@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdMmRelationDao">
+	
+	<resultMap id="RdMmRelationResultMap" type="com.framework.loippi.entity.user.RdMmRelation">
+		<result property="mmCode" column="MM_CODE" />
+		<result property="rank" column="RANK" />
+		<result property="rankNow" column="RANK_NOW" />
+
+		<result property="rankPeriod" column="RANK_PERIOD" />
+		<result property="aRetail" column="A_RETAIL" />
+		<result property="aPpv" column="A_PPV" />
+		<result property="loginPwd" column="LOGIN_PWD" />
+		<result property="pwdInitYn" column="PWD_INIT_YN" />
+		<result property="mmStatus" column="MM_STATUS" />
+		<result property="mmPointStatus" column="MM_POINT_STATUS" />
+		<result property="statusPeriod" column="STATUS_PERIOD" />
+		<result property="sponsorCode" column="SPONSOR_CODE" />
+		<result property="sponsorName" column="SPONSOR_NAME" />
+		<result property="placementCode" column="PLACEMENT_CODE" />
+		<result property="raSponsorStatus" column="RA_SPONSOR_STATUS" />
+		<result property="raStatus" column="RA_STATUS" />
+		<result property="raShopYn" column="RA_SHOP_YN" />
+		<result property="raCode" column="RA_CODE" />
+		<result property="raNickName" column="RA_NICK_NAME" />
+		<result property="raBindingDate" column="RA_BINDING_DATE" />
+		<result property="isVip" column="IS_VIP" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 MM_CODE ,RANK ,RANK_NOW  ,RANK_PERIOD ,A_RETAIL ,LOGIN_PWD ,PWD_INIT_YN ,MM_STATUS ,MM_POINT_STATUS ,STATUS_PERIOD ,SPONSOR_CODE ,SPONSOR_NAME ,PLACEMENT_CODE ,RA_SPONSOR_STATUS ,RA_STATUS ,RA_SHOP_YN ,RA_CODE ,RA_NICK_NAME ,RA_BINDING_DATE ,IS_VIP,A_PPV
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{mmCode},#{rank},#{rankNow},#{rankPeriod},#{aRetail},#{loginPwd},#{pwdInitYn},#{mmStatus},#{mmPointStatus},#{statusPeriod},#{sponsorCode},#{sponsorName},#{placementCode},#{raSponsorStatus},#{raStatus},#{raShopYn},#{raCode},#{raNickName},#{raBindingDate},#{isVip},#{aPpv}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="mmCode != null and mmCode != ''">
+			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="rank != null and rank != ''">
+			AND RANK = #{rank,jdbcType=INTEGER}
+		</if>
+		<if test="rankNow != null and rankNow != ''">
+			AND RANK_NOW = #{rankNow,jdbcType=INTEGER}
+		</if>
+
+		<if test="rankPeriod != null and rankPeriod != ''">
+			AND RANK_PERIOD = #{rankPeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="aRetail != null and aRetail != ''">
+			AND A_RETAIL = #{aRetail}
+		</if>
+		<if test="loginPwd != null and loginPwd != ''">
+			AND LOGIN_PWD = #{loginPwd,jdbcType=VARCHAR}
+		</if>
+		<if test="pwdInitYn != null and pwdInitYn != ''">
+			AND PWD_INIT_YN = #{pwdInitYn,jdbcType=INTEGER}
+		</if>
+		<if test="mmStatus != null and mmStatus != ''">
+			AND MM_STATUS = #{mmStatus,jdbcType=INTEGER}
+		</if>
+		<if test="mmPointStatus != null and mmPointStatus != ''">
+			AND MM_POINT_STATUS = #{mmPointStatus,jdbcType=INTEGER}
+		</if>
+		<if test="statusPeriod != null and statusPeriod != ''">
+			AND STATUS_PERIOD = #{statusPeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="sponsorCode != null and sponsorCode != ''">
+			AND SPONSOR_CODE = #{sponsorCode,jdbcType=VARCHAR}
+		</if>
+		<if test="sponsorName != null and sponsorName != ''">
+			AND SPONSOR_NAME = #{sponsorName,jdbcType=VARCHAR}
+		</if>
+		<if test="placementCode != null and placementCode != ''">
+			AND PLACEMENT_CODE = #{placementCode,jdbcType=VARCHAR}
+		</if>
+		<if test="raSponsorStatus != null and raSponsorStatus != ''">
+			AND RA_SPONSOR_STATUS = #{raSponsorStatus,jdbcType=INTEGER}
+		</if>
+		<if test="raStatus != null and raStatus != ''">
+			AND RA_STATUS = #{raStatus,jdbcType=INTEGER}
+		</if>
+		<if test="raShopYn != null and raShopYn != ''">
+			AND RA_SHOP_YN = #{raShopYn,jdbcType=INTEGER}
+		</if>
+		<if test="raCode != null and raCode != ''">
+			AND RA_CODE = #{raCode,jdbcType=VARCHAR}
+		</if>
+		<if test="raNickName != null and raNickName != ''">
+			AND RA_NICK_NAME = #{raNickName,jdbcType=VARCHAR}
+		</if>
+		<if test="raBindingDate != null and raBindingDate != ''">
+			AND RA_BINDING_DATE = #{raBindingDate}
+		</if>
+		<if test="isVip != null and isVip != ''">
+			AND IS_VIP = #{isVip}
+		</if>
+		<if test="aPpv != null and aPpv != ''">
+			AND A_PPV = #{aPpv}
+		</if>
+		<if test="mmCodes!=null and mmCodes!= ''">
+			and MM_CODE in
+			<foreach item="id" index="index" collection="mmCodes" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="mmCode != null and mmCode != ''">
+			MM_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="rank != null">
+			RANK = #{rank,jdbcType=INTEGER},
+		</if>
+		<if test="rankNow != null">
+			RANK_NOW = #{rankNow,jdbcType=INTEGER},
+		</if>
+
+		<if test="rankPeriod != null and rankPeriod != ''">
+			RANK_PERIOD = #{rankPeriod,jdbcType=VARCHAR},
+		</if>
+		<if test="aRetail != null">
+			A_RETAIL = #{aRetail},
+		</if>
+		<if test="aPpv != null and aPpv != ''">
+			 A_PPV = #{aPpv},
+		</if>
+		<if test="loginPwd != null and loginPwd != ''">
+			LOGIN_PWD = #{loginPwd,jdbcType=VARCHAR},
+		</if>
+		<if test="pwdInitYn != null">
+			PWD_INIT_YN = #{pwdInitYn,jdbcType=INTEGER},
+		</if>
+		<if test="mmStatus != null">
+			MM_STATUS = #{mmStatus,jdbcType=INTEGER},
+		</if>
+		<if test="mmPointStatus != null">
+			MM_POINT_STATUS = #{mmPointStatus,jdbcType=INTEGER},
+		</if>
+		<if test="statusPeriod != null and statusPeriod != ''">
+			STATUS_PERIOD = #{statusPeriod,jdbcType=VARCHAR},
+		</if>
+		<if test="sponsorCode != null and sponsorCode != ''">
+			SPONSOR_CODE = #{sponsorCode,jdbcType=VARCHAR},
+		</if>
+		<if test="sponsorName != null and sponsorName != ''">
+			SPONSOR_NAME = #{sponsorName,jdbcType=VARCHAR},
+		</if>
+		<if test="placementCode != null and placementCode != ''">
+			PLACEMENT_CODE = #{placementCode,jdbcType=VARCHAR},
+		</if>
+		<if test="raSponsorStatus != null">
+			RA_SPONSOR_STATUS = #{raSponsorStatus,jdbcType=INTEGER},
+		</if>
+		<if test="raStatus != null">
+			RA_STATUS = #{raStatus,jdbcType=INTEGER},
+		</if>
+		<if test="raShopYn != null">
+			RA_SHOP_YN = #{raShopYn,jdbcType=INTEGER},
+		</if>
+		<if test="raCode != null and raCode != ''">
+			RA_CODE = #{raCode,jdbcType=VARCHAR},
+		</if>
+		<if test="raNickName != null and raNickName != ''">
+			RA_NICK_NAME = #{raNickName,jdbcType=VARCHAR},
+		</if>
+		<if test="raBindingDate != null">
+			RA_BINDING_DATE = #{raBindingDate},
+		</if>
+		<if test="isVip != null and isVip != ''">
+			 IS_VIP = #{isVip},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdMmRelationResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_RELATION
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdMmRelationResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_RELATION
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_MM_RELATION
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmRelation">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+	          <!--SELECT LAST_INSERT_ID() AS ID    -->
+	    <!--</selectKey>  -->
+		INSERT RD_MM_RELATION 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdMmRelation">
+		UPDATE	RD_MM_RELATION
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	MM_CODE = #{mmCode}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_MM_RELATION
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_MM_RELATION
+		WHERE	ID	IN
+    	<foreach item="RdMmRelationId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdMmRelationId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdMmRelationResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_MM_RELATION
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdMmRelationResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_MM_RELATION
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

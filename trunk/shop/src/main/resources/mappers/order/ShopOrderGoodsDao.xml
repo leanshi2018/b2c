@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.order.ShopOrderGoodsDao">
+
+    <resultMap id="ShopOrderGoodsResultMap" type="com.framework.loippi.entity.order.ShopOrderGoods">
+        <id property="id" column="id"  />
+        <result property="orderId" column="order_id" />
+        <result property="goodsId" column="goods_id" />
+        <result property="goodsName" column="goods_name" />
+        <result property="specId" column="spec_id" />
+        <result property="specInfo" column="spec_info" />
+        <result property="goodsPrice" column="goods_price" />
+        <result property="goodsNum" column="goods_num" />
+        <result property="goodsImage" column="goods_image" />
+        <result property="goodsReturnnum" column="goods_returnnum" />
+        <result property="refundAmount" column="refund_amount" />
+        <result property="storesId" column="stores_id" />
+        <result property="evaluationStatus" column="evaluation_status" />
+        <result property="evaluationTime" column="evaluation_time" />
+        <result property="goodsPayPrice" column="goods_pay_price" />
+        <result property="buyerId" column="buyer_id" />
+        <result property="gcId" column="gc_id" />
+        <result property="goodsBarternum" column="goods_barternum" />
+        <result property="isPresentation" column="is_presentation" />
+        <result property="daddressId" column="daddress_id" />
+        <result property="activityType" column="activity_type" />
+        <result property="activityId" column="activity_id" />
+        <result property="specGoodsSerial" column="spec_goods_serial" />
+        <result property="goodsShippingFee" column="goods_shipping_fee" />
+        <result property="rewardPointPrice" column="reward_point_price" />
+        <result property="marketPrice" column="market_price" />
+        <result property="goodsSubname" column="goods_subname" />
+        <result property="ppv" column="ppv" />
+        <result property="bigPpv" column="big_ppv" />
+        <result property="shippingExpressId" column="shipping_express_id" />
+        <result property="shippingCode" column="shipping_code" />
+        <result property="shippingExpressCode" column="shipping_express_code" />
+        <result property="vipPrice" column="vip_price" />
+        <result property="weight" column="weight" />
+        <result property="goodsType" column="goods_type"/>
+        <result property="shippingGoodsNum" column="shipping_goods_num"/>
+        <result property="shippingExpressName" column="shipping_express_name"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,order_id ,goods_id ,goods_name ,spec_id ,spec_info ,goods_price ,goods_num ,goods_image ,goods_returnnum ,refund_amount ,stores_id ,evaluation_status ,evaluation_time ,goods_pay_price ,buyer_id ,gc_id ,goods_barternum ,is_presentation ,daddress_id ,activity_type ,activity_id ,spec_goods_serial ,goods_shipping_fee ,reward_point_price ,market_price ,goods_subname ,ppv ,big_ppv ,shipping_express_id ,shipping_code,shipping_express_code ,vip_price,weight,goods_type,shipping_goods_num,shipping_express_name
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{orderId},#{goodsId},#{goodsName},#{specId},#{specInfo},#{goodsPrice},#{goodsNum},#{goodsImage},#{goodsReturnnum},#{refundAmount},#{storesId},#{evaluationStatus},#{evaluationTime},#{goodsPayPrice},#{buyerId},#{gcId},#{goodsBarternum},#{isPresentation},#{daddressId},#{activityType},#{activityId},#{specGoodsSerial},#{goodsShippingFee},#{rewardPointPrice},#{marketPrice},#{goodsSubname},#{ppv},#{bigPpv},#{shippingExpressId},#{shippingCode},#{shippingExpressCode},#{vipPrice},#{weight},#{goodsType},#{shippingGoodsNum},#{shippingExpressName}
+	</sql>
+    <sql id="base_list_value_column">
+		 #{item.id},#{item.orderId},#{item.goodsId},#{item.goodsName},#{item.specId},#{item.specInfo},#{item.goodsPrice},#{item.goodsNum},#{item.goodsImage},#{item.goodsReturnnum},#{item.refundAmount},#{item.storesId},#{item.evaluationStatus},#{item.evaluationTime},#{item.goodsPayPrice},#{item.buyerId},#{item.gcId},#{item.goodsBarternum},#{item.isPresentation},#{item.daddressId},#{item.activityType},#{item.activityId},#{item.specGoodsSerial},#{item.goodsShippingFee},#{item.rewardPointPrice},#{item.marketPrice}
+		 ,#{item.goodsSubname},#{item.ppv},#{item.bigPpv},#{item.shippingExpressId},#{item.shippingCode},#{item.shippingExpressCode},#{item.vipPrice},#{item.weight},#{item.goodsType},#{item.shippingGoodsNum},#{item.shippingExpressName}
+	</sql>
+
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND order_id = #{orderId,jdbcType=BIGINT}
+        </if>
+        <if test="goodsId != null and goodsId != ''">
+            AND goods_id = #{goodsId,jdbcType=BIGINT}
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            AND goods_name = #{goodsName,jdbcType=VARCHAR}
+        </if>
+        <if test="specId != null and specId != ''">
+            AND spec_id = #{specId,jdbcType=BIGINT}
+        </if>
+        <if test="specInfo != null and specInfo != ''">
+            AND spec_info = #{specInfo,jdbcType=VARCHAR}
+        </if>
+        <if test="goodsPrice != null and goodsPrice != ''">
+            AND goods_price = #{goodsPrice}
+        </if>
+        <if test="marketPrice != null and marketPrice != ''">
+            AND market_price = #{marketPrice}
+        </if>
+        <!--<if test="activityPrice != null">-->
+            <!--AND activity_price = #{activityPrice}-->
+        <!--</if>-->
+        <!--<if test="goodsTaxFee != null">-->
+            <!--AND goods_tax_fee = #{goodsTaxFee}-->
+        <!--</if>-->
+        <if test="goodsShippingFee != null">
+            AND goods_shipping_fee = #{goodsShippingFee}
+        </if>
+        <if test="goodsNum != null and goodsNum != ''">
+            AND goods_num = #{goodsNum,jdbcType=INTEGER}
+        </if>
+        <if test="goodsImage != null and goodsImage != ''">
+            AND goods_image = #{goodsImage,jdbcType=VARCHAR}
+        </if>
+        <if test="goodsReturnnum != null and goodsReturnnum != ''">
+            AND goods_returnnum = #{goodsReturnnum,jdbcType=INTEGER}
+        </if>
+        <if test="refundAmount != null and refundAmount != ''">
+            AND refund_amount = #{refundAmount}
+        </if>
+        <if test="storesId != null and storesId != ''">
+            AND stores_id = #{storesId,jdbcType=BIGINT}
+        </if>
+        <if test="evaluationStatus != null">
+            AND evaluation_status = #{evaluationStatus,jdbcType=INTEGER}
+        </if>
+        <if test="evaluationTime != null and evaluationTime != ''">
+            AND evaluation_time = #{evaluationTime,jdbcType=BIGINT}
+        </if>
+        <if test="goodsPayPrice != null and goodsPayPrice != ''">
+            AND goods_pay_price = #{goodsPayPrice}
+        </if>
+        <!--<if test="goodsPreAmount != null and goodsPreAmount != ''">-->
+            <!--AND goods_pre_amount = #{goodsPreAmount}-->
+        <!--</if>-->
+        <!--<if test="goodsHbAmount != null">-->
+            <!--AND goods_hb_amount = #{goodsHbAmount}-->
+        <!--</if>-->
+        <if test="buyerId != null and buyerId != ''">
+            AND buyer_id = #{buyerId,jdbcType=VARCHAR}
+        </if>
+        <!--<if test="commisRate != null and commisRate != ''">-->
+            <!--AND commis_rate = #{commisRate,jdbcType=FLOAT}-->
+        <!--</if>-->
+        <if test="gcId != null and gcId != ''">
+            AND gc_id = #{gcId,jdbcType=VARCHAR}
+        </if>
+        <if test="goodsBarternum != null and goodsBarternum != ''">
+            AND goods_barternum = #{goodsBarternum,jdbcType=INTEGER}
+        </if>
+
+        <!--<if test="receiveMobile != null and receiveMobile != ''">-->
+            <!--AND receive_mobile = #{receiveMobile,jdbcType=VARCHAR}-->
+        <!--</if>-->
+        <if test="isPresentation != null and isPresentation != ''">
+            AND is_presentation = #{isPresentation,jdbcType=INTEGER}
+        </if>
+        <if test="activityType != null">
+            AND activity_type = #{activityType,jdbcType=INTEGER}
+        </if>
+        <if test="activityId != null">
+            AND activity_id = #{activityId,jdbcType=BIGINT}
+        </if>
+        <if test="daddressId != null and daddressId != ''">
+            AND daddress_id = #{daddressId,jdbcType=VARCHAR}
+        </if>
+        <if test="specGoodsSerial != null and specGoodsSerial != ''">
+            AND spec_goods_serial = #{specGoodsSerial,jdbcType=VARCHAR}
+        </if>
+        <if test="ppv != null">
+            AND ppv = #{ppv}
+        </if>
+        <if test="bigPpv != null">
+            AND big_ppv = #{bigPpv}
+        </if>
+        <if test="shippingExpressId != null">
+            AND shipping_express_id = #{shippingExpressId}
+        </if>
+        <if test="shippingCode != null and shippingCode != ''">
+            AND shipping_code = #{shippingCode}
+        </if>
+        <if test="shippingExpressCode != null and shippingExpressCode != ''">
+            AND shipping_express_code = #{shippingExpressCode}
+        </if>
+        <if test="vipPrice != null and vipPrice != ''">
+            AND vip_price = #{vipPrice}
+        </if>
+        <if test="weight != null and weight != ''">
+            AND weight = #{weight}
+        </if>
+        <if test="goodsType != null and goodsType != ''">
+            AND goods_type = #{goodsType}
+        </if>
+        <if test="shippingGoodsNum != null and shippingGoodsNum != ''">
+            AND shipping_goods_num = #{shippingGoodsNum}
+        </if>
+        <if test="shippingExpressName != null and shippingExpressName != ''">
+            AND shipping_express_name = #{shippingExpressName}
+        </if>
+        <if test="goodIds != null and goodIds != ''">
+            AND goods_id IN
+            <foreach item="GoodsId" index="index" collection="goodIds" open="(" separator="," close=")">
+                #{GoodsId}
+            </foreach>
+        </if>
+        <if test="Ids != null and Ids != ''">
+            AND id IN
+        <foreach item="ShopOrderGoodsId" index="index" collection="Ids" open="(" separator="," close=")">
+            #{ShopOrderGoodsId}
+        </foreach>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="orderId != null">
+            order_id = #{orderId,jdbcType=BIGINT},
+        </if>
+        <if test="goodsId != null">
+            goods_id = #{goodsId,jdbcType=BIGINT},
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            goods_name = #{goodsName,jdbcType=VARCHAR},
+        </if>
+        <if test="specId != null">
+            spec_id = #{specId,jdbcType=BIGINT},
+        </if>
+        <if test="specInfo != null and specInfo != ''">
+            spec_info = #{specInfo,jdbcType=VARCHAR},
+        </if>
+        <if test="goodsPrice != null">
+            goods_price = #{goodsPrice,jdbcType=DECIMAL},
+        </if>
+        <if test="marketPrice != null and marketPrice != ''">
+            market_price = #{marketPrice},
+        </if>
+        <!--<if test="activityPrice != null">-->
+            <!--activity_price = #{activityPrice,jdbcType=DECIMAL},-->
+        <!--</if>-->
+        <if test="goodsNum != null">
+            goods_num = #{goodsNum,jdbcType=INTEGER},
+        </if>
+        <if test="goodsImage != null and goodsImage != ''">
+            goods_image = #{goodsImage,jdbcType=VARCHAR},
+        </if>
+        <if test="goodsReturnnum != null">
+            goods_returnnum = #{goodsReturnnum,jdbcType=INTEGER},
+        </if>
+        <if test="refundAmount != null">
+            refund_amount = #{refundAmount,jdbcType=DECIMAL},
+        </if>
+        <!--<if test="goodsHbAmount != null">-->
+            <!--goods_hb_amount = #{goodsHbAmount,jdbcType=DECIMAL},-->
+        <!--</if>-->
+        <!--<if test="goodsTaxFee != null">-->
+            <!--goods_tax_fee = #{goodsTaxFee,jdbcType=DECIMAL},-->
+        <!--</if>-->
+        <if test="storesId != null">
+            stores_id = #{storesId,jdbcType=BIGINT},
+        </if>
+        <if test="evaluationStatus != null">
+            evaluation_status = #{evaluationStatus,jdbcType=INTEGER},
+        </if>
+        <if test="evaluationTime != null">
+            evaluation_time = #{evaluationTime,jdbcType=BIGINT},
+        </if>
+        <if test="goodsPayPrice != null">
+            goods_pay_price = #{goodsPayPrice,jdbcType=DECIMAL},
+        </if>
+        <!--<if test="goodsPreAmount != null">-->
+            <!--goods_pre_amount = #{goodsPreAmount,jdbcType=DECIMAL},-->
+        <!--</if>-->
+        <if test="buyerId != null and buyerId != ''">
+            buyer_id = #{buyerId,jdbcType=VARCHAR},
+        </if>
+        <!--<if test="commisRate != null">-->
+            <!--commis_rate = #{commisRate,jdbcType=FLOAT},-->
+        <!--</if>-->
+        <if test="gcId != null and gcId != ''">
+            gc_id = #{gcId,jdbcType=VARCHAR},
+        </if>
+        <if test="goodsBarternum != null">
+            goods_barternum = #{goodsBarternum,jdbcType=INTEGER},
+        </if>
+        <!--<if test="receiveEmail != null and receiveEmail != ''">-->
+            <!--receive_email = #{receiveEmail,jdbcType=VARCHAR},-->
+        <!--</if>-->
+        <!--<if test="receiveMobile != null and receiveMobile != ''">-->
+            <!--receive_mobile = #{receiveMobile,jdbcType=VARCHAR},-->
+        <!--</if>-->
+        <if test="isPresentation != null">
+            is_presentation = #{isPresentation,jdbcType=INTEGER},
+        </if>
+        <if test="daddressId != null and daddressId != ''">
+            daddress_id = #{daddressId,jdbcType=VARCHAR},
+        </if>
+        <if test="specGoodsSerial != null and specGoodsSerial != ''">
+            spec_goods_serial = #{specGoodsSerial,jdbcType=VARCHAR},
+        </if>
+        <if test="activityId != null">
+            activity_id = #{activityId,jdbcType=BIGINT},
+        </if>
+        <if test="activityType != null">
+            activity_type = #{activityType,jdbcType=INTEGER},
+        </if>
+        <!--<if test="voucherPrice != null">-->
+            <!--voucher_price = #{voucherPrice,jdbcType=DECIMAL},-->
+        <!--</if>-->
+        <!--<if test="couponPrice != null">-->
+            <!--coupon_price = #{couponPrice,jdbcType=DECIMAL},-->
+        <!--</if>-->
+        <if test="rewardPointPrice != null">
+            reward_point_price = #{rewardPointPrice,jdbcType=DECIMAL},
+        </if>
+        <if test="ppv != null">
+             ppv = #{ppv},
+        </if>
+        <if test="bigPpv != null">
+             big_ppv = #{bigPpv},
+        </if>
+        <if test="shippingExpressId != null">
+             shipping_express_id = #{shippingExpressId},
+        </if>
+        <if test="shippingCode != null and shippingCode != ''">
+             shipping_code = #{shippingCode},
+        </if>
+        <if test="shippingExpressCode != null and shippingExpressCode != ''">
+             shipping_express_code = #{shippingExpressCode},
+        </if>
+        <if test="vipPrice != null and vipPrice != ''">
+             vip_price = #{vipPrice},
+        </if>
+        <if test="weight != null and weight != ''">
+             weight = #{weight},
+        </if>
+        <if test="goodsType != null and goodsType != ''">
+             goods_type = #{goodsType},
+        </if>
+        <if test="shippingGoodsNum != null and shippingGoodsNum != ''">
+             shipping_goods_num = #{shippingGoodsNum},
+        </if>
+        <if test="shippingExpressName != null and shippingExpressName != ''">
+             shipping_express_name = #{shippingExpressName}
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopOrderGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER_GOODS
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopOrderGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER_GOODS
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_ORDER_GOODS
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.order.ShopOrderGoods">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_ORDER_GOODS
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="java.util.List" >
+        insert into SHOP_ORDER_GOODS
+        (
+        <include refid="base_column"/>
+        )
+        values
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (<include refid="base_list_value_column"/>)
+        </foreach>
+    </insert>
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.order.ShopOrderGoods">
+        UPDATE SHOP_ORDER_GOODS
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateBatch" parameterType="com.framework.loippi.entity.order.ShopOrderGoods">
+        UPDATE SHOP_ORDER_GOODS
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE 1=1
+    <if test="ids != null and ids != ''">
+        and ID in
+        <foreach item="ShopOrderGoodsId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopOrderGoodsId}
+        </foreach>
+    </if>
+        <if test="specIds != null and specIds != ''">
+            and spec_id in
+            <foreach item="ShopOrderGoodsId" index="index" collection="specIds" open="(" separator="," close=")">
+                #{ShopOrderGoodsId}
+            </foreach>
+        </if>
+
+    </update>
+
+
+    <select id="updateBatchForShipmentNum" parameterType="java.util.List">
+        <foreach item="item" index="index" collection="list" open="" close="" separator=";">
+            UPDATE SHOP_ORDER_GOODS
+            SET shipping_goods_num = ifnull(shipping_goods_num, 0 )+#{item.shippingGoodsNum},
+            shipping_express_code = #{item.shippingExpressCode},
+            shipping_express_id = #{item.shippingExpressId},
+            shipping_express_name = #{item.shippingExpressName},
+            shipping_code = #{item.shippingCode}
+            where id = #{item.id}
+        </foreach>
+    </select>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_ORDER_GOODS
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_ORDER_GOODS
+        WHERE ID IN
+        <foreach item="ShopOrderGoodsId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopOrderGoodsId}
+        </foreach>
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteByEntity">
+        DELETE FROM SHOP_ORDER_GOODS
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopOrderGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER_GOODS
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopOrderGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER_GOODS
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="listByOrderId" resultMap="ShopOrderGoodsResultMap">
+        select
+        <include refid="base_column"/>
+        from shop_order_goods
+        where order_id = #{orderId}
+    </select>
+
+    <!--根据多订单id查询多订单商品-->
+    <select id="listByOrderIds" resultMap="ShopOrderGoodsResultMap">
+        select
+        <include refid="base_column"/>
+        from shop_order_goods
+        where order_id IN
+        <foreach item="orderId" index="index" collection="list" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </select>
+
+    <select id="findEvalGoodsByEvalStatusAndOrderId" resultMap="ShopOrderGoodsResultMap">
+        select
+        ogoods.* ,sge.id AS evaluationId
+        from
+        shop_order_goods ogoods left JOIN shop_goods_evaluate sge on ogoods.id= sge.geval_ordergoodsid
+        where
+        ogoods.order_id = #{orderId, jdbcType=BIGINT}
+
+        <if test="evaluationStatus != null and evaluationStatus != ''">
+            AND ogoods.evaluation_status = #{evaluationStatus,jdbcType=INTEGER}
+        </if>
+
+    </select>
+
+</mapper>

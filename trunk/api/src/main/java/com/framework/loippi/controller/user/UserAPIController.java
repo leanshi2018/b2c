@@ -1,0 +1,906 @@
+package com.framework.loippi.controller.user;
+
+
+import com.framework.loippi.consts.UpdateMemberInfoStatus;
+import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.common.ShopApp;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsBrowse;
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.entity.walet.LgTypeEnum;
+import com.framework.loippi.entity.walet.ShopWalletLog;
+import com.framework.loippi.enus.SocialType;
+import com.framework.loippi.enus.UserLoginType;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.param.user.UserAddBankCardsParam;
+import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.evaluate.EvaluateGoodsResult;
+import com.framework.loippi.result.user.*;
+import com.framework.loippi.service.RedisService;
+import com.framework.loippi.service.TUserSettingService;
+import com.framework.loippi.service.common.ShopAppService;
+import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
+import com.framework.loippi.service.user.*;
+import com.framework.loippi.service.wallet.ShopWalletLogService;
+import com.framework.loippi.service.product.ShopGoodsBrowseService;
+import com.framework.loippi.service.product.ShopGoodsEvaluateService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.trade.ShopRefundReturnService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.*;
+import com.framework.loippi.vo.address.MemberAddresVo;
+import com.framework.loippi.vo.order.CountOrderStatusVo;
+import com.framework.loippi.vo.order.OrderSumPpv;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.ibm.icu.text.SimpleDateFormat;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.*;
+
+
+@Controller
+@ResponseBody
+@RequestMapping("/api/user")
+public class UserAPIController extends BaseController {
+
+    @Resource
+    private ShopMemberFavoritesService shopMemberFavoritesService;
+    @Resource
+    private ShopGoodsService shopGoodsService;
+    @Resource
+    private RedisService redisService;
+    @Resource
+    private ShopOrderService shopOrderService;
+    @Resource
+    private ShopGoodsBrowseService shopGoodsBrowseService;
+    @Resource
+    private ShopGoodsEvaluateService shopGoodsEvaluateService;
+    @Resource
+    private RdMmBankService rdMmBankService;
+    @Resource
+    private ShopCommonAreaService shopCommonAreaService;
+    @Resource
+    private ShopAppService shopAppService;
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
+    @Resource
+    private RdMmRelationService rdMmRelationService;
+    @Resource
+    private RdRanksService rdRanksService;
+    @Resource
+    private RdMmAccountInfoService rdMmAccountInfoService;
+
+    @Resource
+    private OldSysRelationshipService oldSysRelationshipService;
+    @Resource
+    private RdRaBindingService rdRaBindingService;
+    @Resource
+    private ShopGoodsEvaluateSensitivityService evaluateSensitivityService;
+    @Value("#{properties['wap.server']}")
+    private String wapServer;
+
+    /**
+     * 个人中心
+     */
+    @RequestMapping("/personCenter")
+    @ResponseBody
+    public String personCenter(HttpServletRequest request) {
+        // 获取缓存实体
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        //用户未登录或者登录失效
+        if (member == null) {
+            PersonCenterResult result = new PersonCenterResult();
+            return ApiUtils.success(result);
+        }
+        RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks);
+        //各种状态订单数量信息
+        List<CountOrderStatusVo> countOrderStatusVoList = shopOrderService
+            .countOrderStatus(Paramap.create().put("buyerId", shopMember.getMmCode()).put("isDel",0));
+        //心愿单数量
+        Long favoritesNum = shopMemberFavoritesService
+            .count(Paramap.create().put("memberId", Long.parseLong(shopMember.getMmCode())));
+        result.setFavoritesNum(Integer.parseInt(favoritesNum + ""));
+        //足迹数量
+        Long browseNum = shopGoodsBrowseService
+            .count(Paramap.create().put("browseMemberId", Long.parseLong(shopMember.getMmCode())));
+        result.setBrowseNum(Integer.parseInt(browseNum + ""));
+        result = PersonCenterResult.build2(result, countOrderStatusVoList);
+        //是否设置登录密码
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        if (StringUtil.isEmpty(rdMmAccountInfo.getPaymentPwd())) {
+            result.setIsPaymentPasswd(0);
+        } else {
+            result.setIsPaymentPasswd(1);
+        }
+        return ApiUtils.success(result);
+    }
+
+    /**
+     * 个人资料
+     */
+    @RequestMapping(value = "/profile.json", method = RequestMethod.POST)
+    public String UserProfile(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdRaBinding rdRaBinding=rdRaBindingService.find("rdCode",member.getMmCode());
+        return ApiUtils.success(UserProfileResult.build2(rdMmBasicInfo,rdRaBinding));
+    }
+
+    /**
+     * 修改头像
+     */
+    @RequestMapping(value = "/updateAvator.json", method = RequestMethod.POST)
+    public String updateAvator(HttpServletRequest request, String avatar) {
+        if (StringUtil.isEmpty(avatar)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        member.setMmAvatar(avatar);
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.UPDATE_AVATAR);
+        redisService.save(session.getSessionid(), AuthsLoginResult.of(member, session, prefix));
+        return ApiUtils.success();
+    }
+
+    /**
+     * 修改推送状态
+     */
+    @RequestMapping(value = "/updatePush.json", method = RequestMethod.POST)
+    public String updatePush(HttpServletRequest request, Integer pushStatus) {
+        if (StringUtil.isEmpty(pushStatus + "")) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        member.setPushStatus(pushStatus);
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.UPDATE_PUSHSTATUS);
+        redisService.save(session.getSessionid(), AuthsLoginResult.of(member, session, prefix));
+        return ApiUtils.success();
+    }
+
+
+    /**
+     * 修改密码时验证当前密码
+     */
+    @RequestMapping(value = "/validPassword.json", method = RequestMethod.POST)
+    public String validPassword(HttpServletRequest request, String password) {
+        if (StringUtils.isBlank(password)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", session.getMmCode());
+        if (!Digests.validatePassword(password, rdMmRelation.getLoginPwd())) {
+            return ApiUtils.error("当前密码输入错误");
+        }
+        return ApiUtils.success();
+    }
+
+
+    /**
+     * 修改昵称
+     */
+    @RequestMapping(value = "/updateNickname.json", method = RequestMethod.POST)
+    public String updateNickname(HttpServletRequest request, String nickName) {
+        if (StringUtils.isBlank(nickName)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        //昵称过滤敏感字
+        evaluateSensitivityService.filterWords(nickName);
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmNickName", nickName);
+        if (shopMember != null) {
+            return ApiUtils.error("此昵称已存在");
+        }
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        member.setMmNickName(nickName);
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.UPDATE_NICKNAME);
+        redisService.save(session.getSessionid(), AuthsLoginResult.of(member, session, prefix));
+        return ApiUtils.success();
+    }
+
+    /**
+     * 修改性别
+     */
+    @RequestMapping(value = "/updateSex.json", method = RequestMethod.POST)
+    public String updateSex(HttpServletRequest request, Integer sex) {
+        if (sex == null || (sex != 1 && sex != 0)) {
+            return ApiUtils.error("性别只能为男或者女");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        member.setGender(sex);
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.UPDATE_SEX);
+        redisService.save(session.getSessionid(), AuthsLoginResult.of(member, session, prefix));
+        return ApiUtils.success();
+    }
+
+    /**
+     * 修改生日
+     */
+    @RequestMapping(value = "/updateBirthday.json", method = RequestMethod.POST)
+    public String updateBirthday(HttpServletRequest request, String birthday) {
+        if (StringUtils.isBlank(birthday)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date birthdayDate;
+        try {
+            birthdayDate = format.parse(birthday);
+        } catch (Exception e) {
+            return ApiUtils.error("格式错误，正确格式：yyyy-MM-dd");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        member.setBirthdate(birthdayDate);
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.UPDATE_BIRTHDAY);
+        redisService.save(session.getSessionid(), AuthsLoginResult.of(member, session, prefix));
+        return ApiUtils.success();
+    }
+
+    /**
+     * 个人资料中修改地区信息
+     */
+    @RequestMapping(value = "/updateAreainfo.json", method = RequestMethod.POST)
+    public String updateAreainfo(HttpServletRequest request, Long areaId) {
+        if (areaId == null) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        StringBuffer areaInfo = new StringBuffer();
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        MemberAddresVo memberAddresVo = shopCommonAreaService.findByAreaId(Paramap.create().put("areaId", areaId));
+        if (memberAddresVo != null && memberAddresVo.getAreaId() != null) {
+            member.setAddCountryId(memberAddresVo.getAreaName());
+            areaInfo.insert(0, memberAddresVo.getAreaName());
+        }
+        if (memberAddresVo != null && memberAddresVo.getCityId() != null) {
+            member.setAddCityId(memberAddresVo.getCityName());
+            areaInfo.insert(0, memberAddresVo.getCityName());
+        }
+        if (memberAddresVo != null && memberAddresVo.getProvinceId() != null) {
+            member.setAddProvinceId(memberAddresVo.getProvinceName());
+            areaInfo.insert(0, memberAddresVo.getProvinceName());
+        }
+        member.setAddTownId(areaInfo.toString());
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.UPDATE_AREAINFO);
+        redisService.save(session.getSessionid(), AuthsLoginResult.of(member, session, prefix));
+        return ApiUtils.success();
+    }
+
+    /**
+     * 个人资料中修改地址信息
+     */
+    @RequestMapping(value = "/updateAddress.json", method = RequestMethod.POST)
+    public String updateAddress(HttpServletRequest request, String addressInfo) {
+        if (StringUtils.isBlank(addressInfo)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        member.setAddDetial(addressInfo);
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.UPDATE_ADDRESS);
+        redisService.save(session.getSessionid(), AuthsLoginResult.of(member, session, prefix));
+        return ApiUtils.success();
+    }
+
+    /**
+     * 修改手机号码
+     *
+     * @param {String} oldMobile 原手机号码
+     * @param {String} oldMobileCode 原手机号码验证码
+     * @param {String} newMobile 新手机号码
+     * @param {String} newMobileCode 新手机号码验证码
+     */
+    @RequestMapping(value = "/updateMobile.json", method = RequestMethod.POST)
+    public String updateMobile(
+        HttpServletRequest request,
+        @RequestParam String oldMobile,
+        @RequestParam String oldMobileCode,
+        @RequestParam String newMobile,
+        @RequestParam String newMobileCode) {
+        if (StringUtils.isBlank(oldMobile) || StringUtils.isBlank(oldMobileCode) || StringUtils.isBlank(newMobile)
+            || StringUtils.isBlank(newMobileCode)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        if (!SmsUtil.validMsg(oldMobile, oldMobileCode, redisService)) {
+            return ApiUtils.error("原手机号码验证码不正确或已过期");
+        }
+        if (!SmsUtil.validMsg(newMobile, newMobileCode, redisService)) {
+            return ApiUtils.error("新手机号码验证码不正确或已过期");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        if (!oldMobile.equals(member.getMobile())) {
+            return ApiUtils.error("不是预留手机号码");
+        }
+        int newMobileCount = rdMmBasicInfoService.count(Paramap.create().put("mobile", newMobile)).intValue();
+        if (newMobileCount > 0) {
+            return ApiUtils.error("新手机号码已被绑定");
+        }
+        RdMmBasicInfo updateMember = new RdMmBasicInfo();
+        updateMember.setMmCode(member.getMmCode());
+        updateMember.setMobile(newMobile);
+        rdMmBasicInfoService.updateMember(updateMember, UpdateMemberInfoStatus.UPDATE_MOBILE);
+        member.setMobile(newMobile);
+        redisService.save(session.getSessionid(), AuthsLoginResult.of(member, session, prefix));
+        redisService.delete(oldMobile);
+        redisService.delete(newMobile);
+        return ApiUtils.success();
+    }
+
+    /**
+     * 进行原手机号码验证
+     */
+    @RequestMapping(value = "/validMobile.json", method = RequestMethod.POST)
+    public String validMobile(HttpServletRequest request, @RequestParam String mobile, @RequestParam String code) {
+        if (StringUtils.isBlank(mobile) || StringUtils.isBlank(code)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        //判断手机验证码是否正确
+        if (!SmsUtil.validMsg(mobile, code, redisService)) {
+            return ApiUtils.error(Xerror.VALID_CODE_ERROR);
+        }
+        /**判断是不是预留手机号码*/
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        if (!member.getMobile().equals(mobile)) {
+            return ApiUtils.error("10004", "不是预留手机号码");
+        }
+        return ApiUtils.success();
+    }
+
+    /**
+     * 支付密码验证
+     */
+    @RequestMapping(value = "/validPaymentPasswd.json", method = RequestMethod.POST)
+    public String validPaymentPasswd(HttpServletRequest request, @RequestParam String paypassword) {
+        if (StringUtils.isBlank(paypassword)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmAccountInfo member = rdMmAccountInfoService.find("mmCode", session.getMmCode());
+        if (!Digests.validatePassword(paypassword, member.getPaymentPwd())) {
+            return ApiUtils.error("支付密码输入错误");
+        }
+        return ApiUtils.success();
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param oldpassword 原密码
+     * @param newpassword 新密码
+     */
+    @RequestMapping(value = "/updatePassword.json", method = RequestMethod.POST)
+    public String updatePassword(HttpServletRequest request, String oldpassword, String newpassword) {
+
+        if (StringUtils.isBlank(oldpassword) || StringUtils.isBlank(newpassword)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", session.getMmCode());
+        if (!Digests.validatePassword(oldpassword, rdMmRelation.getLoginPwd())) {
+            return ApiUtils.error("原密码输入错误");
+        }
+        rdMmRelation.setLoginPwd(Digests.entryptPassword(newpassword));
+        rdMmRelationService.update(rdMmRelation);
+        return ApiUtils.success();
+    }
+
+    /**
+     * 设置支付密码
+     *
+     * @param {String} mobile 手机号码
+     * @param {String} code 手机验证码
+     * @param {String} paypassword 支付密码
+     */
+    @RequestMapping(value = "/setPaymentPasswd", method = RequestMethod.POST)
+    public String setPaymentPasswd(@RequestParam String mobile,
+        @RequestParam String code,
+        @RequestParam String paypassword,
+        HttpServletRequest request) {
+        if (StringUtils.isBlank(mobile) || StringUtils.isBlank(code) || StringUtils.isBlank(paypassword)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        //判断手机验证码是否正确
+        if (!SmsUtil.valicodeIstrue(mobile, code, redisService)) {
+            return ApiUtils.error(Xerror.VALID_CODE_ERROR);
+        }
+        /**判断是不是预留手机号码*/
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        if (!member.getMobile().equals(mobile)) {
+            return ApiUtils.error("10004", "不是预留手机号码");
+        }
+        //为保存密码 故意处理
+        member.setMobile(Digests.entryptPassword(paypassword));
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.SET_PAYMENTPASSWD);
+        return ApiUtils.success();
+    }
+
+    /**
+     * 修改支付密码
+     *
+     * @param {String} mobile 手机号码
+     * @param {String} code 手机验证码
+     * @param {String} paypassword 支付密码
+     */
+    @RequestMapping(value = "/updatePaymentPasswd", method = RequestMethod.POST)
+    public String updatePaymentPasswd(HttpServletRequest request, String oldpassword, String newpassword) {
+        if (StringUtils.isBlank(oldpassword) || StringUtils.isBlank(newpassword)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmAccountInfo member = rdMmAccountInfoService.find("mmCode", session.getMmCode());
+        if (!Digests.validatePassword(oldpassword, member.getPaymentPwd())) {
+            return ApiUtils.error("原密码输入错误");
+        }
+        member.setPaymentPwd(Digests.entryptPassword(newpassword));
+        rdMmAccountInfoService.update(member);
+        return ApiUtils.success();
+    }
+
+    /**
+     * 是否设置支付密码
+     */
+    @RequestMapping(value = "/paymentPasswdState", method = RequestMethod.POST)
+    public String paymentPasswdState(HttpServletRequest request) {
+
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmAccountInfo member = rdMmAccountInfoService.find("mmCode", session.getMmCode());
+        if (StringUtil.isEmpty(member.getPaymentPwd())) {
+            return ApiUtils.success(Paramap.create().put("state", 0));
+        } else {
+            return ApiUtils.success(Paramap.create().put("state", 1));
+        }
+    }
+
+    //银行卡列表
+    @RequestMapping(value = "/bankCardsList.json")
+    public String bankCardsList(@RequestParam(defaultValue = "1") Integer pageNumber,
+        @RequestParam(defaultValue = "10") Integer pageSize,
+        HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        Pageable pageable = new Pageable(pageNumber, pageSize);
+        pageable.setParameter(Paramap.create().put("mmCode", member.getMmCode()));
+        pageable.setOrderProperty("defaultbank");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        List<RdMmBank> rdMmBankList = rdMmBankService.findByPage(pageable).getContent();
+        return ApiUtils.success(BankCardsListResult.build(rdMmBankList));
+    }
+
+    //添加银行卡
+    @RequestMapping(value = "/addBankCards.json")
+    public String addBankCards(@Valid UserAddBankCardsParam param, HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (member == null) {
+            return ApiUtils.error("请登录");
+        }
+        //银行卡的验证
+        String result = "";
+        try {
+            result = BankCardUtils.vaildBankCard(param);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiUtils.error("填写相关信息有误");
+        }
+
+        if (!result.equals("1")) {
+            return ApiUtils.error(result);
+        }
+        //判断手机验证码是否正确
+        if (!SmsUtil.valicodeIstrue(param.getMobile(), param.getCode(), redisService)) {
+            return ApiUtils.error(Xerror.VALID_CODE_ERROR);
+        }
+        RdMmBank rdMmBank = new RdMmBank();
+        rdMmBank.setMmCode(member.getMmCode());
+        rdMmBank.setAccCode(param.getAccCode());
+        rdMmBank.setBankDetail(param.getBankDetail());
+        rdMmBank.setAccName(param.getAccName());
+        rdMmBank.setAccType("1");
+        List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
+        if (rdMmBankList.size() == 0) {
+            rdMmBank.setDefaultbank(1);
+        } else {
+            rdMmBank.setDefaultbank(0);
+        }
+        rdMmBankService.save(rdMmBank);
+        return ApiUtils.success();
+    }
+
+    //设置默认银行卡
+    @RequestMapping(value = "/setdefaultBankCards.json")
+    public String addBankCards(HttpServletRequest request, Integer Id) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        rdMmBankService.updateDef(Id, member.getMmCode());
+        return ApiUtils.success();
+    }
+
+    //删除银行卡
+    @RequestMapping(value = "/removeBankCards.json")
+    public String removeBankCards(HttpServletRequest request, Integer Id) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (Id == null) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(Id + ""));
+        if (rdMmBank == null) {
+            return ApiUtils.error("不存在的银行卡");
+        }
+        rdMmBankService.delete(Long.parseLong(Id + ""));
+        if (rdMmBank.getDefaultbank() == 1) { //如果删除的是默认的 则寻找一个自动为默认
+            List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
+            if (rdMmBankList != null && rdMmBankList.size() > 0) {
+                RdMmBank mmBank = rdMmBankList.get(0);
+                mmBank.setDefaultbank(1);
+                rdMmBankService.update(mmBank);
+            }
+        }
+        return ApiUtils.success();
+    }
+
+    /**
+     * 账号安全
+     */
+    @RequestMapping(value = "/accountSafe.json", method = RequestMethod.POST)
+    public String accountSafe(HttpServletRequest request) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        String qqOpenid = member.getQqCode();
+        String weixinOpenid = member.getWechatCode();
+        return ApiUtils.success(Paramap.create().put("qqopenid", StringUtils.isBlank(qqOpenid) ? "" : qqOpenid)
+            .put("weixinOpenid", StringUtils.isBlank(weixinOpenid) ? "" : weixinOpenid)
+        );
+    }
+
+    /**
+     * 第三方绑定
+     */
+    @RequestMapping(value = "/thirdpartyBind.json", method = RequestMethod.POST)
+    public String thirdpartyBind(HttpServletRequest request, String openid, Integer type) {
+        if (StringUtils.isBlank(openid) || type == null || !(type == UserLoginType.QQ.code
+            || type == UserLoginType.WECHAT.code || type == UserLoginType.WEIBO.code)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        List<RdMmBasicInfo> list = rdMmBasicInfoService.findList(SocialType.of(type), openid);
+        if (list != null && list.size() != 0) {
+            return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "已绑定其它账号");
+        }
+        if (type == UserLoginType.QQ.code) {
+            member.setQqCode(openid);
+        } else if (type == UserLoginType.WECHAT.code) {
+            member.setWechatCode(openid);
+        }
+        rdMmBasicInfoService.update(member);
+        return ApiUtils.success();
+    }
+
+//    /**
+//     * 第三方解绑
+//     */
+//    @RequestMapping(value = "/thirdpartyUnBind.json", method = RequestMethod.POST)
+//    public String thirdpartyUnBind(HttpServletRequest request, Integer type) {
+//        if (type == null || !(type == UserLoginType.QQ.code
+//                || type == UserLoginType.WECHAT.code || type == UserLoginType.WEIBO.code)) {
+//            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+//        }
+//        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+//        shopMemberService.unbindThirdparty(type, session.getUserId());
+//        return ApiUtils.success();
+//    }
+
+    //我的收藏
+    @RequestMapping(value = "/collect.json", method = RequestMethod.POST)
+    public String UserCollect(@RequestParam(defaultValue = "1") Integer pageNumber,
+        @RequestParam(defaultValue = "10") Integer pageSize, HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        Map<String, Object> params = new HashMap<>();
+        params.put("favType", 1);
+        params.put("orderBy", 1);
+        params.put("memberId", member.getMmCode());
+        Pageable pager = new Pageable(pageNumber, pageSize);
+        pager.setParameter(params);
+
+        // 查找list
+        List<ShopMemberFavorites> storeorgoodsList = shopMemberFavoritesService.findByPage(pager).getContent();
+        List<Long> goodsId = new ArrayList<>();
+        for (ShopMemberFavorites eveluate : storeorgoodsList) {
+            goodsId.add(eveluate.getFavId());
+        }
+        Map<Long, ShopGoods> shopGoodsMap = shopGoodsService.findGoodsMap(goodsId);
+        //Map<String, String> shopGoodsEvaluateMap = shopGoodsEvaluateService
+        //    .countCommentRate(goodsId, EvaluateGoodsResult.STANDARD_OF_POSITIVE_COMMENT_SCORE);
+        //翻回list
+        List<UserCollectResult> results = Lists.newArrayList();
+        if (storeorgoodsList != null && storeorgoodsList.size() > 0) {
+            for (ShopMemberFavorites favorite : storeorgoodsList) {
+                UserCollectResult result = new UserCollectResult();
+                Long favId = favorite.getFavId();
+                ShopGoods shopGoods = shopGoodsMap.get(favId);
+                if (shopGoods == null) {
+                    shopMemberFavoritesService.delete(favorite.getId());
+                    continue;
+                }
+                result.build2(shopGoods, result, null, favorite, prefix);
+                results.add(result);
+            }
+        }
+        return ApiUtils.success(results);
+    }
+
+    // 删除收藏
+    @RequestMapping(value = "/collect/remove.json", method = RequestMethod.POST)
+    public String UserCollectRemove(HttpServletRequest request, String ids) {
+        if (StringUtils.isEmpty(ids)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        String[] idsArray = ids.split(",");
+        Long[] idsLong = new Long[idsArray.length];
+        for (int i = 0; i < idsArray.length; i++) {
+            idsLong[i] = Long.valueOf(idsArray[i]);
+        }
+        if (idsLong.length > 0) {
+            shopMemberFavoritesService.deleteByIds(member.getMmCode(), idsLong);
+        }
+        return ApiUtils.success();
+    }
+
+    //我的足迹
+    @RequestMapping(value = "/footprints.json", method = RequestMethod.POST)
+    public String UserFootprints(@RequestParam(defaultValue = "1") Integer pageNumber, String day,
+        @RequestParam(defaultValue = "10") Integer pageSize, HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        Map<String, Object> params = new HashMap<>();
+        if (!StringUtils.isEmpty(day)) {
+            params.put("createTime", Dateutil.parseStrFromToDate(day, "yyyy-MM-dd"));
+        }
+        params.put("browseMemberId", member.getMmCode());
+        Pageable pager = new Pageable(pageNumber, pageSize);
+        pager.setParameter(params);
+        pager.setOrderProperty("create_time");
+        pager.setOrderDirection(Order.Direction.DESC);
+        List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findByPage(pager).getContent();
+        List<Long> goodsIds = new ArrayList<>();
+        for (ShopGoodsBrowse itemBrowse : shopGoodsBrowseList) {
+            goodsIds.add(itemBrowse.getBrowseGoodsId());
+        }
+        Map<Long, ShopGoods> mapGoods = shopGoodsService.findGoodsMap(goodsIds);
+        return ApiUtils.success(UserFootprintsResult.build(shopGoodsBrowseList, mapGoods, member));
+    }
+
+    //删除我的足迹
+    @RequestMapping(value = "/footprints/remove.json", method = RequestMethod.POST)
+    public String UserFootprintsRemove(HttpServletRequest request, String day, String ids, String checkAll) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (!StringUtils.isEmpty(day)) {
+            if (day.indexOf(",") > -1) {
+                String[] daySort = day.split(",");
+                shopGoodsBrowseService.deleteMemberFavorites(
+                    Paramap.create().put("days", daySort).put("browseMemberId", member.getMmCode()));
+//               shopGoodsBrowseService.deleteMemberFavorites(Paramap.create().put("start", daySort[0]).put("end",daySort[daySort.length-1]).put("browseMemberId", member.getUserId()));
+            } else {
+                shopGoodsBrowseService
+                    .deleteMemberFavorites(Paramap.create().put("day", day).put("browseMemberId", member.getMmCode()));
+            }
+
+        } else if (!StringUtils.isEmpty(ids)) {
+            String[] idsArray = ids.split(",");
+            Long[] idsLong = new Long[idsArray.length];
+            for (int i = 0; i < idsArray.length; i++) {
+                idsLong[i] = Long.valueOf(idsArray[i]);
+            }
+            shopGoodsBrowseService
+                .deleteMemberFavorites(Paramap.create().put("ids", idsLong).put("browseMemberId", member.getMmCode()));
+        } else if (!StringUtils.isEmpty(checkAll)) {
+            shopGoodsBrowseService.deleteMemberFavorites(
+                Paramap.create().put("checkAll", checkAll).put("browseMemberId", member.getMmCode()));
+        }
+        return ApiUtils.success();
+    }
+
+//    //更新用户配置信息
+//    @ResponseBody
+//    @RequestMapping("/setting/receiveInform.json")
+//    public String receiveInform(@RequestParam(defaultValue = "0") Integer isReceive, HttpServletRequest request) {
+//        if ((!isReceive.equals("0") && !isReceive.equals("1"))) {
+//            return ApiUtils.error(Xerror.PARAM_INVALID);
+//        }
+//        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+//        ShopMember userSession = new ShopMember();
+//        userSession.setId(member.getUserId());
+//        userSession.setIsReceive(isReceive);
+//        shopMemberService.update(userSession);
+//        redisService.save(request.getHeader(Constants.USER_SESSION_ID), member);
+//        return ApiUtils.success(Paramap.create().put("isReceive", isReceive));
+//    }
+
+    ///**
+    // * 验证老用户
+    // *
+    // * @param request
+    // * @param paypassword 密码
+    // * @param account     账号
+    // * @return
+    // */
+    //@RequestMapping(value = "/validOldUserAccount.json", method = RequestMethod.POST)
+    //public String validOldUserAccount(HttpServletRequest request, @RequestParam String paypassword, @RequestParam String account) {
+    //    if (StringUtils.isBlank(paypassword) || StringUtils.isBlank(account)) {
+    //        return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+    //    }
+    //    // TODO: 2018/12/26  查找老用户信息
+    //    return ApiUtils.success(Paramap.create().put("nickname", "假数据").put("membershipNumber", 52112414)
+    //            .put("id", 1));
+    //}
+
+    /**
+     * 绑定老账户
+     *
+     * @param mmCode 老账户mmCode
+     */
+/*    @RequestMapping(value = "/bindOldUserAccount.json", method = RequestMethod.POST)
+    public String bindOldUserAccount(HttpServletRequest request, @RequestParam String mmCode) {
+        if (StringUtils.isBlank(mmCode)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        // TODO: 2018/12/26  绑定老用户信息
+        OldSysRelationship oldSysRelationship=oldSysRelationshipService.find("oMcode",mmCode);
+        if (oldSysRelationship.getNYnRegistered()==1){
+            return ApiUtils.error("老用户已经注册或者绑定");
+        }
+        Map<String, String> map = oldSysRelationshipService.findOldSysSpcode(oldSysRelationship.getOSpcode());
+        if (map.get("mmCode") != null && !"".equals(map.get("mmCode")) && !"8888".equals(map.get("mmCode"))) {
+            //RdRaBinding rdRaBinding = new RdRaBinding();
+            //rdRaBinding.setBindingBy(member.getNickname());
+            //rdRaBinding.setBindingDate(new Date());
+            //rdRaBinding.setBindingStatus(1);
+            //rdRaBinding.setRaCode(mmCode);
+            //rdRaBinding.setRaNickName(oldSysRelationship.getONickname());
+            //rdRaBinding.setRaSponsorName(map.get("mmName"));
+            //rdRaBinding.setRaStatus(oldSysRelationship.getOStatus());
+            //rdRaBinding.setRaSponsorCode(map.get("mmCode"));
+            //rdRaBinding.setRdCode(member.getMmCode());
+            //rdRaBindingService.save(rdRaBinding);
+            oldSysRelationship.setNYnRegistered(1);
+            oldSysRelationship.setNMcode(member.getMmCode());
+            oldSysRelationshipService.update(oldSysRelationship);
+        } else {
+            return ApiUtils.error("网络关系不一致,不予以绑定");
+        }
+        return ApiUtils.success();
+    }*/
+
+    /**
+     * 个人主页
+     */
+    @RequestMapping(value = "/memberHomepage.json", method = RequestMethod.POST)
+    public String memberHomepage(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request
+            .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        String startTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 10, 1, "yyyy-MM");
+        String endTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 2, 1, "yyyy-MM");
+        OrderSumPpv orderSumMonthlyPpv = shopOrderService.sumPpv(
+            Paramap.create().put("startTime", startTime).put("endTime", endTime).put("buyerId", member.getMmCode()));
+        //OrderSumPpv orderSumAccumulatedPpv=shopOrderService.sumPpv(Paramap.create().put("buyerId",member.getMmCode()));
+        BigDecimal monthlyPpv = BigDecimal.ZERO;
+        BigDecimal AccumulatedPpv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
+        if (orderSumMonthlyPpv != null) {
+            monthlyPpv = Optional.ofNullable(orderSumMonthlyPpv.getTotalPpv()).orElse(BigDecimal.ZERO);
+        }
+        if (rdRanks.getRankClass() == 0) {
+            monthlyPpv = BigDecimal.ZERO;
+            AccumulatedPpv = BigDecimal.ZERO;
+        }
+        //if (orderSumAccumulatedPpv!=null){
+        //    AccumulatedPpv=Optional.ofNullable(orderSumAccumulatedPpv.getTotalPpv()).orElse(BigDecimal.ZERO);
+        //}
+        if (rdRanks == null) {
+            return ApiUtils.success(Paramap.create().put("gradeName", "用户").put("monthlyPpv", monthlyPpv)
+                .put("AccumulatedPpv", AccumulatedPpv).put("url", "www.baidu.com").put("docType", "member_upgrade"));
+        }
+        return ApiUtils.success(Paramap.create().put("gradeName", rdRanks.getRankName()).put("monthlyPpv", monthlyPpv)
+            .put("AccumulatedPpv", AccumulatedPpv).put("url", "www.baidu.com").put("docType", "member_upgrade"));
+    }
+
+    /**
+     * 更新app版本
+     */
+    @RequestMapping(value = "/updatedVersion.json", method = RequestMethod.POST)
+    public String updatedVersion(HttpServletRequest request, int type) {
+        List<ShopApp> shopAppList = shopAppService.findList(Paramap.create().put("device", type)
+            .put("order", "CREATE_DATE desc"));
+        if (shopAppList != null && shopAppList.size() > 0) {
+            ShopApp shopApp = shopAppList.get(0);
+            return ApiUtils.success(Paramap.create().put("version", shopApp.getVersion())
+                .put("url", shopApp.getUrl()).put("isForce", Optional.ofNullable(shopApp.isForce()).orElse(false)));
+        } else {
+            return ApiUtils.error("该版本为最新版本");
+        }
+    }
+
+    /**
+     * 我的邀请码
+     *
+     * @param type IOS 1   Android 0
+     */
+    @RequestMapping(value = "/MyInvitationNumber.json", method = RequestMethod.POST)
+    public String MyInvitationNumber(HttpServletRequest request, int type) {
+        AuthsLoginResult member = (AuthsLoginResult) request
+            .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+        String downloadUrl = "";
+        List<ShopApp> shopAppList = shopAppService.findList(Paramap.create().put("device", type)
+            .put("order", "CREATE_DATE desc"));
+        if (shopAppList != null && shopAppList.size() > 0) {
+            ShopApp shopApp = shopAppList.get(0);
+            downloadUrl = shopApp.getUrl();
+        }
+        StringBuffer shareUrl = new StringBuffer();
+        shareUrl.append(wapServer);
+        shareUrl.append("/wap/download");
+        shareUrl.append(".html?code=");
+        shareUrl.append(member.getMmCode());
+        shareUrl.append("&downloadUrl=");
+        shareUrl.append(downloadUrl);
+        return ApiUtils.success(
+            Paramap.create().put("userCode", member.getMmCode()).put("shareUrl", shareUrl.toString())
+                .put("downloadUrl", downloadUrl));
+    }
+
+    /**
+     * 增加分享次数
+     */
+    @RequestMapping(value = "/addShareNumber.json", method = RequestMethod.POST)
+    public String addShareNumber(HttpServletRequest request) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        member.setShareNum(Optional.ofNullable(member.getShareNum()).orElse(0) + 1);
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.UPDATE_SHARENUMBER);
+        return ApiUtils.success();
+    }
+
+    /**
+     * 分销用户信息
+     *
+     * @param memeberId 用户id
+     */
+    @RequestMapping(value = "/subordinateUserInformation.json", method = RequestMethod.POST)
+    public String subordinateUserInformation(HttpServletRequest request, String memeberId) {
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memeberId);
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", memeberId);
+        RdRanks shopMemberGrade = null;
+        if (Optional.ofNullable(rdMmRelation.getRank()).orElse(-1) != -1) {
+            shopMemberGrade = rdRanksService.find("rankId", rdMmRelation.getRank());
+        }
+        String startTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 10, 1, "yyyy-MM");
+        String endTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 2, 1, "yyyy-MM");
+        OrderSumPpv orderSumMonthlyPpv = shopOrderService
+            .sumPpv(Paramap.create().put("startTime", startTime).put("endTime", endTime).put("buyerId", memeberId));
+        OrderSumPpv orderSumAccumulatedPpv = shopOrderService.sumPpv(Paramap.create().put("buyerId", memeberId));
+
+        return ApiUtils.success(SubordinateUserInformationResult
+            .build(rdMmBasicInfo, shopMemberGrade, orderSumMonthlyPpv, orderSumAccumulatedPpv));
+    }
+
+}

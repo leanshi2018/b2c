@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopGoodsClassDao">
+
+    <resultMap id="ShopGoodsClassResultMap" type="com.framework.loippi.entity.product.ShopGoodsClass">
+        <id property="id" column="id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="gcPic" column="gc_pic"/>
+        <result property="typeId" column="type_id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="gcParentId" column="gc_parent_id"/>
+        <result property="gcSort" column="gc_sort"/>
+        <result property="gcShow" column="gc_show"/>
+        <result property="gcTitle" column="gc_title"/>
+        <result property="gcKeywords" column="gc_keywords"/>
+        <result property="gcDescription" column="gc_description"/>
+        <result property="gcIdpath" column="gc_idpath"/>
+        <result property="expenScale" column="expen_scale"/>
+        <result property="isRelate" column="is_relate"/>
+        <result property="virtualGoods" column="virtual_goods"/>
+        <result property="relation" column="relation"/>
+        <result property="isCommend" column="is_commend"/>
+        <result property="deep" column="deep"/>
+        <result property="advId" column="adv_id"/>
+        <result property="picUrl" column="picUrl"/>
+
+    </resultMap>
+
+
+    <resultMap id="BaseResultMap2" type="com.framework.loippi.entity.product.ShopGoodsClass">
+        <id property="id" column="id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="gcPic" column="gc_pic"/>
+        <result property="typeId" column="type_id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="gcParentId" column="gc_parent_id"/>
+        <result property="gcSort" column="gc_sort"/>
+        <result property="gcShow" column="gc_show"/>
+        <result property="gcTitle" column="gc_title"/>
+        <result property="gcKeywords" column="gc_keywords"/>
+        <result property="gcDescription" column="gc_description"/>
+        <result property="gcIdpath" column="gc_idpath"/>
+        <result property="expenScale" column="expen_scale"/>
+        <result property="isRelate" column="is_relate"/>
+        <result property="virtualGoods" column="virtual_goods"/>
+        <result property="relation" column="relation"/>
+        <result property="isCommend" column="is_commend"/>
+        <result column="has_child" property="hasChild" jdbcType="INTEGER"/>
+        <result property="advId" column="adv_id"/>
+        <result property="picUrl" column="picUrl"/>
+    </resultMap>
+
+
+    <resultMap id="BaseResultMap3" type="com.framework.loippi.entity.product.ShopGoodsClass">
+        <id property="id" column="id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="gcPic" column="gc_pic"/>
+        <result property="typeId" column="type_id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="gcParentId" column="gc_parent_id"/>
+        <result property="gcSort" column="gc_sort"/>
+        <result property="gcShow" column="gc_show"/>
+        <result property="gcTitle" column="gc_title"/>
+        <result property="gcKeywords" column="gc_keywords"/>
+        <result property="gcDescription" column="gc_description"/>
+        <result property="gcIdpath" column="gc_idpath"/>
+        <result property="expenScale" column="expen_scale"/>
+        <result property="isRelate" column="is_relate"/>
+        <result property="virtualGoods" column="virtual_goods"/>
+        <result property="relation" column="relation"/>
+        <result property="isCommend" column="is_commend"/>
+        <result property="picUrl" column="picUrl"/>
+        <result column="has_child" property="hasChild" jdbcType="INTEGER"/>
+        <result property="advId" column="adv_id"/>
+        <!--<collection property="classList" ofType="com.framework.loippi.entity.product.ShopGoodsClass"-->
+                    <!--column="id" javaType="arraylist"-->
+                    <!--select="com.framework.loippi.dao.product.ShopGoodsClassDao.findList2ByLong">-->
+        <!--</collection>-->
+    </resultMap>
+
+
+    <resultMap id="classResultMap" type="com.framework.loippi.entity.product.ShopGoodsClass">
+        <id property="id" column="id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="gcPic" column="gc_pic"/>
+        <result property="typeId" column="type_id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="gcParentId" column="gc_parent_id"/>
+        <result property="gcSort" column="gc_sort"/>
+        <result property="gcShow" column="gc_show"/>
+        <result property="gcTitle" column="gc_title"/>
+        <result property="gcKeywords" column="gc_keywords"/>
+        <result property="gcDescription" column="gc_description"/>
+        <result property="gcIdpath" column="gc_idpath"/>
+        <result property="expenScale" column="expen_scale"/>
+        <result property="isRelate" column="is_relate"/>
+        <result property="virtualGoods" column="virtual_goods"/>
+        <result property="relation" column="relation"/>
+        <result property="isCommend" column="is_commend"/>
+        <result column="has_child" property="hasChild" jdbcType="INTEGER"/>
+        <result property="advId" column="adv_id"/>
+        <result property="picUrl" column="picUrl"/>
+        <!--<collection property="classList" ofType="com.framework.loippi.entity.product.ShopGoodsClass"-->
+                    <!--column="id" javaType="arraylist"-->
+                    <!--select="com.framework.loippi.dao.product.ShopGoodsClassDao.findList2ByLong">-->
+        <!--</collection>-->
+    </resultMap>
+
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,gc_name ,gc_pic ,type_id ,type_name ,gc_parent_id ,gc_sort ,gc_show ,gc_title ,gc_keywords ,gc_description ,gc_idpath ,expen_scale ,is_relate ,virtual_goods ,relation ,is_commend
+
+		 ,deep,adv_id,picUrl
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{gcName},#{gcPic},#{typeId},#{typeName},#{gcParentId},#{gcSort},#{gcShow},#{gcTitle},#{gcKeywords},#{gcDescription},#{gcIdpath},#{expenScale},#{isRelate},#{virtualGoods},#{relation},#{isCommend}
+
+		 ,#{deep} ,#{advId} ,#{picUrl}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="gcName != null and gcName != ''">
+            AND gc_name = #{gcName,jdbcType=VARCHAR}
+        </if>
+        <if test="gcPic != null and gcPic != ''">
+            AND gc_pic = #{gcPic,jdbcType=VARCHAR}
+        </if>
+        <if test="typeId != null and typeId != ''">
+            AND type_id = #{typeId,jdbcType=BIGINT}
+        </if>
+        <if test="typeName != null and typeName != ''">
+            AND type_name = #{typeName,jdbcType=VARCHAR}
+        </if>
+        <if test="gcParentId != null">
+            AND gc_parent_id = #{gcParentId,jdbcType=BIGINT}
+        </if>
+        <if test="gcShow != null">
+            AND gc_show = #{gcShow,jdbcType=INTEGER}
+        </if>
+        <if test="gcTitle != null and gcTitle != ''">
+            AND gc_title = #{gcTitle,jdbcType=VARCHAR}
+        </if>
+        <if test="gcKeywords != null and gcKeywords != ''">
+            AND gc_keywords = #{gcKeywords,jdbcType=VARCHAR}
+        </if>
+        <if test="gcDescription != null and gcDescription != ''">
+            AND gc_description = #{gcDescription,jdbcType=VARCHAR}
+        </if>
+        <if test="gcIdpath != null and gcIdpath != ''">
+            AND gc_idpath = #{gcIdpath,jdbcType=VARCHAR}
+        </if>
+        <if test="expenScale != null and expenScale != ''">
+            AND expen_scale = #{expenScale}
+        </if>
+        <if test="isRelate != null and isRelate != ''">
+            AND is_relate = #{isRelate,jdbcType=INTEGER}
+        </if>
+        <if test="virtualGoods != null and virtualGoods != ''">
+            AND virtual_goods = #{virtualGoods,jdbcType=INTEGER}
+        </if>
+        <if test="relation != null and relation != ''">
+            AND relation = #{relation,jdbcType=INTEGER}
+        </if>
+        <if test="isCommend != null and isCommend != ''">
+            AND is_commend = #{isCommend,jdbcType=INTEGER}
+        </if>
+        <if test="typeIds != null">
+            AND type_id IN
+            <foreach item="typeId" index="index" collection="typeIds" open="(" separator="," close=")">
+                #{typeId}
+            </foreach>
+        </if>
+
+        <if test="deep != null and deep != ''">
+            AND deep = #{deep,jdbcType=INTEGER}
+        </if>
+        <if test="classNameLike != null and classNameLike != ''">
+            AND gc_name LIKE CONCAT(#{classNameLike,jdbcType=VARCHAR},"%")
+        </if>
+        <if test="classIds != null">
+            AND id IN
+            <foreach item="classId" index="index" collection="classIds" open="(" separator="," close=")">
+                #{classId}
+            </foreach>
+        </if>
+
+        <if test="classParentIds != null">
+            AND gc_parent_id IN
+            <foreach item="classId" index="index" collection="classParentIds" open="(" separator="," close=")">
+                #{classId}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="gcName != null and gcName != ''">
+            gc_name = #{gcName,jdbcType=VARCHAR},
+        </if>
+        <if test="gcPic != null and gcPic != ''">
+            gc_pic = #{gcPic,jdbcType=VARCHAR},
+        </if>
+        <if test="typeId != null">
+            type_id = #{typeId,jdbcType=BIGINT},
+        </if>
+        <if test="typeName != null ">
+            type_name = #{typeName,jdbcType=VARCHAR},
+        </if>
+        <if test="gcParentId != null">
+            gc_parent_id = #{gcParentId,jdbcType=BIGINT},
+        </if>
+        <if test="gcSort != null">
+            gc_sort = #{gcSort,jdbcType=INTEGER},
+        </if>
+        <if test="gcShow != null">
+            gc_show = #{gcShow,jdbcType=INTEGER},
+        </if>
+        <if test="gcTitle != null and gcTitle != ''">
+            gc_title = #{gcTitle,jdbcType=VARCHAR},
+        </if>
+        <if test="gcKeywords != null and gcKeywords != ''">
+            gc_keywords = #{gcKeywords,jdbcType=VARCHAR},
+        </if>
+        <if test="gcDescription != null and gcDescription != ''">
+            gc_description = #{gcDescription,jdbcType=VARCHAR},
+        </if>
+        <if test="gcIdpath != null and gcIdpath != ''">
+            gc_idpath = #{gcIdpath,jdbcType=VARCHAR},
+        </if>
+        <if test="expenScale != null">
+            expen_scale = #{expenScale},
+        </if>
+        <if test="isRelate != null">
+            is_relate = #{isRelate,jdbcType=INTEGER},
+        </if>
+        <if test="virtualGoods != null">
+            virtual_goods = #{virtualGoods,jdbcType=INTEGER},
+        </if>
+        <if test="relation != null">
+            relation = #{relation,jdbcType=INTEGER},
+        </if>
+        <if test="isCommend != null">
+            is_commend = #{isCommend,jdbcType=INTEGER},
+        </if>
+
+        <if test="deep != null and deep != ''">
+            deep = #{deep,jdbcType=INTEGER},
+        </if>
+
+        <if test="advId != null and advId != ''">
+            adv_id = #{advId,jdbcType=BIGINT},
+        </if>
+
+        <if test="picUrl != null and picUrl != ''">
+            picUrl = #{picUrl},
+        </if>
+
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="BaseResultMap2">
+        SELECT
+        <include refid="base_column"/>,
+        (select count(*) from shop_goods_class s1 where s1.gc_parent_id=s.id) has_child
+        FROM SHOP_GOODS_CLASS s
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="BaseResultMap3">
+        SELECT
+        <include refid="base_column"/>,
+        (select count(*) from shop_goods_class s1 where s1.gc_parent_id=s.id) has_child
+        FROM SHOP_GOODS_CLASS s
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_GOODS_CLASS
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopGoodsClass">
+        INSERT SHOP_GOODS_CLASS
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopGoodsClass">
+        UPDATE SHOP_GOODS_CLASS
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_GOODS_CLASS
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_GOODS_CLASS
+        WHERE ID IN
+        <foreach item="ShopGoodsClassId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopGoodsClassId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="BaseResultMap3">
+        SELECT
+        <include refid="base_column"/>,
+        (select count(*) from shop_goods_class s1 where s1.gc_parent_id=s.id) has_child
+        FROM SHOP_GOODS_CLASS s
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopGoodsClassResultMap">
+        SELECT
+        <include refid="base_column"/>,
+        (select count(*) from shop_goods_class s1 where s1.gc_parent_id=SHOP_GOODS_CLASS.id) has_child
+        FROM SHOP_GOODS_CLASS
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findChildClass" resultMap="BaseResultMap3">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_CLASS
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+
+    <!--根据父id查询分类列表-->
+    <select id="findList" resultMap="BaseResultMap3">
+        SELECT
+        <include refid="base_column"/>,
+        (select count(*) from shop_goods_class s1 where s1.gc_parent_id=s.id) has_child
+        FROM SHOP_GOODS_CLASS s
+        where gc_parent_id = #{parentid}
+        ORDER BY gc_sort ASC
+    </select>
+
+    <!--条件查询条数-->
+    <select id="findCount" parameterType="com.framework.loippi.entity.product.ShopGoodsClass" resultType="int">
+        SELECT
+        count(*)
+        FROM SHOP_GOODS_CLASS
+        where gc_parent_id !='-1'
+        <if test="gcName != '' and gcName != null">
+            and gc_name = #{gcName}
+        </if>
+        <if test="gcParentId != null and gcParentId!=''">
+            and gc_parent_id = #{gcParentId}
+        </if>
+        <if test="gcId != null and gcId != ''">
+            and id != #{id}
+        </if>
+    </select>
+
+    <!--替换以前的findByParams
+    根据参数查询列表-->
+    <select id="newFindByParams" resultMap="BaseResultMap2">
+        SELECT
+        <include refid="base_column"/>,
+        (select count(*) from shop_goods_class s1 where s1.gc_parent_id=s.id) has_child
+        FROM SHOP_GOODS_CLASS s
+        <where>1=1
+            <include refid="where_column"/>
+            <if test="ids != null and ids != ''">
+                AND ID IN
+                <foreach item="ShopGoodsClassId" index="index" collection="ids" open="(" separator="," close=")">
+                    #{ShopGoodsClassId}
+                </foreach>
+            </if>
+        </where>
+        <if test="gcSort != null and gcSort != ''">
+            ORDER BY gc_sort ASC
+        </if>
+    </select>
+
+    <!-- 查询下级分类节点-->
+    <select id="findChildByParentIds" resultMap="ShopGoodsClassResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_CLASS
+        where
+        1=1
+        <include refid="where_column"/>
+        <if test="ids!=null">
+            and gc_parent_id IN
+            <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        ORDER BY gc_sort ASC
+    </select>
+
+
+</mapper>

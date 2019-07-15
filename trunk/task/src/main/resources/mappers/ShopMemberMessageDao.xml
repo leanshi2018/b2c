@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.ShopMemberMessageDao">
+
+    <resultMap id="ShopMemberMessageResultMap" type="com.framework.loippi.entity.ShopMemberMessage">
+        <id property="id" column="id"/>
+        <result property="msgId" column="msg_id"/>
+        <result property="bizType" column="biz_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="isRead" column="is_read"/>
+        <result property="uid" column="uid"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 SHOP_MEMBER_MESSAGE.id ,SHOP_MEMBER_MESSAGE.msg_id ,SHOP_MEMBER_MESSAGE.biz_type ,SHOP_MEMBER_MESSAGE.create_time,SHOP_MEMBER_MESSAGE.is_read
+
+		 ,SHOP_MEMBER_MESSAGE.uid
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{msgId},#{bizType},#{createTime},#{isRead}
+
+		 ,#{uid}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND SHOP_MEMBER_MESSAGE.id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="msgId != null and msgId != ''">
+            AND SHOP_MEMBER_MESSAGE.msg_id = #{msgId,jdbcType=BIGINT}
+        </if>
+        <if test="bizType != null and bizType != ''">
+            AND SHOP_MEMBER_MESSAGE.biz_type = #{bizType,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND SHOP_MEMBER_MESSAGE.create_time = #{createTime}
+        </if>
+        <if test="isRead != null and isRead != ''">
+            AND SHOP_MEMBER_MESSAGE.is_read = #{isRead}
+        </if>
+        <if test="uid != null and uid != ''">
+            AND SHOP_MEMBER_MESSAGE.uid = #{uid}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="msgId != null">
+            msg_id = #{msgId,jdbcType=BIGINT},
+        </if>
+        <if test="bizType != null">
+            biz_type = #{bizType,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime},
+        </if>
+        <if test="isRead != null and isRead != ''">
+            is_read = #{isRead},
+        </if>
+        <if test="uid != null and uid != ''">
+            uid = #{uid},
+        </if>
+        <if test="bizTypeList != null">
+            biz_type in
+            <foreach item="bizType" index="index" collection="bizTypeList" open="(" separator="," close=")">
+                #{bizType}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopMemberMessageResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_MESSAGE
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopMemberMessageResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_MESSAGE
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_MEMBER_MESSAGE
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.ShopMemberMessage">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_MEMBER_MESSAGE
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.ShopMemberMessage">
+        UPDATE SHOP_MEMBER_MESSAGE
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateReadMessage" parameterType="com.framework.loippi.entity.ShopMemberMessage">
+        UPDATE SHOP_MEMBER_MESSAGE
+        <set>
+            is_read = 1
+        </set>
+        WHERE UID = #{uid,jdbcType=BIGINT} AND biz_type=#{bizType,jdbcType=INTEGER}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE	FROM SHOP_MEMBER_MESSAGE
+        WHERE	ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 删除单条记录 -->
+    <delete id="deleteMessage">
+        DELETE	FROM SHOP_MEMBER_MESSAGE
+        WHERE UID = #{uid,jdbcType=BIGINT} AND biz_type=#{bizType,jdbcType=INTEGER}
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_MEMBER_MESSAGE
+        WHERE ID IN
+        <foreach item="ShopMemberMessageId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopMemberMessageId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopMemberMessageResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_MESSAGE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopMemberMessageResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_MESSAGE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <resultMap id="ShopUserMessageResultMap" type="com.framework.loippi.dto.UserMessageDto">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="subject" column="subject"/>
+        <result property="bizId" column="biz_id"/>
+        <result property="bizType" column="biz_type"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <result property="sendUid" column="sendMemberId"/>
+        <result property="type" column="type"/>
+        <result property="uType" column="u_type"/>
+        <result property="onLine" column="on_line"/>
+        <result property="isTop" column="is_top"/>
+        <result property="mmId" column="mmId"/>
+        <result property="isRead" column="isRead"/>
+    </resultMap>
+
+    <!-- 分页查询-->
+    <select id="findMessagePage" resultMap="ShopUserMessageResultMap">
+        SELECT
+        SHOP_COMMON_MESSAGE.id,SHOP_COMMON_MESSAGE.title,SHOP_COMMON_MESSAGE.subject,SHOP_COMMON_MESSAGE.biz_id,SHOP_COMMON_MESSAGE.biz_type,
+        SHOP_COMMON_MESSAGE.content
+        ,SHOP_COMMON_MESSAGE.create_time,SHOP_COMMON_MESSAGE.type,SHOP_COMMON_MESSAGE.u_type,
+        SHOP_COMMON_MESSAGE.on_line,SHOP_COMMON_MESSAGE.is_top ,
+        SHOP_MEMBER_MESSAGE.id as mmId,SHOP_MEMBER_MESSAGE.is_read as isRead,SHOP_MEMBER_MESSAGE.uid as sendMemberId
+        FROM SHOP_MEMBER_MESSAGE
+        LEFT JOIN SHOP_COMMON_MESSAGE ON SHOP_COMMON_MESSAGE.id=SHOP_MEMBER_MESSAGE.msg_id
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        <if test="uids != null and uids != ''">
+            AND (SHOP_MEMBER_MESSAGE.uid = #{uids} or SHOP_COMMON_MESSAGE.u_type=2 )
+        </if>
+        <if test="isReply != null and isReply != ''">
+            AND SHOP_COMMON_MESSAGE.is_reply = #{isReply}
+        </if>
+        <if test="type != null and type != ''">
+            AND SHOP_COMMON_MESSAGE.type = #{type}
+        </if>
+        order by SHOP_COMMON_MESSAGE.create_time desc
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findMsgOrderPage" resultMap="ShopUserMessageResultMap">
+        SELECT
+        SHOP_COMMON_MESSAGE.id,SHOP_COMMON_MESSAGE.title,SHOP_COMMON_MESSAGE.subject,SHOP_COMMON_MESSAGE.biz_id,SHOP_COMMON_MESSAGE.biz_type,
+        SHOP_COMMON_MESSAGE.content
+        ,SHOP_COMMON_MESSAGE.create_time,SHOP_COMMON_MESSAGE.type,SHOP_COMMON_MESSAGE.u_type,
+        SHOP_COMMON_MESSAGE.on_line,SHOP_COMMON_MESSAGE.is_top ,
+        SHOP_MEMBER_MESSAGE.id as mmId,SHOP_MEMBER_MESSAGE.is_read as
+        isRead,SHOP_ORDER.payment_state,SHOP_MEMBER_MESSAGE.uid
+        FROM SHOP_MEMBER_MESSAGE
+        LEFT JOIN SHOP_COMMON_MESSAGE ON SHOP_COMMON_MESSAGE.id=SHOP_MEMBER_MESSAGE.msg_id
+        LEFT JOIN SHOP_ORDER ON SHOP_COMMON_MESSAGE.biz_id=SHOP_ORDER.id
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+
+        order by SHOP_COMMON_MESSAGE.create_time desc
+    </select>
+
+
+    <select id="countMessage" resultType="long">
+        SELECT COUNT(*) FROM SHOP_MEMBER_MESSAGE
+        <where>
+            uid=#{uid} AND biz_type=#{bizType} AND is_read=2
+        </where>
+    </select>
+
+    <!--批量插入-->
+    <insert id="addTrainRecordBatch" useGeneratedKeys="true" parameterType="java.util.List">
+        INSERT SHOP_MEMBER_MESSAGE
+        (
+        <include refid="base_column"/>
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id},#{item.msgId},#{item.bizType},#{item.createTime},#{item.isRead},#{item.uid}
+            )
+        </foreach>
+    </insert>
+
+    <resultMap id="ShopMemberResultMap" type="com.framework.loippi.dto.ShopMemberDto">
+        <id property="id" column="id"/>
+    </resultMap>
+
+    <!-- 根据参数查询列表-->
+    <select id="findAllMember" resultMap="ShopMemberResultMap">
+        SELECT
+        id
+        FROM SHOP_MEMBER
+        limit #{pageNumber},1000
+    </select>
+
+    <!-- 根据参数查询列表-->
+    <select id="findGroupMember" resultMap="ShopMemberResultMap">
+        SELECT
+        id
+        FROM SHOP_MEMBER
+        WHERE member_groupid=#{groupId}
+        limit #{pageNumber},1000
+    </select>
+
+    <!-- 根据是否已读查询消息-->
+    <select id="findMessagePageByIsRead" resultMap="ShopUserMessageResultMap">
+        SELECT
+        SHOP_COMMON_MESSAGE.id,SHOP_COMMON_MESSAGE.title,SHOP_COMMON_MESSAGE.subject,SHOP_COMMON_MESSAGE.biz_id,SHOP_COMMON_MESSAGE.biz_type,
+        SHOP_COMMON_MESSAGE.content
+        ,SHOP_COMMON_MESSAGE.create_time,SHOP_COMMON_MESSAGE.type,SHOP_COMMON_MESSAGE.u_type,
+        SHOP_COMMON_MESSAGE.on_line,SHOP_COMMON_MESSAGE.is_top ,
+        SHOP_MEMBER_MESSAGE.id as mmId,SHOP_MEMBER_MESSAGE.is_read as isRead,SHOP_MEMBER_MESSAGE.uid
+        FROM SHOP_MEMBER_MESSAGE
+        LEFT JOIN SHOP_COMMON_MESSAGE ON SHOP_COMMON_MESSAGE.id=SHOP_MEMBER_MESSAGE.msg_id
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper> 

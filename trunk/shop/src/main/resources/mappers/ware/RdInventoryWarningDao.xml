@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.ware.RdInventoryWarningDao">
+	
+	<resultMap id="RdInventoryWarningResultMap" type="com.framework.loippi.entity.ware.RdInventoryWarning">
+		<result property="wareCode" column="WARE_CODE" />
+		<result property="wareName" column="WARE_NAME" />
+		<result property="goodsCode" column="GOODS_CODE" />
+		<result property="goodsName" column="GOODS_NAME" />
+		<result property="specificationId" column="SPECIFICATION_ID" />
+		<result property="specifications" column="SPECIFICATIONS" />
+		<result property="inventory" column="INVENTORY" />
+		<result property="precautiousLine" column="PRECAUTIOUS_LINE" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 WARE_CODE ,WARE_NAME ,GOODS_CODE ,GOODS_NAME ,SPECIFICATION_ID ,SPECIFICATIONS ,INVENTORY ,PRECAUTIOUS_LINE 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{wareCode},#{wareName},#{goodsCode},#{goodsName},#{specificationId},#{specifications},#{inventory},#{precautiousLine}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="wareCode != null and wareCode != ''">
+			AND WARE_CODE = #{wareCode,jdbcType=VARCHAR}
+		</if>
+		<if test="wareName != null and wareName != ''">
+			AND WARE_NAME = #{wareName,jdbcType=VARCHAR}
+		</if>
+		<if test="goodsCode != null and goodsCode != ''">
+			AND GOODS_CODE = #{goodsCode,jdbcType=VARCHAR}
+		</if>
+		<if test="goodsName != null and goodsName != ''">
+			AND GOODS_NAME = #{goodsName,jdbcType=VARCHAR}
+		</if>
+		<if test="specificationId != null and specificationId != ''">
+			AND SPECIFICATION_ID = #{specificationId}
+		</if>
+		<if test="specifications != null and specifications != ''">
+			AND SPECIFICATIONS = #{specifications,jdbcType=VARCHAR}
+		</if>
+		<if test="inventory != null and inventory != ''">
+			AND INVENTORY = #{inventory,jdbcType=INTEGER}
+		</if>
+		<if test="precautiousLine != null and precautiousLine != ''">
+			AND PRECAUTIOUS_LINE = #{precautiousLine,jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="wareCode != null and wareCode != ''">
+			WARE_CODE = #{wareCode,jdbcType=VARCHAR},
+		</if>
+		<if test="wareName != null and wareName != ''">
+			WARE_NAME = #{wareName,jdbcType=VARCHAR},
+		</if>
+		<if test="goodsCode != null and goodsCode != ''">
+			GOODS_CODE = #{goodsCode,jdbcType=VARCHAR},
+		</if>
+		<if test="goodsName != null and goodsName != ''">
+			GOODS_NAME = #{goodsName,jdbcType=VARCHAR},
+		</if>
+		<if test="specificationId != null">
+			SPECIFICATION_ID = #{specificationId},
+		</if>
+		<if test="specifications != null and specifications != ''">
+			SPECIFICATIONS = #{specifications,jdbcType=VARCHAR},
+		</if>
+		<if test="inventory != null">
+			INVENTORY = #{inventory,jdbcType=INTEGER},
+		</if>
+		<if test="precautiousLine != null">
+			PRECAUTIOUS_LINE = #{precautiousLine,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdInventoryWarningResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_INVENTORY_WARNING
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdInventoryWarningResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_INVENTORY_WARNING
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_INVENTORY_WARNING
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.ware.RdInventoryWarning">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+	          SELECT LAST_INSERT_ID() AS ID
+	    </selectKey>
+		INSERT RD_INVENTORY_WARNING 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.ware.RdInventoryWarning">
+		UPDATE	RD_INVENTORY_WARNING
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	WARE_CODE = #{wareCode}  and SPECIFICATION_ID=#{specificationId}
+	</update>
+
+	<!-- 修改库存表中商品库存 -->
+	<update id="updateInventory" parameterType="com.framework.loippi.entity.ware.RdInventoryWarning">
+		UPDATE	RD_INVENTORY_WARNING
+		<set>
+			INVENTORY = INVENTORY - #{inventory}
+		</set>
+		WHERE	WARE_CODE = #{wareCode}  and SPECIFICATION_ID=#{specificationId}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_INVENTORY_WARNING
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_INVENTORY_WARNING
+		WHERE	ID	IN
+    	<foreach item="RdInventoryWarningId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdInventoryWarningId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdInventoryWarningResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_INVENTORY_WARNING
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdInventoryWarningResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_INVENTORY_WARNING
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

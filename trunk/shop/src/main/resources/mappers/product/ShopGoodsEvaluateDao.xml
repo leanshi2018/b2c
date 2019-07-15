@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopGoodsEvaluateDao">
+
+    <resultMap id="ShopGoodsEvaluateResultMap" type="com.framework.loippi.entity.product.ShopGoodsEvaluate">
+        <id property="id" column="id"/>
+        <result property="gevalOrderid" column="geval_orderid"/>
+        <result property="gevalOrderno" column="geval_orderno"/>
+        <result property="gevalOrdergoodsid" column="geval_ordergoodsid"/>
+        <result property="gevalGoodsid" column="geval_goodsid"/>
+        <result property="gevalGoodsname" column="geval_goodsname"/>
+        <result property="gevalGoodsprice" column="geval_goodsprice"/>
+        <result property="gevalScores" column="geval_scores"/>
+        <result property="gevalContent" column="geval_content"/>
+        <result property="gevalIsanonymous" column="geval_isanonymous"/>
+        <result property="gevalAddtime" column="geval_addtime"/>
+        <result property="gevalFrommemberid" column="geval_frommemberid"/>
+        <result property="gevalFrommembername" column="geval_frommembername"/>
+        <result property="gevalState" column="geval_state"/>
+        <result property="gevalRemark" column="geval_remark"/>
+        <result property="gevalExplain" column="geval_explain"/>
+        <result property="gevalImage" column="geval_image"/>
+        <result property="isDel" column="is_del"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="specInfo" column="spec_info"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="isLiked" column="islike"/>
+        <result property="replyNum" column="replaynum"/>
+        <result property="likeNum" column="likecount"/>
+        <result property="gevalFrommemberAvatar" column="gevalFrommemberAvatar"/>
+        <result property="sumView" column="sumView"/>
+        <result property="dispatchCity" column="dispatchCity"/>
+        <result property="exchangePoints" column="exchange_points"/>
+        <result property="remarkTime" column="remark_time"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,geval_orderid ,geval_orderno ,geval_ordergoodsid ,geval_goodsid ,geval_goodsname ,geval_goodsprice ,geval_scores ,geval_content ,geval_isanonymous ,geval_addtime ,geval_frommemberid ,geval_frommembername ,geval_state ,geval_remark ,geval_explain ,geval_image ,is_del ,create_time ,update_time ,spec_info ,parent_id ,mobile ,ip ,checkedstatus ,nick,sumView,exchange_points,remark_time
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{gevalOrderid},#{gevalOrderno},#{gevalOrdergoodsid},#{gevalGoodsid},#{gevalGoodsname},#{gevalGoodsprice},#{gevalScores},#{gevalContent},#{gevalIsanonymous},#{gevalAddtime},#{gevalFrommemberid},#{gevalFrommembername},#{gevalState},#{gevalRemark},#{gevalExplain},#{gevalImage},#{isDel},#{createTime},#{updateTime},#{specInfo},#{parentId},#{mobile},#{ip},#{checkedstatus},#{nick},#{sumView},#{exchangePoints},#{remarkTime}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="gevalOrderid != null and gevalOrderid != ''">
+            AND geval_orderid = #{gevalOrderid,jdbcType=BIGINT}
+        </if>
+        <if test="gevalOrderno != null and gevalOrderno != ''">
+            AND geval_orderno = #{gevalOrderno,jdbcType=VARCHAR}
+        </if>
+        <if test="gevalOrdergoodsid != null and gevalOrdergoodsid != ''">
+            AND geval_ordergoodsid = #{gevalOrdergoodsid,jdbcType=BIGINT}
+        </if>
+        <if test="gevalGoodsid != null and gevalGoodsid != ''">
+            AND geval_goodsid = #{gevalGoodsid,jdbcType=BIGINT}
+        </if>
+        <if test="gevalGoodsname != null and gevalGoodsname != ''">
+            AND geval_goodsname like CONCAT('%',#{gevalGoodsname},'%')
+        </if>
+        <if test="gevalGoodsprice != null and gevalGoodsprice != ''">
+            AND geval_goodsprice = #{gevalGoodsprice}
+        </if>
+        <if test="gevalScores != null and gevalScores != ''">
+            AND geval_scores = #{gevalScores,jdbcType=INTEGER}
+        </if>
+        <if test="gevalContent != null and gevalContent != ''">
+            AND geval_content like CONCAT('%',#{gevalContent},'%')
+        </if>
+        <if test="gevalIsanonymous != null and gevalIsanonymous != ''">
+            AND geval_isanonymous = #{gevalIsanonymous,jdbcType=INTEGER}
+        </if>
+        <if test="gevalAddtime != null and gevalAddtime != ''">
+            AND geval_addtime = #{gevalAddtime}
+        </if>
+        <if test="gevalFrommemberid != null and gevalFrommemberid != ''">
+            AND geval_frommemberid = #{gevalFrommemberid,jdbcType=BIGINT}
+        </if>
+        <if test="gevalFrommembername != null and gevalFrommembername != ''">
+            AND geval_frommembername like CONCAT('%',#{gevalFrommembername},'%')
+        </if>
+        <if test="gevalState != null ">
+            AND geval_state = #{gevalState,jdbcType=INTEGER}
+        </if>
+        <if test="gevalRemark != null and gevalRemark != ''">
+            AND geval_remark = #{gevalRemark,jdbcType=VARCHAR}
+        </if>
+        <if test="gevalExplain != null and gevalExplain != ''">
+            AND geval_explain = #{gevalExplain,jdbcType=VARCHAR}
+        </if>
+        <if test="gevalImage != null and gevalImage != ''">
+            AND geval_image = #{gevalImage,jdbcType=VARCHAR}
+        </if>
+        <if test="isDel != null and isDel != ''">
+            AND is_del = #{isDel,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND update_time = #{updateTime}
+        </if>
+        <if test="specInfo != null and specInfo != ''">
+            AND spec_info = #{specInfo,jdbcType=VARCHAR}
+        </if>
+        <if test="parentId != null">
+            AND parent_id = #{parentId,jdbcType=BIGINT}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            AND mobile = #{mobile,jdbcType=VARCHAR}
+        </if>
+        <if test="ip != null and ip != ''">
+            AND ip = #{ip,jdbcType=VARCHAR}
+        </if>
+        <if test="checkedstatus != null">
+            AND checkedstatus = #{checkedstatus,jdbcType=INTEGER}
+        </if>
+        <if test="nick != null and nick != ''">
+            AND nick = #{nick,jdbcType=VARCHAR}
+        </if>
+        <if test="exchangePoints != null and exchangePoints != ''">
+            AND exchange_points = #{exchangePoints}
+        </if>
+        <if test="remarkTime != null and remarkTime != ''">
+            AND remark_time = #{remarkTime}
+        </if>
+        <if test="keyWordId != null and keyWordId != ''">
+            AND geval_frommemberid like CONCAT('%',#{keyWordId},'%')
+        </if>
+        <if test="keyWordMobile != null and keyWordMobile != ''">
+            AND mobile like CONCAT('%',#{keyWordMobile},'%')
+        </if>
+        <if test="keyWordOrderId != null and keyWordOrderId != ''">
+            AND geval_orderid like CONCAT('%',#{keyWordOrderId},'%')
+        </if>
+        <if test="keyWordGoodsId != null and keyWordGoodsId != ''">
+            AND geval_goodsid like CONCAT('%',#{keyWordGoodsId},'%')
+        </if>
+        <if test="keyWordGoodsName != null and keyWordGoodsName != ''">
+            AND geval_goodsname like CONCAT('%',#{keyWordGoodsName},'%')
+        </if>
+        <!--<if test="startTimeStr !=null and startTimeStr != ''">-->
+            <!--<![CDATA[and create_time >= #{startTimeStr}]]>-->
+        <!--</if>-->
+        <!--<if test="endTimeStr !=null and endTimeStr != ''">-->
+            <!--<![CDATA[and create_time < =#{endTimeStr}]]>-->
+        <!--</if>-->
+        <if test="startTime != null and startTime != '' ">
+            <![CDATA[ AND UNIX_TIMESTAMP(create_time)*1000 >= #{startTime}]]>
+        </if>
+        <if test="endTime != null and endTime != '' ">
+            <![CDATA[ AND UNIX_TIMESTAMP(create_time)*1000 <= #{endTime}]]>
+        </if>
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column2">
+        <if test="id != null and id != ''">
+            AND geval.id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="gevalOrderid != null and gevalOrderid != ''">
+            AND geval.geval_orderid = #{gevalOrderid,jdbcType=BIGINT}
+        </if>
+        <if test="gevalOrderno != null and gevalOrderno != ''">
+            AND geval.geval_orderno = #{gevalOrderno,jdbcType=VARCHAR}
+        </if>
+        <if test="gevalOrdergoodsid != null and gevalOrdergoodsid != ''">
+            AND geval.geval_ordergoodsid = #{gevalOrdergoodsid,jdbcType=BIGINT}
+        </if>
+        <if test="gevalGoodsid != null and gevalGoodsid != ''">
+            AND geval.geval_goodsid = #{gevalGoodsid,jdbcType=BIGINT}
+        </if>
+        <if test="gevalGoodsname != null and gevalGoodsname != ''">
+            AND geval.geval_goodsname like CONCAT('%',#{gevalGoodsname},'%')
+        </if>
+        <if test="gevalGoodsprice != null and gevalGoodsprice != ''">
+            AND geval.geval_goodsprice = #{gevalGoodsprice}
+        </if>
+        <if test="gevalScores != null and gevalScores != ''">
+            AND geval.geval_scores = #{gevalScores,jdbcType=INTEGER}
+        </if>
+        <if test="gevalContent != null and gevalContent != ''">
+            AND geval.geval_content like CONCAT('%',#{gevalContent},'%')
+        </if>
+        <if test="gevalIsanonymous != null and gevalIsanonymous != ''">
+            AND geval.geval_isanonymous = #{gevalIsanonymous,jdbcType=INTEGER}
+        </if>
+        <if test="gevalAddtime != null and gevalAddtime != ''">
+            AND geval.geval_addtime = #{gevalAddtime}
+        </if>
+        <if test="gevalFrommemberid != null and gevalFrommemberid != ''">
+            AND geval.geval_frommemberid = #{gevalFrommemberid,jdbcType=BIGINT}
+        </if>
+        <if test="gevalFrommembername != null and gevalFrommembername != ''">
+            AND geval.geval_frommembername like CONCAT('%',#{gevalFrommembername},'%')
+        </if>
+        <if test="gevalState != null">
+            AND geval.geval_state = #{gevalState,jdbcType=INTEGER}
+        </if>
+        <if test="gevalRemark != null and gevalRemark != ''">
+            AND geval.geval_remark = #{gevalRemark,jdbcType=VARCHAR}
+        </if>
+        <if test="gevalExplain != null and gevalExplain != ''">
+            AND geval.geval_explain = #{gevalExplain,jdbcType=VARCHAR}
+        </if>
+        <if test="gevalImage != null and gevalImage != ''">
+            AND geval.geval_image = #{gevalImage,jdbcType=VARCHAR}
+        </if>
+        <if test="isDel != null and isDel != ''">
+            AND geval.is_del = #{isDel,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND geval.create_time = #{createTime}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND geval.update_time = #{updateTime}
+        </if>
+        <if test="specInfo != null and specInfo != ''">
+            AND geval.spec_info = #{specInfo,jdbcType=VARCHAR}
+        </if>
+        <if test="parentId != null">
+            AND geval.parent_id = #{parentId,jdbcType=BIGINT}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            AND geval.mobile = #{mobile,jdbcType=VARCHAR}
+        </if>
+        <if test="ip != null and ip != ''">
+            AND geval.ip = #{ip,jdbcType=VARCHAR}
+        </if>
+        <if test="checkedstatus != null">
+            AND geval.checkedstatus = #{checkedstatus,jdbcType=INTEGER}
+        </if>
+        <if test="exchangePoints != null and exchangePoints != ''">
+            AND geval.exchange_points = #{exchangePoints}
+        </if>
+        <if test="nick != null and nick != ''">
+            AND geval.nick = #{nick,jdbcType=VARCHAR}
+        </if>
+        <if test="remarkTime != null and remarkTime != ''">
+            AND geval.remark_time = #{remarkTime}
+        </if>
+        <if test="startTime != null and startTime != '' ">
+            <![CDATA[ AND UNIX_TIMESTAMP(geval_addtime)*1000 >= #{startTime}]]>
+        </if>
+        <if test="endTime != null and endTime != '' ">
+            <![CDATA[ AND UNIX_TIMESTAMP(geval_addtime)*1000 <= #{endTime}]]>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="gevalOrderid != null">
+            geval_orderid = #{gevalOrderid,jdbcType=BIGINT},
+        </if>
+        <if test="gevalOrderno != null and gevalOrderno != ''">
+            geval_orderno = #{gevalOrderno,jdbcType=VARCHAR},
+        </if>
+        <if test="gevalOrdergoodsid != null">
+            geval_ordergoodsid = #{gevalOrdergoodsid,jdbcType=BIGINT},
+        </if>
+        <if test="gevalGoodsid != null">
+            geval_goodsid = #{gevalGoodsid,jdbcType=BIGINT},
+        </if>
+        <if test="gevalGoodsname != null and gevalGoodsname != ''">
+            geval_goodsname = #{gevalGoodsname,jdbcType=VARCHAR},
+        </if>
+        <if test="gevalGoodsprice != null">
+            geval_goodsprice = #{gevalGoodsprice,jdbcType=},
+        </if>
+        <if test="gevalScores != null">
+            geval_scores = #{gevalScores,jdbcType=INTEGER},
+        </if>
+        <if test="gevalContent != null and gevalContent != ''">
+            geval_content = #{gevalContent,jdbcType=VARCHAR},
+        </if>
+        <if test="gevalIsanonymous != null">
+            geval_isanonymous = #{gevalIsanonymous,jdbcType=INTEGER},
+        </if>
+        <if test="gevalAddtime != null">
+            geval_addtime = #{gevalAddtime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="gevalFrommemberid != null">
+            geval_frommemberid = #{gevalFrommemberid,jdbcType=BIGINT},
+        </if>
+        <if test="gevalFrommembername != null and gevalFrommembername != ''">
+            geval_frommembername = #{gevalFrommembername,jdbcType=VARCHAR},
+        </if>
+        <if test="gevalState != null">
+            geval_state = #{gevalState,jdbcType=INTEGER},
+        </if>
+        <if test="gevalRemark != null and gevalRemark != ''">
+            geval_remark = #{gevalRemark,jdbcType=VARCHAR},
+        </if>
+        <if test="gevalExplain != null and gevalExplain != ''">
+            geval_explain = #{gevalExplain,jdbcType=VARCHAR},
+        </if>
+        <if test="gevalImage != null and gevalImage != ''">
+            geval_image = #{gevalImage,jdbcType=VARCHAR},
+        </if>
+        <if test="isDel != null">
+            is_del = #{isDel,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="specInfo != null and specInfo != ''">
+            spec_info = #{specInfo,jdbcType=VARCHAR},
+        </if>
+        <if test="parentId != null">
+            parent_id = #{parentId,jdbcType=BIGINT},
+        </if>
+        <if test="mobile != null and mobile != ''">
+            mobile = #{mobile,jdbcType=VARCHAR},
+        </if>
+        <if test="ip != null and ip != ''">
+            ip = #{ip,jdbcType=VARCHAR},
+        </if>
+        <if test="checkedstatus != null">
+            checkedstatus = #{checkedstatus,jdbcType=INTEGER},
+        </if>
+        <if test="nick != null and nick != ''">
+            nick = #{nick,jdbcType=VARCHAR},
+        </if>
+        <if test="sumView != null and sumView != ''">
+            sumView = #{sumView,jdbcType=VARCHAR},
+        </if>
+        <if test="exchangePoints != null and exchangePoints != ''">
+             exchange_points = #{exchangePoints},
+        </if>
+        <if test="remarkTime != null and remarkTime != ''">
+            remark_time = #{remarkTime},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopGoodsEvaluateResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_EVALUATE
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="findByParentId" resultMap="ShopGoodsEvaluateResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_EVALUATE
+        WHERE parent_id = #{parentId,jdbcType=BIGINT} AND parent_id is not null AND parent_id != 0 AND
+        geval_ordergoodsid is not NULL limit 1
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopGoodsEvaluateResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_EVALUATE
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_GOODS_EVALUATE
+        <where>
+            <include refid="where_column"/>
+        </where>
+
+    </select>
+    <!-- 统计记录数 -->
+    <select id="countGevalContent" resultType="com.framework.loippi.entity.product.ShopGoodsEvaluateKeywords">
+        <foreach item="gevalContent" index="index" collection="gevalContents" open="" separator="union" close="">
+            SELECT COUNT(*) as countNum,#{gevalContent} as keywords   FROM SHOP_GOODS_EVALUATE
+            <where>
+                geval_content like CONCAT('%',#{gevalContent},'%')
+                <include refid="where_column"/>
+            </where>
+        </foreach>
+
+    </select>
+
+
+
+    <!-- 统计多件商品评论率 -->
+    <select id="countCommentRate" resultMap="ShopGoodsEvaluateResultMap">
+        SELECT (sum(
+        <if test="score != null and score != ''">
+            case when <![CDATA[ geval_scores >= #{score}]]> then 1 else 0 end
+        </if>
+        )/COUNT(1))*100 as gevalContent,geval_goodsid
+        FROM SHOP_GOODS_EVALUATE
+        <where>
+            <include refid="where_column"/>
+            <if test="ids != null and ids.size > 0">
+                AND SHOP_GOODS_EVALUATE.geval_goodsid in
+                <foreach collection="ids" open="(" separator="," close=")" item="item">#{item}</foreach>
+            </if>
+        </where>
+    </select>
+
+    <!--统计所有总分-->
+    <select id="findScore" resultType="long">
+        SELECT sum(geval_scores) FROM SHOP_GOODS_EVALUATE
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopGoodsEvaluate">
+        set names utf8mb4;
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_GOODS_EVALUATE
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopGoodsEvaluate">
+        UPDATE SHOP_GOODS_EVALUATE
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_GOODS_EVALUATE
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_GOODS_EVALUATE
+        WHERE ID IN
+        <foreach item="ShopGoodsEvaluateId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopGoodsEvaluateId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopGoodsEvaluateResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_EVALUATE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopGoodsEvaluateResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_EVALUATE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+
+    <select id="findWithReplyNumAndLikeCount" resultMap="ShopGoodsEvaluateResultMap">
+        select
+        geval.id ,geval.geval_orderid ,geval.geval_orderno ,geval.geval_ordergoodsid ,geval.geval_goodsid
+        ,geval.geval_goodsname ,geval.geval_goodsprice ,geval.geval_scores ,geval.geval_content ,geval.geval_isanonymous
+        ,geval.geval_addtime ,geval.geval_storeid ,geval.geval_storename ,geval.geval_frommemberid
+        ,geval.geval_frommembername ,geval.geval_state ,geval.geval_remark ,geval.geval_explain ,geval.geval_image
+        ,geval.is_del ,geval.create_time ,geval.update_time ,geval.spec_info ,geval.parent_id ,geval.mobile ,geval.ip
+        ,geval.checkedstatus ,geval.nick,geval.sumView,
+        (select ogoods.goods_image from shop_order_goods ogoods where ogoods.id = geval.geval_ordergoodsid) goods_image,
+        (select count( id )
+        from shop_goods_evaluate eval
+        where eval.parent_id = geval.id
+        and (is_del = 0 or is_del is null)) replaynum,
+        (select if(count( id ) > 0, 1 , 0)
+        from shop_goods_evaluate_like elike
+        where elike.geval_id = geval.id
+        and elike.member_id = geval.geval_frommemberid) islike,
+        (select count( id )
+        from shop_goods_evaluate_like elike
+        where elike.geval_id = geval.id) likecount,
+        (select city_id
+        from shop_goods sg
+        where sg.id = geval.geval_goodsid) dispatchCity,
+        (select sm.member_avatar from SHOP_MEMBER sm where sm.id= geval.geval_frommemberid) gevalFrommemberAvatar,
+        (select count( id ) from shop_goods_evaluate gevals where geval.id= gevals.parent_id AND
+        gevals.geval_ordergoodsid is not NULL) isAdditionalEval
+        from
+        shop_goods_evaluate geval
+        <where>1=1
+            <include refid="where_column2"/>
+        </where>
+
+        ORDER by create_time DESC ,geval_scores DESC
+    </select>
+
+    <update id="addLikeNum">
+        UPDATE SHOP_GOODS_EVALUATE
+        <set>
+            likecount=likecount + #{sub}
+        </set>
+        WHERE ID = #{evalId,jdbcType=BIGINT}
+    </update>
+
+</mapper>

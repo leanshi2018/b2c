@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdMmAccountInfoDao">
+	
+	<resultMap id="RdMmAccountInfoResultMap" type="com.framework.loippi.entity.user.RdMmAccountInfo">
+		<result property="mmCode" column="MM_CODE" />
+		<result property="bonusStatus" column="BONUS_STATUS" />
+		<result property="bonusCurrency" column="BONUS_CURRENCY" />
+		<result property="bonusBlance" column="BONUS_BLANCE" />
+		<result property="walletStatus" column="WALLET_STATUS" />
+		<result property="walletCurrency" column="WALLET_CURRENCY" />
+		<result property="walletBlance" column="WALLET_BLANCE" />
+		<result property="redemptionStatus" column="REDEMPTION_STATUS" />
+		<result property="redemptionCurrency" column="REDEMPTION_CURRENCY" />
+		<result property="redemptionBlance" column="REDEMPTION_BLANCE" />
+		<result property="wechatAcc" column="WECHAT_ACC" />
+		<result property="alipayAcc" column="ALIPAY_ACC" />
+		<result property="paymentPhone" column="PAYMENT_PHONE" />
+		<result property="paymentPwd" column="PAYMENT_PWD" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 MM_CODE ,BONUS_STATUS ,BONUS_CURRENCY ,BONUS_BLANCE ,WALLET_STATUS ,WALLET_CURRENCY ,WALLET_BLANCE ,REDEMPTION_STATUS ,REDEMPTION_CURRENCY ,REDEMPTION_BLANCE ,WECHAT_ACC ,ALIPAY_ACC ,PAYMENT_PHONE ,PAYMENT_PWD 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{mmCode},#{bonusStatus},#{bonusCurrency},#{bonusBlance},#{walletStatus},#{walletCurrency},#{walletBlance},#{redemptionStatus},#{redemptionCurrency},#{redemptionBlance},#{wechatAcc},#{alipayAcc},#{paymentPhone},#{paymentPwd}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="mmCode != null and mmCode != ''">
+			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="bonusStatus != null and bonusStatus != ''">
+			AND BONUS_STATUS = #{bonusStatus,jdbcType=INTEGER}
+		</if>
+		<if test="bonusCurrency != null and bonusCurrency != ''">
+			AND BONUS_CURRENCY = #{bonusCurrency,jdbcType=VARCHAR}
+		</if>
+		<if test="bonusBlance != null and bonusBlance != ''">
+			AND BONUS_BLANCE = #{bonusBlance}
+		</if>
+		<if test="walletStatus != null and walletStatus != ''">
+			AND WALLET_STATUS = #{walletStatus,jdbcType=INTEGER}
+		</if>
+		<if test="walletCurrency != null and walletCurrency != ''">
+			AND WALLET_CURRENCY = #{walletCurrency,jdbcType=VARCHAR}
+		</if>
+		<if test="walletBlance != null and walletBlance != ''">
+			AND WALLET_BLANCE = #{walletBlance}
+		</if>
+		<if test="redemptionStatus != null and redemptionStatus != ''">
+			AND REDEMPTION_STATUS = #{redemptionStatus,jdbcType=INTEGER}
+		</if>
+		<if test="redemptionCurrency != null and redemptionCurrency != ''">
+			AND REDEMPTION_CURRENCY = #{redemptionCurrency,jdbcType=VARCHAR}
+		</if>
+		<if test="redemptionBlance != null and redemptionBlance != ''">
+			AND REDEMPTION_BLANCE = #{redemptionBlance}
+		</if>
+		<if test="wechatAcc != null and wechatAcc != ''">
+			AND WECHAT_ACC = #{wechatAcc,jdbcType=VARCHAR}
+		</if>
+		<if test="alipayAcc != null and alipayAcc != ''">
+			AND ALIPAY_ACC = #{alipayAcc,jdbcType=VARCHAR}
+		</if>
+		<if test="paymentPhone != null and paymentPhone != ''">
+			AND PAYMENT_PHONE = #{paymentPhone,jdbcType=VARCHAR}
+		</if>
+		<if test="paymentPwd != null and paymentPwd != ''">
+			AND PAYMENT_PWD = #{paymentPwd,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="mmCode != null and mmCode != ''">
+			MM_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="bonusStatus != null">
+			BONUS_STATUS = #{bonusStatus,jdbcType=INTEGER},
+		</if>
+		<if test="bonusCurrency != null and bonusCurrency != ''">
+			BONUS_CURRENCY = #{bonusCurrency,jdbcType=VARCHAR},
+		</if>
+		<if test="bonusBlance != null">
+			BONUS_BLANCE = #{bonusBlance},
+		</if>
+		<if test="walletStatus != null">
+			WALLET_STATUS = #{walletStatus,jdbcType=INTEGER},
+		</if>
+		<if test="walletCurrency != null and walletCurrency != ''">
+			WALLET_CURRENCY = #{walletCurrency,jdbcType=VARCHAR},
+		</if>
+		<if test="walletBlance != null">
+			WALLET_BLANCE = #{walletBlance},
+		</if>
+		<if test="redemptionStatus != null">
+			REDEMPTION_STATUS = #{redemptionStatus,jdbcType=INTEGER},
+		</if>
+		<if test="redemptionCurrency != null and redemptionCurrency != ''">
+			REDEMPTION_CURRENCY = #{redemptionCurrency,jdbcType=VARCHAR},
+		</if>
+		<if test="redemptionBlance != null">
+			REDEMPTION_BLANCE = #{redemptionBlance},
+		</if>
+		<if test="wechatAcc != null and wechatAcc != ''">
+			WECHAT_ACC = #{wechatAcc,jdbcType=VARCHAR},
+		</if>
+		<if test="alipayAcc != null and alipayAcc != ''">
+			ALIPAY_ACC = #{alipayAcc,jdbcType=VARCHAR},
+		</if>
+		<if test="paymentPhone != null and paymentPhone != ''">
+			PAYMENT_PHONE = #{paymentPhone,jdbcType=VARCHAR},
+		</if>
+		<if test="paymentPwd != null and paymentPwd != ''">
+			PAYMENT_PWD = #{paymentPwd,jdbcType=VARCHAR},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdMmAccountInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_ACCOUNT_INFO
+		WHERE	MM_CODE = #{mmCode,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdMmAccountInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_ACCOUNT_INFO
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_MM_ACCOUNT_INFO
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmAccountInfo">
+
+		INSERT RD_MM_ACCOUNT_INFO 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdMmAccountInfo">
+		UPDATE	RD_MM_ACCOUNT_INFO
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	MM_CODE = #{mmCode,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_MM_ACCOUNT_INFO
+		WHERE	MM_CODE = #{mmCode,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_MM_ACCOUNT_INFO
+		WHERE	MM_CODE	IN
+    	<foreach item="RdMmAccountInfoId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdMmAccountInfoId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdMmAccountInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_MM_ACCOUNT_INFO
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdMmAccountInfoResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_MM_ACCOUNT_INFO
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

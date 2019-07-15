@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	    http://www.springframework.org/schema/tx
+	    http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+    	http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.1.xsd"
+       default-lazy-init="true">
+    <description>Transaction配置</description>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- 事务管理器配置 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <aop:config>
+        <aop:pointcut expression="execution(* com.framework.loippi.service.impl.*.*(..))" id="servicePointcut"/>
+        <aop:advisor pointcut-ref="servicePointcut" advice-ref="txAdvice"/>
+    </aop:config>
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="save*" propagation="REQUIRED"/>
+            <tx:method name="add*" propagation="REQUIRED"/>
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <tx:method name="remove*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRED"/>
+            <tx:method name="edit*" propagation="REQUIRED"/>
+            <tx:method name="modify*" propagation="REQUIRED"/>
+            <tx:method name="notifyCheck*" propagation="REQUIRED"/>
+            <tx:method name="*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--&lt;!&ndash; proxy-target-class="true" 表示强制使用CGLIB代理，默认为：false &ndash;&gt;-->
+    <!--<aop:config>-->
+        <!--<aop:advisor pointcut="execution(* **.service.*.*Service.*(..))" advice-ref="txAdvice"/>-->
+    <!--</aop:config>-->
+
+    <!--<tx:advice id="txAdvice" transaction-manager="transactionManager">-->
+        <!--<tx:attributes>-->
+            <!--<tx:method name="select*" read-only="true"/>-->
+            <!--<tx:method name="get*" read-only="true"/>-->
+            <!--<tx:method name="find*" read-only="true"/>-->
+            <!--<tx:method name="query*" read-only="true"/>-->
+            <!--<tx:method name="read*" read-only="true"/>-->
+            <!--<tx:method name="insert*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>-->
+            <!--<tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>-->
+            <!--<tx:method name="update*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>-->
+            <!--<tx:method name="modify*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>-->
+            <!--<tx:method name="remove*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>-->
+            <!--<tx:method name="delete*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>-->
+            <!--<tx:method name="*" read-only="true"/>-->
+        <!--</tx:attributes>-->
+    <!--</tx:advice>-->
+
+</beans>

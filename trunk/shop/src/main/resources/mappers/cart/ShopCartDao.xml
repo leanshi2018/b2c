@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.cart.ShopCartDao">
+
+    <resultMap id="ShopCartResultMap" type="com.framework.loippi.entity.cart.ShopCart">
+        <id property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="specId" column="spec_id"/>
+        <result property="specInfo" column="spec_info"/>
+        <result property="goodsRetailPrice" column="goods_retail_price"/>
+        <result property="goodsNum" column="goods_num"/>
+        <result property="goodsImages" column="goods_images"/>
+        <result property="firstGcId" column="first_gc_id"/>
+        <result property="goodsState" column="goods_state"/>
+        <result property="getGoodsNowStorage" column="spec_goods_storage"/>
+        <result property="activityId" column="activity_id"/>
+        <result property="activityType" column="activity_type"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="goodsMemberPrice" column="goods_member_price"/>
+        <result property="goodsBigPrice" column="goods_big_price"/>
+        <result property="ppv" column="ppv"/>
+        <result property="bigPpv" column="big_ppv"/>
+        <result property="weight" column="weight"/>
+        <result property="goodsType" column="goods_type"/>
+
+        <result property="activitySpecId" column="activity_spec_id"/>
+        <result property="activityGoodsId" column="activity_goods_id"/>
+    </resultMap>
+
+    <resultMap id="ShopCartVoWithGoodsResultMap" type="com.framework.loippi.vo.cart.ShopCartVo"
+               extends="ShopCartResultMap">
+        <association property="goods" javaType="com.framework.loippi.entity.product.ShopGoods" column="goods_id"
+                     select="com.framework.loippi.dao.product.ShopGoodsDao.find"/>
+    </resultMap>
+
+    <resultMap id="ShopCartVoWithGoodsAndSpecResultMap" type="com.framework.loippi.vo.cart.ShopCartVo"
+               extends="ShopCartVoWithGoodsResultMap">
+        <association property="goodsSpec" javaType="com.framework.loippi.entity.product.ShopGoodsSpec" column="spec_id"
+                     select="com.framework.loippi.dao.product.ShopGoodsSpecDao.find"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,member_id  ,goods_id ,goods_name ,spec_id ,spec_info ,goods_retail_price ,goods_num ,goods_images ,first_gc_id ,goods_state,activity_id,activity_type
+
+		 ,goods_member_price,brand_id,brand_name,ppv,big_ppv,weight,goods_big_price,goods_type,activity_spec_id,activity_goods_id
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{memberId},#{goodsId},#{goodsName},#{specId},#{specInfo},#{goodsRetailPrice},#{goodsNum},#{goodsImages},#{firstGcId},#{goodsState},#{activityId},#{activityType}
+
+		 ,#{goodsMemberPrice},#{brandId},#{brandName},#{ppv},#{bigPpv},#{weight},#{goodsBigPrice},#{goodsType},#{activitySpecId},#{activityGoodsId}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="memberId != null and memberId != ''">
+            AND member_id = #{memberId,jdbcType=BIGINT}
+        </if>
+
+        <if test="goodsId != null and goodsId != ''">
+            AND goods_id = #{goodsId,jdbcType=BIGINT}
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            AND goods_name = #{goodsName,jdbcType=VARCHAR}
+        </if>
+        <if test="specId != null and specId != ''">
+            AND spec_id = #{specId,jdbcType=BIGINT}
+        </if>
+        <if test="specInfo != null and specInfo != ''">
+            AND spec_info = #{specInfo,jdbcType=VARCHAR}
+        </if>
+        <if test="goodsRetailPrice != null and goodsRetailPrice != ''">
+            AND goods_retail_price = #{goodsRetailPrice}
+        </if>
+        <if test="goodsMemberPrice != null and goodsMemberPrice != ''">
+            AND goods_member_price = #{goodsMemberPrice}
+        </if>
+        <if test="goodsNum != null and goodsNum != ''">
+            AND goods_num = #{goodsNum,jdbcType=INTEGER}
+        </if>
+        <if test="goodsImages != null and goodsImages != ''">
+            AND goods_images = #{goodsImages,jdbcType=VARCHAR}
+        </if>
+        <if test="firstGcId != null and firstGcId != ''">
+            AND first_gc_id = #{firstGcId,jdbcType=INTEGER}
+        </if>
+        <if test="goodsState != null and goodsState != ''">
+            AND goods_state = #{goodsState,jdbcType=INTEGER}
+        </if>
+        <if test="activityType != null">
+            AND activity_type = #{activityType,jdbcType=INTEGER}
+        </if>
+        <if test="activityId != null">
+            AND activity_id = #{activityId,jdbcType=BIGINT}
+        </if>
+        <if test="brandId != null">
+            AND brand_id = #{brandId}
+        </if>
+        <if test="brandName != null and brandName != ''">
+            AND brand_name = #{brandName}
+        </if>
+        <if test="ppv != null">
+            AND ppv = #{ppv}
+        </if>
+        <if test="bigPpv != null">
+            AND big_ppv = #{bigPpv}
+        </if>
+        <if test="weight != null">
+            AND weight = #{weight}
+        </if>
+        <if test="goodsBigPrice != null">
+            AND goods_big_price = #{goodsBigPrice}
+        </if>
+        <if test="goodsType != null">
+            AND goods_type = #{goodsType}
+        </if>
+
+        <if test="ids != null and ids != ''">
+            and ID IN
+            <foreach item="ShopCartId" index="index" collection="ids" open="(" separator="," close=")">
+                #{ShopCartId}
+            </foreach>
+        </if>
+        <if test="activitySpecId != null and activitySpecId != ''">
+            AND activity_spec_id = #{activitySpecId,jdbcType=BIGINT}
+        </if>
+        <if test="activityGoodsId != null and activityGoodsId != ''">
+            AND activity_goods_id = #{activityGoodsId,jdbcType=BIGINT}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="memberId != null">
+            member_id = #{memberId,jdbcType=BIGINT},
+        </if>
+
+        <if test="goodsId != null">
+            goods_id = #{goodsId,jdbcType=BIGINT},
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            goods_name = #{goodsName,jdbcType=VARCHAR},
+        </if>
+        <if test="specId != null">
+            spec_id = #{specId,jdbcType=BIGINT},
+        </if>
+        <if test="specInfo != null and specInfo != ''">
+            spec_info = #{specInfo,jdbcType=VARCHAR},
+        </if>
+        <if test="goodsRetailPrice != null">
+            goods_retail_price = #{goodsRetailPrice,jdbcType=BIGINT},
+        </if>
+        <if test="goodsMemberPrice != null and goodsMemberPrice != ''">
+            goods_member_price = #{goodsMemberPrice},
+        </if>
+        <if test="goodsNum != null">
+            goods_num = #{goodsNum,jdbcType=INTEGER},
+        </if>
+        <if test="goodsImages != null and goodsImages != ''">
+            goods_images = #{goodsImages,jdbcType=VARCHAR},
+        </if>
+        <if test="firstGcId != null">
+            first_gc_id = #{firstGcId,jdbcType=INTEGER},
+        </if>
+        <if test="goodsState != null">
+            goods_state = #{goodsState,jdbcType=INTEGER},
+        </if>
+        <if test="activityId != null">
+            activity_id = #{activityId,jdbcType=BIGINT},
+        </if>
+        <if test="activityType != null">
+            activity_type = #{activityType,jdbcType=INTEGER},
+        </if>
+        <if test="brandId != null">
+            brand_id = #{brandId},
+        </if>
+        <if test="brandName != null and brandName != ''">
+            brand_name = #{brandName},
+        </if>
+        <if test="ppv != null">
+            ppv = #{ppv},
+        </if>
+        <if test="bigPpv != null">
+            big_ppv = #{bigPpv},
+        </if>
+        <if test="weight != null">
+            weight = #{weight},
+        </if>
+        <if test="goodsBigPrice != null">
+            goods_big_price = #{goodsBigPrice},
+        </if>
+        <if test="goodsType != null">
+             goods_type = #{goodsType},
+        </if>
+        <if test="activitySpecId != null and activitySpecId != ''">
+            activity_spec_id = #{activitySpecId,jdbcType=BIGINT},
+        </if>
+        <if test="activityGoodsId != null and activityGoodsId != ''">
+            activity_goods_id = #{activityGoodsId,jdbcType=BIGINT},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopCartResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_CART
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopCartResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_CART
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_CART
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.cart.ShopCart">
+        INSERT SHOP_CART
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.cart.ShopCart">
+        UPDATE SHOP_CART
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_CART
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_CART
+        WHERE ID IN
+        <foreach item="ShopCartId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopCartId}
+        </foreach>
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteBatch">
+        DELETE FROM SHOP_CART
+
+        WHERE goods_id IN
+        <foreach item="goodsId" index="index" collection="ids" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+        <if test="memberId != null">
+            AND member_id = #{memberId}
+        </if>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopCartResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_CART
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopCartResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_CART
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!--扩展查询商品信息-->
+    <select id="listShopCartVoWithGoodsAndSpec" resultMap="ShopCartVoWithGoodsAndSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_CART
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!--更具id批量查询-->
+    <select id="listShopCartVoWithGoodsAndSpecByIds" resultMap="ShopCartVoWithGoodsAndSpecResultMap">
+        select
+        <include refid="base_column"/>
+        from shop_cart where id in
+        <foreach item="ShopCartId" index="index" collection="array" open="(" separator="," close=")">
+            #{ShopCartId}
+        </foreach>
+    </select>
+
+    <!-- 修改根据规格 -->
+    <update id="updateBatchSpec" parameterType="com.framework.loippi.entity.cart.ShopCart">
+        UPDATE shop_cart
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE 1=1
+        <if test="specIds != null and specIds != ''">
+            and spec_id in
+            <foreach item="ShopOrderGoodSpecId" index="index" collection="specIds" open="(" separator="," close=")">
+                #{ShopOrderGoodSpecId}
+            </foreach>
+        </if>
+
+    </update>
+</mapper>

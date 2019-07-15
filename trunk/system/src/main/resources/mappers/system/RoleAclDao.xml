@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.RoleAclDao">
+	
+	<resultMap id="RoleAclResultMap" type="com.framework.loippi.entity.RoleAcl">
+		<id property="roleId" column="ROLE_ID" />
+		<result property="aclId" column="ACL_ID" />
+	</resultMap>
+
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 ROLE_ID  ,ACL_ID
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{roleId,jdbcType=BIGINT} , #{aclId,jdbcType=BIGINT} 
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="roleId != null">
+			AND ROLE_ID = #{roleId,jdbcType=BIGINT}
+		</if>
+		<if test="aclId != null">
+			AND ACL_ID = #{aclId,jdbcType=BIGINT}
+		</if>
+	</sql>
+	
+	<sql id="set_column">
+		<if test="aclId != null">
+			ACL_ID = #{aclId,jdbcType=BIGINT},
+		</if>
+		<if test="roleId != null">
+			ROLE_ID = #{roleId,jdbcType=BIGINT},
+		</if>
+	</sql>
+	
+	<select id="find" resultMap="RoleAclResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	T_SYSTEM_ROLE_ACLS
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<insert id="insert" parameterType="com.framework.loippi.entity.RoleAcl">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  
+	          SELECT LAST_INSERT_ID() AS ID    
+	    </selectKey>  
+		INSERT T_SYSTEM_ROLE_ACLS 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<update id="update" parameterType="com.framework.loippi.entity.RoleAcl">
+		UPDATE	T_SYSTEM_ROLE_ACLS
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<delete id="delete">
+		DELETE	FROM T_SYSTEM_ROLE_ACLS
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	
+	<delete id="deleteByAclId">
+		DELETE	FROM T_SYSTEM_ROLE_ACLS
+		WHERE	ACL_ID = #{aclId,jdbcType=BIGINT}
+	</delete>
+	
+	<delete id="deleteByRoleId">
+		DELETE	FROM T_SYSTEM_ROLE_ACLS
+		WHERE	ROLE_ID = #{roleId,jdbcType=BIGINT}
+	</delete>
+	
+	
+	
+	<delete id="deleteAll">
+		DELETE	FROM T_SYSTEM_ROLE_ACLS
+		WHERE	ID	IN
+    	<foreach item="RoleAclId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RoleAclId} 
+		</foreach>
+	</delete>
+	
+	<select id="findByParams" resultMap="RoleAclResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	T_SYSTEM_ROLE_ACLS
+		<where>
+			<include refid="where_column" />
+		</where>
+	</select>
+</mapper> 

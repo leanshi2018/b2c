@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.activity.ShopActivityOrderDao">
+
+    <resultMap id="BaseResultMap" type="com.framework.loippi.entity.activity.ShopActivityOrder">
+        <result column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="rule_id" property="ruleId"/>
+        <result column="activity_name" property="activityName" jdbcType="VARCHAR"/>
+        <result column="coupon_source" property="couponSource" jdbcType="VARCHAR"/>
+        <result column="coupon_type" property="couponType" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		id,
+		order_id,
+		activity_id,
+		rule_id,
+		activity_name,
+		coupon_source,
+		coupon_type
+	</sql>
+
+    <sql id="base_value_column">
+		#{id},#{orderId},#{activityId},#{ruleId},#{activityName},#{couponSource}, #{couponType}
+	</sql>
+
+    <sql id="whereStatement">
+        <where>
+            1 = 1
+            <if test="orderId != null ">
+                AND order_id = #{orderId}
+            </if>
+            <if test="activityId != null ">
+                AND activity_id = #{activityId}
+            </if>
+            <if test="ruleId != null">
+                AND rule_id = #{ruleId}
+            </if>
+            <if test="activityName != null and activityName != ''">
+                AND activity_name = #{activityName}
+            </if>
+            <if test="couponSource != null and couponSource != ''">
+                AND coupon_source = #{condition.couponSource}
+            </if>
+            <if test="couponType != null and couponType != ''">
+                AND coupon_type = #{couponType}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findShopActivityOrderPagerList" resultMap="BaseResultMap"
+            parameterType="com.framework.loippi.support.Pageable">
+
+        select * from shop_activity_order
+        <include refid="whereStatement"/>
+
+        <if test="orderBy == 0">
+            order by id desc
+        </if>
+        <if test="orderBy == 1">
+            order by id asc
+        </if>
+
+    </select>
+
+    <select id="findShopActivityOrderAllList" resultMap="BaseResultMap"
+            parameterType="com.framework.loippi.entity.activity.ShopActivityOrder">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from shop_activity_order
+        <if test="orderBy == 0">
+            order by id desc
+        </if>
+        <if test="orderBy == 1">
+            order by id asc
+        </if>
+    </select>
+
+    <select id="findShopActivityOrderByOrderId" resultMap="BaseResultMap" parameterType="Long">
+
+        select
+        <include refid="Base_Column_List"/>
+        from shop_activity_order c where order_id = #{id}
+
+    </select>
+
+    <delete id="deleteShopActivityOrderById" parameterType="Long">
+		delete from
+		shop_activity_order where id = #{id}
+	</delete>
+
+
+    <insert id="saveShopActivityOrder" parameterType="com.framework.loippi.entity.activity.ShopActivityOrder">
+
+        insert into shop_activity_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="id != null ">
+                id,
+            </if>
+            <if test="orderId != null ">
+                order_id,
+            </if>
+            <if test="activityId != null ">
+                activity_id,
+            </if>
+            <if test="ruleId != null ">
+                rule_id,
+            </if>
+            <if test="activityName != null and activityName != ''">
+                activity_name,
+            </if>
+            <if test="couponSource != null and couponSource != ''">
+                coupon_source,
+            </if>
+            <if test="couponType != null ">
+                coupon_type,
+            </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+
+            <if test="id != null ">
+                #{id},
+            </if>
+            <if test="orderId != null ">
+                #{orderId},
+            </if>
+            <if test="activityId != null ">
+                #{activityId},
+            </if>
+            <if test="ruleId != null ">
+                #{ruleId},
+            </if>
+            <if test="activityName != null and activityName != ''">
+                #{activityName},
+            </if>
+            <if test="couponSource != null and couponSource != ''">
+                #{couponSource},
+            </if>
+            <if test="couponType != null ">
+                #{couponType},
+            </if>
+        </trim>
+
+    </insert>
+
+    <insert id="insert" parameterType="com.framework.loippi.entity.activity.ShopActivityOrder">
+        INSERT shop_activity_order
+        (
+        <include refid="Base_Column_List"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM shop_activity_order
+        <include refid="whereStatement"/>
+    </select>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM shop_activity_order
+        <include refid="whereStatement"/>
+    </select>
+
+    <update id="updateShopActivityOrder" parameterType="com.framework.loippi.entity.activity.ShopActivityOrder">
+
+        update shop_activity_order
+        <set>
+            <if test="orderId != null '">
+                order_id = #{orderId},
+            </if>
+            <if test="activityId != null ">
+                activity_id = #{activityId},
+            </if>
+            <if test="ruleId != null">
+                rule_id = #{ruleId},
+            </if>
+            <if test="activityName != null and activityName != ''">
+                activity_name = #{activityName},
+            </if>
+            <if test="couponSource != null and couponSource != ''">
+                coupon_source = #{couponSource},
+            </if>
+            <if test="couponType != null ">
+                coupon_type = #{couponType},
+            </if>
+        </set>
+
+        WHERE id = #{id}
+
+    </update>
+
+</mapper>

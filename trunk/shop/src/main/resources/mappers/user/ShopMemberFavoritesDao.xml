@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.ShopMemberFavoritesDao">
+
+    <resultMap id="ShopMemberFavoritesResultMap" type="com.framework.loippi.entity.user.ShopMemberFavorites">
+        <result property="id" column="id"/>
+        <result property="favId" column="fav_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="specId" column="specId"/>
+        <result property="activityId" column="activityId"/>
+        <result property="favType" column="fav_type"/>
+        <result property="favTime" column="fav_time"/>
+        <result property="activitType" column="activitType"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,fav_id ,member_id ,fav_type ,fav_time ,specId,activityId,activitType
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{favId},#{memberId},#{favType},#{favTime},#{specId},#{activityId},#{activitType}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="favId != null and favId != ''">
+            AND fav_id = #{favId,jdbcType=BIGINT}
+        </if>
+        <if test="memberId != null and memberId != ''">
+            AND member_id = #{memberId,jdbcType=BIGINT}
+        </if>
+        <if test="favType != null and favType != ''">
+            AND fav_type = #{favType,jdbcType=INTEGER}
+        </if>
+        <if test="favTime != null and favTime != ''">
+            AND fav_time = #{favTime}
+        </if>
+        <if test="specId != null and specId != ''">
+            AND specId = #{specId}
+        </if>
+        <if test="activityId != null and activityId != ''">
+            AND activityId = #{activityId}
+        </if>
+
+        <if test="ids != null and ids != ''">
+            AND ID IN
+            <foreach item="ShopMemberFootprintsId" index="index" collection="ids" open="(" separator="," close=")">
+                #{ShopMemberFootprintsId}
+            </foreach>
+        </if>
+
+        <if test="favIds != null and favIds != ''">
+            AND fav_id IN
+            <foreach item="favId" index="index" collection="favIds" open="(" separator="," close=")">
+                #{favId}
+            </foreach>
+        </if>
+
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="favId != null">
+            fav_id = #{favId,jdbcType=BIGINT},
+        </if>
+        <if test="memberId != null">
+            member_id = #{memberId,jdbcType=BIGINT},
+        </if>
+        <if test="favType != null">
+            fav_type = #{favType,jdbcType=INTEGER},
+        </if>
+        <if test="favTime != null">
+            fav_time = #{favTime,jdbcType=},
+        </if>
+
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopMemberFavoritesResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_FAVORITES
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopMemberFavoritesResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_FAVORITES
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_MEMBER_FAVORITES
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.ShopMemberFavorites">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_MEMBER_FAVORITES
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.ShopMemberFavorites">
+        UPDATE SHOP_MEMBER_FAVORITES
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_MEMBER_FAVORITES
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!--根据对象删除记录-->
+    <delete id="deleteFav">
+        DELETE FROM SHOP_MEMBER_FAVORITES
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_MEMBER_FAVORITES
+        WHERE ID IN
+        <foreach item="ShopMemberFavoritesId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopMemberFavoritesId}
+        </foreach>
+    </delete>
+
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopMemberFavoritesResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_FAVORITES
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopMemberFavoritesResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_FAVORITES
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        <if test="orderBy != null">
+            order by fav_time desc
+        </if>
+    </select>
+    <!-- 分页查询收藏的商品-->
+    <select id="findGoodsByPage" resultType="com.framework.loippi.vo.fav.MemberGoodsFavVo">
+        SELECT
+        f.id , f.fav_id as favId ,f.specId ,f.activityId ,f.activitType,f.fav_type as favType,
+        s.goods_image as goodsImg , s.goods_name as goodsName,g.spec_goods_price AS goodsStorePrice,
+        sao.PRICE AS activityPrice,s.id as goodsId,
+        CASE
+        WHEN sao.PRICE IS NOT NULL and g.spec_goods_price IS NOT NULL
+        THEN g.spec_goods_price
+        WHEN g.spec_market_price IS NOT NULL
+        THEN g.spec_market_price
+        ELSE s.goods_market_price
+        END AS marketPrice,
+        CASE
+        WHEN sao.PRICE IS NOT NULL
+        THEN sao.PRICE
+        WHEN g.spec_goods_price IS NOT NULL
+        THEN g.spec_goods_price
+        ELSE s.goods_store_price
+        END AS price
+        FROM
+        SHOP_MEMBER_FAVORITES f
+        LEFT  JOIN SHOP_GOODS s on f.fav_id = s.id
+        LEFT JOIN shop_goods_spec g ON f.specId = g.id
+        LEFT JOIN shop_activity_object sao ON sao.object_id = g.id  and
+        EXISTS (select 1 from shop_activity sa where sa.id = sao.ACTIVITY_ID AND NOW() &lt;sa.end_time
+        <if test="isActivityGoods != null">
+            <!--AND (sa.ACTIVITY_TYPE = 60 or sa.ACTIVITY_TYPE = 10)-->
+            AND (sa.ACTIVITY_STATUS = 20)
+        </if>
+        )
+        left join shop_activity sa on
+        sao.ACTIVITY_ID = sa.id
+        where  1=1
+        <if test="memberId!=null">
+            and   f.member_id = #{memberId}
+        </if>
+        <if test="favType!=null">
+            and f.fav_type= #{favType}
+        </if>
+        <if test="activityId!=null">
+            and f.activityId = #{activityId}
+        </if>
+        <if test="favId!=null">
+            and  f.fav_type =#{favId}
+        </if>
+    </select>
+    <!-- 批量添加收藏的商品-->
+    <insert id="insertBatch" parameterType="java.util.List" >
+    insert into SHOP_MEMBER_FAVORITES
+    (id ,fav_id ,member_id ,fav_type ,fav_time,activityId)
+    values
+    <foreach collection="list" item="item" index="index"
+    separator=",">
+    (
+    #{item.id},#{item.favId},#{item.memberId},#{item.favType},#{item.favTime},#{item.activityId}
+    )
+    </foreach>
+    </insert>
+</mapper>

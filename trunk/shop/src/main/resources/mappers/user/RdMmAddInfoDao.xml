@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdMmAddInfoDao">
+	
+	<resultMap id="RdMmAddInfoResultMap" type="com.framework.loippi.entity.user.RdMmAddInfo">
+		<id property="aid" column="AID"  />
+		<result property="mmCode" column="MM_CODE" />
+		<result property="consigneeName" column="CONSIGNEE_NAME" />
+		<result property="mobile" column="MOBILE" />
+		<result property="phone" column="PHONE" />
+		<result property="defaultadd" column="DEFAULTADD" />
+		<result property="valid" column="VALID" />
+		<result property="addProvinceCode" column="ADD_PROVINCE_CODE" />
+		<result property="addCityCode" column="ADD_CITY_CODE" />
+		<result property="addCountryCode" column="ADD_COUNTRY_CODE" />
+		<result property="addTownCode" column="ADD_TOWN_CODE" />
+		<result property="addDetial" column="ADD_DETIAL" />
+		<result property="addPost" column="ADD_POST" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 AID ,MM_CODE ,CONSIGNEE_NAME ,MOBILE ,PHONE ,DEFAULTADD ,VALID ,ADD_PROVINCE_CODE ,ADD_CITY_CODE ,ADD_COUNTRY_CODE ,ADD_TOWN_CODE ,ADD_DETIAL ,ADD_POST 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{aid},#{mmCode},#{consigneeName},#{mobile},#{phone},#{defaultadd},#{valid},#{addProvinceCode},#{addCityCode},#{addCountryCode},#{addTownCode},#{addDetial},#{addPost}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="aid != null">
+			AND AID = #{aid,jdbcType=INTEGER}
+		</if>
+		<if test="mmCode != null">
+			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="consigneeName != null and consigneeName != ''">
+			AND CONSIGNEE_NAME = #{consigneeName,jdbcType=VARCHAR}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND MOBILE = #{mobile,jdbcType=VARCHAR}
+		</if>
+		<if test="phone != null and phone != ''">
+			AND PHONE = #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="defaultadd != null and defaultadd != ''">
+			AND DEFAULTADD = #{defaultadd,jdbcType=INTEGER}
+		</if>
+		<if test="valid != null and valid != ''">
+			AND VALID = #{valid,jdbcType=INTEGER}
+		</if>
+		<if test="addProvinceCode != null and addProvinceCode != ''">
+			AND ADD_PROVINCE_CODE = #{addProvinceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="addCityCode != null and addCityCode != ''">
+			AND ADD_CITY_CODE = #{addCityCode,jdbcType=VARCHAR}
+		</if>
+		<if test="addCountryCode != null and addCountryCode != ''">
+			AND ADD_COUNTRY_CODE = #{addCountryCode,jdbcType=VARCHAR}
+		</if>
+		<if test="addTownCode != null and addTownCode != ''">
+			AND ADD_TOWN_CODE = #{addTownCode,jdbcType=VARCHAR}
+		</if>
+		<if test="addDetial != null and addDetial != ''">
+			AND ADD_DETIAL = #{addDetial,jdbcType=VARCHAR}
+		</if>
+		<if test="addPost != null and addPost != ''">
+			AND ADD_POST = #{addPost,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="aid != null">
+			AID = #{aid,jdbcType=INTEGER},
+		</if>
+		<if test="mmCode != null ">
+			MM_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="consigneeName != null and consigneeName != ''">
+			CONSIGNEE_NAME = #{consigneeName,jdbcType=VARCHAR},
+		</if>
+		<if test="mobile != null and mobile != ''">
+			MOBILE = #{mobile,jdbcType=VARCHAR},
+		</if>
+		<if test="phone != null and phone != ''">
+			PHONE = #{phone,jdbcType=VARCHAR},
+		</if>
+		<if test="defaultadd != null">
+			DEFAULTADD = #{defaultadd,jdbcType=INTEGER},
+		</if>
+		<if test="valid != null">
+			VALID = #{valid,jdbcType=INTEGER},
+		</if>
+		<if test="addProvinceCode != null and addProvinceCode != ''">
+			ADD_PROVINCE_CODE = #{addProvinceCode,jdbcType=VARCHAR},
+		</if>
+		<if test="addCityCode != null and addCityCode != ''">
+			ADD_CITY_CODE = #{addCityCode,jdbcType=VARCHAR},
+		</if>
+		<if test="addCountryCode != null and addCountryCode != ''">
+			ADD_COUNTRY_CODE = #{addCountryCode,jdbcType=VARCHAR},
+		</if>
+		<if test="addTownCode != null and addTownCode != ''">
+			ADD_TOWN_CODE = #{addTownCode,jdbcType=VARCHAR},
+		</if>
+		<if test="addDetial != null and addDetial != ''">
+			ADD_DETIAL = #{addDetial,jdbcType=VARCHAR},
+		</if>
+		<if test="addPost != null and addPost != ''">
+			ADD_POST = #{addPost,jdbcType=VARCHAR},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdMmAddInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_ADD_INFO
+		WHERE	AID=#{aid}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdMmAddInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_ADD_INFO
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_MM_ADD_INFO
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmAddInfo">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="aid">
+	          SELECT LAST_INSERT_ID() AS aid
+	    </selectKey>
+		INSERT RD_MM_ADD_INFO 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdMmAddInfo">
+		UPDATE	RD_MM_ADD_INFO
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	AID = #{aid}
+	</update>
+	<!-- 修改 -->
+	<update id="updateMember" parameterType="com.framework.loippi.entity.user.RdMmAddInfo">
+		UPDATE RD_MM_ADD_INFO
+		<set>
+			<include refid="set_column"/>
+		</set>
+		WHERE MM_CODE = #{mmCode}
+	</update>
+
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_MM_ADD_INFO
+		WHERE		AID=#{aid}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_MM_ADD_INFO
+		WHERE	ID	IN
+    	<foreach item="RdMmAddInfoId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdMmAddInfoId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdMmAddInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_MM_ADD_INFO
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdMmAddInfoResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_MM_ADD_INFO
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

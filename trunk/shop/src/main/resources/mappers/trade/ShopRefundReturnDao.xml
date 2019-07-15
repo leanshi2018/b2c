@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.trade.ShopRefundReturnDao">
+
+    <resultMap id="shopRefundReturnResultMap" type="com.framework.loippi.entity.trade.ShopRefundReturn">
+        <id property="id" column="id"  />
+        <result property="orderId" column="order_id" />
+        <result property="orderSn" column="order_sn" />
+        <result property="refundSn" column="refund_sn" />
+        <result property="storeId" column="store_id" />
+        <result property="storeName" column="store_name" />
+        <result property="buyerId" column="buyer_id" />
+        <result property="buyerName" column="buyer_name" />
+        <result property="goodsNum" column="goods_num" />
+        <result property="rewardPointAmount" column="reward_point_amount" />
+        <result property="refundAmount" column="refund_amount" />
+        <result property="orderGoodsType" column="order_goods_type" />
+        <result property="refundType" column="refund_type" />
+        <result property="sellerState" column="seller_state" />
+        <result property="refundState" column="refund_state" />
+        <result property="returnType" column="return_type" />
+        <result property="orderLock" column="order_lock" />
+        <result property="goodsState" column="goods_state" />
+        <result property="createTime" column="create_time" />
+        <result property="sellerTime" column="seller_time" />
+        <result property="adminTime" column="admin_time" />
+        <result property="reasonId" column="reason_id" />
+        <result property="reasonInfo" column="reason_info" />
+        <result property="picInfo" column="pic_info" />
+        <result property="buyerMessage" column="buyer_message" />
+        <result property="sellerMessage" column="seller_message" />
+        <result property="adminMessage" column="admin_message" />
+        <result property="expressId" column="express_id" />
+        <result property="invoiceNo" column="invoice_no" />
+        <result property="shipTime" column="ship_time" />
+        <result property="delayTime" column="delay_time" />
+        <result property="receiveTime" column="receive_time" />
+        <result property="receiveMessage" column="receive_message" />
+        <result property="commisRate" column="commis_rate" />
+        <result property="expressName" column="express_name" />
+        <result property="batchNo" column="batch_no" />
+        <result property="brandName" column="brand_name" />
+        <result property="expressCode" column="express_code" />
+        <result property="buyerMobile" column="buyer_mobile" />
+        <result property="ppv" column="ppv" />
+    </resultMap>
+
+    <resultMap id="shopRefundReturnVoResultMap" type="com.framework.loippi.vo.refund.ShopRefundReturnVo">
+        <collection property="returnLogList" column="{returnId=id, returnState=refund_state}" javaType="arraylist"
+                    ofType="com.framework.loippi.entity.trade.ShopReturnLog"
+                    select="com.framework.loippi.dao.trade.ShopReturnLogDao.findByParams">
+        </collection>
+    </resultMap>
+    <resultMap id="shopRefundReturnGoodsVoResultMap" type="com.framework.loippi.vo.refund.ReturnGoodsVo"
+               extends="shopRefundReturnResultMap">
+        <collection property="shopReturnOrderGoodsList" ofType="com.framework.loippi.entity.trade.ShopReturnOrderGoods"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao.listByReturnOrderId">
+        </collection>
+    </resultMap>
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,order_id ,order_sn ,refund_sn ,store_id ,store_name ,buyer_id ,buyer_name ,goods_num ,reward_point_amount ,refund_amount  ,order_goods_type ,refund_type ,seller_state ,refund_state ,return_type,brand_name
+		 ,order_lock ,goods_state ,create_time ,seller_time ,admin_time ,reason_id ,reason_info ,pic_info ,buyer_message ,seller_message ,admin_message ,express_id ,invoice_no ,ship_time ,delay_time ,receive_time ,receive_message ,commis_rate ,express_name ,batch_no,express_code,buyer_mobile,ppv
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{orderId},#{orderSn},#{refundSn},#{storeId},#{storeName},#{buyerId},#{buyerName},#{goodsNum},#{rewardPointAmount},#{refundAmount},#{orderGoodsType},#{refundType},#{sellerState},#{refundState}
+		 ,#{returnType},#{brandName},#{orderLock},#{goodsState},#{createTime},#{sellerTime},#{adminTime},#{reasonId},#{reasonInfo},#{picInfo},#{buyerMessage},#{sellerMessage},#{adminMessage},#{expressId},#{invoiceNo},#{shipTime},#{delayTime},#{receiveTime},#{receiveMessage},#{commisRate},#{expressName},#{batchNo},#{expressCode},#{buyerMobile},#{ppv}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=VARCHAR}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND order_id = #{orderId,jdbcType=VARCHAR}
+        </if>
+        <if test="orderSn != null and orderSn != ''">
+            AND order_sn = #{orderSn,jdbcType=VARCHAR}
+        </if>
+        <if test="refundSn != null and refundSn != ''">
+            AND refund_sn = #{refundSn,jdbcType=VARCHAR}
+        </if>
+        <if test="storeId != null">
+            AND store_id = #{storeId}
+        </if>
+        <if test="storeName != null and storeName != ''">
+            AND store_name = #{storeName,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerId != null and buyerId != ''">
+            AND buyer_id = #{buyerId,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerName != null and buyerName != ''">
+            AND buyer_name = #{buyerName,jdbcType=VARCHAR}
+        </if>
+
+        <if test="goodsNum != null">
+            AND goods_num = #{goodsNum,jdbcType=INTEGER}
+        </if>
+        <if test="rewardPointAmount != null">
+            AND reward_point_amount = #{rewardPointAmount,jdbcType=DECIMAL}
+        </if>
+
+        <if test="refundAmount != null">
+            AND refund_amount = #{refundAmount,jdbcType=DECIMAL}
+        </if>
+
+        <if test="orderGoodsType != null">
+            AND order_goods_type = #{orderGoodsType,jdbcType=INTEGER}
+        </if>
+        <if test="refundType != null">
+            AND refund_type = #{refundType,jdbcType=INTEGER}
+        </if>
+        <if test="sellerState != null">
+            AND seller_state = #{sellerState,jdbcType=INTEGER}
+        </if>
+        <if test="refundState != null">
+            AND refund_state = #{refundState,jdbcType=INTEGER}
+        </if>
+        <if test="returnType != null">
+            AND return_type = #{returnType,jdbcType=INTEGER}
+        </if>
+        <if test="orderLock != null">
+            AND order_lock = #{orderLock,jdbcType=INTEGER}
+        </if>
+        <if test="goodsState != null">
+            AND goods_state = #{goodsState,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null">
+            AND create_time = #{createTime,jdbcType=BIGINT}
+        </if>
+        <if test="sellerTime != null">
+            AND seller_time = #{sellerTime,jdbcType=BIGINT}
+        </if>
+        <if test="adminTime != null">
+            AND admin_time = #{adminTime,jdbcType=BIGINT}
+        </if>
+        <if test="reasonId != null and reasonId != ''">
+            AND reason_id = #{reasonId,jdbcType=VARCHAR}
+        </if>
+        <if test="reasonInfo != null and reasonInfo != ''">
+            AND reason_info = #{reasonInfo,jdbcType=VARCHAR}
+        </if>
+        <if test="picInfo != null and picInfo != ''">
+            AND pic_info = #{picInfo,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerMessage != null and buyerMessage != ''">
+            AND buyer_message = #{buyerMessage,jdbcType=VARCHAR}
+        </if>
+        <if test="sellerMessage != null and sellerMessage != ''">
+            AND seller_message = #{sellerMessage,jdbcType=VARCHAR}
+        </if>
+        <if test="adminMessage != null and adminMessage != ''">
+            AND admin_message = #{adminMessage,jdbcType=VARCHAR}
+        </if>
+        <if test="expressId != null and expressId != ''">
+            AND express_id = #{expressId,jdbcType=VARCHAR}
+        </if>
+        <if test="invoiceNo != null and invoiceNo != ''">
+            AND invoice_no = #{invoiceNo,jdbcType=VARCHAR}
+        </if>
+        <if test="shipTime != null">
+            AND ship_time = #{shipTime,jdbcType=BIGINT}
+        </if>
+        <if test="delayTime != null">
+            AND delay_time = #{delayTime,jdbcType=BIGINT}
+        </if>
+        <if test="receiveTime != null">
+            AND receive_time = #{receiveTime,jdbcType=BIGINT}
+        </if>
+        <if test="receiveMessage != null and receiveMessage != ''">
+            AND receive_message = #{receiveMessage,jdbcType=VARCHAR}
+        </if>
+        <if test="commisRate != null">
+            AND commis_rate = #{commisRate,jdbcType=INTEGER}
+        </if>
+        <if test="expressName != null and expressName != ''">
+            AND express_name = #{expressName,jdbcType=VARCHAR}
+        </if>
+        <if test="batchNo != null and batchNo != ''">
+            AND batch_no = #{batchNo,jdbcType=VARCHAR}
+        </if>
+        <if test="refundSnKeyWord != null and refundSnKeyWord != ''">
+            and refund_sn like CONCAT('%',#{refundSnKeyWord},'%')
+        </if>
+        <if test="notApproved != null and notApproved != ''">
+            AND seller_state not in (1 , 2 , 4 , 5 , 6)
+        </if>
+        <if test="brandName != null and brandName != ''">
+            AND brand_name = #{brandName}
+        </if>
+        <if test="expressCode != null and expressCode != ''">
+            AND express_code = #{expressCode}
+        </if>
+        <if test="buyerMobile != null and buyerMobile != ''">
+            AND buyer_mobile = #{buyerMobile}
+        </if>
+        <if test="ppv != null and ppv != ''">
+            AND ppv = #{ppv}
+        </if>
+        <if test="keyWordMobile != null and keyWordMobile != ''">
+            AND buyer_mobile like CONCAT('%',#{keyWordMobile},'%')
+        </if>
+        <if test="keyWordOrderId != null and keyWordOrderId != ''">
+            AND order_sn like CONCAT('%',#{keyWordOrderId},'%')
+        </if>
+        <if test="keyWordMemberId != null and keyWordMemberId != ''">
+            AND buyer_id like CONCAT('%',#{keyWordMemberId},'%')
+        </if>
+        <if test="startTime !=null and startTime != ''">
+        <![CDATA[and create_time >= #{startTime}]]>
+        </if>
+        <if test="endTime !=null and endTime != ''">
+        <![CDATA[and create_time <= #{endTime}]]>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+            id = #{id,jdbcType=VARCHAR},
+        </if>
+        <if test="orderId != null and orderId != ''">
+            order_id = #{orderId,jdbcType=VARCHAR},
+        </if>
+        <if test="orderSn != null and orderSn != ''">
+            order_sn = #{orderSn,jdbcType=VARCHAR},
+        </if>
+        <if test="refundSn != null and refundSn != ''">
+            refund_sn = #{refundSn,jdbcType=VARCHAR},
+        </if>
+        <if test="storeId != null and storeId != ''">
+            store_id = #{storeId,jdbcType=VARCHAR},
+        </if>
+        <if test="storeName != null and storeName != ''">
+            store_name = #{storeName,jdbcType=VARCHAR},
+        </if>
+        <if test="buyerId != null and buyerId != ''">
+            buyer_id = #{buyerId,jdbcType=VARCHAR},
+        </if>
+        <if test="buyerName != null and buyerName != ''">
+            buyer_name = #{buyerName,jdbcType=VARCHAR},
+        </if>
+
+        <if test="goodsNum != null">
+            goods_num = #{goodsNum,jdbcType=INTEGER},
+        </if>
+        <if test="rewardPointAmount != null">
+            reward_point_amount = #{rewardPointAmount,jdbcType=DECIMAL},
+        </if>
+
+        <if test="refundAmount != null">
+            refund_amount = #{refundAmount,jdbcType=DECIMAL},
+        </if>
+
+        <if test="orderGoodsType != null">
+            order_goods_type = #{orderGoodsType,jdbcType=INTEGER},
+        </if>
+        <if test="refundType != null">
+            refund_type = #{refundType,jdbcType=INTEGER},
+        </if>
+        <if test="sellerState != null">
+            seller_state = #{sellerState,jdbcType=INTEGER},
+        </if>
+        <if test="refundState != null">
+            refund_state = #{refundState,jdbcType=INTEGER},
+        </if>
+        <if test="returnType != null">
+            return_type = #{returnType,jdbcType=INTEGER},
+        </if>
+        <if test="orderLock != null">
+            order_lock = #{orderLock,jdbcType=INTEGER},
+        </if>
+        <if test="goodsState != null">
+            goods_state = #{goodsState,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=BIGINT},
+        </if>
+        <if test="sellerTime != null">
+            seller_time = #{sellerTime,jdbcType=BIGINT},
+        </if>
+        <if test="adminTime != null">
+            admin_time = #{adminTime,jdbcType=BIGINT},
+        </if>
+        <if test="reasonId != null and reasonId != ''">
+            reason_id = #{reasonId,jdbcType=VARCHAR},
+        </if>
+        <if test="reasonInfo != null and reasonInfo != ''">
+            reason_info = #{reasonInfo,jdbcType=VARCHAR},
+        </if>
+        <if test="picInfo != null and picInfo != ''">
+            pic_info = #{picInfo,jdbcType=VARCHAR},
+        </if>
+        <if test="buyerMessage != null and buyerMessage != ''">
+            buyer_message = #{buyerMessage,jdbcType=VARCHAR},
+        </if>
+        <if test="sellerMessage != null and sellerMessage != ''">
+            seller_message = #{sellerMessage,jdbcType=VARCHAR},
+        </if>
+        <if test="adminMessage != null and adminMessage != ''">
+            admin_message = #{adminMessage,jdbcType=VARCHAR},
+        </if>
+        <if test="expressId != null and expressId != ''">
+            express_id = #{expressId,jdbcType=VARCHAR},
+        </if>
+        <if test="invoiceNo != null and invoiceNo != ''">
+            invoice_no = #{invoiceNo,jdbcType=VARCHAR},
+        </if>
+        <if test="shipTime != null">
+            ship_time = #{shipTime,jdbcType=BIGINT},
+        </if>
+        <if test="delayTime != null">
+            delay_time = #{delayTime,jdbcType=BIGINT},
+        </if>
+        <if test="receiveTime != null">
+            receive_time = #{receiveTime,jdbcType=BIGINT},
+        </if>
+        <if test="receiveMessage != null and receiveMessage != ''">
+            receive_message = #{receiveMessage,jdbcType=VARCHAR},
+        </if>
+        <if test="commisRate != null">
+            commis_rate = #{commisRate,jdbcType=INTEGER},
+        </if>
+        <if test="expressName != null and expressName != ''">
+            express_name = #{expressName,jdbcType=VARCHAR},
+        </if>
+        <if test="batchNo != null and batchNo != ''">
+            batch_no = #{batchNo,jdbcType=VARCHAR},
+        </if>
+        <if test="buyerMobile != null and buyerMobile != ''">
+             buyer_mobile = #{buyerMobile},
+        </if>
+        <if test="ppv != null and ppv != ''">
+             ppv = #{ppv},
+        </if>
+        <if test="specName != null and specName != ''">
+            spec_name = #{specName,jdbcType=VARCHAR},
+        </if>
+        <if test="brandName != null and brandName != ''">
+             brand_name = #{brandName},
+        </if>
+        <if test="expressCode != null and expressCode != ''">
+            express_code = #{expressCode},
+        </if>
+
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="shopRefundReturnResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_REFUND_RETURN
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="shopRefundReturnResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_REFUND_RETURN
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_REFUND_RETURN
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.trade.ShopRefundReturn">
+        set names utf8mb4;
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_REFUND_RETURN
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.trade.ShopRefundReturn">
+        set names utf8mb4;
+        UPDATE SHOP_REFUND_RETURN
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_REFUND_RETURN
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_REFUND_RETURN
+        WHERE ID IN
+        <foreach item="shopRefundReturnId" index="index" collection="ids" open="(" separator="," close=")">
+            #{shopRefundReturnId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="shopRefundReturnResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_REFUND_RETURN
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+    <!--查询订单列表（包括商品信息)-->
+    <select id="listRefundReturnVoWithGoods" resultMap="shopRefundReturnGoodsVoResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_REFUND_RETURN
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="shopRefundReturnResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_REFUND_RETURN
+        <where>1=1
+            <include refid="where_column"/>
+            <if test="buyerId != null">
+                and buyer_id = #{buyerId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getShopRefundReturnVoWithLog" resultMap="shopRefundReturnVoResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_REFUND_RETURN
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+    <!--<select id="findOrderGoodsAdminVoList" resultMap="shopRefundReturnResultMap2">-->
+    <!--select-->
+    <!--srr.refund_sn,-->
+    <!--srr.order_id,-->
+    <!--so.order_sn,-->
+    <!--so.buyer_name,-->
+    <!--srr.goods_name,-->
+    <!--srr.refund_amount,-->
+    <!--soa.address,-->
+    <!--soa.true_name,-->
+    <!--soa.mob_phone,-->
+    <!--srr.create_time-->
+    <!--from-->
+    <!--shop_refund_return srr left join shop_order so on-->
+    <!--so.id = srr.order_id left join shop_order_address soa on-->
+    <!--soa.id = so.address_id-->
+    <!--where-->
+    <!--1 = 1-->
+    <!--<if test="accountName !=null and accountName != ''">-->
+    <!--and so.buyer_name LIKE CONCAT('%', #{accountName},'%')-->
+    <!--</if>-->
+    <!--<if test="orderSn != null and orderSn != ''">-->
+    <!--and so.order_sn LIKE CONCAT('%', #{orderSn}, '%')-->
+    <!--</if>-->
+    <!--<if test="refundSn !=null and refundSn != ''">-->
+    <!--and srr.refund_sn LIKE CONCAT('%', #{refundSn}, '%');-->
+    <!--</if>-->
+    <!--<if test="searchStartTime !=null and searchEndTime != ''">-->
+    <!--<![CDATA[and srr.admin_time >= #{searchStartTime}]]>-->
+    <!--</if>-->
+    <!--<if test="searchEndTime != null and searchEndTime != ''">-->
+    <!--<![CDATA[and srr.admin_time<= #{searchEndTime}]]>-->
+    <!--</if>-->
+    <!--</select>-->
+
+</mapper> 

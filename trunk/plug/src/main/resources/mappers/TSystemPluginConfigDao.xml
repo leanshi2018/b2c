@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.TSystemPluginConfigDao">
+
+    <resultMap id="TSystemPluginConfigResultMap" type="com.framework.loippi.entity.TSystemPluginConfig">
+        <id property="id" column="ID"/>
+        <result property="pluginId" column="PLUGIN_ID"/>
+        <result property="isEnabled" column="IS_ENABLED"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 ID ,PLUGIN_ID ,IS_ENABLED 
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{pluginId},#{isEnabled}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND ID = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="pluginId != null and pluginId != ''">
+            AND PLUGIN_ID = #{pluginId,jdbcType=VARCHAR}
+        </if>
+        <if test="isEnabled != null and isEnabled != ''">
+            AND IS_ENABLED = #{isEnabled,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            ID = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="pluginId != null and pluginId != ''">
+            PLUGIN_ID = #{pluginId,jdbcType=VARCHAR},
+        </if>
+        <if test="isEnabled != null">
+            IS_ENABLED = #{isEnabled,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="TSystemPluginConfigResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_PLUGIN_CONFIG
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="TSystemPluginConfigResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_PLUGIN_CONFIG
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM T_SYSTEM_PLUGIN_CONFIG
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.TSystemPluginConfig">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT T_SYSTEM_PLUGIN_CONFIG
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.TSystemPluginConfig">
+        UPDATE T_SYSTEM_PLUGIN_CONFIG
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM T_SYSTEM_PLUGIN_CONFIG
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM T_SYSTEM_PLUGIN_CONFIG
+        WHERE ID IN
+        <foreach item="TSystemPluginConfigId" index="index" collection="ids" open="(" separator="," close=")">
+            #{TSystemPluginConfigId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="TSystemPluginConfigResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_PLUGIN_CONFIG
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="TSystemPluginConfigResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_PLUGIN_CONFIG
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper> 

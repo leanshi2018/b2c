@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.order.ShopOrderLogisticsDao">
+	
+	<resultMap id="ShopOrderLogisticsResultMap" type="com.framework.loippi.entity.order.ShopOrderLogistics">
+		<id property="id" column="id"  />
+		<result property="orderId" column="order_id" />
+		<result property="goodsId" column="goods_id" />
+		<result property="goodsName" column="goods_name" />
+		<result property="specId" column="spec_id" />
+		<result property="specInfo" column="spec_info" />
+		<result property="goodsType" column="goods_type" />
+		<result property="goodsImage" column="goods_image" />
+		<result property="ppv" column="ppv" />
+		<result property="price" column="price" />
+		<result property="shippingExpressId" column="shipping_express_id" />
+		<result property="shippingExpressCode" column="shipping_express_code" />
+		<result property="shippingCode" column="shipping_code" />
+		<result property="goodsNum" column="goods_num" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 id ,order_id ,goods_id ,goods_name ,spec_id ,spec_info ,goods_type ,goods_image ,ppv ,price ,shipping_express_id ,shipping_express_code ,shipping_code  ,goods_num
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{id},#{orderId},#{goodsId},#{goodsName},#{specId},#{specInfo},#{goodsType},#{goodsImage},#{ppv},#{price},#{shippingExpressId},#{shippingExpressCode},#{shippingCode},#{goodsNum}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null and id != ''">
+			AND id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="orderId != null and orderId != ''">
+			AND order_id = #{orderId,jdbcType=BIGINT}
+		</if>
+		<if test="goodsId != null and goodsId != ''">
+			AND goods_id = #{goodsId,jdbcType=BIGINT}
+		</if>
+		<if test="goodsName != null and goodsName != ''">
+			AND goods_name = #{goodsName,jdbcType=VARCHAR}
+		</if>
+		<if test="specId != null and specId != ''">
+			AND spec_id = #{specId,jdbcType=BIGINT}
+		</if>
+		<if test="specInfo != null and specInfo != ''">
+			AND spec_info = #{specInfo,jdbcType=VARCHAR}
+		</if>
+		<if test="goodsType != null and goodsType != ''">
+			AND goods_type = #{goodsType,jdbcType=INTEGER}
+		</if>
+		<if test="goodsImage != null and goodsImage != ''">
+			AND goods_image = #{goodsImage,jdbcType=VARCHAR}
+		</if>
+		<if test="ppv != null and ppv != ''">
+			AND ppv = #{ppv,jdbcType=DECIMAL}
+		</if>
+		<if test="price != null and price != ''">
+			AND price = #{price,jdbcType=DECIMAL}
+		</if>
+		<if test="shippingExpressId != null and shippingExpressId != ''">
+			AND shipping_express_id = #{shippingExpressId,jdbcType=BIGINT}
+		</if>
+		<if test="shippingExpressCode != null and shippingExpressCode != ''">
+			AND shipping_express_code = #{shippingExpressCode,jdbcType=VARCHAR}
+		</if>
+		<if test="shippingCode != null and shippingCode != ''">
+			AND shipping_code = #{shippingCode,jdbcType=VARCHAR}
+		</if>
+		<if test="goodsNum != null and goodsNum != ''">
+			AND goods_num = #{goodsNum}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="id != null">
+			id = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="orderId != null">
+			order_id = #{orderId,jdbcType=BIGINT},
+		</if>
+		<if test="goodsId != null">
+			goods_id = #{goodsId,jdbcType=BIGINT},
+		</if>
+		<if test="goodsName != null and goodsName != ''">
+			goods_name = #{goodsName,jdbcType=VARCHAR},
+		</if>
+		<if test="specId != null">
+			spec_id = #{specId,jdbcType=BIGINT},
+		</if>
+		<if test="specInfo != null and specInfo != ''">
+			spec_info = #{specInfo,jdbcType=VARCHAR},
+		</if>
+		<if test="goodsType != null">
+			goods_type = #{goodsType,jdbcType=INTEGER},
+		</if>
+		<if test="goodsImage != null and goodsImage != ''">
+			goods_image = #{goodsImage,jdbcType=VARCHAR},
+		</if>
+		<if test="ppv != null">
+			ppv = #{ppv,jdbcType=DECIMAL},
+		</if>
+		<if test="price != null">
+			price = #{price,jdbcType=DECIMAL},
+		</if>
+		<if test="shippingExpressId != null">
+			shipping_express_id = #{shippingExpressId,jdbcType=BIGINT},
+		</if>
+		<if test="shippingExpressCode != null and shippingExpressCode != ''">
+			shipping_express_code = #{shippingExpressCode,jdbcType=VARCHAR},
+		</if>
+		<if test="shippingCode != null and shippingCode != ''">
+			shipping_code = #{shippingCode,jdbcType=VARCHAR},
+		</if>
+		<if test="goodsNum != null and goodsNum != ''">
+			 goods_num = #{goodsNum},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="ShopOrderLogisticsResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	SHOP_ORDER_LOGISTICS
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="ShopOrderLogisticsResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	SHOP_ORDER_LOGISTICS
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM SHOP_ORDER_LOGISTICS
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.order.ShopOrderLogistics">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  
+	          SELECT LAST_INSERT_ID() AS ID    
+	    </selectKey>  
+		INSERT SHOP_ORDER_LOGISTICS 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.order.ShopOrderLogistics">
+		UPDATE	SHOP_ORDER_LOGISTICS
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM SHOP_ORDER_LOGISTICS
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM SHOP_ORDER_LOGISTICS
+		WHERE	ID	IN
+    	<foreach item="ShopOrderLogisticsId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{ShopOrderLogisticsId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="ShopOrderLogisticsResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	SHOP_ORDER_LOGISTICS
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="ShopOrderLogisticsResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM SHOP_ORDER_LOGISTICS
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

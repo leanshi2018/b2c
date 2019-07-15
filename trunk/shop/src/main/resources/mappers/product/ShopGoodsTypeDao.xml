@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopGoodsTypeDao">
+
+    <resultMap id="ShopGoodsTypeResultMap" type="com.framework.loippi.entity.product.ShopGoodsType">
+        <id property="id" column="id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="typeSort" column="type_sort"/>
+        <result property="stParentId" column="st_parent_id"/>
+        <result property="stIdpath" column="st_idpath"/>
+        <result property="expenScale" column="expen_scale"/>
+        <result property="openCustomSpec" column="open_custom_spec"/>
+        <result property="openCustomAttr" column="open_custom_attr"/>
+        <collection property="brandList" ofType="com.framework.loippi.entity.product.ShopGoodsTypeBrand"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.product.ShopGoodsTypeBrandDao.findByTypes">
+        </collection>
+        <collection property="specList" ofType="com.framework.loippi.entity.product.ShopGoodsTypeSpec"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.product.ShopGoodsTypeSpecDao.findByTypes">
+        </collection>
+        <collection property="specVos" ofType="com.framework.loippi.entity.common.ShopCommonSpec"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.common.ShopCommonSpecDao.findListByType">
+        </collection>
+        <collection property="brandListByType" ofType="com.framework.loippi.entity.product.ShopGoodsBrand"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.product.ShopGoodsBrandDao.findByTpypeId">
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="ShopGoodsTypeResultMapSimple" type="com.framework.loippi.entity.product.ShopGoodsType">
+        <id property="id" column="id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="typeSort" column="type_sort"/>
+        <result property="stParentId" column="st_parent_id"/>
+        <result property="stIdpath" column="st_idpath"/>
+        <result property="expenScale" column="expen_scale"/>
+        <result property="openCustomSpec" column="open_custom_spec"/>
+        <result property="openCustomAttr" column="open_custom_attr"/>
+    </resultMap>
+
+    <resultMap id="ShopGoodsTypeResultMap2" type="com.framework.loippi.entity.product.ShopGoodsType">
+        <id property="id" column="id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="typeSort" column="type_sort"/>
+        <result property="stParentId" column="st_parent_id"/>
+        <result property="stIdpath" column="st_idpath"/>
+        <result property="expenScale" column="expen_scale"/>
+        <result property="openCustomSpec" column="open_custom_spec"/>
+        <result property="openCustomAttr" column="open_custom_attr"/>
+        <collection property="brandList" ofType="com.framework.loippi.entity.product.ShopGoodsTypeBrand"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.product.ShopGoodsTypeBrandDao.findByTypes">
+        </collection>
+    </resultMap>
+
+    <resultMap id="ShopGoodsTypeResultMap3" type="com.framework.loippi.entity.product.ShopGoodsBrand">
+        <id property="id" column="id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="brandClass" column="brand_class"/>
+        <result property="brandPic" column="brand_pic"/>
+        <result property="brandSort" column="brand_sort"/>
+        <result property="brandRecommend" column="brand_recommend"/>
+        <result property="storeId" column="store_id"/>
+        <result property="brandApply" column="brand_apply"/>
+        <result property="classId" column="class_id"/>
+        <result property="isDel" column="is_del"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="pinyin" column="pinyin"/>
+        <result property="brandCountry" column="brand_Country"/>
+        <result property="brandStatePic" column="brand_StatePic"/>
+        <result property="description" column="description"/>
+
+    </resultMap>
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,type_name ,type_sort ,st_parent_id ,st_idpath ,expen_scale ,open_custom_spec ,open_custom_attr ,description
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{typeName},#{typeSort},#{stParentId},#{stIdpath},#{expenScale},#{openCustomSpec},#{openCustomAttr},#{description}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="typeName != null and typeName != ''">
+            AND type_name = #{typeName,jdbcType=VARCHAR}
+        </if>
+        <if test="typeSort != null and typeSort != ''">
+            AND type_sort = #{typeSort,jdbcType=INTEGER}
+        </if>
+        <if test="stParentId != null and stParentId != ''">
+            AND st_parent_id = #{stParentId,jdbcType=BIGINT}
+        </if>
+        <if test="stIdpath != null and stIdpath != ''">
+            AND st_idpath = #{stIdpath,jdbcType=VARCHAR}
+        </if>
+        <if test="expenScale != null and expenScale != ''">
+            AND expen_scale = #{expenScale}
+        </if>
+        <if test="openCustomSpec != null and openCustomSpec != ''">
+            AND open_custom_spec = #{openCustomSpec,jdbcType=INTEGER}
+        </if>
+        <if test="description != null and description != ''">
+            AND description = #{description,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="typeName != null and typeName != ''">
+            type_name = #{typeName,jdbcType=VARCHAR},
+        </if>
+        <if test="typeSort != null">
+            type_sort = #{typeSort,jdbcType=INTEGER},
+        </if>
+        <if test="stParentId != null">
+            st_parent_id = #{stParentId,jdbcType=BIGINT},
+        </if>
+        <if test="stIdpath != null and stIdpath != ''">
+            st_idpath = #{stIdpath,jdbcType=VARCHAR},
+        </if>
+        <if test="expenScale != null">
+            expen_scale = #{expenScale,jdbcType=},
+        </if>
+        <if test="openCustomSpec != null">
+            open_custom_spec = #{openCustomSpec,jdbcType=INTEGER},
+        </if>
+        <if test="openCustomAttr != null">
+            open_custom_attr = #{openCustomAttr,jdbcType=INTEGER},
+        </if>
+        <if test="openCustomAttr != null">
+            open_custom_attr = #{openCustomAttr,jdbcType=INTEGER},
+        </if>
+        <if test="description != null">
+            description = #{description,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="findBrandList" resultMap="ShopGoodsTypeResultMap3">
+        select bd.*,tbd.type_id AS typeId
+        from shop_goods_brand bd left JOIN shop_goods_type_brand tbd ON bd.id=tbd.brand_id where 1=1
+        <if test="typeIds != null">
+            AND tbd.type_id in
+            <foreach collection="typeIds" open="(" separator="," close=")" item="typeId">#{typeId}</foreach>
+        </if>
+        GROUP BY bd.brand_name
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopGoodsTypeResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopGoodsTypeResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE
+    </select>
+
+    <select id="findAllSimple" resultMap="ShopGoodsTypeResultMapSimple">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_GOODS_TYPE
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopGoodsType">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_GOODS_TYPE
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopGoodsType">
+        UPDATE SHOP_GOODS_TYPE
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_GOODS_TYPE
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_GOODS_TYPE
+        WHERE ID IN
+        <foreach item="ShopGoodsTypeId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopGoodsTypeId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopGoodsTypeResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        ORDER BY type_sort
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopGoodsTypeResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        ORDER BY type_sort
+    </select>
+
+    <select id="findSimpleByPage" resultMap="ShopGoodsTypeResultMapSimple">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        ORDER BY type_sort
+    </select>
+
+
+    <!--关联查询-->
+    <select id="selectTypeFetchOther" resultMap="ShopGoodsTypeResultMap">
+        SELECT
+        *
+        FROM
+        SHOP_GOODS_TYPE gt
+        WHERE
+        gt.id = #{typeId}
+    </select>
+
+</mapper> 

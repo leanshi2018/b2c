@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.walet.ShopWalletLogDao">
+
+    <resultMap id="ShopWalletLogResultMap" type="com.framework.loippi.entity.walet.ShopWalletLog">
+        <id property="id" column="id"/>
+        <result property="lgMemberId" column="lg_member_id"/>
+        <result property="lgMemberName" column="lg_member_name"/>
+        <result property="lgAdminName" column="lg_admin_name"/>
+        <result property="lgType" column="lg_type"/>
+        <result property="lgAvAmount" column="lg_av_amount"/>
+        <result property="lgFreezeAmount" column="lg_freeze_amount"/>
+        <result property="lgAddAmount" column="lg_add_amount"/>
+        <result property="lgRdeAmount" column="lg_rde_amount"/>
+        <result property="createTime" column="create_time"/>
+        <result property="lgDesc" column="lg_desc"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="storeId" column="store_id"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,lg_member_id ,lg_member_name ,lg_admin_name ,lg_type ,lg_av_amount ,lg_freeze_amount ,lg_add_amount ,lg_rde_amount ,create_time ,lg_desc ,order_sn ,store_id
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{lgMemberId},#{lgMemberName},#{lgAdminName},#{lgType},#{lgAvAmount},#{lgFreezeAmount},#{lgAddAmount},#{lgRdeAmount},#{createTime},#{lgDesc},#{orderSn},#{storeId}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="lgMemberId != null and lgMemberId != ''">
+            AND lg_member_id = #{lgMemberId,jdbcType=BIGINT}
+        </if>
+        <!--<if test="is_lg_add_rde != null or is_lg_add_rde != ''">-->
+        <!--<if test="is_lg_add_rde == 0">-->
+        <!--and lg_rde_amount is null-->
+        <!--</if>-->
+        <!--<if test="is_lg_add_rde == 1">-->
+        <!--and lg_add_amount is null-->
+        <!--</if>-->
+        <!--</if>-->
+
+        <if test="lgType != null and lgType != ''">
+            AND lg_type = #{lgType,jdbcType=VARCHAR}
+        </if>
+        <if test="lgTypes != null and lgTypes != ''">
+            AND lg_type in
+            <foreach item="typeItem" index="index" collection="lgTypes" open="(" separator="," close=")">
+                '${typeItem}'
+            </foreach>
+        </if>
+        <if test="searchStartTime != null">
+            AND date_format(create_time, '%Y-%m-%d') >= date_format(#{searchStartTime}, '%Y-%m-%d')
+        </if>
+        <if test="searchEndTime != null">
+            AND date_format(#{searchEndTime}, '%Y-%m-%d') >= date_format(create_time, '%Y-%m-%d')
+        </if>
+        <if test="lgDesc != null and lgDesc != ''">
+            AND lg_desc = #{lgDesc,jdbcType=VARCHAR}
+        </if>
+        <if test="orderSn != null">
+            AND order_sn = #{orderSn,jdbcType=VARCHAR}
+        </if>
+        <if test="lgTypesParam != null and lgTypesParam != ''">
+            AND lg_type in
+            <foreach collection="lgTypesParam" index="index" open="(" separator="," close=")" item="typeItem">
+                #{
+                 lgTypesParam[${index}]}
+            </foreach>
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND store_id = #{storeId,jdbcType=BIGINT}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="lgMemberId != null">
+            lg_member_id = #{lgMemberId,jdbcType=BIGINT},
+        </if>
+        <if test="lgMemberName != null and lgMemberName != ''">
+            lg_member_name = #{lgMemberName,jdbcType=VARCHAR},
+        </if>
+        <if test="lgAdminName != null and lgAdminName != ''">
+            lg_admin_name = #{lgAdminName,jdbcType=VARCHAR},
+        </if>
+        <if test="lgType != null and lgType != ''">
+            lg_type = #{lgType,jdbcType=VARCHAR},
+        </if>
+        <if test="lgAvAmount != null">
+            lg_av_amount = #{lgAvAmount},
+        </if>
+        <if test="lgFreezeAmount != null">
+            lg_freeze_amount = #{lgFreezeAmount},
+        </if>
+        <if test="lgAddAmount != null">
+            lg_add_amount = #{lgAddAmount},
+        </if>
+        <if test="lgRdeAmount != null">
+            lg_rde_amount = #{lgRdeAmount},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime},
+        </if>
+        <if test="lgDesc != null and lgDesc != ''">
+            lg_desc = #{lgDesc,jdbcType=VARCHAR},
+        </if>
+        <if test="orderSn != null">
+            order_sn = #{orderSn,jdbcType=VARCHAR},
+        </if>
+        <if test="storeId != null">
+            store_id = #{storeId,jdbcType=BIGINT},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopWalletLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_WALLET_LOG
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopWalletLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_WALLET_LOG
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_WALLET_LOG
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.walet.ShopWalletLog">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_WALLET_LOG
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.walet.ShopWalletLog">
+        UPDATE SHOP_WALLET_LOG
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_WALLET_LOG
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_WALLET_LOG
+        WHERE ID IN
+        <foreach item="ShopWalletLogId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopWalletLogId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopWalletLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_WALLET_LOG
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopWalletLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_WALLET_LOG
+        <where>1=1
+            <include refid="where_column"/>
+            ORDER BY create_time DESC
+        </where>
+    </select>
+
+    <select id="countAmount" resultType="java.math.BigDecimal">
+        SELECT SUM(lg_rde_amount) FROM SHOP_WALLET_LOG
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="countAmountStore" resultType="java.math.BigDecimal">
+        SELECT SUM(lg_rde_amount) FROM SHOP_WALLET_LOG
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="countAmountParams" resultType="java.math.BigDecimal">
+        SELECT SUM(lg_add_amount) FROM SHOP_WALLET_LOG
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="listStatsCountVoByIncome" resultType="com.framework.loippi.vo.stats.StatsCountVo">
+        SELECT
+          sum(count) count,
+          'yesterday' timeLong
+        FROM (
+               SELECT ifnull(sum(payment_amount), 0) count
+               FROM shop_member_payment_tally
+               WHERE payment_state = 1 AND trade_type IN (10, 20) AND to_days(now()) - to_days(create_time) = 1
+               UNION ALL
+               SELECT ifnull(sum(service_amount), 0) count
+               FROM shop_wallet_cash
+               WHERE to_days(now()) - to_days(create_time) = 1
+             ) t
+        UNION
+        SELECT
+          sum(count) count,
+          'beforeYesterday' timeLong
+        FROM (
+               SELECT ifnull(sum(payment_amount), 0) count
+               FROM shop_member_payment_tally
+               WHERE payment_state = 1 AND trade_type IN (10, 20) AND to_days(now()) - to_days(create_time) = 2
+               UNION ALL
+               SELECT ifnull(sum(service_amount), 0) count
+               FROM shop_wallet_cash
+               WHERE to_days(now()) - to_days(create_time) = 2
+             ) t
+        UNION
+        SELECT
+          sum(count) count,
+          'lastWeek' timeLong
+        FROM (
+               SELECT ifnull(sum(payment_amount), 0) count
+               FROM shop_member_payment_tally
+               WHERE payment_state = 1 AND trade_type IN (10, 20) AND
+                     YEARWEEK(date_format(create_time, '%Y-%m-%d')) = YEARWEEK(now()) - 1
+               UNION ALL
+               SELECT ifnull(sum(service_amount), 0) count
+               FROM shop_wallet_cash
+               WHERE YEARWEEK(date_format(create_time, '%Y-%m-%d')) = YEARWEEK(now()) - 1
+             ) t
+        UNION
+        SELECT
+          sum(count) count,
+          'beforeLastWeek' timeLong
+        FROM (
+               SELECT ifnull(sum(payment_amount), 0) count
+               FROM shop_member_payment_tally
+               WHERE payment_state = 1 AND trade_type IN (10, 20) AND
+                     YEARWEEK(date_format(create_time, '%Y-%m-%d')) = YEARWEEK(now()) - 2
+               UNION ALL
+               SELECT ifnull(sum(service_amount), 0) count
+               FROM shop_wallet_cash
+               WHERE YEARWEEK(date_format(create_time, '%Y-%m-%d')) = YEARWEEK(now()) - 2
+             ) t
+        UNION
+        SELECT
+          sum(count) count,
+          'lastMonth' timeLong
+        FROM (
+               SELECT ifnull(sum(payment_amount), 0) count
+               FROM shop_member_payment_tally
+               WHERE
+                 payment_state = 1 AND trade_type IN (10, 20) AND
+                 date_format(now(), '%Y%m') - date_format(create_time, '%Y%m') = 1
+               UNION ALL
+               SELECT ifnull(sum(service_amount), 0) count
+               FROM shop_wallet_cash
+               WHERE date_format(now(), '%Y%m') - date_format(create_time, '%Y%m') = 1
+             ) t
+        UNION
+        SELECT
+          sum(count) count,
+          'beforeLastMonth' timeLong
+        FROM (
+               SELECT ifnull(sum(payment_amount), 0) count
+               FROM shop_member_payment_tally
+               WHERE
+                 payment_state = 1 AND trade_type IN (10, 20) AND
+                 date_format(now(), '%Y%m') - date_format(create_time, '%Y%m') = 2
+               UNION ALL
+               SELECT ifnull(sum(service_amount), 0) count
+               FROM shop_wallet_cash
+               WHERE date_format(now(), '%Y%m') - date_format(create_time, '%Y%m') = 2
+             ) t
+        UNION
+        SELECT
+          sum(count) count,
+          'untilNow' timeLong
+        FROM (
+               SELECT ifnull(sum(payment_amount), 0) count
+               FROM shop_member_payment_tally WHERE payment_state = 1 AND trade_type IN (10, 20)
+               UNION ALL
+               SELECT ifnull(sum(service_amount), 0) count
+               FROM shop_wallet_cash
+             ) t;
+    </select>
+
+    <select id="listStatsCountVoByExpenditure" resultType="com.framework.loippi.vo.stats.StatsCountVo">
+    SELECT
+      sum(count)  count,
+      'yesterday' timeLong
+    FROM (
+           SELECT ifnull(sum(payment_amount), 0) count
+           FROM shop_member_payment_tally
+           WHERE payment_state = 1 AND trade_type IN (40, 50) AND to_days(now()) - to_days(create_time) = 1
+           UNION ALL
+           SELECT ifnull(sum(pdc_amount), 0) count
+           FROM shop_wallet_cash
+           WHERE to_days(now()) - to_days(create_time) = 1
+         ) t
+    UNION
+    SELECT
+      sum(count)        count,
+      'beforeYesterday' timeLong
+    FROM (
+           SELECT ifnull(sum(payment_amount), 0) count
+           FROM shop_member_payment_tally
+           WHERE payment_state = 1 AND trade_type IN (40, 50) AND to_days(now()) - to_days(create_time) = 2
+           UNION ALL
+           SELECT ifnull(sum(pdc_amount), 0) count
+           FROM shop_wallet_cash
+           WHERE to_days(now()) - to_days(create_time) = 2
+         ) t
+    UNION
+    SELECT
+      sum(count) count,
+      'lastWeek' timeLong
+    FROM (
+           SELECT ifnull(sum(payment_amount), 0) count
+           FROM shop_member_payment_tally
+           WHERE payment_state = 1 AND trade_type IN (40, 50) AND
+                 YEARWEEK(date_format(create_time, '%Y-%m-%d')) = YEARWEEK(now()) - 1
+           UNION ALL
+           SELECT ifnull(sum(pdc_amount), 0) count
+           FROM shop_wallet_cash
+           WHERE YEARWEEK(date_format(create_time, '%Y-%m-%d')) = YEARWEEK(now()) - 1
+         ) t
+    UNION
+    SELECT
+      sum(count)       count,
+      'beforeLastWeek' timeLong
+    FROM (
+           SELECT ifnull(sum(payment_amount), 0) count
+           FROM shop_member_payment_tally
+           WHERE payment_state = 1 AND trade_type IN (40, 50) AND
+                 YEARWEEK(date_format(create_time, '%Y-%m-%d')) = YEARWEEK(now()) - 2
+           UNION ALL
+           SELECT ifnull(sum(pdc_amount), 0) count
+           FROM shop_wallet_cash
+           WHERE YEARWEEK(date_format(create_time, '%Y-%m-%d')) = YEARWEEK(now()) - 2
+         ) t
+    UNION
+    SELECT
+      sum(count)  count,
+      'lastMonth' timeLong
+    FROM (
+           SELECT ifnull(sum(payment_amount), 0) count
+           FROM shop_member_payment_tally
+           WHERE
+             payment_state = 1 AND trade_type IN (40, 50) AND
+             date_format(now(), '%Y%m') - date_format(create_time, '%Y%m') = 1
+           UNION ALL
+           SELECT ifnull(sum(pdc_amount), 0) count
+           FROM shop_wallet_cash
+           WHERE date_format(now(), '%Y%m') - date_format(create_time, '%Y%m') = 1
+         ) t
+    UNION
+    SELECT
+      sum(count)        count,
+      'beforeLastMonth' timeLong
+    FROM (
+           SELECT ifnull(sum(payment_amount), 0) count
+           FROM shop_member_payment_tally
+           WHERE
+             payment_state = 1 AND trade_type IN (40, 50) AND
+             date_format(now(), '%Y%m') - date_format(create_time, '%Y%m') = 2
+           UNION ALL
+           SELECT ifnull(sum(pdc_amount), 0) count
+           FROM shop_wallet_cash
+           WHERE date_format(now(), '%Y%m') - date_format(create_time, '%Y%m') = 2
+         ) t
+    UNION
+    SELECT
+      sum(count) count,
+      'untilNow' timeLong
+    FROM (
+           SELECT ifnull(sum(payment_amount), 0) count
+           FROM shop_member_payment_tally where payment_state = 1 AND trade_type IN (40, 50)
+           UNION ALL
+           SELECT ifnull(sum(pdc_amount), 0) count
+           FROM shop_wallet_cash
+         ) t
+  </select>
+
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="java.util.List">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT INTO shop_wallet_log
+        (
+        id ,
+        lg_member_id ,
+        lg_member_name ,
+        lg_admin_name ,
+        lg_type ,
+        lg_av_amount ,
+        lg_freeze_amount ,
+        lg_add_amount ,
+        lg_rde_amount ,
+        create_time ,
+        lg_desc ,
+        order_sn
+        ) VALUES
+        <foreach collection="list" index="index" item="item" open="" close="" separator=",">
+            (#{item.id},
+            #{item.lgMemberId},
+            #{item.lgMemberName},
+            #{item.lgAdminName},
+            #{item.lgType},
+            #{item.lgAvAmount},
+            #{item.lgFreezeAmount},
+            #{item.lgAddAmount},
+            #{item.lgRdeAmount},
+            #{item.createTime},
+            #{item.lgDesc},
+            #{item.orderSn}
+            )
+        </foreach>
+    </insert>
+</mapper> 

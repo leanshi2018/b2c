@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdNewVipDetailDao">
+	
+	<resultMap id="RdNewVipDetailResultMap" type="com.framework.loippi.entity.user.RdNewVipDetail">
+		<result property="refereesCode" column="REFEREES_CODE" />
+		<result property="refereesNickname" column="REFEREES_NICKNAME" />
+		<result property="refereesRank" column="REFEREES_RANK" />
+		<result property="refereesTime" column="REFEREES_TIME" />
+		<result property="electionCode" column="ELECTION_CODE" />
+		<result property="electionNickname" column="ELECTION_NICKNAME" />
+		<result property="refereesMemNumber" column="REFEREES_MEM_NUMBER" />
+		<result property="consumption" column="CONSUMPTION" />
+		<result property="newVipBonus" column="NEW_VIP_BONUS" />
+		<result property="getBonusTime" column="GET_BONUS_TIME" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 REFEREES_CODE ,REFEREES_NICKNAME ,REFEREES_RANK ,REFEREES_TIME ,ELECTION_CODE ,ELECTION_NICKNAME ,REFEREES_MEM_NUMBER ,CONSUMPTION ,NEW_VIP_BONUS ,GET_BONUS_TIME 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{refereesCode},#{refereesNickname},#{refereesRank},#{refereesTime},#{electionCode},#{electionNickname},#{refereesMemNumber},#{consumption},#{newVipBonus},#{getBonusTime}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="refereesCode != null and refereesCode != ''">
+			AND REFEREES_CODE = #{refereesCode,jdbcType=VARCHAR}
+		</if>
+		<if test="refereesNickname != null and refereesNickname != ''">
+			AND REFEREES_NICKNAME = #{refereesNickname,jdbcType=VARCHAR}
+		</if>
+		<if test="refereesRank != null and refereesRank != ''">
+			AND REFEREES_RANK = #{refereesRank,jdbcType=INTEGER}
+		</if>
+		<if test="refereesTime != null and refereesTime != ''">
+			AND REFEREES_TIME = #{refereesTime}
+		</if>
+		<if test="electionCode != null and electionCode != ''">
+			AND ELECTION_CODE = #{electionCode,jdbcType=VARCHAR}
+		</if>
+		<if test="electionNickname != null and electionNickname != ''">
+			AND ELECTION_NICKNAME = #{electionNickname,jdbcType=VARCHAR}
+		</if>
+		<if test="refereesMemNumber != null and refereesMemNumber != ''">
+			AND REFEREES_MEM_NUMBER = #{refereesMemNumber,jdbcType=INTEGER}
+		</if>
+		<if test="consumption != null and consumption != ''">
+			AND CONSUMPTION = #{consumption}
+		</if>
+		<if test="newVipBonus != null and newVipBonus != ''">
+			AND NEW_VIP_BONUS = #{newVipBonus}
+		</if>
+		<if test="getBonusTime != null and getBonusTime != ''">
+			AND GET_BONUS_TIME = #{getBonusTime}
+		</if>
+
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="refereesCode != null and refereesCode != ''">
+			REFEREES_CODE = #{refereesCode,jdbcType=VARCHAR},
+		</if>
+		<if test="refereesNickname != null and refereesNickname != ''">
+			REFEREES_NICKNAME = #{refereesNickname,jdbcType=VARCHAR},
+		</if>
+		<if test="refereesRank != null">
+			REFEREES_RANK = #{refereesRank,jdbcType=INTEGER},
+		</if>
+		<if test="refereesTime != null">
+			REFEREES_TIME = #{refereesTime},
+		</if>
+		<if test="electionCode != null and electionCode != ''">
+			ELECTION_CODE = #{electionCode,jdbcType=VARCHAR},
+		</if>
+		<if test="electionNickname != null and electionNickname != ''">
+			ELECTION_NICKNAME = #{electionNickname,jdbcType=VARCHAR},
+		</if>
+		<if test="refereesMemNumber != null">
+			REFEREES_MEM_NUMBER = #{refereesMemNumber,jdbcType=INTEGER},
+		</if>
+		<if test="consumption != null">
+			CONSUMPTION = #{consumption},
+		</if>
+		<if test="newVipBonus != null">
+			NEW_VIP_BONUS = #{newVipBonus},
+		</if>
+		<if test="getBonusTime != null">
+			GET_BONUS_TIME = #{getBonusTime},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdNewVipDetailResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_NEW_VIP_DETAIL
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdNewVipDetailResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_NEW_VIP_DETAIL
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_NEW_VIP_DETAIL
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdNewVipDetail">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  
+	          SELECT LAST_INSERT_ID() AS ID    
+	    </selectKey>  
+		INSERT RD_NEW_VIP_DETAIL 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdNewVipDetail">
+		UPDATE	RD_NEW_VIP_DETAIL
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_NEW_VIP_DETAIL
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_NEW_VIP_DETAIL
+		WHERE	ID	IN
+    	<foreach item="RdNewVipDetailId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdNewVipDetailId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdNewVipDetailResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_NEW_VIP_DETAIL
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdNewVipDetailResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_NEW_VIP_DETAIL
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

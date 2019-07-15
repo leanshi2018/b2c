@@ -1,0 +1,82 @@
+package com.framework.loippi.job;
+
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.support.Pageable;
+
+
+import java.util.Date;
+import java.util.List;
+import javax.annotation.Resource;
+
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.validator.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+/**   暂时屏蔽
+ * 功能：根据设置定时更新订单
+ * 类名：ShopOrderJob
+ * 日期：2019/01/17  18:59
+ * 作者：czl
+ * 详细说明：
+ * 修改备注:
+ */
+@Service
+@EnableScheduling
+@Lazy(false)
+public class ShopOrderJob {
+
+    @Resource
+    private ShopOrderService orderService;
+
+    private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
+//
+
+    /**
+     * 订单12小时自动关闭取消功能
+     */
+    @Scheduled(cron = "0 */30 * * * ?")  //每30分钟执行一次
+    public void cancelTimeOutPaymentOrder() {
+        log.info("#################################################################");
+        log.info("#####################  开始执行-订单24小时取消 ###################");
+        log.info("#################################################################");
+        int pageNo = 1;
+        int pageSize = 500;
+        Pageable pager=new Pageable();
+
+        long limit = 2 * 60 * 60 * 1000;
+        do {
+            pager.setPageSize(pageSize);
+            pager.setPageNumber(pageNo);
+            pager.setParameter(Paramap.create().put("orderState", 10).put("lockState", "0").put("servenDay", DateUtils.addDays(new Date(), -1)));
+            List<ShopOrder> orderList = orderService.findByPage(pager).getContent();
+            if (orderList != null && orderList.size() > 0) {
+                orderList.forEach(order -> {
+                    log.info("订单[{}]创建时间[{}], 超过[{}]秒未支付, 自动取消");
+                    try {
+                        orderService.updateCancelOrder(order.getId(), Constants.OPERATOR_TIME_TASK, order.getBuyerId(), PaymentTallyState.PAYMENTTALLY_TREM_MB,"系统定时取消订单","");
+                    }catch (Exception e){
+                        System.err.println(e);
+                        e.printStackTrace();
+                    }
+
+                });
+            }
+            pageNo++;
+            pageSize = orderList.size();
+        } while (pageSize == 500);
+    }
+
+
+
+
+
+
+}

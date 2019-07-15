@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.ShopMemberLeavingMessageDao">
+	
+	<resultMap id="LeavingMessageResultMap" type="com.framework.loippi.entity.user.ShopMemberLeavingMessage">
+		<id property="id" column="id"  />
+		<result property="replyContent" column="reply_content" />
+		<result property="replyObject" column="reply_object" />
+		<result property="createTime" column="create_time" />
+		<result property="uid" column="uid" />
+		<result property="bizId" column="biz_id" />
+		<result property="replyObjectType" column="reply_object_type" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 id ,reply_content ,reply_object ,create_time ,uid ,biz_id ,reply_object_type
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{id},#{replyContent},#{replyObject},#{createTime},#{uid},#{bizId},#{replyObjectType}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null and id != ''">
+			AND id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="replyContent != null and replyContent != ''">
+			AND reply_content = #{replyContent}
+		</if>
+		<if test="replyObject != null and replyObject != ''">
+			AND reply_object = #{replyObject,jdbcType=VARCHAR}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND create_time = #{createTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="uid != null and uid != ''">
+			AND uid = #{uid,jdbcType=BIGINT}
+		</if>
+		<if test="bizId != null and bizId != ''">
+			AND biz_id = #{bizId}
+		</if>
+		<if test="replyObjectType != null and replyObjectType != ''">
+			AND reply_object_type = #{replyObjectType,jdbcType=INTEGER}
+		</if>
+		<if test="order != null and order != ''">
+			order by #{order}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="id != null">
+			id = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="replyContent != null and replyContent != ''">
+			 reply_content = #{replyContent},
+		</if>
+		<if test="replyObject != null and replyObject != ''">
+			reply_object = #{replyObject,jdbcType=VARCHAR},
+		</if>
+		<if test="createTime != null">
+			create_time = #{createTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="uid != null">
+			uid = #{uid,jdbcType=BIGINT},
+		</if>
+		<if test="bizId != null">
+			biz_id = #{bizId},
+		</if>
+		<if test="replyObjectType != null">
+			reply_object_type = #{replyObjectType,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="LeavingMessageResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	SHOP_MEMBER_LEAVING_MESSAGE
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="LeavingMessageResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	SHOP_MEMBER_LEAVING_MESSAGE
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM SHOP_MEMBER_LEAVING_MESSAGE
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.ShopMemberLeavingMessage">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  
+	          SELECT LAST_INSERT_ID() AS ID    
+	    </selectKey>  
+		INSERT SHOP_MEMBER_LEAVING_MESSAGE 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.ShopMemberLeavingMessage">
+		UPDATE	SHOP_MEMBER_LEAVING_MESSAGE
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM SHOP_MEMBER_LEAVING_MESSAGE
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM SHOP_MEMBER_LEAVING_MESSAGE
+		WHERE	ID	IN
+    	<foreach item="LeavingMessageId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{LeavingMessageId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="LeavingMessageResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	SHOP_MEMBER_LEAVING_MESSAGE
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="LeavingMessageResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM SHOP_MEMBER_LEAVING_MESSAGE
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

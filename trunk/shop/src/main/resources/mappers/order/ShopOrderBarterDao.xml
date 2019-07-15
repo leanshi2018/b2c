@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.order.ShopOrderBarterDao">
+	
+	<resultMap id="ShopOrderBarterResultMap" type="com.framework.loippi.entity.order.ShopOrderBarter">
+		<id property="id" column="id"  />
+		<result property="orderId" column="order_id" />
+		<result property="orderSn" column="order_sn" />
+		<result property="barterSn" column="barter_sn" />
+		<result property="storeId" column="store_id" />
+		<result property="storeName" column="store_name" />
+		<result property="buyerId" column="buyer_id" />
+		<result property="buyerName" column="buyer_name" />
+		<result property="goodsId" column="goods_id" />
+		<result property="orderGoodsId" column="order_goods_id" />
+		<result property="goodsName" column="goods_name" />
+		<result property="goodsNum" column="goods_num" />
+		<result property="goodsImage" column="goods_image" />
+		<result property="orderGoodsType" column="order_goods_type" />
+		<result property="sellerState" column="seller_state" />
+		<result property="orderLock" column="order_lock" />
+		<result property="goodsState" column="goods_state" />
+		<result property="createTime" column="create_time" />
+		<result property="sellerTime" column="seller_time" />
+		<result property="reasonId" column="reason_id" />
+		<result property="reasonInfo" column="reason_info" />
+		<result property="picInfo" column="pic_info" />
+		<result property="buyerMessage" column="buyer_message" />
+		<result property="sellerMessage" column="seller_message" />
+		<result property="buyerExpressId" column="buyer_express_id" />
+		<result property="buyerInvoiceNo" column="buyer_invoice_no" />
+		<result property="buyerExpressName" column="buyer_express_name" />
+		<result property="buyerShipTime" column="buyer_ship_time" />
+		<result property="buyerDelayTime" column="buyer_delay_time" />
+		<result property="buyerReceiveTime" column="buyer_receive_time" />
+		<result property="buyerReceiveMessage" column="buyer_receive_message" />
+		<result property="sellerExpressId" column="seller_express_id" />
+		<result property="sellerInvoiceNo" column="seller_invoice_no" />
+		<result property="sellerExpressName" column="seller_express_name" />
+		<result property="sellerShipTime" column="seller_ship_time" />
+		<result property="sellerDelayTime" column="seller_delay_time" />
+		<result property="sellerReceiveTime" column="seller_receive_time" />
+		<result property="sellerReceiveMessage" column="seller_receive_message" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 id ,order_id ,order_sn ,barter_sn ,store_id ,store_name ,buyer_id ,buyer_name ,goods_id ,order_goods_id ,goods_name ,goods_num ,goods_image ,order_goods_type ,seller_state ,order_lock ,goods_state ,create_time ,seller_time ,reason_id ,reason_info ,pic_info ,buyer_message ,seller_message ,buyer_express_id ,buyer_invoice_no ,buyer_express_name ,buyer_ship_time ,buyer_delay_time ,buyer_receive_time ,buyer_receive_message ,seller_express_id ,seller_invoice_no ,seller_express_name ,seller_ship_time ,seller_delay_time ,seller_receive_time ,seller_receive_message 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{id},#{orderId},#{orderSn},#{barterSn},#{storeId},#{storeName},#{buyerId},#{buyerName},#{goodsId},#{orderGoodsId},#{goodsName},#{goodsNum},#{goodsImage},#{orderGoodsType},#{sellerState},#{orderLock},#{goodsState},#{createTime},#{sellerTime},#{reasonId},#{reasonInfo},#{picInfo},#{buyerMessage},#{sellerMessage},#{buyerExpressId},#{buyerInvoiceNo},#{buyerExpressName},#{buyerShipTime},#{buyerDelayTime},#{buyerReceiveTime},#{buyerReceiveMessage},#{sellerExpressId},#{sellerInvoiceNo},#{sellerExpressName},#{sellerShipTime},#{sellerDelayTime},#{sellerReceiveTime},#{sellerReceiveMessage}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null and id != ''">
+			AND id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="orderId != null and orderId != ''">
+			AND order_id = #{orderId,jdbcType=BIGINT}
+		</if>
+		<if test="orderSn != null and orderSn != ''">
+			AND order_sn = #{orderSn,jdbcType=VARCHAR}
+		</if>
+		<if test="barterSn != null and barterSn != ''">
+			AND barter_sn = #{barterSn,jdbcType=VARCHAR}
+		</if>
+		<if test="storeId != null and storeId != ''">
+			AND store_id = #{storeId,jdbcType=BIGINT}
+		</if>
+		<if test="storeName != null and storeName != ''">
+			AND store_name = #{storeName,jdbcType=VARCHAR}
+		</if>
+		<if test="buyerId != null and buyerId != ''">
+			AND buyer_id = #{buyerId,jdbcType=BIGINT}
+		</if>
+		<if test="buyerName != null and buyerName != ''">
+			AND buyer_name = #{buyerName,jdbcType=VARCHAR}
+		</if>
+		<if test="goodsId != null and goodsId != ''">
+			AND goods_id = #{goodsId,jdbcType=BIGINT}
+		</if>
+		<if test="orderGoodsId != null and orderGoodsId != ''">
+			AND order_goods_id = #{orderGoodsId,jdbcType=BIGINT}
+		</if>
+		<if test="goodsName != null and goodsName != ''">
+			AND goods_name = #{goodsName,jdbcType=VARCHAR}
+		</if>
+		<if test="goodsNum != null and goodsNum != ''">
+			AND goods_num = #{goodsNum,jdbcType=INTEGER}
+		</if>
+		<if test="goodsImage != null and goodsImage != ''">
+			AND goods_image = #{goodsImage,jdbcType=VARCHAR}
+		</if>
+		<if test="orderGoodsType != null and orderGoodsType != ''">
+			AND order_goods_type = #{orderGoodsType,jdbcType=INTEGER}
+		</if>
+		<if test="sellerState != null and sellerState != ''">
+			AND seller_state = #{sellerState,jdbcType=INTEGER}
+		</if>
+		<if test="orderLock != null and orderLock != ''">
+			AND order_lock = #{orderLock,jdbcType=INTEGER}
+		</if>
+		<if test="goodsState != null and goodsState != ''">
+			AND goods_state = #{goodsState,jdbcType=INTEGER}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND create_time = #{createTime}
+		</if>
+		<if test="sellerTime != null and sellerTime != ''">
+			AND seller_time = #{sellerTime}
+		</if>
+		<if test="reasonId != null and reasonId != ''">
+			AND reason_id = #{reasonId,jdbcType=BIGINT}
+		</if>
+		<if test="reasonInfo != null and reasonInfo != ''">
+			AND reason_info = #{reasonInfo,jdbcType=VARCHAR}
+		</if>
+		<if test="picInfo != null and picInfo != ''">
+			AND pic_info = #{picInfo,jdbcType=VARCHAR}
+		</if>
+		<if test="buyerMessage != null and buyerMessage != ''">
+			AND buyer_message = #{buyerMessage,jdbcType=VARCHAR}
+		</if>
+		<if test="sellerMessage != null and sellerMessage != ''">
+			AND seller_message = #{sellerMessage,jdbcType=VARCHAR}
+		</if>
+		<if test="buyerExpressId != null and buyerExpressId != ''">
+			AND buyer_express_id = #{buyerExpressId,jdbcType=BIGINT}
+		</if>
+		<if test="buyerInvoiceNo != null and buyerInvoiceNo != ''">
+			AND buyer_invoice_no = #{buyerInvoiceNo,jdbcType=VARCHAR}
+		</if>
+		<if test="buyerExpressName != null and buyerExpressName != ''">
+			AND buyer_express_name = #{buyerExpressName,jdbcType=VARCHAR}
+		</if>
+		<if test="buyerShipTime != null and buyerShipTime != ''">
+			AND buyer_ship_time = #{buyerShipTime}
+		</if>
+		<if test="buyerDelayTime != null and buyerDelayTime != ''">
+			AND buyer_delay_time = #{buyerDelayTime}
+		</if>
+		<if test="buyerReceiveTime != null and buyerReceiveTime != ''">
+			AND buyer_receive_time = #{buyerReceiveTime}
+		</if>
+		<if test="buyerReceiveMessage != null and buyerReceiveMessage != ''">
+			AND buyer_receive_message = #{buyerReceiveMessage,jdbcType=VARCHAR}
+		</if>
+		<if test="sellerExpressId != null and sellerExpressId != ''">
+			AND seller_express_id = #{sellerExpressId,jdbcType=BIGINT}
+		</if>
+		<if test="sellerInvoiceNo != null and sellerInvoiceNo != ''">
+			AND seller_invoice_no = #{sellerInvoiceNo,jdbcType=VARCHAR}
+		</if>
+		<if test="sellerExpressName != null and sellerExpressName != ''">
+			AND seller_express_name = #{sellerExpressName,jdbcType=VARCHAR}
+		</if>
+		<if test="sellerShipTime != null and sellerShipTime != ''">
+			AND seller_ship_time = #{sellerShipTime}
+		</if>
+		<if test="sellerDelayTime != null and sellerDelayTime != ''">
+			AND seller_delay_time = #{sellerDelayTime}
+		</if>
+		<if test="sellerReceiveTime != null and sellerReceiveTime != ''">
+			AND seller_receive_time = #{sellerReceiveTime}
+		</if>
+		<if test="sellerReceiveMessage != null and sellerReceiveMessage != ''">
+			AND seller_receive_message = #{sellerReceiveMessage,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="id != null">
+			id = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="orderId != null">
+			order_id = #{orderId,jdbcType=BIGINT},
+		</if>
+		<if test="orderSn != null and orderSn != ''">
+			order_sn = #{orderSn,jdbcType=VARCHAR},
+		</if>
+		<if test="barterSn != null and barterSn != ''">
+			barter_sn = #{barterSn,jdbcType=VARCHAR},
+		</if>
+		<if test="storeId != null">
+			store_id = #{storeId,jdbcType=BIGINT},
+		</if>
+		<if test="storeName != null and storeName != ''">
+			store_name = #{storeName,jdbcType=VARCHAR},
+		</if>
+		<if test="buyerId != null">
+			buyer_id = #{buyerId,jdbcType=BIGINT},
+		</if>
+		<if test="buyerName != null and buyerName != ''">
+			buyer_name = #{buyerName,jdbcType=VARCHAR},
+		</if>
+		<if test="goodsId != null">
+			goods_id = #{goodsId,jdbcType=BIGINT},
+		</if>
+		<if test="orderGoodsId != null">
+			order_goods_id = #{orderGoodsId,jdbcType=BIGINT},
+		</if>
+		<if test="goodsName != null and goodsName != ''">
+			goods_name = #{goodsName,jdbcType=VARCHAR},
+		</if>
+		<if test="goodsNum != null">
+			goods_num = #{goodsNum,jdbcType=INTEGER},
+		</if>
+		<if test="goodsImage != null and goodsImage != ''">
+			goods_image = #{goodsImage,jdbcType=VARCHAR},
+		</if>
+		<if test="orderGoodsType != null">
+			order_goods_type = #{orderGoodsType,jdbcType=INTEGER},
+		</if>
+		<if test="sellerState != null">
+			seller_state = #{sellerState,jdbcType=INTEGER},
+		</if>
+		<if test="orderLock != null">
+			order_lock = #{orderLock,jdbcType=INTEGER},
+		</if>
+		<if test="goodsState != null">
+			goods_state = #{goodsState,jdbcType=INTEGER},
+		</if>
+		<if test="createTime != null">
+			create_time = #{createTime,jdbcType=},
+		</if>
+		<if test="sellerTime != null">
+			seller_time = #{sellerTime,jdbcType=},
+		</if>
+		<if test="reasonId != null">
+			reason_id = #{reasonId,jdbcType=BIGINT},
+		</if>
+		<if test="reasonInfo != null and reasonInfo != ''">
+			reason_info = #{reasonInfo,jdbcType=VARCHAR},
+		</if>
+		<if test="picInfo != null and picInfo != ''">
+			pic_info = #{picInfo,jdbcType=VARCHAR},
+		</if>
+		<if test="buyerMessage != null and buyerMessage != ''">
+			buyer_message = #{buyerMessage,jdbcType=VARCHAR},
+		</if>
+		<if test="sellerMessage != null and sellerMessage != ''">
+			seller_message = #{sellerMessage,jdbcType=VARCHAR},
+		</if>
+		<if test="buyerExpressId != null">
+			buyer_express_id = #{buyerExpressId,jdbcType=BIGINT},
+		</if>
+		<if test="buyerInvoiceNo != null and buyerInvoiceNo != ''">
+			buyer_invoice_no = #{buyerInvoiceNo,jdbcType=VARCHAR},
+		</if>
+		<if test="buyerExpressName != null and buyerExpressName != ''">
+			buyer_express_name = #{buyerExpressName,jdbcType=VARCHAR},
+		</if>
+		<if test="buyerShipTime != null">
+			buyer_ship_time = #{buyerShipTime,jdbcType=},
+		</if>
+		<if test="buyerDelayTime != null">
+			buyer_delay_time = #{buyerDelayTime,jdbcType=},
+		</if>
+		<if test="buyerReceiveTime != null">
+			buyer_receive_time = #{buyerReceiveTime,jdbcType=},
+		</if>
+		<if test="buyerReceiveMessage != null and buyerReceiveMessage != ''">
+			buyer_receive_message = #{buyerReceiveMessage,jdbcType=VARCHAR},
+		</if>
+		<if test="sellerExpressId != null">
+			seller_express_id = #{sellerExpressId,jdbcType=BIGINT},
+		</if>
+		<if test="sellerInvoiceNo != null and sellerInvoiceNo != ''">
+			seller_invoice_no = #{sellerInvoiceNo,jdbcType=VARCHAR},
+		</if>
+		<if test="sellerExpressName != null and sellerExpressName != ''">
+			seller_express_name = #{sellerExpressName,jdbcType=VARCHAR},
+		</if>
+		<if test="sellerShipTime != null">
+			seller_ship_time = #{sellerShipTime,jdbcType=},
+		</if>
+		<if test="sellerDelayTime != null">
+			seller_delay_time = #{sellerDelayTime,jdbcType=},
+		</if>
+		<if test="sellerReceiveTime != null">
+			seller_receive_time = #{sellerReceiveTime,jdbcType=},
+		</if>
+		<if test="sellerReceiveMessage != null and sellerReceiveMessage != ''">
+			seller_receive_message = #{sellerReceiveMessage,jdbcType=VARCHAR},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="ShopOrderBarterResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	SHOP_ORDER_BARTER
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="ShopOrderBarterResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	SHOP_ORDER_BARTER
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM SHOP_ORDER_BARTER
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.order.ShopOrderBarter">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  
+	          SELECT LAST_INSERT_ID() AS ID    
+	    </selectKey>  
+		INSERT SHOP_ORDER_BARTER 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.order.ShopOrderBarter">
+		UPDATE	SHOP_ORDER_BARTER
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM SHOP_ORDER_BARTER
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM SHOP_ORDER_BARTER
+		WHERE	ID	IN
+    	<foreach item="ShopOrderBarterId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{ShopOrderBarterId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="ShopOrderBarterResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	SHOP_ORDER_BARTER
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="ShopOrderBarterResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM SHOP_ORDER_BARTER
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

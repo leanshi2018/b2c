@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.ShopCommonMessageDao">
+
+    <resultMap id="ShopCommonMessageResultMap" type="com.framework.loippi.entity.ShopCommonMessage">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="subject" column="subject"/>
+        <result property="bizId" column="biz_id"/>
+        <result property="bizType" column="biz_type"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <result property="sendUid" column="send_uid"/>
+        <result property="type" column="type"/>
+        <result property="uType" column="u_type"/>
+        <result property="onLine" column="on_line"/>
+        <result property="isTop" column="is_top"/>
+        <result property="image" column="image"/>
+        <result property="isReply" column="is_reply"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,title ,biz_id ,biz_type ,content ,create_time ,send_uid ,type ,u_type ,on_line ,is_top,subject,image,is_reply
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{title},#{bizId},#{bizType},#{content},#{createTime},#{sendUid},#{type},#{uType},#{onLine},#{isTop},#{subject},#{image},#{isReply}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="title != null and title != ''">
+            AND title = #{title,jdbcType=VARCHAR}
+        </if>
+        <if test="image != null and image != ''">
+            AND image = #{image,jdbcType=VARCHAR}
+        </if>
+        <if test="bizId != null">
+            AND biz_id = #{bizId,jdbcType=BIGINT}
+        </if>
+        <if test="bizType != null and bizType != ''">
+            AND biz_type = #{bizType,jdbcType=INTEGER}
+        </if>
+        <if test="content != null and content != ''">
+            AND content LIKE CONCAT('%', #{content},'%')
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="sendUid != null and sendUid != ''">
+            AND send_uid = #{sendUid,jdbcType=VARCHAR}
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type,jdbcType=INTEGER}
+        </if>
+        <if test="uType != null and uType != ''">
+            AND u_type = #{uType,jdbcType=INTEGER}
+        </if>
+        <if test="onLine != null and onLine != ''">
+            AND on_line = #{onLine,jdbcType=INTEGER}
+        </if>
+        <if test="isTop != null and isTop != ''">
+            AND is_top = #{isTop,jdbcType=INTEGER}
+        </if>
+
+        <if test="subject != null and subject != ''">
+            AND subject = #{subject,jdbcType=VARCHAR}
+        </if>
+        <if test="isReply != null and isReply != ''">
+            AND is_reply = #{isReply}
+        </if>
+        <if test="searchStartTime !=null and searchStartTime != ''">
+            <![CDATA[and create_time >= #{searchStartTime}]]>
+        </if>
+        <if test="searchEndTime !=null and searchEndTime != ''">
+            <![CDATA[and create_time <= #{searchEndTime}]]>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="title != null and title != ''">
+            title = #{title,jdbcType=VARCHAR},
+        </if>
+        <if test="image != null and image != ''">
+            image = #{image,jdbcType=VARCHAR},
+        </if>
+        <if test="bizId != null">
+            biz_id = #{bizId,jdbcType=BIGINT},
+        </if>
+        <if test="bizType != null">
+            biz_type = #{bizType,jdbcType=INTEGER},
+        </if>
+        <if test="content != null and content != ''">
+            content = #{content,jdbcType=VARCHAR},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime},
+        </if>
+        <if test="sendUid != null">
+            send_uid = #{sendUid,jdbcType=VARCHAR},
+        </if>
+        <if test="type != null">
+            type = #{type,jdbcType=INTEGER},
+        </if>
+        <if test="uType != null">
+            u_type = #{uType,jdbcType=INTEGER},
+        </if>
+        <if test="onLine != null">
+            on_line = #{onLine,jdbcType=INTEGER},
+        </if>
+        <if test="isTop != null">
+            is_top = #{isTop,jdbcType=INTEGER},
+        </if>
+
+        <if test="subject != null and subject != ''">
+            subject = #{subject,jdbcType=VARCHAR},
+        </if>
+        <if test="isReply != null">
+             is_reply = #{isReply},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopCommonMessageResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_MESSAGE
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopCommonMessageResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_MESSAGE
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_COMMON_MESSAGE
+        <where>
+            <include refid="where_column"/>
+            <if test="startTime !=NULL">
+                <![CDATA[ AND create_time >= #{startTime,jdbcType=TIMESTAMP} ]]>
+            </if>
+            <if test="endTime != null">
+                <![CDATA[ AND create_time <= #{endTime,jdbcType=TIMESTAMP} ]]>
+            </if>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.ShopCommonMessage">
+     <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_COMMON_MESSAGE
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.ShopCommonMessage">
+        UPDATE SHOP_COMMON_MESSAGE
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_COMMON_MESSAGE
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_COMMON_MESSAGE
+        WHERE ID IN
+        <foreach item="ShopCommonMessageId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopCommonMessageId}
+        </foreach>
+    </delete>
+    <!-- 删除多条推送记录-->
+    <delete id="deleteAllMemberMessage">
+        DELETE FROM SHOP_MEMBER_MESSAGE
+        WHERE MSG_ID IN
+        <foreach item="ShopCommonMessageId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopCommonMessageId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopCommonMessageResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_MESSAGE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopCommonMessageResultMap">
+        SELECT
+        <include refid="base_column"/>, rmbi.MM_NICK_NAME  as userName,rmbi.MOBILE as mobile
+        FROM SHOP_COMMON_MESSAGE
+        left join RD_MM_BASIC_INFO rmbi on send_uid=rmbi.MM_CODE
+        <where>1=1
+            <include refid="where_column"/>
+            <if test="mobile !=null and mobile != ''">
+                AND rmbi.MOBILE like CONCAT('%',#{mobile},'%')
+            </if>
+            <if test="userName !=null and userName != ''">
+                AND rmbi.MM_NICK_NAME like CONCAT('%',#{userName},'%')
+            </if>
+        </where>
+        ORDER BY is_top ASC ,create_time DESC
+    </select>
+
+
+    <select id="countMessage" resultType="long">
+        SELECT COUNT(*) FROM SHOP_COMMON_MESSAGE
+        <where>
+            biz_type=#{bizType} AND (u_type=1 OR (u_type=2 AND send_uid IN (SELECT member_groupid from SHOP_MEMBER WHERE
+            SHOP_MEMBER.id=#{uid})))
+        </where>
+    </select>
+
+    <select id="findMessagePage" resultMap="ShopCommonMessageResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_MESSAGE
+        <where>
+            biz_type=#{bizType} AND (u_type=1 OR (u_type=2 AND send_uid IN (SELECT member_groupid from SHOP_MEMBER WHERE
+            SHOP_MEMBER.id=#{uid})))
+        </where>
+    </select>
+
+</mapper> 

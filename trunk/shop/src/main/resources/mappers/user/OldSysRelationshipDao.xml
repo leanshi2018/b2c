@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.OldSysRelationshipDao">
+	
+	<resultMap id="OldSysRelationshipResultMap" type="com.framework.loippi.entity.user.OldSysRelationship">
+		<id property="id" column="ID"  />
+		<result property="oMcode" column="O_MCODE" />
+		<result property="oNickname" column="O_NICKNAME" />
+		<result property="oSpcode" column="O_SPCODE" />
+		<result property="batchId" column="BATCH_ID" />
+		<result property="creationTime" column="CREATION_TIME" />
+		<result property="creationBy" column="CREATION_BY" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="updateBy" column="UPDATE_BY" />
+		<result property="nMcode" column="N_MCODE" />
+		<result property="nYnRegistered" column="N_YN_REGISTERED" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 ID ,O_MCODE ,O_NICKNAME ,O_SPCODE,BATCH_ID ,CREATION_TIME ,CREATION_BY ,UPDATE_TIME ,UPDATE_BY ,N_MCODE ,N_YN_REGISTERED
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{id},#{oMcode},#{oNickname},#{oSpcode},#{batchId},#{creationTime},#{creationBy},#{updateTime},#{updateBy},#{nMcode},#{nYnRegistered}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null and id != ''">
+			AND ID = #{id,jdbcType=INTEGER}
+		</if>
+		<if test="oMcode != null and oMcode != ''">
+			AND O_MCODE = #{oMcode,jdbcType=VARCHAR}
+		</if>
+		<if test="oNickname != null and oNickname != ''">
+			AND O_NICKNAME = #{oNickname,jdbcType=VARCHAR}
+		</if>
+		<if test="oSpcode != null and oSpcode != ''">
+			AND O_SPCODE = #{oSpcode,jdbcType=VARCHAR}
+		</if>
+		<if test="batchId != null and batchId != ''">
+			AND BATCH_ID = #{batchId,jdbcType=VARCHAR}
+		</if>
+		<if test="creationTime != null and creationTime != ''">
+			AND CREATION_TIME = #{creationTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="creationBy != null and creationBy != ''">
+			AND CREATION_BY = #{creationBy,jdbcType=VARCHAR}
+		</if>
+		<if test="updateTime != null and updateTime != ''">
+			AND UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			AND UPDATE_BY = #{updateBy,jdbcType=VARCHAR}
+		</if>
+		<if test="nMcode != null and nMcode != ''">
+			AND N_MCODE = #{nMcode,jdbcType=VARCHAR}
+		</if>
+		<if test="nYnRegistered != null and nYnRegistered != ''">
+			AND N_YN_REGISTERED = #{nYnRegistered,jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="id != null">
+			ID = #{id,jdbcType=INTEGER},
+		</if>
+		<if test="oMcode != null and oMcode != ''">
+			O_MCODE = #{oMcode,jdbcType=VARCHAR},
+		</if>
+		<if test="oNickname != null and oNickname != ''">
+			O_NICKNAME = #{oNickname,jdbcType=VARCHAR},
+		</if>
+		<if test="oSpcode != null and oSpcode != ''">
+			O_SPCODE = #{oSpcode,jdbcType=VARCHAR},
+		</if>
+		<if test="batchId != null and batchId != ''">
+			BATCH_ID = #{batchId,jdbcType=VARCHAR},
+		</if>
+		<if test="creationTime != null">
+			CREATION_TIME = #{creationTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="creationBy != null and creationBy != ''">
+			CREATION_BY = #{creationBy,jdbcType=VARCHAR},
+		</if>
+		<if test="updateTime != null">
+			UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+		</if>
+		<if test="nMcode != null and nMcode != ''">
+			N_MCODE = #{nMcode,jdbcType=VARCHAR},
+		</if>
+		<if test="nYnRegistered != null">
+			N_YN_REGISTERED = #{nYnRegistered,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="OldSysRelationshipResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	OLD_SYS_RELATIONSHIP
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="OldSysRelationshipResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	OLD_SYS_RELATIONSHIP
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM OLD_SYS_RELATIONSHIP
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.OldSysRelationship">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  
+	          SELECT LAST_INSERT_ID() AS ID    
+	    </selectKey>  
+		INSERT OLD_SYS_RELATIONSHIP 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.OldSysRelationship">
+		UPDATE	OLD_SYS_RELATIONSHIP
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM OLD_SYS_RELATIONSHIP
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM OLD_SYS_RELATIONSHIP
+		WHERE	ID	IN
+    	<foreach item="OldSysRelationshipId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{OldSysRelationshipId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="OldSysRelationshipResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	OLD_SYS_RELATIONSHIP
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="OldSysRelationshipResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM OLD_SYS_RELATIONSHIP
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

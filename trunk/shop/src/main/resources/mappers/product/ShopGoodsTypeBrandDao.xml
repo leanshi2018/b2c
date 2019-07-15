@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopGoodsTypeBrandDao">
+
+    <resultMap id="ShopGoodsTypeBrandResultMap" type="com.framework.loippi.entity.product.ShopGoodsTypeBrand">
+        <id property="id" column="id"/>
+        <result property="typeId" column="type_id"/>
+        <result property="brandId" column="brand_id"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,type_id ,brand_id 
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{typeId},#{brandId}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="typeId != null and typeId != ''">
+            AND type_id = #{typeId,jdbcType=BIGINT}
+        </if>
+        <if test="brandId != null and brandId != ''">
+            AND brand_id = #{brandId,jdbcType=BIGINT}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="typeId != null">
+            type_id = #{typeId,jdbcType=BIGINT},
+        </if>
+        <if test="brandId != null">
+            brand_id = #{brandId,jdbcType=BIGINT},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopGoodsTypeBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE_BRAND
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopGoodsTypeBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE_BRAND
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_GOODS_TYPE_BRAND
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopGoodsTypeBrand">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_GOODS_TYPE_BRAND
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopGoodsTypeBrand">
+        UPDATE SHOP_GOODS_TYPE_BRAND
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_GOODS_TYPE_BRAND
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_GOODS_TYPE_BRAND
+        WHERE ID IN
+        <foreach item="ShopGoodsTypeBrandId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopGoodsTypeBrandId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopGoodsTypeBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE_BRAND
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopGoodsTypeBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE_BRAND
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 将List<TypeBrand> 插入表 -->
+    <insert id="batchSave">
+        INSERT INTO SHOP_GOODS_TYPE_BRAND (id,type_id,brand_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id},#{item.typeId},#{item.brandId})
+        </foreach>
+    </insert>
+
+    <select id="findByTypes" resultMap="ShopGoodsTypeBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_TYPE_BRAND
+        WHERE type_id = #{typeID,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByTypeId">
+		DELETE	FROM SHOP_GOODS_TYPE_BRAND
+		WHERE	type_id = #{type_id,jdbcType=BIGINT}
+	</delete>
+
+</mapper> 

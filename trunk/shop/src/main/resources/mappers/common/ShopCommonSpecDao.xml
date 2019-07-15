@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.ShopCommonSpecDao">
+
+    <resultMap id="ShopCommonSpecResultMap" type="com.framework.loippi.entity.common.ShopCommonSpec">
+        <id property="id" column="id"/>
+        <result property="spName" column="sp_name"/>
+        <result property="spFormat" column="sp_format"/>
+        <result property="spValue" column="sp_value"/>
+        <result property="spSort" column="sp_sort"/>
+        <result property="classId" column="class_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="isTemplate" column="is_template"/>
+        <result property="specGroupName" column="spec_group_name"/>
+        <result property="goodsId" column="goods_id"/>
+    </resultMap>
+
+
+    <resultMap id="BaseResultMap1" type="com.framework.loippi.vo.goods.SpecVo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="sp_name" property="spName" jdbcType="INTEGER"/>
+        <result column="sp_format" property="spFormat" jdbcType="INTEGER"/>
+        <result column="sp_value" property="spValue" jdbcType="INTEGER"/>
+        <result column="sp_sort" property="spSort" jdbcType="INTEGER"/>
+        <result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+        <result column="store_id" property="storeId" jdbcType="VARCHAR"/>
+        <result column="is_template" property="isTemplate" jdbcType="INTEGER"/>
+        <result column="spec_group_name" property="specGroupName" jdbcType="VARCHAR"/>
+        <collection property="specValueList" ofType="com.framework.loippi.entity.common.ShopCommonSpecValue"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.common.ShopCommonSpecValueDao.findListBySpId">
+        </collection>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,sp_name ,sp_format ,sp_value ,sp_sort ,class_id ,store_id ,is_template ,spec_group_name ,goods_id 
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{spName},#{spFormat},#{spValue},#{spSort},#{classId},#{storeId},#{isTemplate},#{specGroupName},#{goodsId}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="spName != null and spName != ''">
+            AND sp_name = #{spName,jdbcType=VARCHAR}
+        </if>
+        <if test="spFormat != null and spFormat != ''">
+            AND sp_format = #{spFormat,jdbcType=INTEGER}
+        </if>
+        <if test="spValue != null and spValue != ''">
+            AND sp_value = #{spValue,jdbcType=VARCHAR}
+        </if>
+        <if test="spSort != null and spSort != ''">
+            AND sp_sort = #{spSort,jdbcType=INTEGER}
+        </if>
+        <if test="classId != null and classId != ''">
+            AND class_id = #{classId,jdbcType=BIGINT}
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND store_id = #{storeId,jdbcType=BIGINT}
+        </if>
+        <if test="isTemplate != null and isTemplate != ''">
+            AND is_template = #{isTemplate,jdbcType=INTEGER}
+        </if>
+        <if test="specGroupName != null and specGroupName != ''">
+            AND spec_group_name = #{specGroupName,jdbcType=VARCHAR}
+        </if>
+        <if test="goodsId != null and goodsId != ''">
+            AND goods_id = #{goodsId,jdbcType=VARCHAR}
+        </if>
+        <if test="ids != null and ids.size > 0">
+        AND id in
+        <foreach collection="ids" open="(" separator="," close=")" item="item">${item}</foreach>
+    </if>
+        <if test="spNameLike != null and spNameLike != ''">
+            AND sp_name  LIKE CONCAT('%', #{spNameLike},'%')
+        </if>
+
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="spName != null and spName != ''">
+            sp_name = #{spName,jdbcType=VARCHAR},
+        </if>
+        <if test="spFormat != null">
+            sp_format = #{spFormat,jdbcType=INTEGER},
+        </if>
+        <if test="spValue != null and spValue != ''">
+            sp_value = #{spValue,jdbcType=VARCHAR},
+        </if>
+        <if test="spSort != null">
+            sp_sort = #{spSort,jdbcType=INTEGER},
+        </if>
+        <if test="classId != null">
+            class_id = #{classId,jdbcType=BIGINT},
+        </if>
+        <if test="storeId != null">
+            store_id = #{storeId,jdbcType=BIGINT},
+        </if>
+        <if test="isTemplate != null">
+            is_template = #{isTemplate,jdbcType=INTEGER},
+        </if>
+        <if test="specGroupName != null and specGroupName != ''">
+            spec_group_name = #{specGroupName,jdbcType=VARCHAR},
+        </if>
+        <if test="goodsId != null and goodsId != ''">
+            goods_id = #{goodsId,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopCommonSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_SPEC
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopCommonSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_SPEC
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_COMMON_SPEC
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.common.ShopCommonSpec">
+        INSERT SHOP_COMMON_SPEC
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.common.ShopCommonSpec">
+        UPDATE SHOP_COMMON_SPEC
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_COMMON_SPEC
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_COMMON_SPEC
+        WHERE ID IN
+        <foreach item="ShopCommonSpecId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopCommonSpecId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopCommonSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_SPEC
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        ORDER BY sp_sort
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopCommonSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_SPEC
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        ORDER BY sp_sort
+    </select>
+
+
+    <select id="findListByType" resultMap="BaseResultMap1">
+		select a.id, a.sp_name, a.sp_format, a.sp_value, a.sp_sort from shop_common_spec a
+		join shop_goods_type_spec b on a.id=b.sp_id where b.type_id=#{typeId}
+	</select>
+
+    <!--导入商品用-->
+    <select id="findListByType2" resultMap="BaseResultMap1">
+
+	select a.id, a.sp_name, a.sp_format, a.sp_value, a.sp_sort,c.id,c.sp_value_name from shop_common_spec a
+	LEFT  join shop_goods_type_spec b on a.id=b.sp_id LEFT join  shop_goods_spec_value c on a.id=c.sp_id
+	where b.type_id=#{typeId} GROUP BY a.sp_name
+	</select>
+
+</mapper> 

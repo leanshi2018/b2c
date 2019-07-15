@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdMmBankDao">
+	
+	<resultMap id="RdMmBankResultMap" type="com.framework.loippi.entity.user.RdMmBank">
+		<id property="oid" column="OID"  />
+		<result property="mmCode" column="MM_CODE" />
+		<result property="accType" column="ACC_TYPE" />
+		<result property="currency" column="CURRENCY" />
+		<result property="accCode" column="ACC_CODE" />
+		<result property="accName" column="ACC_NAME" />
+		<result property="bankCode" column="BANK_CODE" />
+		<result property="bankDetail" column="BANK_DETAIL" />
+		<result property="validThru" column="VALID_THRU" />
+		<result property="cvv2" column="CVV2" />
+		<result property="defaultbank" column="DEFAULTBANK" />
+		<result property="paymentDefault" column="PAYMENT_DEFAULT" />
+		<result property="withdrawDefault" column="WITHDRAW_DEFAULT" />
+		<result property="rechargeDefault" column="RECHARGE_DEFAULT" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 OID ,MM_CODE ,ACC_TYPE ,CURRENCY ,ACC_CODE ,ACC_NAME ,BANK_CODE ,BANK_DETAIL ,VALID_THRU ,CVV2 ,DEFAULTBANK ,PAYMENT_DEFAULT ,WITHDRAW_DEFAULT ,RECHARGE_DEFAULT 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{oid},#{mmCode},#{accType},#{currency},#{accCode},#{accName},#{bankCode},#{bankDetail},#{validThru},#{cvv2},#{defaultbank},#{paymentDefault},#{withdrawDefault},#{rechargeDefault}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="oid != null and oid != ''">
+			AND OID = #{oid,jdbcType=INTEGER}
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="accType != null and accType != ''">
+			AND ACC_TYPE = #{accType,jdbcType=VARCHAR}
+		</if>
+		<if test="currency != null and currency != ''">
+			AND CURRENCY = #{currency,jdbcType=VARCHAR}
+		</if>
+		<if test="accCode != null and accCode != ''">
+			AND ACC_CODE = #{accCode,jdbcType=VARCHAR}
+		</if>
+		<if test="accName != null and accName != ''">
+			AND ACC_NAME = #{accName,jdbcType=VARCHAR}
+		</if>
+		<if test="bankCode != null and bankCode != ''">
+			AND BANK_CODE = #{bankCode,jdbcType=VARCHAR}
+		</if>
+		<if test="bankDetail != null and bankDetail != ''">
+			AND BANK_DETAIL = #{bankDetail,jdbcType=VARCHAR}
+		</if>
+		<if test="validThru != null and validThru != ''">
+			AND VALID_THRU = #{validThru,jdbcType=VARCHAR}
+		</if>
+		<if test="cvv2 != null and cvv2 != ''">
+			AND CVV2 = #{cvv2,jdbcType=VARCHAR}
+		</if>
+		<if test="defaultbank != null and defaultbank != ''">
+			AND DEFAULTBANK = #{defaultbank,jdbcType=INTEGER}
+		</if>
+		<if test="paymentDefault != null and paymentDefault != ''">
+			AND PAYMENT_DEFAULT = #{paymentDefault,jdbcType=VARCHAR}
+		</if>
+		<if test="withdrawDefault != null and withdrawDefault != ''">
+			AND WITHDRAW_DEFAULT = #{withdrawDefault,jdbcType=VARCHAR}
+		</if>
+		<if test="rechargeDefault != null and rechargeDefault != ''">
+			AND RECHARGE_DEFAULT = #{rechargeDefault,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="oid != null">
+			OID = #{oid,jdbcType=INTEGER},
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			MM_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="accType != null and accType != ''">
+			ACC_TYPE = #{accType,jdbcType=VARCHAR},
+		</if>
+		<if test="currency != null and currency != ''">
+			CURRENCY = #{currency,jdbcType=VARCHAR},
+		</if>
+		<if test="accCode != null and accCode != ''">
+			ACC_CODE = #{accCode,jdbcType=VARCHAR},
+		</if>
+		<if test="accName != null and accName != ''">
+			ACC_NAME = #{accName,jdbcType=VARCHAR},
+		</if>
+		<if test="bankCode != null and bankCode != ''">
+			BANK_CODE = #{bankCode,jdbcType=VARCHAR},
+		</if>
+		<if test="bankDetail != null and bankDetail != ''">
+			BANK_DETAIL = #{bankDetail,jdbcType=VARCHAR},
+		</if>
+		<if test="validThru != null and validThru != ''">
+			VALID_THRU = #{validThru,jdbcType=VARCHAR},
+		</if>
+		<if test="cvv2 != null and cvv2 != ''">
+			CVV2 = #{cvv2,jdbcType=VARCHAR},
+		</if>
+		<if test="defaultbank != null">
+			DEFAULTBANK = #{defaultbank,jdbcType=INTEGER},
+		</if>
+		<if test="paymentDefault != null and paymentDefault != ''">
+			PAYMENT_DEFAULT = #{paymentDefault,jdbcType=VARCHAR},
+		</if>
+		<if test="withdrawDefault != null and withdrawDefault != ''">
+			WITHDRAW_DEFAULT = #{withdrawDefault,jdbcType=VARCHAR},
+		</if>
+		<if test="rechargeDefault != null and rechargeDefault != ''">
+			RECHARGE_DEFAULT = #{rechargeDefault,jdbcType=VARCHAR},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdMmBankResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_BANK
+		WHERE	OID=#{OID,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdMmBankResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_BANK
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_MM_BANK
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmBank">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="OID">-->
+	          <!--SELECT LAST_INSERT_ID() AS OID-->
+	    <!--</selectKey>  -->
+		INSERT RD_MM_BANK 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdMmBank">
+		UPDATE	RD_MM_BANK
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	OID = #{oid,jdbcType=BIGINT}
+	</update>
+
+	<!-- 修改 -->
+	<update id="updateMember" parameterType="com.framework.loippi.entity.user.RdMmBank">
+		UPDATE	RD_MM_BANK
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	MM_CODE = #{mmCode}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_MM_BANK
+		WHERE	OID = #{oid,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_MM_BANK
+		WHERE	OID	IN
+    	<foreach item="RdMmBankId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdMmBankId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdMmBankResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_MM_BANK
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdMmBankResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_MM_BANK
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

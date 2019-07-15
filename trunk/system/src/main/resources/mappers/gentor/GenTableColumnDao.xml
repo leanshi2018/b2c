@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.GenTableColumnDao">
+
+	<resultMap id="GenTableColumnResultMap" type="com.framework.loippi.entity.GenTableColumn">
+		<id property="id" column="ID" />
+		<result property="createDate" column="CREATE_DATE" />
+		<result property="updateDate" column="UPDATE_DATE" />
+		<result property="creator" column="CREATOR" />
+		<result property="updator" column="UPDATOR" />
+		<result property="name" column="NAME" />
+		<result property="genTableId" column="GEN_TABLE_ID" />
+		<result property="comments" column="COMMENTS" />
+		<result property="jdbcType" column="JDBC_TYPE" />
+		<result property="mybatisJdbcType" column="MYBATIS_JDBC_TYPE" />
+		<result property="javaType" column="JAVA_TYPE" />
+		<result property="javaField" column="JAVA_FIELD" />
+		<result property="pk" column="IS_PK" />
+		<result property="nullable" column="IS_NULL" />
+		<result property="insert" column="IS_INSERT" />
+		<result property="edit" column="IS_EDIT" />
+		<result property="list" column="IS_LIST" />
+		<result property="query" column="IS_QUERY" />
+		<result property="queryType" column="QUERY_TYPE" />
+		<result property="showType" column="SHOW_TYPE" />
+		<result property="sort" column="SORTS" />
+		<result property="remarks" column="REMARKS" />
+	</resultMap>
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		ID ,CREATE_DATE,UPDATE_DATE,CREATOR,UPDATOR ,NAME ,GEN_TABLE_ID ,COMMENTS
+		,JDBC_TYPE ,MYBATIS_JDBC_TYPE ,JAVA_TYPE,JAVA_FIELD,IS_PK,IS_NULL,IS_INSERT,IS_EDIT,IS_LIST,IS_QUERY,QUERY_TYPE,SHOW_TYPE,SORTS,REMARKS
+	</sql>
+
+	<sql id="base_value_column">
+		#{id,jdbcType=BIGINT} ,#{createDate} ,#{updateDate} ,#{creator} ,#{updator} ,#{name}
+		,#{genTableId} ,#{comments} ,#{jdbcType},#{mybatisJdbcType} ,#{javaType},#{javaField} ,#{pk},#{nullable} ,#{insert} ,#{edit} ,#{list},#{query} ,#{queryType},#{showType} ,#{sort} ,#{remarks}
+	</sql>
+
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null and id != ''">
+			AND ID = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="genTableId != null and genTableId != ''">
+			AND GEN_TABLE_ID = #{genTableId,jdbcType=BIGINT}
+		</if>
+	</sql>
+
+	<sql id="set_column">
+		<if test="id != null and id != ''">
+			ID = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="name != null and name != ''">
+			NAME = #{name,jdbcType=VARCHAR} ,
+		</if>
+		<if test="comments != null and comments != ''">
+			COMMENTS = #{comments,jdbcType=VARCHAR},
+		</if>
+		<if test="jdbcType != null and jdbcType != ''">
+			JAVA_TYPE = #{jdbcType,jdbcType=VARCHAR},
+		</if>
+		<if test="mybatisJdbcType != null and mybatisJdbcType != ''">
+			MYBATIS_JDBC_TYPE = #{mybatisJdbcType,jdbcType=VARCHAR},
+		</if>
+		<if test="javaType != null and javaType != ''">
+			JAVA_TYPE = #{javaType,jdbcType=VARCHAR},
+		</if>
+		<if test="javaField != null and javaField != ''">
+			JAVA_FIELD = #{javaField,jdbcType=VARCHAR},
+		</if>
+		<if test="remarks != null and remarks != ''">
+			REMARKS = #{remarks,jdbcType=VARCHAR},
+		</if>
+		<if test="queryType != null and queryType != ''">
+			QUERY_TYPE = #{queryType,jdbcType=VARCHAR},
+		</if>
+		<if test="showType != null and showType != ''">
+			SHOW_TYPE = #{showType,jdbcType=VARCHAR},
+		</if>
+			<if test="isPk != null and isPk != ''">
+			IS_PK = #{isPk,jdbcType=INT},
+		</if>
+		<if test="isNull != null and isNull != ''">
+			IS_NULL = #{isNull,jdbcType=INT},
+		</if>
+		<if test="isInsert != null and isInsert != ''">
+			IS_INSERT = #{isInsert,jdbcType=INT},
+		</if>
+		<if test="isEdit != null and isEdit != ''">
+			IS_EDIT = #{isEdit,jdbcType=INT},
+		</if>
+		<if test="isQuery != null and isQuery != ''">
+			IS_QUERY = #{isQuery,jdbcType=INT},
+		</if>
+		<if test="sort != null and sort != ''">
+			SORTS = #{sort,jdbcType=INT},
+		</if>
+		<if test="updator != null and updator != ''">
+			UPDATOR = #{updator,jdbcType=BIGINT},
+		</if>
+		<if test="updateDate != null and updateDate != ''">
+			UPDATE_DATE = #{updateDate},
+		</if>
+	</sql>
+
+
+	<select id="find" resultMap="GenTableColumnResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM T_GEN_TABLE_COLUMN
+		WHERE ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	
+	<select id="findByTableId" resultMap="GenTableColumnResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM T_GEN_TABLE_COLUMN
+		WHERE GEN_TABLE_ID=#{tableId,jdbcType=BIGINT}
+	</select>
+	
+
+	<select id="findAll" resultMap="GenTableColumnResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM T_GEN_TABLE_COLUMN
+	</select>
+
+	<insert id="insert" parameterType="com.framework.loippi.entity.GenTableColumn">
+		<selectKey resultType="java.lang.Long" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID() AS ID
+		</selectKey>
+		INSERT T_GEN_TABLE_COLUMN
+			(<include refid="base_column" />)
+		VALUES 
+			(<include refid="base_value_column" />)
+	</insert>
+
+	<update id="update" parameterType="com.framework.loippi.entity.GenTableColumn">
+		UPDATE T_GEN_TABLE_COLUMN
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
+
+	<delete id="delete">
+		DELETE FROM T_GEN_TABLE_COLUMN
+		WHERE ID =
+		#{id,jdbcType=BIGINT}
+	</delete>
+
+	<delete id="deleteByTableId">
+		DELETE FROM T_GEN_TABLE_COLUMN
+		WHERE GEN_TABLE_ID =
+		#{tableId,jdbcType=BIGINT}
+	</delete>
+	
+	<delete id="deleteAll">
+		DELETE FROM T_GEN_TABLE_COLUMN
+		WHERE ID IN
+		<foreach item="ItemId" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{ItemId}
+		</foreach>
+	</delete>
+
+	<select id="findByParams" resultMap="GenTableColumnResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM T_GEN_TABLE_COLUMN
+		<where>
+			<include refid="where_column" />
+		</where>
+	</select>
+
+	<select id="findByPage" resultMap="GenTableColumnResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM T_GEN_TABLE_COLUMN
+		<where>
+			<include refid="where_column" />
+		</where>
+		ORDER BY SORTS
+	</select>
+
+</mapper> 

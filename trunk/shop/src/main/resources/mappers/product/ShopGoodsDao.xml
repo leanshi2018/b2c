@@ -1,0 +1,699 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopGoodsDao">
+
+  <resultMap id="ShopGoodsResultMap" type="com.framework.loippi.entity.product.ShopGoods">
+    <id property="id" column="id"/>
+    <result property="goodsSerial" column="goods_serial"/>
+    <result property="memberShip" column="member_ship"/>
+    <result property="goodsName" column="goods_name"/>
+    <result property="goodsSubtitle" column="goods_subtitle"/>
+    <result property="goodsKeywords" column="goods_keywords"/>
+    <result property="gcId" column="gc_id"/>
+    <result property="gcName" column="gc_name"/>
+    <result property="brandId" column="brand_id"/>
+    <result property="brandName" column="brand_name"/>
+    <result property="typeId" column="type_id"/>
+    <result property="specOpen" column="spec_open"/>
+    <result property="specId" column="spec_id"/>
+    <result property="specName" column="spec_name"/>
+    <result property="goodsImage" column="goods_image"/>
+    <result property="goodsImageMore" column="goods_image_more"/>
+    <result property="goodsRetailPrice" column="goods_retail_price"/>
+    <result property="goodsMemberPrice" column="goods_member_price"/>
+    <result property="goodsBigPrice" column="goods_big_price"/>
+    <result property="ppv" column="ppv"/>
+    <result property="bigPpv" column="big_ppv"/>
+    <result property="weight" column="weight"/>
+    <result property="shelfLife" column="shelf_life"/>
+
+    <result property="goodsShow" column="goods_show"/>
+    <result property="goodsClick" column="goods_click"/>
+    <result property="goodsState" column="goods_state"/>
+    <result property="createTime" column="create_time"/>
+    <result property="mobileBody" column="mobile_body"/>
+    <result property="goodsSpec" column="goods_spec"/>
+    <result property="updateTime" column="update_time"/>
+    <result property="transportId" column="transport_id"/>
+    <result property="goodsCloseReason" column="goods_close_reason"/>
+    <result property="commentnum" column="commentnum"/>
+    <result property="salenum" column="salenum"/>
+    <result property="goodsCollect" column="goods_collect"/>
+    <result property="isDel" column="is_del"/>
+    <result property="stock" column="stock"/>
+    <result property="sort" column="sort"/>
+    <result property="gcLevle" column="gc_levle"/>
+    <result property="releaseTime" column="release_time"/>
+    <result property="details" column="details"/>
+    <result property="evaluaterate" column="evaluateRate"/>
+    <result property="state" column="state"/>
+    <result property="goodsType" column="goods_type"/>
+    <result property="salePopulationIds" column="sale_population_ids"/>
+    <result property="salePopulationName" column="sale_population_name"/>
+  </resultMap>
+
+  <resultMap id="countOnSaleBrand" type="com.framework.loippi.vo.goods.BrandListVo">
+    <result column="brandId" property="brandId"/>
+    <result column="countNum" property="countNum"/>
+  </resultMap>
+
+  <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+  <sql id="base_column">
+        id ,goods_serial ,member_ship ,goods_name ,goods_subtitle ,goods_keywords ,gc_id ,gc_name ,brand_id ,brand_name ,
+        type_id ,spec_open ,spec_id ,spec_name ,goods_image ,goods_image_more ,goods_retail_price ,goods_member_price ,
+        goods_big_price ,ppv ,big_ppv,weight,shelf_life ,goods_show ,goods_click ,goods_state ,create_time ,mobile_body ,goods_spec ,update_time ,
+        transport_id ,goods_close_reason ,commentnum ,salenum ,goods_collect ,is_del ,stock ,sort ,gc_levle ,release_time ,details ,evaluateRate ,state
+        ,goods_type,sale_population_ids,sale_population_name
+    </sql>
+
+  <sql id="base_value_column">
+        #{id},#{goodsSerial},#{memberShip},#{goodsName},#{goodsSubtitle},#{goodsKeywords},#{gcId},#{gcName},#{brandId},#{brandName},#{typeId},#{specOpen},
+        #{specId},#{specName},#{goodsImage},#{goodsImageMore},#{goodsRetailPrice},#{goodsMemberPrice},#{goodsBigPrice},#{ppv},#{bigPpv},#{weight},#{shelfLife},#{goodsShow},#{goodsClick},
+        #{goodsState},#{createTime},#{mobileBody},#{goodsSpec},#{updateTime},#{transportId},#{goodsCloseReason},#{commentnum},#{salenum},#{goodsCollect},#{isDel},
+        #{stock},#{sort},#{gcLevle},#{releaseTime},#{details},#{evaluaterate},#{state}
+        ,#{goodsType},#{salePopulationIds},#{salePopulationName}
+    </sql>
+
+  <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+  <sql id="where_column">
+    <if test="id != null and id != ''">
+      AND id = #{id,jdbcType=BIGINT}
+    </if>
+    <if test="goodsSerial != null and goodsSerial != ''">
+      AND goods_serial = #{goodsSerial,jdbcType=VARCHAR}
+    </if>
+    <if test="memberShip != null and memberShip != ''">
+      AND member_ship = #{memberShip,jdbcType=BIGINT}
+    </if>
+    <if test="goodsName != null and goodsName != ''">
+      AND goods_name = #{goodsName,jdbcType=VARCHAR}
+    </if>
+    <if test="goodsSubtitle != null and goodsSubtitle != ''">
+      AND goods_subtitle = #{goodsSubtitle,jdbcType=VARCHAR}
+    </if>
+    <if test="goodsKeywords != null and goodsKeywords != ''">
+      AND goods_keywords = #{goodsKeywords,jdbcType=VARCHAR}
+    </if>
+    <if test="gcId != null and gcId != ''">
+      AND gc_id = #{gcId,jdbcType=BIGINT}
+    </if>
+    <if test="gcName != null and gcName != ''">
+      AND gc_name = #{gcName,jdbcType=VARCHAR}
+    </if>
+    <if test="brandId != null and brandId != ''">
+      AND brand_id = #{brandId,jdbcType=BIGINT}
+    </if>
+    <if test="brandName != null and brandName != ''">
+      AND brand_name = #{brandName,jdbcType=VARCHAR}
+    </if>
+    <if test="typeId != null and typeId != ''">
+      AND type_id = #{typeId,jdbcType=BIGINT}
+    </if>
+    <if test="specOpen != null and specOpen != ''">
+      AND spec_open = #{specOpen,jdbcType=INTEGER}
+    </if>
+    <if test="specId != null and specId != ''">
+      AND spec_id = #{specId,jdbcType=BIGINT}
+    </if>
+    <if test="specName != null and specName != ''">
+      AND spec_name = #{specName,jdbcType=VARCHAR}
+    </if>
+    <if test="goodsImage != null and goodsImage != ''">
+      AND goods_image = #{goodsImage,jdbcType=VARCHAR}
+    </if>
+    <if test="goodsImageMore != null and goodsImageMore != ''">
+      AND goods_image_more = #{goodsImageMore,jdbcType=VARCHAR}
+    </if>
+    <if test="goodsRetailPrice != null and goodsRetailPrice != ''">
+      AND goods_retail_price = #{goodsRetailPrice,jdbcType=DECIMAL}
+    </if>
+    <if test="goodsMemberPrice != null and goodsMemberPrice != ''">
+      AND goods_member_price = #{goodsMemberPrice,jdbcType=DECIMAL}
+    </if>
+    <if test="goodsBigPrice != null and goodsBigPrice != ''">
+      AND goods_big_price = #{goodsBigPrice,jdbcType=DECIMAL}
+    </if>
+    <if test="ppv != null and ppv != ''">
+      AND ppv = #{ppv}
+    </if>
+    <if test="bigPpv != null and bigPpv != ''">
+      AND big_ppv = #{bigPpv}
+    </if>
+    <if test="weight != null and weight != ''">
+      AND weight = #{weight}
+    </if>
+    <if test="shelfLife != null and shelfLife != ''">
+      AND shelf_life = #{shelfLife,jdbcType=INTEGER}
+    </if>
+    <if test="goodsShow != null">
+      AND goods_show = #{goodsShow,jdbcType=INTEGER}
+    </if>
+    <if test="goodsClick != null and goodsClick != ''">
+      AND goods_click = #{goodsClick,jdbcType=INTEGER}
+    </if>
+    <if test="goodsState != null and goodsState != ''">
+      AND goods_state = #{goodsState,jdbcType=INTEGER}
+    </if>
+    <if test="createTime != null and createTime != ''">
+      AND create_time = #{createTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="mobileBody != null and mobileBody != ''">
+      AND mobile_body = #{mobileBody,jdbcType=VARCHAR}
+    </if>
+    <if test="goodsSpec != null and goodsSpec != ''">
+      AND goods_spec = #{goodsSpec,jdbcType=VARCHAR}
+    </if>
+    <if test="updateTime != null and updateTime != ''">
+      AND update_time = #{updateTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="transportId != null and transportId != ''">
+      AND transport_id = #{transportId,jdbcType=BIGINT}
+    </if>
+    <if test="goodsCloseReason != null and goodsCloseReason != ''">
+      AND goods_close_reason = #{goodsCloseReason,jdbcType=VARCHAR}
+    </if>
+    <if test="commentnum != null and commentnum != ''">
+      AND commentnum = #{commentnum,jdbcType=INTEGER}
+    </if>
+    <if test="salenum != null and salenum != ''">
+      AND salenum = #{salenum,jdbcType=INTEGER}
+    </if>
+    <if test="goodsCollect != null and goodsCollect != ''">
+      AND goods_collect = #{goodsCollect,jdbcType=INTEGER}
+    </if>
+    <if test="isDel != null and isDel != ''">
+      AND is_del = #{isDel,jdbcType=INTEGER}
+    </if>
+    <if test="stock != null and stock != ''">
+      AND stock = #{stock,jdbcType=BIGINT}
+    </if>
+    <if test="sort != null and sort != ''">
+      AND sort = #{sort,jdbcType=INTEGER}
+    </if>
+    <if test="gcLevle != null and gcLevle != ''">
+      AND gc_levle = #{gcLevle,jdbcType=INTEGER}
+    </if>
+    <if test="releaseTime != null and releaseTime != ''">
+      AND release_time = #{releaseTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="details != null and details != ''">
+      AND details = #{details,jdbcType=VARCHAR}
+    </if>
+    <if test="evaluaterate != null and evaluaterate != ''">
+      AND evaluateRate = #{evaluaterate,jdbcType=DOUBLE}
+    </if>
+    <if test="state != null and state != ''">
+      AND state = #{state,jdbcType=INTEGER}
+    </if>
+    <if test="goodsType != null and goodsType != ''">
+      AND goods_type = #{goodsType,jdbcType=INTEGER}
+    </if>
+    <if test="salePopulationIds != null and salePopulationIds != ''">
+      AND sale_population_ids = #{salePopulationIds}
+    </if>
+    <if test="salePopulation != null and salePopulation != ''">
+      AND sale_population_ids LIKE CONCAT('%', #{salePopulation},'%')
+    </if>
+    <if test="salePopulationName != null and salePopulationName != ''">
+      AND sale_population_name = #{salePopulationName}
+    </if>
+
+    <if test="combinationIndex != null and combinationIndex != ''">
+      AND s.id != #{combinationIndex,jdbcType=BIGINT}
+    </if>
+    <if test="brandIds != null">
+      AND brand_id IN
+      <foreach item="brandId" index="index" collection="brandIds" open="(" separator="," close=")">
+        #{brandId}
+      </foreach>
+    </if>
+    <if test="goodsIds != null">
+      AND s.id IN
+      <foreach item="id" index="index" collection="goodsIds" open="(" separator="," close=")">
+        #{id}
+      </foreach>
+    </if>
+    <if test="classIds != null">
+      AND gc_id IN
+      <foreach item="classId" index="index" collection="classIds" open="(" separator="," close=")">
+        #{classId}
+      </foreach>
+    </if>
+    <if test="keyWordBrandName != null and keyWordBrandName != ''">
+      AND brand_name like concat('%',#{keyWordBrandName},'%')
+    </if>
+    <if test="startPrice != null and startPrice != ''">
+      AND goods_store_price &gt; #{startPrice}
+    </if>
+    <if test="endPrice != null and endPrice != ''">
+      AND goods_store_price &lt; #{endPrice}
+    </if>
+    <if test="goodsListKeywords != null and goodsListKeywords != ''">
+      AND ( s.goods_name like concat('%',#{goodsListKeywords},'%') OR s.id like concat('%',#{goodsListKeywords},'%'))
+    </if>
+
+    <if test="bianma != null and bianma != ''">
+      AND (g.spec_goods_serial like concat('%',#{bianma},'%') OR g.spec_bar_code like concat('%',#{bianma},'%'))
+    </if>
+    <if test="searchStartTime !=null and searchStartTime != ''">
+      <![CDATA[and update_time >= #{searchStartTime}]]>
+    </if>
+    <if test="searchEndTime !=null and searchEndTime != ''">
+      <![CDATA[and update_time <= #{searchEndTime}]]>
+    </if>
+
+  </sql>
+
+  <!-- 设置语句 -->
+  <sql id="set_column">
+    <if test="id != null">
+      id = #{id,jdbcType=BIGINT},
+    </if>
+    <if test="goodsSerial != null and goodsSerial != ''">
+      goods_serial = #{goodsSerial,jdbcType=VARCHAR},
+    </if>
+    <if test="memberShip != null">
+      member_ship = #{memberShip,jdbcType=BIGINT},
+    </if>
+    <if test="goodsName != null and goodsName != ''">
+      goods_name = #{goodsName,jdbcType=VARCHAR},
+    </if>
+    <if test="goodsSubtitle != null and goodsSubtitle != ''">
+      goods_subtitle = #{goodsSubtitle,jdbcType=VARCHAR},
+    </if>
+    <if test="goodsKeywords != null and goodsKeywords != ''">
+      goods_keywords = #{goodsKeywords,jdbcType=VARCHAR},
+    </if>
+    <if test="gcId != null">
+      gc_id = #{gcId,jdbcType=BIGINT},
+    </if>
+    <if test="gcName != null and gcName != ''">
+      gc_name = #{gcName,jdbcType=VARCHAR},
+    </if>
+    <if test="brandId != null">
+      brand_id = #{brandId,jdbcType=BIGINT},
+    </if>
+    <if test="brandName != null and brandName != ''">
+      brand_name = #{brandName,jdbcType=VARCHAR},
+    </if>
+    <if test="typeId != null">
+      type_id = #{typeId,jdbcType=BIGINT},
+    </if>
+    <if test="specOpen != null">
+      spec_open = #{specOpen,jdbcType=INTEGER},
+    </if>
+    <if test="specId != null">
+      spec_id = #{specId,jdbcType=BIGINT},
+    </if>
+    <if test="specName != null and specName != ''">
+      spec_name = #{specName,jdbcType=VARCHAR},
+    </if>
+    <if test="goodsImage != null and goodsImage != ''">
+      goods_image = #{goodsImage,jdbcType=VARCHAR},
+    </if>
+    <if test="goodsImageMore != '' ">
+      goods_image_more = #{goodsImageMore},
+    </if>
+    <if test="goodsRetailPrice != null">
+      goods_retail_price = #{goodsRetailPrice,jdbcType=DECIMAL},
+    </if>
+    <if test="goodsMemberPrice != null">
+      goods_member_price = #{goodsMemberPrice,jdbcType=DECIMAL},
+    </if>
+    <if test="goodsBigPrice != null">
+      goods_big_price = #{goodsBigPrice,jdbcType=DECIMAL},
+    </if>
+    <if test="ppv != null">
+      ppv = #{ppv},
+    </if>
+    <if test="bigPpv != null">
+      big_ppv = #{bigPpv},
+    </if>
+    <if test="weight != null and weight != ''">
+      weight = #{weight},
+    </if>
+    <if test="shelfLife != null and shelfLife != ''">
+      shelf_life = #{shelfLife,jdbcType=INTEGER},
+    </if>
+    <if test="goodsShow != null">
+      goods_show = #{goodsShow,jdbcType=INTEGER},
+    </if>
+    <if test="goodsClick != null">
+      goods_click = #{goodsClick,jdbcType=INTEGER},
+    </if>
+    <if test="goodsState != null">
+      goods_state = #{goodsState,jdbcType=INTEGER},
+    </if>
+    <if test="createTime != null">
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+    </if>
+    <if test="mobileBody != null and mobileBody != ''">
+      mobile_body = #{mobileBody,jdbcType=VARCHAR},
+    </if>
+    <if test="goodsSpec != null and goodsSpec != ''">
+      goods_spec = #{goodsSpec,jdbcType=VARCHAR},
+    </if>
+    <if test="updateTime != null">
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+    </if>
+    <if test="transportId != null">
+      transport_id = #{transportId,jdbcType=BIGINT},
+    </if>
+    <if test="goodsCloseReason != null and goodsCloseReason != ''">
+      goods_close_reason = #{goodsCloseReason,jdbcType=VARCHAR},
+    </if>
+    <if test="commentnum != null">
+      commentnum = #{commentnum,jdbcType=INTEGER},
+    </if>
+    <if test="salenum != null">
+      salenum = #{salenum,jdbcType=INTEGER},
+    </if>
+    <if test="goodsCollect != null">
+      goods_collect = #{goodsCollect,jdbcType=INTEGER},
+    </if>
+    <if test="isDel != null">
+      is_del = #{isDel,jdbcType=INTEGER},
+    </if>
+    <if test="stock != null">
+      stock = #{stock,jdbcType=BIGINT},
+    </if>
+    <if test="sort != null">
+      sort = #{sort,jdbcType=INTEGER},
+    </if>
+    <if test="gcLevle != null">
+      gc_levle = #{gcLevle,jdbcType=INTEGER},
+    </if>
+    <if test="releaseTime != null">
+      release_time = #{releaseTime,jdbcType=TIMESTAMP},
+    </if>
+    <if test="details != null and details != ''">
+      details = #{details,jdbcType=VARCHAR},
+    </if>
+    <if test="evaluaterate != null">
+      evaluateRate = #{evaluaterate,jdbcType=DOUBLE},
+    </if>
+    <if test="state != null">
+      state = #{state,jdbcType=INTEGER},
+    </if>
+    <if test="goodsType != null and goodsType != ''">
+      goods_type = #{goodsType,jdbcType=INTEGER},
+    </if>
+    <if test="salePopulationIds != null and salePopulationIds != ''">
+      sale_population_ids = #{salePopulationIds},
+    </if>
+    <if test="salePopulationName != null and salePopulationName != ''">
+      sale_population_name = #{salePopulationName},
+    </if>
+  </sql>
+
+  <!-- 根据ID查询 -->
+  <select id="find" resultMap="ShopGoodsResultMap">
+    SELECT
+    <include refid="base_column"/>
+    FROM SHOP_GOODS
+    WHERE ID=#{id,jdbcType=BIGINT}
+
+  </select>
+
+  <!-- 查询所有 -->
+  <select id="findAll" resultMap="ShopGoodsResultMap">
+    SELECT
+    <include refid="base_column"/>
+    FROM SHOP_GOODS
+  </select>
+
+  <!-- 统计记录数 -->
+  <select id="count" resultType="long">
+    SELECT COUNT(*) FROM SHOP_GOODS s LEFT JOIN shop_goods_spec g ON s.id=g.goods_id
+    <where>1=1
+      <include refid="where_column"/>
+      <if test="sgsIds != null and sgsIds != ''">
+        AND g.id NOT in
+        <foreach collection="sgsIds" open="(" separator="," close=")" item="sgsId">#{sgsId}</foreach>
+      </if>
+    </where>
+  </select>
+
+  <!-- 插入 -->
+  <insert id="insert" keyProperty="id" parameterType="com.framework.loippi.entity.product.ShopGoods">
+    INSERT SHOP_GOODS
+    (
+    <include refid="base_column"/>
+    )
+    VALUES (<include refid="base_value_column"/>)
+  </insert>
+
+  <!-- 修改 -->
+  <update id="update" parameterType="com.framework.loippi.entity.product.ShopGoods">
+    UPDATE SHOP_GOODS
+    <set>
+      <include refid="set_column"/>
+    </set>
+    WHERE id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 删除单条记录 -->
+  <delete id="delete">
+    UPDATE SHOP_GOODS
+    <set>
+      <include refid="set_column"/>
+    </set>
+    WHERE id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 删除多条记录-->
+  <delete id="deleteAll">
+    DELETE FROM SHOP_GOODS
+    WHERE ID IN
+    <foreach item="ShopGoodsId" index="index" collection="ids" open="(" separator="," close=")">
+      #{ShopGoodsId}
+    </foreach>
+  </delete>
+
+  <!-- 根据参数查询列表-->
+  <select id="findByParams" resultMap="ShopGoodsResultMap">
+    SELECT
+    SHOP_GOODS.*
+    <if test="showCommentNum == 1 ">
+      , ifnull( count( distinct sge.id), 0 ) as goodsEvaluaterate
+    </if>
+    FROM SHOP_GOODS
+    <if test="showCommentNum == 1 ">
+      LEFT JOIN SHOP_GOODS_EVALUATE sge ON (SHOP_GOODS.id=sge.geval_goodsid)
+    </if>
+    <where>1=1
+      <include refid="where_column"/>
+      <if test="ids != null and ids.size > 0">
+        AND SHOP_GOODS.id in
+        <foreach collection="ids" open="(" separator="," close=")" item="item">#{item}</foreach>
+      </if>
+    </where>
+    <if test="showCommentNum == 1 ">
+      GROUP BY  SHOP_GOODS.id
+    </if>
+  </select>
+
+  <!-- 分页查询-->
+  <select id="findByPage" resultMap="ShopGoodsResultMap">
+    SELECT
+    s.*
+    <if test="goodsType == 3 ">
+      ,count(sgg.id) as listGroupGoodsNum
+    </if>
+    <if test="showCommentNum == 1 ">
+      , ifnull( count( distinct sge.id), 0 ) as goodsEvaluaterate
+    </if>
+    FROM SHOP_GOODS s
+    <if test="goodsType != 3 ">
+      LEFT JOIN shop_goods_spec g ON s.id=g.goods_id
+    </if>
+    <if test="goodsType == 3 ">
+      LEFT JOIN shop_goods_goods sgg ON s.id=sgg.good_id
+    </if>
+    <if test="gcParentId != null ">
+      LEFT JOIN SHOP_GOODS_CLASS sgc ON s.gc_id=sgc.id
+    </if>
+    <if test="showCommentNum == 1 ">
+      LEFT JOIN SHOP_GOODS_EVALUATE sge ON (s.id=sge.geval_goodsid and sge.geval_state = 0 and sge.is_del is NULL)
+    </if>
+    <where>1=1
+
+      <if test="ids != null and ids.size > 0">
+        AND s.id in
+        <foreach collection="ids" open="(" separator="," close=")" item="item">${item}</foreach>
+      </if>
+      <if test="sgsIds != null and sgsIds != ''">
+        AND g.id NOT in
+        <foreach collection="sgsIds" open="(" separator="," close=")" item="sgsId">${sgsId}</foreach>
+      </if>
+      <if test="notIds != null and notIds.size > 0">
+        AND s.id NOT in
+        <foreach collection="notIds" open="(" separator="," close=")" item="item">${item}</foreach>
+      </if>
+      <if test="noBrandIds != null">
+        <!--AND s.brand_id NOT in-->
+        <!--<foreach collection="noBrandIds" open="(" separator="," close=")" item="item">${item}</foreach>-->
+        and  EXISTS ( select 1 from SHOP_GOODS_BRAND where brand_recommend!=0 and s.brand_id=SHOP_GOODS_BRAND.id)
+      </if>
+      <if test="gcParentId != null ">
+        AND sgc.gc_parent_id = #{gcParentId}
+      </if>
+      <if test="noGoodsType != null ">
+        AND s.goods_type != #{noGoodsType}
+      </if>
+      <if test="isDels != null and isDels != ''">
+        AND s.is_del = #{isDels}
+      </if>
+      <include refid="where_column"/>
+    </where>
+    GROUP BY s.goods_name
+    <if test="goodsEvaluaterate != null and goodsEvaluaterate != ''">
+      ORDER BY evaluaterate desc
+    </if>
+    <if test="goodsSalenum != null and goodsSalenum != ''">
+      ORDER BY salenum desc
+    </if>
+    <if test="orderAll != null and orderAll != ''">
+      ORDER BY
+      salenum DESC,evaluaterate DESC
+    </if>
+
+  </select>
+
+  <!--通过分类id组查找对应的商品-->
+  <select id="findGoodsByGcIds" resultMap="ShopGoodsResultMap">
+    select * from SHOP_GOODS
+    <if test="ids!=null">
+      WHERE gc_id IN
+      <foreach item="gcId" index="index" collection="ids" open="(" separator="," close=")">
+        #{gcId}
+      </foreach>
+    </if>
+  </select>
+
+  <!-- 组合分页查询-->
+  <select id="findByPageCombination" resultMap="ShopGoodsResultMap">
+    SELECT
+    <include refid="base_column"/>
+    FROM SHOP_GOODS
+    <where>
+      id !=#{id,jdbcType=BIGINT}
+    </where>
+    <if test="orderAll != null and orderAll != ''">
+      ORDER BY best_sellers_commend DESC,create_time DESC
+    </if>
+  </select>
+
+  <!-- 组合分页查询-->
+  <!-- 统计记录数 -->
+  <select id="countPageCombination" resultType="long">
+    SELECT COUNT(*) FROM SHOP_GOODS
+    <where>
+      id !=#{id,jdbcType=BIGINT}
+
+      <if test=" sgsIds != null and sgsIds != ''">
+        AND g.id NOT in (SELECT sgs.id from shop_goods sg
+        LEFT JOIN shop_goods_spec sgs on sg.id=sgs.goods_id
+        WHERE sgs.id in
+        <foreach collection="sgsIds" open="(" separator="," close=")" item="sgsId">#{sgsId}</foreach>
+        )
+      </if>
+    </where>
+  </select>
+
+  <!-- 批量操作-->
+  <delete id="updateAll">
+    UPDATE SHOP_GOODS
+    <set>
+      <include refid="set_column"/>
+    </set>
+    WHERE id IN
+    <foreach item="ShopGoodsId" index="index" collection="ids" open="(" separator="," close=")">
+      #{ShopGoodsId}
+    </foreach>
+  </delete>
+
+  <!-- 批量操作 取消收藏或者收藏-->
+  <delete id="updateAllGoodsCollect">
+    UPDATE SHOP_GOODS
+    <if test="type==1">
+      set goods_collect =(SHOP_GOODS.goods_collect+1)
+    </if>
+    <if test="type==2">
+      <!-- 判断收藏数 如果收藏为null或者小于1 就不减1 防止报错-->
+      set  goods_collect =
+      if(
+      ifnull(goods_collect, 0)
+      >=1,
+     (goods_collect-1),
+     0 )
+      <!--<choose>-->
+        <!--<when test="SHOP_GOODS.goods_collect != null and SHOP_GOODS.goods_collect != '' and SHOP_GOODS.goods_collect>=1">-->
+          <!--set SHOP_GOODS.goods_collect =(SHOP_GOODS.goods_collect-1)-->
+        <!--</when>-->
+        <!--<otherwise>-->
+          <!--set SHOP_GOODS.goods_collect=0-->
+        <!--</otherwise>-->
+      <!--</choose>-->
+    </if>
+    WHERE id IN
+    <foreach item="ShopGoodsId" index="index" collection="ids" open="(" separator="," close=")">
+      #{ShopGoodsId}
+    </foreach>
+  </delete>
+
+  <!--根据qr获取商品-->
+  <select id="findByQCode" resultType="long">
+        select id from SHOP_GOODS
+        where qrCode = #{qCode}
+    </select>
+
+  <!--   热卖推荐-->
+  <select id="findByhot" resultMap="ShopGoodsResultMap">
+        select * from SHOP_GOODS
+        where bestSellersCommend = #{bestSellersCommend}
+    </select>
+
+  <update id="updateGoodsCommentNum" parameterType="com.framework.loippi.entity.product.ShopGoods">
+    UPDATE SHOP_GOODS
+    <set>
+      commentnum = ifnull(commentnum, 0) + #{commentnum, jdbcType=INTEGER}
+      <if test="evaluaterate !=null and evaluaterate != ''">
+        ,evaluateRate = #{evaluaterate}
+      </if>
+
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="countOnSaleByBrand" resultMap="countOnSaleBrand">
+    SELECT s.brand_id ,COUNT(*) AS countNum FROM SHOP_GOODS s LEFT JOIN shop_goods_spec g ON s.id=g.goods_id
+    <where>1=1 AND s.brand_id is NOT NULL
+      <include refid="where_column"/>
+      <if test="sgsIds != null and sgsIds != ''">
+        AND g.id NOT in
+        <foreach collection="sgsIds" open="(" separator="," close=")" item="sgsId">#{sgsId}</foreach>
+      </if>
+    </where>
+    group by s.brand_id
+  </select>
+
+  <select id="listStatsCountVo" resultType="com.framework.loippi.vo.stats.StatsCountVo">
+        select sum(goods_num) count, 'yesterday' timeLong from shop_order_goods ogoods LEFT JOIN shop_order sorder on ogoods.order_id = sorder.id where sorder.order_state != 0 and to_days(now()) - to_days(sorder.create_time) =1
+        union
+        select sum(goods_num) count, 'beforeYesterday' timeLong from shop_order_goods ogoods LEFT JOIN shop_order sorder on ogoods.order_id = sorder.id where sorder.order_state != 0 and to_days(now()) - to_days(sorder.create_time) =2
+        union
+        SELECT sum(goods_num) count, 'lastWeek' timeLong FROM shop_order_goods ogoods LEFT JOIN shop_order sorder on ogoods.order_id = sorder.id where sorder.order_state != 0 and YEARWEEK(date_format(sorder.create_time,'%Y-%m-%d')) = YEARWEEK(now())-1
+        union
+        SELECT sum(goods_num) count, 'beforeLastWeek' timeLong from shop_order_goods ogoods LEFT JOIN shop_order sorder on ogoods.order_id = sorder.id where sorder.order_state != 0 and YEARWEEK(date_format(sorder.create_time,'%Y-%m-%d')) = YEARWEEK(now()) - 2
+        union
+        select sum(goods_num) count, 'lastMonth' timeLong from shop_order_goods ogoods LEFT JOIN shop_order sorder on ogoods.order_id = sorder.id where sorder.order_state != 0 and date_format(now(), '%Y%m') - date_format(sorder.create_time, '%Y%m') = 1
+        union
+        select sum(goods_num) count, 'beforeLastMonth' timeLong from shop_order_goods ogoods LEFT JOIN shop_order sorder on ogoods.order_id = sorder.id where sorder.order_state != 0 and date_format(now(), '%Y%m') - date_format(sorder.create_time, '%Y%m') = 2
+        UNION
+        select sum(salenum) count, 'untilNow' timeLong from shop_goods;
+    </select>
+</mapper>

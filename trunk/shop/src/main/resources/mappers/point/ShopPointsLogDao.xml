@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.point.ShopPointsLogDao">
+
+    <resultMap id="ShopPointsLogResultMap" type="com.framework.loippi.entity.point.ShopPointsLog">
+        <id property="id" column="id"/>
+        <result property="plMemberid" column="pl_memberid"/>
+        <result property="plMembername" column="pl_membername"/>
+        <result property="plAdminid" column="pl_adminid"/>
+        <result property="plAdminname" column="pl_adminname"/>
+        <result property="plPoints" column="pl_points"/>
+        <result property="createTime" column="create_time"/>
+        <result property="plDesc" column="pl_desc"/>
+        <result property="plStage" column="pl_stage"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="remarks" column="remarks"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="plType" column="pl_type"/>
+        <result property="ifBound" column="if_bound"/>
+        <result property="gradename" column="gradename"/>
+        <result property="bizType" column="biz_type"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,pl_memberid ,pl_membername ,pl_adminid ,pl_adminname ,pl_points ,create_time ,pl_desc ,pl_stage ,create_by ,create_date ,update_by ,update_date ,remarks ,del_flag ,pl_type ,if_bound ,gradename,biz_type
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{plMemberid},#{plMembername},#{plAdminid},#{plAdminname},#{plPoints},#{createTime},#{plDesc},#{plStage},#{createBy},#{createDate},#{updateBy},#{updateDate},#{remarks},#{delFlag},#{plType},#{ifBound},#{gradename},#{bizType}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="plMemberid != null and plMemberid != ''">
+            AND pl_memberid = #{plMemberid,jdbcType=BIGINT}
+        </if>
+        <if test="plMembername != null and plMembername != ''">
+            AND pl_membername = #{plMembername,jdbcType=VARCHAR}
+        </if>
+        <if test="plAdminid != null and plAdminid != ''">
+            AND pl_adminid = #{plAdminid,jdbcType=BIGINT}
+        </if>
+        <if test="plAdminname != null and plAdminname != ''">
+            AND pl_adminname = #{plAdminname,jdbcType=VARCHAR}
+        </if>
+        <if test="plPoints != null and plPoints != ''">
+            AND pl_points = #{plPoints,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="plDesc != null and plDesc != ''">
+            AND pl_desc = #{plDesc,jdbcType=VARCHAR}
+        </if>
+        <if test="plStage != null and plStage != ''">
+            AND pl_stage = #{plStage,jdbcType=VARCHAR}
+        </if>
+        <if test="createBy != null and createBy != ''">
+            AND create_by = #{createBy,jdbcType=BIGINT}
+        </if>
+        <if test="createDate != null and createDate != ''">
+            AND create_date = #{createDate}
+        </if>
+        <if test="updateBy != null and updateBy != ''">
+            AND update_by = #{updateBy,jdbcType=BIGINT}
+        </if>
+        <if test="updateDate != null and updateDate != ''">
+            AND update_date = #{updateDate}
+        </if>
+        <if test="remarks != null and remarks != ''">
+            AND remarks = #{remarks,jdbcType=VARCHAR}
+        </if>
+        <if test="delFlag != null and delFlag != ''">
+            AND del_flag = #{delFlag,jdbcType=INTEGER}
+        </if>
+        <if test="plType != null and plType != ''">
+            AND pl_type = #{plType,jdbcType=INTEGER}
+        </if>
+        <if test="bizType != null and bizType != ''">
+            AND biz_type = #{bizType,jdbcType=INTEGER}
+        </if>
+        <if test="ifBound != null and ifBound != ''">
+            AND if_bound = #{ifBound,jdbcType=INTEGER}
+        </if>
+        <if test="gradename != null and gradename != ''">
+            AND gradename = #{gradename,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="plMemberid != null">
+            pl_memberid = #{plMemberid,jdbcType=BIGINT},
+        </if>
+        <if test="plMembername != null and plMembername != ''">
+            pl_membername = #{plMembername,jdbcType=VARCHAR},
+        </if>
+        <if test="plAdminid != null">
+            pl_adminid = #{plAdminid,jdbcType=BIGINT},
+        </if>
+        <if test="plAdminname != null and plAdminname != ''">
+            pl_adminname = #{plAdminname,jdbcType=VARCHAR},
+        </if>
+        <if test="plPoints != null">
+            pl_points = #{plPoints,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=},
+        </if>
+        <if test="plDesc != null and plDesc != ''">
+            pl_desc = #{plDesc,jdbcType=VARCHAR},
+        </if>
+        <if test="plStage != null and plStage != ''">
+            pl_stage = #{plStage,jdbcType=VARCHAR},
+        </if>
+        <if test="createBy != null">
+            create_by = #{createBy,jdbcType=BIGINT},
+        </if>
+        <if test="createDate != null">
+            create_date = #{createDate,jdbcType=},
+        </if>
+        <if test="updateBy != null">
+            update_by = #{updateBy,jdbcType=BIGINT},
+        </if>
+        <if test="updateDate != null">
+            update_date = #{updateDate,jdbcType=},
+        </if>
+        <if test="remarks != null and remarks != ''">
+            remarks = #{remarks,jdbcType=VARCHAR},
+        </if>
+        <if test="delFlag != null">
+            del_flag = #{delFlag,jdbcType=INTEGER},
+        </if>
+        <if test="plType != null">
+            pl_type = #{plType,jdbcType=INTEGER},
+        </if>
+        <if test="ifBound != null">
+            if_bound = #{ifBound,jdbcType=INTEGER},
+        </if>
+
+        <if test="bizType != null and bizType != ''">
+            biz_type = #{bizType,jdbcType=INTEGER},
+        </if>
+        <if test="gradename != null and gradename != ''">
+            gradename = #{gradename,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopPointsLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_POINTS_LOG
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopPointsLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_POINTS_LOG
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_POINTS_LOG
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.point.ShopPointsLog">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_POINTS_LOG
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.point.ShopPointsLog">
+        UPDATE SHOP_POINTS_LOG
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_POINTS_LOG
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_POINTS_LOG
+        WHERE ID IN
+        <foreach item="ShopPointsLogId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopPointsLogId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopPointsLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_POINTS_LOG
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopPointsLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_POINTS_LOG
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper> 

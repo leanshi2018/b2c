@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopGoodsSpecDao">
+
+    <resultMap id="ShopGoodsSpecResultMap" type="com.framework.loippi.entity.product.ShopGoodsSpec">
+        <id property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="specName" column="spec_name"/>
+        <result property="specBigPrice" column="spec_big_price"/>
+        <result property="specRetailPrice" column="spec_retail_price"/>
+        <result property="specMemberPrice" column="spec_member_price"/>
+        <result property="specGoodsStorage" column="spec_goods_storage"/>
+        <result property="specSalenum" column="spec_salenum"/>
+        <result property="specGoodsColor" column="spec_goods_color"/>
+        <result property="specGoodsSerial" column="spec_goods_serial"/>
+        <result property="specGoodsSpec" column="spec_goods_spec"/>
+        <result property="specIsopen" column="spec_isopen"/>
+        <result property="specBarCode" column="spec_bar_code"/>
+        <result property="specPic" column="spec_pic"/>
+        <result property="ppv" column="ppv"/>
+        <result property="bigPpv" column="big_ppv"/>
+        <result property="weight" column="weight"/>
+        <result property="shelfLife" column="shelf_life"/>
+    </resultMap>
+
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,goods_id ,spec_name ,spec_big_price ,spec_retail_price ,spec_member_price ,spec_goods_storage ,spec_salenum ,spec_goods_color ,spec_goods_serial ,spec_goods_spec ,spec_isopen ,spec_bar_code,spec_pic,ppv,big_ppv,weight,shelf_life
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{goodsId},#{specName},#{specBigPrice},#{specRetailPrice},#{specMemberPrice},#{specGoodsStorage},#{specSalenum},#{specGoodsColor},#{specGoodsSerial},#{specGoodsSpec},#{specIsopen},#{specBarCode},#{specPic},#{ppv},#{bigPpv},#{weight},#{shelfLife}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="goodsId != null and goodsId != ''">
+            AND goods_id = #{goodsId,jdbcType=BIGINT}
+        </if>
+        <if test="specName != null and specName != ''">
+            AND spec_name = #{specName,jdbcType=VARCHAR}
+        </if>
+        <if test="specBigPrice != null and specBigPrice != ''">
+            AND spec_big_price = #{specBigPrice}
+        </if>
+        <if test="specRetailPrice != null">
+            AND spec_retail_price = #{specRetailPrice}
+        </if>
+        <if test="specMemberPrice != null">
+            AND spec_member_price = #{specMemberPrice}
+        </if>
+        <if test="specGoodsStorage != null and specGoodsStorage != ''">
+            AND spec_goods_storage = #{specGoodsStorage,jdbcType=INTEGER}
+        </if>
+        <if test="specSalenum != null and specSalenum != ''">
+            AND spec_salenum = #{specSalenum,jdbcType=INTEGER}
+        </if>
+        <if test="specGoodsColor != null and specGoodsColor != ''">
+            AND spec_goods_color = #{specGoodsColor,jdbcType=VARCHAR}
+        </if>
+        <if test="specGoodsSerial != null and specGoodsSerial != ''">
+            AND spec_goods_serial = #{specGoodsSerial,jdbcType=VARCHAR}
+        </if>
+        <if test="specGoodsSpec != null and specGoodsSpec != ''">
+            AND spec_goods_spec = #{specGoodsSpec,jdbcType=VARCHAR}
+        </if>
+        <if test="specIsopen != null and specIsopen != ''">
+            AND spec_isopen = #{specIsopen,jdbcType=INTEGER}
+        </if>
+        <if test="combinationIndex != null and combinationIndex != ''">
+            AND goods_id != #{combinationIndex,jdbcType=BIGINT}
+        </if>
+        <if test="specBarCode != null and specBarCode != ''">
+            AND spec_bar_code = #{specBarCode}
+        </if>
+        <if test="ppv != null">
+            AND ppv = #{ppv}
+        </if>
+        <if test="bigPpv != null">
+            AND big_ppv = #{bigPpv}
+        </if>
+        <if test="weight != null">
+            AND weight = #{weight}
+        </if>
+        <if test="shelfLife != null">
+            AND shelf_life = #{shelfLife}
+        </if>
+        <if test="keyWord != null and keyWord != ''">
+            AND spec_goods_spec like concat('%',#{keyWord},'%')
+        </if>
+        <if test="shopGoodsIds != null">
+            AND goods_id IN
+            <foreach item="goodsId" index="index" collection="shopGoodsIds" open="(" separator="," close=")">
+                #{goodsId}
+            </foreach>
+        </if>
+        <if test="inStock != null">
+            AND spec_goods_storage > 0
+        </if>
+        <if test="notSpecIsOpen != null and notSpecIsOpen != ''">
+            AND spec_isopen !={notSpecIsOpen}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="goodsId != null">
+            goods_id = #{goodsId,jdbcType=BIGINT},
+        </if>
+        <if test="specName != null and specName != ''">
+            spec_name = #{specName,jdbcType=VARCHAR},
+        </if>
+        <if test="specBigPrice != null">
+            spec_big_price = #{specBigPrice},
+        </if>
+        <if test="specRetailPrice != null">
+            spec_retail_price = #{specRetailPrice},
+        </if>
+        <if test="specMemberPrice != null">
+            spec_member_price = #{specMemberPrice},
+        </if>
+        <if test="specGoodsStorage != null">
+            spec_goods_storage = #{specGoodsStorage,jdbcType=INTEGER},
+        </if>
+        <if test="specSalenum != null">
+            spec_salenum = #{specSalenum,jdbcType=INTEGER},
+        </if>
+        <if test="specGoodsColor != null and specGoodsColor != ''">
+            spec_goods_color = #{specGoodsColor,jdbcType=VARCHAR},
+        </if>
+        <if test="specGoodsSerial != null and specGoodsSerial != ''">
+            spec_goods_serial = #{specGoodsSerial,jdbcType=VARCHAR},
+        </if>
+        <if test="specGoodsSpec != null and specGoodsSpec != ''">
+            spec_goods_spec = #{specGoodsSpec,jdbcType=VARCHAR},
+        </if>
+        <if test="specIsopen != null">
+            spec_isopen = #{specIsopen,jdbcType=INTEGER},
+        </if>
+        <if test="specPic != null">
+            spec_pic = #{specPic,jdbcType=INTEGER},
+        </if>
+        <if test="specBarCode != null">
+            spec_bar_code = #{specBarCode,jdbcType=INTEGER},
+        </if>
+        <if test="ppv != null">
+            ppv = #{ppv},
+        </if>
+        <if test="bigPpv != null">
+            big_ppv = #{bigPpv},
+        </if>
+        <if test="weight != null">
+            weight = #{weight},
+        </if>
+        <if test="shelfLife != null">
+            shelf_life = #{shelfLife},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopGoodsSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_SPEC
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopGoodsSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_SPEC
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_GOODS_SPEC
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopGoodsSpec">
+        INSERT SHOP_GOODS_SPEC
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopGoodsSpec">
+        UPDATE SHOP_GOODS_SPEC
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_GOODS_SPEC
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_GOODS_SPEC
+        WHERE ID IN
+        <foreach item="ShopGoodsSpecId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopGoodsSpecId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopGoodsSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_SPEC
+        <where>1=1
+            <include refid="where_column"/>
+            <if test="ids != null and ids.size > 0">
+                AND SHOP_GOODS_SPEC.id in
+                <foreach collection="ids" open="(" separator="," close=")" item="item">#{item}</foreach>
+            </if>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopGoodsSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_SPEC
+        <where>1=1
+            <include refid="where_column"/>
+            <if test="ids != null and ids.size > 0">
+                AND SHOP_GOODS_SPEC.id in
+                <foreach collection="ids" open="(" separator="," close=")" item="item">#{item}</foreach>
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findByCondition" resultMap="ShopGoodsSpecResultMap"
+            parameterType="com.framework.loippi.entity.product.ShopGoodsSpec">
+        select
+        <include refid="base_column"/>
+        from shop_goods_spec
+        <where>
+            1 = 1 and spec_isopen=1
+            <if test="goodsId != null and goodsId != ''">
+                and goods_id = #{goodsId}
+            </if>
+            <if test="specGoodsSpec != null">
+                and spec_goods_spec = #{specGoodsSpec}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据goodsid批量删除 -->
+    <delete id="deleteGoodsSpecByGoodsId">
+        UPDATE SHOP_GOODS_SPEC SET spec_isopen = 3 where 1=1
+        <if test="goodIds != null and goodIds.size > 0">
+            AND SHOP_GOODS_SPEC.goods_id in
+            <foreach collection="goodIds" open="(" separator="," close=")" item="item">#{item}</foreach>
+        </if>
+    </delete>
+
+
+    <!-- 修改goodssepc表的库存和销售情况 -->
+    <update id="updateGoodsSpecStorage" parameterType="com.framework.loippi.entity.product.ShopGoodsSpec">
+        update shop_goods_spec
+        <set>
+            spec_goods_storage = spec_goods_storage - #{specSalenum},
+            spec_salenum = spec_salenum + #{specSalenum}
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 通过goodsId查找 -->
+    <select id="findListByGoodsId" resultMap="ShopGoodsSpecResultMap">
+        select
+        <include refid="base_column"/>
+        from shop_goods_spec where goods_id=#{goodsId} AND spec_isopen !=3
+    </select>
+
+    <select id="findByGoodsId" resultMap="ShopGoodsSpecResultMap" parameterType="Long">
+        select
+        <include refid="base_column"/>
+        from shop_goods_spec where goods_id=#{goodsId}
+    </select>
+
+    <select id="findGoodsStocksInfo" resultType="com.framework.loippi.result.sys.GoodsStocksListView">
+        select sg.id as goodsId,sg.goods_name,sg.goods_type,sg.gc_id,sg.gc_name,sg.brand_id,sg.brand_name,sg.goods_show,sg.sale_population_ids,sgs.id as specId,sgs.spec_name as specName
+        ,sgs.spec_goods_storage as specGoodsStorage,sgs.spec_salenum as specSalenum ,spec_goods_serial ,spec_goods_spec ,spec_isopen,sgs.shelf_life,sg.update_time
+        from shop_goods_spec sgs
+        left join SHOP_GOODS sg on sg.id=sgs.goods_id
+        <if test="gcParentId != null ">
+            LEFT JOIN SHOP_GOODS_CLASS sgc  ON sg.gc_id=sgc.id
+        </if>
+         where
+                 1=1
+        <if test="gcParentId != null ">
+            AND sgc.gc_parent_id = #{gcParentId}
+        </if>
+        <if test="brandName != null and brandName != ''">
+            AND sg.brand_name like concat('%',#{brandName},'%')
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            AND sg.goods_name like concat('%',#{goodsName},'%')
+        </if>
+        <if test="searchStartTime !=null and searchStartTime != ''">
+            <![CDATA[and update_time >= #{searchStartTime}]]>
+        </if>
+        <if test="searchEndTime !=null and searchEndTime != ''">
+            <![CDATA[and update_time <= #{searchEndTime}]]>
+        </if>
+        <if test="salePopulation != null and salePopulation != ''">
+            AND sg.sale_population_ids LIKE CONCAT('%', #{salePopulation},'%')
+        </if>
+        <if test="goodsType != null and goodsType != ''">
+            AND sg.goods_type = #{goodsType}
+        </if>
+        <if test="gcId != null">
+            AND sg.gc_id = #{gcId}
+        </if>
+        <if test="id != null">
+            AND sg.id = #{id}
+        </if>
+        <if test="goodsListKeywords != null and goodsListKeywords != ''">
+            AND ( s.goods_name like concat('%',#{goodsListKeywords},'%') OR s.id like concat('%',#{goodsListKeywords},'%'))
+        </if>
+        AND spec_isopen !=3
+    </select>
+
+</mapper> 

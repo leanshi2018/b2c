@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.order.ShopOrderInvoiceDao">
+	
+	<resultMap id="ShopOrderInvoiceResultMap" type="com.framework.loippi.entity.order.ShopOrderInvoice">
+		<id property="id" column="id"  />
+		<result property="memberId" column="member_id" />
+		<result property="orderId" column="order_id" />
+		<result property="invState" column="inv_state" />
+		<result property="invTitle" column="inv_title" />
+		<result property="invContent" column="inv_content" />
+		<result property="invCompany" column="inv_company" />
+		<result property="invCode" column="inv_code" />
+		<result property="invRegAddr" column="inv_reg_addr" />
+		<result property="invRegPhone" column="inv_reg_phone" />
+		<result property="invRegBname" column="inv_reg_bname" />
+		<result property="invRegBaccount" column="inv_reg_baccount" />
+		<result property="invRecName" column="inv_rec_name" />
+		<result property="invRecMobphone" column="inv_rec_mobphone" />
+		<result property="invRecProvince" column="inv_rec_province" />
+		<result property="invGotoAddr" column="inv_goto_addr" />
+		<result property="isDefault" column="is_default" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 id ,member_id ,order_id ,inv_state ,inv_title ,inv_content ,inv_company ,inv_code ,inv_reg_addr ,inv_reg_phone ,inv_reg_bname ,inv_reg_baccount ,inv_rec_name ,inv_rec_mobphone ,inv_rec_province ,inv_goto_addr ,is_default 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{id},#{memberId},#{orderId},#{invState},#{invTitle},#{invContent},#{invCompany},#{invCode},#{invRegAddr},#{invRegPhone},#{invRegBname},#{invRegBaccount},#{invRecName},#{invRecMobphone},#{invRecProvince},#{invGotoAddr},#{isDefault}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null and id != ''">
+			AND id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="memberId != null and memberId != ''">
+			AND member_id = #{memberId,jdbcType=BIGINT}
+		</if>
+		<if test="orderId != null and orderId != ''">
+			AND order_id = #{orderId,jdbcType=BIGINT}
+		</if>
+		<if test="invState != null and invState != ''">
+			AND inv_state = #{invState,jdbcType=VARCHAR}
+		</if>
+		<if test="invTitle != null and invTitle != ''">
+			AND inv_title = #{invTitle,jdbcType=VARCHAR}
+		</if>
+		<if test="invContent != null and invContent != ''">
+			AND inv_content = #{invContent,jdbcType=VARCHAR}
+		</if>
+		<if test="invCompany != null and invCompany != ''">
+			AND inv_company = #{invCompany,jdbcType=VARCHAR}
+		</if>
+		<if test="invCode != null and invCode != ''">
+			AND inv_code = #{invCode,jdbcType=VARCHAR}
+		</if>
+		<if test="invRegAddr != null and invRegAddr != ''">
+			AND inv_reg_addr = #{invRegAddr,jdbcType=VARCHAR}
+		</if>
+		<if test="invRegPhone != null and invRegPhone != ''">
+			AND inv_reg_phone = #{invRegPhone,jdbcType=VARCHAR}
+		</if>
+		<if test="invRegBname != null and invRegBname != ''">
+			AND inv_reg_bname = #{invRegBname,jdbcType=VARCHAR}
+		</if>
+		<if test="invRegBaccount != null and invRegBaccount != ''">
+			AND inv_reg_baccount = #{invRegBaccount,jdbcType=VARCHAR}
+		</if>
+		<if test="invRecName != null and invRecName != ''">
+			AND inv_rec_name = #{invRecName,jdbcType=VARCHAR}
+		</if>
+		<if test="invRecMobphone != null and invRecMobphone != ''">
+			AND inv_rec_mobphone = #{invRecMobphone,jdbcType=VARCHAR}
+		</if>
+		<if test="invRecProvince != null and invRecProvince != ''">
+			AND inv_rec_province = #{invRecProvince,jdbcType=VARCHAR}
+		</if>
+		<if test="invGotoAddr != null and invGotoAddr != ''">
+			AND inv_goto_addr = #{invGotoAddr,jdbcType=VARCHAR}
+		</if>
+		<if test="isDefault != null and isDefault != ''">
+			AND is_default = #{isDefault,jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="id != null">
+			id = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="memberId != null">
+			member_id = #{memberId,jdbcType=BIGINT},
+		</if>
+		<if test="orderId != null">
+			order_id = #{orderId,jdbcType=BIGINT},
+		</if>
+		<if test="invState != null and invState != ''">
+			inv_state = #{invState,jdbcType=VARCHAR},
+		</if>
+		<if test="invTitle != null and invTitle != ''">
+			inv_title = #{invTitle,jdbcType=VARCHAR},
+		</if>
+		<if test="invContent != null and invContent != ''">
+			inv_content = #{invContent,jdbcType=VARCHAR},
+		</if>
+		<if test="invCompany != null and invCompany != ''">
+			inv_company = #{invCompany,jdbcType=VARCHAR},
+		</if>
+		<if test="invCode != null and invCode != ''">
+			inv_code = #{invCode,jdbcType=VARCHAR},
+		</if>
+		<if test="invRegAddr != null and invRegAddr != ''">
+			inv_reg_addr = #{invRegAddr,jdbcType=VARCHAR},
+		</if>
+		<if test="invRegPhone != null and invRegPhone != ''">
+			inv_reg_phone = #{invRegPhone,jdbcType=VARCHAR},
+		</if>
+		<if test="invRegBname != null and invRegBname != ''">
+			inv_reg_bname = #{invRegBname,jdbcType=VARCHAR},
+		</if>
+		<if test="invRegBaccount != null and invRegBaccount != ''">
+			inv_reg_baccount = #{invRegBaccount,jdbcType=VARCHAR},
+		</if>
+		<if test="invRecName != null and invRecName != ''">
+			inv_rec_name = #{invRecName,jdbcType=VARCHAR},
+		</if>
+		<if test="invRecMobphone != null and invRecMobphone != ''">
+			inv_rec_mobphone = #{invRecMobphone,jdbcType=VARCHAR},
+		</if>
+		<if test="invRecProvince != null and invRecProvince != ''">
+			inv_rec_province = #{invRecProvince,jdbcType=VARCHAR},
+		</if>
+		<if test="invGotoAddr != null and invGotoAddr != ''">
+			inv_goto_addr = #{invGotoAddr,jdbcType=VARCHAR},
+		</if>
+		<if test="isDefault != null">
+			is_default = #{isDefault,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="ShopOrderInvoiceResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	SHOP_ORDER_INVOICE
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="ShopOrderInvoiceResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	SHOP_ORDER_INVOICE
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM SHOP_ORDER_INVOICE
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.order.ShopOrderInvoice">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  
+	          SELECT LAST_INSERT_ID() AS ID    
+	    </selectKey>  
+		INSERT SHOP_ORDER_INVOICE 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.order.ShopOrderInvoice">
+		UPDATE	SHOP_ORDER_INVOICE
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM SHOP_ORDER_INVOICE
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM SHOP_ORDER_INVOICE
+		WHERE	ID	IN
+    	<foreach item="ShopOrderInvoiceId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{ShopOrderInvoiceId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="ShopOrderInvoiceResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	SHOP_ORDER_INVOICE
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="ShopOrderInvoiceResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM SHOP_ORDER_INVOICE
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdMmEditDao">
+	
+	<resultMap id="RdMmEditResultMap" type="com.framework.loippi.entity.user.RdMmEdit">
+		<id property="eid" column="EID"  />
+		<result property="mmCode" column="MM_CODE" />
+		<result property="mmNameBefore" column="MM_NAME_BEFORE" />
+		<result property="mmNameAfter" column="MM_NAME_AFTER" />
+		<result property="idTypeBefore" column="ID_TYPE_BEFORE" />
+		<result property="idTypeAfter" column="ID_TYPE_AFTER" />
+		<result property="idCodeBefore" column="ID_CODE_BEFORE" />
+		<result property="idCodeAfter" column="ID_CODE_AFTER" />
+		<result property="mmNickNameBefore" column="MM_NICK_NAME_BEFORE" />
+		<result property="mmNickNameAfter" column="MM_NICK_NAME_AFTER" />
+		<result property="genderBefore" column="GENDER_BEFORE" />
+		<result property="genderAfter" column="GENDER_AFTER" />
+		<result property="mobileBefore" column="MOBILE_BEFORE" />
+		<result property="mobileAfter" column="MOBILE_AFTER" />
+		<result property="wechatCodeBefore" column="WECHAT_CODE_BEFORE" />
+		<result property="wechatCodeAfter" column="WECHAT_CODE_AFTER" />
+		<result property="emailBefore" column="EMAIL_BEFORE" />
+		<result property="emailAfter" column="EMAIL_AFTER" />
+		<result property="addPostBefore" column="ADD_POST_BEFORE" />
+		<result property="addPostAfter" column="ADD_POST_AFTER" />
+		<result property="addProvinceIdBefore" column="ADD_PROVINCE_ID_BEFORE" />
+		<result property="addProvinceIdAfter" column="ADD_PROVINCE_ID_AFTER" />
+		<result property="addCityIdBefore" column="ADD_CITY_ID_BEFORE" />
+		<result property="addCityIdAfter" column="ADD_CITY_ID_AFTER" />
+		<result property="addCountryIdBefore" column="ADD_COUNTRY_ID_BEFORE" />
+		<result property="addCountryIdAfter" column="ADD_COUNTRY_ID_AFTER" />
+		<result property="addDetialBefore" column="ADD_DETIAL_BEFORE" />
+		<result property="addDetialAfter" column="ADD_DETIAL_AFTER" />
+		<result property="bankDetailBefore" column="BANK_DETAIL_BEFORE" />
+		<result property="bankDetailAfter" column="BANK_DETAIL_AFTER" />
+		<result property="accNameBefore" column="ACC_NAME_BEFORE" />
+		<result property="accNameAfter" column="ACC_NAME_AFTER" />
+		<result property="accCodeBefore" column="ACC_CODE_BEFORE" />
+		<result property="accCodeAfter" column="ACC_CODE_AFTER" />
+		<result property="withdrawDefaultBefore" column="WITHDRAW_DEFAULT_BEFORE" />
+		<result property="withdrawDefaultAfter" column="WITHDRAW_DEFAULT_AFTER" />
+		<result property="sponsorCodeBefore" column="SPONSOR_CODE_BEFORE" />
+		<result property="sponsorCodeAfter" column="SPONSOR_CODE_AFTER" />
+		<result property="sponsorNameBefore" column="SPONSOR_NAME_BEFORE" />
+		<result property="sponsorNameAfter" column="SPONSOR_NAME_AFTER" />
+		<result property="rankBefore" column="RANK_BEFORE" />
+		<result property="rankAfter" column="RANK_AFTER" />
+		<result property="raCodeBefore" column="RA_CODE_BEFORE" />
+		<result property="raCodeAfter" column="RA_CODE_AFTER" />
+		<result property="raNameBefore" column="RA_NAME_BEFORE" />
+		<result property="raNameAfter" column="RA_NAME_AFTER" />
+		<result property="raIdTypeBefore" column="RA_ID_TYPE_BEFORE" />
+		<result property="raIdTypeAfter" column="RA_ID_TYPE_AFTER" />
+		<result property="raIdCodeBefore" column="RA_ID_CODE_BEFORE" />
+		<result property="raIdCodeAfter" column="RA_ID_CODE_AFTER" />
+		<result property="updateBy" column="UPDATE_BY" />
+		<result property="updateMemo" column="UPDATE_MEMO" />
+		<result property="updateType" column="UPDATE_TYPE" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="uploadPath" column="UPLOAD_PATH" />
+		<result property="reviewMemo" column="REVIEW_MEMO" />
+		<result property="reviewStatus" column="REVIEW_STATUS" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 EID ,MM_CODE ,MM_NAME_BEFORE ,MM_NAME_AFTER ,ID_TYPE_BEFORE ,ID_TYPE_AFTER ,ID_CODE_BEFORE ,ID_CODE_AFTER ,MM_NICK_NAME_BEFORE ,MM_NICK_NAME_AFTER ,GENDER_BEFORE ,GENDER_AFTER ,MOBILE_BEFORE ,MOBILE_AFTER ,WECHAT_CODE_BEFORE ,WECHAT_CODE_AFTER ,EMAIL_BEFORE ,EMAIL_AFTER ,ADD_POST_BEFORE ,ADD_POST_AFTER ,ADD_PROVINCE_ID_BEFORE ,ADD_PROVINCE_ID_AFTER ,ADD_CITY_ID_BEFORE ,ADD_CITY_ID_AFTER ,ADD_COUNTRY_ID_BEFORE ,ADD_COUNTRY_ID_AFTER ,ADD_DETIAL_BEFORE ,ADD_DETIAL_AFTER ,BANK_DETAIL_BEFORE ,BANK_DETAIL_AFTER ,ACC_NAME_BEFORE ,ACC_NAME_AFTER ,ACC_CODE_BEFORE ,ACC_CODE_AFTER ,WITHDRAW_DEFAULT_BEFORE ,WITHDRAW_DEFAULT_AFTER ,SPONSOR_CODE_BEFORE ,SPONSOR_CODE_AFTER ,SPONSOR_NAME_BEFORE ,SPONSOR_NAME_AFTER ,RANK_BEFORE ,RANK_AFTER ,RA_CODE_BEFORE ,RA_CODE_AFTER ,RA_NAME_BEFORE ,RA_NAME_AFTER ,RA_ID_TYPE_BEFORE ,RA_ID_TYPE_AFTER ,RA_ID_CODE_BEFORE ,RA_ID_CODE_AFTER ,UPDATE_BY ,UPDATE_MEMO ,UPDATE_TYPE ,UPDATE_TIME ,UPLOAD_PATH ,REVIEW_MEMO ,REVIEW_STATUS 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{eid},#{mmCode},#{mmNameBefore},#{mmNameAfter},#{idTypeBefore},#{idTypeAfter},#{idCodeBefore},#{idCodeAfter},#{mmNickNameBefore},#{mmNickNameAfter},#{genderBefore},#{genderAfter},#{mobileBefore},#{mobileAfter},#{wechatCodeBefore},#{wechatCodeAfter},#{emailBefore},#{emailAfter},#{addPostBefore},#{addPostAfter},#{addProvinceIdBefore},#{addProvinceIdAfter},#{addCityIdBefore},#{addCityIdAfter},#{addCountryIdBefore},#{addCountryIdAfter},#{addDetialBefore},#{addDetialAfter},#{bankDetailBefore},#{bankDetailAfter},#{accNameBefore},#{accNameAfter},#{accCodeBefore},#{accCodeAfter},#{withdrawDefaultBefore},#{withdrawDefaultAfter},#{sponsorCodeBefore},#{sponsorCodeAfter},#{sponsorNameBefore},#{sponsorNameAfter},#{rankBefore},#{rankAfter},#{raCodeBefore},#{raCodeAfter},#{raNameBefore},#{raNameAfter},#{raIdTypeBefore},#{raIdTypeAfter},#{raIdCodeBefore},#{raIdCodeAfter},#{updateBy},#{updateMemo},#{updateType},#{updateTime},#{uploadPath},#{reviewMemo},#{reviewStatus}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="eid != null and eid != ''">
+			AND EID = #{eid,jdbcType=INTEGER}
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="mmNameBefore != null and mmNameBefore != ''">
+			AND MM_NAME_BEFORE = #{mmNameBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="mmNameAfter != null and mmNameAfter != ''">
+			AND MM_NAME_AFTER = #{mmNameAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="idTypeBefore != null and idTypeBefore != ''">
+			AND ID_TYPE_BEFORE = #{idTypeBefore,jdbcType=INTEGER}
+		</if>
+		<if test="idTypeAfter != null and idTypeAfter != ''">
+			AND ID_TYPE_AFTER = #{idTypeAfter,jdbcType=INTEGER}
+		</if>
+		<if test="idCodeBefore != null and idCodeBefore != ''">
+			AND ID_CODE_BEFORE = #{idCodeBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="idCodeAfter != null and idCodeAfter != ''">
+			AND ID_CODE_AFTER = #{idCodeAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="mmNickNameBefore != null and mmNickNameBefore != ''">
+			AND MM_NICK_NAME_BEFORE = #{mmNickNameBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="mmNickNameAfter != null and mmNickNameAfter != ''">
+			AND MM_NICK_NAME_AFTER = #{mmNickNameAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="genderBefore != null and genderBefore != ''">
+			AND GENDER_BEFORE = #{genderBefore,jdbcType=INTEGER}
+		</if>
+		<if test="genderAfter != null and genderAfter != ''">
+			AND GENDER_AFTER = #{genderAfter,jdbcType=INTEGER}
+		</if>
+		<if test="mobileBefore != null and mobileBefore != ''">
+			AND MOBILE_BEFORE = #{mobileBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="mobileAfter != null and mobileAfter != ''">
+			AND MOBILE_AFTER = #{mobileAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="wechatCodeBefore != null and wechatCodeBefore != ''">
+			AND WECHAT_CODE_BEFORE = #{wechatCodeBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="wechatCodeAfter != null and wechatCodeAfter != ''">
+			AND WECHAT_CODE_AFTER = #{wechatCodeAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="emailBefore != null and emailBefore != ''">
+			AND EMAIL_BEFORE = #{emailBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="emailAfter != null and emailAfter != ''">
+			AND EMAIL_AFTER = #{emailAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="addPostBefore != null and addPostBefore != ''">
+			AND ADD_POST_BEFORE = #{addPostBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="addPostAfter != null and addPostAfter != ''">
+			AND ADD_POST_AFTER = #{addPostAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="addProvinceIdBefore != null and addProvinceIdBefore != ''">
+			AND ADD_PROVINCE_ID_BEFORE = #{addProvinceIdBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="addProvinceIdAfter != null and addProvinceIdAfter != ''">
+			AND ADD_PROVINCE_ID_AFTER = #{addProvinceIdAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="addCityIdBefore != null and addCityIdBefore != ''">
+			AND ADD_CITY_ID_BEFORE = #{addCityIdBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="addCityIdAfter != null and addCityIdAfter != ''">
+			AND ADD_CITY_ID_AFTER = #{addCityIdAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="addCountryIdBefore != null and addCountryIdBefore != ''">
+			AND ADD_COUNTRY_ID_BEFORE = #{addCountryIdBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="addCountryIdAfter != null and addCountryIdAfter != ''">
+			AND ADD_COUNTRY_ID_AFTER = #{addCountryIdAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="addDetialBefore != null and addDetialBefore != ''">
+			AND ADD_DETIAL_BEFORE = #{addDetialBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="addDetialAfter != null and addDetialAfter != ''">
+			AND ADD_DETIAL_AFTER = #{addDetialAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="bankDetailBefore != null and bankDetailBefore != ''">
+			AND BANK_DETAIL_BEFORE = #{bankDetailBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="bankDetailAfter != null and bankDetailAfter != ''">
+			AND BANK_DETAIL_AFTER = #{bankDetailAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="accNameBefore != null and accNameBefore != ''">
+			AND ACC_NAME_BEFORE = #{accNameBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="accNameAfter != null and accNameAfter != ''">
+			AND ACC_NAME_AFTER = #{accNameAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="accCodeBefore != null and accCodeBefore != ''">
+			AND ACC_CODE_BEFORE = #{accCodeBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="accCodeAfter != null and accCodeAfter != ''">
+			AND ACC_CODE_AFTER = #{accCodeAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="withdrawDefaultBefore != null and withdrawDefaultBefore != ''">
+			AND WITHDRAW_DEFAULT_BEFORE = #{withdrawDefaultBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="withdrawDefaultAfter != null and withdrawDefaultAfter != ''">
+			AND WITHDRAW_DEFAULT_AFTER = #{withdrawDefaultAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="sponsorCodeBefore != null and sponsorCodeBefore != ''">
+			AND SPONSOR_CODE_BEFORE = #{sponsorCodeBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="sponsorCodeAfter != null and sponsorCodeAfter != ''">
+			AND SPONSOR_CODE_AFTER = #{sponsorCodeAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="sponsorNameBefore != null and sponsorNameBefore != ''">
+			AND SPONSOR_NAME_BEFORE = #{sponsorNameBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="sponsorNameAfter != null and sponsorNameAfter != ''">
+			AND SPONSOR_NAME_AFTER = #{sponsorNameAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="rankBefore != null and rankBefore != ''">
+			AND RANK_BEFORE = #{rankBefore,jdbcType=INTEGER}
+		</if>
+		<if test="rankAfter != null and rankAfter != ''">
+			AND RANK_AFTER = #{rankAfter,jdbcType=INTEGER}
+		</if>
+		<if test="raCodeBefore != null and raCodeBefore != ''">
+			AND RA_CODE_BEFORE = #{raCodeBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="raCodeAfter != null and raCodeAfter != ''">
+			AND RA_CODE_AFTER = #{raCodeAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="raNameBefore != null and raNameBefore != ''">
+			AND RA_NAME_BEFORE = #{raNameBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="raNameAfter != null and raNameAfter != ''">
+			AND RA_NAME_AFTER = #{raNameAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="raIdTypeBefore != null and raIdTypeBefore != ''">
+			AND RA_ID_TYPE_BEFORE = #{raIdTypeBefore,jdbcType=INTEGER}
+		</if>
+		<if test="raIdTypeAfter != null and raIdTypeAfter != ''">
+			AND RA_ID_TYPE_AFTER = #{raIdTypeAfter,jdbcType=INTEGER}
+		</if>
+		<if test="raIdCodeBefore != null and raIdCodeBefore != ''">
+			AND RA_ID_CODE_BEFORE = #{raIdCodeBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="raIdCodeAfter != null and raIdCodeAfter != ''">
+			AND RA_ID_CODE_AFTER = #{raIdCodeAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			AND UPDATE_BY = #{updateBy,jdbcType=VARCHAR}
+		</if>
+		<if test="updateMemo != null and updateMemo != ''">
+			AND UPDATE_MEMO = #{updateMemo,jdbcType=VARCHAR}
+		</if>
+		<if test="updateType != null and updateType != ''">
+			AND UPDATE_TYPE = #{updateType,jdbcType=INTEGER}
+		</if>
+		<if test="updateTime != null and updateTime != ''">
+			AND UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="uploadPath != null and uploadPath != ''">
+			AND UPLOAD_PATH = #{uploadPath,jdbcType=VARCHAR}
+		</if>
+		<if test="reviewMemo != null and reviewMemo != ''">
+			AND REVIEW_MEMO = #{reviewMemo,jdbcType=VARCHAR}
+		</if>
+		<if test="reviewStatus != null and reviewStatus != ''">
+			AND REVIEW_STATUS = #{reviewStatus,jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="eid != null">
+			EID = #{eid,jdbcType=INTEGER},
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			MM_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="mmNameBefore != null and mmNameBefore != ''">
+			MM_NAME_BEFORE = #{mmNameBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="mmNameAfter != null and mmNameAfter != ''">
+			MM_NAME_AFTER = #{mmNameAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="idTypeBefore != null">
+			ID_TYPE_BEFORE = #{idTypeBefore,jdbcType=INTEGER},
+		</if>
+		<if test="idTypeAfter != null">
+			ID_TYPE_AFTER = #{idTypeAfter,jdbcType=INTEGER},
+		</if>
+		<if test="idCodeBefore != null and idCodeBefore != ''">
+			ID_CODE_BEFORE = #{idCodeBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="idCodeAfter != null and idCodeAfter != ''">
+			ID_CODE_AFTER = #{idCodeAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="mmNickNameBefore != null and mmNickNameBefore != ''">
+			MM_NICK_NAME_BEFORE = #{mmNickNameBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="mmNickNameAfter != null and mmNickNameAfter != ''">
+			MM_NICK_NAME_AFTER = #{mmNickNameAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="genderBefore != null">
+			GENDER_BEFORE = #{genderBefore,jdbcType=INTEGER},
+		</if>
+		<if test="genderAfter != null">
+			GENDER_AFTER = #{genderAfter,jdbcType=INTEGER},
+		</if>
+		<if test="mobileBefore != null and mobileBefore != ''">
+			MOBILE_BEFORE = #{mobileBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="mobileAfter != null and mobileAfter != ''">
+			MOBILE_AFTER = #{mobileAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="wechatCodeBefore != null and wechatCodeBefore != ''">
+			WECHAT_CODE_BEFORE = #{wechatCodeBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="wechatCodeAfter != null and wechatCodeAfter != ''">
+			WECHAT_CODE_AFTER = #{wechatCodeAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="emailBefore != null and emailBefore != ''">
+			EMAIL_BEFORE = #{emailBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="emailAfter != null and emailAfter != ''">
+			EMAIL_AFTER = #{emailAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="addPostBefore != null and addPostBefore != ''">
+			ADD_POST_BEFORE = #{addPostBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="addPostAfter != null and addPostAfter != ''">
+			ADD_POST_AFTER = #{addPostAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="addProvinceIdBefore != null and addProvinceIdBefore != ''">
+			ADD_PROVINCE_ID_BEFORE = #{addProvinceIdBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="addProvinceIdAfter != null and addProvinceIdAfter != ''">
+			ADD_PROVINCE_ID_AFTER = #{addProvinceIdAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="addCityIdBefore != null and addCityIdBefore != ''">
+			ADD_CITY_ID_BEFORE = #{addCityIdBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="addCityIdAfter != null and addCityIdAfter != ''">
+			ADD_CITY_ID_AFTER = #{addCityIdAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="addCountryIdBefore != null and addCountryIdBefore != ''">
+			ADD_COUNTRY_ID_BEFORE = #{addCountryIdBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="addCountryIdAfter != null and addCountryIdAfter != ''">
+			ADD_COUNTRY_ID_AFTER = #{addCountryIdAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="addDetialBefore != null and addDetialBefore != ''">
+			ADD_DETIAL_BEFORE = #{addDetialBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="addDetialAfter != null and addDetialAfter != ''">
+			ADD_DETIAL_AFTER = #{addDetialAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="bankDetailBefore != null and bankDetailBefore != ''">
+			BANK_DETAIL_BEFORE = #{bankDetailBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="bankDetailAfter != null and bankDetailAfter != ''">
+			BANK_DETAIL_AFTER = #{bankDetailAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="accNameBefore != null and accNameBefore != ''">
+			ACC_NAME_BEFORE = #{accNameBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="accNameAfter != null and accNameAfter != ''">
+			ACC_NAME_AFTER = #{accNameAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="accCodeBefore != null and accCodeBefore != ''">
+			ACC_CODE_BEFORE = #{accCodeBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="accCodeAfter != null and accCodeAfter != ''">
+			ACC_CODE_AFTER = #{accCodeAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="withdrawDefaultBefore != null and withdrawDefaultBefore != ''">
+			WITHDRAW_DEFAULT_BEFORE = #{withdrawDefaultBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="withdrawDefaultAfter != null and withdrawDefaultAfter != ''">
+			WITHDRAW_DEFAULT_AFTER = #{withdrawDefaultAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="sponsorCodeBefore != null and sponsorCodeBefore != ''">
+			SPONSOR_CODE_BEFORE = #{sponsorCodeBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="sponsorCodeAfter != null and sponsorCodeAfter != ''">
+			SPONSOR_CODE_AFTER = #{sponsorCodeAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="sponsorNameBefore != null and sponsorNameBefore != ''">
+			SPONSOR_NAME_BEFORE = #{sponsorNameBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="sponsorNameAfter != null and sponsorNameAfter != ''">
+			SPONSOR_NAME_AFTER = #{sponsorNameAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="rankBefore != null">
+			RANK_BEFORE = #{rankBefore,jdbcType=INTEGER},
+		</if>
+		<if test="rankAfter != null">
+			RANK_AFTER = #{rankAfter,jdbcType=INTEGER},
+		</if>
+		<if test="raCodeBefore != null and raCodeBefore != ''">
+			RA_CODE_BEFORE = #{raCodeBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="raCodeAfter != null and raCodeAfter != ''">
+			RA_CODE_AFTER = #{raCodeAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="raNameBefore != null and raNameBefore != ''">
+			RA_NAME_BEFORE = #{raNameBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="raNameAfter != null and raNameAfter != ''">
+			RA_NAME_AFTER = #{raNameAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="raIdTypeBefore != null">
+			RA_ID_TYPE_BEFORE = #{raIdTypeBefore,jdbcType=INTEGER},
+		</if>
+		<if test="raIdTypeAfter != null">
+			RA_ID_TYPE_AFTER = #{raIdTypeAfter,jdbcType=INTEGER},
+		</if>
+		<if test="raIdCodeBefore != null and raIdCodeBefore != ''">
+			RA_ID_CODE_BEFORE = #{raIdCodeBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="raIdCodeAfter != null and raIdCodeAfter != ''">
+			RA_ID_CODE_AFTER = #{raIdCodeAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+		</if>
+		<if test="updateMemo != null and updateMemo != ''">
+			UPDATE_MEMO = #{updateMemo,jdbcType=VARCHAR},
+		</if>
+		<if test="updateType != null">
+			UPDATE_TYPE = #{updateType,jdbcType=INTEGER},
+		</if>
+		<if test="updateTime != null">
+			UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="uploadPath != null and uploadPath != ''">
+			UPLOAD_PATH = #{uploadPath,jdbcType=VARCHAR},
+		</if>
+		<if test="reviewMemo != null and reviewMemo != ''">
+			REVIEW_MEMO = #{reviewMemo,jdbcType=VARCHAR},
+		</if>
+		<if test="reviewStatus != null">
+			REVIEW_STATUS = #{reviewStatus,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdMmEditResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_EDIT
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdMmEditResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_EDIT
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_MM_EDIT
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmEdit">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+	          <!--SELECT LAST_INSERT_ID() AS ID    -->
+	    <!--</selectKey>  -->
+		INSERT RD_MM_EDIT 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdMmEdit">
+		UPDATE	RD_MM_EDIT
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_MM_EDIT
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_MM_EDIT
+		WHERE	ID	IN
+    	<foreach item="RdMmEditId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdMmEditId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdMmEditResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_MM_EDIT
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdMmEditResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_MM_EDIT
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

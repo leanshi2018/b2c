@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.trade.ShopReturnReasonDao">
+
+    <resultMap id="ShopReturnReasonResultMap" type="com.framework.loippi.entity.trade.ShopReturnReason">
+        <id property="id" column="id"/>
+        <result property="reasonInfo" column="reason_info"/>
+        <result property="sort" column="sort"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDel" column="is_del"/>
+        <result property="reasonType" column="reason_type"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,reason_info ,sort ,update_time ,is_del, reason_type
+	</sql>
+
+    <sql id="base_value_column">
+		#{id},#{reasonInfo},#{sort},#{updateTime},#{isDel},#{reasonType}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="reasonInfo != null and reasonInfo != ''">
+            AND reason_info = #{reasonInfo,jdbcType=VARCHAR}
+        </if>
+        <if test="sort != null and sort != ''">
+            AND sort = #{sort,jdbcType=INTEGER}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND update_time = #{updateTime}
+        </if>
+        <if test="isDel != null and isDel != ''">
+            AND is_del = #{isDel,jdbcType=INTEGER}
+        </if>
+        <if test="reasonType != null">
+            AND reason_type = #{reasonType,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="reasonInfo != null and reasonInfo != ''">
+            reason_info = #{reasonInfo,jdbcType=VARCHAR},
+        </if>
+        <if test="sort != null">
+            sort = #{sort,jdbcType=INTEGER},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime,jdbcType=},
+        </if>
+        <if test="isDel != null">
+            is_del = #{isDel,jdbcType=INTEGER},
+        </if>
+        <if test="reasonType != null">
+            reason_type = #{reasonType,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopReturnReasonResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_RETURN_REASON
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopReturnReasonResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_RETURN_REASON
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_RETURN_REASON
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.trade.ShopReturnReason">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_RETURN_REASON
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.trade.ShopReturnReason">
+        UPDATE SHOP_RETURN_REASON
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_RETURN_REASON
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_RETURN_REASON
+        WHERE ID IN
+        <foreach item="ShopReturnReasonId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopReturnReasonId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopReturnReasonResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_RETURN_REASON
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopReturnReasonResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_RETURN_REASON
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdRanksDao">
+	
+	<resultMap id="RdRanksResultMap" type="com.framework.loippi.entity.user.RdRanks">
+		<result property="rankId" column="RANK_ID" />
+		<result property="rankName" column="RANK_NAME" />
+		<result property="rankShortName" column="RANK_SHORT_NAME" />
+		<result property="rankOrder" column="RANK_ORDER" />
+		<result property="rankClass" column="RANK_CLASS" />
+		<result property="staticYn" column="STATIC_YN" />
+		<result property="rPreRank" column="R_PRE_RANK" />
+		<result property="activePv" column="ACTIVE_PV" />
+		<result property="rankKeepMonths" column="RANK_KEEP_MONTHS" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 RANK_ID ,RANK_NAME ,RANK_SHORT_NAME ,RANK_ORDER ,RANK_CLASS ,STATIC_YN ,R_PRE_RANK ,ACTIVE_PV ,RANK_KEEP_MONTHS 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{rankId},#{rankName},#{rankShortName},#{rankOrder},#{rankClass},#{staticYn},#{rPreRank},#{activePv},#{rankKeepMonths}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="rankId != null and rankId != ''">
+			AND RANK_ID = #{rankId,jdbcType=INTEGER}
+		</if>
+		<if test="rankName != null and rankName != ''">
+			AND RANK_NAME = #{rankName,jdbcType=VARCHAR}
+		</if>
+		<if test="rankShortName != null and rankShortName != ''">
+			AND RANK_SHORT_NAME = #{rankShortName,jdbcType=VARCHAR}
+		</if>
+		<if test="rankOrder != null and rankOrder != ''">
+			AND RANK_ORDER = #{rankOrder,jdbcType=INTEGER}
+		</if>
+		<if test="rankClass != null">
+			AND RANK_CLASS = #{rankClass,jdbcType=INTEGER}
+		</if>
+		<if test="staticYn != null and staticYn != ''">
+			AND STATIC_YN = #{staticYn,jdbcType=INTEGER}
+		</if>
+		<if test="rPreRank != null and rPreRank != ''">
+			AND R_PRE_RANK = #{rPreRank,jdbcType=INTEGER}
+		</if>
+		<if test="activePv != null and activePv != ''">
+			AND ACTIVE_PV = #{activePv,jdbcType=INTEGER}
+		</if>
+		<if test="rankKeepMonths != null and rankKeepMonths != ''">
+			AND RANK_KEEP_MONTHS = #{rankKeepMonths,jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="rankId != null">
+			RANK_ID = #{rankId,jdbcType=INTEGER},
+		</if>
+		<if test="rankName != null and rankName != ''">
+			RANK_NAME = #{rankName,jdbcType=VARCHAR},
+		</if>
+		<if test="rankShortName != null and rankShortName != ''">
+			RANK_SHORT_NAME = #{rankShortName,jdbcType=VARCHAR},
+		</if>
+		<if test="rankOrder != null">
+			RANK_ORDER = #{rankOrder,jdbcType=INTEGER},
+		</if>
+		<if test="rankClass != null">
+			RANK_CLASS = #{rankClass,jdbcType=INTEGER},
+		</if>
+		<if test="staticYn != null">
+			STATIC_YN = #{staticYn,jdbcType=INTEGER},
+		</if>
+		<if test="rPreRank != null">
+			R_PRE_RANK = #{rPreRank,jdbcType=INTEGER},
+		</if>
+		<if test="activePv != null">
+			ACTIVE_PV = #{activePv,jdbcType=INTEGER},
+		</if>
+		<if test="rankKeepMonths != null">
+			RANK_KEEP_MONTHS = #{rankKeepMonths,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdRanksResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_RANKS
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdRanksResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_RANKS
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_RANKS
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdRanks">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="RANK_ID">-->
+	          <!--SELECT LAST_INSERT_ID() AS RANK_ID-->
+	    <!--</selectKey>  -->
+		INSERT RD_RANKS 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdRanks">
+		UPDATE	RD_RANKS
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_RANKS
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_RANKS
+		WHERE	ID	IN
+    	<foreach item="RdRanksId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdRanksId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdRanksResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_RANKS
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdRanksResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_RANKS
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

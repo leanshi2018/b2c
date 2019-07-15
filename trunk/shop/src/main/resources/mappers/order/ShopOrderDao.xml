@@ -1,0 +1,1404 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.order.ShopOrderDao">
+
+    <resultMap id="ShopOrderResultMap" type="com.framework.loippi.entity.order.ShopOrder">
+        <id property="id" column="id"  />
+        <result property="orderSn" column="order_sn" />
+        <result property="storeId" column="store_id" />
+        <result property="storeName" column="store_name" />
+        <result property="buyerId" column="buyer_id" />
+        <result property="buyerName" column="buyer_name" />
+        <result property="buyerPhone" column="buyer_phone" />
+        <result property="createTime" column="create_time" />
+        <result property="orderType" column="order_type" />
+        <result property="orderPlatform" column="order_platform" />
+        <result property="paymentId" column="payment_id" />
+        <result property="paymentName" column="payment_name" />
+        <result property="paymentCode" column="payment_code" />
+        <result property="paymentBranch" column="payment_branch" />
+        <result property="paymentState" column="payment_state" />
+        <result property="outSn" column="out_sn" />
+        <result property="tradeSn" column="trade_sn" />
+        <result property="paymentTime" column="payment_time" />
+        <result property="payMessage" column="pay_message" />
+        <result property="shippingTime" column="shipping_time" />
+        <result property="shippingExpressId" column="shipping_express_id" />
+        <result property="shippingCode" column="shipping_code" />
+        <result property="outPaymentCode" column="out_payment_code" />
+        <result property="finnshedTime" column="finnshed_time" />
+        <result property="goodsAmount" column="goods_amount" />
+        <result property="discount" column="discount" />
+        <result property="orderAmount" column="order_amount" />
+        <result property="orderTotalPrice" column="order_total_price" />
+        <result property="shippingFee" column="shipping_fee" />
+        <result property="shippingName" column="shipping_name" />
+        <result property="evaluationStatus" column="evaluation_status" />
+        <result property="evaluationTime" column="evaluation_time" />
+        <result property="evalsellerStatus" column="evalseller_status" />
+        <result property="evalsellerTime" column="evalseller_time" />
+        <result property="orderMessage" column="order_message" />
+        <result property="orderState" column="order_state" />
+        <result property="orderPointscount" column="order_pointscount" />
+        <result property="refundState" column="refund_state" />
+        <result property="returnState" column="return_state" />
+        <result property="refundAmount" column="refund_amount" />
+        <result property="returnNum" column="return_num" />
+        <result property="xianshiId" column="xianshi_id" />
+        <result property="xianshiExplain" column="xianshi_explain" />
+        <result property="mansongId" column="mansong_id" />
+        <result property="mansongExplain" column="mansong_explain" />
+        <result property="bundlingId" column="bundling_id" />
+        <result property="bundlingExplain" column="bundling_explain" />
+        <result property="deliverExplain" column="deliver_explain" />
+        <result property="daddressId" column="daddress_id" />
+        <result property="addressId" column="address_id" />
+        <result property="payId" column="pay_id" />
+        <result property="paySn" column="pay_sn" />
+        <result property="balanceState" column="balance_state" />
+        <result property="balanceTime" column="balance_time" />
+        <result property="shippingExpressCode" column="shipping_express_code" />
+        <result property="predepositAmount" column="predeposit_amount" />
+        <result property="cancelCause" column="cancel_cause" />
+        <result property="lockState" column="lock_state" />
+        <result property="barterState" column="barter_state" />
+        <result property="barterNum" column="barter_num" />
+        <result property="usePointNum" column="use_point_num" />
+        <result property="pointRmbNum" column="point_rmb_num" />
+        <result property="isDel" column="is_del" />
+        <result property="batchNo" column="batch_no" />
+        <result property="isRemind" column="is_remind" />
+        <result property="isModify" column="is_modify" />
+        <result property="brandId" column="brand_id" />
+        <result property="brandName" column="brand_name" />
+        <result property="ppv" column="ppv" />
+        <result property="shippingPreferentialFee" column="shipping_preferential_fee" />
+        <result property="remindTime" column="remind_time" />
+        <result property="shopOrderTypeId" column="shop_order_type_id" />
+        <result property="creationPeriod" column="creation_period" />
+        <result property="logisticType" column="logistic_type"/>
+        <result property="refundPoint" column="refund_point"/>
+        <result property="refundPpv" column="refund_ppv"/>
+    </resultMap>
+
+    <resultMap id="OrderViewResultMap" type="com.framework.loippi.result.sys.OrderView">
+        <id property="id" column="id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="accountName" column="buyer_name"/>
+        <result property="goodsCount" column="goods_num"/>
+        <result property="orderTotalPrice" column="order_total_price"/>
+        <result property="orderAmount" column="order_amount"/>
+        <result property="receiverName" column="true_name"/>
+        <result property="receiverPhone" column="mob_phone"/>
+        <result property="orderState" column="order_state"/>
+        <result property="orderType" column="order_type"/>
+        <result property="orderPlatform" column="order_platform"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deliverExplain" column="deliver_explain"/>
+        <result property="paySn" column="pay_sn"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="paymentState" column="payment_state"/>
+        <result property="paymentTime" column="payment_time"/>
+        <result property="ppv" column="ppv"/>
+        <result property="shippingPreferentialFee" column="shipping_preferential_fee"/>
+        <result property="logisticType" column="logistic_type"/>
+        <result property="shippingExpressCode" column="shipping_express_code"/>
+        <result property="shippingCode" column="shipping_code"/>
+    </resultMap>
+
+    <!--扩展查询商品-->
+    <resultMap id="ShopOrderVoWithGoodsResultMap" type="com.framework.loippi.vo.order.ShopOrderVo"
+               extends="ShopOrderResultMap">
+        <collection property="shopOrderGoods" ofType="com.zjshop.core.entity.base.OrderGoods"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.order.ShopOrderGoodsDao.listByOrderId">
+        </collection>
+    </resultMap>
+
+    <!--扩展查询订单收货地址-->
+    <resultMap id="ShopOrderVoWithAddressResultMap" type="com.framework.loippi.vo.order.ShopOrderVo"
+               extends="ShopOrderResultMap">
+        <association property="address" javaType="com.framework.loippi.entity.order.ShopOrderAddress"
+                     column="address_id" select="com.framework.loippi.dao.order.ShopOrderAddressDao.find"/>
+    </resultMap>
+
+    <!--扩展查询订单收货地址和商品-->
+    <resultMap id="ShopOrderVoWithGoodsAndAddressResultMap" type="com.framework.loippi.vo.order.ShopOrderVo"
+               extends="ShopOrderResultMap">
+    </resultMap>
+
+    <resultMap id="ShopOrderVoWithAbleRefundReturnGoodsResultMap" type="com.framework.loippi.vo.order.ShopOrderVo"
+               extends="ShopOrderResultMap">
+        <collection property="shopOrderGoods" ofType="com.zjshop.core.entity.base.OrderGoods"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.order.ShopOrderGoodsDao.listAbleRefundReturnByOrderId">
+        </collection>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,order_sn ,store_id ,store_name ,buyer_id ,buyer_name ,buyer_phone ,create_time ,order_type ,order_platform ,payment_id ,payment_name ,payment_code ,payment_branch ,payment_state ,out_sn ,trade_sn ,payment_time ,pay_message ,shipping_time ,shipping_express_id ,shipping_code ,out_payment_code ,finnshed_time ,goods_amount ,discount ,order_amount ,order_total_price ,shipping_fee ,shipping_name ,evaluation_status ,evaluation_time ,evalseller_status ,evalseller_time ,order_message ,order_state ,order_pointscount ,refund_state ,return_state ,refund_amount ,return_num ,xianshi_id ,xianshi_explain ,mansong_id ,mansong_explain ,bundling_id ,bundling_explain ,deliver_explain ,daddress_id ,address_id ,pay_id ,pay_sn ,balance_state ,balance_time ,shipping_express_code ,predeposit_amount ,cancel_cause ,lock_state ,barter_state ,barter_num ,use_point_num ,point_rmb_num ,is_del ,batch_no ,is_remind ,is_modify ,brand_id ,brand_name ,ppv ,shipping_preferential_fee ,remind_time,shop_order_type_id ,creation_period ,logistic_type ,refund_point ,refund_ppv
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{orderSn},#{storeId},#{storeName},#{buyerId},#{buyerName},#{buyerPhone},#{createTime},#{orderType},#{orderPlatform},#{paymentId},#{paymentName},#{paymentCode},#{paymentBranch},#{paymentState},#{outSn},#{tradeSn},#{paymentTime},#{payMessage},#{shippingTime},#{shippingExpressId},#{shippingCode},#{outPaymentCode},#{finnshedTime},#{goodsAmount},#{discount},#{orderAmount},#{orderTotalPrice},#{shippingFee},#{shippingName},#{evaluationStatus},#{evaluationTime},#{evalsellerStatus},#{evalsellerTime},#{orderMessage},#{orderState},#{orderPointscount},#{refundState},#{returnState},#{refundAmount},#{returnNum},#{xianshiId},#{xianshiExplain},#{mansongId},#{mansongExplain},#{bundlingId},#{bundlingExplain},#{deliverExplain},#{daddressId},#{addressId},#{payId},#{paySn},#{balanceState},#{balanceTime},#{shippingExpressCode},#{predepositAmount},#{cancelCause},#{lockState},#{barterState},#{barterNum},#{usePointNum},#{pointRmbNum},#{isDel},#{batchNo},#{isRemind},#{isModify},#{brandId},#{brandName},#{ppv},#{shippingPreferentialFee},#{remindTime},#{shopOrderTypeId},#{creationPeriod} ,#{logisticType} ,#{refundPoint},#{refundPpv}
+	</sql>
+
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="orderSn != null and orderSn != ''">
+            AND order_sn = #{orderSn,jdbcType=VARCHAR}
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND store_id = #{storeId,jdbcType=BIGINT}
+        </if>
+        <if test="storeName != null and storeName != ''">
+            AND store_name = #{storeName,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerId != null and buyerId != ''">
+            AND buyer_id = #{buyerId,jdbcType=BIGINT}
+        </if>
+        <if test="buyerName != null and buyerName != ''">
+            AND buyer_name = #{buyerName,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerPhone != null and buyerPhone != ''">
+            AND buyer_phone = #{buyerPhone,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="orderType != null and orderType != ''">
+            AND order_type = #{orderType,jdbcType=INTEGER}
+        </if>
+        <if test="orderPlatform != null and orderPlatform != ''">
+            AND order_platform = #{orderPlatform,jdbcType=INTEGER}
+        </if>
+        <if test="paymentId != null and paymentId != ''">
+            AND payment_id = #{paymentId,jdbcType=BIGINT}
+        </if>
+        <if test="paymentName != null and paymentName != ''">
+            AND payment_name = #{paymentName,jdbcType=VARCHAR}
+        </if>
+        <if test="paymentCode != null and paymentCode != ''">
+            AND payment_code = #{paymentCode,jdbcType=VARCHAR}
+        </if>
+        <if test="paymentBranch != null and paymentBranch != ''">
+            AND payment_branch = #{paymentBranch,jdbcType=VARCHAR}
+        </if>
+        <if test="paymentState != null and paymentState != ''">
+            AND payment_state = #{paymentState,jdbcType=INTEGER}
+        </if>
+        <if test="outSn != null and outSn != ''">
+            AND out_sn = #{outSn,jdbcType=VARCHAR}
+        </if>
+        <if test="tradeSn != null and tradeSn != ''">
+            AND trade_sn = #{tradeSn,jdbcType=VARCHAR}
+        </if>
+        <if test="paymentTime != null and paymentTime != ''">
+            AND payment_time = #{paymentTime}
+        </if>
+        <if test="payMessage != null and payMessage != ''">
+            AND pay_message = #{payMessage,jdbcType=VARCHAR}
+        </if>
+        <if test="shippingTime != null and shippingTime != ''">
+            AND shipping_time = #{shippingTime}
+        </if>
+        <if test="shippingExpressId != null and shippingExpressId != ''">
+            AND shipping_express_id = #{shippingExpressId,jdbcType=BIGINT}
+        </if>
+        <if test="shippingCode != null and shippingCode != ''">
+            AND shipping_code = #{shippingCode,jdbcType=VARCHAR}
+        </if>
+        <if test="outPaymentCode != null and outPaymentCode != ''">
+            AND out_payment_code = #{outPaymentCode,jdbcType=VARCHAR}
+        </if>
+        <if test="finnshedTime != null and finnshedTime != ''">
+            AND finnshed_time = #{finnshedTime}
+        </if>
+        <if test="goodsAmount != null and goodsAmount != ''">
+            AND goods_amount = #{goodsAmount}
+        </if>
+        <if test="discount != null and discount != ''">
+            AND discount = #{discount}
+        </if>
+        <if test="orderAmount != null and orderAmount != ''">
+            AND order_amount = #{orderAmount}
+        </if>
+        <if test="orderTotalPrice != null and orderTotalPrice != ''">
+            AND order_total_price = #{orderTotalPrice}
+        </if>
+        <if test="shippingFee != null and shippingFee != ''">
+            AND shipping_fee = #{shippingFee}
+        </if>
+        <if test="shippingName != null and shippingName != ''">
+            AND shipping_name = #{shippingName,jdbcType=VARCHAR}
+        </if>
+        <if test="evaluationStatus != null and evaluationStatus != ''">
+            AND evaluation_status = #{evaluationStatus,jdbcType=INTEGER}
+        </if>
+        <if test="evaluationTime != null and evaluationTime != ''">
+            AND evaluation_time = #{evaluationTime}
+        </if>
+        <if test="evalsellerStatus != null and evalsellerStatus != ''">
+            AND evalseller_status = #{evalsellerStatus,jdbcType=BIGINT}
+        </if>
+        <if test="evalsellerTime != null and evalsellerTime != ''">
+            AND evalseller_time = #{evalsellerTime}
+        </if>
+        <if test="orderMessage != null and orderMessage != ''">
+            AND order_message = #{orderMessage,jdbcType=VARCHAR}
+        </if>
+        <if test="orderState != null and orderState != ''">
+            AND order_state = #{orderState,jdbcType=INTEGER}
+        </if>
+        <if test="orderPointscount != null and orderPointscount != ''">
+            AND order_pointscount = #{orderPointscount,jdbcType=INTEGER}
+        </if>
+        <if test="refundState != null and refundState != ''">
+            AND refund_state = #{refundState,jdbcType=INTEGER}
+        </if>
+        <if test="returnState != null and returnState != ''">
+            AND return_state = #{returnState,jdbcType=INTEGER}
+        </if>
+        <if test="refundAmount != null and refundAmount != ''">
+            AND refund_amount = #{refundAmount}
+        </if>
+        <if test="returnNum != null and returnNum != ''">
+            AND return_num = #{returnNum,jdbcType=INTEGER}
+        </if>
+        <if test="xianshiId != null and xianshiId != ''">
+            AND xianshi_id = #{xianshiId,jdbcType=BIGINT}
+        </if>
+        <if test="xianshiExplain != null and xianshiExplain != ''">
+            AND xianshi_explain = #{xianshiExplain,jdbcType=VARCHAR}
+        </if>
+        <if test="mansongId != null and mansongId != ''">
+            AND mansong_id = #{mansongId,jdbcType=BIGINT}
+        </if>
+        <if test="mansongExplain != null and mansongExplain != ''">
+            AND mansong_explain = #{mansongExplain,jdbcType=VARCHAR}
+        </if>
+        <if test="bundlingId != null and bundlingId != ''">
+            AND bundling_id = #{bundlingId,jdbcType=BIGINT}
+        </if>
+        <if test="bundlingExplain != null and bundlingExplain != ''">
+            AND bundling_explain = #{bundlingExplain,jdbcType=VARCHAR}
+        </if>
+        <if test="deliverExplain != null and deliverExplain != ''">
+            AND deliver_explain = #{deliverExplain,jdbcType=VARCHAR}
+        </if>
+        <if test="daddressId != null and daddressId != ''">
+            AND daddress_id = #{daddressId,jdbcType=BIGINT}
+        </if>
+        <if test="addressId != null and addressId != ''">
+            AND address_id = #{addressId,jdbcType=BIGINT}
+        </if>
+        <if test="payId != null and payId != ''">
+            AND pay_id = #{payId,jdbcType=BIGINT}
+        </if>
+        <if test="paySn != null and paySn != ''">
+            AND pay_sn = #{paySn,jdbcType=VARCHAR}
+        </if>
+        <if test="balanceState != null and balanceState != ''">
+            AND balance_state = #{balanceState,jdbcType=INTEGER}
+        </if>
+        <if test="balanceTime != null and balanceTime != ''">
+            AND balance_time = #{balanceTime}
+        </if>
+        <if test="shippingExpressCode != null and shippingExpressCode != ''">
+            AND shipping_express_code = #{shippingExpressCode,jdbcType=VARCHAR}
+        </if>
+        <if test="batchNo != null and batchNo != ''">
+            AND batch_no = #{batchNo,jdbcType=VARCHAR}
+        </if>
+        <if test="predepositAmount != null and predepositAmount != ''">
+            AND predeposit_amount = #{predepositAmount}
+        </if>
+        <if test="cancelCause != null and cancelCause != ''">
+            AND cancel_cause = #{cancelCause,jdbcType=VARCHAR}
+        </if>
+        <if test="isRemind != null and isRemind != ''">
+            AND is_remind = #{isRemind,jdbcType=INTEGER}
+        </if>
+        <if test="lockState != null and lockState != ''">
+            AND lock_state = #{lockState,jdbcType=INTEGER}
+        </if>
+        <if test="barterState != null and barterState != ''">
+            AND barter_state = #{barterState,jdbcType=INTEGER}
+        </if>
+        <if test="barterNum != null and barterNum != ''">
+            AND barter_num = #{barterNum,jdbcType=INTEGER}
+        </if>
+        <if test="usePointNum != null and usePointNum != ''">
+            AND use_point_num = #{usePointNum,jdbcType=INTEGER}
+        </if>
+        <if test="pointRmbNum != null and pointRmbNum != ''">
+            AND point_rmb_num = #{pointRmbNum,jdbcType=INTEGER}
+        </if>
+        <if test="isDel != null">
+            AND is_del = #{isDel,jdbcType=INTEGER}
+        </if>
+        <if test="orderStates != null">
+            AND order_state in
+            <foreach collection="orderStates" item="state" index="index"
+                     open="(" close=")" separator=",">
+                #{state}
+            </foreach>
+        </if>
+        <if test="orderSnKeyWord != null and orderSnKeyWord != ''">
+            AND order_sn like CONCAT('%',#{orderSnKeyWord},'%')
+        </if>
+        <if test="isModify != null">
+            AND is_modify = #{isModify}
+        </if>
+        <if test="brandId != null">
+            AND brand_id = #{brandId}
+        </if>
+        <if test="brandName != null and brandName != ''">
+            AND brand_name = #{brandName}
+        </if>
+        <if test="ppv != null and ppv != ''">
+            AND ppv = #{ppv}
+        </if>
+        <if test="shippingPreferentialFee != null and shippingPreferentialFee != ''">
+            AND shipping_preferential_fee = #{shippingPreferentialFee}
+        </if>
+        <if test="remindTime != null and remindTime != ''">
+            AND remind_time = #{remindTime}
+        </if>
+        <if test="shopOrderTypeId != null and shopOrderTypeId != ''">
+            AND shop_order_type_id = #{shopOrderTypeId}
+        </if>
+        <if test="creationPeriod != null and creationPeriod != ''">
+            AND creation_period = #{creationPeriod}
+        </if>
+        <if test="logisticType != null and logisticType != ''">
+            AND logistic_type = #{logisticType}
+        </if>
+        <if test="servenDay != null">
+            AND create_time &lt; #{servenDay,jdbcType=TIMESTAMP}
+        </if>
+        <if test="refundPoint != null and refundPoint != ''">
+            AND refund_point = #{refundPoint}
+        </if>
+        <if test="refundPpv != null and refundPpv != ''">
+            AND refund_ppv = #{refundPpv}
+        </if>
+
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="orderSn != null and orderSn != ''">
+            order_sn = #{orderSn,jdbcType=VARCHAR},
+        </if>
+        <if test="storeId != null">
+            store_id = #{storeId,jdbcType=BIGINT},
+        </if>
+        <if test="storeName != null and storeName != ''">
+            store_name = #{storeName,jdbcType=VARCHAR},
+        </if>
+        <if test="batchNo != null and batchNo != ''">
+            batch_no = #{batchNo,jdbcType=VARCHAR},
+        </if>
+        <if test="buyerId != null">
+            buyer_id = #{buyerId,jdbcType=BIGINT},
+        </if>
+        <if test="buyerName != null and buyerName != ''">
+            buyer_name = #{buyerName,jdbcType=VARCHAR},
+        </if>
+        <if test="buyerPhone != null and buyerPhone != ''">
+            buyer_phone = #{buyerPhone,jdbcType=VARCHAR},
+        </if>
+        <if test="isRemind != null and isRemind != ''">
+            is_remind = #{isRemind,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="orderType != null">
+            order_type = #{orderType,jdbcType=INTEGER},
+        </if>
+        <if test="orderPlatform != null">
+            order_platform = #{orderPlatform,jdbcType=INTEGER},
+        </if>
+        <if test="paymentId != null">
+            payment_id = #{paymentId,jdbcType=BIGINT},
+        </if>
+        <if test="paymentName != null and paymentName != ''">
+            payment_name = #{paymentName,jdbcType=VARCHAR},
+        </if>
+        <if test="paymentCode != null and paymentCode != ''">
+            payment_code = #{paymentCode,jdbcType=VARCHAR},
+        </if>
+        <if test="paymentBranch != null and paymentBranch != ''">
+            payment_branch = #{paymentBranch,jdbcType=VARCHAR},
+        </if>
+        <if test="paymentState != null">
+            payment_state = #{paymentState,jdbcType=INTEGER},
+        </if>
+        <if test="outSn != null and outSn != ''">
+            out_sn = #{outSn,jdbcType=VARCHAR},
+        </if>
+        <if test="tradeSn != null and tradeSn != ''">
+            trade_sn = #{tradeSn,jdbcType=VARCHAR},
+        </if>
+        <if test="paymentTime != null">
+            payment_time = #{paymentTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="payMessage != null and payMessage != ''">
+            pay_message = #{payMessage,jdbcType=VARCHAR},
+        </if>
+        <if test="shippingTime != null">
+            shipping_time = #{shippingTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="shippingExpressId != null">
+            shipping_express_id = #{shippingExpressId,jdbcType=BIGINT},
+        </if>
+        <if test="shippingCode != null and shippingCode != ''">
+            shipping_code = #{shippingCode,jdbcType=VARCHAR},
+        </if>
+        <if test="outPaymentCode != null and outPaymentCode != ''">
+            out_payment_code = #{outPaymentCode,jdbcType=VARCHAR},
+        </if>
+        <if test="finnshedTime != null">
+            finnshed_time = #{finnshedTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="goodsAmount != null">
+            goods_amount = #{goodsAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="discount != null">
+            discount = #{discount,jdbcType=DECIMAL},
+        </if>
+        <if test="orderAmount != null">
+            order_amount = #{orderAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="orderTotalPrice != null">
+            order_total_price = #{orderTotalPrice,jdbcType=DECIMAL},
+        </if>
+        <if test="shippingFee != null">
+            shipping_fee = #{shippingFee,jdbcType=DECIMAL},
+        </if>
+        <if test="shippingName != null and shippingName != ''">
+            shipping_name = #{shippingName,jdbcType=VARCHAR},
+        </if>
+        <if test="evaluationStatus != null">
+            evaluation_status = #{evaluationStatus},
+        </if>
+        <if test="evaluationTime != null">
+            evaluation_time = #{evaluationTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="evalsellerStatus != null">
+            evalseller_status = #{evalsellerStatus,jdbcType=BIGINT},
+        </if>
+        <if test="evalsellerTime != null">
+            evalseller_time = #{evalsellerTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="orderMessage != null and orderMessage != ''">
+            order_message = #{orderMessage,jdbcType=VARCHAR},
+        </if>
+        <if test="orderState != null">
+            order_state = #{orderState,jdbcType=INTEGER},
+        </if>
+        <if test="orderPointscount != null">
+            order_pointscount = #{orderPointscount,jdbcType=INTEGER},
+        </if>
+        <if test="refundState != null">
+            refund_state = #{refundState,jdbcType=INTEGER},
+        </if>
+        <if test="returnState != null">
+            return_state = #{returnState,jdbcType=INTEGER},
+        </if>
+        <if test="refundAmount != null">
+            refund_amount = #{refundAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="returnNum != null">
+            return_num = #{returnNum,jdbcType=INTEGER},
+        </if>
+        <if test="xianshiId != null">
+            xianshi_id = #{xianshiId,jdbcType=BIGINT},
+        </if>
+        <if test="xianshiExplain != null and xianshiExplain != ''">
+            xianshi_explain = #{xianshiExplain,jdbcType=VARCHAR},
+        </if>
+        <if test="mansongId != null">
+            mansong_id = #{mansongId,jdbcType=BIGINT},
+        </if>
+        <if test="mansongExplain != null and mansongExplain != ''">
+            mansong_explain = #{mansongExplain,jdbcType=VARCHAR},
+        </if>
+        <if test="bundlingId != null">
+            bundling_id = #{bundlingId,jdbcType=BIGINT},
+        </if>
+        <if test="bundlingExplain != null and bundlingExplain != ''">
+            bundling_explain = #{bundlingExplain,jdbcType=VARCHAR},
+        </if>
+        <if test="deliverExplain != null and deliverExplain != ''">
+            deliver_explain = #{deliverExplain,jdbcType=VARCHAR},
+        </if>
+        <if test="daddressId != null">
+            daddress_id = #{daddressId,jdbcType=BIGINT},
+        </if>
+        <if test="addressId != null">
+            address_id = #{addressId,jdbcType=BIGINT},
+        </if>
+        <if test="payId != null">
+            pay_id = #{payId,jdbcType=BIGINT},
+        </if>
+        <if test="paySn != null and paySn != ''">
+            pay_sn = #{paySn,jdbcType=VARCHAR},
+        </if>
+        <if test="balanceState != null">
+            balance_state = #{balanceState,jdbcType=INTEGER},
+        </if>
+        <if test="balanceTime != null">
+            balance_time = #{balanceTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="shippingExpressCode != null and shippingExpressCode != ''">
+            shipping_express_code = #{shippingExpressCode,jdbcType=VARCHAR},
+        </if>
+        <if test="predepositAmount != null">
+            predeposit_amount = #{predepositAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="cancelCause != null and cancelCause != ''">
+            cancel_cause = #{cancelCause,jdbcType=VARCHAR},
+        </if>
+        <if test="lockState != null">
+            lock_state = #{lockState,jdbcType=INTEGER},
+        </if>
+        <if test="barterState != null">
+            barter_state = #{barterState,jdbcType=INTEGER},
+        </if>
+        <if test="barterNum != null">
+            barter_num = #{barterNum,jdbcType=INTEGER},
+        </if>
+        <if test="usePointNum != null">
+            use_point_num = #{usePointNum,jdbcType=INTEGER},
+        </if>
+        <if test="pointRmbNum != null">
+            point_rmb_num = #{pointRmbNum,jdbcType=INTEGER},
+        </if>
+        <if test="isDel != null">
+            is_del = #{isDel,jdbcType=INTEGER},
+        </if>
+        <if test="isModify != null">
+             is_modify = #{isModify},
+        </if>
+        <if test="brandId != null">
+             brand_id = #{brandId},
+        </if>
+        <if test="brandName != null and brandName != ''">
+             brand_name = #{brandName},
+        </if>
+        <if test="ppv != null and ppv != ''">
+             ppv = #{ppv},
+        </if>
+        <if test="shippingPreferentialFee != null and shippingPreferentialFee != ''">
+             shipping_preferential_fee = #{shippingPreferentialFee},
+        </if>
+        <if test="remindTime != null and remindTime != ''">
+             remind_time = #{remindTime},
+        </if>
+        <if test="shopOrderTypeId != null and shopOrderTypeId != ''">
+             shop_order_type_id = #{shopOrderTypeId},
+        </if>
+        <if test="creationPeriod != null and creationPeriod != ''">
+             creation_period = #{creationPeriod},
+        </if>
+        <if test="logisticType != null and logisticType != ''">
+             logistic_type = #{logisticType},
+        </if>
+        <if test="refundPoint != null and refundPoint != ''">
+             refund_point = #{refundPoint},
+        </if>
+        <if test="refundPpv != null and refundPpv != ''">
+             refund_ppv = #{refundPpv},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopOrderResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopOrderResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_ORDER
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 根据订单状态统计所有订单记录数 -->
+    <select id="countOrderStatus" resultType="com.framework.loippi.vo.order.CountOrderStatusVo">
+        SELECT COUNT(1) as total ,order_state as orderStatus ,evaluation_status as evaluationStatusType FROM SHOP_ORDER
+        <where>
+            <include refid="where_column"/>
+        </where>
+        GROUP BY order_state,evaluation_status
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.order.ShopOrder">
+        INSERT SHOP_ORDER
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.order.ShopOrder">
+        UPDATE SHOP_ORDER
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!--解决并发更新-->
+    <update id="updateByIdAndOrderStateAndLockState" parameterType="com.framework.loippi.entity.order.ShopOrder">
+        UPDATE SHOP_ORDER
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+        AND order_state=#{prevOrderState, jdbcType=INTEGER}
+
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_ORDER
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_ORDER
+        WHERE ID IN
+        <foreach item="ShopOrderId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopOrderId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopOrderResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopOrderResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        AND order_state != 0
+    </select>
+
+    <select id="listOrderView" resultMap="OrderViewResultMap"
+            parameterType="com.framework.loippi.result.sys.OrderView">
+        select
+        so.store_name,
+        so.id,
+        so.order_sn,
+        so.logistic_type,
+        so.buyer_name,
+        so.buyer_id,
+        so.buyer_phone,
+        (select sum(sog.goods_num) from shop_order_goods sog where sog.order_id = so.id) AS goods_num,
+        so.order_total_price,
+        so.order_amount,
+        so.address_id,
+        so.goods_amount,
+        so.discount,
+        so.payment_code,
+        so.shipping_fee,
+        so.point_rmb_num,
+        so.creation_period,
+        sod.true_name,
+        sod.mob_phone,
+        so.order_state,
+        so.order_type,
+        so.order_platform,
+        so.create_time,
+        so.order_message,
+        so.ppv,
+        GREATEST(IFNULL(so.balance_time,''), IFNULL(so.create_time,''), IFNULL(so.payment_time,''),
+        IFNULL(so.shipping_time,''), IFNULL(so.finnshed_time, '')) as update_time,
+        so.deliver_explain,
+        so.payment_time,
+        so.payment_state,
+        so.payment_name,
+        so.shipping_express_code,
+        so.shipping_code,
+        so.pay_sn
+        from
+        shop_order so left join shop_order_address sod on so.address_id = sod.id
+        where 1=1
+        <if test="orderSn !=null and orderSn != ''">
+            and so.order_sn LIKE CONCAT('%', #{orderSn}, '%')
+        </if>
+        <if test="goodsSn !=null and goodsSn != ''">
+
+        </if>
+        <if test="orderType != null">
+            and so.order_type = #{orderType}
+        </if>
+        <if test="receiverName !=null and receiverName != ''">
+            and sod.true_name LIKE CONCAT('%', #{receiverName}, '%')
+        </if>
+        <if test="receiverPhone !=null and receiverPhone != ''">
+            and sod.mob_phone LIKE CONCAT('%', #{receiverPhone},'%')
+        </if>
+        <if test="buyerPhone !=null and buyerPhone != ''">
+            and so.buyer_phone LIKE CONCAT('%', #{buyerPhone},'%')
+        </if>
+        <if test="paymentType ==1 ">
+            and so.payment_code != 'cashOnDeliveryPlugin'
+        </if>
+        <if test="paymentType ==2 ">
+            and so.payment_code = 'cashOnDeliveryPlugin'
+        </if>
+        <if test="searchStartTime !=null and searchStartTime != ''">
+            <![CDATA[and so.create_time >= #{searchStartTime}]]>
+        </if>
+        <if test="searchEndTime !=null and searchEndTime != ''">
+            <![CDATA[and so.create_time <= #{searchEndTime}]]>
+        </if>
+        <if test="payStartTime !=null and payStartTime != ''">
+            <![CDATA[and so.payment_time >= #{payStartTime}]]>
+        </if>
+        <if test="payEndTime !=null and payEndTime != ''">
+            <![CDATA[and so.payment_time <= #{payEndTime}]]>
+        </if>
+        <if test="accountName !=null and accountName != ''">
+            and so.buyer_name LIKE CONCAT('%', #{accountName}, '%')
+        </if>
+        <if test="paymentCode !=null and paymentCode != ''">
+            so.payment_code = #{paymentCode}
+        </if>
+        <if test="orderState !=null and orderState != ''">
+            and so.order_state = #{orderState}
+        </if>
+        <if test="paySn !=null and paySn != ''">
+            and so.pay_sn LIKE CONCAT('%', #{paySn}, '%')
+        </if>
+        <if test="paymentName !=null and paymentName != ''">
+            and so.payment_name = #{paymentName}
+        </if>
+        <if test="paymentState !=null and paymentState != ''">
+            and so.payment_state = #{paymentState}
+        </if>
+        <if test="paymentTime !=null and paymentTime != ''">
+            and so.payment_time = #{paymentTime}
+        </if>
+        <if test="buyerId != null">
+            and so.buyer_id =#{buyerId}
+        </if>
+        <if test="keyWordsBuyerId != null">
+            and so.buyer_id LIKE CONCAT('%', #{keyWordsBuyerId},'%')
+        </if>
+        <if test="storeId != null">
+            and so.store_id = #{storeId,jdbcType=BIGINT}
+        </if>
+        <if test="unequalStoreId != null">
+            and so.store_id != #{unequalStoreId,jdbcType=BIGINT}
+        </if>
+        <if test="creationPeriod != null and creationPeriod != ''">
+            AND so.creation_period = #{creationPeriod}
+        </if>
+        <if test="logisticType != null and logisticType != ''">
+            AND so.logistic_type = #{logisticType}
+        </if>
+        <if test="evalsellerStatus != null and evalsellerStatus != ''">
+            AND so.evalseller_status = #{evalsellerStatus}
+        </if>
+        <if test="ids != null and ids.size > 0">
+            and so.id IN
+            <foreach item="ShopOrderId" index="index" collection="ids" open="(" separator="," close=")">
+                ${ShopOrderId}
+            </foreach>
+        </if>
+    </select>
+
+    <!--根据id集合查询订单和会员信息-->
+    <select id="listOrderMemberInfoByIds" resultType="com.framework.loippi.vo.order.OrderMemberVo">
+        SELECT t.id as orderId,t.payment_time as orderTime,m.id as memberId,
+        m.member_truename as memberName ,m.member_avatar as memberAvatar
+        FROM SHOP_ORDER t
+        left join shop_member m on t.buyer_id = m.id
+        <where>1=1
+            <if test="ids">
+                and t.id IN
+                <foreach item="ShopOrderId" index="index" collection="ids" open="(" separator="," close=")">
+                    #{ShopOrderId}
+                </foreach>
+            </if>
+            <if test="orderId!=null">
+                and t.id = #{orderId}
+            </if>
+        </where>
+    </select>
+
+    <!--扩展查询订单收货地址和订单商品-->
+    <select id="getShopOrderVoWithGoodsAndAddress" resultMap="ShopOrderVoWithGoodsAndAddressResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!--扩展查询订单商品-->
+    <select id="getShopOrderVoWithGoods" resultMap="ShopOrderVoWithGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="listShopOrderVoWithAbleRefundReturnGoods" resultMap="ShopOrderVoWithAbleRefundReturnGoodsResultMap">
+    SELECT
+    sorder.id,
+    sorder.order_sn,
+    sorder.store_id,
+    sorder.store_name,
+    sorder.buyer_id,
+    sorder.buyer_name,
+    sorder.buyer_phone,
+    sorder.create_time,
+    sorder.order_type,
+    sorder.order_platform,
+    sorder.payment_id,
+    sorder.payment_name,
+    sorder.payment_code,
+    sorder.payment_branch,
+    sorder.payment_state,
+    sorder.out_sn,
+    sorder.trade_sn,
+    sorder.payment_time,
+    sorder.pay_message,
+    sorder.shipping_time,
+    sorder.shipping_express_id,
+    sorder.shipping_code,
+    sorder.out_payment_code,
+    sorder.finnshed_time,
+    sorder.goods_amount,
+    sorder.discount,
+    sorder.order_amount,
+    sorder.order_total_price,
+    sorder.shipping_fee,
+    sorder.shipping_name,
+    sorder.evaluation_status,
+    sorder.evaluation_time,
+    sorder.evalseller_status,
+    sorder.evalseller_time,
+    sorder.order_message,
+    sorder.order_state,
+    sorder.order_pointscount,
+    sorder.refund_state,
+    sorder.return_state,
+    sorder.refund_amount,
+    sorder.return_num,
+    sorder.xianshi_id,
+    sorder.xianshi_explain,
+    sorder.mansong_id,
+    sorder.mansong_explain,
+    sorder.bundling_id,
+    sorder.bundling_explain,
+    sorder.deliver_explain,
+    sorder.daddress_id,
+    sorder.address_id,
+    sorder.pay_id,
+    sorder.pay_sn,
+    sorder.balance_state,
+    sorder.balance_time,
+    sorder.shipping_express_code,
+    sorder.predeposit_amount,
+    sorder.cancel_cause,
+    sorder.lock_state,
+    sorder.barter_state,
+    sorder.barter_num,
+    sorder.use_point_num,
+    sorder.point_rmb_num,
+    sorder.is_del,
+    sorder.batch_no,
+    sorder.is_remind
+    FROM
+    shop_order AS sorder
+    WHERE
+    order_state=#{orderState} AND
+    evaluation_status=#{evaluationStatus} AND
+    buyer_id =#{buyerId} AND refund_state=#{refundState}
+    and sorder.id=#{id}
+    (select count(ogoods.id) from shop_order_goods ogoods
+    left join
+    shop_refund_return refund on ogoods.id = refund.order_goods_id
+    where ogoods.order_id = sorder.id and refund.id is null
+    ) > 0
+    order by create_time DESC
+  </select>
+
+    <!--查询订单列表（包括商品信息)-->
+    <select id="listShopOrderVoWithGoods" resultMap="ShopOrderVoWithGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!--查询订单列表（包括商品信息+收货地址)-->
+    <select id="listShopOrderVoWithGoodsAndAddr" resultMap="ShopOrderVoWithGoodsAndAddressResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="listDeliverableWithGoodsAndAddr" resultMap="ShopOrderVoWithGoodsAndAddressResultMap">
+        SELECT
+        sorder.id, sorder.order_sn, sorder.store_id, sorder.store_name, sorder.buyer_id,
+        sorder.buyer_name, sorder.buyer_phone, sorder.create_time, sorder.order_type, sorder.order_platform,
+        sorder.payment_id, sorder.payment_name, sorder.payment_code, sorder.payment_branch,
+        sorder.payment_state, sorder.out_sn, sorder.trade_sn,
+        sorder.payment_time,sorder.pay_message,sorder.shipping_time,
+        sorder.shipping_express_id, sorder.shipping_code, sorder.out_payment_code, sorder.finnshed_time,
+        sorder.goods_amount, sorder.discount, sorder.order_amount, sorder.order_total_price,sorder.shipping_fee,
+        sorder.shipping_name, sorder.evaluation_status, sorder.evaluation_time, sorder.evalseller_status,
+        sorder.evalseller_time, sorder.order_message, sorder.order_state, sorder.order_pointscount,
+        sorder.refund_state, sorder.return_state, sorder.refund_amount,
+        sorder.return_num, sorder.xianshi_id, sorder.xianshi_explain,
+        sorder.mansong_id,
+        sorder.mansong_explain, sorder.bundling_id, sorder.bundling_explain, sorder.deliver_explain,
+        sorder.daddress_id, sorder.address_id, sorder.pay_id, sorder.pay_sn, sorder.balance_state, sorder.balance_time,
+        sorder.shipping_express_code, sorder.predeposit_amount, sorder.cancel_cause,
+         sorder.lock_state, sorder.barter_state, sorder.barter_num, sorder.use_point_num,
+        sorder.point_rmb_num,
+        sorder.is_del,sorder.batch_no, sorder.is_remind
+        FROM SHOP_ORDER sorder
+        <where>1=1
+            <if test="storeId != null">
+                AND sorder.store_id = #{storeId,jdbcType=BIGINT}
+            </if>
+            <if test="orderSnKeyWord != null and orderSnKeyWord != ''">
+                AND sorder.order_sn like CONCAT('%',#{orderSnKeyWord},'%')
+            </if>
+            <if test="orderState !=null">
+                and sorder.order_state = #{orderState}
+            </if>
+        </where>
+    </select>
+
+    <select id="listOrderCountVo" resultType="com.framework.loippi.vo.order.OrderCountVo">
+    select
+        <if test="num == 2">
+            date_format( create_time, '%Y-%m' ) orderDate
+        </if>
+        <if test="num != 2">
+            date_format( create_time, '%Y-%m-%d' ) orderDate
+        </if>
+        ,if(xianshi_id=-1,70,order_state) as orderState
+
+	    ,count(1) num
+	    ,sum(ifnull( order_amount, 0 ) + ifnull( point_rmb_num, 0 )) orderPrice
+    from
+	    shop_order
+    where
+	    store_id = #{storeId}
+        <if test="notOrderType !=null and notOrderType != ''">
+            and order_type != ${notOrderType}
+        </if>
+        <if test="num == 2">
+  	  and create_time BETWEEN date_format( #{staTime}, '%Y-%m-1' ) and date_format( #{endTime}, '%Y-%m-31 23:59:59' )
+        </if>
+        <if test="num != 2">
+            and create_time BETWEEN date_format( #{staTime}, '%Y-%m-%d' ) and date_format( #{endTime}, '%Y-%m-%d 23:59:59' )
+        </if>
+        group BY
+	    orderDate, orderState
+  </select>
+
+  <select id="listOrderCountVoGroupByState" resultType="com.framework.loippi.vo.order.OrderCountVo">
+    select count(1) num, order_state orderState from shop_order where store_id = #{storeId} GROUP BY order_state;
+  </select>
+
+    <select id="listOrderStatisticsVo" resultType="com.framework.loippi.vo.order.OrderStatisticsVo">
+        select
+        <if test="num == 2">
+        date_format( create_time, '%Y-%m' ) orderDate,
+        </if>
+        <if test="num != 2">
+            date_format( create_time, '%Y-%m-%d' ) orderDate,
+        </if>
+        sorder.order_sn orderSn,
+        sorder.store_name memberName,
+        if(xianshi_id=-1,70,order_state) as orderState,
+        sorder.order_total_price orderTotalPrice,
+        sum(sorder.order_amount) orderPayPrice,
+        sum(sorder.point_rmb_num)pointRmbNum,
+        sorder.order_type orderType,
+        sorder.create_time createDate,
+        count(1) num
+        from
+        shop_order sorder
+        where
+        1 = 1
+        <if test="notOrderType !=null and notOrderType != ''">
+            and order_type != ${notOrderType}
+        </if>
+        <if test="orderState != null">and order_state = #{orderState}</if>
+        <if test="storeId != null">and store_id = #{storeId}</if>
+        <if test="startTime != null and startTime != '' ">and create_time &gt;= #{startTimeStr}</if>
+        <if test="endTime != null and endTime != '' ">and create_time &lt;= #{endTimeStr}</if>
+
+        group by orderDate desc , orderState
+    </select>
+
+    <!--根据订单类型分组统计订单数及总额-->
+    <select id="listGroupPriceAndNumOfOrderType" resultType="com.framework.loippi.vo.order.OrderCountVo">
+        select so.order_type,so.payment_time as orderDate, COUNT(1) AS num,
+
+        SUM( ifnull( so.order_amount, 0 ) + ifnull( so.point_rmb_num, 0 ) ) AS orderPrice
+        from shop_order so where 1=1 and so.order_type != '5'
+        <if test="orderState !=null and orderState != ''">
+            and so.order_state=#{orderState}
+        </if>
+        <if test="notOrderState !=null and notOrderState != ''">
+            and so.order_state != ${notOrderState}
+        </if>
+        GROUP BY so.order_type
+        ORDER BY so.order_type ASC
+    </select>
+
+    <!--根据订单类型分组统计订单数及总额-->
+    <select id="countMemberOrderNum" resultType="com.framework.loippi.vo.order.OrderCountVo">
+        select  COUNT(so.id) AS num,buyer_id,buyer_name
+        from shop_order so where 1=1
+        <if test="orderState !=null and orderState != ''">
+            and so.order_state=#{orderState}
+        </if>
+        <if test="notOrderState !=null and notOrderState != ''">
+            and so.order_state != #{notOrderState}
+        </if>
+        GROUP BY buyer_id
+    </select>
+
+    <select id="listOrderMemberStatisticsVo" resultType="com.framework.loippi.vo.order.OrderMemberStatisticsVo">
+        select sm.MM_NICK_NAME nickName
+        ,so.buyer_name AS memberName
+        ,so.buyer_id AS memberId
+        ,COUNT(so.id) AS orderNum
+        ,smg.RANK_NAME AS gradeName
+        ,SUM(ifnull( so.order_amount, 0 ) + ifnull( so.point_rmb_num, 0 )) AS orderPriceSum
+        from shop_order so
+        inner JOIN RD_MM_BASIC_INFO sm on so.buyer_id=sm.MM_CODE
+        LEFT JOIN RD_MM_RELATION rmr on rmr.MM_CODE=sm.MM_CODE
+        LEFT JOIN RD_RANKS smg on rmr.RANK=smg.RANK_ID
+        where 1=1
+        <if test="startTime !=null and startTime != ''">
+            <![CDATA[and so.create_time >= #{startTime}]]>
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            <![CDATA[and so.create_time < ADDDATE(#{endTime},INTERVAL 1 DAY)]]>
+        </if>
+        <if test="nickName !=null and nickName != ''">
+            and sm.MM_NICK_NAME LIKE CONCAT('%', #{nickName}, '%')
+        </if>
+        <if test="memberId !=null and memberId != ''">
+            and sm.MM_CODE LIKE CONCAT('%', #{memberId}, '%')
+
+        </if>
+        GROUP BY so.buyer_id
+        ORDER BY orderPriceSum desc
+    </select>
+
+    <select id="listGoodsStatisticsVo" resultType="com.framework.loippi.vo.goods.GoodsStatisticsVo">
+        select
+            sum( ifnull( ogoods.market_price, 0 ) * ogoods.goods_num) as saleAmount,
+            sum( ogoods.goods_num ) saleNum,
+            ogoods.goods_name,
+            ogoods.goods_id,
+            sg.brand_name,
+            sg.brand_id,
+            sgc.gc_name,
+            sgc.id,
+            sgc.gc_parent_id,
+            sgc2.gc_name as gcParentName
+        from
+            shop_order_goods ogoods
+        left join shop_order sorder on ogoods.order_id = sorder.id
+        left join shop_goods sg on ogoods.goods_id = sg.id
+        left join shop_goods_class sgc on sg.gc_id = sgc.id
+        left join shop_goods_class sgc2 on sgc.gc_parent_id = sgc2.id
+        where
+            sorder.order_state = 40
+        <if test="startTime !=null and startTime != ''">
+            <![CDATA[and sorder.create_time >= #{startTime}]]>
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            <![CDATA[and sorder.create_time < ADDDATE(#{endTime},INTERVAL 1 DAY)]]>
+        </if>
+        <if test="goodsIdKeyWord !=null and goodsIdKeyWord != ''">
+            <![CDATA[ and (ogoods.goods_id LIKE CONCAT(CONCAT('%',#{goodsIdKeyWord}),'%'))]]>
+        </if>
+        <if test="goodsName !=null and goodsName != ''">
+            <![CDATA[ and (ogoods.goods_name LIKE CONCAT(CONCAT('%',#{goodsName}),'%'))]]>
+        </if>
+        <if test="brandName !=null and brandName != ''">
+            <![CDATA[ and (sg.brand_name LIKE CONCAT(CONCAT('%',#{brandName}),'%'))]]>
+        </if>
+        <if test="gcParentId !=null and gcParentId != ''">
+          and  sgc2.id = #{gcParentId}
+        </if>
+        <if test="gcId !=null and gcId != ''">
+           and  sgc.id = #{gcId}
+        </if>
+        group by
+            ogoods.goods_id
+        order by
+            saleNum desc;
+    </select>
+
+    <select id="listStoreStatisticsVo" resultType="com.framework.loippi.vo.store.StoreStatisticsVo">
+        select
+            store_id storeId,
+            store_name storeName,
+            count( 1 ) orderNum,
+            sum(sgoods.goods_num) goodsNum,
+            sum(sorder.order_total_price) orderPriceSum
+        from
+            shop_order sorder left join shop_order_goods sgoods on
+            sorder.id = sgoods.order_id
+        where order_state = 40
+        <if test="startTime !=null and startTime != ''">
+            <![CDATA[and sorder.create_time >= #{startTime}]]>
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            <![CDATA[and sorder.create_time < ADDDATE(#{endTime},INTERVAL 1 DAY)]]>
+        </if>
+        <if test="storeKeyWord !=null and storeKeyWord != ''">
+            <![CDATA[ and (sorder.store_id LIKE CONCAT(CONCAT('%',#{storeKeyWord}),'%')
+              OR sorder.store_name LIKE CONCAT(CONCAT('%',#{storeKeyWord}),'%'))]]>
+        </if>
+        group by
+            store_id
+        order by orderNum desc;
+    </select>
+
+    <!--根据订单类型分组统计订单数及总额-->
+    <select id="statisticsOrderPriceAndOrderNumByState" resultMap="ShopOrderResultMap">
+        select so.order_type, COUNT(so.id) AS orderNum,
+        SUM(so.order_total_price) AS countOrderPrice
+        from shop_order so where 1=1 and so.order_type != '5'
+        <if test="orderState !=null and orderState != ''">
+            and so.order_state=#{orderState}
+        </if>
+        <if test="storeId != null">
+            AND so.store_id = #{storeId}
+        </if>
+        GROUP  BY  so.order_type
+        ORDER BY so.order_type ASC
+    </select>
+
+    <!--统计秒杀或促销活动总额和订单总数  日   周  月-->
+    <select id="statisticsSeckillOrPromotionBystate" resultType="com.framework.loippi.vo.activity.ActivityStatisticsVo">
+        SELECT
+        <if test='state == "1"'>
+            date_format( so.create_time, '%Y-%m-%d' ) as "createDate",
+        </if>
+        <if test='state == "2"'>
+            WEEK(so.create_time) as "weekDate",
+        </if>
+        <if test='state == "3"'>
+            date_format( so.create_time, '%Y-%m' ) as "monthDate",
+        </if>
+        COUNT(so.id) as totalNum,
+        SUM(so.order_total_price) as totalPrice
+        <if test="paymentState!=null">
+            ,so.payment_state
+        </if>
+        from shop_order so
+        WHERE 1=1
+        <if test="orderType!=null">
+            and so.order_type=#{orderType}
+        </if>
+        <if test="paymentState!=null">
+            and so.payment_state=#{paymentState}
+        </if>
+        <if test="storeId != null">
+            and so.store_id = #{storeId}
+        </if>
+        <if test='state == "1"'>
+            and date_format( so.create_time, '%Y-%m-%d' ) between date_format( #{beforeDate}, '%Y-%m-%d' ) and date_format( #{afterDate}, '%Y-%m-%d' )
+            GROUP BY
+            date_format( so.create_time, '%Y-%m-%d' )
+            order by
+            createDate asc
+        </if>
+        <if test='state == "2"'>
+            and date_format( so.create_time, '%Y-%m-%d' ) between date_format( #{beforeDate}, '%Y-%m-%d' ) and date_format( #{afterDate}, '%Y-%m-%d' )
+            GROUP BY
+            WEEK(so.create_time)
+            order by
+            weekDate asc
+        </if>
+        <if test='state == "3"'>
+            and DATE_FORMAT(so.create_time,'%Y-%m')>
+            DATE_FORMAT(date_sub(curdate(), interval 12 month),'%Y-%m')
+            GROUP BY
+            date_format( so.create_time, '%Y-%m' )
+            order by
+            monthDate asc
+        </if>
+    </select>
+
+    <!-- 统计已秒杀的人数及秒杀购买总额 -->
+    <select id="countSeckillSuccess" resultType="com.framework.loippi.vo.activity.ActivityStatisticsVo">
+        SELECT COUNT(*) as totalNum,SUM(so.order_total_price) as totalPrice
+        from shop_order so
+        WHERE 1=1
+        and so.order_type=3
+        <if test="paymentState!=null">
+            and so.payment_state=#{paymentState}
+        </if>
+        <if test="storeId != null">
+            and so.store_id=#{storeId}
+        </if>
+    </select>
+
+    <select id="listStatsCountVo" resultType="com.framework.loippi.vo.stats.StatsCountVo">
+    select count(1) count, 'yesterday' as timeLong from shop_order WHERE order_state = 40 AND to_days(now()) - to_days(finnshed_time) =1
+    union
+    select count(1) count, 'beforeYesterday' as timeLong from shop_order WHERE order_state = 40 AND to_days(now()) - to_days(finnshed_time) =2
+    union
+    SELECT count(1) count, 'lastWeek' as timeLong FROM shop_order WHERE order_state = 40 AND YEARWEEK(date_format(finnshed_time,'%Y-%m-%d')) = YEARWEEK(now())-1
+    union
+    SELECT count(1) count, 'beforeLastWeek' as timeLong from shop_order WHERE order_state = 40 AND YEARWEEK(date_format(finnshed_time,'%Y-%m-%d')) = YEARWEEK(now()) - 2
+    union
+    select count(1) count, 'lastMonth' as timeLong from shop_order WHERE order_state = 40 AND date_format(now(), '%Y%m') - date_format(finnshed_time, '%Y%m') = 1
+    union
+    select count(1) count, 'beforeLastMonth' as timeLong from shop_order WHERE order_state = 40 AND date_format(now(), '%Y%m') - date_format(finnshed_time, '%Y%m') = 2
+    union
+    select count(1) count, 'untilNow' as timeLong from shop_order WHERE order_state = 40;
+    </select>
+    <!--&lt;!&ndash; 范围获取未付款订单列表 &ndash;&gt;-->
+    <select id="listNonPaymentOrder" resultMap="ShopOrderResultMap">
+    select
+    <include refid="base_column"/>
+    from shop_order where order_state = 10 and order_type !=1 limit #{startIndex}, #{pageSize};
+    </select>
+    <!-- 统计某用户的ppv值 -->
+    <select id="sumPpv" resultType="com.framework.loippi.vo.order.OrderSumPpv">
+        SELECT SUM(so.ppv-ifnull( so.refund_ppv, 0 )) as totalPpv,
+        SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )) as totalmoney
+        from shop_order so
+        WHERE 1=1
+        <if test="startTime !=null and startTime != ''">
+            <![CDATA[and so.payment_time >= #{startTime}]]>
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            <![CDATA[and so.payment_time < LAST_DAY(CURDATE())]]>
+        </if>
+        <if test="buyerId != null">
+            and so.buyer_id =#{buyerId}
+        </if>
+    </select>
+
+    <!--&lt;!&ndash; 根据不同的时间段查出相应的订单量 &ndash;&gt;-->
+    <!--<select id="countorderbuy" resultType="com.framework.loippi.vo.order.OrderCountVo" parameterType="map">-->
+    <!--(-->
+    <!--select FROM_UNIXTIME(unix_timestamp(create_time),#{timesn}) ordate,count(1) num,sum(order_total_price)-->
+    <!--orderprice,order_state orderState-->
+    <!--from shop_order-->
+    <!--where create_time &gt;=FROM_UNIXTIME(#{starttime}/1000,'%Y-%m-%d') and create_time &lt;=-->
+    <!--FROM_UNIXTIME(#{endtime}/1000,'%Y-%m-%d')-->
+    <!--<if test="storeId != null and storeId!=''">-->
+    <!--and store_id=#{storeId}-->
+    <!--</if>-->
+    <!--<if test="orderState != null and orderState!=''">-->
+    <!--and order_state = #{orderState}-->
+    <!--</if>-->
+    <!--<if test="storeName != null and storeName!=''">-->
+    <!--and store_name =#{storeName}-->
+    <!--</if>-->
+    <!--group by ordate,orderState-->
+    <!--)-->
+    <!--union(-->
+    <!--select '订单总数' ordate,count(1) num,sum(order_total_price) orderprice,order_state orderState-->
+    <!--from shop_order-->
+    <!--where create_time &gt;= FROM_UNIXTIME(#{starttime}/1000,'%Y-%m-%d') and create_time &lt;=-->
+    <!--FROM_UNIXTIME(#{endtime}/1000,'%Y-%m-%d')-->
+    <!--<if test="storeId != null and storeId!=''">-->
+    <!--and store_id=#{storeId}-->
+    <!--</if>-->
+    <!--<if test="orderState != null and orderState!=''">-->
+    <!--and order_state = #{orderState}-->
+    <!--</if>-->
+    <!--<if test="storeName != null and storeName!=''">-->
+    <!--and store_name =#{storeName}-->
+    <!--</if>-->
+    <!--group by ordate,orderState-->
+    <!--)-->
+    <!--</select>-->
+    <!--&lt;!&ndash; 订单统计 &ndash;&gt;-->
+    <!--<select id="findOrderinfo" resultMap="BaseResultMap6">-->
+    <!--select so.order_sn,sm.member_name,so.store_name,so.order_total_price,so.order_amount,so.predeposit_amount,-->
+    <!--so.payment_code,so.order_state,so.create_time from shop_order so LEFT JOIN-->
+    <!--shop_member sm on so.buyer_id=sm.id where 1=1-->
+    <!--<if test="orderState != null ">-->
+    <!--and order_state = #{orderState}-->
+    <!--</if>-->
+    <!--<if test="storeId != null ">-->
+    <!--and store_id = #{storeId}-->
+    <!--</if>-->
+    <!--<if test="storeName != null and storeName != '' ">-->
+    <!--and store_name like-->
+    <!--<if test="dbName == 'oracle'">'%'||#{storeName}||'%'</if>-->
+    <!--<if test="dbName == 'mssql'">'%'+#{storeName}+'%'</if>-->
+    <!--<if test="dbName == 'mysql'">concat('%',#{storeName},'%')</if>-->
+    <!--</if>-->
+    <!--<if test="startTime != null and startTime != '' ">-->
+    <!--and so.create_time &gt;= FROM_UNIXTIME(#{startTime}/1000,'%Y-%m-%d')-->
+    <!--</if>-->
+    <!--<if test="endTime != null and endTime != '' ">-->
+    <!--and so.create_time &lt;= FROM_UNIXTIME(#{endTime}/1000,'%Y-%m-%d')-->
+    <!--</if>-->
+    <!--ORDER BY create_time DESC-->
+    <!--</select>-->
+
+    <!--<resultMap id="BaseResultMap6" type="com.framework.loippi.vo.order.OrderStatisticsVo" extends="ShopOrderResultMap">-->
+    <!--<result column="member_name" property="membername" jdbcType="VARCHAR"/>-->
+    <!--</resultMap>-->
+</mapper>

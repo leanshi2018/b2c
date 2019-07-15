@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopGoodsBrowseDao">
+
+    <resultMap id="ShopGoodsBrowseResultMap" type="com.framework.loippi.entity.product.ShopGoodsBrowse">
+        <id property="id" column="id"/>
+        <result property="browseMemberId" column="browse_member_id"/>
+        <result property="browseGoodsId" column="browse_goods_id"/>
+        <result property="browseActivityId" column="browse_activity_id"/>
+        <result property="browseGoodsName" column="browse_goods_name"/>
+        <result property="browseGoodsImage" column="browse_goods_image"/>
+        <result property="browseGoodsPrice" column="browse_goods_price"/>
+        <result property="browseGoodsVipPrice" column="browse_goods_vip_price"/>
+        <result property="browseGcId" column="browse_gc_id"/>
+        <result property="browseGcName" column="browse_gc_name"/>
+        <result property="browseSpecId" column="browse_spec_id"/>
+        <result property="browseBrandId" column="browse_brand_id"/>
+        <result property="browseBrandName" column="browse_brand_name"/>
+        <result property="browseState" column="browse_state"/>
+        <result property="browseNum" column="browse_num"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,browse_member_id ,browse_goods_id ,browse_activity_id ,browse_goods_name ,browse_goods_image ,browse_goods_price,browse_goods_vip_price ,browse_gc_id ,browse_gc_name ,browse_spec_id ,browse_brand_id ,browse_brand_name ,browse_state ,browse_num ,create_time
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{browseMemberId},#{browseGoodsId},#{browseActivityId},#{browseGoodsName},#{browseGoodsImage},#{browseGoodsPrice},#{browseGoodsVipPrice},#{browseGcId},#{browseGcName},#{browseSpecId},#{browseBrandId},#{browseBrandName},#{browseState},#{browseNum},#{createTime}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="browseMemberId != null and browseMemberId != ''">
+            AND browse_member_id = #{browseMemberId,jdbcType=BIGINT}
+        </if>
+        <if test="browseGoodsId != null and browseGoodsId != ''">
+            AND browse_goods_id = #{browseGoodsId,jdbcType=BIGINT}
+        </if>
+        <if test="browseActivityId != null and browseActivityId != ''">
+            AND browse_activity_id = #{browseActivityId,jdbcType=BIGINT}
+        </if>
+        <if test="browseGoodsName != null and browseGoodsName != ''">
+            AND browse_goods_name = #{browseGoodsName,jdbcType=VARCHAR}
+        </if>
+        <if test="browseGoodsImage != null and browseGoodsImage != ''">
+            AND browse_goods_image = #{browseGoodsImage,jdbcType=VARCHAR}
+        </if>
+        <if test="browseGoodsPrice != null and browseGoodsPrice != ''">
+            AND browse_goods_price = #{browseGoodsPrice}
+        </if>
+        <if test="browseGcId != null and browseGcId != ''">
+            AND browse_gc_id = #{browseGcId,jdbcType=BIGINT}
+        </if>
+        <if test="browseGcName != null and browseGcName != ''">
+            AND browse_gc_name = #{browseGcName,jdbcType=VARCHAR}
+        </if>
+        <if test="browseSpecId != null and browseSpecId != ''">
+            AND browse_spec_id = #{browseSpecId,jdbcType=BIGINT}
+        </if>
+        <if test="browseBrandId != null and browseBrandId != ''">
+            AND browse_brand_id = #{browseBrandId,jdbcType=BIGINT}
+        </if>
+        <if test="browseBrandName != null and browseBrandName != ''">
+            AND browse_brand_name = #{browseBrandName,jdbcType=VARCHAR}
+        </if>
+        <if test="browseState != null and browseState != ''">
+            AND browse_state = #{browseState,jdbcType=INTEGER}
+        </if>
+        <if test="browseNum != null and browseNum != ''">
+            AND browse_num = #{browseNum,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="browseGoodsVipPrice != null and browseGoodsVipPrice != ''">
+            AND browse_goods_vip_price = #{browseGoodsVipPrice}
+        </if>
+        <if test="day != null and day != ''">
+            and create_time BETWEEN date_format( #{day}, '%Y-%m-%d' ) and date_format( #{day}, '%Y-%m-%d 23:59:59' )
+        </if>
+
+        <if test="ids != null and ids != ''">
+            AND ID IN
+            <foreach item="ShopMemberFavoritesId" index="index" collection="ids" open="(" separator="," close=")">
+                #{ShopMemberFavoritesId}
+            </foreach>
+        </if>
+        <if test="days != null and days != ''">
+            AND create_time IN
+            <foreach item="day" index="index" collection="days" open="(" separator="," close=")">
+                #{day}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="browseMemberId != null">
+            browse_member_id = #{browseMemberId,jdbcType=BIGINT},
+        </if>
+        <if test="browseGoodsId != null">
+            browse_goods_id = #{browseGoodsId,jdbcType=BIGINT},
+        </if>
+        <if test="browseActivityId != null and browseActivityId != ''">
+             browse_activity_id = #{browseActivityId,jdbcType=BIGINT},
+        </if>
+        <if test="browseGoodsName != null and browseGoodsName != ''">
+            browse_goods_name = #{browseGoodsName,jdbcType=VARCHAR},
+        </if>
+        <if test="browseGoodsImage != null and browseGoodsImage != ''">
+            browse_goods_image = #{browseGoodsImage,jdbcType=VARCHAR},
+        </if>
+        <if test="browseGoodsPrice != null">
+            browse_goods_price = #{browseGoodsPrice,jdbcType=},
+        </if>
+        <if test="browseGcId != null">
+            browse_gc_id = #{browseGcId,jdbcType=BIGINT},
+        </if>
+        <if test="browseGcName != null and browseGcName != ''">
+            browse_gc_name = #{browseGcName,jdbcType=VARCHAR},
+        </if>
+        <if test="browseSpecId != null">
+            browse_spec_id = #{browseSpecId,jdbcType=BIGINT},
+        </if>
+        <if test="browseBrandId != null">
+            browse_brand_id = #{browseBrandId,jdbcType=BIGINT},
+        </if>
+        <if test="browseBrandName != null and browseBrandName != ''">
+            browse_brand_name = #{browseBrandName,jdbcType=VARCHAR},
+        </if>
+        <if test="browseState != null">
+            browse_state = #{browseState,jdbcType=INTEGER},
+        </if>
+        <if test="browseNum != null">
+            browse_num = #{browseNum,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=},
+        </if>
+        <if test="browseGoodsVipPrice != null and browseGoodsVipPrice != ''">
+             browse_goods_vip_price = #{browseGoodsVipPrice},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopGoodsBrowseResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_BROWSE
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopGoodsBrowseResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_BROWSE
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_GOODS_BROWSE
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopGoodsBrowse">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_GOODS_BROWSE
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopGoodsBrowse">
+        UPDATE SHOP_GOODS_BROWSE
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_GOODS_BROWSE
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_GOODS_BROWSE
+        WHERE ID IN
+        <foreach item="ShopGoodsBrowseId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopGoodsBrowseId}
+        </foreach>
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteMemberFavorites">
+        DELETE FROM SHOP_GOODS_BROWSE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopGoodsBrowseResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_BROWSE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopGoodsBrowseResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_BROWSE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper> 

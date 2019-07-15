@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.ware.RdWareAdjustDao">
+	
+	<resultMap id="RdWareAdjustResultMap" type="com.framework.loippi.entity.ware.RdWareAdjust">
+		<id property="wid" column="WID"  />
+		<result property="wareCode" column="WARE_CODE" />
+		<result property="wareName" column="WARE_NAME" />
+		<result property="adjustType" column="ADJUST_TYPE" />
+		<result property="attachAdd" column="ATTACH_ADD" />
+		<result property="status" column="STATUS" />
+		<result property="wareAmount" column="WARE_AMOUNT" />
+		<result property="autohrizeBy" column="AUTOHRIZE_BY" />
+		<result property="autohrizeTime" column="AUTOHRIZE_TIME" />
+		<result property="autohrizeDesc" column="AUTOHRIZE_DESC" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 WID ,WARE_CODE ,WARE_NAME ,ADJUST_TYPE ,ATTACH_ADD ,STATUS ,WARE_AMOUNT ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{wid},#{wareCode},#{wareName},#{adjustType},#{attachAdd},#{status},#{wareAmount},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="wid != null and wid != ''">
+			AND WID = #{wid,jdbcType=INTEGER}
+		</if>
+		<if test="wareCode != null and wareCode != ''">
+			AND WARE_CODE = #{wareCode,jdbcType=VARCHAR}
+		</if>
+		<if test="wareName != null and wareName != ''">
+			AND WARE_NAME = #{wareName,jdbcType=VARCHAR}
+		</if>
+		<if test="adjustType != null and adjustType != ''">
+			AND ADJUST_TYPE = #{adjustType,jdbcType=VARCHAR}
+		</if>
+		<if test="attachAdd != null and attachAdd != ''">
+			AND ATTACH_ADD = #{attachAdd,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null and status != ''">
+			AND STATUS = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="wareAmount != null and wareAmount != ''">
+			AND WARE_AMOUNT = #{wareAmount,jdbcType=DECIMAL}
+		</if>
+		<if test="autohrizeBy != null and autohrizeBy != ''">
+			AND AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR}
+		</if>
+		<if test="autohrizeTime != null and autohrizeTime != ''">
+			AND AUTOHRIZE_TIME = #{autohrizeTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="autohrizeDesc != null and autohrizeDesc != ''">
+			AND AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="wid != null">
+			WID = #{wid,jdbcType=INTEGER},
+		</if>
+		<if test="wareCode != null and wareCode != ''">
+			WARE_CODE = #{wareCode,jdbcType=VARCHAR},
+		</if>
+		<if test="wareName != null and wareName != ''">
+			WARE_NAME = #{wareName,jdbcType=VARCHAR},
+		</if>
+		<if test="adjustType != null and adjustType != ''">
+			ADJUST_TYPE = #{adjustType,jdbcType=VARCHAR},
+		</if>
+		<if test="attachAdd != null and attachAdd != ''">
+			ATTACH_ADD = #{attachAdd,jdbcType=VARCHAR},
+		</if>
+		<if test="status != null">
+			STATUS = #{status,jdbcType=INTEGER},
+		</if>
+		<if test="wareAmount != null">
+			WARE_AMOUNT = #{wareAmount,jdbcType=DECIMAL},
+		</if>
+		<if test="autohrizeBy != null and autohrizeBy != ''">
+			AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR},
+		</if>
+		<if test="autohrizeTime != null">
+			AUTOHRIZE_TIME = #{autohrizeTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="autohrizeDesc != null and autohrizeDesc != ''">
+			AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdWareAdjustResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_WARE_ADJUST
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdWareAdjustResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_WARE_ADJUST
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_WARE_ADJUST
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.ware.RdWareAdjust">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="wid">
+	          SELECT LAST_INSERT_ID() AS WID
+	    </selectKey>
+		INSERT RD_WARE_ADJUST 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.ware.RdWareAdjust">
+		UPDATE	RD_WARE_ADJUST
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_WARE_ADJUST
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_WARE_ADJUST
+		WHERE	ID	IN
+    	<foreach item="RdWareAdjustId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdWareAdjustId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdWareAdjustResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_WARE_ADJUST
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdWareAdjustResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_WARE_ADJUST
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdRaBindingDao">
+	
+	<resultMap id="RdRaBindingResultMap" type="com.framework.loippi.entity.user.RdRaBinding">
+		<result property="raCode" column="RA_CODE" />
+		<result property="raName" column="RA_NAME" />
+		<result property="raNickName" column="RA_NICK_NAME" />
+		<result property="raStatus" column="RA_STATUS" />
+		<result property="raIdType" column="RA_ID_TYPE" />
+		<result property="raIdCode" column="RA_ID_CODE" />
+		<result property="raSponsorCode" column="RA_SPONSOR_CODE" />
+		<result property="raSponsorName" column="RA_SPONSOR_NAME" />
+		<result property="bindingStatus" column="BINDING_STATUS" />
+		<result property="rdCode" column="RD_CODE" />
+		<result property="bindingDate" column="BINDING_DATE" />
+		<result property="bindingBy" column="BINDING_BY" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 RA_CODE ,RA_NAME ,RA_NICK_NAME ,RA_STATUS ,RA_ID_TYPE ,RA_ID_CODE ,RA_SPONSOR_CODE ,RA_SPONSOR_NAME ,BINDING_STATUS ,RD_CODE ,BINDING_DATE ,BINDING_BY 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{raCode},#{raName},#{raNickName},#{raStatus},#{raIdType},#{raIdCode},#{raSponsorCode},#{raSponsorName},#{bindingStatus},#{rdCode},#{bindingDate},#{bindingBy}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="raCode != null and raCode != ''">
+			AND RA_CODE = #{raCode,jdbcType=VARCHAR}
+		</if>
+		<if test="raName != null and raName != ''">
+			AND RA_NAME = #{raName,jdbcType=VARCHAR}
+		</if>
+		<if test="raNickName != null and raNickName != ''">
+			AND RA_NICK_NAME = #{raNickName,jdbcType=VARCHAR}
+		</if>
+		<if test="raStatus != null and raStatus != ''">
+			AND RA_STATUS = #{raStatus,jdbcType=INTEGER}
+		</if>
+		<if test="raIdType != null and raIdType != ''">
+			AND RA_ID_TYPE = #{raIdType,jdbcType=INTEGER}
+		</if>
+		<if test="raIdCode != null and raIdCode != ''">
+			AND RA_ID_CODE = #{raIdCode,jdbcType=VARCHAR}
+		</if>
+		<if test="raSponsorCode != null and raSponsorCode != ''">
+			AND RA_SPONSOR_CODE = #{raSponsorCode,jdbcType=VARCHAR}
+		</if>
+		<if test="raSponsorName != null and raSponsorName != ''">
+			AND RA_SPONSOR_NAME = #{raSponsorName,jdbcType=VARCHAR}
+		</if>
+		<if test="bindingStatus != null and bindingStatus != ''">
+			AND BINDING_STATUS = #{bindingStatus,jdbcType=INTEGER}
+		</if>
+		<if test="rdCode != null and rdCode != ''">
+			AND RD_CODE = #{rdCode,jdbcType=VARCHAR}
+		</if>
+		<if test="bindingDate != null and bindingDate != ''">
+			AND BINDING_DATE = #{bindingDate,jdbcType=TIMESTAMP}
+		</if>
+		<if test="bindingBy != null and bindingBy != ''">
+			AND BINDING_BY = #{bindingBy,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="raCode != null and raCode != ''">
+			RA_CODE = #{raCode,jdbcType=VARCHAR},
+		</if>
+		<if test="raName != null and raName != ''">
+			RA_NAME = #{raName,jdbcType=VARCHAR},
+		</if>
+		<if test="raNickName != null and raNickName != ''">
+			RA_NICK_NAME = #{raNickName,jdbcType=VARCHAR},
+		</if>
+		<if test="raStatus != null">
+			RA_STATUS = #{raStatus,jdbcType=INTEGER},
+		</if>
+		<if test="raIdType != null">
+			RA_ID_TYPE = #{raIdType,jdbcType=INTEGER},
+		</if>
+		<if test="raIdCode != null and raIdCode != ''">
+			RA_ID_CODE = #{raIdCode,jdbcType=VARCHAR},
+		</if>
+		<if test="raSponsorCode != null and raSponsorCode != ''">
+			RA_SPONSOR_CODE = #{raSponsorCode,jdbcType=VARCHAR},
+		</if>
+		<if test="raSponsorName != null and raSponsorName != ''">
+			RA_SPONSOR_NAME = #{raSponsorName,jdbcType=VARCHAR},
+		</if>
+		<if test="bindingStatus != null">
+			BINDING_STATUS = #{bindingStatus,jdbcType=INTEGER},
+		</if>
+		<if test="rdCode != null and rdCode != ''">
+			RD_CODE = #{rdCode,jdbcType=VARCHAR},
+		</if>
+		<if test="bindingDate != null">
+			BINDING_DATE = #{bindingDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="bindingBy != null and bindingBy != ''">
+			BINDING_BY = #{bindingBy,jdbcType=VARCHAR},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdRaBindingResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_RA_BINDING
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdRaBindingResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_RA_BINDING
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_RA_BINDING
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdRaBinding">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+	          <!--SELECT LAST_INSERT_ID() AS ID    -->
+	    <!--</selectKey>  -->
+		INSERT RD_RA_BINDING 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdRaBinding">
+		UPDATE	RD_RA_BINDING
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_RA_BINDING
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_RA_BINDING
+		WHERE	ID	IN
+    	<foreach item="RdRaBindingId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdRaBindingId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdRaBindingResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_RA_BINDING
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdRaBindingResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_RA_BINDING
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

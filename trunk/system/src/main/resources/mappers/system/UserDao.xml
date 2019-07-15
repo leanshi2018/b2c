@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.UserDao">
+
+    <resultMap id="UserResultMap" type="com.framework.loippi.entity.User">
+        <id property="id" column="ID"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="updateDate" column="UPDATE_DATE"/>
+        <result property="username" column="USER_NAME"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="nickname" column="NICKNAME"/>
+        <result property="isEnabled" column="IS_ENABLED"/>
+        <result property="isLocked" column="IS_LOCKED"/>
+        <result property="loginFailureCount" column="LOGIN_FAILURE_COUNT"/>
+        <result property="lockedDate" column="LOCKED_DATE"/>
+        <result property="loginDate" column="LOGIN_DATE"/>
+        <result property="loginIp" column="LOGIN_IP"/>
+        <result property="roleId" column="ROLE_ID"/>
+        <result property="email" column="EMAIL"/>
+        <result property="theme" column="THEME"/>
+        <result property="phone" column="phone"/>
+        <result property="userType" column="user_type"/>
+        <result property="content" column="content"/>
+        <association property="role" column="ROLE_ID" select="com.framework.loippi.dao.RoleDao.find"/>
+    </resultMap>
+
+
+    <resultMap id="UserAndRoleResultMap" extends="UserResultMap" type="com.framework.loippi.entity.User">
+        <association property="role" javaType="com.framework.loippi.entity.Role">
+            <id property="id" column="ID"/>
+            <result property="createDate" column="CREATE_DATE"/>
+            <result property="updateDate" column="UPDATE_DATE"/>
+            <result property="creator" column="CREATOR"/>
+            <result property="updator" column="UPDATOR"/>
+            <result property="name" column="ROLE_NAME"/>
+            <result property="isSystem" column="IS_SYSTEM"/>
+            <result property="description" column="DESCRIPTIONS"/>
+        </association>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 ID  ,CREATE_DATE ,UPDATE_DATE,USER_NAME ,PASSWORD ,NICKNAME,AVATAR ,IS_ENABLED 
+		 ,IS_LOCKED ,LOGIN_FAILURE_COUNT ,LOCKED_DATE ,LOGIN_IP ,EMAIL,ROLE_ID,LOGIN_DATE,THEME
+
+		 ,phone,user_type,content
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id,jdbcType=BIGINT} ,#{createDate} ,#{updateDate}  ,#{username} ,#{password} 
+		 ,#{nickname} ,#{avatar},#{isEnabled} ,#{isLocked} ,#{loginFailureCount} 
+		 ,#{lockedDate} ,#{loginIp} ,#{email} ,#{roleId},#{loginDate},#{theme}
+
+		 ,#{phone},#{userType},#{content}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND ID = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="isEnabled != null">
+            AND IS_ENABLED = #{isEnabled,jdbcType=BIT}
+        </if>
+        <if test="isLocked != null">
+            AND IS_LOCKED = #{isLocked,jdbcType=BIT}
+        </if>
+        <if test="email != null and email != ''">
+            AND EMAIL = #{position,jdbcType=VARCHAR}
+        </if>
+        <if test="username != null and username != ''">
+            AND USER_NAME = #{username,jdbcType=VARCHAR}
+        </if>
+        <if test="roleId != null">
+            AND ROLE_ID = #{roleId}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone = #{phone,jdbcType=VARCHAR}
+        </if>
+        <if test="userType != null and userType != ''">
+            AND user_type = #{userType,jdbcType=INTEGER}
+        </if>
+        <if test="content != null and content != ''">
+            AND content = #{content,jdbcType=VARCHAR}
+        </if>
+        <if test="likeUserName != null and likeUserName != ''">
+            AND USER_NAME like CONCAT('%',#{likeUserName},'%')
+        </if>
+        <if test="searchStartTime !=null and searchStartTime != ''">
+            <![CDATA[and CREATE_DATE >= #{searchStartTime}]]>
+        </if>
+        <if test="searchEndTime !=null and searchEndTime != ''">
+            <![CDATA[and CREATE_DATE <= #{searchEndTime}]]>
+        </if>
+    </sql>
+
+    <sql id="set_column">
+        <if test="id != null">
+            ID = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="isEnabled != null">
+            IS_ENABLED = #{isEnabled,jdbcType=BIT},
+        </if>
+        <if test="avatar != null and avatar != ''">
+            AVATAR = #{avatar,jdbcType=VARCHAR},
+        </if>
+        <if test="isLocked != null">
+            IS_LOCKED = #{isLocked,jdbcType=BIT},
+        </if>
+        <if test="username != null and username != ''">
+            USER_NAME = #{username,jdbcType=VARCHAR},
+        </if>
+        <if test="password != null and password != ''">
+            PASSWORD = #{password,jdbcType=VARCHAR},
+        </if>
+        <if test="nickname != null and nickname != ''">
+            NICKNAME = #{nickname,jdbcType=VARCHAR},
+        </if>
+        <if test="loginFailureCount != null">
+            LOGIN_FAILURE_COUNT = #{loginFailureCount,jdbcType=INTEGER},
+        </if>
+        <if test="loginIp != null and loginIp != ''">
+            LOGIN_IP = #{loginIp,jdbcType=VARCHAR},
+        </if>
+        <if test="roleId != null">
+            ROLE_ID = #{roleId,jdbcType=BIGINT},
+        </if>
+        <if test="email != null and email != ''">
+            EMAIL = #{email,jdbcType=VARCHAR},
+        </if>
+        <if test="updateDate != null and updateDate != ''">
+            UPDATE_DATE = #{updateDate},
+        </if>
+        <if test="theme != null and theme != ''">
+            THEME = #{theme},
+        </if>
+
+        <if test="phone != null and phone != ''">
+            phone = #{phone,jdbcType=VARCHAR},
+        </if>
+        <if test="userType != null and userType != ''">
+            user_type = #{userType,jdbcType=INTEGER},
+        </if>
+        <if test="content != null and content != ''">
+            content = #{content,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM T_SYSTEM_USER
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="find" resultMap="UserResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_USER
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+
+    <select id="findAll" resultMap="UserResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_USER
+    </select>
+
+
+    <select id="findUserAndRole" resultMap="UserAndRoleResultMap">
+		SELECT	*
+		FROM	T_SYSTEM_USER u, T_SYSTEM_ROLE r
+		WHERE	u.ID=#{id,jdbcType=BIGINT} AND u.ROLE_ID = r.ID
+	</select>
+
+    <insert id="insert" parameterType="com.framework.loippi.entity.User">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT INTO T_SYSTEM_USER
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <update id="update" parameterType="com.framework.loippi.entity.User">
+        UPDATE T_SYSTEM_USER
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+		DELETE	FROM T_SYSTEM_USER
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <delete id="deleteAll">
+        DELETE FROM T_SYSTEM_USER
+        WHERE ID IN
+        <foreach item="userId" index="index" collection="ids" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <select id="findByParams" resultMap="UserResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_USER
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="findByPage" resultMap="UserResultMap" parameterType="java.util.Map">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_USER
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper> 

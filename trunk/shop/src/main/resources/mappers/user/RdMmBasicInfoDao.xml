@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdMmBasicInfoDao">
+	
+	<resultMap id="RdMmBasicInfoResultMap" type="com.framework.loippi.entity.user.RdMmBasicInfo">
+		<id property="mmId" column="MM_ID"  />
+		<result property="mmCode" column="MM_CODE" />
+		<result property="mmName" column="MM_NAME" />
+		<result property="mmNickName" column="MM_NICK_NAME" />
+		<result property="idType" column="ID_TYPE" />
+		<result property="idCode" column="ID_CODE" />
+		<result property="gender" column="GENDER" />
+		<result property="birthdate" column="BIRTHDATE" />
+		<result property="email" column="EMAIL" />
+		<result property="nationId" column="NATION_ID" />
+		<result property="addProvinceId" column="ADD_PROVINCE_ID" />
+		<result property="addCityId" column="ADD_CITY_ID" />
+		<result property="addCountryId" column="ADD_COUNTRY_ID" />
+		<result property="addTownId" column="ADD_TOWN_ID" />
+		<result property="addDetial" column="ADD_DETIAL" />
+		<result property="addPost" column="ADD_POST" />
+		<result property="mobile" column="MOBILE" />
+		<result property="wechatCode" column="WECHAT_CODE" />
+		<result property="qqCode" column="QQ_CODE" />
+		<result property="facebookCode" column="FACEBOOK_CODE" />
+		<result property="phone" column="PHONE" />
+		<result property="creationSource" column="CREATION_SOURCE" />
+		<result property="creationIp" column="CREATION_IP" />
+		<result property="creationDate" column="CREATION_DATE" />
+		<result property="creationBy" column="CREATION_BY" />
+		<result property="creationPeriod" column="CREATION_PERIOD" />
+		<result property="updateSource" column="UPDATE_SOURCE" />
+		<result property="updateIp" column="UPDATE_IP" />
+		<result property="updateDate" column="UPDATE_DATE" />
+		<result property="updateBy" column="UPDATE_BY" />
+		<result property="updatePeriod" column="UPDATE_PERIOD" />
+		<result property="mmAvatar" column="MM_AVATAR" />
+		<result property="shareNum" column="SHARE_NUM" />
+		<result property="pushStatus" column="PUSH_STATUS" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 MM_ID ,MM_CODE ,MM_NAME ,MM_NICK_NAME ,ID_TYPE ,ID_CODE ,GENDER ,BIRTHDATE ,EMAIL ,NATION_ID ,ADD_PROVINCE_ID ,ADD_CITY_ID ,ADD_COUNTRY_ID ,ADD_TOWN_ID ,ADD_DETIAL ,ADD_POST ,MOBILE ,WECHAT_CODE ,QQ_CODE ,FACEBOOK_CODE ,PHONE ,CREATION_SOURCE ,CREATION_IP ,CREATION_DATE ,CREATION_BY ,CREATION_PERIOD ,UPDATE_SOURCE ,UPDATE_IP ,UPDATE_DATE ,UPDATE_BY ,UPDATE_PERIOD ,MM_AVATAR,SHARE_NUM,PUSH_STATUS
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{mmId},#{mmCode},#{mmName},#{mmNickName},#{idType},#{idCode},#{gender},#{birthdate},#{email},#{nationId},#{addProvinceId},#{addCityId},#{addCountryId},#{addTownId},#{addDetial},#{addPost},#{mobile},#{wechatCode},#{qqCode},#{facebookCode},#{phone},#{creationSource},#{creationIp},#{creationDate},#{creationBy},#{creationPeriod},#{updateSource},#{updateIp},#{updateDate},#{updateBy},#{updatePeriod},#{mmAvatar},#{shareNum},#{pushStatus}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="mmId != null and mmId != ''">
+			AND MM_ID = #{mmId,jdbcType=INTEGER}
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="mmName != null and mmName != ''">
+			AND MM_NAME = #{mmName,jdbcType=VARCHAR}
+		</if>
+		<if test="mmNickName != null and mmNickName != ''">
+			AND MM_NICK_NAME = #{mmNickName,jdbcType=VARCHAR}
+		</if>
+		<if test="idType != null and idType != ''">
+			AND ID_TYPE = #{idType,jdbcType=INTEGER}
+		</if>
+		<if test="idCode != null and idCode != ''">
+			AND ID_CODE = #{idCode,jdbcType=VARCHAR}
+		</if>
+		<if test="gender != null and gender != ''">
+			AND GENDER = #{gender,jdbcType=INTEGER}
+		</if>
+		<if test="birthdate != null and birthdate != ''">
+			AND BIRTHDATE = #{birthdate,jdbcType=TIMESTAMP}
+		</if>
+		<if test="email != null and email != ''">
+			AND EMAIL = #{email,jdbcType=VARCHAR}
+		</if>
+		<if test="nationId != null and nationId != ''">
+			AND NATION_ID = #{nationId,jdbcType=VARCHAR}
+		</if>
+		<if test="addProvinceId != null and addProvinceId != ''">
+			AND ADD_PROVINCE_ID = #{addProvinceId,jdbcType=VARCHAR}
+		</if>
+		<if test="addCityId != null and addCityId != ''">
+			AND ADD_CITY_ID = #{addCityId,jdbcType=VARCHAR}
+		</if>
+		<if test="addCountryId != null and addCountryId != ''">
+			AND ADD_COUNTRY_ID = #{addCountryId,jdbcType=VARCHAR}
+		</if>
+		<if test="addTownId != null and addTownId != ''">
+			AND ADD_TOWN_ID = #{addTownId,jdbcType=VARCHAR}
+		</if>
+		<if test="addDetial != null and addDetial != ''">
+			AND ADD_DETIAL = #{addDetial,jdbcType=VARCHAR}
+		</if>
+		<if test="addPost != null and addPost != ''">
+			AND ADD_POST = #{addPost,jdbcType=VARCHAR}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND MOBILE = #{mobile,jdbcType=VARCHAR}
+		</if>
+		<if test="wechatCode != null and wechatCode != ''">
+			AND WECHAT_CODE = #{wechatCode,jdbcType=VARCHAR}
+		</if>
+		<if test="qqCode != null and qqCode != ''">
+			AND QQ_CODE = #{qqCode,jdbcType=VARCHAR}
+		</if>
+		<if test="facebookCode != null and facebookCode != ''">
+			AND FACEBOOK_CODE = #{facebookCode,jdbcType=VARCHAR}
+		</if>
+		<if test="phone != null and phone != ''">
+			AND PHONE = #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="creationSource != null and creationSource != ''">
+			AND CREATION_SOURCE = #{creationSource,jdbcType=VARCHAR}
+		</if>
+		<if test="creationIp != null and creationIp != ''">
+			AND CREATION_IP = #{creationIp,jdbcType=VARCHAR}
+		</if>
+		<if test="creationDate != null and creationDate != ''">
+			AND CREATION_DATE = #{creationDate,jdbcType=TIMESTAMP}
+		</if>
+		<if test="creationBy != null and creationBy != ''">
+			AND CREATION_BY = #{creationBy,jdbcType=VARCHAR}
+		</if>
+		<if test="creationPeriod != null and creationPeriod != ''">
+			AND CREATION_PERIOD = #{creationPeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="updateSource != null and updateSource != ''">
+			AND UPDATE_SOURCE = #{updateSource,jdbcType=VARCHAR}
+		</if>
+		<if test="updateIp != null and updateIp != ''">
+			AND UPDATE_IP = #{updateIp,jdbcType=VARCHAR}
+		</if>
+		<if test="updateDate != null and updateDate != ''">
+			AND UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			AND UPDATE_BY = #{updateBy,jdbcType=VARCHAR}
+		</if>
+		<if test="updatePeriod != null and updatePeriod != ''">
+			AND UPDATE_PERIOD = #{updatePeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="mmAvatar != null and mmAvatar != ''">
+			AND MM_AVATAR = #{mmAvatar}
+		</if>
+		<if test="shareNum != null and shareNum != ''">
+			AND SHARE_NUM = #{shareNum}
+		</if>
+		<if test="pushStatus != null and pushStatus != ''">
+			AND PUSH_STATUS = #{pushStatus}
+		</if>
+		<if test="info !=null and info != ''">
+			AND (MOBILE like CONCAT('%',#{info},'%') or MM_NICK_NAME like CONCAT('%',#{info},'%'))
+		</if>
+		<if test="verificationNickName !=null and verificationNickName != '' and verificationMobile != null and verificationMobile != ''">
+			AND (MM_NICK_NAME = #{verificationNickName} or MOBILE = #{verificationMobile})
+		</if>
+		<if test="mmCodes!=null and mmCodes!= ''">
+			and MM_CODE in
+			<foreach item="id" index="index" collection="mmCodes" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="mmId != null">
+			MM_ID = #{mmId,jdbcType=INTEGER},
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			MM_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="mmName != null and mmName != ''">
+			MM_NAME = #{mmName,jdbcType=VARCHAR},
+		</if>
+		<if test="mmNickName != null and mmNickName != ''">
+			MM_NICK_NAME = #{mmNickName,jdbcType=VARCHAR},
+		</if>
+		<if test="idType != null">
+			ID_TYPE = #{idType,jdbcType=INTEGER},
+		</if>
+		<if test="idCode != null and idCode != ''">
+			ID_CODE = #{idCode,jdbcType=VARCHAR},
+		</if>
+		<if test="gender != null">
+			GENDER = #{gender,jdbcType=INTEGER},
+		</if>
+		<if test="birthdate != null">
+			BIRTHDATE = #{birthdate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="email != null and email != ''">
+			EMAIL = #{email,jdbcType=VARCHAR},
+		</if>
+		<if test="nationId != null and nationId != ''">
+			NATION_ID = #{nationId,jdbcType=VARCHAR},
+		</if>
+		<if test="addProvinceId != null and addProvinceId != ''">
+			ADD_PROVINCE_ID = #{addProvinceId,jdbcType=VARCHAR},
+		</if>
+		<if test="addCityId != null and addCityId != ''">
+			ADD_CITY_ID = #{addCityId,jdbcType=VARCHAR},
+		</if>
+		<if test="addCountryId != null and addCountryId != ''">
+			ADD_COUNTRY_ID = #{addCountryId,jdbcType=VARCHAR},
+		</if>
+		<if test="addTownId != null and addTownId != ''">
+			ADD_TOWN_ID = #{addTownId,jdbcType=VARCHAR},
+		</if>
+		<if test="addDetial != null and addDetial != ''">
+			ADD_DETIAL = #{addDetial,jdbcType=VARCHAR},
+		</if>
+		<if test="addPost != null and addPost != ''">
+			ADD_POST = #{addPost,jdbcType=VARCHAR},
+		</if>
+		<if test="mobile != null and mobile != ''">
+			MOBILE = #{mobile,jdbcType=VARCHAR},
+		</if>
+		<if test="wechatCode != null and wechatCode != ''">
+			WECHAT_CODE = #{wechatCode,jdbcType=VARCHAR},
+		</if>
+		<if test="qqCode != null and qqCode != ''">
+			QQ_CODE = #{qqCode,jdbcType=VARCHAR},
+		</if>
+		<if test="facebookCode != null and facebookCode != ''">
+			FACEBOOK_CODE = #{facebookCode,jdbcType=VARCHAR},
+		</if>
+		<if test="phone != null and phone != ''">
+			PHONE = #{phone,jdbcType=VARCHAR},
+		</if>
+		<if test="creationSource != null and creationSource != ''">
+			CREATION_SOURCE = #{creationSource,jdbcType=VARCHAR},
+		</if>
+		<if test="creationIp != null and creationIp != ''">
+			CREATION_IP = #{creationIp,jdbcType=VARCHAR},
+		</if>
+		<if test="creationDate != null">
+			CREATION_DATE = #{creationDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="creationBy != null and creationBy != ''">
+			CREATION_BY = #{creationBy,jdbcType=VARCHAR},
+		</if>
+		<if test="creationPeriod != null and creationPeriod != ''">
+			CREATION_PERIOD = #{creationPeriod,jdbcType=VARCHAR},
+		</if>
+		<if test="updateSource != null and updateSource != ''">
+			UPDATE_SOURCE = #{updateSource,jdbcType=VARCHAR},
+		</if>
+		<if test="updateIp != null and updateIp != ''">
+			UPDATE_IP = #{updateIp,jdbcType=VARCHAR},
+		</if>
+		<if test="updateDate != null">
+			UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+		</if>
+		<if test="updatePeriod != null and updatePeriod != ''">
+			UPDATE_PERIOD = #{updatePeriod,jdbcType=VARCHAR},
+		</if>
+		<if test="mmAvatar != null and mmAvatar != ''">
+			 MM_AVATAR = #{mmAvatar},
+		</if>
+		<if test="shareNum != null and shareNum != ''">
+			 SHARE_NUM = #{shareNum},
+		</if>
+		<if test="pushStatus != null and pushStatus != ''">
+			 PUSH_STATUS = #{pushStatus},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdMmBasicInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_BASIC_INFO
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdMmBasicInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_BASIC_INFO
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_MM_BASIC_INFO
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+
+	<!-- 统计记录数 -->
+	<select id="getMaxMmCode" resultType="string">
+		SELECT max(MM_CODE) FROM RD_MM_BASIC_INFO
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmBasicInfo">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="MM_ID">-->
+	          <!--SELECT LAST_INSERT_ID() AS MM_ID-->
+	    <!--</selectKey>  -->
+		INSERT RD_MM_BASIC_INFO 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdMmBasicInfo">
+		UPDATE	RD_MM_BASIC_INFO
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	MM_CODE = #{mmCode}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_MM_BASIC_INFO
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_MM_BASIC_INFO
+		WHERE	ID	IN
+    	<foreach item="RdMmBasicInfoId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdMmBasicInfoId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdMmBasicInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_MM_BASIC_INFO
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdMmBasicInfoResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_MM_BASIC_INFO
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+
+
+	<!--登录时验证用户是否存在 -->
+	<select id="findMemberExist" resultMap="RdMmBasicInfoResultMap"
+			parameterType="com.framework.loippi.entity.user.RdMmBasicInfo">
+		select
+		<include refid="base_column"/>
+		from RD_MM_BASIC_INFO
+		<where>
+			1=1
+			<if test="mmName != null and mmName != '' ">
+				AND (MM_NAME = #{mmName})
+			</if>
+			<if test="mobile != null and mobile != '' ">
+				AND (MOBILE = #{mobile} or MM_CODE=#{mobile})
+			</if>
+		</where>
+		limit 0,1
+	</select>
+	<!-- 统计记录数 -->
+	<select id="sumShare" resultType="int">
+		SELECT sum(ifnull( SHARE_NUM, 0 )) FROM RD_MM_BASIC_INFO
+		<where>
+			<include refid="where_column"/>
+		</where>
+	</select>
+</mapper> 

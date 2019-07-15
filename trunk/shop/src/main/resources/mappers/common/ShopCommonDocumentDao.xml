@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.ShopCommonDocumentDao">
+
+    <resultMap id="ShopCommonDocumentResultMap" type="com.framework.loippi.entity.common.ShopCommonDocument">
+        <id property="id" column="id"/>
+        <result property="docCode" column="doc_code"/>
+        <result property="docType" column="doc_type"/>
+        <result property="docTitle" column="doc_title"/>
+        <result property="docContent" column="doc_content"/>
+        <result property="docTime" column="doc_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDel" column="is_del"/>
+        <result property="pageViews" column="page_views"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,doc_code ,doc_type,doc_title ,doc_content ,doc_time ,create_time ,update_time ,is_del,page_views
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{docCode},#{docType},#{docTitle},#{docContent},#{docTime},#{createTime},#{updateTime},#{isDel},#{pageViews}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="docCode != null and docCode != ''">
+            AND doc_code = #{docCode,jdbcType=VARCHAR}
+        </if>
+        <if test="docType != null and docType != ''">
+            AND doc_type = #{docType,jdbcType=VARCHAR}
+        </if>
+        <if test="docTitle != null and docTitle != ''">
+            AND doc_title = #{docTitle,jdbcType=VARCHAR}
+        </if>
+        <if test="docContent != null and docContent != ''">
+            AND doc_content = #{docContent,jdbcType=VARCHAR}
+        </if>
+        <if test="docTime != null and docTime != ''">
+            AND doc_time = #{docTime}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND update_time = #{updateTime}
+        </if>
+        <if test="isDel != null and isDel != ''">
+            AND is_del = #{isDel,jdbcType=INTEGER}
+        </if>
+        <if test="notIndocType != null and notIndocType!=''">
+            AND doc_type!=#{notIndocType}
+        </if>
+        <if test="pageViews != null and pageViews!=''">
+            AND page_views=#{pageViews}
+        </if>
+        <if test="idLike != null and idLike!=''">
+            AND id like concat('%',#{idLike},'%')
+        </if>
+        <if test="nameLike != null and nameLike!=''">
+            AND doc_title like concat('%',#{nameLike},'%')
+        </if>
+        <if test="searchStartTime !=null and searchStartTime != ''">
+            <![CDATA[and update_time >= #{searchStartTime}]]>
+        </if>
+        <if test="searchEndTime !=null and searchEndTime != ''">
+            <![CDATA[and update_time <= #{searchEndTime}]]>
+        </if>
+
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="docCode != null and docCode != ''">
+            doc_code = #{docCode,jdbcType=VARCHAR},
+        </if>
+        <if test="docType != null and docType != ''">
+            doc_type = #{docType,jdbcType=VARCHAR},
+        </if>
+        <if test="docTitle != null and docTitle != ''">
+            doc_title = #{docTitle,jdbcType=VARCHAR},
+        </if>
+        <if test="docContent != null">
+            doc_content = #{docContent},
+        </if>
+        <if test="docTime != null">
+            doc_time = #{docTime},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime},
+        </if>
+        <if test="isDel != null">
+            is_del = #{isDel,jdbcType=INTEGER},
+        </if>
+        <if test="pageViews != null and pageViews!=''">
+             page_views=#{pageViews},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopCommonDocumentResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_DOCUMENT
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopCommonDocumentResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_DOCUMENT
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_COMMON_DOCUMENT
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.common.ShopCommonDocument">
+        INSERT SHOP_COMMON_DOCUMENT
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.common.ShopCommonDocument">
+        UPDATE SHOP_COMMON_DOCUMENT
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_COMMON_DOCUMENT
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_COMMON_DOCUMENT
+        WHERE ID IN
+        <foreach item="ShopCommonDocumentId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopCommonDocumentId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopCommonDocumentResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_DOCUMENT
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopCommonDocumentResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_DOCUMENT
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+
+    </select>
+
+    <select id="findDocumentListByDocType" resultMap="ShopCommonDocumentResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_DOCUMENT
+        WHERE doc_type LIKE concat(#{docType},"%");
+    </select>
+
+</mapper> 

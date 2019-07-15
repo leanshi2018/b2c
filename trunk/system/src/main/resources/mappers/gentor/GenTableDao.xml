@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.GenTableDao">
+
+    <resultMap id="GenTableResultMap" type="com.framework.loippi.entity.GenTable">
+        <id property="id" column="ID"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="updateDate" column="UPDATE_DATE"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="updator" column="UPDATOR"/>
+        <result property="name" column="TABLE_NAME"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="className" column="CLASS_NAME"/>
+        <result property="parentTable" column="PARENT_TABLE"/>
+        <result property="parentTableFk" column="PARENT_TABLE_FK"/>
+        <result property="remarks" column="REMARKS"/>
+    </resultMap>
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		ID ,CREATE_DATE,UPDATE_DATE,CREATOR,UPDATOR ,TABLE_NAME ,DESCRIPTION ,CLASS_NAME
+		,PARENT_TABLE ,PARENT_TABLE_FK ,REMARKS
+	</sql>
+
+    <sql id="base_value_column">
+		#{id,jdbcType=BIGINT} ,#{createDate} ,#{updateDate} ,#{creator} ,#{updator} ,#{name}
+		,#{description} ,#{className} ,#{parentTable} ,#{parentTableFk} ,#{remarks}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND ID = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="name != null and name != ''">
+            AND TABLE_NAME like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="description != null and description != ''">
+            AND DESCRIPTION = #{description,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+            ID = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="name != null and name != ''">
+            TABLE_NAME = #{name,jdbcType=VARCHAR} ,
+        </if>
+        <if test="description != null and description != ''">
+            DESCRIPTION = #{description,jdbcType=VARCHAR},
+        </if>
+        <if test="className != null and className != ''">
+            CLASS_NAME = #{className,jdbcType=VARCHAR},
+        </if>
+        <if test="parentTable != null and parentTable != ''">
+            PARENT_TABLE = #{parentTable,jdbcType=VARCHAR},
+        </if>
+        <if test="parentTableFk != null and parentTableFk != ''">
+            PARENT_TABLE_FK = #{parentTableFk,jdbcType=VARCHAR},
+        </if>
+        <if test="remarks != null and remarks != ''">
+            REMARKS = #{remarks,jdbcType=VARCHAR},
+        </if>
+        <if test="updator != null and updator != ''">
+            UPDATOR = #{updator,jdbcType=BIGINT},
+        </if>
+        <if test="updateDate != null and updateDate != ''">
+            UPDATE_DATE = #{updateDate},
+        </if>
+    </sql>
+
+
+    <select id="find" resultMap="GenTableResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_GEN_TABLE
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="findAll" resultMap="GenTableResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_GEN_TABLE
+    </select>
+
+    <insert id="insert" parameterType="com.framework.loippi.entity.GenTable">
+        <selectKey resultType="java.lang.Long" order="AFTER"
+                   keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT T_GEN_TABLE
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (
+        <include refid="base_value_column"/>
+        )
+    </insert>
+
+    <update id="update" parameterType="com.framework.loippi.entity.GenTable">
+        UPDATE T_GEN_TABLE
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+		DELETE FROM T_GEN_TABLE
+		WHERE ID =
+		#{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM T_GEN_TABLE
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <delete id="deleteAll">
+        DELETE FROM T_GEN_TABLE
+        WHERE ID IN
+        <foreach item="ItemId" index="index" collection="ids" open="("
+                 separator="," close=")">
+            #{ItemId}
+        </foreach>
+    </delete>
+
+    <select id="findByParams" resultMap="GenTableResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_GEN_TABLE
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="findByPage" resultMap="GenTableResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_GEN_TABLE
+        <where>
+            <include refid="where_column"/>
+        </where>
+        order by CREATE_DATE desc
+    </select>
+
+    <select id="findAllTable" resultType="com.framework.loippi.entity.GenTable">
+        SELECT t.table_name AS name,t.TABLE_COMMENT AS remarks
+        FROM information_schema.`TABLES` t
+        WHERE t.TABLE_SCHEMA = (select database())
+        ORDER BY t.TABLE_NAME
+    </select>
+</mapper> 

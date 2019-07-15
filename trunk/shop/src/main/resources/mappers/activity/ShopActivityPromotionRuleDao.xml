@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.activity.ShopActivityPromotionRuleDao">
+
+    <resultMap id="BaseResultMap" type="com.framework.loippi.entity.activity.ShopActivityPromotionRule">
+        <result column="id" property="id"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="limit_type" property="limitType" jdbcType="INTEGER"/>
+        <result column="limit_where" property="limitWhere" jdbcType="VARCHAR"/>
+        <result column="priority" property="priority" jdbcType="INTEGER"/>
+        <result column="coupon_source" property="couponSource" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+        <result column="rule_type" property="ruleType" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="CouponResultMap" type="com.framework.loippi.vo.activity.ShopStoreCouponVo"
+               extends="BaseResultMap">
+        <result column="OBJECT_ID" property="associateActivityId"/>
+        <result column="is_get" property="hadGet" jdbcType="INTEGER"/>
+        <association property="shopActivity" javaType="com.framework.loippi.entity.activity.ShopActivity"
+                     column="activity_id"
+                     select="com.framework.loippi.dao.activity.ShopActivityDao.find"/>
+    </resultMap>
+
+    <resultMap type="com.framework.loippi.vo.activity.ShopActivityPromotionRuleVO" id="BaseResultMap2">
+        <result column="id" property="id"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="limit_type" property="limitType" jdbcType="INTEGER"/>
+        <result column="limit_where" property="limitWhere" jdbcType="VARCHAR"/>
+        <result column="priority" property="priority" jdbcType="INTEGER"/>
+        <result column="coupon_source" property="couponSource" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="rule_title" property="ruleTitle" jdbcType="VARCHAR"/>
+        <result column="rule_type" property="ruleType" jdbcType="INTEGER"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+        <!--表里没有 冗余字段 -->
+        <result column="spec_goods_spec" property="specGoodsSpec" jdbcType="VARCHAR"/>
+        <result column="source_name" property="sourceName" jdbcType="VARCHAR"/>
+        <result column="source_image" property="sourceImage" jdbcType="VARCHAR"/>
+        <result column="goods_spec_id" property="goodsSpecId"/>
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		id,
+		activity_id,
+		limit_type,
+		limit_where,
+		priority,
+		coupon_source,
+		description,
+		rule_type,
+		rule_title,
+		sort
+	</sql>
+
+    <sql id="Coupon_Column_List">
+		apr.id,
+		apr.activity_id,
+		apr.limit_type,
+		apr.limit_where,
+		apr.priority,
+		apr.coupon_source,
+		apr.description,
+		apr.rule_type,
+		apr.rule_title,
+		apr.sort
+	</sql>
+
+    <sql id="whereStatement">
+        <where>
+            1 = 1
+            <if test="ruleType !=null">
+                AND rule_type =#{ruleType}
+            </if>
+            <if test="activityId !=null">
+                AND activity_id =#{activityId}
+            </if>
+            <if test="limitType !=null">
+                AND limit_type =#{limitType}
+            </if>
+            <if test="ruleTitle !=null">
+                AND rule_title =#{ruleTitle}
+            </if>
+            <if test="id !=null">
+                AND id =#{id}
+            </if>
+            <if test="sort!=null">
+                AND sort = #{sort}
+            </if>
+            <if test="isActivityIdNull !=null">
+                AND activity_id is null
+            </if>
+        </where>
+    </sql>
+
+    <sql id="whereStatementCustom">
+        <where>
+            1 = 1
+            <if test="ruleType !=null">
+                AND rule_type =#{ruleType}
+            </if>
+            <if test="activityId !=null">
+                AND activity_id =#{activityId}
+            </if>
+            <if test="limitType !=null">
+                AND limit_type =#{limitType}
+            </if>
+            <if test="ruleTitle !=null">
+                AND rule_title =#{ruleTitle}
+            </if>
+            <if test="id !=null">
+                AND id =#{id}
+            </if>
+            <if test="sort!=null">
+                AND sort = #{sort}
+            </if>
+            <if test="keyWord !=null">
+                and rule_title like concat('%',#{keyWord},'%')
+            </if>
+            <if test="keyWordId !=null">
+                and id like concat('%',#{keyWordId},'%')
+            </if>
+            <if test="isActivityIdNull !=null">
+                AND activity_id is null
+            </if>
+        </where>
+    </sql>
+
+    <!--按条件查询规则列表-->
+    <select id="listActivityRules" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from shop_activity_promotion_rule
+        <include refid="whereStatement"/>
+    </select>
+
+    <select id="findShopActivityPromotionRulePagerList" resultMap="BaseResultMap"
+            parameterType="com.framework.loippi.support.Pageable">
+        select * from shop_activity_promotion_rule
+        <include refid="whereStatementCustom"/>
+    </select>
+
+    <select id="findShopActivityPromotionRuleList" resultMap="BaseResultMap"
+            parameterType="com.framework.loippi.entity.activity.ShopActivityPromotionRule">
+        select * from shop_activity_promotion_rule
+        <include refid="whereStatement"/>
+    </select>
+
+    <select id="findShopActivityPromotionRuleAllList" resultMap="BaseResultMap"
+            parameterType="com.framework.loippi.entity.activity.ShopActivityPromotionRule">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from shop_activity_promotion_rule
+
+        <if test="ruleType !=null">
+            where rule_type =#{ruleType}
+        </if>
+
+    </select>
+
+    <select id="findShopActivityPromotionRuleById" resultMap="CouponResultMap" parameterType="Long">
+        select
+        <include refid="Base_Column_List"/>
+        from shop_activity_promotion_rule c where id = #{id}
+        order by c.priority asc
+    </select>
+
+    <select id="findById" resultMap="BaseResultMap" parameterType="Long">
+        select
+        <include refid="Base_Column_List"/>
+        from shop_activity_promotion_rule c where id = #{id}
+        order by c.priority asc
+    </select>
+
+
+    <select id="findShopActivityPromotionRuleByActivityId" resultMap="CouponResultMap" parameterType="Long">
+
+        select
+        <include refid="Base_Column_List"/>
+        from shop_activity_promotion_rule c where activity_id = #{activityId} order by priority desc
+
+    </select>
+
+    <!--根据店铺id 和活动类型获取店铺活动  营销活动的秒杀、团购-->
+    <select id="findActivityByStoreIdAndActivityType" resultMap="CouponResultMap" parameterType="Long">
+        select
+        <include refid="Coupon_Column_List"/>
+        from (select
+        id
+        from shop_activity c
+        where 1=1
+        <if test="storeId != null ">
+            AND store_id = #{storeId}
+        </if>
+        <if test="activityType != null ">
+            and activity_type= #{activityType}
+        </if>
+        and activity_status=20 and audit_status=20 )
+        a left JOIN shop_activity_promotion_rule apr on a.id=apr.activity_id
+        where 1=1 and apr.rule_type = 2
+        <if test="ruleId != null ">
+            and apr.id=#{ruleId}
+        </if>
+    </select>
+
+
+    <!--根据店铺id 获取领取用户优惠券列表-->
+    <select id="listShopCouponVo" resultMap="CouponResultMap">
+        select
+        <include refid="Coupon_Column_List"/>
+        , obj.OBJECT_ID
+        <if test="memberId != null ">, case when mc.id is not null THEN 1 ELSE 0 END is_get</if>
+        from (select
+        id
+        from shop_activity c
+        where 1=1
+        <if test="storeId != null ">
+            AND store_id = #{storeId}
+        </if>
+        <if test="activityClassId != null">
+            AND activity_class_id = #{activityClassId}
+        </if>
+        and activity_status=20 and audit_status=1 and activity_type=90)
+        a left JOIN shop_activity_promotion_rule apr on a.id=apr.activity_id
+        <if test="memberId != null ">
+            left JOIN
+            shop_activity_member_coupon mc on apr.id=mc.activity_rule_id
+            and mc.member_id=#{memberId}
+        </if>
+        left JOIN
+        shop_activity_goods obj on obj.ACTIVITY_ID = a.id
+        where 1=1
+        <if test="ruleId != null ">
+            and apr.id=#{ruleId}
+        </if>
+        ORDER BY mc.is_use, create_time DESC
+    </select>
+    <!--根据店铺id 获取优惠券数量-->
+    <select id="findCouponNum" resultType="int" parameterType="Long">
+        SELECT count(*) FROM
+        (SELECT id FROM shop_activity c WHERE 1 = 1
+        <if test="storeId != null'">
+            AND store_id = #{storeId}
+        </if>
+        AND activity_status = 20
+        AND audit_status = 20
+        AND activity_type = 90
+        ) a
+        LEFT JOIN shop_activity_promotion_rule apr ON a.id = apr.activity_id
+    </select>
+
+
+    <delete id="deleteShopActivityPromotionRuleById" parameterType="Long">
+		delete from
+		shop_activity_promotion_rule where id = #{id}
+	</delete>
+
+    <delete id="deleteShopActivityPromotionRuleByActivityId" parameterType="Long">
+		delete from
+		shop_activity_promotion_rule where activity_id = #{activityId}
+	</delete>
+
+    <insert id="saveShopActivityPromotionRule"
+            parameterType="com.framework.loippi.entity.activity.ShopActivityPromotionRule">
+
+        insert into shop_activity_promotion_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="id != null and id != ''">
+                id,
+            </if>
+            <if test="activityId != null ">
+                activity_id,
+            </if>
+
+            <if test="limitType != null ">
+                limit_type,
+            </if>
+            <if test="limitWhere != null and limitWhere != ''">
+                limit_where,
+            </if>
+            <if test="priority != null ">
+                priority,
+            </if>
+            <if test="couponSource != null and couponSource != ''">
+                coupon_source,
+            </if>
+            <if test="description != null and description != ''">
+                description,
+            </if>
+            <if test="ruleType != null ">
+                rule_type,
+            </if>
+            <if test="ruleTitle != null ">
+                rule_title,
+            </if>
+            <if test="sort != null ">
+                sort,
+            </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+
+            <if test="id != null ">
+                #{id},
+            </if>
+
+            <if test="activityId != null ">
+                #{activityId},
+            </if>
+            <if test="limitType != null ">
+                #{limitType},
+            </if>
+            <if test="limitWhere != null and limitWhere != ''">
+                #{limitWhere},
+            </if>
+            <if test="priority != null ">
+                #{priority},
+            </if>
+            <if test="couponSource != null and couponSource != ''">
+                #{couponSource},
+            </if>
+            <if test="description != null and description != ''">
+                #{description},
+            </if>
+            <if test="ruleType != null ">
+                #{ruleType},
+            </if>
+            <if test="ruleTitle != null ">
+                #{ruleTitle},
+            </if>
+            <if test="sort != null ">
+                #{sort},
+            </if>
+        </trim>
+
+    </insert>
+
+    <update id="updateShopActivityPromotionRule"
+            parameterType="com.framework.loippi.entity.activity.ShopActivityPromotionRule">
+
+        update shop_activity_promotion_rule
+        <set>
+
+            <if test="activityId != null ">
+                activity_id=#{activityId},
+            </if>
+            <if test="limitType != null ">
+                limit_type = #{limitType},
+            </if>
+            <if test="limitWhere != null and limitWhere != ''">
+                limit_where = #{limitWhere},
+            </if>
+            <if test="priority != null ">
+                priority = #{priority},
+            </if>
+            <if test="couponSource != null and couponSource != ''">
+                coupon_source = #{couponSource},
+            </if>
+            <if test="description != null and description != ''">
+                description=#{description},
+            </if>
+            <if test="ruleType != null ">
+                rule_type=#{ruleType},
+            </if>
+            <if test="ruleTitle != null ">
+                rule_title=#{ruleTitle},
+            </if>
+            <if test="sort != null ">
+                sort=#{sort},
+            </if>
+        </set>
+
+        WHERE id = #{id}
+
+    </update>
+
+    <select id="findShopPromotionRuleVOList" resultMap="BaseResultMap2"
+            parameterType="com.framework.loippi.entity.activity.ShopActivityPromotionRule">
+		select s.*, a.spec_goods_spec , b.goods_name as source_name, b.goods_image as source_image ,d.coupon_source as goods_spec_id from shop_activity_promotion_rule s
+		left join shop_activity_source d on s.coupon_source= d.ID left join  shop_goods_spec a on d.coupon_source=a.goods_spec_id  left join shop_goods b on a.goods_id = b.goods_id
+		where a.spec_isopen=1 and s.activity_id=#{activityId}  AND s.rule_type=2
+	</select>
+
+    <!--获取用户该订单该商家的参加活动列表 并取得最大的优惠信息-->
+    <select id="findActivityRuleByStoreIdAndLimitWhere" resultMap="CouponResultMap"
+            parameterType="com.framework.loippi.vo.activity.CartCouponVo">
+
+        <if test="dbName=='mysql'">
+            select
+            <include refid="Coupon_Column_List"/>
+            from ( select activity_id,priority
+
+            from (select id from shop_activity c INNER join (
+            select am.activity_id,case when am.member_level is not null and am.MEMBER_LEVEL!='' then
+            (select integration from shop_member_grade mg where mg.grade_id= am.MEMBER_LEVEL) else 0 end sl
+            , case when m.member_gradeid is not null and m.member_gradeid!='' then (
+            select integration from shop_member_grade mg where mg.grade_id= m.member_gradeid ) else 0 end l
+            from shop_activity_membership am ,shop_member m where m.member_id=#{memberId} HAVING l>=sl
+            ) ship on c.id=ship.activity_id where c.store_id = #{storeId}
+
+            and activity_status=20 and audit_status=20 and activity_type in (${activityTypes}) and
+            goods_type=#{goodsType} order by priority desc ) a
+
+            inner JOIN (select max(priority) priority ,r.activity_id from shop_activity_promotion_rule r
+
+            where 1=1
+            <if test="goodsType==0">
+                and case when LIMIT_TYPE=1 then LIMIT_WHERE &lt;= #{goodsTotalPrice} when LIMIT_TYPE=2 then LIMIT_WHERE
+                &lt;= #{goodsTotalNum} else 1=1 end
+            </if>
+            group by activity_id
+
+            ) apr on a.id=apr.activity_id ) b inner JOIN shop_activity_promotion_rule apr on
+            apr.activity_id=b.activity_id and apr.priority=b.priority
+
+        </if>
+
+        <if test="dbName=='oracle'">
+            select
+            <include refid="Coupon_Column_List"/>
+            from ( select activity_id,priority
+
+            from (select id from shop_activity c INNER join (
+            select * from ( select am.activity_id,case when am.member_level is not null and am.MEMBER_LEVEL!='' then
+            (select integration from shop_member_grade mg where mg.grade_id= am.MEMBER_LEVEL) else 0 end sl
+            , case when m.member_gradeid is not null and m.member_gradeid!='' then (
+            select integration from shop_member_grade mg where mg.grade_id= m.member_gradeid ) else 0 end l
+            from shop_activity_membership am ,shop_member m where m.member_id=#{memberId} )a where l>=sl
+            ) ship on c.id=ship.activity_id where c.store_id = #{storeId}
+
+            and activity_status=20 and audit_status=20 and activity_type in (${activityTypes}) and
+            goods_type=#{goodsType} order by priority desc ) a
+
+            inner JOIN (select max(priority) priority ,r.activity_id from shop_activity_promotion_rule r
+
+            where 1=1
+            <if test="goodsType==0">
+                and TO_NUMBER(LIMIT_WHERE) &lt;= (case when LIMIT_TYPE='1' then #{goodsTotalPrice} when LIMIT_TYPE='2'
+                then #{goodsTotalNum} else TO_NUMBER(LIMIT_WHERE) end)
+            </if>
+            group by activity_id
+
+            ) apr on a.id=apr.activity_id ) b inner JOIN shop_activity_promotion_rule apr on
+            apr.activity_id=b.activity_id and apr.priority=b.priority
+        </if>
+
+
+    </select>
+
+
+    <select id="findCouponListByGoods" resultMap="CouponResultMap" parameterType="map">
+        <if test="dbName == 'mysql'">
+            select
+            <include refid="Coupon_Column_List"/>
+            from (select DISTINCT (c.id) as id from shop_activity c
+
+            left JOIN shop_activity_goods ao on c.id=ao.activity_id
+
+            where activity_status=20 and audit_status=20 and activity_type=#{activityType}
+
+            and case when c.goods_type=1 then ao.object_id=#{gcId}
+
+            when c.goods_type=2 then ao.object_id=#{typeId}
+
+
+            when c.goods_type=3 then ao.object_id=#{brandId}
+
+            when c.goods_type=4 then ao.object_id=#{goodsId}
+
+            else 1=1 end and store_id=#{storeId} ) a
+            left JOIN shop_activity_promotion_rule apr on a.id=apr.activity_id
+        </if>
+
+        <if test="dbName == 'oracle'">
+            select
+            <include refid="Coupon_Column_List"/>
+            from (select DISTINCT (c.id) as id from shop_activity c
+
+            left JOIN shop_activity_goods ao on c.id=ao.activity_id
+
+            where activity_status=20 and audit_status=20 and activity_type=#{activityType}
+
+            and ao.object_id=( case when c.goods_type=1 then #{gcId}
+
+            when c.goods_type=2 then #{typeId}
+
+
+            when c.goods_type=3 then #{brandId}
+
+            when c.goods_type=4 then #{goodsId}
+
+            else ao.object_id end ) and store_id=#{storeId} ) a
+            left JOIN shop_activity_promotion_rule apr on a.id=apr.activity_id
+            UNION
+            SELECT
+            <include refid="Coupon_Column_List"/>
+            FROM
+            (
+            SELECT DISTINCT
+            (c.id) AS id
+            FROM
+            shop_activity c
+            LEFT JOIN shop_activity_goods ao ON c. ID = ao.activity_id
+            WHERE
+            activity_status = 20
+            AND audit_status = 20
+            AND activity_type =#{activityType}
+            AND goods_type = 0
+            AND store_id = #{storeId}
+            ) A
+            LEFT JOIN shop_activity_promotion_rule apr ON A.ID = apr.activity_id
+        </if>
+
+    </select>
+
+    <select id="getShopStoreCouponVoById" resultMap="CouponResultMap">
+       select
+		obj.OBJECT_ID,
+		rule.id,
+		rule.activity_id,
+		rule.limit_type,
+		rule.limit_where,
+		rule.priority,
+		rule.coupon_source,
+		rule.description,
+		rule.rule_type,
+		rule.rule_title,
+		rule.sort
+    from shop_activity_promotion_rule rule
+    left join shop_activity act on act.id=rule.activity_id
+    left join shop_activity_goods obj on obj.ACTIVITY_ID = act.ID
+    where rule.id = #{id};
+   </select>
+
+    <!--批量根据活动查询活动规则-->
+    <select id="findAtiIdsList" resultMap="CouponResultMap">
+        SELECT
+        rule.ID ,rule.LIMIT_TYPE ,rule.LIMIT_WHERE ,rule.PRIORITY ,rule.COUPON_SOURCE ,rule.description ,rule.rule_title
+        ,rule.rule_type ,rule.sort
+        ,shop_activity.id as activityId
+        FROM shop_activity
+        LEFT JOIN SHOP_ACTIVITY_PROMOTION_RULE as rule ON shop_activity.PROMOTION_RULE_ID=rule.id
+        WHERE shop_activity.ID IN
+        <foreach item="ShopActivityPromotionRuleId" index="index" collection="activityIds" open="(" separator=","
+                 close=")">
+            #{ShopActivityPromotionRuleId}
+        </foreach>
+    </select>
+
+</mapper>

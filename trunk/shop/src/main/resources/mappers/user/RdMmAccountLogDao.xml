@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdMmAccountLogDao">
+	
+	<resultMap id="RdMmAccountLogResultMap" type="com.framework.loippi.entity.user.RdMmAccountLog">
+		<id property="transNumber" column="TRANS_NUMBER"  />
+		<result property="batchNumber" column="BATCH_NUMBER" />
+		<result property="mmCode" column="MM_CODE" />
+		<result property="mmNickName" column="MM_NICK_NAME" />
+		<result property="transTypeCode" column="TRANS_TYPE_CODE" />
+		<result property="accType" column="ACC_TYPE" />
+		<result property="trSourceType" column="TR_SOURCE_TYPE" />
+		<result property="trMmCode" column="TR_MM_CODE" />
+		<result property="trBankOid" column="TR_BANK_OID" />
+		<result property="trOrderOid" column="TR_ORDER_OID" />
+		<result property="currencyCode" column="CURRENCY_CODE" />
+		<result property="blanceBefore" column="BLANCE_BEFORE" />
+		<result property="amount" column="AMOUNT" />
+		<result property="blanceAfter" column="BLANCE_AFTER" />
+		<result property="transDate" column="TRANS_DATE" />
+		<result property="transPeriod" column="TRANS_PERIOD" />
+		<result property="transDesc" column="TRANS_DESC" />
+		<result property="status" column="STATUS" />
+		<result property="washedYn" column="WASHED_YN" />
+		<result property="orignTransNumber" column="ORIGN_TRANS_NUMBER" />
+		<result property="creationBy" column="CREATION_BY" />
+		<result property="creationTime" column="CREATION_TIME" />
+		<result property="updateBy" column="UPDATE_BY" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="autohrizeBy" column="AUTOHRIZE_BY" />
+		<result property="autohrizeTime" column="AUTOHRIZE_TIME" />
+		<result property="autohrizeDesc" column="AUTOHRIZE_DESC" />
+		<result property="presentationFeeNow" column="PRESENTATION_FEE_NOW" />
+		<result property="actualWithdrawals" column="ACTUAL_WITHDRAWALS" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 TRANS_NUMBER ,BATCH_NUMBER ,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC ,PRESENTATION_FEE_NOW,ACTUAL_WITHDRAWALS
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{transNumber},#{batchNumber},#{mmCode},#{mmNickName},#{transTypeCode},#{accType},#{trSourceType},#{trMmCode},#{trBankOid},#{trOrderOid},#{currencyCode},#{blanceBefore},#{amount},#{blanceAfter},#{transDate},#{transPeriod},#{transDesc},#{status},#{washedYn},#{orignTransNumber},#{creationBy},#{creationTime},#{updateBy},#{updateTime},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{presentationFeeNow},#{actualWithdrawals}
+	</sql>
+	<sql id="base_list_column">
+		TRANS_NUMBER,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC
+	</sql>
+	<sql id="base_list_value_column">
+		#{item.transNumber},#{item.mmCode},#{item.mmNickName},#{item.transTypeCode},#{item.accType},#{item.trSourceType},#{item.trMmCode},#{item.trBankOid},#{item.trOrderOid},#{item.currencyCode},#{item.blanceBefore},#{item.amount},#{item.blanceAfter},#{item.transDate},#{item.transPeriod},#{item.transDesc},#{item.status}
+		 ,#{item.washedYn},#{item.orignTransNumber},#{item.creationBy},#{item.creationTime},#{item.updateBy},#{item.updateTime},#{item.autohrizeBy},#{item.autohrizeTime},#{item.autohrizeDesc}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="transNumber != null and transNumber != ''">
+			AND TRANS_NUMBER = #{transNumber,jdbcType=INTEGER}
+		</if>
+		<if test="batchNumber != null and batchNumber != ''">
+			AND BATCH_NUMBER = #{batchNumber,jdbcType=INTEGER}
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="mmNickName != null and mmNickName != ''">
+			AND MM_NICK_NAME = #{mmNickName,jdbcType=VARCHAR}
+		</if>
+		<if test="transTypeCode != null and transTypeCode != ''">
+			AND TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR}
+		</if>
+		<if test="accType != null and accType != ''">
+			AND ACC_TYPE = #{accType,jdbcType=VARCHAR}
+		</if>
+		<if test="trSourceType != null and trSourceType != ''">
+			AND TR_SOURCE_TYPE = #{trSourceType,jdbcType=VARCHAR}
+		</if>
+		<if test="trMmCode != null and trMmCode != ''">
+			AND TR_MM_CODE = #{trMmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="trBankOid != null and trBankOid != ''">
+			AND TR_BANK_OID = #{trBankOid,jdbcType=INTEGER}
+		</if>
+		<if test="trOrderOid != null and trOrderOid != ''">
+			AND TR_ORDER_OID = #{trOrderOid}
+		</if>
+		<if test="currencyCode != null and currencyCode != ''">
+			AND CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR}
+		</if>
+		<if test="blanceBefore != null and blanceBefore != ''">
+			AND BLANCE_BEFORE = #{blanceBefore}
+		</if>
+		<if test="amount != null and amount != ''">
+			AND AMOUNT = #{amount}
+		</if>
+		<if test="blanceAfter != null and blanceAfter != ''">
+			AND BLANCE_AFTER = #{blanceAfter}
+		</if>
+		<if test="transDate != null and transDate != ''">
+			AND TRANS_DATE = #{transDate}
+		</if>
+		<if test="transPeriod != null and transPeriod != ''">
+			AND TRANS_PERIOD = #{transPeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="transDesc != null and transDesc != ''">
+			AND TRANS_DESC = #{transDesc,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null and status != ''">
+			AND STATUS = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="washedYn != null and washedYn != ''">
+			AND WASHED_YN = #{washedYn,jdbcType=INTEGER}
+		</if>
+		<if test="orignTransNumber != null and orignTransNumber != ''">
+			AND ORIGN_TRANS_NUMBER = #{orignTransNumber,jdbcType=VARCHAR}
+		</if>
+		<if test="creationBy != null and creationBy != ''">
+			AND CREATION_BY = #{creationBy,jdbcType=VARCHAR}
+		</if>
+		<if test="creationTime != null and creationTime != ''">
+			AND CREATION_TIME = #{creationTime}
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			AND UPDATE_BY = #{updateBy,jdbcType=VARCHAR}
+		</if>
+		<if test="updateTime != null and updateTime != ''">
+			AND UPDATE_TIME = #{updateTime}
+		</if>
+		<if test="autohrizeBy != null and autohrizeBy != ''">
+			AND AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR}
+		</if>
+		<if test="autohrizeTime != null and autohrizeTime != ''">
+			AND AUTOHRIZE_TIME = #{autohrizeTime}
+		</if>
+		<if test="autohrizeDesc != null and autohrizeDesc != ''">
+			AND AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR}
+		</if>
+		<if test="presentationFeeNow != null and presentationFeeNow != ''">
+			AND PRESENTATION_FEE_NOW = #{presentationFeeNow}
+		</if>
+		<if test="actualWithdrawals != null and actualWithdrawals != ''">
+			AND ACTUAL_WITHDRAWALS = #{actualWithdrawals}
+		</if>
+		<if test="time != null and time != ''">
+			AND CREATION_TIME BETWEEN CONCAT( #{time},'-01 00:00:00') and CONCAT( #{time},'-31 23:59:59')
+		</if>
+		<if test="bop != null and bop != ''">
+			AND (TRANS_TYPE_CODE="SP" OR TRANS_TYPE_CODE="WD")
+		</if>
+		<if test="shp != null and shp != ''">
+			AND (TRANS_TYPE_CODE="BT" OR TRANS_TYPE_CODE="TT"  OR TRANS_TYPE_CODE="OP" OR (TRANS_TYPE_CODE="OT" and ACC_TYPE="SWB") OR (TRANS_TYPE_CODE="TF" and ACC_TYPE="SWB"))
+		</if>
+		<if test="pui != null and pui != ''">
+			AND (TRANS_TYPE_CODE="PC" OR TRANS_TYPE_CODE="EG" OR (TRANS_TYPE_CODE="OT" and ACC_TYPE="SRB"))
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="transNumber != null">
+			TRANS_NUMBER = #{transNumber,jdbcType=INTEGER},
+		</if>
+		<if test="batchNumber != null">
+			BATCH_NUMBER = #{batchNumber,jdbcType=INTEGER},
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			MM_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="mmNickName != null and mmNickName != ''">
+			MM_NICK_NAME = #{mmNickName,jdbcType=VARCHAR},
+		</if>
+		<if test="transTypeCode != null and transTypeCode != ''">
+			TRANS_TYPE_CODE = #{transTypeCode,jdbcType=VARCHAR},
+		</if>
+		<if test="accType != null and accType != ''">
+			ACC_TYPE = #{accType,jdbcType=VARCHAR},
+		</if>
+		<if test="trSourceType != null and trSourceType != ''">
+			TR_SOURCE_TYPE = #{trSourceType,jdbcType=VARCHAR},
+		</if>
+		<if test="trMmCode != null and trMmCode != ''">
+			TR_MM_CODE = #{trMmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="trBankOid != null">
+			TR_BANK_OID = #{trBankOid,jdbcType=INTEGER},
+		</if>
+		<if test="trOrderOid != null">
+			TR_ORDER_OID = #{trOrderOid},
+		</if>
+		<if test="currencyCode != null and currencyCode != ''">
+			CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+		</if>
+		<if test="blanceBefore != null">
+			BLANCE_BEFORE = #{blanceBefore},
+		</if>
+		<if test="amount != null">
+			AMOUNT = #{amount},
+		</if>
+		<if test="blanceAfter != null">
+			BLANCE_AFTER = #{blanceAfter},
+		</if>
+		<if test="transDate != null">
+			TRANS_DATE = #{transDate},
+		</if>
+		<if test="transPeriod != null and transPeriod != ''">
+			TRANS_PERIOD = #{transPeriod,jdbcType=VARCHAR},
+		</if>
+		<if test="transDesc != null and transDesc != ''">
+			TRANS_DESC = #{transDesc,jdbcType=VARCHAR},
+		</if>
+		<if test="status != null">
+			STATUS = #{status,jdbcType=INTEGER},
+		</if>
+		<if test="washedYn != null">
+			WASHED_YN = #{washedYn,jdbcType=INTEGER},
+		</if>
+		<if test="orignTransNumber != null and orignTransNumber != ''">
+			ORIGN_TRANS_NUMBER = #{orignTransNumber,jdbcType=VARCHAR},
+		</if>
+		<if test="creationBy != null and creationBy != ''">
+			CREATION_BY = #{creationBy,jdbcType=VARCHAR},
+		</if>
+		<if test="creationTime != null">
+			CREATION_TIME = #{creationTime},
+		</if>
+		<if test="updateBy != null and updateBy != ''">
+			UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+		</if>
+		<if test="updateTime != null">
+			UPDATE_TIME = #{updateTime},
+		</if>
+		<if test="autohrizeBy != null and autohrizeBy != ''">
+			AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR},
+		</if>
+		<if test="autohrizeTime != null">
+			AUTOHRIZE_TIME = #{autohrizeTime},
+		</if>
+		<if test="autohrizeDesc != null and autohrizeDesc != ''">
+			AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR},
+		</if>
+		<if test="presentationFeeNow != null and presentationFeeNow != ''">
+			 PRESENTATION_FEE_NOW = #{presentationFeeNow},
+		</if>
+		<if test="actualWithdrawals != null and actualWithdrawals != ''">
+			 ACTUAL_WITHDRAWALS = #{actualWithdrawals},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdMmAccountLogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_ACCOUNT_LOG
+		WHERE	TRANS_NUMBER=#{transNumber}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdMmAccountLogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_ACCOUNT_LOG
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_MM_ACCOUNT_LOG
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmAccountLog" keyProperty="transNumber">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="transNumber">
+	          SELECT LAST_INSERT_ID() AS TRANS_NUMBER
+	    </selectKey>  
+		INSERT RD_MM_ACCOUNT_LOG
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+
+	<insert id="insertBatch" parameterType="List">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="transNumber">
+			SELECT LAST_INSERT_ID() AS TRANS_NUMBER
+		</selectKey>
+		insert into RD_MM_ACCOUNT_LOG
+		 (<include refid="base_list_column" /> )
+		values
+		<foreach collection ="list" item="item" index= "index" separator =",">
+			(<include refid="base_list_value_column" />)
+		</foreach >
+	</insert>
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdMmAccountLog">
+		UPDATE	RD_MM_ACCOUNT_LOG
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	TRANS_NUMBER = #{transNumber}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_MM_ACCOUNT_LOG
+		WHERE	TRANS_NUMBER = #{transNumber}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_MM_ACCOUNT_LOG
+		WHERE	TRANS_NUMBER	IN
+    	<foreach item="RdMmAccountLogId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdMmAccountLogId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdMmAccountLogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_MM_ACCOUNT_LOG
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdMmAccountLogResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_MM_ACCOUNT_LOG
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+		order by TRANS_DATE desc
+	</select>
+	
+</mapper> 

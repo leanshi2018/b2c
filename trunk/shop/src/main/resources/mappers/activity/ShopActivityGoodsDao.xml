@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.activity.ShopActivityGoodsDao">
+
+    <resultMap id="ShopActivityGoodsResultMap" type="com.framework.loippi.entity.activity.ShopActivityGoods">
+        <id property="id" column="ID"/>
+        <result property="activityId" column="activity_id"/>
+        <result property="objectType" column="OBJECT_TYPE"/>
+        <result property="objectId" column="object_id"/>
+        <result property="price" column="price"/>
+        <result property="stockNumber" column="stock_number"/>
+        <result property="saleNumber" column="sale_number"/>
+        <result property="mainPicture" column="main_picture"/>
+        <result property="sort" column="sort"/>
+        <result property="status" column="status"/>
+        <result property="activityType" column="activity_type"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 ID ,activity_id ,OBJECT_TYPE ,object_id ,price ,stock_number ,sale_number ,main_picture ,sort ,status
+
+		 ,activity_type
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{activityId},#{objectType},#{objectId},#{price},#{stockNumber},#{saleNumber},#{mainPicture},#{sort},#{status}
+
+		 ,#{activityType}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND ID = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="activityId != null and activityId != ''">
+            AND activity_id = #{activityId,jdbcType=BIGINT}
+        </if>
+        <if test="objectType != null and objectType != ''">
+            AND OBJECT_TYPE = #{objectType,jdbcType=INTEGER}
+        </if>
+        <if test="objectId != null and objectId != ''">
+            AND object_id = #{objectId,jdbcType=BIGINT}
+        </if>
+        <if test="price != null and price != ''">
+            AND price = #{price,jdbcType=DECIMAL}
+        </if>
+        <if test="stockNumber != null and stockNumber != ''">
+            AND stock_number = #{stockNumber,jdbcType=INTEGER}
+        </if>
+        <if test="saleNumber != null and saleNumber != ''">
+            AND sale_number = #{saleNumber,jdbcType=INTEGER}
+        </if>
+        <if test="mainPicture != null and mainPicture != ''">
+            AND main_picture = #{mainPicture,jdbcType=VARCHAR}
+        </if>
+        <if test="sort != null and sort != ''">
+            AND sort = #{sort,jdbcType=INTEGER}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="activityType != null and activityType != ''">
+            AND activity_type = #{activityType,jdbcType=INTEGER}
+        </if>
+        <if test="atiGoodIdList != null and atiGoodIdList != ''">
+            AND ID IN
+            <foreach item="ShopActivityGoodsId" index="index" collection="atiGoodIdList" open="(" separator="," close=")">
+                #{ShopActivityGoodsId}
+            </foreach>
+        </if>
+        <if test="goodIdList != null and goodIdList != ''">
+            AND object_id IN
+            <foreach item="ShopActivityGoodsId" index="index" collection="goodIdList" open="(" separator="," close=")">
+                #{ShopActivityGoodsId}
+            </foreach>
+        </if>
+        <if test="activityIds != null and activityIds != ''">
+            AND activity_id IN
+            <foreach item="activityId" index="index" collection="activityIds" open="(" separator="," close=")">
+                #{activityId}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            ID = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="activityId != null">
+            activity_id = #{activityId,jdbcType=BIGINT},
+        </if>
+        <if test="objectType != null">
+            OBJECT_TYPE = #{objectType,jdbcType=INTEGER},
+        </if>
+        <if test="objectId != null">
+            object_id = #{objectId,jdbcType=BIGINT},
+        </if>
+        <if test="price != null">
+            price = #{price,jdbcType=DECIMAL},
+        </if>
+        <if test="stockNumber != null">
+            stock_number = #{stockNumber,jdbcType=INTEGER},
+        </if>
+        <if test="saleNumber != null">
+            sale_number = #{saleNumber,jdbcType=INTEGER},
+        </if>
+        <if test="mainPicture != null and mainPicture != ''">
+            main_picture = #{mainPicture,jdbcType=VARCHAR},
+        </if>
+        <if test="sort != null">
+            sort = #{sort,jdbcType=INTEGER},
+        </if>
+        <if test="storeId != null">
+            store_id = #{storeId,jdbcType=BIGINT},
+        </if>
+        <if test="status != null">
+            status = #{status,jdbcType=INTEGER},
+        </if>
+
+        <if test="activityType != null and activityType != ''">
+            activity_type = #{activityType,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopActivityGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY_GOODS
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopActivityGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY_GOODS
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_ACTIVITY_GOODS
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.activity.ShopActivityGoods">
+        INSERT SHOP_ACTIVITY_GOODS
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.activity.ShopActivityGoods">
+        UPDATE SHOP_ACTIVITY_GOODS
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_ACTIVITY_GOODS
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_ACTIVITY_GOODS
+        WHERE ID IN
+        <foreach item="ShopActivityGoodsId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopActivityGoodsId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopActivityGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY_GOODS
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+       
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopActivityGoodsResultMap">
+        SELECT
+        SHOP_ACTIVITY_GOODS.*,SHOP_GOODS.goods_retail_price,SHOP_GOODS.goods_member_price,SHOP_GOODS.goods_big_price,SHOP_GOODS.ppv,
+        SHOP_GOODS.big_ppv,SHOP_GOODS.goods_name,SHOP_GOODS.goods_image
+        FROM SHOP_ACTIVITY_GOODS
+        LEFT JOIN SHOP_GOODS ON SHOP_ACTIVITY_GOODS.object_id=SHOP_GOODS.id
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 查找参加活动的商品-->
+    <select id="findActivityGoods" resultMap="ShopActivityGoodsResultMap">
+        SELECT
+        SHOP_ACTIVITY_GOODS.*
+        FROM SHOP_ACTIVITY_GOODS
+        LEFT JOIN SHOP_ACTIVITY ON SHOP_ACTIVITY_GOODS.activity_id=SHOP_ACTIVITY.id
+        <where>1=1
+            <include refid="where_column"/>
+            <if test="notActivityStatus != null and notActivityStatus != ''">
+                AND activity_status != #{notActivityStatus}
+            </if>
+
+        </where>
+    </select>
+    <delete id="deleteShopActivityGoodsByActivityId" parameterType="Long">
+		delete from
+		SHOP_ACTIVITY_GOODS where activity_id = #{activityId}
+	</delete>
+</mapper> 

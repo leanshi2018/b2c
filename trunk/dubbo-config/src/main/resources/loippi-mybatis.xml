@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd"
+       default-lazy-init="false">
+    <description>MyBatis配置</description>
+    <!-- SessionFactory配置 -->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 自动扫描entity目录, 省掉mybatis-config.xml里的手工配置 -->
+        <property value="**.entity" name="typeAliasesPackage"/>
+        <property value="org.springframework.util.LinkedCaseInsensitiveMap" name="typeAliases"/>
+        <property value="classpath:mybatis-config.xml" name="configLocation"/>
+        <!-- 显式指定Mapper文件位置 -->
+        <property value="classpath*:${mybatis.mapper_location}" name="mapperLocations"/>
+
+
+    </bean>
+    <!-- 扫描basePackage下所有 接口 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property value="**.dao" name="basePackage"/>
+        <property value="sqlSessionFactory" name="sqlSessionFactoryBeanName"/>
+    </bean>
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+
+    </bean>
+
+</beans>

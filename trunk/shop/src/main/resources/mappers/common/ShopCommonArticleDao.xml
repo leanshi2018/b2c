@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.ShopCommonArticleDao">
+
+    <resultMap id="ShopCommonArticleResultMap" type="com.framework.loippi.entity.common.ShopCommonArticle">
+        <id property="id" column="id"/>
+        <result property="acId" column="ac_id"/>
+        <result property="articleUrl" column="article_url"/>
+        <result property="articleShow" column="article_show"/>
+        <result property="articleSort" column="article_sort"/>
+        <result property="articleTitle" column="article_title"/>
+        <result property="articleContent" column="article_content"/>
+        <result property="isDel" column="is_del"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="articleTime" column="article_time"/>
+        <result property="status" column="status"/>
+        <result property="articleImage" column="article_image"/>
+        <result property="articleAuthor" column="article_author"/>
+        <result property="isTop" column="is_top"/>
+        <result property="pageViews" column="page_views"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,ac_id ,article_url ,article_show ,article_sort ,article_title ,article_content ,is_del ,create_time ,update_time ,article_time,article_image,article_author,is_top,page_views
+
+		 ,status
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{acId},#{articleUrl},#{articleShow},#{articleSort},#{articleTitle},#{articleContent},#{isDel},#{createTime},#{updateTime},#{articleTime},#{articleImage},#{articleAuthor},#{isTop},#{pageViews}
+
+		 ,#{status}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND SHOP_COMMON_ARTICLE.id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="acId != null and acId != ''">
+            AND SHOP_COMMON_ARTICLE.ac_id = #{acId,jdbcType=BIGINT}
+        </if>
+        <if test="articleUrl != null and articleUrl != ''">
+            AND SHOP_COMMON_ARTICLE.article_url = #{articleUrl,jdbcType=VARCHAR}
+        </if>
+        <if test="articleShow != null">
+            AND SHOP_COMMON_ARTICLE.article_show = #{articleShow,jdbcType=INTEGER}
+        </if>
+        <if test="articleSort != null and articleSort != ''">
+            AND SHOP_COMMON_ARTICLE.article_sort = #{articleSort,jdbcType=INTEGER}
+        </if>
+        <if test="articleTitle != null and articleTitle != ''">
+            AND SHOP_COMMON_ARTICLE.article_title = #{articleTitle,jdbcType=VARCHAR}
+        </if>
+        <if test="articleContent != null and articleContent != ''">
+            AND SHOP_COMMON_ARTICLE.article_content = #{articleContent,jdbcType=VARCHAR}
+        </if>
+        <if test="isDel != null and isDel != ''">
+            AND SHOP_COMMON_ARTICLE.is_del = #{isDel,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND SHOP_COMMON_ARTICLE.create_time = #{createTime}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND SHOP_COMMON_ARTICLE.update_time = #{updateTime}
+        </if>
+        <if test="articleTime != null and articleTime != ''">
+            AND SHOP_COMMON_ARTICLE.article_time = #{articleTime}
+        </if>
+        <if test="status != null">
+            AND SHOP_COMMON_ARTICLE.status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="articleImage != null and articleImage != ''">
+            AND SHOP_COMMON_ARTICLE.article_image = #{articleImage}
+        </if>
+        <if test="articleAuthor != null and articleAuthor != ''">
+            AND SHOP_COMMON_ARTICLE.article_author = #{articleAuthor}
+        </if>
+        <if test="isTop != null">
+            AND SHOP_COMMON_ARTICLE.is_top = #{isTop}
+        </if>
+        <if test="pageViews != null">
+            AND SHOP_COMMON_ARTICLE.page_views = #{pageViews}
+        </if>
+        <if test="key != null and key != ''">
+            and (
+            SHOP_COMMON_ARTICLE.article_title like CONCAT('%',#{key},'%' )
+            or SHOP_COMMON_ARTICLE.article_content like CONCAT('%',#{key},'%' )
+            )
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="acId != null">
+            ac_id = #{acId,jdbcType=BIGINT},
+        </if>
+        <if test="articleUrl != null and articleUrl != ''">
+            article_url = #{articleUrl,jdbcType=VARCHAR},
+        </if>
+        <if test="articleShow != null">
+            article_show = #{articleShow,jdbcType=INTEGER},
+        </if>
+        <if test="articleSort != null">
+            article_sort = #{articleSort,jdbcType=INTEGER},
+        </if>
+        <if test="articleTitle != null and articleTitle != ''">
+            article_title = #{articleTitle,jdbcType=VARCHAR},
+        </if>
+        <if test="articleContent != null and articleContent != ''">
+            article_content = #{articleContent,jdbcType=VARCHAR},
+        </if>
+        <if test="isDel != null">
+            is_del = #{isDel,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime},
+        </if>
+        <if test="articleTime != null">
+            article_time = #{articleTime},
+        </if>
+        <if test="status != null and status != ''">
+            SHOP_COMMON_ARTICLE.status = #{status,jdbcType=INTEGER},
+        </if>
+        <if test="articleImage != null and articleImage != ''">
+             SHOP_COMMON_ARTICLE.article_image = #{articleImage},
+        </if>
+        <if test="articleAuthor != null and articleAuthor != ''">
+             SHOP_COMMON_ARTICLE.article_author = #{articleAuthor},
+        </if>
+        <if test="isTop != null">
+             SHOP_COMMON_ARTICLE.is_top = #{isTop},
+        </if>
+        <if test="pageViews != null">
+             SHOP_COMMON_ARTICLE.page_views = #{pageViews},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopCommonArticleResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_ARTICLE
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopCommonArticleResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_ARTICLE
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_COMMON_ARTICLE
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.common.ShopCommonArticle">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_COMMON_ARTICLE
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.common.ShopCommonArticle">
+        UPDATE SHOP_COMMON_ARTICLE
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_COMMON_ARTICLE
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_COMMON_ARTICLE
+        WHERE ID IN
+        <foreach item="ShopCommonArticleId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopCommonArticleId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopCommonArticleResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_ARTICLE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopCommonArticleResultMap">
+        SELECT
+        SHOP_COMMON_ARTICLE.*,SHOP_COMMON_ARTICLE_CLASS.ac_name as acName
+        FROM SHOP_COMMON_ARTICLE
+        LEFT JOIN SHOP_COMMON_ARTICLE_CLASS ON SHOP_COMMON_ARTICLE.ac_id=SHOP_COMMON_ARTICLE_CLASS.id
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper> 

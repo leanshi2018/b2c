@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.walet.ShopWalletCashDao">
+
+    <resultMap id="ShopWalletCashResultMap" type="com.framework.loippi.entity.walet.ShopWalletCash">
+        <id property="id" column="id"/>
+        <result property="pdcSn" column="pdc_sn"/>
+        <result property="pdcMemberId" column="pdc_member_id"/>
+        <result property="pdcMemberName" column="pdc_member_name"/>
+        <result property="pdcAmount" column="pdc_amount"/>
+        <result property="serviceAmount" column="service_amount"/>
+        <result property="pdcBankName" column="pdc_bank_name"/>
+        <result property="pdcBankNo" column="pdc_bank_no"/>
+        <result property="pdcBankUser" column="pdc_bank_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="pdcPaymentTime" column="pdc_payment_time"/>
+        <result property="pdcPaymentState" column="pdc_payment_state"/>
+        <result property="pdcPaymentAdmin" column="pdc_payment_admin"/>
+        <result property="lgDesc" column="lg_desc"/>
+        <result property="storeId" column="store_id"/>
+        <result property="pdcType" column="pdc_type"/>
+        <result property="pdcBankSubbranch" column="pdc_bank_subbranch"/>
+        <result property="memberLgDesc" column="member_lgDesc"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,pdc_sn ,pdc_member_id ,pdc_member_name ,pdc_amount ,pdc_bank_name ,pdc_bank_no ,pdc_bank_user ,create_time ,pdc_payment_time ,pdc_payment_state ,pdc_payment_admin ,lg_desc ,store_id,pdc_type,pdc_bank_subbranch,member_lgDesc,service_amount
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{pdcSn},#{pdcMemberId},#{pdcMemberName},#{pdcAmount},#{pdcBankName},#{pdcBankNo},#{pdcBankUser},#{createTime},#{pdcPaymentTime},#{pdcPaymentState},#{pdcPaymentAdmin},#{lgDesc},#{storeId},#{pdcType},#{pdcBankSubbranch},#{memberLgDesc},#{serviceAmount}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="pdcSn != null and pdcSn != ''">
+            AND pdc_sn = #{pdcSn,jdbcType=VARCHAR}
+        </if>
+        <if test="pdcMemberId != null and pdcMemberId != ''">
+            AND pdc_member_id = #{pdcMemberId,jdbcType=BIGINT}
+        </if>
+        <if test="pdcMemberName != null and pdcMemberName != ''">
+            AND pdc_member_name = #{pdcMemberName,jdbcType=VARCHAR}
+        </if>
+        <if test="pdcAmount != null and pdcAmount != ''">
+            AND pdc_amount = #{pdcAmount}
+        </if>
+        <if test="pdcBankName != null and pdcBankName != ''">
+            AND pdc_bank_name = #{pdcBankName,jdbcType=VARCHAR}
+        </if>
+        <if test="pdcBankNo != null and pdcBankNo != ''">
+            AND pdc_bank_no = #{pdcBankNo,jdbcType=VARCHAR}
+        </if>
+        <if test="pdcBankUser != null and pdcBankUser != ''">
+            AND pdc_bank_user = #{pdcBankUser,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="pdcPaymentTime != null and pdcPaymentTime != ''">
+            AND pdc_payment_time = #{pdcPaymentTime}
+        </if>
+        <if test="pdcPaymentState != null and pdcPaymentState != ''">
+            AND pdc_payment_state = #{pdcPaymentState,jdbcType=VARCHAR}
+        </if>
+        <if test="pdcPaymentAdmin != null and pdcPaymentAdmin != ''">
+            AND pdc_payment_admin = #{pdcPaymentAdmin,jdbcType=BIGINT}
+        </if>
+        <if test="searchStartTime != null">
+            AND date_format(create_time, '%Y-%m-%d') &gt;= date_format(#{searchStartTime}, '%Y-%m-%d')
+        </if>
+        <if test="searchEndTime != null">
+            AND date_format(#{searchEndTime}, '%Y-%m-%d') &gt;= date_format(create_time, '%Y-%m-%d')
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND store_id = #{storeId,jdbcType=BIGINT}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="pdcSn != null and pdcSn != ''">
+            pdc_sn = #{pdcSn,jdbcType=VARCHAR},
+        </if>
+        <if test="pdcMemberId != null">
+            pdc_member_id = #{pdcMemberId,jdbcType=BIGINT},
+        </if>
+        <if test="pdcMemberName != null and pdcMemberName != ''">
+            pdc_member_name = #{pdcMemberName,jdbcType=VARCHAR},
+        </if>
+        <if test="pdcAmount != null">
+            pdc_amount = #{pdcAmount},
+        </if>
+        <if test="serviceAmount != null">
+            service_amount = #{serviceAmount},
+        </if>
+        <if test="pdcBankName != null and pdcBankName != ''">
+            pdc_bank_name = #{pdcBankName,jdbcType=VARCHAR},
+        </if>
+        <if test="pdcBankNo != null and pdcBankNo != ''">
+            pdc_bank_no = #{pdcBankNo,jdbcType=VARCHAR},
+        </if>
+        <if test="pdcBankUser != null and pdcBankUser != ''">
+            pdc_bank_user = #{pdcBankUser,jdbcType=VARCHAR},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime},
+        </if>
+        <if test="pdcPaymentTime != null">
+            pdc_payment_time = #{pdcPaymentTime},
+        </if>
+        <if test="pdcPaymentState != null and pdcPaymentState != ''">
+            pdc_payment_state = #{pdcPaymentState,jdbcType=VARCHAR},
+        </if>
+        <if test="pdcPaymentAdmin != null">
+            pdc_payment_admin = #{pdcPaymentAdmin,jdbcType=BIGINT},
+        </if>
+        <if test="lgDesc != null">
+            lg_desc = #{lgDesc},
+        </if>
+
+        <if test="pdcType != null">
+            pdc_type = #{pdcType},
+        </if>
+
+        <if test="pdcBankSubbranch != null">
+            pdc_bank_subbranch = #{pdcBankSubbranch},
+        </if>
+
+        <if test="memberLgDesc != null">
+            member_lgDesc = #{memberLgDesc},
+        </if>
+        <if test="storeId != null">
+            store_id = #{storeId,jdbcType=BIGINT}
+        </if>
+
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopWalletCashResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_WALLET_CASH
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopWalletCashResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_WALLET_CASH
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_WALLET_CASH
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.walet.ShopWalletCash">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_WALLET_CASH
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.walet.ShopWalletCash">
+        UPDATE SHOP_WALLET_CASH
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_WALLET_CASH
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_WALLET_CASH
+        WHERE ID IN
+        <foreach item="ShopWalletCashId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopWalletCashId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopWalletCashResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_WALLET_CASH
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopWalletCashResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_WALLET_CASH
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="countServiceAmount" resultType="java.math.BigDecimal">
+        SELECT sum(service_amount) FROM SHOP_WALLET_CASH
+        WHERE pdc_payment_state=1
+    </select>
+</mapper> 

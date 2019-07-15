@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.activity.ShopActivityDao">
+
+    <resultMap id="ShopActivityResultMap" type="com.framework.loippi.entity.activity.ShopActivity">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="subActivityName" column="sub_activity_name"/>
+        <result property="promotionRuleId" column="PROMOTION_RULE_ID"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="goodsType" column="GOODS_TYPE"/>
+        <result property="promotionType" column="PROMOTION_TYPE"/>
+        <result property="activityDescription" column="ACTIVITY_DESCRIPTION"/>
+        <result property="activityType" column="ACTIVITY_TYPE"/>
+        <result property="auditStatus" column="AUDIT_STATUS"/>
+        <result property="activityStatus" column="ACTIVITY_STATUS"/>
+        <result property="activityPicture" column="ACTIVITY_PICTURE"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isRecommend" column="is_recommend"/>
+        <result property="isFreeShipping" column="is_free_shipping"/>
+        <result property="sort" column="sort"/>
+        <result property="activityPicturePc" column="activity_picture_pc"/>
+        <result property="activityClassId" column="activity_class_id"/>
+        <result property="activityClass" column="activity_class"/>
+        <result property="memberType" column="member_type"/>
+        <!--优惠券 使用数-->
+        <result column="useNum" property="useNum"/>
+        <!--优惠券 领取数-->
+        <result column="getNum" property="getNum"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,name ,activity_name ,sub_activity_name ,PROMOTION_RULE_ID ,start_time ,end_time ,GOODS_TYPE ,PROMOTION_TYPE ,RESTRICTION_NUM ,ACTIVITY_DESCRIPTION ,ACTIVITY_TYPE ,AUDIT_STATUS ,ACTIVITY_STATUS ,ACTIVITY_PICTURE ,create_time ,update_time ,is_recommend ,is_free_shipping ,sort ,activity_picture_pc ,activity_class_id ,activity_class ,member_type
+    </sql>
+
+    <sql id="base_value_column">
+        #{id},#{name},#{activityName},#{subActivityName},#{promotionRuleId},#{startTime},#{endTime},#{goodsType},#{promotionType},#{restrictionNum},#{activityDescription},#{activityType},#{auditStatus},#{activityStatus},#{activityPicture},#{createTime},#{updateTime},#{isRecommend},#{isFreeShipping},#{sort},#{activityPicturePc},#{activityClassId},#{activityClass},#{memberType}
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="name != null and name != ''">
+            AND name like concat('%',#{name},'%')
+        </if>
+        <if test="activityName != null and activityName != ''">
+            AND activity_name like concat('%',#{activityName},'%')
+        </if>
+        <if test="subActivityName != null and subActivityName != ''">
+            AND sub_activity_name = #{subActivityName,jdbcType=VARCHAR}
+        </if>
+        <if test="promotionRuleId != null and promotionRuleId != ''">
+            AND PROMOTION_RULE_ID = #{promotionRuleId,jdbcType=BIGINT}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND start_time = #{startTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND end_time = #{endTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="goodsType != null and goodsType != ''">
+            AND GOODS_TYPE = #{goodsType,jdbcType=INTEGER}
+        </if>
+        <if test="promotionType != null and promotionType != ''">
+            AND PROMOTION_TYPE = #{promotionType,jdbcType=INTEGER}
+        </if>
+        <if test="activityDescription != null and activityDescription != ''">
+            AND ACTIVITY_DESCRIPTION = #{activityDescription,jdbcType=VARCHAR}
+        </if>
+        <if test="activityType != null and activityType != ''">
+            AND ACTIVITY_TYPE = #{activityType,jdbcType=INTEGER}
+        </if>
+        <if test="auditStatus != null and auditStatus != ''">
+            AND AUDIT_STATUS = #{auditStatus,jdbcType=INTEGER}
+        </if>
+        <if test="activityStatus != null and activityStatus != ''">
+            AND ACTIVITY_STATUS = #{activityStatus,jdbcType=INTEGER}
+        </if>
+        <if test="activityPicture != null and activityPicture != ''">
+            AND ACTIVITY_PICTURE = #{activityPicture,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND update_time = #{updateTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="isRecommend != null and isRecommend != ''">
+            AND is_recommend = #{isRecommend,jdbcType=INTEGER}
+        </if>
+        <if test="isFreeShipping != null and isFreeShipping != ''">
+            AND is_free_shipping = #{isFreeShipping,jdbcType=INTEGER}
+        </if>
+        <if test="sort != null and sort != ''">
+            AND sort = #{sort,jdbcType=INTEGER}
+        </if>
+        <if test="activityPicturePc != null and activityPicturePc != ''">
+            AND activity_picture_pc = #{activityPicturePc,jdbcType=VARCHAR}
+        </if>
+        <if test="activityClassId != null and activityClassId != ''">
+            AND activity_class_id = #{activityClassId,jdbcType=BIGINT}
+        </if>
+        <if test="activityClass != null and activityClass != ''">
+            AND activity_class = #{activityClass,jdbcType=VARCHAR}
+        </if>
+        <if test="memberType != null and memberType != ''">
+            AND member_type = #{memberType,jdbcType=INTEGER}
+        </if>
+        <if test="searchStartTime !=null and searchStartTime != ''">
+            <![CDATA[and start_time >= #{searchStartTime}]]>
+        </if>
+        <if test="searchEndTime !=null and searchEndTime != ''">
+            <![CDATA[and end_time <= #{searchEndTime}]]>
+        </if>
+        <if test="promotionRuleIds != null">
+            and PROMOTION_RULE_ID in
+            <foreach collection="promotionRuleIds" index="index" item="promotionRuleIds" open="(" separator=","
+                     close=")">
+                #{promotionRuleIds}
+            </foreach>
+        </if>
+        <if test="ids!=null">
+            and id in
+            <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="activityStatusList != null">
+            and activity_status in
+            <foreach collection="activityStatusList" index="index" item="activityStatus" open="(" separator=","
+                     close=")">
+                #{activityStatus}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="name != null and name != ''">
+            name = #{name,jdbcType=VARCHAR},
+        </if>
+        <if test="activityName != null and activityName != ''">
+            activity_name = #{activityName,jdbcType=VARCHAR},
+        </if>
+        <if test="subActivityName != null and subActivityName != ''">
+            sub_activity_name = #{subActivityName,jdbcType=VARCHAR},
+        </if>
+        <if test="promotionRuleId != null">
+            PROMOTION_RULE_ID = #{promotionRuleId,jdbcType=BIGINT},
+        </if>
+        <if test="startTime != null">
+            start_time = #{startTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="endTime != null">
+            end_time = #{endTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="goodsType != null">
+            GOODS_TYPE = #{goodsType,jdbcType=INTEGER},
+        </if>
+        <if test="promotionType != null">
+            PROMOTION_TYPE = #{promotionType,jdbcType=INTEGER},
+        </if>
+        <if test="activityDescription != null and activityDescription != ''">
+            ACTIVITY_DESCRIPTION = #{activityDescription,jdbcType=VARCHAR},
+        </if>
+        <if test="activityType != null">
+            ACTIVITY_TYPE = #{activityType,jdbcType=INTEGER},
+        </if>
+        <if test="auditStatus != null">
+            AUDIT_STATUS = #{auditStatus,jdbcType=INTEGER},
+        </if>
+        <if test="activityStatus != null">
+            ACTIVITY_STATUS = #{activityStatus,jdbcType=INTEGER},
+        </if>
+        <if test="activityPicture != null and activityPicture != ''">
+            ACTIVITY_PICTURE = #{activityPicture,jdbcType=VARCHAR},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="isRecommend != null">
+            is_recommend = #{isRecommend,jdbcType=INTEGER},
+        </if>
+        <if test="isFreeShipping != null">
+            is_free_shipping = #{isFreeShipping,jdbcType=INTEGER},
+        </if>
+        <if test="sort != null">
+            sort = #{sort,jdbcType=INTEGER},
+        </if>
+        <if test="activityPicturePc != null and activityPicturePc != ''">
+            activity_picture_pc = #{activityPicturePc,jdbcType=VARCHAR},
+        </if>
+        <if test="activityClassId != null">
+            activity_class_id = #{activityClassId,jdbcType=BIGINT},
+        </if>
+        <if test="activityClass != null and activityClass != ''">
+            activity_class = #{activityClass,jdbcType=VARCHAR},
+        </if>
+        <if test="memberType != null">
+            member_type = #{memberType,jdbcType=INTEGER},
+        </if>
+        <if test="alreadyBuyNumber != null">
+            already_buy_number = #{alreadyBuyNumber,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopActivityResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopActivityResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_ACTIVITY
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.activity.ShopActivity">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_ACTIVITY
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.activity.ShopActivity">
+        UPDATE SHOP_ACTIVITY
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE FROM SHOP_ACTIVITY
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_ACTIVITY
+        WHERE ID IN
+        <foreach item="ShopActivityId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopActivityId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopActivityResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopActivityResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY
+        <where>1=1
+            <include refid="where_column"/>
+            <if test="activityTime != null">
+                    <![CDATA[and start_time <= #{activityTime}]]>
+                    <![CDATA[and end_time >= #{activityTime}]]>
+            </if>
+        </where>
+        order by update_time desc ,create_time desc
+    </select>
+
+    <!--获取用户该订单该商家的参加活动列表 并取得最大的优惠信息-->
+    <select id="findActivityByCartCouponVo" resultMap="ShopActivityResultMap"
+            parameterType="com.framework.loippi.vo.activity.CartCouponVo">
+        select
+        <include refid="base_column"/>
+        from shop_activity c INNER join (
+        select am.activity_id,case when am.member_level is not null and am.MEMBER_LEVEL!='' then
+        (select integration from shop_member_grade mg where mg.id= am.MEMBER_LEVEL) else 0 end sl
+        , case when m.member_gradeid is not null and m.member_gradeid!='' then (
+        select integration from shop_member_grade mg where mg.id= m.member_gradeid ) else 0 end l
+        from shop_activity_membership am ,shop_member m where m.id=#{memberId} HAVING l>=sl
+        ) ship on c.id=ship.activity_id where activity_status=20 and audit_status=20 and activity_type in
+        (${activityTypes})
+        order
+        by priority desc
+    </select>
+
+    <!--更新卖出数量-->
+    <update id="updateRestrictionNum" parameterType="com.framework.loippi.entity.activity.ShopActivity">
+        update shop_activity SET RESTRICTION_NUM = #{restrictionNum} where id = #{id} AND RESTRICTION_NUM > 0
+    </update>
+
+    <!--更新活动开始状态 20-->
+    <update id="updateShopActivityStartStatus" parameterType="com.framework.loippi.entity.activity.ShopActivity">
+        update shop_activity
+        set activity_status=20
+        WHERE audit_status=20 and activity_status=10 and is_auto_start_activity=1 and start_time &lt;= #{currentTime}
+        and
+        end_time &gt;= #{currentTime}
+    </update>
+
+    <!--更新活动结束状态 30-->
+    <update id="updateShopActivityEndStatus" parameterType="com.framework.loippi.entity.activity.ShopActivity">
+        update shop_activity
+        set activity_status=30
+        WHERE audit_status=20 and end_time &lt;= #{currentTime} and activity_status=20
+    </update>
+
+    <select id="findByEndTimeCount" resultType="java.lang.Integer" parameterType="map">
+        SELECT COUNT(1) FROM shop_activity WHERE end_time &gt; #{endTime} and activity_type =
+        #{activityType}
+        <if test="id != null and id != ''">
+            and id != #{id}
+        </if>
+    </select>
+
+    <!--更新活动结束状态 30-->
+    <update id="stopShopActivityById" parameterType="Long">
+        update shop_activity
+        set activity_status=30
+        WHERE id=#{id}
+    </update>
+
+    <!--批量更新-->
+    <update id="updateActivityBatch">
+        UPDATE shop_activity
+        set
+        <if test="auditStatus!=null">
+            audit_status = #{auditStatus}
+        </if>
+        <if test="activityStatus!=null">
+            activity_status = #{activityStatus}
+        </if>
+        <where>
+            id in
+            <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </update>
+
+    <!--统计优惠劵发放总数  日  周  月-->
+    <select id="statisticsGiveOutCouponTotalByState" resultType="com.framework.loippi.vo.activity.ActivityStatisticsVo">
+        SELECT
+        <if test='state == "1"'>
+            date_format( sa.START_TIME, '%Y-%m-%d' ) as "createDate",
+        </if>
+        <if test='state == "2"'>
+            WEEK(sa.START_TIME) as "weekDate",
+        </if>
+        <if test='state == "3"'>
+            date_format( sa.START_TIME, '%Y-%m' ) as "monthDate",
+        </if>
+        SUM(sa.RESTRICTION_NUM) as totalNum
+        from shop_activity sa
+        WHERE 1=1
+        <if test='state == "1"'>
+            and date_format( sa.START_TIME, '%Y-%m-%d' ) between date_format( #{beforeDate}, '%Y-%m-%d' ) and
+            date_format( #{afterDate}, '%Y-%m-%d' )
+            GROUP BY
+            date_format( sa.START_TIME, '%Y-%m-%d' )
+            order by
+            createDate asc
+        </if>
+        <if test='state == "2"'>
+            and date_format( sa.START_TIME, '%Y-%m-%d' ) between date_format( #{beforeDate}, '%Y-%m-%d' ) and
+            date_format( #{afterDate}, '%Y-%m-%d' )
+            GROUP BY
+            WEEK(sa.START_TIME)
+            order by
+            weekDate asc
+        </if>
+        <if test='state == "3"'>
+            and DATE_FORMAT(sa.START_TIME,'%Y-%m')>
+            DATE_FORMAT(date_sub(curdate(), interval 12 month),'%Y-%m')
+            GROUP BY
+            date_format( sa.START_TIME, '%Y-%m' )
+            order by
+            monthDate asc
+        </if>
+    </select>
+
+    <select id="findErrorStatusData" resultType="com.framework.loippi.entity.activity.ShopActivity">
+        SELECT
+        <include refid="base_column"/>
+        from shop_activity
+        where
+        (ACTIVITY_STATUS=10 AND START_SIGN_TIME &lt; current_time())
+        OR
+        (ACTIVITY_STATUS=11 AND END_SIGN_TIME &lt; current_time())
+        OR
+        (ACTIVITY_STATUS=12 AND START_TIME &lt; current_time() )
+        OR
+        (ACTIVITY_STATUS=20 AND END_TIME &lt; current_time())
+    </select>
+
+</mapper>

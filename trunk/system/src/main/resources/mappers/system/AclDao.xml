@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.AclDao">
+
+    <resultMap id="AclResultMap" type="com.framework.loippi.entity.Acl">
+        <id property="id" column="ID"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="updateDate" column="UPDATE_DATE"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="updator" column="UPDATOR"/>
+        <result property="name" column="ACL_NAME"/>
+        <result property="url" column="URL"/>
+        <result property="type" column="ACL_TYPE"/>
+        <result property="permission" column="PERMISSION"/>
+        <result property="icon" column="ICON"/>
+        <result property="parentId" column="PARENT_ID"/>
+        <result property="sorts" column="SORTS"/>
+        <result property="platType" column="PLAT_TYPE"/>
+    </resultMap>
+
+    <resultMap id="AclChildResultMap" type="com.framework.loippi.entity.Acl">
+        <id property="id" column="ID"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="updateDate" column="UPDATE_DATE"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="updator" column="UPDATOR"/>
+        <result property="name" column="ACL_NAME"/>
+        <result property="url" column="URL"/>
+        <result property="type" column="ACL_TYPE"/>
+        <result property="permission" column="PERMISSION"/>
+        <result property="icon" column="ICON"/>
+        <result property="parentId" column="PARENT_ID"/>
+        <result property="sorts" column="SORTS"/>
+        <result property="platType" column="PLAT_TYPE"/>
+        <collection property="children" column="id" ofType="com.framework.loippi.entity.Acl"
+                    javaType="java.util.ArrayList"
+                    select="findChildrens"></collection>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 ID  ,CREATE_DATE,UPDATE_DATE,CREATOR,UPDATOR ,ACL_NAME ,URL ,ACL_TYPE ,PERMISSION ,ICON ,PARENT_ID,SORTS
+
+
+		 ,PLAT_TYPE
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id,jdbcType=BIGINT} ,#{createDate} ,#{updateDate} ,#{creator} ,#{updator} ,#{name} ,#{url} ,#{type} ,#{permission} ,#{icon} ,#{parentId},#{sorts}
+
+		 ,#{platType}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND ID = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="name != null and name != ''">
+            AND ACL_NAME = #{PERMISSION_NAME,jdbcType=VARCHAR}
+        </if>
+        <if test="permission != null and permission != ''">
+            AND PERMISSION = #{permission,jdbcType=VARCHAR}
+        </if>
+        <if test="type != null">
+            AND ACL_TYPE = #{type,jdbcType=INTEGER}
+        </if>
+        <if test="parentId != null">
+            AND PARENT_ID = #{parentId,jdbcType=BIGINT}
+        </if>
+
+        <if test="platType != null">
+            AND PLAT_TYPE = #{platType,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+            ID = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="name != null and name != ''">
+            ACL_NAME = #{name,jdbcType=VARCHAR} ,
+        </if>
+        <if test="permission != null and permission != ''">
+            PERMISSION = #{permission,jdbcType=VARCHAR},
+        </if>
+        <if test="url != null and url != ''">
+            URL = #{url,jdbcType=VARCHAR},
+        </if>
+        <if test="type != null and type != ''">
+            ACL_TYPE = #{type,jdbcType=INTEGER},
+        </if>
+        <if test="icon != null and icon != ''">
+            ICON = #{icon,jdbcType=VARCHAR},
+        </if>
+        <if test="parentId != null and parentId != ''">
+            PARENT_ID = #{parentId,jdbcType=BIGINT},
+        </if>
+        <if test="updator != null and updator != ''">
+            UPDATOR = #{updator,jdbcType=BIGINT},
+        </if>
+        <if test="updateDate != null and updateDate != ''">
+            UPDATE_DATE = #{updateDate},
+        </if>
+        <if test="sorts != null and sorts != ''">
+            SORTS = #{sorts},
+        </if>
+
+        <if test="platType != null">
+            PLAT_TYPE = #{platType,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+
+    <select id="findRoots" resultMap="AclResultMap">
+		SELECT * FROM T_SYSTEM_ACL where ACL_TYPE = 0 AND PARENT_ID IS NULL AND PLAT_TYPE=#{platType} ORDER BY SORTS
+	</select>
+
+    <select id="findByRoleId" resultMap="AclResultMap">
+		SELECT * FROM T_SYSTEM_ACL where ID IN (SELECT ACL_ID FROM T_SYSTEM_ROLE_ACLS WHERE ROLE_ID =#{roleId,jdbcType=BIGINT}) ORDER BY SORTS
+	</select>
+
+
+    <select id="find" resultMap="AclResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_ACL
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="findAll" resultMap="AclResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_ACL
+    </select>
+
+    <select id="findChildrens" resultMap="AclChildResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_ACL
+        WHERE PARENT_ID=#{id,jdbcType=BIGINT}
+        AND PLAT_TYPE=#{platType}
+        ORDER BY SORTS
+    </select>
+
+    <insert id="insert" parameterType="com.framework.loippi.entity.Acl">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT T_SYSTEM_ACL
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <update id="update" parameterType="com.framework.loippi.entity.Acl">
+        UPDATE T_SYSTEM_ACL
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+		DELETE	FROM T_SYSTEM_ACL
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <delete id="deleteAll">
+        DELETE FROM T_SYSTEM_ACL
+        WHERE ID IN
+        <foreach item="AclId" index="index" collection="ids" open="(" separator="," close=")">
+            #{AclId}
+        </foreach>
+    </delete>
+
+    <select id="findByParams" resultMap="AclResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_ACL
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="findByPage" resultMap="AclResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM T_SYSTEM_ACL
+        <where>
+            <include refid="where_column"/>
+        </where>
+
+        ORDER BY SORTS
+    </select>
+
+</mapper> 

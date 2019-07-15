@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.ShopCommonArticleClassDao">
+
+    <resultMap id="ShopCommonArticleClassResultMap" type="com.framework.loippi.entity.common.ShopCommonArticleClass">
+        <id property="id" column="id"/>
+        <result property="acCode" column="ac_code"/>
+        <result property="acName" column="ac_name"/>
+        <result property="acParentId" column="ac_parent_id"/>
+        <result property="acSort" column="ac_sort"/>
+        <result property="isDel" column="is_del"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="acStatus" column="ac_status"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,ac_code ,ac_name ,ac_parent_id ,ac_sort ,is_del ,create_time ,update_time ,ac_status ,image_url ,remarks
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{acCode},#{acName},#{acParentId},#{acSort},#{isDel},#{createTime},#{updateTime},#{acStatus},#{imageUrl},#{remarks}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="acCode != null and acCode != ''">
+            AND ac_code = #{acCode,jdbcType=VARCHAR}
+        </if>
+        <if test="acName != null and acName != ''">
+            AND ac_name = #{acName,jdbcType=VARCHAR}
+        </if>
+        <if test="acParentId != null">
+            AND ac_parent_id = #{acParentId}
+        </if>
+        <if test="acSort != null and acSort != ''">
+            AND ac_sort = #{acSort,jdbcType=INTEGER}
+        </if>
+        <if test="isDel != null and isDel != ''">
+            AND is_del = #{isDel,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND update_time = #{updateTime}
+        </if>
+        <if test="acStatus != null">
+            AND ac_status = #{acStatus,jdbcType=INTEGER}
+        </if>
+        <if test="imageUrl != null">
+            AND image_url = #{imageUrl}
+        </if>
+        <if test="remarks != null">
+            AND remarks = #{remarks}
+        </if>
+        <if test="acNameLike != null and acNameLike != ''">
+            AND ac_name like CONCAT('%',#{acNameLike},'%')
+        </if>
+        <if test="noId != null">
+            AND id != #{noId,jdbcType=BIGINT}
+        </if>
+
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="acCode != null and acCode != ''">
+            ac_code = #{acCode,jdbcType=VARCHAR},
+        </if>
+        <if test="acName != null and acName != ''">
+            ac_name = #{acName,jdbcType=VARCHAR},
+        </if>
+        <if test="acParentId != null">
+            ac_parent_id = #{acParentId,jdbcType=BIGINT},
+        </if>
+        <if test="acSort != null">
+            ac_sort = #{acSort,jdbcType=INTEGER},
+        </if>
+        <if test="isDel != null">
+            is_del = #{isDel,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime},
+        </if>
+        <if test="acStatus != null">
+            ac_status = #{acStatus,jdbcType=INTEGER},
+        </if>
+        <if test="imageUrl != null">
+             image_url = #{imageUrl},
+        </if>
+        <if test="remarks != null">
+             remarks = #{remarks},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopCommonArticleClassResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_ARTICLE_CLASS
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopCommonArticleClassResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_ARTICLE_CLASS
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_COMMON_ARTICLE_CLASS
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.common.ShopCommonArticleClass">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_COMMON_ARTICLE_CLASS
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.common.ShopCommonArticleClass">
+        UPDATE SHOP_COMMON_ARTICLE_CLASS
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_COMMON_ARTICLE_CLASS
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_COMMON_ARTICLE_CLASS
+        WHERE ID IN
+        <foreach item="ShopCommonArticleClassId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopCommonArticleClassId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopCommonArticleClassResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_ARTICLE_CLASS
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        <if test="order != null">
+            order by  ${order}
+        </if>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopCommonArticleClassResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_ARTICLE_CLASS
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        <if test="order != null">
+            order by  ${order}
+        </if>
+    </select>
+
+</mapper> 

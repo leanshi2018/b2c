@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.ShopCommonFeedbackDao">
+
+    <resultMap id="ShopCommonFeedbackResultMap" type="com.framework.loippi.entity.common.ShopCommonFeedback">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="createTime" column="create_time"/>
+        <result property="phoneType" column="phone_type"/>
+
+        <result property="uid" column="uid"/>
+        <result property="status" column="status"/>
+        <result property="manageId" column="manageid"/>
+        <result property="opTime" column="op_time"/>
+        <result property="replyContent" column="reply_content"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 SHOP_COMMON_FEEDBACK.id ,SHOP_COMMON_FEEDBACK.title ,SHOP_COMMON_FEEDBACK.content ,SHOP_COMMON_FEEDBACK.email
+		 ,SHOP_COMMON_FEEDBACK.phone ,SHOP_COMMON_FEEDBACK.create_time ,SHOP_COMMON_FEEDBACK.phone_type
+		 ,SHOP_COMMON_FEEDBACK.uid,SHOP_COMMON_FEEDBACK.status,SHOP_COMMON_FEEDBACK.manageid,SHOP_COMMON_FEEDBACK.op_time,reply_content
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{title},#{content},#{email},#{phone},#{createTime},#{phoneType}
+		 ,#{uid},#{status},#{manageId},#{opTime},#{replyContent}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="uid != null and uid != ''">
+            AND uid = #{uid,jdbcType=BIGINT}
+        </if>
+        <if test="title != null and title != ''">
+            AND title = #{title,jdbcType=VARCHAR}
+        </if>
+        <if test="content != null and content != ''">
+            AND SHOP_COMMON_FEEDBACK.content = #{content,jdbcType=VARCHAR}
+        </if>
+        <if test="email != null and email != ''">
+            AND email = #{email,jdbcType=VARCHAR}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone = #{phone,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND SHOP_COMMON_FEEDBACK.create_time = #{createTime}
+        </if>
+        <if test="phoneType != null and phoneType != ''">
+            AND phone_type = #{phoneType,jdbcType=INTEGER}
+        </if>
+
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="manageId != null and manageId != ''">
+            AND manageid = #{manageId,jdbcType=INTEGER}
+        </if>
+        <if test="opTime != null and opTime != ''">
+            AND op_time = #{opTime}
+        </if>
+        <if test="replyContent != null and replyContent != ''">
+            AND reply_content = #{replyContent}
+        </if>
+        <if test="starttime != null and starttimec != ''">
+            and SHOP_COMMON_FEEDBACK.create_time <![CDATA[>=]]> #{starttime}
+        </if>
+        <if test="endtime != null and endtime != ''">
+            and SHOP_COMMON_FEEDBACK.create_time <![CDATA[<]]> date_sub(#{endtime},interval -1 day)
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            SHOP_COMMON_FEEDBACK.id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="uid != null and uid != ''">
+            SHOP_COMMON_FEEDBACK.uid = #{uid,jdbcType=BIGINT},
+        </if>
+        <if test="title != null and title != ''">
+            SHOP_COMMON_FEEDBACK.title = #{title,jdbcType=VARCHAR},
+        </if>
+        <if test="content != null and content != ''">
+            SHOP_COMMON_FEEDBACK.content = #{content,jdbcType=VARCHAR},
+        </if>
+        <if test="email != null and email != ''">
+            SHOP_COMMON_FEEDBACK.email = #{email,jdbcType=VARCHAR},
+        </if>
+        <if test="phone != null and phone != ''">
+            SHOP_COMMON_FEEDBACK.phone = #{phone,jdbcType=VARCHAR},
+        </if>
+        <if test="createTime != null">
+            SHOP_COMMON_FEEDBACK.create_time = #{createTime},
+        </if>
+        <if test="phoneType != null">
+            SHOP_COMMON_FEEDBACK.phone_type = #{phoneType,jdbcType=INTEGER},
+        </if>
+
+        <if test="status != null and status != ''">
+            SHOP_COMMON_FEEDBACK.status = #{status,jdbcType=INTEGER},
+        </if>
+        <if test="manageId != null and manageId != ''">
+            SHOP_COMMON_FEEDBACK.manageid = #{manageId,jdbcType=INTEGER},
+        </if>
+        <if test="opTime != null and opTime != ''">
+            SHOP_COMMON_FEEDBACK.op_time = #{opTime},
+        </if>
+        <if test="replyContent != null and replyContent != ''">
+             reply_content = #{replyContent},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopCommonFeedbackResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_FEEDBACK
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopCommonFeedbackResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_FEEDBACK
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_COMMON_FEEDBACK
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.common.ShopCommonFeedback">
+        INSERT SHOP_COMMON_FEEDBACK
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.common.ShopCommonFeedback">
+        UPDATE SHOP_COMMON_FEEDBACK
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_COMMON_FEEDBACK
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_COMMON_FEEDBACK
+        WHERE ID IN
+        <foreach item="ShopCommonFeedbackId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopCommonFeedbackId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopCommonFeedbackResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_FEEDBACK
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopCommonFeedbackResultMap">
+        SELECT
+        <include refid="base_column"/>,RD_MM_BASIC_INFO.MM_NICK_NAME as userName,T_SYSTEM_USER.NICKNAME as managerName
+        FROM SHOP_COMMON_FEEDBACK
+        LEFT JOIN RD_MM_BASIC_INFO ON SHOP_COMMON_FEEDBACK.uid=RD_MM_BASIC_INFO.MM_CODE
+        LEFT JOIN T_SYSTEM_USER ON SHOP_COMMON_FEEDBACK.manageid=T_SYSTEM_USER.ID
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper> 

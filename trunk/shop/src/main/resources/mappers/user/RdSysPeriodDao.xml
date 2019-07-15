@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdSysPeriodDao">
+	
+	<resultMap id="RdSysPeriodResultMap" type="com.framework.loippi.entity.user.RdSysPeriod">
+		<result property="periodCode" column="PERIOD_CODE" />
+		<result property="prePeriod" column="PRE_PERIOD" />
+		<result property="nextPeriod" column="NEXT_PERIOD" />
+		<result property="salesStatus" column="SALES_STATUS" />
+		<result property="calStatus" column="CAL_STATUS" />
+		<result property="beginDate" column="BEGIN_DATE" />
+		<result property="endDate" column="END_DATE" />
+		<result property="calTimes" column="CAL_TIMES" />
+		<result property="bonusStatus" column="BONUS_STATUS" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 PERIOD_CODE ,PRE_PERIOD ,NEXT_PERIOD ,SALES_STATUS ,CAL_STATUS ,BEGIN_DATE ,END_DATE ,CAL_TIMES ,BONUS_STATUS 
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{periodCode},#{prePeriod},#{nextPeriod},#{salesStatus},#{calStatus},#{beginDate},#{endDate},#{calTimes},#{bonusStatus}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="periodCode != null and periodCode != ''">
+			AND PERIOD_CODE = #{periodCode,jdbcType=VARCHAR}
+		</if>
+		<if test="prePeriod != null and prePeriod != ''">
+			AND PRE_PERIOD = #{prePeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="nextPeriod != null and nextPeriod != ''">
+			AND NEXT_PERIOD = #{nextPeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="salesStatus != null and salesStatus != ''">
+			AND SALES_STATUS = #{salesStatus,jdbcType=INTEGER}
+		</if>
+		<if test="calStatus != null and calStatus != ''">
+			AND CAL_STATUS = #{calStatus,jdbcType=INTEGER}
+		</if>
+		<if test="beginDate != null and beginDate != ''">
+			AND BEGIN_DATE = #{beginDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND END_DATE = #{endDate}
+		</if>
+		<if test="calTimes != null and calTimes != ''">
+			AND CAL_TIMES = #{calTimes,jdbcType=INTEGER}
+		</if>
+		<if test="bonusStatus != null and bonusStatus != ''">
+			AND BONUS_STATUS = #{bonusStatus,jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="periodCode != null and periodCode != ''">
+			PERIOD_CODE = #{periodCode,jdbcType=VARCHAR},
+		</if>
+		<if test="prePeriod != null and prePeriod != ''">
+			PRE_PERIOD = #{prePeriod,jdbcType=VARCHAR},
+		</if>
+		<if test="nextPeriod != null and nextPeriod != ''">
+			NEXT_PERIOD = #{nextPeriod,jdbcType=VARCHAR},
+		</if>
+		<if test="salesStatus != null">
+			SALES_STATUS = #{salesStatus,jdbcType=INTEGER},
+		</if>
+		<if test="calStatus != null">
+			CAL_STATUS = #{calStatus,jdbcType=INTEGER},
+		</if>
+		<if test="beginDate != null">
+			BEGIN_DATE = #{beginDate},
+		</if>
+		<if test="endDate != null">
+			END_DATE = #{endDate},
+		</if>
+		<if test="calTimes != null">
+			CAL_TIMES = #{calTimes,jdbcType=INTEGER},
+		</if>
+		<if test="bonusStatus != null">
+			BONUS_STATUS = #{bonusStatus,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="RdSysPeriodResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_SYS_PERIOD
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="RdSysPeriodResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_SYS_PERIOD
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM RD_SYS_PERIOD
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.RdSysPeriod">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+	          <!--SELECT LAST_INSERT_ID() AS ID    -->
+	    <!--</selectKey>  -->
+		INSERT RD_SYS_PERIOD 
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.RdSysPeriod">
+		UPDATE	RD_SYS_PERIOD
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM RD_SYS_PERIOD
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM RD_SYS_PERIOD
+		WHERE	ID	IN
+    	<foreach item="RdSysPeriodId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdSysPeriodId} 
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="RdSysPeriodResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_SYS_PERIOD
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="RdSysPeriodResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_SYS_PERIOD
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+
+	<!-- 获取当前时间的业务周期 -->
+	<select id="getSysPeriodService" resultType="string">
+		SELECT PERIOD_CODE FROM RD_SYS_PERIOD
+		<where> 1=1
+			<![CDATA[and BEGIN_DATE <= #{data}]]>
+			<![CDATA[and END_DATE >= #{data}]]>
+		</where>
+	</select>
+</mapper> 

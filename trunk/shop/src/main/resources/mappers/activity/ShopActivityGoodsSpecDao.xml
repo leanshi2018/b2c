@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.activity.ShopActivityGoodsSpecDao">
+
+    <resultMap id="ShopActivityGoodsSpecResultMap" type="com.framework.loippi.entity.activity.ShopActivityGoodsSpec">
+        <id property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="activityId" column="activity_id"/>
+        <result property="activityGoodsId" column="activity_goods_id"/>
+        <result property="specId" column="spec_id"/>
+        <result property="activityPrice" column="activity_price"/>
+        <result property="activityStock" column="activity_stock"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,goods_id ,activity_id ,activity_goods_id ,spec_id ,activity_price ,activity_stock ,create_time
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{goodsId},#{activityId},#{activityGoodsId},#{specId},#{activityPrice},#{activityStock},#{createTime}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="goodsId != null and goodsId != ''">
+            AND goods_id = #{goodsId,jdbcType=BIGINT}
+        </if>
+        <if test="activityId != null and activityId != ''">
+            AND activity_id = #{activityId,jdbcType=BIGINT}
+        </if>
+        <if test="activityGoodsId != null and activityGoodsId != ''">
+            AND activity_goods_id = #{activityGoodsId,jdbcType=BIGINT}
+        </if>
+        <if test="specId != null and specId != ''">
+            AND spec_id = #{specId,jdbcType=BIGINT}
+        </if>
+        <if test="activityPrice != null and activityPrice != ''">
+            AND activity_price = #{activityPrice,jdbcType=DECIMAL}
+        </if>
+        <if test="activityStock != null and activityStock != ''">
+            AND activity_stock = #{activityStock}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="goodIdList != null and goodIdList != ''">
+            AND activity_goods_id IN
+            <foreach item="atiGoodId" index="index" collection="goodIdList" open="(" separator="," close=")">
+                #{atiGoodId}
+            </foreach>
+        </if>
+        <if test="idList != null and idList != ''">
+            AND id IN
+            <foreach item="idItem" index="index" collection="idList" open="(" separator="," close=")">
+                #{idItem}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="goodsId != null">
+            goods_id = #{goodsId,jdbcType=BIGINT},
+        </if>
+        <if test="activityId != null">
+            activity_id = #{activityId,jdbcType=BIGINT},
+        </if>
+        <if test="activityGoodsId != null">
+            activity_goods_id = #{activityGoodsId,jdbcType=BIGINT},
+        </if>
+        <if test="specId != null">
+            spec_id = #{specId,jdbcType=BIGINT},
+        </if>
+        <if test="activityPrice != null">
+            activity_price = #{activityPrice,jdbcType=DECIMAL},
+        </if>
+        <if test="activityStock != null">
+            activity_stock = #{activityStock},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopActivityGoodsSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY_GOODS_SPEC
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopActivityGoodsSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY_GOODS_SPEC
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_ACTIVITY_GOODS_SPEC
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.activity.ShopActivityGoodsSpec">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_ACTIVITY_GOODS_SPEC
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.activity.ShopActivityGoodsSpec">
+        UPDATE SHOP_ACTIVITY_GOODS_SPEC
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_ACTIVITY_GOODS_SPEC
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_ACTIVITY_GOODS_SPEC
+        WHERE 1=1
+        <if test="ids != null">
+           and  ID IN
+            <foreach item="ShopActivityGoodsSpecId" index="index" collection="ids" open="(" separator="," close=")">
+                #{ShopActivityGoodsSpecId}
+            </foreach>
+        </if>
+        <if test="activityGoodsIds != null">
+            and  activity_goods_id IN
+            <foreach item="ShopActivityGoodsSpecId" index="index" collection="activityGoodsIds" open="(" separator="," close=")">
+                #{ShopActivityGoodsSpecId}
+            </foreach>
+        </if>
+
+
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopActivityGoodsSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY_GOODS_SPEC
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopActivityGoodsSpecResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ACTIVITY_GOODS_SPEC
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+    <delete id="deleteShopActivityGoodsSpecByActivityId" parameterType="Long">
+		delete from
+		SHOP_ACTIVITY_GOODS where activity_id = #{activityId}
+	</delete>
+
+    <!-- 修改根据规格 -->
+    <update id="updateBatchSpec" parameterType="com.framework.loippi.entity.activity.ShopActivityGoodsSpec">
+        UPDATE SHOP_ACTIVITY_GOODS_SPEC
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE 1=1
+        <if test="ids != null and ids != ''">
+            and ID in
+            <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="specIds != null and specIds != ''">
+            and spec_id in
+            <foreach item="ShopOrderGoodSpecId" index="index" collection="specIds" open="(" separator="," close=")">
+                #{ShopOrderGoodSpecId}
+            </foreach>
+        </if>
+
+    </update>
+</mapper> 

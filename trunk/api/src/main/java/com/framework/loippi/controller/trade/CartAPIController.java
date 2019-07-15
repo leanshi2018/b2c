@@ -1,0 +1,332 @@
+package com.framework.loippi.controller.trade;
+
+import com.framework.loippi.consts.CartConstant;
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
+import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.cart.ShopCart;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderDiscountType;
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.product.ShopGoodsFreight;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.enus.ActivityTypeEnus.EnumType;
+import com.framework.loippi.mybatis.paginator.domain.Order.Direction;
+import com.framework.loippi.param.cart.CartAddParam;
+import com.framework.loippi.result.app.cart.CartCheckOutResult;
+import com.framework.loippi.result.app.cart.CartResult;
+import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.service.activity.ShopActivityService;
+import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
+import com.framework.loippi.service.product.ShopGoodsFreightService;
+import com.framework.loippi.service.user.*;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.vo.cart.ShopCartVo;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+/**
+ * 功能： api购物车模块接口 类名：CartAPIController 日期：2017/11/20  10:40 作者：czl 详细说明： 修改备注:
+ */
+@Controller("apiCartController")
+@Slf4j
+public class CartAPIController extends BaseController {
+
+    @Resource
+    private ShopCartService cartService;
+    @Resource
+    private ShopOrderDiscountTypeService shopOrderDiscountTypeService;
+    @Resource
+    private ShopOrderService orderService;
+    @Resource
+    private RdMmAddInfoService rdMmAddInfoService;
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
+    @Resource
+    private RdMmRelationService rdMmRelationService;
+    @Resource
+    private RdRanksService rdRanksService;
+    @Resource
+    private RdMmAccountInfoService rdMmAccountInfoService;
+
+    /**
+     * 购物车列表
+     */
+    @RequestMapping(value = "/api/cart/list", method = RequestMethod.POST)
+    @ResponseBody
+    public String list(Pageable pageable, HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        pageable.setParameter(Paramap.create().put("memberId", member.getMmCode()));
+        pageable.setOrderDirection(Direction.DESC);
+        pageable.setOrderProperty("id");
+        List<ShopCartVo> shopCartVos = cartService.listWithGoodsAndSpec(pageable);
+        List<CartResult> cartResults = CartResult.buildList(shopCartVos);
+        return ApiUtils.success(cartResults);
+    }
+
+    /**
+     * 移出购物车
+     */
+    @RequestMapping(value = "/api/cart/remove", method = RequestMethod.POST)
+    @ResponseBody
+    public String remove(String cartIds, HttpServletRequest request) {
+        if (StringUtils.isEmpty(cartIds)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+
+        // cartIds 购物车id字符串, 用逗号隔开
+        String[] idsStr = cartIds.split(",");
+        Long[] ids = new Long[idsStr.length];
+        for (int i = 0; i < idsStr.length; i++) {
+            ids[i] = Long.valueOf(idsStr[i]);
+        }
+        // 删除条数
+        cartService.deleteAll(ids);
+        return ApiUtils.success();
+    }
+
+    /**
+     * 加入购物车
+     */
+    @RequestMapping(value = "/api/cart/add", method = RequestMethod.POST)
+    @ResponseBody
+    public String add(@Valid CartAddParam param, BindingResult vResult, HttpServletRequest request) {
+        if (vResult.hasErrors()) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        cartService.saveCart(param.getGoodsId(), member.getMmCode(), rdRanks.getRankId(),
+            param.getCount(), param.getSpecId(),
+            CartConstant.SAVE_TYPE_ADD_TO_CART,
+            param.getActivityId(), param.getActivityType(), param.getActivityGoodsId(), param.getActivitySkuId());
+        return ApiUtils.success();
+    }
+
+    /**
+     * 更新购物车
+     */
+    @RequestMapping(value = "/api/cart/update", method = RequestMethod.POST)
+    @ResponseBody
+    public String update(@RequestParam long cartId, @RequestParam int num, HttpServletRequest request) {
+        if (num < 1) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        //根据商品规格id查询商品规格
+        cartService.updateNum(cartId, num, Long.parseLong(member.getMmCode()));
+        return ApiUtils.success();
+    }
+
+    /**
+     * 批量更新
+     */
+    @RequestMapping(value = "/api/cart/updateBatch", method = RequestMethod.POST)
+    @ResponseBody
+    public String updateBatch(@RequestParam Map<Long, Integer> cartIdNumMap, HttpServletRequest request) {
+        // 检查不为空
+        for (Entry<Long, Integer> entry : cartIdNumMap.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) {
+                return ApiUtils.error(Xerror.PARAM_INVALID);
+            }
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        cartService.updateNumBatch(cartIdNumMap, Long.parseLong(member.getMmCode()));
+        return ApiUtils.success();
+    }
+
+
+    /**
+     * 购物车结算
+     */
+    @RequestMapping(value = "/api/cart/checkout", method = RequestMethod.POST)
+    @ResponseBody
+    public String checkout(@RequestParam String cartIds, Long groupBuyActivityId, Long shopOrderTypeId,
+        @RequestParam(defaultValue = "1") Integer logisticType,
+        HttpServletRequest request, Long addressId) {
+        if (StringUtils.isBlank(cartIds)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+
+        //订单类型相关
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        //查看该会员类型下 所有可选择的订单类型
+        Integer type = 1; //默认显示零售价
+        List<ShopOrderDiscountType> orderDiscountTypeList = new ArrayList<>();
+        if (rdRanks != null && rdRanks.getRankClass() != null && rdRanks.getRankClass() > 0) {
+            type = 2;
+            orderDiscountTypeList = shopOrderDiscountTypeService.findAll();
+        }
+
+        // 获取收货地址
+        RdMmAddInfo addr = null;
+        if (addressId != null) {
+            addr = rdMmAddInfoService.find("aid", addressId);
+        } else {
+            List<RdMmAddInfo> addrList = rdMmAddInfoService.findList("mmCode", member.getMmCode());
+            if (CollectionUtils.isNotEmpty(addrList)) {
+                addr = addrList.stream()
+                    .filter(item -> item.getDefaultadd() != null && item.getDefaultadd() == 1)
+                    .findFirst()
+                    .orElse(addrList.get(0));
+            }
+        }
+        if (logisticType == 2) {
+            addr = null;
+        }
+        ShopOrderDiscountType shopOrderDiscountType = null;
+        if (shopOrderTypeId != null) {
+            shopOrderDiscountType = shopOrderDiscountTypeService.find(shopOrderTypeId);
+            if (shopOrderDiscountType != null) {
+                type = shopOrderDiscountType.getPreferentialType();
+                if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_MEMBER
+                    && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV
+                    && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PREFERENTIAL
+                    && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL) {
+                    type = ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL;
+                    shopOrderDiscountType.setPreferentialType(type);
+                }
+            }
+        }
+        if (shopOrderDiscountType == null) {
+            shopOrderDiscountType = new ShopOrderDiscountType();
+            shopOrderDiscountType.setId(-1L);
+            shopOrderDiscountType.setPreferentialType(type);
+        }
+        Map<String, Object> map = cartService
+            .queryTotalPrice(cartIds, member.getMmCode(), null, groupBuyActivityId, shopOrderDiscountType, addr);
+        // 购物车数据
+        if (map.get("error").equals("true")) {
+            return ApiUtils.error("商品属性发生改变,请重新结算");
+        }
+        List<ShopCart> cartList = Lists.newArrayList();
+        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
+            String[] cartId = cartIds.split(",");
+            if (cartId != null && cartId.length > 0) {
+                cartList = cartService.findList("ids", cartId);
+            }
+        }
+        if (CollectionUtils.isEmpty(cartList)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        CartCheckOutResult result = CartCheckOutResult
+            .build(map, cartList, addr, shopOrderTypeId, shopOrderDiscountType);
+        if (log.isDebugEnabled()) {
+            log.debug(JacksonUtil.toJson(result));
+        }
+
+        // TODO: 2018/12/14 自提地址 自提地址 id为-1 表示平台地址
+        RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", -1);
+        List<ShopOrderDiscountType> shopOrderDiscountTypeList = new ArrayList<>();
+        if (rdRanks != null && rdRanks.getRankClass() != null && rdRanks.getRankClass() > 0) {
+            shopOrderDiscountTypeList = shopOrderDiscountTypeService.findList("totalPpv", result.getTotalPpv());
+        }
+        result = result.build2(result, shopOrderDiscountTypeList, rdRanks, rdMmBasicInfo, shopMemberAddress,
+            orderDiscountTypeList);
+        return ApiUtils.success(result);
+    }
+
+    /**
+     * 立即购买
+     */
+    @RequestMapping(value = "/api/cart/buyNow", method = RequestMethod.POST)
+    @ResponseBody
+    public String buyNow(@Valid CartAddParam param, BindingResult vResult, HttpServletRequest request) {
+        if (vResult.hasErrors()) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        Long groupBuyActivityId = param.getActivityId();
+        Long cartId = cartService.saveCart(param.getGoodsId(), member.getMmCode(),
+            null, param.getCount(),
+            param.getSpecId(), 1, param.getActivityId(),
+            param.getActivityType(), param.getActivityGoodsId(), param.getActivitySkuId());
+        return checkout(cartId.toString(), null, groupBuyActivityId, 1, request, null);
+    }
+
+    /**
+     * 购物车数量
+     */
+    @RequestMapping(value = "/api/cart/count", method = RequestMethod.POST)
+    @ResponseBody
+    public String countOfMemberCart(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        Long count = cartService.count(Paramap.create().put("memberId", member.getMmCode()));
+        return ApiUtils.success(count);
+    }
+
+    /**
+     * 再次购买
+     */
+
+    @RequestMapping(value = "/api/cart/buyAgain", method = RequestMethod.POST)
+    @ResponseBody
+    public String buyAgain(Long orderId, HttpServletRequest request) {
+        try {
+            if (orderId == null) {
+                ApiUtils.error(Xerror.PARAM_INVALID);
+            }
+            AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+            ShopOrder order = orderService.findWithOrderGoodsById(orderId);
+            if (order == null || order.getShopOrderGoodses() == null || order.getShopOrderGoodses().size() < 1) {
+                ApiUtils.error("没有购买记录");
+            }
+            List<ShopCart> cartList = new ArrayList<>();
+            for (ShopOrderGoods item : order.getShopOrderGoodses()) {
+                ShopCart cart = new ShopCart();
+                cart.setGoodsId(item.getGoodsId());
+                cart.setMemberId(Long.parseLong(item.getBuyerId()));
+                cart.setGoodsNum(item.getGoodsNum());
+                cart.setSpecId(item.getSpecId());
+                cart.setActivityId(item.getActivityId());
+                cart.setActivityType(item.getActivityType());
+                cartList.add(cart);
+            }
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+            RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+            List<Long> list = cartService.saveCartList(cartList, member.getMmCode(),rdRanks);
+            return checkout(Joiner.on(",").join(list), null, -1L, 1, request, null);
+        } catch (Exception e) {
+            log.error("再次购买错误", e);
+            return ApiUtils.error(e.getMessage());
+        }
+    }
+
+
+}

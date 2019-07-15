@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.1.xsd
+	    http://www.springframework.org/schema/tx
+	    http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd 
+    	http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.1.xsd"
+       default-lazy-init="true">
+
+    <context:property-placeholder location="classpath*:/loippi.config.properties" ignore-resource-not-found="true"
+                                  ignore-unresolvable="true"/>
+
+    <context:component-scan base-package="com.framework.loippi" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean id="executeTimeInterceptor" class="com.framework.loippi.interceptor.ExecuteTimeInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/admin/**"/>
+            <mvc:exclude-mapping path="/sys/**"/>
+            <bean id="webContentInterceptor" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
+                <property name="cacheSeconds" value="0"/>
+            </bean>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/admin/**"/>
+            <mvc:exclude-mapping path="/sys/**"/>
+            <bean id="listInterceptor" class="com.framework.loippi.interceptor.ListInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/admin/**"/>
+            <mvc:exclude-mapping path="/sys/**"/>
+            <mvc:exclude-mapping path="/constant/**"/>
+            <bean id="tokenInterceptor" class="com.framework.loippi.interceptor.TokenInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/admin/**"/>
+            <bean id="logInterceptor" class="com.framework.loippi.interceptor.LogInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <mvc:annotation-driven/>
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="favorPathExtension" value="true"/>
+        <property name="mediaTypes">
+            <map>
+                <entry key="json" value="application/json"/>
+                <entry key="jsonp" value="application/javascript"/>
+                <entry key="jhtml" value="text/html"/>
+            </map>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+            </list>
+        </property>
+        <property name="defaultContentType" value="text/html"/>
+    </bean>
+
+    <bean id="freeMarkerConfigurer" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/WEB-INF/template/"/>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="defaultEncoding">${template.encoding}</prop>
+                <prop key="url_escaping_charset">${url_escaping_charset}</prop>
+                <prop key="locale">${locale}</prop>
+                <prop key="template_update_delay">${template.update_delay}</prop>
+                <prop key="tag_syntax">auto_detect</prop>
+                <prop key="whitespace_stripping">true</prop>
+                <prop key="classic_compatible">true</prop>
+                <prop key="number_format">${template.number_format}</prop>
+                <prop key="boolean_format">${template.boolean_format}</prop>
+                <prop key="datetime_format">${template.datetime_format}</prop>
+                <prop key="date_format">${template.date_format}</prop>
+                <prop key="time_format">${template.time_format}</prop>
+                <prop key="object_wrapper">freemarker.ext.beans.BeansWrapper</prop>
+                <prop key="auto_import">/views/commons/header.ftl as p,/views/commons/layout.ftl as layout,/views/spring/spring.ftl as spring</prop>
+            </props>
+        </property>
+
+        <property name="freemarkerVariables">
+            <map>
+                <entry key="systemName" value="${system.name}"/>
+                <entry key="systemVersion" value="${system.version}"/>
+                <entry key="systemDescription" value="${system.description}"/>
+                <entry key="base" value="#{servletContext.contextPath}"/>
+                <entry key="locale" value="${locale}"/>
+                <entry key="setting" value="#{T(com.framework.loippi.utils.SettingUtils).get()}"/>
+                <entry key="message" value-ref="messageMethod"/>
+                <entry key="abbreviate" value-ref="abbreviateMethod"/>
+                <entry key="flash_message" value-ref="flashMessageDirective"/>
+                <entry key="pagination" value-ref="paginationDirective"/>
+                <entry key="promationStatus" value-ref="promationStatus"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="contentType" value="text/html; charset=UTF-8"/>
+        <property name="suffix" value=".ftl"/>
+    </bean>
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8"/>
+    </bean>
+
+    <bean id="exceptionResolver"
+          class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="defaultErrorView" value="admin/common/error"/>
+    </bean>
+
+    <!-- Enable Shiro Annotations for Spring-configured beans.  Only run after
+    the lifecycleBeanProcessor has run: -->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property ref="securityManager" name="securityManager"/>
+    </bean>
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="org.apache.shiro.authz.UnauthorizedException">/admin/common/unauthorized</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- 配置kaptcha验证码 -->
+    <bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
+        <property name="config">
+            <bean class="com.google.code.kaptcha.util.Config">
+                <constructor-arg type="java.util.Properties">
+                    <props>
+                        <prop key="kaptcha.image.width">100</prop>
+                        <prop key="kaptcha.image.height">50</prop>
+                        <prop key="kaptcha.noise.impl">com.google.code.kaptcha.impl.NoNoise</prop>
+                        <prop key="kaptcha.textproducer.char.string">QWERTYUIOPLKJHGFDSAZXCVBNM</prop>
+                        <prop key="kaptcha.textproducer.char.length">4</prop>
+                    </props>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+</beans>

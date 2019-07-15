@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.LogDao">
+	
+	<resultMap id="LogResultMap" type="com.framework.loippi.entity.Log">
+		<id property="id" column="ID" />
+		<result property="createDate" column="CREATE_DATE" />
+		<result property="operation" column="OPERATIONS" />
+		<result property="operator" column="OPERATOR" />
+		<result property="content" column="CONTENT" />
+		<result property="parameter" column="PARAMETER" />
+		<result property="ip" column="IP" />
+		<result property="roleName" column="ROLE_NAME" />
+
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 ID  ,CREATE_DATE,OPERATIONS,OPERATOR,CONTENT ,PARAMETER ,IP ,ROLE_NAME
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{id,jdbcType=BIGINT} ,#{createDate} ,#{operation} ,#{operator} ,#{content} ,#{parameter},#{ip} ,#{roleName}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null">
+			AND ID = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="operator != null and operator != ''">
+			AND OPERATOR LIKE concat('%',#{operator,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="beginDate != null">
+			and CREATE_DATE >= #{beginDate}
+		</if>
+		<if test="endDate != null">
+			and CREATE_DATE <![CDATA[<=]]> #{endDate}
+		</if>
+	</sql>
+	
+	<sql id="set_column">
+		<if test="id != null">
+			ID = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="operator != null and operator != ''">
+			OPERATOR = #{OPERATOR,jdbcType=VARCHAR} ,
+		</if>
+	</sql>
+
+
+	
+	<select id="find" resultMap="LogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	T_SYSTEM_LOG
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<select id="findAll" resultMap="LogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	T_SYSTEM_LOG
+	</select>
+	
+	<insert id="insert" parameterType="com.framework.loippi.entity.Log">
+		INSERT T_SYSTEM_LOG
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<update id="update" parameterType="com.framework.loippi.entity.Log">
+		UPDATE	T_SYSTEM_LOG
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<delete id="delete">
+		DELETE	FROM T_SYSTEM_LOG
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<delete id="deleteAll">
+		DELETE	FROM T_SYSTEM_LOG
+		WHERE	ID	IN
+    	<foreach item="LogId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{LogId} 
+		</foreach>
+	</delete>
+	<delete id="clear">
+		DELETE	FROM T_SYSTEM_LOG
+	</delete>
+	<select id="findByParams" resultMap="LogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	T_SYSTEM_LOG
+		left join
+		<where>
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<select id="findByPage" resultMap="LogResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM T_SYSTEM_LOG
+		<where>
+			<include refid="where_column" />
+		</where>  
+		ORDER BY  CREATE_DATE DESC
+	</select>
+	
+</mapper> 

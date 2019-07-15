@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopGoodsBrandDao">
+
+    <resultMap id="ShopGoodsBrandResultMap" type="com.framework.loippi.entity.product.ShopGoodsBrand">
+        <id property="id" column="id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="brandClass" column="brand_class"/>
+        <result property="brandPic" column="brand_pic"/>
+        <result property="brandSort" column="brand_sort"/>
+        <result property="brandRecommend" column="brand_recommend"/>
+        <result property="storeId" column="store_id"/>
+        <result property="brandApply" column="brand_apply"/>
+        <result property="classId" column="class_id"/>
+        <result property="isDel" column="is_del"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="pinyin" column="pinyin"/>
+        <result property="description" column="description"/>
+        <result property="advertImage" column="advert_image"/>
+        <result property="stars" column="stars"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,brand_name ,brand_class ,brand_pic ,brand_sort ,brand_recommend ,store_id ,brand_apply ,class_id ,is_del ,create_time ,update_time
+
+		 ,pinyin,description,advert_image,stars
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{brandName},#{brandClass},#{brandPic},#{brandSort},#{brandRecommend},#{storeId},#{brandApply},#{classId},#{isDel},#{createTime},#{updateTime}
+
+		 ,#{pinyin},#{description},#{advertImage},#{stars}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="brandName != null and brandName != ''">
+            AND brand_name like concat('%',#{brandName},'%')
+        </if>
+        <if test="brandClass != null and brandClass != ''">
+            AND brand_class = #{brandClass,jdbcType=VARCHAR}
+        </if>
+        <if test="brandPic != null and brandPic != ''">
+            AND brand_pic = #{brandPic,jdbcType=VARCHAR}
+        </if>
+        <if test="brandSort != null and brandSort != ''">
+            AND brand_sort = #{brandSort,jdbcType=INTEGER}
+        </if>
+        <if test="brandRecommend != null">
+            AND brand_recommend = #{brandRecommend,jdbcType=INTEGER}
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND store_id = #{storeId,jdbcType=BIGINT}
+        </if>
+        <if test="brandApply != null and brandApply != ''">
+            AND brand_apply = #{brandApply,jdbcType=INTEGER}
+        </if>
+        <if test="classId != null and classId != ''">
+            AND class_id = #{classId,jdbcType=VARCHAR}
+        </if>
+        <if test="isDel != null and isDel != ''">
+            AND is_del = #{isDel,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND update_time = #{updateTime}
+        </if>
+
+        <if test="pinyin != null and pinyin != ''">
+            AND pinyin = #{pinyin}
+        </if>
+        <if test="stars != null and stars != ''">
+            AND stars = #{stars}
+        </if>
+        <if test="advertImage != null and advertImage != ''">
+            AND advert_image = #{advertImage}
+        </if>
+
+        <if test="brandNameLike != null and brandNameLike != ''">
+            AND brand_name LIKE CONCAT('%',#{brandNameLike},'%')
+        </if>
+        <if test="brandKeywords != null and brandKeywords != ''">
+            AND brand_name like concat('%',#{brandKeywords},'%')
+        </if>
+        <if test="classNameLike != null and classNameLike != ''">
+            AND brand_class LIKE CONCAT(#{classNameLike,jdbcType=VARCHAR},"%")
+        </if>
+
+        <if test="combinationIndex != null and combinationIndex != ''">
+            AND id != #{combinationIndex,jdbcType=BIGINT}
+        </if>
+
+        <if test="brandIds != null">
+            AND id IN
+            <foreach item="brandId" index="index" collection="brandIds" open="(" separator="," close=")">
+                #{brandId}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="brandName != null and brandName != ''">
+            brand_name = #{brandName,jdbcType=VARCHAR},
+        </if>
+        <if test="brandClass != null and brandClass != ''">
+            brand_class = #{brandClass,jdbcType=VARCHAR},
+        </if>
+        <if test="brandPic != null and brandPic != ''">
+            brand_pic = #{brandPic,jdbcType=VARCHAR},
+        </if>
+        <if test="brandSort != null">
+            brand_sort = #{brandSort,jdbcType=INTEGER},
+        </if>
+        <if test="brandRecommend != null">
+            brand_recommend = #{brandRecommend,jdbcType=INTEGER},
+        </if>
+        <if test="storeId != null">
+            store_id = #{storeId,jdbcType=BIGINT},
+        </if>
+        <if test="brandApply != null">
+            brand_apply = #{brandApply,jdbcType=INTEGER},
+        </if>
+        <if test="classId != null and classId != ''">
+            class_id = #{classId,jdbcType=VARCHAR},
+        </if>
+        <if test="isDel != null">
+            is_del = #{isDel,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime},
+        </if>
+
+        <if test="pinyin != null and pinyin != ''">
+            pinyin = #{pinyin},
+        </if>
+        <if test="stars != null and stars != ''">
+            stars = #{stars},
+        </if>
+        <if test="advertImage != null and advertImage != ''">
+            advert_image = #{advertImage},
+        </if>
+
+        <if test="description != null and description != ''">
+            description = #{description},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopGoodsBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_BRAND
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopGoodsBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_BRAND
+        WHERE (is_del=0 or is_del is null)
+        ORDER BY pinyin ASC
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_GOODS_BRAND
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopGoodsBrand">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_GOODS_BRAND
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopGoodsBrand">
+        UPDATE SHOP_GOODS_BRAND
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_GOODS_BRAND
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_GOODS_BRAND
+        WHERE ID IN
+        <foreach item="ShopGoodsBrandId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopGoodsBrandId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopGoodsBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_BRAND
+        <where>(is_del=0 or is_del is null)
+            <include refid="where_column"/>
+        </where>
+        ORDER BY pinyin DESC
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopGoodsBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_BRAND
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="findByClassId" resultMap="ShopGoodsBrandResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_BRAND
+        WHERE class_id=#{classId,jdbcType=BIGINT}
+        ORDER BY pinyin DESC
+    </select>
+
+    <!-- 根据获取总数 -->
+    <select id="countBrand" resultType="Integer" parameterType="com.framework.loippi.entity.product.ShopGoodsBrand">
+        SELECT count(1) from SHOP_GOODS_BRAND
+        <include refid="where_column"/>
+    </select>
+
+    <!-- 根据关键字获取品牌 -->
+    <select id="findByClassKey" resultMap="ShopGoodsBrandResultMap">
+        select
+        <include refid="base_column"/>
+        from SHOP_GOODS_BRAND
+        where brand_class like
+        concat('%',#{keyword},'%')
+        or brand_name like
+        concat('%',#{keyword},'%')
+        order by brand_sort desc
+    </select>
+
+    <select id="findByTpypeId" resultMap="ShopGoodsBrandResultMap">
+      select a.* FROM shop_goods_brand a
+      JOIN shop_goods_type_brand b on a.id=b.brand_id
+      where b.type_id = #{typeId,jdbcType=BIGINT}  order by brand_sort desc
+    </select>
+
+</mapper> 

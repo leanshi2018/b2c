@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.ShopMemberPaymentTallyDao">
+
+    <resultMap id="ShopMemberPaymentTallyResultMap" type="com.framework.loippi.entity.user.ShopMemberPaymentTally">
+        <id property="id" column="id"/>
+        <result property="paymentCode" column="payment_code"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="paymentState" column="payment_state"/>
+        <result property="paymentSn" column="payment_sn"/>
+        <result property="paymentFrom" column="payment_from"/>
+        <result property="paymentAmount" column="payment_amount"/>
+        <result property="tradeType" column="trade_type"/>
+        <result property="tradeSn" column="trade_sn"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,payment_code ,payment_name ,payment_state ,payment_sn ,payment_from ,payment_amount ,trade_type ,trade_sn ,buyer_id ,buyer_name ,create_time ,remark
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{paymentCode},#{paymentName},#{paymentState},#{paymentSn},#{paymentFrom},#{paymentAmount},#{tradeType},#{tradeSn},#{buyerId},#{buyerName},#{createTime},#{remark}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="paymentCode != null and paymentCode != ''">
+            AND payment_code = #{paymentCode,jdbcType=VARCHAR}
+        </if>
+        <if test="paymentName != null and paymentName != ''">
+            AND payment_name = #{paymentName,jdbcType=VARCHAR}
+        </if>
+        <if test="paymentState != null and paymentState != ''">
+            AND payment_state = #{paymentState,jdbcType=INTEGER}
+        </if>
+        <if test="paymentSn != null and paymentSn != ''">
+            AND payment_sn = #{paymentSn,jdbcType=VARCHAR}
+        </if>
+        <if test="paymentFrom != null and paymentFrom != ''">
+            AND payment_from = #{paymentFrom,jdbcType=INTEGER}
+        </if>
+        <if test="paymentAmount != null and paymentAmount != ''">
+            AND payment_amount = #{paymentAmount}
+        </if>
+        <if test="tradeType != null and tradeType != ''">
+            AND trade_type = #{tradeType,jdbcType=INTEGER}
+        </if>
+        <if test="tradeSn != null and tradeSn != ''">
+            AND trade_sn = #{tradeSn,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerId != null and buyerId != ''">
+            AND buyer_id = #{buyerId,jdbcType=BIGINT}
+        </if>
+        <if test="buyerName != null and buyerName != ''">
+            AND buyer_name like concat('%',#{buyerName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="searchStartTime != null">
+            AND date_format(create_time, '%Y-%m-%d') &gt;= date_format(#{searchStartTime}, '%Y-%m-%d')
+        </if>
+        <if test="searchEndTime != null">
+            AND date_format(#{searchEndTime}, '%Y-%m-%d') &lt;= date_format(create_time, '%Y-%m-%d')
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="paymentCode != null and paymentCode != ''">
+            payment_code = #{paymentCode,jdbcType=VARCHAR},
+        </if>
+        <if test="paymentName != null and paymentName != ''">
+            payment_name = #{paymentName,jdbcType=VARCHAR},
+        </if>
+        <if test="paymentState != null">
+            payment_state = #{paymentState,jdbcType=INTEGER},
+        </if>
+        <if test="paymentSn != null and paymentSn != ''">
+            payment_sn = #{paymentSn,jdbcType=VARCHAR},
+        </if>
+        <if test="paymentFrom != null">
+            payment_from = #{paymentFrom,jdbcType=INTEGER},
+        </if>
+        <if test="paymentAmount != null">
+            payment_amount = #{paymentAmount,jdbcType=},
+        </if>
+        <if test="tradeType != null">
+            trade_type = #{tradeType,jdbcType=INTEGER},
+        </if>
+        <if test="tradeSn != null and tradeSn != ''">
+            trade_sn = #{tradeSn,jdbcType=VARCHAR},
+        </if>
+        <if test="buyerId != null">
+            buyer_id = #{buyerId,jdbcType=BIGINT},
+        </if>
+        <if test="buyerName != null and buyerName != ''">
+            buyer_name = #{buyerName,jdbcType=VARCHAR},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime},
+        </if>
+        <if test="remark != null and remark != ''">
+            remark = #{remark,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopMemberPaymentTallyResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_PAYMENT_TALLY
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopMemberPaymentTallyResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_PAYMENT_TALLY
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM SHOP_MEMBER_PAYMENT_TALLY
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.ShopMemberPaymentTally">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT SHOP_MEMBER_PAYMENT_TALLY
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.ShopMemberPaymentTally">
+        UPDATE SHOP_MEMBER_PAYMENT_TALLY
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM SHOP_MEMBER_PAYMENT_TALLY
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM SHOP_MEMBER_PAYMENT_TALLY
+        WHERE ID IN
+        <foreach item="ShopMemberPaymentTallyId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopMemberPaymentTallyId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopMemberPaymentTallyResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_PAYMENT_TALLY
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopMemberPaymentTallyResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_MEMBER_PAYMENT_TALLY
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="countAmount" resultType="java.math.BigDecimal">
+         select sum(payment_amount) from SHOP_MEMBER_PAYMENT_TALLY where payment_state =1 and trade_type = 10;
+    </select>
+
+
+    <select id="countAmountByStore" resultType="java.math.BigDecimal">
+        select sum(payment_amount) from shop_member_payment_tally smpt LEFT JOIN
+        shop_order so  on smpt.payment_sn =so.pay_sn
+        <where>1=1
+                AND so.store_id = #{storeId}
+        </where>
+    </select>
+
+    <select id="findByPageStore" parameterType="com.framework.loippi.vo.user.ShopMemberPaymentTallyVo" resultType="com.framework.loippi.vo.user.ShopMemberPaymentTallyVo">
+        SELECT
+        smpt.*,
+        sm.member_mobile AS phoneNumber
+        FROM shop_member_payment_tally smpt LEFT JOIN
+        shop_order so  on smpt.payment_sn =so.pay_sn LEFT JOIN  shop_member sm ON  smpt.buyer_id=sm.id
+        <where>1=1
+            <if test="storeId != null ">
+                AND so.store_id = #{storeId}
+            </if>
+
+            <if test="searchStartTime != null">
+                AND date_format(smpt.create_time, '%Y-%m-%d') &gt;= date_format(#{searchStartTime}, '%Y-%m-%d')
+            </if>
+            <if test="searchEndTime != null">
+                AND date_format(#{searchEndTime}, '%Y-%m-%d') &gt;= date_format(smpt.create_time, '%Y-%m-%d')
+            </if>
+
+            <if test="id != null and id != ''">
+                AND smpt.id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="buyerName != null and buyerName != ''">
+                AND sm.member_mobile = #{buyerName,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findByPageStoreIncome" parameterType="com.framework.loippi.vo.user.ShopMemberPaymentTallyVo" resultType="com.framework.loippi.vo.user.ShopMemberPaymentTallyVo">
+        SELECT
+        smpt.*,
+        sm.member_mobile AS phoneNumber
+        FROM shop_member_payment_tally smpt LEFT JOIN
+        shop_order so  on smpt.payment_sn =so.pay_sn LEFT JOIN  shop_member sm ON  smpt.buyer_id=sm.id
+        <where>1=1
+            <if test="storeId != null ">
+                AND so.store_id = #{storeId}
+            </if>
+
+            <if test="searchStartTime != null">
+                AND date_format(smpt.create_time, '%Y-%m-%d') &gt;= date_format(#{searchStartTime}, '%Y-%m-%d')
+            </if>
+            <if test="searchEndTime != null">
+                AND date_format(#{searchEndTime}, '%Y-%m-%d') &gt;= date_format(smpt.create_time, '%Y-%m-%d')
+            </if>
+
+            <if test="id != null and id != ''">
+                AND smpt.id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="buyerName != null and buyerName != ''">
+                AND sm.member_mobile = #{buyerName,jdbcType=VARCHAR}
+            </if>
+        </where>
+        UNION
+
+        SELECT swc.id,'' AS payment_code,swc.pdc_member_name as payment_name,pdc_payment_state AS payment_state,pdc_sn as payment_sn,'' as payment_from ,service_amount AS payment_amount,
+        '' as trade_type,'' as trade_sn,'' AS buyer_id,'' AS buyer_name,swc.create_time,lg_desc as remark,sm.member_mobile AS phoneNumber
+        FROM shop_wallet_cash swc LEFT JOIN  shop_member sm ON swc.pdc_member_id=sm.id
+        <where> 1=1 and pdc_payment_state=1
+            <if test="searchStartTime != null">
+                AND date_format(swc.create_time, '%Y-%m-%d') &gt;= date_format(#{searchStartTime}, '%Y-%m-%d')
+            </if>
+            <if test="searchEndTime != null">
+                AND date_format(#{searchEndTime}, '%Y-%m-%d') &gt;= date_format(swc.create_time, '%Y-%m-%d')
+            </if>
+
+            <if test="id != null and id != ''">
+                AND swc.id = #{id,jdbcType=BIGINT}
+            </if>
+
+            <if test="buyerName != null and buyerName != ''">
+                AND sm.member_mobile = #{buyerName,jdbcType=VARCHAR}
+            </if>
+
+        </where>
+    </select>
+
+    <!--统计收入金额  日   周  月-->
+    <select id="statisticsIncomesBystate" resultType="com.framework.loippi.vo.activity.ActivityStatisticsVo">
+        SELECT
+        <if test='state == "1"'>
+            date_format( smpt.create_time, '%Y-%m-%d' ) as "createDate",
+        </if>
+        <if test='state == "2"'>
+            WEEK(smpt.create_time) as "weekDate",
+        </if>
+        <if test='state == "3"'>
+            date_format( smpt.create_time, '%Y-%m' ) as "monthDate",
+        </if>
+        COUNT(smpt.id) as totalNum,
+        SUM(smpt.payment_amount) as totalPrice
+        from SHOP_MEMBER_PAYMENT_TALLY smpt
+        WHERE 1=1
+        <if test='state == "1"'>
+            and date_format( smpt.create_time, '%Y-%m-%d' ) between date_format( #{beforeDate}, '%Y-%m-%d' ) and date_format( #{afterDate}, '%Y-%m-%d' )
+            GROUP BY
+            date_format( smpt.create_time, '%Y-%m-%d' )
+            order by
+            createDate asc
+        </if>
+        <if test='state == "2"'>
+            and date_format( smpt.create_time, '%Y-%m-%d' ) between date_format( #{beforeDate}, '%Y-%m-%d' ) and date_format( #{afterDate}, '%Y-%m-%d' )
+            GROUP BY
+            WEEK(smpt.create_time)
+            order by
+            weekDate asc
+        </if>
+        <if test='state == "3"'>
+            and DATE_FORMAT(smpt.create_time,'%Y-%m')>
+            DATE_FORMAT(date_sub(curdate(), interval 12 month),'%Y-%m')
+            GROUP BY
+            date_format( smpt.create_time, '%Y-%m' )
+            order by
+            monthDate asc
+        </if>
+    </select>
+
+</mapper> 
