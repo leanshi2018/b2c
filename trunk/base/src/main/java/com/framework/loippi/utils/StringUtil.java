@@ -741,7 +741,7 @@ public class StringUtil {
     public static boolean isMobilePhone(String s) {
         if (isEmpty(s))
             return false;
-        return (Pattern.matches("^(13|14|15|17|18)\\d{9}$", s) || Pattern.matches("^(166)\\d{8}$", s));
+        return (Pattern.matches("^[1]([3-9])[0-9]{9}$", s));//TODO
     }
 
     public static boolean isPhoneNumber(String s) {
