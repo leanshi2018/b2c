@@ -441,7 +441,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         }
         List<Long> activityIds = new ArrayList<>();
         for (ShopCart shopCart : cartList) {
-            activityIds.add(shopCart.getActivityId());
+            activityIds.add(shopCart.getActivityId());//购物车集合中存在活动id的集合
         }
         if (cartList.isEmpty()){
             throw new StateResult(AppConstants.FAIL, "购物车不存在");
@@ -454,7 +454,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
      * 获取cartInfoList
      */
     public List<CartInfo> getCartInfoList(List<ShopCart> cartList, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr, String memberId,List<Long> activityIds) {
-        Integer type = shopOrderDiscountType.getPreferentialType();
+        Integer type = shopOrderDiscountType.getPreferentialType();//获取订单优惠类型
         // 拆单,将购物车数据存入map,键为品牌id,值为店铺名称,得到所有品牌的信息(唯一,去重)
         //本项目不拆单了
 //        Map<Long, String> brandMap = new HashMap<>();

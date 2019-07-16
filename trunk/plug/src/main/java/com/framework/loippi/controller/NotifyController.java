@@ -58,8 +58,8 @@ public class NotifyController {
      */
     @RequestMapping({"/notifyMobile/{pluginId}/{sn}.json"})
     public void pluginMobileNotify(HttpServletRequest request,
-        @PathVariable String pluginId,
-        @PathVariable String sn,
+        @PathVariable String pluginId,//支付方式id
+        @PathVariable String sn,//支付订单号paySn
         HttpServletResponse response) {
         PrintWriter out = null;
         try {

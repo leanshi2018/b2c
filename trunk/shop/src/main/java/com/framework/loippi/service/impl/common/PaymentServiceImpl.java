@@ -82,7 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
          */
         ShopOrder order = orderService.find("paySn", sn);
         // 回调会有多次
-        if (order.getPaymentState() == null || order.getPaymentState() == 0) {
+        if (order.getPaymentState() == null || order.getPaymentState() == 0) {//TODO
             orderService.updateOrderStatePayFinish(sn, batchNo, plug);
             //更改支付流水表状态
             paymentTallyService.updatePaymentTally(sn, batchNo, plug);

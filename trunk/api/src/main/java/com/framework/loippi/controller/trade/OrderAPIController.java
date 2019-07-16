@@ -143,20 +143,20 @@ public class OrderAPIController extends BaseController {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         // 订单留言
         Map<String, Object> orderMsgMap = new HashMap<>();
-        if (StringUtils.isNotBlank(param.getOrderMessages())) {
+        if (StringUtils.isNotBlank(param.getOrderMessages())) {//验证是否有留言信息
             orderMsgMap.put("orderMessages", param.getOrderMessages());
         }
-        if (param.getLogisticType() == 2) {
+        if (param.getLogisticType() == 2) {//如果订单为自提 需要记录自提人姓名和电话
             orderMsgMap.put("userName", param.getUserName());
             orderMsgMap.put("userPhone", param.getUserPhone());
         }
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
-        Integer type = 1; //默认显示零售价
+        Integer type = 1; //默认显示零售价  判断商品是按零售价还是会员价出售
         if (rdRanks.getRankClass() > 0) {
             type = 2;
         }
-        ShopOrderDiscountType shopOrderDiscountType = null;
+        ShopOrderDiscountType shopOrderDiscountType = null;//订单优惠类型
         if (param.getShopOrderTypeId() != -1) {
             shopOrderDiscountType = shopOrderDiscountTypeService.find(param.getShopOrderTypeId());
             if (shopOrderDiscountType != null) {
@@ -202,7 +202,7 @@ public class OrderAPIController extends BaseController {
         paramap.put("buyerId", member.getMmCode());
         paramap.put("isDel", 0);
         // -1 查询所有订单
-        if (orderStatus != null && orderStatus != -1 && orderStatus != 80) {
+        if (orderStatus != null && orderStatus != -1 && orderStatus != 80) {//0:已取消;5待审核;10:待付款;20:待发货;30:待收货;40:交易完成;50:已提交;60:已确认
             // 0:已取消;10:待付款;20:待发货;30:待收货;40:交易完成;50:已提交;60:已确认;
             paramap.put("orderState", orderStatus);
             paramap.put("lockState", 0);
@@ -435,7 +435,7 @@ public class OrderAPIController extends BaseController {
             System.out.println("dd:" + PaymentTallyState.PAYMENTTALLY_TREM_PC);
             paymentTallyService.savePaymentTally(paymentCode, "支付宝", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
             //修改订单付款信息
-            sHtmlText = alipayMobileService.toPay(payCommon);
+            sHtmlText = alipayMobileService.toPay(payCommon);//TODO
             model.put("tocodeurl", sHtmlText);
             model.put("orderSn", pay.getOrderSn());
         } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("YL")) {

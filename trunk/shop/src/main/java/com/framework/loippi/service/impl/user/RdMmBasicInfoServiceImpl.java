@@ -103,6 +103,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             List<RdMmRelation> oldRdMmRelation = rdMmRelationDao
                 .findByParams(Paramap.create().put("mmCode", rdMmRelation.getSponsorCode()));
             rdMmRelation.setSponsorName(oldRdMmBasicInfoList.get(0).getMmName());
+            rdMmRelation.setRaSponsorStatus(1);
         }
         //老用户
         if (registerType == 2) {

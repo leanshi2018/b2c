@@ -567,6 +567,22 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
     }
 
+    /**
+     *
+     * @param cartIds     多个购物车id
+     * @param memberId    用户id
+     * @param orderMsgMap 存储买家留言信息,键为店铺id,值为店铺留言
+     * @param addressId   收货地址id
+     * @param couponIds   优惠券id
+     * @param isPp        优惠积分支付
+     * @param platform    0 微信端 1app
+     * @param groupBuyActivityId 团购活动id
+     * @param groupOrderId 开团订单id
+     * @param shopOrderDiscountType 优惠订单类型
+     * @param logisticType 快递1 自提2
+     * @param paymentType 1在线支付 2货到付款
+     * @return
+     */
     @Override
     public ShopOrderPay addOrderReturnPaySn(String cartIds, String memberId, Map<String, Object> orderMsgMap,
         Long addressId, String couponIds, Integer isPp, Integer platform, Long groupBuyActivityId,
@@ -583,7 +599,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         orderPay.setId(twiterIdService.getTwiterId());
         orderPay.setPaySn(paySn);
         orderPay.setBuyerId(Long.parseLong(memberId));
-        orderPay.setApiPayState("0");
+        orderPay.setApiPayState("0");//设置支付状态0
         //保存订单支付表
         orderPayDao.insert(orderPay);
         //1快递 2自提
@@ -673,7 +689,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             //订单类型id
             order.setShopOrderTypeId(shopOrderDiscountType.getId());
             //若支付完成
-            if (orderSettlement.getOrderAmount().doubleValue() == 0) {
+            if (orderSettlement.getOrderAmount().doubleValue() == 0) {//购物车集合计算所需支付金额为0 视为已经支付订单
                 order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
                 order.setPaymentState(OrderState.PAYMENT_STATE_YES); //付款状态
                 order.setPaymentTime(new Date());
@@ -1618,7 +1634,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         }
 
         for (ShopOrder order : orderList) {
-            if (order.getPaymentState() == 0) {
+            if (order.getPaymentState() == 0) {//未付款
                 memberId = order.getBuyerId();
                 // 新建一个订单日志
                 ShopOrderLog orderLog = new ShopOrderLog();
@@ -1632,7 +1648,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 // 保存订单日志
                 orderLogDao.insert(orderLog);
                 // 修改订单状态
-                ShopOrder newOrder = new ShopOrder();
+                /*ShopOrder newOrder = new ShopOrder();
                 newOrder.setId(order.getId());
                 newOrder.setOrderState(OrderState.ORDER_STATE_UNFILLED);
                 newOrder.setPaymentState(OrderState.PAYMENT_STATE_YES);
@@ -1643,6 +1659,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 newOrder.setTradeSn(tradeSn);
                 newOrder.setPaymentBranch(paymentBranch);
                 orderDao.update(newOrder);
+                */
+                order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                order.setPaymentState(OrderState.PAYMENT_STATE_YES);
+                order.setLockState(OrderState.ORDER_LOCK_STATE_NO);
+                order.setPaymentTime(new Date());
+                String period = rdSysPeriodDao.getSysPeriodService(new Date());//TODO 2019/7/15 15:51 修改by zc
+                order.setCreationPeriod(period);
+                order.setTradeSn(tradeSn);
+                order.setPaymentBranch(paymentBranch);
+                orderDao.update(order);
                 orderTotalAmount += order.getOrderAmount().doubleValue();
             }
         }
@@ -2237,7 +2263,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
     @Override
     public void ProcessingIntegrals(String paysn, Integer integration, RdMmBasicInfo shopMember, ShopOrderPay pay,
-        Integer shoppingPointSr) {
+        Integer shoppingPointSr) {//购物积分购物比例
         //第一步 判断积分是否正确
         if (integration < 0) {
             throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能小于0");
@@ -2273,7 +2299,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 pointNum = new BigDecimal(
                     (order.getOrderAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration))
                     .setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-                order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(0) + pointNum);
+                order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(0) + pointNum);//设置订单所用积分数量
                 order.setPointRmbNum(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
                     .add(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
                 order.setOrderAmount(order.getOrderAmount()
