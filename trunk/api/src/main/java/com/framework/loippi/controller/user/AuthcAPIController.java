@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.user;
 
+import com.alibaba.fastjson.JSON;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.user.*;
 import com.framework.loippi.enus.SocialType;
@@ -12,7 +13,9 @@ import com.framework.loippi.service.huanxin.HxService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
 import com.framework.loippi.service.user.*;
 import com.framework.loippi.utils.*;
+import com.framework.loippi.utils.unionpay.pc.gwj.util.JsonUtil;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -293,16 +296,19 @@ public class AuthcAPIController extends BaseController {
             }
             try {
                 resultString = PostUtil.postRequest(
-                    "http://admin.fkcn.com/m/user/verify",
-                    oMCode, password);
+                        "http://admin.fkcn.com/m/user/verify",
+                        oMCode, password);
             } catch (Exception e) {
                 e.printStackTrace();
                 return ApiUtils.error("验证老用户发生错误");
             }
             //0：正确，1老系统会员编号不存在，2密码不正确，-1账号暂时锁定，10分钟后再试
-            if ("".equals(resultString.trim())) {
+            Map parse = (Map)JSON.parse(resultString);
+            Object whetherCorrect = parse.get("whetherCorrect");
+            String str = whetherCorrect+"";
+            if ("".equals(str.trim())) {
                 return ApiUtils.error("验证老用户发生错误");
-            } else if ("0".equals(resultString.trim())) {
+            } else if ("0".equals(str.trim())) {
                 //前期测试数据.后期前端不进行修改,后台进行修改
                 String sessionId = twiterIdService.getSessionId();
                 RaMember raMember = new RaMember();
@@ -313,13 +319,13 @@ public class AuthcAPIController extends BaseController {
                 raMember.setOPassword("");
                 redisService.save(sessionId, raMember);
                 return ApiUtils.success(raMember);
-            } else if ("1".equals(resultString.trim())) {
+            } else if ("1".equals(str.trim())) {
                 return ApiUtils.error("老系统会员编号不存在");
-            } else if ("2".equals(resultString.trim())) {
+            } else if ("2".equals(str.trim())) {
                 return ApiUtils.error("密码不正确");
-            } else if ("3".equals(resultString.trim())) {
+            } else if ("3".equals(str.trim())) {
                 return ApiUtils.error("会员不活跃");
-            } else if ("-1".equals(resultString.trim())) {
+            } else if ("-1".equals(str.trim())) {
                 return ApiUtils.error("密码错误三次," +
                         "账号暂时锁定，10分钟后再试");
             } else {
