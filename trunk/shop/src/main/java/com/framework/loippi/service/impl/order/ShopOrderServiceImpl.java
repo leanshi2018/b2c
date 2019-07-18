@@ -2427,6 +2427,42 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     newOrder.setPrevOrderState(OrderState.ORDER_STATE_NO_PATMENT);
                     newOrder.setPrevLockState(OrderState.ORDER_LOCK_STATE_NO);
                     updateByIdOrderStateLockState(newOrder, OrderState.ORDER_OPERATE_PAY);
+
+                    //判断会员等级，并根据升级条件升级 TODO
+                    RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
+                    if (rdMmRelation != null) {
+                        BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
+                        BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
+                                .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO));
+                        BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
+                        BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
+                        BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
+                        BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
+                        //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
+                        if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1) {
+                            RdRanks rdRanks = rdRanksService.find("rankClass", 1);
+                            rdMmRelation.setRank(rdRanks.getRankId());
+                        }
+                        if (ppv.compareTo(agencyPpv) == -1 && (ppv.add(orderPpv)).compareTo(agencyPpv) != -1) {
+                            RdRanks rdRanks = rdRanksService.find("rankClass", 2);
+                            rdMmRelation.setRank(rdRanks.getRankId());
+                        }
+                        ////晋升
+                        ////    //发送升级的消息队列
+                        //    try {
+                        //        Producer producer = new Producer("PromotionVIP");
+                        //        PromotionVipResult promotionVipResult = new PromotionVipResult();
+                        //        promotionVipResult.setMmCode(order.getBuyerId() + "");
+                        //        promotionVipResult.setDate(new Date());
+                        //       producer.sendMessage(SerializationUtils.serialize(promotionVipResult));
+                        //    } catch (IOException e) {
+                        //        e.printStackTrace();
+                        //    }
+                        ////}
+                        rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
+                        rdMmRelation.setAPpv(ppv.add(orderPpv));
+                        rdMmRelationService.update(rdMmRelation);
+                    }
                 }
                 //换购订单 扣除换购积分 并生成记录
                 if ("10".equals(paymentId)) {
