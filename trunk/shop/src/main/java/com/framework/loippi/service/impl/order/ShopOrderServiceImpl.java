@@ -2572,13 +2572,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
 
                 //降级到vip会员
-                if (aPpv.compareTo(agencyPpv) == 1 && orderPpv.compareTo(agencyPpv) == -1) {
+                if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }
 
                 //之前大于升级vip的价位 加上这个售后金额小于vip的价位
-                if (aRetail.compareTo(vipMoney) == 1 && orderMoney.compareTo(vipMoney) == -1) {
+                if ((aRetail.compareTo(vipMoney) == 1||aRetail.compareTo(vipMoney) == 0) && orderMoney.compareTo(vipMoney) == -1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 0);
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }
