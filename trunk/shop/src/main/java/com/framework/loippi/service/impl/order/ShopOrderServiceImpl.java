@@ -2563,6 +2563,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     rdMmIntegralRule = rdMmIntegralRuleList.get(0);
                 }
                 int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
+                //计算处理后累计购买金额
                 BigDecimal orderMoney = aRetail.subtract(refundReturn.getRefundAmount().add(new BigDecimal(refundReturn.getRewardPointAmount().doubleValue() * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
                 BigDecimal aPpv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                 BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
@@ -2572,7 +2573,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
 
                 //降级到vip会员
-                if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1) {
+                if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1) {//TODO
                     RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }

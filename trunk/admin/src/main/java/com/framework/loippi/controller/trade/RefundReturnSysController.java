@@ -298,7 +298,7 @@ public class RefundReturnSysController extends GenericController {
                          @RequestParam(required = false, value = "returntype", defaultValue = "") String returntype,
                          @RequestParam(required = false, value = "orderpaytype", defaultValue = "") String orderpaytype,
                          @RequestParam(required = false, value = "refundAmount", defaultValue = "0") String refundAmount,
-                         @RequestParam(required = false, value = "refundPpv", defaultValue = "0") Integer refundPpv,
+                         @RequestParam(required = false, value = "refundPpv", defaultValue = "0") String refundPpv,
                          @RequestParam(required = false, value = "refundPoint", defaultValue = "0") Integer refundPoint,
                          HttpServletRequest request, HttpServletResponse response) {
 
@@ -323,7 +323,7 @@ public class RefundReturnSysController extends GenericController {
                 return backurl;
             }
             refundReturn.setRefundAmount(money);
-            refundReturn.setPpv(BigDecimal.valueOf(refundPpv));
+            refundReturn.setPpv(new BigDecimal(refundPpv));
             refundReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
             //处理积分,pv值
             if (refundReturn.getBatchNo()==null){

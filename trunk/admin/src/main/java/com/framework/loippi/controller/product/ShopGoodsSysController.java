@@ -92,7 +92,7 @@ public class ShopGoodsSysController extends GenericController {
                 Paramap.create().put("goodIds", ids));
             if (shopOrderGoodses > 0) {
                 model.addAttribute("msg", "删除失败,存在已下单的商品");
-                model.addAttribute("referer", request.getHeader("Referer"));
+                model.addAttribute("referer", request.getHeader("Referer"));//先前网页的地址，当前请求网页紧随其后,即来路
                 return Constants.MSG_URL;
             }
 

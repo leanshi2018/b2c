@@ -54,6 +54,14 @@ public class ShopMemberPaymentTallyServiceImpl extends GenericServiceImpl<ShopMe
         super.setGenericDao(shopMemberPaymentTallyDao);
     }
 
+    /**
+     *
+     * @param paytype 支付方式
+     * @param payname 支付名称
+     * @param pay     支付体
+     * @param paytrem 支付终端
+     * @param type
+     */
     @Override
     public void savePaymentTally(String paytype, String payname, ShopOrderPay pay, Integer paytrem,Integer type) {
         //根据支付单号获取订单信息
