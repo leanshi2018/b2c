@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <framework>
 	<!-- 基础配置 -->
-	<setting name="siteName" value="广东乐安士电子商务有限公司" />
+	<setting name="siteName" value="广州紫鲸互联网有限公司" />
 	<setting name="siteUrl" value="http://127.0.0.1:10081/loippi" />
 	<setting name="logo" value="http://127.0.0.1:10081/loippi/resources/admin/images/logo.jpg" />
 	<setting name="contact" value="Mounate Yan." />
 	<setting name="phone" value="13527700031" />
-	<setting name="address" value="深圳市南山区南山大道南园枫叶大厦1栋19R" />
-	<setting name="email" value="szleanshi@163.com" />
-	<setting name="certtext" value="粤ICP备19008370号-1" />
+	<setting name="address" value="广州市广园中路171号联鸣商贸中心4106室" />
+	<setting name="email" value="metronic@framework.com" />
+	<setting name="certtext" value="沪ICP备0000001号" />
 	<setting name="accountLockCount" value="5" />
 	<setting name="accountLockTime" value="10" />
 	<setting name="uploadMaxSize" value="10" />

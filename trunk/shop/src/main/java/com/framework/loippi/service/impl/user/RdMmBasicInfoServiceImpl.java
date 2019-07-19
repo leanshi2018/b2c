@@ -1,20 +1,37 @@
 package com.framework.loippi.service.impl.user;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
-import com.framework.loippi.dao.user.*;
-import com.framework.loippi.entity.user.*;
+import com.framework.loippi.dao.user.RdMmAccountInfoDao;
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
+import com.framework.loippi.dao.user.RdMmEditDao;
+import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.dao.user.RdRaBindingDao;
+import com.framework.loippi.dao.user.RdRanksDao;
+import com.framework.loippi.dao.user.RdSysPeriodDao;
+import com.framework.loippi.entity.user.OldSysRelationship;
+import com.framework.loippi.entity.user.RaMember;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmEdit;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.OldSysRelationshipService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.support.Message.Type;
 import com.framework.loippi.utils.Paramap;
-import java.math.BigDecimal;
-import javax.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 
 /**
@@ -148,10 +165,11 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
 
             //如果老用户开店 直接升级vip会员 后期客户要求取消 只要注册成功就是直接升级vip会员
             //if (oldSysRelationship.getOStatus() == 1) {
-                rdRanksList = rdRanksDao.findByParams(Paramap.create().put("rankClass", 1));
+/*                rdRanksList = rdRanksDao.findByParams(Paramap.create().put("rankClass", 1));
                 if (rdRanksList != null && rdRanksList.size() > 0) {
                     rdMmRelation.setRank(rdRanksList.get(0).getRankId());
-                }
+                }*/
+            rdMmRelation.setRank(3);//如果是老会员注册，直接将等级设置为初级代理店 TODO 2019-07-19修改业务需求
             //}
             oldSysRelationship.setNYnRegistered(1);
             oldSysRelationship.setNMcode(newMmCode);
