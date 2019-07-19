@@ -1685,10 +1685,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                         rdMmRelation.setRank(rdRanks.getRankId());
                     }
-                    if (ppv.compareTo(agencyPpv) == -1 && (ppv.add(orderPpv)).compareTo(agencyPpv) != -1) {
+                    //目前不进行代理会员升级降级处理
+                    /*if (ppv.compareTo(agencyPpv) == -1 && (ppv.add(orderPpv)).compareTo(agencyPpv) != -1) {
                         RdRanks rdRanks = rdRanksService.find("rankClass", 2);
                         rdMmRelation.setRank(rdRanks.getRankId());
-                    }
+                    }*/
                     ////晋升
                     ////    //发送升级的消息队列
                     //    try {
@@ -2443,10 +2444,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                             rdMmRelation.setRank(rdRanks.getRankId());
                         }
-                        if (ppv.compareTo(agencyPpv) == -1 && (ppv.add(orderPpv)).compareTo(agencyPpv) != -1) {
+                        /*if (ppv.compareTo(agencyPpv) == -1 && (ppv.add(orderPpv)).compareTo(agencyPpv) != -1) {
                             RdRanks rdRanks = rdRanksService.find("rankClass", 2);
                             rdMmRelation.setRank(rdRanks.getRankId());
-                        }
+                        }*/
                         ////晋升
                         ////    //发送升级的消息队列
                         //    try {
@@ -2578,10 +2579,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
 
                 //之前大于升级vip的价位 加上这个售后金额小于vip的价位
-                if ((aRetail.compareTo(vipMoney) == 1||aRetail.compareTo(vipMoney) == 0) && orderMoney.compareTo(vipMoney) == -1) {
+                /*if ((aRetail.compareTo(vipMoney) == 1||aRetail.compareTo(vipMoney) == 0) && orderMoney.compareTo(vipMoney) == -1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 0);
                     rdMmRelation.setRank(rdRanks.getRankId());
-                }
+                }*/
                 ////发送升级的消息队列
                 //try {
                 //    Producer producer = new Producer("DowngradeVIP");

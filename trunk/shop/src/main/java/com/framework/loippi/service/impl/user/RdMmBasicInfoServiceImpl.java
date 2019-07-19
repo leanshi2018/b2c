@@ -148,10 +148,11 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
 
             //如果老用户开店 直接升级vip会员 后期客户要求取消 只要注册成功就是直接升级vip会员
             //if (oldSysRelationship.getOStatus() == 1) {
-                rdRanksList = rdRanksDao.findByParams(Paramap.create().put("rankClass", 1));
+/*                rdRanksList = rdRanksDao.findByParams(Paramap.create().put("rankClass", 1));
                 if (rdRanksList != null && rdRanksList.size() > 0) {
                     rdMmRelation.setRank(rdRanksList.get(0).getRankId());
-                }
+                }*/
+            rdMmRelation.setRank(3);//如果是老会员注册，直接将等级设置为初级代理店 TODO 2019-07-19修改业务需求
             //}
             oldSysRelationship.setNYnRegistered(1);
             oldSysRelationship.setNMcode(newMmCode);
