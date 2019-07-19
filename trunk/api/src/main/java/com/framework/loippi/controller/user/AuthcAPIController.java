@@ -317,7 +317,6 @@ public class AuthcAPIController extends BaseController {
             Map parse = (Map)JSON.parse(resultString);
             Object whetherCorrect = parse.get("whetherCorrect");
             String str = whetherCorrect+"";
-            str = "0";//TODO
             if ("".equals(str.trim())) {
                 return ApiUtils.error("验证老用户发生错误");
             } else if ("0".equals(str.trim())) {
