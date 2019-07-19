@@ -1,45 +1,17 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.consts.RefundReturnState;
-import com.framework.loippi.controller.GenericController;
-import com.framework.loippi.entity.AliPayRefund;
-import com.framework.loippi.entity.WeiRefund;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.trade.ShopRefundReturn;
-import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
-
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.service.alipay.AlipayRefundService;
-import com.framework.loippi.service.trade.ShopReturnOrderGoodsService;
-
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdRanksService;
-import com.framework.loippi.service.wechat.WechatMobileRefundService;
-import com.framework.loippi.service.wechat.WechatRefundService;
-import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.trade.ShopRefundReturnService;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.NumberUtils;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.StringUtil;
-import com.framework.loippi.utils.validator.DateUtils;
-import com.framework.loippi.vo.refund.ShopRefundReturnVo;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,6 +21,34 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.RequestContext;
+
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.RefundReturnState;
+import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.entity.AliPayRefund;
+import com.framework.loippi.entity.WeiRefund;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.service.alipay.AlipayRefundService;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.trade.ShopRefundReturnService;
+import com.framework.loippi.service.trade.ShopReturnOrderGoodsService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.wechat.WechatMobileRefundService;
+import com.framework.loippi.service.wechat.WechatRefundService;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.NumberUtils;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.validator.DateUtils;
+import com.framework.loippi.vo.refund.ShopRefundReturnVo;
 
 /**
  * 功能： 售后管理
@@ -88,7 +88,6 @@ public class RefundReturnSysController extends GenericController {
      * refundSnKeyWord【服务单号搜索快捷键】
      *
      * @param refundSnKeyWord refundSnKeyWord服务单号关键字
-     * @see ShopRefundReturn#sellerState
      */
     @RequiresPermissions("admin:refundreturn:main")
     @RequestMapping(value = {"/admin/refundreturn/list"}, method = {RequestMethod.GET})
@@ -144,7 +143,6 @@ public class RefundReturnSysController extends GenericController {
     /**
      * 进入【确认审核/审核同意/审核不同意】页面
      *
-     * @see ShopRefundReturn#sellerState
      */
     @RequestMapping(value = "/admin/refundreturn/audit/forward", method = RequestMethod.GET)
     @RequiresPermissions("admin:refundreturn:audit")
@@ -195,7 +193,6 @@ public class RefundReturnSysController extends GenericController {
      *
      * @param sellerMessage 审核留言
      * @param processInfo   处理进度
-     * @see ShopRefundReturn#sellerState 同意/不同意
      */
     @RequiresPermissions("admin:refundreturn:audit")
     @RequestMapping(value = "/admin/refundreturn/passAudit")
@@ -259,6 +256,9 @@ public class RefundReturnSysController extends GenericController {
 //                totalPpv+=Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO);
             }
             model.addAttribute("shopReturnOrderGoodsList", shopReturnOrderGoodsList);
+            for (ShopReturnOrderGoods orderGoods : shopReturnOrderGoodsList) {
+                System.out.println(orderGoods.getSpecId()+"============================================"+orderGoods.getSpecInfo());
+            }
             model.addAttribute("orderpaytype", orderpaytype);
             model.addAttribute("shopMember", rdMmBasicInfo);
             model.addAttribute("paymentBranch", order.getPaymentBranch());
@@ -323,6 +323,7 @@ public class RefundReturnSysController extends GenericController {
                 return backurl;
             }
             refundReturn.setRefundAmount(money);
+            //refundReturn.setPpv(BigDecimal.valueOf(refundPpv));
             refundReturn.setPpv(new BigDecimal(refundPpv));
             refundReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
             //处理积分,pv值
