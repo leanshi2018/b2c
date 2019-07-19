@@ -1,27 +1,21 @@
 package com.framework.loippi.result.app.order;
 
-import com.cloopen.rest.sdk.utils.DateUtil;
-import com.framework.loippi.consts.OrderState;
-import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
-import com.framework.loippi.entity.order.ShopOrderAddress;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.user.RdMmAddInfo;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.result.app.cart.BaseGoodsResult;
-import com.framework.loippi.support.FileInfo;
-import com.framework.loippi.utils.NumberUtils;
-import com.framework.loippi.utils.validator.Words;
-import com.framework.loippi.vo.order.ShopOrderVo;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.cloopen.rest.sdk.utils.DateUtil;
+import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
+import com.framework.loippi.entity.order.ShopOrderAddress;
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.result.app.cart.BaseGoodsResult;
+import com.framework.loippi.vo.order.ShopOrderVo;
 
 /**
  * 订单详情--返回app数据

@@ -1,35 +1,53 @@
 package com.framework.loippi.controller.user;
 
 
-import com.cloopen.rest.sdk.utils.DateUtil;
-import com.framework.loippi.consts.IntegrationNameConsts;
-import com.framework.loippi.controller.BaseController;
-import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.param.user.UserAddrsAddParam;
-import com.framework.loippi.param.user.UserAddrsUpdateParam;
-import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.result.user.*;
-import com.framework.loippi.service.common.ShopCommonAreaService;
-import com.framework.loippi.service.integration.RdMmIntegralRuleService;
-import com.framework.loippi.service.user.*;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.*;
-import com.framework.loippi.vo.address.MemberAddresVo;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.*;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.framework.loippi.consts.IntegrationNameConsts;
+import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBank;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.user.IntegrationBuildResult;
+import com.framework.loippi.result.user.IntegrationDetailResult;
+import com.framework.loippi.result.user.IntegrationListResult;
+import com.framework.loippi.result.user.IntegrationMemberListResult;
+import com.framework.loippi.result.user.UserIntegrationListResult;
+import com.framework.loippi.service.integration.RdMmIntegralRuleService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmBankService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdNewVipDetailService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Constants;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
 
 /**
  * 积分 Created by Administrator on 2017/11/23.
@@ -341,6 +359,12 @@ public class UserIntegrationAPIController extends BaseController {
     //积分明细列表
     @RequestMapping(value = "/water/list.json")
     public String bopList(HttpServletRequest request, String transTypeCode, String time, Integer type, Pageable pager) {
+
+        System.out.println("********************************");
+        System.out.println(transTypeCode+"====transTypeCode");
+        System.out.println(type+"====type");
+        System.out.println(pager+"====pager");
+        System.out.println("********************************");
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         Map<String, Object> map = new HashMap<>();
         map.put("mmCode", member.getMmCode());
@@ -364,12 +388,24 @@ public class UserIntegrationAPIController extends BaseController {
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setOrderProperty("TRANS_DATE");
         List<RdMmAccountLog> rdMmAccountLogList = RdMmAccountLogService.findByPage(pager).getContent();
+        System.out.println(RdMmAccountLogService.findByPage(pager)+"+++12313211");
+
+        int i =1;
+        for (RdMmAccountLog mmAccountLog : rdMmAccountLogList) {
+            System.out.println(mmAccountLog+"===="+i);
+            i++;
+        }
         return ApiUtils.success(IntegrationListResult.build(rdMmAccountLogList, type));
     }
 
     //积分明细详情
     @RequestMapping(value = "/water/detail.json")
     public String bopDetail(HttpServletRequest request, Integer transNumber, Integer type) {
+        System.out.println(2);
+        System.out.println("****************");
+        System.out.println(transNumber+"====transNumber");
+        System.out.println(type+"====type");
+        System.out.println("****************");
         if (transNumber == null || type == null) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
