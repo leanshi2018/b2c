@@ -362,7 +362,7 @@ public class UserIntegrationAPIController extends BaseController {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         Map<String, Object> map = new HashMap<>();
         map.put("mmCode", member.getMmCode());
-        if (type == 1) {
+        if (type == 1) {//奖励积分
             if ("-1".equals(transTypeCode)) {
                 map.put("bop", "1");
             } else {
@@ -371,9 +371,9 @@ public class UserIntegrationAPIController extends BaseController {
             if (!StringUtil.isEmpty(time)) {
                 map.put("time", time);
             }
-        } else if (type == 2) {
+        } else if (type == 2) {//购物积分
             map.put("shp", "1");
-        } else if (type == 3) {
+        } else if (type == 3) {//换购积分
             map.put("pui", "1");
         } else {
             return ApiUtils.error("积分类型出错");
