@@ -465,7 +465,7 @@ public class OrderAPIController extends BaseController {
                     return ApiUtils.error("该订单不符合购物积分全抵现,请选择支付方式");
                 }
             }
-            paymentTallyService.savePaymentTally(paymentCode, "积分全抵扣", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
+            paymentTallyService.savePaymentTally(paymentCode, "积分全抵扣", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);//保存支付流水表
             Map<String, Object> data = orderService
                 .updateOrderpay(payCommon, member.getMmCode(), "在线支付-购物积分", paymentCode, paymentId);
             model.putAll(data);

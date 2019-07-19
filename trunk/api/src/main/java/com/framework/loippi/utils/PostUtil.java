@@ -46,7 +46,7 @@ public class PostUtil {
             json.append(line);
             //resultStr +=line;
         }
-        System.out.println("3412412---" + json);
+        //System.out.println("3412412---" + json);
         bReader.close();
         //return resultStr;
 
