@@ -1,20 +1,17 @@
 package com.framework.loippi.result.user;
 
-import com.cloopen.rest.sdk.utils.DateUtil;
-import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import java.math.RoundingMode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.math.RoundingMode;
 import java.util.Optional;
+
+import com.cloopen.rest.sdk.utils.DateUtil;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 
 /**
  *
@@ -142,25 +139,46 @@ public class IntegrationDetailResult {
                 transTypeName="积分转出";
             }else if ("WD".equals(transTypeCode)){
                 transTypeName="提现";
+            }else if ("BA".equals(transTypeCode)){
+                transTypeName="奖金转入";
+            }else if ("RB".equals(transTypeCode)){
+                transTypeName="公司补发奖金";
+            }else if ("RC".equals(transTypeCode)){
+                transTypeName="购买商品并评论";
+            }else if ("RR".equals(transTypeCode)){
+                transTypeName="归还欠款";
+            }else if ("MUB".equals(transTypeCode)){
+                transTypeName="补偿奖励积分";
+            }else if ("MDB".equals(transTypeCode)){
+                transTypeName="补扣奖励积分";
             }
         }else if (type==2) {
-            if ("BT".equals(transTypeCode) || "TT".equals(transTypeCode)) {
-                transTypeName = "积分转出";
+            if ("BT".equals(transTypeCode)) {
+                transTypeName = "奖励积分转换";
             } else if ("OP".equals(transTypeCode)) {
                 transTypeName = "购物";
             }else if ("OT".equals(transTypeCode)) {
                 transTypeName = "订单退还";
             }else if ("TF".equals(transTypeCode)) {
                 transTypeName = "他人转入";
+            }else if ("MUW".equals(transTypeCode)) {
+                transTypeName = "补偿购物积分";
+            }else if ("MDW".equals(transTypeCode)) {
+                transTypeName = "补扣购物积分";
+            }else if ("TT".equals(transTypeCode)) {
+                transTypeName = "转给他人";
             }
         }else if (type==3) {
             if ("PC".equals(transTypeCode)) {
                 transTypeName = "评价";
             } else if ("EG".equals(transTypeCode)) {
                 transTypeName = "积分换购";
-            }
-            else if ("OT".equals(transTypeCode)) {
+            }else if ("OT".equals(transTypeCode)) {
                 transTypeName = "订单退还";
+            }else if ("MUR".equals(transTypeCode)) {
+                transTypeName = "补偿换购积分";
+            }else if ("MDR".equals(transTypeCode)) {
+                transTypeName = "补扣换购积分";
             }
         }
 

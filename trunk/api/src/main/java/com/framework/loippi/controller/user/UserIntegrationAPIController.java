@@ -360,11 +360,6 @@ public class UserIntegrationAPIController extends BaseController {
     @RequestMapping(value = "/water/list.json")
     public String bopList(HttpServletRequest request, String transTypeCode, String time, Integer type, Pageable pager) {
 
-        System.out.println("********************************");
-        System.out.println(transTypeCode+"====transTypeCode");
-        System.out.println(type+"====type");
-        System.out.println(pager+"====pager");
-        System.out.println("********************************");
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         Map<String, Object> map = new HashMap<>();
         map.put("mmCode", member.getMmCode());
@@ -388,24 +383,12 @@ public class UserIntegrationAPIController extends BaseController {
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setOrderProperty("TRANS_DATE");
         List<RdMmAccountLog> rdMmAccountLogList = RdMmAccountLogService.findByPage(pager).getContent();
-        System.out.println(RdMmAccountLogService.findByPage(pager)+"+++12313211");
-
-        int i =1;
-        for (RdMmAccountLog mmAccountLog : rdMmAccountLogList) {
-            System.out.println(mmAccountLog+"===="+i);
-            i++;
-        }
         return ApiUtils.success(IntegrationListResult.build(rdMmAccountLogList, type));
     }
 
     //积分明细详情
     @RequestMapping(value = "/water/detail.json")
     public String bopDetail(HttpServletRequest request, Integer transNumber, Integer type) {
-        System.out.println(2);
-        System.out.println("****************");
-        System.out.println(transNumber+"====transNumber");
-        System.out.println(type+"====type");
-        System.out.println("****************");
         if (transNumber == null || type == null) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
