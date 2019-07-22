@@ -1,20 +1,37 @@
 package com.framework.loippi.service.impl.user;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
-import com.framework.loippi.dao.user.*;
-import com.framework.loippi.entity.user.*;
+import com.framework.loippi.dao.user.RdMmAccountInfoDao;
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
+import com.framework.loippi.dao.user.RdMmEditDao;
+import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.dao.user.RdRaBindingDao;
+import com.framework.loippi.dao.user.RdRanksDao;
+import com.framework.loippi.dao.user.RdSysPeriodDao;
+import com.framework.loippi.entity.user.OldSysRelationship;
+import com.framework.loippi.entity.user.RaMember;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmEdit;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.OldSysRelationshipService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.support.Message.Type;
 import com.framework.loippi.utils.Paramap;
-import java.math.BigDecimal;
-import javax.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 
 /**

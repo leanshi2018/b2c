@@ -1,17 +1,18 @@
 package com.framework.loippi.entity.order;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.hibernate.validator.constraints.Length;
+
 import com.framework.loippi.mybatis.eitity.GenericEntity;
 import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.mybatis.ext.annotation.Table;
 import com.framework.loippi.utils.validator.Words;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 
 /**
  * Entity - 订单表

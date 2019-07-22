@@ -1,15 +1,15 @@
 package com.framework.loippi.entity.order;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import org.hibernate.validator.constraints.Length;
+
 import com.framework.loippi.mybatis.eitity.GenericEntity;
 import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.mybatis.ext.annotation.Table;
 import com.framework.loippi.utils.validator.Words;
-
-import org.hibernate.validator.constraints.Length;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Entity - 订单地址信息表
