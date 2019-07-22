@@ -119,14 +119,14 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             if ("-1".equals(sponsorCode)) {
                 throw new RuntimeException("用户上级绑定数据出现循环！");
             }
-            if (!"999999999".equals(sponsorCode)) {
+            if (!"101000158".equals(sponsorCode)) {
                 List<RdMmBasicInfo> oldRdMmBasicInfoList = rdMmBasicInfoDao
                     .findByParams(Paramap.create().put("mmCode", rdMmRelation.getSponsorCode()));
                 rdMmRelation.setSponsorName(oldRdMmBasicInfoList.get(0).getMmName());
             } else {
-                rdMmRelation.setSponsorName("公司");
+                rdMmRelation.setSponsorName("美国公司节点1");
             }
-            if ("0".equals(index)) {
+            if ("1".equals(index)) {
                 rdMmRelation.setRaSponsorStatus(1);
             } else {
                 rdMmRelation.setRaSponsorStatus(0);
@@ -155,7 +155,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             rdMmRelation.setRank(3);//如果是老会员注册，直接将等级设置为初级代理店 TODO 2019-07-19修改业务需求
             //}
             oldSysRelationship.setNYnRegistered(1);
-            oldSysRelationship.setNMcode(newMmCode);
+            //oldSysRelationship.setNMcode(newMmCode);
             oldSysRelationship.setUpdateTime(new Date());
             if (oldSysRelationship.getId()!=null){
                 oldSysRelationshipService.update(oldSysRelationship);
