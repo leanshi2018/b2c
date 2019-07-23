@@ -1,50 +1,85 @@
 package com.framework.loippi.service.impl.order;
 
 
-import com.cloopen.rest.sdk.utils.DateUtil;
-import com.framework.loippi.consts.*;
+import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.IntegrationNameConsts;
+import com.framework.loippi.consts.NewVipConstant;
+import com.framework.loippi.consts.OrderState;
+import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.StateResult;
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.dao.common.ShopCommonExpressDao;
-import com.framework.loippi.dao.order.*;
+import com.framework.loippi.dao.order.ShopOrderAddressDao;
+import com.framework.loippi.dao.order.ShopOrderDao;
+import com.framework.loippi.dao.order.ShopOrderDiscountTypeDao;
+import com.framework.loippi.dao.order.ShopOrderGoodsDao;
+import com.framework.loippi.dao.order.ShopOrderLogDao;
+import com.framework.loippi.dao.order.ShopOrderLogisticsDao;
+import com.framework.loippi.dao.order.ShopOrderPayDao;
 import com.framework.loippi.dao.point.ShopPointsLogDao;
 import com.framework.loippi.dao.product.ShopGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsSpecDao;
 import com.framework.loippi.dao.trade.ShopRefundReturnDao;
 import com.framework.loippi.dao.trade.ShopReturnLogDao;
 import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
-
 import com.framework.loippi.dao.user.RdGoodsAdjustmentDao;
-import com.framework.loippi.dao.user.RdRanksDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.dao.user.ShopMemberPaymentTallyDao;
 import com.framework.loippi.dao.ware.RdInventoryWarningDao;
 import com.framework.loippi.dao.ware.RdWareAdjustDao;
-import com.framework.loippi.dao.ware.RdWarehouseDao;
-import com.framework.loippi.dto.PushMessage;
-import com.framework.loippi.entity.*;
-import com.framework.loippi.entity.activity.ShopActivityGoods;
+import com.framework.loippi.entity.AliPayRefund;
+import com.framework.loippi.entity.PayCommon;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.TSystemPluginConfig;
+import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
-import com.framework.loippi.entity.activity.ShopActivityPromotionRule;
-import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.order.*;
-import com.framework.loippi.entity.point.ShopPointsLog;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderAddress;
+import com.framework.loippi.entity.order.ShopOrderDiscountType;
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.order.ShopOrderLog;
+import com.framework.loippi.entity.order.ShopOrderLogistics;
+import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.entity.walet.LgTypeEnum;
-import com.framework.loippi.entity.walet.ShopWalletLog;
+import com.framework.loippi.entity.user.RdGoodsAdjustment;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAdjust;
-import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
@@ -54,58 +89,52 @@ import com.framework.loippi.pojo.cart.CartVo;
 import com.framework.loippi.pojo.order.CartOrderVo;
 import com.framework.loippi.pojo.order.OrderSettlement;
 import com.framework.loippi.pojo.order.OrderVo;
-import com.framework.loippi.rabbitmq.Producer;
-import com.framework.loippi.result.app.vip.PromotionVipResult;
 import com.framework.loippi.result.sys.OrderView;
-import com.framework.loippi.service.*;
-import com.framework.loippi.service.activity.ShopActivityGoodsService;
+import com.framework.loippi.service.RedisService;
+import com.framework.loippi.service.TSystemPluginConfigService;
+import com.framework.loippi.service.TUserSettingService;
+import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.activity.ShopActivityGoodsSpecService;
+import com.framework.loippi.service.activity.ShopActivityService;
 import com.framework.loippi.service.alipay.AlipayRefundService;
+import com.framework.loippi.service.common.ProductService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
-import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
-import com.framework.loippi.service.product.ShopGoodsFreightService;
-import com.framework.loippi.service.product.ShopGoodsSpecService;
-import com.framework.loippi.service.user.*;
-import com.framework.loippi.service.wechat.WechatMobileRefundService;
-import com.framework.loippi.service.activity.ShopActivityService;
-import com.framework.loippi.service.common.ProductService;
-import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
+import com.framework.loippi.service.product.ShopGoodsFreightService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.wallet.ShopWalletLogService;
+import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.*;
+import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.GoodsUtils;
+import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.RandomUtils;
+import com.framework.loippi.utils.SnowFlake;
+import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
 import com.framework.loippi.vo.goods.GoodsStatisticsVo;
-import com.framework.loippi.vo.order.*;
+import com.framework.loippi.vo.order.CountOrderStatusVo;
+import com.framework.loippi.vo.order.OrderCountVo;
+import com.framework.loippi.vo.order.OrderMemberStatisticsVo;
+import com.framework.loippi.vo.order.OrderStatisticsVo;
+import com.framework.loippi.vo.order.OrderSumPpv;
+import com.framework.loippi.vo.order.ShopOrderVo;
 import com.framework.loippi.vo.stats.StatsCountVo;
 import com.framework.loippi.vo.store.StoreStatisticsVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.security.Principal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONArray;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.SerializationUtils;
-
-import javax.annotation.Resource;
-import javax.validation.constraints.Min;
 
 /**
  * SERVICE - ShopOrder(订单表)
@@ -2806,5 +2835,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     @Override
     public OrderSumPpv sumPpv(Map<String, Object> paramMap) {
         return orderDao.sumPpv(paramMap);
+    }
+
+    @Override
+    public BigDecimal countOrderPPVByMCodeAndPeriod(String mmCode, String period) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("creationPeriod",period);
+        map.put("buyerId",mmCode);
+        return orderDao.countOrderPPVByMCodeAndPeriod(map);
     }
 }

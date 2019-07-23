@@ -32,6 +32,7 @@ import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRaBinding;
 import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
 import com.framework.loippi.enus.SocialType;
 import com.framework.loippi.enus.UserLoginType;
@@ -59,6 +60,7 @@ import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRaBindingService;
 import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
@@ -115,6 +117,8 @@ public class UserAPIController extends BaseController {
     private RdRaBindingService rdRaBindingService;
     @Resource
     private ShopGoodsEvaluateSensitivityService evaluateSensitivityService;
+    @Resource
+    private RdSysPeriodService periodService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -146,6 +150,27 @@ public class UserAPIController extends BaseController {
         Long browseNum = shopGoodsBrowseService
             .count(Paramap.create().put("browseMemberId", Long.parseLong(shopMember.getMmCode())));
         result.setBrowseNum(Integer.parseInt(browseNum + ""));
+
+        //当周期
+        RdSysPeriod sysPeriod = periodService.getPeriodService(new Date());
+        String period = "";
+        String endDate = "";
+        BigDecimal periodMi = new BigDecimal("0.00");//本期已达成MI
+        if (sysPeriod!=null){
+            period = sysPeriod.getPeriodCode();
+            Date eDate = sysPeriod.getEndDate();
+            SimpleDateFormat starForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            endDate = starForm.format(eDate);
+            //本期的已达成MI
+            periodMi = shopOrderService.countOrderPPVByMCodeAndPeriod(member.getMmCode(), period);
+        }else{
+            period = "未找到周期";
+            endDate = "未找到周期";
+        }
+        result.setPeriod(period);
+        result.setEndDate(endDate);
+        result.setPeriodMi(periodMi);
+
         result = PersonCenterResult.build2(result, countOrderStatusVoList);
         //是否设置登录密码
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
