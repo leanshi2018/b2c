@@ -114,5 +114,9 @@ public class RdMmRelation implements GenericEntity {
 	/** 是否获得过新晋vip奖励  0:没有获得(默认) 1:已经获得 */
 	@Column(name = "IS_VIP" )
 	private Integer isVip;
+
+	/** 新会员注册老会员注册标识 新会员：1 老会员：2 */
+	@Column(name = "N_O_FLAG" )
+	private Integer nOFlag;
 	
 }
