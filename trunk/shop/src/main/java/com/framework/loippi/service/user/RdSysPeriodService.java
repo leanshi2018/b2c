@@ -1,9 +1,9 @@
 package com.framework.loippi.service.user;
 
+import java.util.Date;
+
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.service.GenericService;
-
-import java.util.Date;
 
 /**
  * SERVICE - RdSysPeriod(业务周期)
@@ -15,4 +15,5 @@ public interface RdSysPeriodService  extends GenericService<RdSysPeriod, Long> {
 
     String getSysPeriodService(Date date);
 
+    RdSysPeriod getPeriodService(Date date);
 }

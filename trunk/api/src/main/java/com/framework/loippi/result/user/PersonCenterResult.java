@@ -1,9 +1,5 @@
 package com.framework.loippi.result.user;
 
-import com.framework.loippi.consts.OrderState;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.vo.order.CountOrderStatusVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +8,11 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import com.framework.loippi.consts.OrderState;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.vo.order.CountOrderStatusVo;
 
 /**
  * Result - 用户资料
@@ -93,6 +94,12 @@ public class PersonCenterResult {
     private Integer lookPpv;
     //是否显示vip价格 0 不显示 1 显示
     private Integer lookVip;
+    //当前周期
+    private String period;
+    //周期结束时间
+    private String endDate;
+    //本期已达成MI
+    private BigDecimal periodMi;
 
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);

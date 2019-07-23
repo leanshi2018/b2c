@@ -1,13 +1,14 @@
 package com.framework.loippi.service.impl.user;
 
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdSysPeriodService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 
 /**
@@ -31,5 +32,10 @@ public class RdSysPeriodServiceImpl extends GenericServiceImpl<RdSysPeriod, Long
 	@Override
 	public String getSysPeriodService(Date date) {
 		return rdSysPeriodDao.getSysPeriodService(date);
+	}
+
+	@Override
+	public RdSysPeriod getPeriodService(Date date) {
+		return rdSysPeriodDao.getPeriodService(date);
 	}
 }

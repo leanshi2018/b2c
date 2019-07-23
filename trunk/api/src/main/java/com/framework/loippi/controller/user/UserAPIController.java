@@ -1,42 +1,18 @@
 package com.framework.loippi.controller.user;
 
 
-import com.framework.loippi.consts.UpdateMemberInfoStatus;
-import com.framework.loippi.controller.BaseController;
-import com.framework.loippi.entity.common.ShopApp;
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsBrowse;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.entity.walet.LgTypeEnum;
-import com.framework.loippi.entity.walet.ShopWalletLog;
-import com.framework.loippi.enus.SocialType;
-import com.framework.loippi.enus.UserLoginType;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.param.user.UserAddBankCardsParam;
-import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.result.evaluate.EvaluateGoodsResult;
-import com.framework.loippi.result.user.*;
-import com.framework.loippi.service.RedisService;
-import com.framework.loippi.service.TUserSettingService;
-import com.framework.loippi.service.common.ShopAppService;
-import com.framework.loippi.service.common.ShopCommonAreaService;
-import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
-import com.framework.loippi.service.user.*;
-import com.framework.loippi.service.wallet.ShopWalletLogService;
-import com.framework.loippi.service.product.ShopGoodsBrowseService;
-import com.framework.loippi.service.product.ShopGoodsEvaluateService;
-import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.service.trade.ShopRefundReturnService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.*;
-import com.framework.loippi.vo.address.MemberAddresVo;
-import com.framework.loippi.vo.order.CountOrderStatusVo;
-import com.framework.loippi.vo.order.OrderSumPpv;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.ibm.icu.text.SimpleDateFormat;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -45,11 +21,62 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.*;
+import com.framework.loippi.consts.UpdateMemberInfoStatus;
+import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.common.ShopApp;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsBrowse;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmBank;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRaBinding;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RdSysPeriod;
+import com.framework.loippi.entity.user.ShopMemberFavorites;
+import com.framework.loippi.enus.SocialType;
+import com.framework.loippi.enus.UserLoginType;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.param.user.UserAddBankCardsParam;
+import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.user.BankCardsListResult;
+import com.framework.loippi.result.user.PersonCenterResult;
+import com.framework.loippi.result.user.SubordinateUserInformationResult;
+import com.framework.loippi.result.user.UserCollectResult;
+import com.framework.loippi.result.user.UserFootprintsResult;
+import com.framework.loippi.result.user.UserProfileResult;
+import com.framework.loippi.service.RedisService;
+import com.framework.loippi.service.common.ShopAppService;
+import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopGoodsBrowseService;
+import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
+import com.framework.loippi.service.product.ShopGoodsEvaluateService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.user.OldSysRelationshipService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmBankService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRaBindingService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RdSysPeriodService;
+import com.framework.loippi.service.user.ShopMemberFavoritesService;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.BankCardUtils;
+import com.framework.loippi.utils.Constants;
+import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.SmsUtil;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.vo.address.MemberAddresVo;
+import com.framework.loippi.vo.order.CountOrderStatusVo;
+import com.framework.loippi.vo.order.OrderSumPpv;
+import com.google.common.collect.Lists;
+import com.ibm.icu.text.SimpleDateFormat;
 
 
 @Controller
@@ -90,6 +117,8 @@ public class UserAPIController extends BaseController {
     private RdRaBindingService rdRaBindingService;
     @Resource
     private ShopGoodsEvaluateSensitivityService evaluateSensitivityService;
+    @Resource
+    private RdSysPeriodService periodService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -121,6 +150,27 @@ public class UserAPIController extends BaseController {
         Long browseNum = shopGoodsBrowseService
             .count(Paramap.create().put("browseMemberId", Long.parseLong(shopMember.getMmCode())));
         result.setBrowseNum(Integer.parseInt(browseNum + ""));
+
+        //当周期
+        RdSysPeriod sysPeriod = periodService.getPeriodService(new Date());
+        String period = "";
+        String endDate = "";
+        BigDecimal periodMi = new BigDecimal("0.00");//本期已达成MI
+        if (sysPeriod!=null){
+            period = sysPeriod.getPeriodCode();
+            Date eDate = sysPeriod.getEndDate();
+            SimpleDateFormat starForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            endDate = starForm.format(eDate);
+            //本期的已达成MI
+            periodMi = shopOrderService.countOrderPPVByMCodeAndPeriod(member.getMmCode(), period);
+        }else{
+            period = "未找到周期";
+            endDate = "未找到周期";
+        }
+        result.setPeriod(period);
+        result.setEndDate(endDate);
+        result.setPeriodMi(periodMi);
+
         result = PersonCenterResult.build2(result, countOrderStatusVoList);
         //是否设置登录密码
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());

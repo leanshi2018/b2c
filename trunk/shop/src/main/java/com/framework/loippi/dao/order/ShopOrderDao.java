@@ -1,5 +1,11 @@
 package com.framework.loippi.dao.order;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.mybatis.paginator.domain.PageBounds;
@@ -7,14 +13,15 @@ import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
 import com.framework.loippi.vo.goods.GoodsStatisticsVo;
-import com.framework.loippi.vo.order.*;
+import com.framework.loippi.vo.order.CountOrderStatusVo;
+import com.framework.loippi.vo.order.OrderCountVo;
+import com.framework.loippi.vo.order.OrderMemberStatisticsVo;
+import com.framework.loippi.vo.order.OrderMemberVo;
+import com.framework.loippi.vo.order.OrderStatisticsVo;
+import com.framework.loippi.vo.order.OrderSumPpv;
+import com.framework.loippi.vo.order.ShopOrderVo;
 import com.framework.loippi.vo.stats.StatsCountVo;
 import com.framework.loippi.vo.store.StoreStatisticsVo;
-
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * DAO - ShopOrder(订单表)
@@ -144,4 +151,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
      * @return
      */
     OrderSumPpv sumPpv(Map<String, Object> paramMap);
+
+	BigDecimal countOrderPPVByMCodeAndPeriod(Map<String, Object> map);
 }
