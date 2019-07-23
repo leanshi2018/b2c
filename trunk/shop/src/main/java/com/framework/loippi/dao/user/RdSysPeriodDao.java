@@ -1,10 +1,10 @@
 package com.framework.loippi.dao.user;
 
 
+import java.util.Date;
+
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.mybatis.dao.GenericDao;
-
-import java.util.Date;
 
 /**
  * DAO - RdSysPeriod(业务周期)
@@ -15,4 +15,6 @@ import java.util.Date;
 public interface RdSysPeriodDao  extends GenericDao<RdSysPeriod, Long> {
 
     String getSysPeriodService(Date date);
+
+	RdSysPeriod getPeriodService(Date date);
 }

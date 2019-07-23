@@ -1,5 +1,9 @@
 package com.framework.loippi.service.order;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.entity.PayCommon;
 import com.framework.loippi.entity.order.ShopOrder;
@@ -15,12 +19,14 @@ import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
 import com.framework.loippi.vo.goods.GoodsStatisticsVo;
-import com.framework.loippi.vo.order.*;
+import com.framework.loippi.vo.order.CountOrderStatusVo;
+import com.framework.loippi.vo.order.OrderCountVo;
+import com.framework.loippi.vo.order.OrderMemberStatisticsVo;
+import com.framework.loippi.vo.order.OrderStatisticsVo;
+import com.framework.loippi.vo.order.OrderSumPpv;
+import com.framework.loippi.vo.order.ShopOrderVo;
 import com.framework.loippi.vo.stats.StatsCountVo;
 import com.framework.loippi.vo.store.StoreStatisticsVo;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * SERVICE - ShopOrder(订单表)
@@ -282,4 +288,12 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
      * @return
      */
     OrderSumPpv sumPpv(Map<String, Object> paramMap);
+
+    /**
+     * 计算当前周期下会员的ppv
+     * @param mmCode
+     * @param period
+     * @return
+     */
+    BigDecimal countOrderPPVByMCodeAndPeriod(String mmCode, String period);
 }

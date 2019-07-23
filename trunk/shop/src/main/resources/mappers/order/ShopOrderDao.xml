@@ -1401,4 +1401,10 @@
     <!--<resultMap id="BaseResultMap6" type="com.framework.loippi.vo.order.OrderStatisticsVo" extends="ShopOrderResultMap">-->
     <!--<result column="member_name" property="membername" jdbcType="VARCHAR"/>-->
     <!--</resultMap>-->
+
+    <!--计算当前周期下会员的ppv-->
+    <select id="countOrderPPVByMCodeAndPeriod" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        SELECT sum(ppv) FROM shop_order WHERE buyer_id = #{buyerId} AND payment_state = 1 AND creation_period = #{creationPeriod}
+    </select>
+
 </mapper>
