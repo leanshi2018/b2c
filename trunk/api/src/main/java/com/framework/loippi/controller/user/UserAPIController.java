@@ -21,11 +21,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrowse;
+import com.framework.loippi.entity.user.OldSysRelationship;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
@@ -69,6 +71,7 @@ import com.framework.loippi.utils.Constants;
 import com.framework.loippi.utils.Dateutil;
 import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.PostUtil;
 import com.framework.loippi.utils.SmsUtil;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
@@ -180,6 +183,99 @@ public class UserAPIController extends BaseController {
             result.setIsPaymentPasswd(1);
         }
         return ApiUtils.success(result);
+    }
+
+    @RequestMapping(value = "/binding.json", method = RequestMethod.POST)
+    public String binding(HttpServletRequest request, String oMCode, String password) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("请登录后再进行老系统会员绑定操作");
+        }
+        if (StringUtils.isEmpty(oMCode)) {
+            return ApiUtils.error("老系统会员编号为空");
+        }
+        if (StringUtils.isEmpty(password)) {
+            return ApiUtils.error("老系统会员二级密码为空");
+        }
+        //1.根据会员提供老系统会员编号查询中间表中该会员是否已经注册
+        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("oMcode", oMCode);
+        if(oldSysRelationship==null){
+            return ApiUtils.error("将要进行绑定的老系统会员不存在或尚未在新系统同步");
+        }
+        if(oldSysRelationship.getNYnRegistered()==1){
+            return ApiUtils.error("提供的老系统会员编号已经在新系统进行注册，不能进行绑定");
+        }
+        //2.如果提供老系统会员在中间表存在且未注册，验证需要绑定会员的二级密码(确认是会员本人进行绑定)
+        String resultString="";
+        try {
+            resultString = PostUtil.postRequest(
+                    "http://admin.fkcn.com/m/user/verify",
+                    oMCode, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiUtils.error("验证老用户发生错误");
+        }
+        //   0：正确，1老系统会员编号不存在，2密码不正确，-1账号暂时锁定，10分钟后再试
+        Map parse = (Map) JSON.parse(resultString);
+        Object whetherCorrect = parse.get("whetherCorrect");
+        String str = whetherCorrect+"";
+        if ("".equals(str.trim())) {
+            return ApiUtils.error("验证老用户发生错误");
+        } else if ("0".equals(str.trim())) {
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+            Integer raSponsorStatus = rdMmRelation.getRaSponsorStatus();
+            if(raSponsorStatus==1){//如果需要修改会员在新系统绑定状态为永久状态，则需要判断其推荐人是否与中间表中推荐人一致
+                OldSysRelationship oldSysRelationship1 = oldSysRelationshipService.find("nMcode", rdMmRelation.getSponsorCode());
+                if (oldSysRelationship1==null){//说明中间表没有其推荐人，即永久推荐人和需要绑定老系统会员对应不上
+                    return ApiUtils.error("新系统会员直接推荐人无法与将要绑定老系统直接推荐人匹配，不予进行老系统会员绑定");
+                }
+                String oSpcode = oldSysRelationship.getOSpcode();//将要绑定老会员的推荐人
+                String oMcode = oldSysRelationship1.getOMcode();//新系统会员目前绑定的永久推荐人
+                if(!oSpcode.equals(oMcode)){
+                    return ApiUtils.error("新系统会员直接推荐人无法与将要绑定老系统直接推荐人匹配，不予进行老系统会员绑定");
+                }
+                //3.需要绑定的老系统会员和新系统中间表中直接推荐人是同一个人，可以进行绑定
+                try {
+                    rdMmRelationService.badingAndUpgrade(rdMmRelation,oldSysRelationship);
+                    return ApiUtils.success("老系统会员绑定成功");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return ApiUtils.success("网络异常，请稍后重试");
+                }
+            }
+            if(raSponsorStatus==0){//如果需要修改会员在新系统绑定状态为临时状态，需要查询中间表中推荐人是否注册，如果注册，将关系表中推荐人关系进行修改
+                OldSysRelationship oldSysRelationship2 = oldSysRelationshipService.find("oMcode", oldSysRelationship.getOSpcode());
+                if(oldSysRelationship2.getNYnRegistered()==1){
+                    RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode", oldSysRelationship2.getNMcode());
+                    try {
+                        rdMmRelationService.badingAndUpgrade2(rdMmRelation,oldSysRelationship,basicInfo);
+                        return ApiUtils.success("老系统会员绑定成功");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return ApiUtils.success("网络异常，请稍后重试");
+                    }
+                }
+                try {
+                    rdMmRelationService.badingAndUpgrade(rdMmRelation,oldSysRelationship);
+                    return ApiUtils.success("老系统会员绑定成功");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return ApiUtils.success("网络异常，请稍后重试");
+                }
+            }
+            return ApiUtils.error("会员绑定状态错误");
+        } else if ("1".equals(str.trim())) {
+            return ApiUtils.error("老系统会员编号不存在");
+        } else if ("2".equals(str.trim())) {
+            return ApiUtils.error("密码不正确");
+        } else if ("3".equals(str.trim())) {
+            return ApiUtils.error("会员不活跃");
+        } else if ("-1".equals(str.trim())) {
+            return ApiUtils.error("密码错误三次," +
+                    "账号暂时锁定，10分钟后再试");
+        } else {
+            return ApiUtils.error("验证老用户发生错误");
+        }
     }
 
     /**

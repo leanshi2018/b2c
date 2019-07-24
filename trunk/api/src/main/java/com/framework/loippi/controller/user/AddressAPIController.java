@@ -42,7 +42,6 @@ public class AddressAPIController extends BaseController {
     @Resource
     private ShopCommonAreaService shopCommonAreaService;
 
-
     //列表
     @RequestMapping(value = "/list.json")
     public String UserAddrsList(@RequestParam(defaultValue = "1") Integer pageNumber,

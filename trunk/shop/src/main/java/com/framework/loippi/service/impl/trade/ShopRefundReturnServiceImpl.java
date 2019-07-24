@@ -11,6 +11,7 @@ import com.framework.loippi.dao.trade.ShopRefundReturnDao;
 import com.framework.loippi.dao.trade.ShopReturnLogDao;
 import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
 
+import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.dao.user.ShopMemberPaymentTallyDao;
 import com.framework.loippi.dao.walet.ShopWalletLogDao;
 import com.framework.loippi.entity.ShopCommonMessage;
@@ -21,6 +22,7 @@ import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
 
+import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.walet.LgTypeEnum;
 import com.framework.loippi.entity.walet.ShopWalletLog;
@@ -29,6 +31,7 @@ import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
+import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.JacksonUtil;
@@ -77,6 +80,9 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
     private ShopMemberMessageDao shopMemberMessageDao;
     @Resource
     private ShopReturnOrderGoodsDao shopReturnOrderGoodsDao;
+
+    @Resource
+    private RdMmRelationDao rdMmRelationDao;
 
     @Autowired
     public void setGenericDao() {
@@ -215,7 +221,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
      * @param adminMessage 管理员备注
      */
     @Override
-    public void updateRefundReturnAudiReturn(Long refundId, String adminMessage,String type) {
+    public void updateRefundReturnAudiReturn(Long refundId, String adminMessage,String type) {//pointsPaymentPlugin
         ShopRefundReturn refundReturn = shopRefundReturnDao.find(refundId);
         if (refundReturn.getSellerState() == null
             || refundReturn.getSellerState() != RefundReturnState.SELLER_STATE_AGREE) {

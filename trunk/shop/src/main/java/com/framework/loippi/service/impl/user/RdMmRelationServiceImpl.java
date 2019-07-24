@@ -12,6 +12,8 @@ import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmRelationService;
 
+import java.util.Date;
+
 
 /**
  * SERVICE - RdMmRelation(会员关系状态表)
@@ -48,6 +50,7 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 		rdMmRelation.setNOFlag(2);
 		oldSysRelationship.setNYnRegistered(1);
 		oldSysRelationship.setNMcode(rdMmRelation.getMmCode());
+        oldSysRelationship.setUpdateTime(new Date());
 		oldSysRelationshipDao.update(oldSysRelationship);
 		rdMmRelationDao.update(rdMmRelation);
 	}
@@ -63,6 +66,7 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 		rdMmRelation.setSponsorName(basicInfo.getMmName());
 		oldSysRelationship.setNYnRegistered(1);
 		oldSysRelationship.setNMcode(rdMmRelation.getMmCode());
+		oldSysRelationship.setUpdateTime(new Date());
 		oldSysRelationshipDao.update(oldSysRelationship);
 		rdMmRelationDao.update(rdMmRelation);
 	}
