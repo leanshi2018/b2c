@@ -1,5 +1,9 @@
 package com.framework.loippi.service.impl.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.framework.loippi.dao.user.OldSysRelationshipDao;
 import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.entity.user.OldSysRelationship;
@@ -7,10 +11,6 @@ import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmRelationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -27,6 +27,7 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 	
 	@Autowired
 	private RdMmRelationDao rdMmRelationDao;
+
 	@Autowired
 	private  OldSysRelationshipDao oldSysRelationshipDao;
 	
