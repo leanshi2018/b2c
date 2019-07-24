@@ -81,6 +81,8 @@ public class RefundReturnSysController extends GenericController {
     @Resource
     private WechatRefundService wechatRefundService;
 
+
+
     /**
      * 列表查询
      * refundType【退货/退款】
@@ -424,7 +426,7 @@ public class RefundReturnSysController extends GenericController {
                 backurl = Constants.MSG_URL;
             }
             model.addAttribute("referer", "list.jhtml");
-            return backurl;
+            return backurl;///common/common/show_msg
         }
 
 

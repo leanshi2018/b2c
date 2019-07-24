@@ -1701,7 +1701,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 orderTotalAmount += order.getOrderAmount().doubleValue();
                 //Modify by zc 2019-07-18 TODO
                 RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
-                if (rdMmRelation != null) {
+                if (rdMmRelation != null&&rdMmRelation.getNOFlag()==1) {
                     BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
                     BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
                             .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO));
@@ -2460,7 +2460,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
                     //判断会员等级，并根据升级条件升级 TODO
                     RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
-                    if (rdMmRelation != null) {
+                    if (rdMmRelation != null&&rdMmRelation.getNOFlag()==1) {//新会员判断累计购买额并影响等级
                         BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
                         BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
                                 .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO));
@@ -2602,11 +2602,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
 
                 //降级到vip会员
-                if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1) {
+                if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }
-
+                //******************************************降级到普通会员****************************************************************** TODO 修改by zc 2019-07-24
+                if (aRetail.compareTo(vipMoney)!=-1&&orderMoney.compareTo(vipMoney)==-1&&rdMmRelation.getNOFlag()==1) {//新会员 退款之前累计购买额大于等于360退款之后小于360降级vip
+                    rdMmRelation.setRank(0);
+                }
+                //************************************************************************************************************
                 //之前大于升级vip的价位 加上这个售后金额小于vip的价位
                 /*if ((aRetail.compareTo(vipMoney) == 1||aRetail.compareTo(vipMoney) == 0) && orderMoney.compareTo(vipMoney) == -1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 0);
@@ -2652,12 +2656,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     orderPpv = aPpv.subtract(refundReturn.getPpv());
                 }
                 //降级到vip会员
-                if (aPpv.compareTo(agencyPpv) == 1 && orderPpv.compareTo(agencyPpv) == -1) {
+                if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }
                 //之前大于升级vip的价位 加上这个售后金额小于vip的价位
-                if (aRetail.compareTo(vipMoney) == 1 && orderMoney.compareTo(vipMoney) == -1) {
+                if (aRetail.compareTo(vipMoney) != -1 && orderMoney.compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 0);
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }

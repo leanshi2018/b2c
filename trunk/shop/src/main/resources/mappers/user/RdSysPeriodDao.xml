@@ -172,7 +172,7 @@
 	</select>
 
 	<!--获取当前时间的业务周期信息-->
-	<select id="getSysPeriodService" resultMap="RdSysPeriodResultMap">
+	<select id="getPeriodService" resultMap="RdSysPeriodResultMap">
 		SELECT * FROM RD_SYS_PERIOD
 		<where> 1=1
 			<![CDATA[and BEGIN_DATE <= #{data}]]>

@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 
 /**
  * SERVICE - RdMmRelation(会员关系状态表)
@@ -21,13 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-@RequiredArgsConstructor  //对所有带有@NonNull注解的或者带有final修饰的成员变量生成对应的构造方法
 public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Long> implements RdMmRelationService {
 	
 	@Autowired
 	private RdMmRelationDao rdMmRelationDao;
-
-	private final OldSysRelationshipDao oldSysRelationshipDao;
+	@Autowired
+	private  OldSysRelationshipDao oldSysRelationshipDao;
 	
 	
 	@Autowired
@@ -48,6 +49,7 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 		rdMmRelation.setNOFlag(2);
 		oldSysRelationship.setNYnRegistered(1);
 		oldSysRelationship.setNMcode(rdMmRelation.getMmCode());
+        oldSysRelationship.setUpdateTime(new Date());
 		oldSysRelationshipDao.update(oldSysRelationship);
 		rdMmRelationDao.update(rdMmRelation);
 	}
@@ -63,6 +65,7 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 		rdMmRelation.setSponsorName(basicInfo.getMmName());
 		oldSysRelationship.setNYnRegistered(1);
 		oldSysRelationship.setNMcode(rdMmRelation.getMmCode());
+		oldSysRelationship.setUpdateTime(new Date());
 		oldSysRelationshipDao.update(oldSysRelationship);
 		rdMmRelationDao.update(rdMmRelation);
 	}
