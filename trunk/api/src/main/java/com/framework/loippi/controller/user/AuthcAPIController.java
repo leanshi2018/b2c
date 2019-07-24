@@ -1,6 +1,5 @@
 package com.framework.loippi.controller.user;
 
-import com.framework.loippi.utils.*;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.math.BigDecimal;
@@ -38,6 +37,14 @@ import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Constants;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.PostUtil;
+import com.framework.loippi.utils.SmsUtil;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
 
 /**
  * Created by Administrator on 2017/6/18.
@@ -253,7 +260,8 @@ public class AuthcAPIController extends BaseController {
 
     @RequestMapping(value = "/binding", method = RequestMethod.POST)
     public String binding(HttpServletRequest request, String oMCode, String password) {
-        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        String sessionId = (String)request.getAttribute(Constants.USER_SESSION_ID);
+        AuthsLoginResult member = redisService.get(sessionId, AuthsLoginResult.class);
         if(member==null){
             return ApiUtils.error("请登录后再进行老系统会员绑定操作");
         }
