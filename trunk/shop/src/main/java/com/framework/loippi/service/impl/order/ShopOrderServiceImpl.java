@@ -471,6 +471,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         order.setIsModify(1);
         order.setCancelCause(message); // 取消原因
         order.setOrderState(OrderState.ORDER_STATE_CANCLE); //订单状态
+        order.setCancelTime(new Date());
         //order.settime Date());
         // 修改商品库存和销量
         for (ShopOrderGoods orderGoods : order.getShopOrderGoods()) {
