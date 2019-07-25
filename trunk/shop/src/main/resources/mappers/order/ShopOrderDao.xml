@@ -82,6 +82,7 @@
         <result property="logisticType" column="logistic_type"/>
         <result property="refundPoint" column="refund_point"/>
         <result property="refundPpv" column="refund_ppv"/>
+        <result property="cancelTime" column="cancel_time"/>
     </resultMap>
 
     <resultMap id="OrderViewResultMap" type="com.framework.loippi.result.sys.OrderView">
@@ -108,6 +109,7 @@
         <result property="logisticType" column="logistic_type"/>
         <result property="shippingExpressCode" column="shipping_express_code"/>
         <result property="shippingCode" column="shipping_code"/>
+        <result property="cancelTime" column="cancel_time"/>
     </resultMap>
 
     <!--扩展查询商品-->
@@ -141,11 +143,11 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,order_sn ,store_id ,store_name ,buyer_id ,buyer_name ,buyer_phone ,create_time ,order_type ,order_platform ,payment_id ,payment_name ,payment_code ,payment_branch ,payment_state ,out_sn ,trade_sn ,payment_time ,pay_message ,shipping_time ,shipping_express_id ,shipping_code ,out_payment_code ,finnshed_time ,goods_amount ,discount ,order_amount ,order_total_price ,shipping_fee ,shipping_name ,evaluation_status ,evaluation_time ,evalseller_status ,evalseller_time ,order_message ,order_state ,order_pointscount ,refund_state ,return_state ,refund_amount ,return_num ,xianshi_id ,xianshi_explain ,mansong_id ,mansong_explain ,bundling_id ,bundling_explain ,deliver_explain ,daddress_id ,address_id ,pay_id ,pay_sn ,balance_state ,balance_time ,shipping_express_code ,predeposit_amount ,cancel_cause ,lock_state ,barter_state ,barter_num ,use_point_num ,point_rmb_num ,is_del ,batch_no ,is_remind ,is_modify ,brand_id ,brand_name ,ppv ,shipping_preferential_fee ,remind_time,shop_order_type_id ,creation_period ,logistic_type ,refund_point ,refund_ppv
+		 id ,order_sn ,store_id ,store_name ,buyer_id ,buyer_name ,buyer_phone ,create_time ,order_type ,order_platform ,payment_id ,payment_name ,payment_code ,payment_branch ,payment_state ,out_sn ,trade_sn ,payment_time ,pay_message ,shipping_time ,shipping_express_id ,shipping_code ,out_payment_code ,finnshed_time ,goods_amount ,discount ,order_amount ,order_total_price ,shipping_fee ,shipping_name ,evaluation_status ,evaluation_time ,evalseller_status ,evalseller_time ,order_message ,order_state ,order_pointscount ,refund_state ,return_state ,refund_amount ,return_num ,xianshi_id ,xianshi_explain ,mansong_id ,mansong_explain ,bundling_id ,bundling_explain ,deliver_explain ,daddress_id ,address_id ,pay_id ,pay_sn ,balance_state ,balance_time ,shipping_express_code ,predeposit_amount ,cancel_cause ,lock_state ,barter_state ,barter_num ,use_point_num ,point_rmb_num ,is_del ,batch_no ,is_remind ,is_modify ,brand_id ,brand_name ,ppv ,shipping_preferential_fee ,remind_time,shop_order_type_id ,creation_period ,logistic_type ,refund_point ,refund_ppv，cancel_time;
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{orderSn},#{storeId},#{storeName},#{buyerId},#{buyerName},#{buyerPhone},#{createTime},#{orderType},#{orderPlatform},#{paymentId},#{paymentName},#{paymentCode},#{paymentBranch},#{paymentState},#{outSn},#{tradeSn},#{paymentTime},#{payMessage},#{shippingTime},#{shippingExpressId},#{shippingCode},#{outPaymentCode},#{finnshedTime},#{goodsAmount},#{discount},#{orderAmount},#{orderTotalPrice},#{shippingFee},#{shippingName},#{evaluationStatus},#{evaluationTime},#{evalsellerStatus},#{evalsellerTime},#{orderMessage},#{orderState},#{orderPointscount},#{refundState},#{returnState},#{refundAmount},#{returnNum},#{xianshiId},#{xianshiExplain},#{mansongId},#{mansongExplain},#{bundlingId},#{bundlingExplain},#{deliverExplain},#{daddressId},#{addressId},#{payId},#{paySn},#{balanceState},#{balanceTime},#{shippingExpressCode},#{predepositAmount},#{cancelCause},#{lockState},#{barterState},#{barterNum},#{usePointNum},#{pointRmbNum},#{isDel},#{batchNo},#{isRemind},#{isModify},#{brandId},#{brandName},#{ppv},#{shippingPreferentialFee},#{remindTime},#{shopOrderTypeId},#{creationPeriod} ,#{logisticType} ,#{refundPoint},#{refundPpv}
+		 #{id},#{orderSn},#{storeId},#{storeName},#{buyerId},#{buyerName},#{buyerPhone},#{createTime},#{orderType},#{orderPlatform},#{paymentId},#{paymentName},#{paymentCode},#{paymentBranch},#{paymentState},#{outSn},#{tradeSn},#{paymentTime},#{payMessage},#{shippingTime},#{shippingExpressId},#{shippingCode},#{outPaymentCode},#{finnshedTime},#{goodsAmount},#{discount},#{orderAmount},#{orderTotalPrice},#{shippingFee},#{shippingName},#{evaluationStatus},#{evaluationTime},#{evalsellerStatus},#{evalsellerTime},#{orderMessage},#{orderState},#{orderPointscount},#{refundState},#{returnState},#{refundAmount},#{returnNum},#{xianshiId},#{xianshiExplain},#{mansongId},#{mansongExplain},#{bundlingId},#{bundlingExplain},#{deliverExplain},#{daddressId},#{addressId},#{payId},#{paySn},#{balanceState},#{balanceTime},#{shippingExpressCode},#{predepositAmount},#{cancelCause},#{lockState},#{barterState},#{barterNum},#{usePointNum},#{pointRmbNum},#{isDel},#{batchNo},#{isRemind},#{isModify},#{brandId},#{brandName},#{ppv},#{shippingPreferentialFee},#{remindTime},#{shopOrderTypeId},#{creationPeriod} ,#{logisticType} ,#{refundPoint},#{refundPpv},#{cancelTime}
 	</sql>
 
 
@@ -392,6 +394,9 @@
         <if test="refundPpv != null and refundPpv != ''">
             AND refund_ppv = #{refundPpv}
         </if>
+        <if test="cancelTime != null and cancelTime != ''">
+            AND cancel_time = #{cancelTime}
+        </if>
 
     </sql>
 
@@ -624,6 +629,9 @@
         </if>
         <if test="refundPpv != null and refundPpv != ''">
              refund_ppv = #{refundPpv},
+        </if>
+        <if test="cancelTime != null and cancelTime != ''">
+             cancel_time = #{cancelTime}
         </if>
     </sql>
 

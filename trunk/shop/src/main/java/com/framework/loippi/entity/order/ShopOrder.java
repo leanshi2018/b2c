@@ -355,6 +355,12 @@ public class ShopOrder implements GenericEntity {
      */
     private Integer orderNum;
 
+    /**
+     *订单取消时间，默认为null
+     */
+    @Column(name = "cancel_time" )
+    private java.util.Date cancelTime;
+
 /*********************添加*********************/
     /**
      * 订单商品

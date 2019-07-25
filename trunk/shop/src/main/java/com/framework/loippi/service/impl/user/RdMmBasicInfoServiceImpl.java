@@ -32,6 +32,7 @@ import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.OldSysRelationshipService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.utils.Paramap;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -41,6 +42,7 @@ import com.framework.loippi.utils.Paramap;
  * @version 2.0
  */
 @Service
+@Transactional
 public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, Long> implements RdMmBasicInfoService {
 
     @Autowired
