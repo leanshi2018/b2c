@@ -1,15 +1,19 @@
 package com.framework.loippi.result.user;
 
-import com.framework.loippi.consts.DocumentConsts;
-import com.framework.loippi.consts.IntegrationNameConsts;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.mybatis.ext.annotation.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
 
 /**
  *

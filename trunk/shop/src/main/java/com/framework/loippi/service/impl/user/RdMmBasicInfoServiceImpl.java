@@ -130,6 +130,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
                 throw new RuntimeException("老用户已注册或者绑定！");
             }
             Map<String, String> map = oldSysRelationshipService.findOldSysSpcode(oldSysRelationship.getOSpcode());
+            System.out.println(map);
             String sponsorCode = map.get("mmCode");
             String index = map.get("index");
             rdMmRelation.setSponsorCode(sponsorCode);
