@@ -166,7 +166,7 @@ public class UserAPIController extends BaseController {
             endDate = starForm.format(eDate);
             //本期的已达成MI
             periodMi = shopOrderService.countOrderPPVByMCodeAndPeriod(member.getMmCode(), period);
-            if (periodMi==null||!"".equals(periodMi)){
+            if (periodMi==null||"".equals(periodMi)){
                 periodMi = new BigDecimal("0.00");
             }
         }else{
