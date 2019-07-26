@@ -159,6 +159,8 @@ public class OrderView {
      */
     private String orderMessage;
 
+    private Date cancelTime;
+
     private String keyWordsBuyerId;
 
     private Date createTime;
