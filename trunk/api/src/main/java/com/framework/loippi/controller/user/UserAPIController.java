@@ -13,9 +13,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.alibaba.fastjson.JSON;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -24,11 +21,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrowse;
+import com.framework.loippi.entity.user.OldSysRelationship;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmBank;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRaBinding;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RdSysPeriod;
+import com.framework.loippi.entity.user.ShopMemberFavorites;
 import com.framework.loippi.enus.SocialType;
 import com.framework.loippi.enus.UserLoginType;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -58,6 +65,16 @@ import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.BankCardUtils;
+import com.framework.loippi.utils.Constants;
+import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.PostUtil;
+import com.framework.loippi.utils.SmsUtil;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.address.MemberAddresVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
 import com.framework.loippi.vo.order.OrderSumPpv;
@@ -149,7 +166,7 @@ public class UserAPIController extends BaseController {
             endDate = starForm.format(eDate);
             //本期的已达成MI
             periodMi = shopOrderService.countOrderPPVByMCodeAndPeriod(member.getMmCode(), period);
-            if (periodMi==null||!"".equals(periodMi)){
+            if (periodMi==null||"".equals(periodMi)){
                 periodMi = new BigDecimal("0.00");
             }
         }else{
