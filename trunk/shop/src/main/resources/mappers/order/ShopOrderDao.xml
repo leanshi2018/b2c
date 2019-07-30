@@ -1349,6 +1349,11 @@
         SELECT sum(ppv) FROM shop_order WHERE buyer_id = #{buyerId} AND payment_state = 1 AND creation_period = #{creationPeriod}
     </select>
 
+    <!--计算当前周期下会员的退款或者退货的ppv-->
+    <select id="countOrderPPVRefundStateNot0" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        SELECT sum(ppv) FROM shop_order WHERE buyer_id = #{buyerId} AND payment_state = 1 AND creation_period = #{creationPeriod} AND (refund_state != 0 OR return_state != 0)
+    </select>
+
     <!--&lt;!&ndash; 根据不同的时间段查出相应的订单量 &ndash;&gt;-->
     <!--<select id="countorderbuy" resultType="com.framework.loippi.vo.order.OrderCountVo" parameterType="map">-->
     <!--(-->

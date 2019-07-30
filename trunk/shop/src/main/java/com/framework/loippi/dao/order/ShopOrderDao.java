@@ -153,4 +153,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     OrderSumPpv sumPpv(Map<String, Object> paramMap);
 
 	BigDecimal countOrderPPVByMCodeAndPeriod(Map<String, Object> map);
+
+	BigDecimal countOrderPPVRefundStateNot0(Map<String, Object> map);
 }
