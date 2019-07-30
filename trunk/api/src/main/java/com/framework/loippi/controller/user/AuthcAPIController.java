@@ -162,10 +162,14 @@ public class AuthcAPIController extends BaseController {
         rdMmBasicInfo.setMobile(param.getMobile());
         rdMmBasicInfo.setMmNickName(param.getName());
         rdMmBasicInfo.setCreationIp(request.getRemoteAddr());
+        List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("verificationMobile", param.getMobile()));
+        if(verificationMobile!=null&&verificationMobile.size()>0){
+            return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "手机号码已经注册");
+        }
         List<RdMmBasicInfo> rdMmBasicInfoList = rdMmBasicInfoService
-            .findList(Paramap.create().put("verificationMobile", param.getMobile()).put("verificationNickName", param.getName()));
+            .findList(Paramap.create().put("verificationNickName", param.getName()));
         if (rdMmBasicInfoList != null && rdMmBasicInfoList.size() > 0) {
-            return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "号码已注册或者昵称已被占用");
+            return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "昵称已被占用");
         }
         /**
          * 证件类型 1.身份证2.护照3.军官证4.回乡证
@@ -266,7 +270,8 @@ public class AuthcAPIController extends BaseController {
         rdMmBasicInfo.setCreationSource("1");
         rdMmBasicInfo.setIdCode(param.getMemberTrueId());
         rdMmBasicInfo.setIdType(param.getType());
-        rdMmBasicInfo.setMmName(param.getMemberTrueName());
+        //rdMmBasicInfo.setMmName(param.getMemberTrueName());
+        rdMmBasicInfo.setMmName(param.getName());
         rdMmBasicInfo.setPushStatus(1);
         rdMmRelation.setARetail(BigDecimal.ZERO);
         rdMmRelation.setLoginPwd(Digests.entryptPassword(param.getPassword()));

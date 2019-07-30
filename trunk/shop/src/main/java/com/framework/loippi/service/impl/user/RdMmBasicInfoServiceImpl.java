@@ -271,6 +271,11 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             rdMmRelation.setMmPointStatus(1);
             rdMmRelationDao.update(rdMmRelation);
 
+        }else if(type == UpdateMemberInfoStatus.UPDATE_NAME){
+            rdMmEdit.setMmNameBefore(rdMmBasicInfo.getMmName());
+            rdMmEdit.setMmNameAfter(member.getMmName());
+            rdMmEdit.setUpdateType(2);
+            rdMmEditDao.insert(rdMmEdit);
         }
         rdMmBasicInfoDao.update(member);
     }

@@ -660,7 +660,10 @@
   <update id="updateGoodsCommentNum" parameterType="com.framework.loippi.entity.product.ShopGoods">
     UPDATE SHOP_GOODS
     <set>
-      commentnum = ifnull(commentnum, 0) + #{commentnum, jdbcType=INTEGER}
+        id = #{id}
+      <if test="commentnum !=null and commentnum != ''">
+        ,commentnum = #{commentnum}
+      </if>
       <if test="evaluaterate !=null and evaluaterate != ''">
         ,evaluateRate = #{evaluaterate}
       </if>
