@@ -41,6 +41,10 @@ public class IntegrationMemberListResult {
      * 手机号
      */
     private String memberMobile;
+    /**
+     * 与推荐人的关系  0：临时绑定  1：永久绑定
+     */
+    private Integer raSpoStatus;
 
     public static List<IntegrationMemberListResult> build(List<RdMmBasicInfo> shopMemberList,List<RdMmRelation> rdMmRelationList, List<RdRanks> shopMemberGradeList) {
         List<IntegrationMemberListResult> userIntegrationListResultList=new ArrayList<>();
@@ -60,6 +64,7 @@ public class IntegrationMemberListResult {
                 for (RdMmRelation rdMmRelation : rdMmRelationList) {
                     if(rdMmRelation.getMmCode().equals(mmCode)){
                         integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        integrationMemberListResult.setRaSpoStatus(rdMmRelation.getRaSponsorStatus());
                         break;
                     }
                     integrationMemberListResult.setGradeName("");

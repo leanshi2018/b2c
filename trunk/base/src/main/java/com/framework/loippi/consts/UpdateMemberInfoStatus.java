@@ -57,8 +57,13 @@ public class UpdateMemberInfoStatus {
      */
     public static final int UPDATE_SHARENUMBER = 11;
     /**
-     * 更新分享次数
+     * 更新推送状态
      */
     public static final int UPDATE_PUSHSTATUS = 12;
+
+    /**
+     * 更新会员姓名
+     */
+    public static final int UPDATE_NAME = 13;
 
 }

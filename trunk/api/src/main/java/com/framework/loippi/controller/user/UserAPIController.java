@@ -293,6 +293,22 @@ public class UserAPIController extends BaseController {
     }
 
     /**
+     * 修改姓名
+     */
+    @RequestMapping(value = "/updateName.json", method = RequestMethod.POST)
+    public String updateName(HttpServletRequest request, String name) {
+        if (StringUtil.isEmpty(name)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        member.setMmName(name);
+        rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.UPDATE_NAME);
+        redisService.save(session.getSessionid(), AuthsLoginResult.of(member, session, prefix));
+        return ApiUtils.success();
+    }
+
+    /**
      * 修改头像
      */
     @RequestMapping(value = "/updateAvator.json", method = RequestMethod.POST)
@@ -1047,7 +1063,20 @@ public class UserAPIController extends BaseController {
         OrderSumPpv orderSumMonthlyPpv = shopOrderService
             .sumPpv(Paramap.create().put("startTime", startTime).put("endTime", endTime).put("buyerId", memeberId));
         OrderSumPpv orderSumAccumulatedPpv = shopOrderService.sumPpv(Paramap.create().put("buyerId", memeberId));
-
+/*        //查找当前周期订单数据
+        String periodCode = periodService.getSysPeriodService(new Date());
+        OrderSumPpv periodSumPpv = new OrderSumPpv();
+        if(periodCode==null){
+            periodSumPpv.setTotalmoney(new BigDecimal("0.00"));
+            periodSumPpv.setTotalPpv(new BigDecimal("0.00"));
+        }else {
+            periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",periodCode));
+        }
+        BigDecimal retail = new BigDecimal("0.00");
+        BigDecimal buyerId = shopOrderService.findOrderRetail(Paramap.create().put("buyerId", memeberId));//查询出零售订单总额
+        if(buyerId!=null){
+            retail = buyerId.add(retail);
+        }*/
         return ApiUtils.success(SubordinateUserInformationResult
             .build(rdMmBasicInfo, shopMemberGrade, orderSumMonthlyPpv, orderSumAccumulatedPpv));
     }
