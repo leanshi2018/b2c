@@ -2847,7 +2847,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         Map<String,Object> map = new HashMap<>();
         map.put("creationPeriod",period);
         map.put("buyerId",mmCode);
-        return orderDao.countOrderPPVByMCodeAndPeriod(map);
+        BigDecimal pvAll = orderDao.countOrderPPVByMCodeAndPeriod(map);
+        BigDecimal pvNot0 = orderDao.countOrderPPVRefundStateNot0(map);
+        BigDecimal pv =  pvAll.subtract(pvNot0);
+        return pv;
     }
 
     @Override

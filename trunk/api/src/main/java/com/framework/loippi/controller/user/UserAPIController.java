@@ -1030,7 +1030,7 @@ public class UserAPIController extends BaseController {
         shareUrl.append(downloadUrl);
         return ApiUtils.success(
             Paramap.create().put("userCode", member.getMmCode()).put("shareUrl", shareUrl.toString())
-                .put("downloadUrl", downloadUrl));
+                .put("downloadUrl", "https://a.app.qq.com/o/simple.jsp?pkgname=com.ewhale.distribution"));
     }
 
     /**
