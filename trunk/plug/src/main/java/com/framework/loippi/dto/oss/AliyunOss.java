@@ -372,6 +372,7 @@ public class AliyunOss {
      */
     public static String uploadQRcord2Oss(String text, String imagename) {
         // http://show-oss-chebian.oss-cn-shenzhen.aliyuncs.com/store-details/802331103296766000_CASE1
+        text = "https://a.app.qq.com/o/simple.jsp?pkgname=com.ewhale.distribution";
         int width = 300;
         int height = 300;
         // 二维码的图片格式

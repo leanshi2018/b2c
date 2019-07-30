@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import com.framework.loippi.utils.Paramap;
 import org.apache.ibatis.annotations.Param;
 
 import com.framework.loippi.entity.order.ShopOrder;
@@ -12,6 +11,7 @@ import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.mybatis.paginator.domain.PageBounds;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.result.sys.OrderView;
+import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
 import com.framework.loippi.vo.goods.GoodsStatisticsVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
@@ -154,6 +154,8 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     OrderSumPpv sumPpv(Map<String, Object> paramMap);
 
 	BigDecimal countOrderPPVByMCodeAndPeriod(Map<String, Object> map);
+
+	BigDecimal countOrderPPVRefundStateNot0(Map<String, Object> map);
 
     OrderSumPpv findByPeriod(Paramap periodCode);
 
