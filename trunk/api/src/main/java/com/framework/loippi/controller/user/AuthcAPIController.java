@@ -155,12 +155,12 @@ public class AuthcAPIController extends BaseController {
         rdMmBasicInfo.setMobile(param.getMobile());
         rdMmBasicInfo.setMmNickName(param.getName());
         rdMmBasicInfo.setCreationIp(request.getRemoteAddr());
-        List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("verificationMobile", param.getMobile()));
+        List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("mobile", param.getMobile()));
         if(verificationMobile!=null&&verificationMobile.size()>0){
             return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "手机号码已经注册");
         }
         List<RdMmBasicInfo> rdMmBasicInfoList = rdMmBasicInfoService
-            .findList(Paramap.create().put("verificationNickName", param.getName()));
+            .findList(Paramap.create().put("mmNickName", param.getName()));
         if (rdMmBasicInfoList != null && rdMmBasicInfoList.size() > 0) {
             return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "昵称已被占用");
         }
