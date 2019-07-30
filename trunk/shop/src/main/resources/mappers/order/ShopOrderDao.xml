@@ -1330,7 +1330,8 @@
     <!-- 统计某用户的ppv值 -->
     <select id="sumPpv" resultType="com.framework.loippi.vo.order.OrderSumPpv">
         SELECT SUM(so.ppv-ifnull( so.refund_ppv, 0 )) as totalPpv,
-        SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )) as totalmoney
+        SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )-ifnull(so.refund_point, 0)) as totalmoney
+        /*SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )) as totalmoney*/
         from shop_order so
         WHERE 1=1
         <if test="startTime !=null and startTime != ''">
@@ -1346,7 +1347,33 @@
 
     <!--计算当前周期下会员的ppv-->
     <select id="countOrderPPVByMCodeAndPeriod" parameterType="java.util.Map" resultType="java.math.BigDecimal">
-        SELECT sum(ppv) FROM shop_order WHERE buyer_id = #{buyerId} AND payment_state = 1 AND creation_period = #{creationPeriod}
+        SELECT sum(ppv-ifnull(refund_ppv, 0 )) FROM shop_order WHERE buyer_id = #{buyerId} AND payment_state = 1 AND creation_period = #{creationPeriod} and order_state != 0
+    </select>
+
+    <!-- 统计某用户指定周期的ppv值 -->
+    <select id="findByPeriod" resultType="com.framework.loippi.vo.order.OrderSumPpv" parameterType="java.util.Map">
+        SELECT SUM(so.ppv-ifnull( so.refund_ppv, 0 )) as totalPpv,
+        SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )-ifnull(so.refund_point, 0)) as totalmoney
+        from shop_order so
+        WHERE 1=1
+        <if test="buyerId !=null and buyerId != ''">
+           and buyer_id = #{buyerId}
+        </if>
+        <if test="creationPeriod !=null and creationPeriod != ''">
+            AND creation_period = #{creationPeriod}
+        </if>
+        and payment_state = 1 and order_state != 0
+    </select>
+
+    <!-- 查询出零售订单总额 -->
+    <select id="findOrderRetail" resultType="java.math.BigDecimal" parameterType="java.util.Map">
+        SELECT SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )-ifnull(so.refund_point, 0))
+        from shop_order so
+        WHERE 1=1
+        <if test="buyerId !=null and buyerId != ''">
+            and buyer_id = #{buyerId}
+        </if>
+        and payment_state = 1 and order_state != 0 and order_type = 1
     </select>
 
     <!--计算当前周期下会员的退款或者退货的ppv-->

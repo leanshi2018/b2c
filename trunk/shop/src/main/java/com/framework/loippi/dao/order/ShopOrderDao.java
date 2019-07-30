@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.framework.loippi.utils.Paramap;
 import org.apache.ibatis.annotations.Param;
 
 import com.framework.loippi.entity.order.ShopOrder;
@@ -154,5 +155,11 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
 
 	BigDecimal countOrderPPVByMCodeAndPeriod(Map<String, Object> map);
 
+
 	BigDecimal countOrderPPVRefundStateNot0(Map<String, Object> map);
+
+    OrderSumPpv findByPeriod(Paramap periodCode);
+
+    BigDecimal findOrderRetail(Paramap buyerId);
+
 }

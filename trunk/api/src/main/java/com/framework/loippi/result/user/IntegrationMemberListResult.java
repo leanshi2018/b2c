@@ -41,6 +41,10 @@ public class IntegrationMemberListResult {
      * 手机号
      */
     private String memberMobile;
+    /**
+     * 与推荐人的关系  0：临时绑定  1：永久绑定
+     */
+    private Integer raSpoStatus;
 
     public static List<IntegrationMemberListResult> build(List<RdMmBasicInfo> shopMemberList,List<RdMmRelation> rdMmRelationList, List<RdRanks> shopMemberGradeList) {
         List<IntegrationMemberListResult> userIntegrationListResultList=new ArrayList<>();
@@ -49,20 +53,29 @@ public class IntegrationMemberListResult {
             map.put(item.getRankId(),item.getRankName());
         }
         if (shopMemberList!=null && shopMemberList.size()>0){
-            Integer flag=0;
+            //Integer flag=0;
             for (RdMmBasicInfo item:shopMemberList) {
                 IntegrationMemberListResult integrationMemberListResult=new IntegrationMemberListResult();
                 integrationMemberListResult.setMemberMobile(Optional.ofNullable(item.getMobile()).orElse(""));
                 integrationMemberListResult.setMemberName(Optional.ofNullable(item.getMmNickName()).orElse(""));
                 integrationMemberListResult.setId( Optional.ofNullable(item.getMmCode()).orElse("-1"));
                 integrationMemberListResult.setMemberAvatar(Optional.ofNullable(item.getMmAvatar()).orElse(""));
-                RdMmRelation rdMmRelation=rdMmRelationList.get(flag);
+                String mmCode = item.getMmCode();
+                for (RdMmRelation rdMmRelation : rdMmRelationList) {
+                    if(rdMmRelation.getMmCode().equals(mmCode)){
+                        integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        integrationMemberListResult.setRaSpoStatus(rdMmRelation.getRaSponsorStatus());
+                        break;
+                    }
+                    integrationMemberListResult.setGradeName("");
+                }
+/*                RdMmRelation rdMmRelation=rdMmRelationList.get(flag);
                 flag++;
                 if (map.get(Optional.ofNullable(rdMmRelation.getRank()).orElse(-1))!=null && !"".equals(map.get(Optional.ofNullable(rdMmRelation.getRank()).orElse(-1)))){
                     integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
                 }else{
                     integrationMemberListResult.setGradeName("");
-                }
+                }*/
                 userIntegrationListResultList.add(integrationMemberListResult);
             }
         }

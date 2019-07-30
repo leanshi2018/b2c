@@ -17,6 +17,7 @@ import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
 import com.framework.loippi.vo.goods.GoodsStatisticsVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
@@ -296,4 +297,13 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
      * @return
      */
     BigDecimal countOrderPPVByMCodeAndPeriod(String mmCode, String period);
+
+    /**
+     * 查询指定周期订单总额以及ppv
+     * @param periodCode
+     * @return
+     */
+    OrderSumPpv findByPeriod(Paramap periodCode);
+
+    BigDecimal findOrderRetail(Paramap buyerId);
 }

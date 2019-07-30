@@ -1,6 +1,7 @@
 package com.framework.loippi.result.user;
 
 import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.vo.order.OrderSumPpv;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,27 @@ public class SubordinateUserInformationResult {
     //当月购买PV
     private BigDecimal monthPpv;
 
+    /**
+     * 与推荐人的绑定关系
+     */
+    private Integer raSpoStatus;
+    /**
+     * 当前周期购货额
+     */
+    private BigDecimal periodMoney;
+    /**
+     * 当月获得PV值（MI值）
+     */
+    private BigDecimal periodPv;
+    /**
+     * 零售购买额（零售类型已支付且没有退款的订单）
+     */
+    private BigDecimal retailMoney;
+    /**
+     * 已获零售利润
+     */
+    private BigDecimal retailProfits;
+
 
 
 
@@ -72,6 +94,9 @@ public class SubordinateUserInformationResult {
         return result;
     }
 
+    public static SubordinateUserInformationResult build2(RdMmBasicInfo profile, RdRanks shopMemberGrade, OrderSumPpv orderSumMonthlyPpv, OrderSumPpv orderSumAccumulatedPpv, RdMmRelation rdMmRelation, BigDecimal retail) {
+        return null;
+    }
 
 }
 

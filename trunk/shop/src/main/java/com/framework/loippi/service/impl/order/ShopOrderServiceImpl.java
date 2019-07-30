@@ -2852,4 +2852,14 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         BigDecimal pv =  pvAll.subtract(pvNot0);
         return pv;
     }
+
+    @Override
+    public OrderSumPpv findByPeriod(Paramap periodCode) {
+        return orderDao.findByPeriod(periodCode);
+    }
+
+    @Override
+    public BigDecimal findOrderRetail(Paramap buyerId) {
+        return orderDao.findOrderRetail(buyerId);
+    }
 }
