@@ -288,8 +288,9 @@ public class UserAPIController extends BaseController {
     public String UserProfile(HttpServletRequest request) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
-        RdRaBinding rdRaBinding=rdRaBindingService.find("rdCode",member.getMmCode());
-        return ApiUtils.success(UserProfileResult.build2(rdMmBasicInfo,rdRaBinding));
+        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("nMcode",member.getMmCode());
+        //RdRaBinding rdRaBinding=rdRaBindingService.find("rdCode",member.getMmCode());
+        return ApiUtils.success(UserProfileResult.build3(rdMmBasicInfo,oldSysRelationship));
     }
 
     /**
