@@ -153,6 +153,10 @@ public class OrderSysController extends GenericController {
 
     @RequestMapping(value = {"/admin/order/otherList"})
     public String otherList(Pageable pageable, ModelMap model, OrderView param,String orderTypeStr ) {
+        System.out.println("pageable:"+pageable);
+        System.out.println("model:"+model);
+        System.out.println("param:"+param);
+        System.out.println("orderTypeStr:"+orderTypeStr);
         // 自营订单
         param.setStoreId(0L);
         pageable.setParameter(param);
@@ -180,6 +184,22 @@ public class OrderSysController extends GenericController {
         model.addAttribute("param", param);
         return "trade/shop_order/other_list";
     }
+
+    /**
+     *  待发货订单连接第三方发货
+     * @param request
+     * @param response
+     * @param orderSnList
+     * @throws Exception
+     */
+    @RequestMapping(value = {"/admin/order/expressOrder"})
+    public void expressOrder(HttpServletRequest request, HttpServletResponse response, String[] orderSnList ) throws Exception{
+
+
+
+        request.getRequestDispatcher("/admin/order/otherList").forward(request, response);//请求转发
+    }
+
 
     /**
      * 详情
