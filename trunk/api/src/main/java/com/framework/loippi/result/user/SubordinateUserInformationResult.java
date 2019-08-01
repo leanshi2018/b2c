@@ -94,8 +94,32 @@ public class SubordinateUserInformationResult {
         return result;
     }
 
-    public static SubordinateUserInformationResult build2(RdMmBasicInfo profile, RdRanks shopMemberGrade, OrderSumPpv orderSumMonthlyPpv, OrderSumPpv orderSumAccumulatedPpv, RdMmRelation rdMmRelation, BigDecimal retail) {
-        return null;
+    public static SubordinateUserInformationResult build2(RdMmBasicInfo profile, RdRanks shopMemberGrade, OrderSumPpv periodSumPpv, OrderSumPpv orderSumAccumulatedPpv,Integer raSponsorStatus) {
+        Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
+        SubordinateUserInformationResult result = new SubordinateUserInformationResult();
+        result.setAvatar(optional.map(RdMmBasicInfo::getMmAvatar).orElse(""));
+        result.setNickname(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
+        if (shopMemberGrade!=null){
+            result.setMemberGradeName(shopMemberGrade.getRankName());
+        }else{
+            result.setMemberGradeName("用户");
+        }
+
+        result.setIsOnline(0);
+        if (orderSumAccumulatedPpv!=null){
+            result.setTotalMoney(Optional.ofNullable(orderSumAccumulatedPpv.getTotalmoney()).orElse(BigDecimal.ZERO));
+        }else{
+            result.setTotalMoney(BigDecimal.ZERO);
+        }
+        if (periodSumPpv!=null && shopMemberGrade.getRankClass()!=0){
+            result.setPeriodMoney(Optional.ofNullable(periodSumPpv.getTotalmoney()).orElse(BigDecimal.ZERO));
+            result.setPeriodPv(Optional.ofNullable(periodSumPpv.getTotalPpv()).orElse(BigDecimal.ZERO));
+        }else{
+            result.setMonthMoney(BigDecimal.ZERO);
+            result.setMonthPpv(BigDecimal.ZERO);
+        }
+        result.setRaSpoStatus(raSponsorStatus);
+        return result;
     }
 
 }
