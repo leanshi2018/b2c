@@ -1331,7 +1331,6 @@
     <select id="sumPpv" resultType="com.framework.loippi.vo.order.OrderSumPpv">
         SELECT SUM(so.ppv-ifnull( so.refund_ppv, 0 )) as totalPpv,
         SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )-ifnull(so.refund_point, 0)) as totalmoney
-        /*SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )) as totalmoney*/
         from shop_order so
         WHERE 1=1
         <if test="startTime !=null and startTime != ''">
@@ -1343,6 +1342,7 @@
         <if test="buyerId != null">
             and so.buyer_id =#{buyerId}
         </if>
+        AND payment_state = 1 and order_state != 0
     </select>
 
     <!--计算当前周期下会员的ppv-->
