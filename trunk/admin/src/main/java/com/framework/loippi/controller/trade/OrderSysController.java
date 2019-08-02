@@ -219,7 +219,7 @@ public class OrderSysController extends GenericController {
      * @param typeExperss 发货类型 1选择发货  0所有发货
      * @throws Exception
      */
-    @RequestMapping(value = {"/admin/order/expressOrder"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/admin/order/expressOrder"}, method = RequestMethod.POST)
     public void expressOrder(HttpServletRequest request, HttpServletResponse response, Long[] ids, String typeExperss) throws Exception{
        /* Long[] ids = new Long[1];
         ids[0] = 6562977106358177792l;//,Long[] ids
