@@ -12,4 +12,6 @@ import com.framework.loippi.service.GenericService;
  */
 public interface RdWarehouseService  extends GenericService<RdWarehouse, Long> {
 
+	RdWarehouse findByCode(String wareCode);
+
 }

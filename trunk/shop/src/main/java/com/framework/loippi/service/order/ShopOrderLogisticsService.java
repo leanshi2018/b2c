@@ -12,4 +12,5 @@ import com.framework.loippi.service.GenericService;
  */
 public interface ShopOrderLogisticsService  extends GenericService<ShopOrderLogistics, Long> {
 
+	void insert(ShopOrderLogistics shopOrderLogistics);
 }

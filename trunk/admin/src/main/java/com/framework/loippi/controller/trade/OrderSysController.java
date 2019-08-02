@@ -20,6 +20,7 @@ import org.apache.axis.client.Service;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,10 +52,13 @@ import com.framework.loippi.entity.order.ShopOrderLogistics;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.entity.user.RdGoodsAdjustment;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.ware.RdWareAdjust;
+import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.service.KuaidiService;
@@ -71,11 +75,14 @@ import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.service.user.RdGoodsAdjustmentService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
+import com.framework.loippi.service.ware.RdWareAdjustService;
+import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
@@ -131,6 +138,12 @@ public class OrderSysController extends GenericController {
     private UserService userService;
     @Resource
     private RdInventoryWarningService inventoryWarningService;
+    @Resource
+    private RdWarehouseService rdWarehouseService;
+    @Resource
+    private RdWareAdjustService rdWareAdjustService;
+    @Resource
+    private RdGoodsAdjustmentService rdGoodsAdjustmentService;
     // 订单编辑中
     private static final int ORDER_EDITING = 0;
     // 订单编辑完成
@@ -206,50 +219,55 @@ public class OrderSysController extends GenericController {
      * @param typeExperss 发货类型 1选择发货  0所有发货
      * @throws Exception
      */
-    @RequestMapping(value = {"/admin/order/expressOrder"}, method = RequestMethod.POST)
-    public void expressOrder(HttpServletRequest request, HttpServletResponse response, Long[] ids ,String typeExperss) throws Exception{
-
-        System.out.println("*******************");
-        System.out.println("ids:"+ids);
-        System.out.println("typeExperss:"+typeExperss);
-        System.out.println("*******************");
-
+    @RequestMapping(value = {"/admin/order/expressOrder"}, method = RequestMethod.GET)
+    public void expressOrder(HttpServletRequest request, HttpServletResponse response, Long[] ids, String typeExperss) throws Exception{
+       /* Long[] ids = new Long[1];
+        ids[0] = 6562977106358177792l;//,Long[] ids
+*/
         if (typeExperss.equals("1")){//选择发货
             System.out.println("进来了选择发货");
             if (ids.length>0){
                 for (Long id : ids) {
-                    Map<String, Object> resMap = orderShip(id);//发货返回信息
-                    String resultS = (String)resMap.get("res");
-                    if (!"".equals(resultS)){
-                        Map maps = (Map) JSON.parse(resultS);
-                        String success = (String)maps.get("success");//是否成功
-                        String orderSn = (String)maps.get("CsRefNo");//订单编号
-                        if (success.equals("success")){//发货成功
-                            String trackingNo = (String)maps.get("TrackingNo");//运单号
-                            if (!"".equals(trackingNo)){// 订单状态：待收货 提交状态：已提交 失败原因：""  +运单号
-                                System.out.println("待收货");
-                                Integer orderState = 30;
-                                Integer submitStatus = 10;
-                                String failInfo = "";
-                                orderService.updateOrderStatus(orderSn,orderState,submitStatus,failInfo,trackingNo);
-                            }else{//状订单态：仓库在备货 提交状态：已提交 失败原因：""
-                                System.out.println("仓库在备货");
-                                orderService.updateOrderStatus(orderSn,25,10,"","");
-                            }
+                    if (id!=null){
+                        Map<String, Object> resMap = orderShip(id);//发货返回信息
+                        String resultS = (String)resMap.get("res");
+                        if (!"".equals(resultS)){
+                            Map maps = (Map) JSON.parse(resultS);
+                            String success = (String)maps.get("success");//是否成功
+                            String orderSn = (String)maps.get("CsRefNo");//订单编号
+                            if (success.equals("success")){//发货成功
+                                String trackingNo = (String)maps.get("TrackingNo");//运单号
+                                if (!"".equals(trackingNo)){// 订单状态：待收货 提交状态：已提交 失败原因：""  +运单号
+                                    System.out.println("待收货");
+                                    Integer orderState = 30;
+                                    Integer submitStatus = 10;
+                                    String failInfo = "";
+                                    orderService.updateOrderStatus(orderSn,orderState,submitStatus,failInfo,trackingNo);
+                                }else{//状订单态：仓库在备货 提交状态：已提交 失败原因：""
+                                    System.out.println("仓库在备货");
+                                    orderService.updateOrderStatus(orderSn,25,10,"","");
+                                }
 
-                            List<Map<String,Object>> products = (List<Map<String,Object>>)resMap.get("Products");//发货的数据
-                            for (Map<String, Object> product : products) {
-                                String sku = (String)product.get("SKU");//发货商品规格编号
-                                Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
-                                ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
-                                Long goodsSpecId = goodsSpec.getId();//商品规格id
-                                inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514",goodsSpecId,quantity);
+                                List<Map<String,Object>> products = (List<Map<String,Object>>)resMap.get("Products");//发货的数据
+                                for (Map<String, Object> product : products) {
+                                    String sku = (String)product.get("SKU");//发货商品规格编号
+                                    Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
+                                    ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
+                                    Long goodsSpecId = goodsSpec.getId();//商品规格id
+                                    inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514",goodsSpecId,quantity);
+                                }
+
+                                List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
+                                List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>)resMap.get("orderGoods");
+                                List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo);//需要修改订单商品信息
+                                shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
+
                             }
-                        }
-                        if (success.equals("failure")) {//发货失败   提交状态：提交失败 失败原因：failInfo
-                            String failInfo = (String)maps.get("Info");//失败信息
-                            System.out.println("failInfo");
-                            orderService.updateOrderStatus(orderSn,20,20,failInfo,"");
+                            if (success.equals("failure")) {//发货失败   提交状态：提交失败 失败原因：failInfo
+                                String failInfo = (String)maps.get("Info");//失败信息
+                                System.out.println("failInfo");
+                                orderService.updateOrderStatus(orderSn,20,20,failInfo,"");
+                            }
                         }
                     }
                 }
@@ -286,6 +304,11 @@ public class OrderSysController extends GenericController {
                             Long goodsSpecId = goodsSpec.getId();//商品规格id
                             inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514",goodsSpecId,quantity);
                         }
+
+                        List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
+                        List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>)resMap.get("orderGoods");
+                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo);//需要修改订单商品信息
+                        shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
                     }
                     if (success.equals("failure")) {//发货失败   提交状态：提交失败 失败原因：failInfo
                         String failInfo = (String)maps.get("Info");//失败信息
@@ -296,8 +319,87 @@ public class OrderSysController extends GenericController {
             }
         }
 
+        System.out.println("发货完成！");
+        request.getRequestDispatcher("/admin/order/otherList").forward(request, response);//请求转发
+    }
 
-       // request.getRequestDispatcher("/admin/order/otherList").forward(request, response);//请求转发
+    /**
+     * 需要修改订单商品信息
+     * @param orderGoodsList
+     * @return
+     */
+    public List<ShopOrderGoods> updateOrderGoods(List<ShopOrderGoods> shopOrderGoodsNullList,List<ShopOrderGoods> orderGoodsList,String trackingNo) {
+        for (ShopOrderGoods orderGoods : orderGoodsList) {
+            ShopCommonExpress express = commonExpressService.find(44l);
+
+            ShopOrderGoods shopOrderGoods = new ShopOrderGoods();
+            shopOrderGoods.setShippingExpressCode(Optional.ofNullable(express.getECode()).orElse(""));
+            shopOrderGoods.setShippingExpressId(Optional.ofNullable(express.getId()).orElse(-1L));
+            shopOrderGoods.setShippingExpressName(Optional.ofNullable(express.getEName()).orElse(""));
+            shopOrderGoods.setShippingCode(Optional.ofNullable(trackingNo).orElse("-1"));
+            shopOrderGoods.setShippingGoodsNum(orderGoods.getGoodsNum());
+            shopOrderGoods.setId(orderGoods.getId());
+            shopOrderGoodsNullList.add(shopOrderGoods);
+
+            String adminName="";
+            Subject subject = SecurityUtils.getSubject();
+            if (subject != null) {
+                Principal principal = (Principal) subject.getPrincipal();
+                if (principal != null && principal.getId() != null) {
+                    adminName=principal.getUsername();
+                }
+            }
+
+            RdWarehouse warehouse = rdWarehouseService.findByCode("20192514");
+            //新增发货单
+            RdWareAdjust rdWareAdjust = new RdWareAdjust();
+            rdWareAdjust.setWareCode(warehouse.getWareCode());
+            rdWareAdjust.setWareName(warehouse.getWareName());
+            rdWareAdjust.setAdjustType("SOT");
+            rdWareAdjust.setStatus(3);
+            rdWareAdjust.setAutohrizeBy(adminName);
+            rdWareAdjust.setAutohrizeTime(new Date());
+            rdWareAdjust.setAutohrizeDesc("订单发货");
+            rdWareAdjustService.insert(rdWareAdjust);
+
+            ShopGoodsSpec shopGoodsSpec = shopGoodsSpecService.find(orderGoods.getSpecId());
+            ShopGoods shopGoods = shopGoodsService.find(orderGoods.getGoodsId());
+            //新增的发货商品详情
+            RdGoodsAdjustment rdGoodsAdjustment = new RdGoodsAdjustment();
+            rdGoodsAdjustment.setWid(rdWareAdjust.getWid());
+            rdGoodsAdjustment.setSpecificationId(shopGoodsSpec.getId());
+            rdGoodsAdjustment.setGoodId(shopGoodsSpec.getGoodsId());
+            rdGoodsAdjustment.setGoodsName(shopGoods.getGoodsName());
+            rdGoodsAdjustment.setSpecName(shopGoodsSpec.getSpecName());
+            rdGoodsAdjustment.setGoodsSpec(shopGoodsSpec.getSpecGoodsSpec());
+            rdGoodsAdjustment.setStockNow(shopGoodsSpec.getSpecGoodsStorage().longValue());
+            rdGoodsAdjustment.setStockInto(Long.valueOf(orderGoods.getGoodsNum()));
+            rdGoodsAdjustment.setCreateTime(new Date());
+            rdGoodsAdjustment.setWareCode(warehouse.getWareCode());
+            rdGoodsAdjustment.setSign(1);
+            rdGoodsAdjustment.setAutohrizeTime(new Date());
+            rdGoodsAdjustment.setStatus(1L);
+            rdGoodsAdjustmentService.insert(rdGoodsAdjustment);
+            //新增订单商品物流信息表
+            ShopOrderLogistics shopOrderLogistics = new ShopOrderLogistics();
+            shopOrderLogistics.setGoodsId(shopGoodsSpec.getGoodsId());
+            shopOrderLogistics.setGoodsImage(shopGoods.getGoodsImage());
+            shopOrderLogistics.setGoodsName(shopGoods.getGoodsName());
+            shopOrderLogistics.setGoodsType(shopGoods.getGoodsType());
+            shopOrderLogistics.setOrderId(orderGoods.getOrderId());
+            shopOrderLogistics.setSpecId(shopGoodsSpec.getId());
+            shopOrderLogistics.setSpecInfo(orderGoods.getSpecInfo());
+            shopOrderLogistics.setGoodsNum(orderGoods.getGoodsNum());
+            shopOrderLogistics.setPpv(shopGoodsSpec.getPpv());
+            shopOrderLogistics.setPrice(shopGoodsSpec.getSpecRetailPrice());
+            shopOrderLogistics.setShippingExpressCode(Optional.ofNullable(express.getECode()).orElse(""));
+            shopOrderLogistics.setShippingExpressId(Optional.ofNullable(express.getId()).orElse(-1L));
+            shopOrderLogistics.setShippingCode(Optional.ofNullable(trackingNo).orElse("-1"));
+            shopOrderLogistics.setId(twiterIdService.getTwiterId());
+            shopOrderLogisticsService.insert(shopOrderLogistics);
+
+        }
+        return shopOrderGoodsNullList;
     }
 
     /**
@@ -343,7 +445,7 @@ public class OrderSysController extends GenericController {
 
         map.put("ShipToAdress2","");
         map.put("ShipToCompanyName","");
-        map.put("OrderStatus","1");//订单状态--(草稿=1),(确认=3)
+        map.put("OrderStatus","3");//订单状态--(草稿=1),(确认=3)
         map.put("TrackingNo","");
         map.put("CusRemark","");
         map.put("CODType","");
@@ -520,6 +622,7 @@ public class OrderSysController extends GenericController {
         Map<String,Object> resultMap = new HashMap<String,Object>();
         resultMap.put("res",res);
         resultMap.put("Products",productLists);
+        resultMap.put("orderGoods",orderGoodsList);
 
         return resultMap;
     }
