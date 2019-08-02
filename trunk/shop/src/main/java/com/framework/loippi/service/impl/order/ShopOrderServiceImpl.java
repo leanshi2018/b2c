@@ -353,6 +353,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         }
 
         shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoodsList);
+
+
+
+
+
+
+
         // 更新订单
         ShopOrder newOrder = new ShopOrder();
         newOrder.setId(order.getId());
@@ -2876,6 +2883,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         map.put("submitStatus",submitStatus);
         map.put("failInfo",failInfo);
         map.put("shippingCode",trackingNo);
+        ShopCommonExpress express = shopCommonExpressDao.find(44l);
+        map.put("shippingExpressCode",Optional.ofNullable(express.getECode()).orElse(""));
+        map.put("shippingExpressId",Optional.ofNullable(express.getId()).orElse(-1L));
+        map.put("shippingName",Optional.ofNullable(express.getEName()).orElse(""));
+        map.put("shippingTime",new Date());
         orderDao.updateOrderStatus(map);
     }
 

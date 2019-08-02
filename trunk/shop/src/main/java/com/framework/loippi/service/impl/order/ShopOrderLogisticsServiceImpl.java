@@ -1,11 +1,12 @@
 package com.framework.loippi.service.impl.order;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.order.ShopOrderLogisticsDao;
 import com.framework.loippi.entity.order.ShopOrderLogistics;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.order.ShopOrderLogisticsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 
 /**
@@ -24,5 +25,10 @@ public class ShopOrderLogisticsServiceImpl extends GenericServiceImpl<ShopOrderL
 	@Autowired
 	public void setGenericDao() {
 		super.setGenericDao(shopOrderLogisticsDao);
+	}
+
+	@Override
+	public void insert(ShopOrderLogistics shopOrderLogistics) {
+		shopOrderLogisticsDao.insert(shopOrderLogistics);
 	}
 }

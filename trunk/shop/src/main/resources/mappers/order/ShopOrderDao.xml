@@ -1395,6 +1395,10 @@
         order_state = #{orderState},
         submit_status = #{submitStatus},
         fail_info = #{failInfo},
+        shipping_express_id = #{shippingExpressId},
+        shipping_express_code = #{shippingExpressCode},
+        shipping_name = #{shippingName},
+        shipping_time = #{shippingTime},
         shipping_code = #{shippingCode}
         WHERE
         order_sn = #{orderSn}
