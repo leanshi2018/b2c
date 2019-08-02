@@ -161,4 +161,12 @@
         </where>
     </select>
 
+    <select id="findGoodsGoodsByGoodsId" parameterType="java.lang.Long" resultMap="ShopGoodsGoodsResultMap">
+        select * from shop_goods_goods where good_id = #{goodId}
+    </select>
+
+    <select id="findGoodsGoods" parameterType="java.util.Map" resultMap="ShopGoodsGoodsResultMap">
+        select * from shop_goods_goods where good_id = #{goodId} and combine_goods_id = #{combineGoodsId}
+    </select>
+
 </mapper> 

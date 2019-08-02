@@ -2862,4 +2862,21 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     public BigDecimal findOrderRetail(Paramap buyerId) {
         return orderDao.findOrderRetail(buyerId);
     }
+
+    @Override
+    public List<ShopOrder> findStatu20() {
+        return orderDao.findStatu20();
+    }
+
+    @Override
+    public void updateOrderStatus(String orderSn, Integer orderState, Integer submitStatus, String failInfo, String trackingNo) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderSn",orderSn);
+        map.put("orderState",orderState);
+        map.put("submitStatus",submitStatus);
+        map.put("failInfo",failInfo);
+        map.put("shippingCode",trackingNo);
+        orderDao.updateOrderStatus(map);
+    }
+
 }

@@ -1,13 +1,10 @@
 package com.framework.loippi.dao.order;
 
+import java.util.List;
+
 import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.user.ShopMemberFavorites;
-import com.framework.loippi.entity.walet.ShopWalletLog;
 import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.utils.Paramap;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * DAO - ShopOrderGoods(订单商品表)
@@ -38,4 +35,5 @@ public interface ShopOrderGoodsDao extends GenericDao<ShopOrderGoods, Long> {
 
     void updateBatchForShipmentNum(List<ShopOrderGoods> shopOrderGoodsList);
 
+	List<ShopOrderGoods> listByOrderId(Long id);
 }

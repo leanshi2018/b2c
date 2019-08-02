@@ -163,5 +163,14 @@
 			<include refid="where_column" />
 		</where>
 	</select>
-	
+
+	<!-- 修改库存表中商品库存 -->
+	<update id="updateInventoryByWareCodeAndSpecId" parameterType="java.util.Map">
+		UPDATE	RD_INVENTORY_WARNING
+		<set>
+			INVENTORY = INVENTORY - #{inventory}
+		</set>
+		WHERE	WARE_CODE = #{wareCode}  and SPECIFICATION_ID=#{specificationId}
+	</update>
+
 </mapper> 
