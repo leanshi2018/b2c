@@ -1,32 +1,25 @@
 package com.framework.loippi.service.impl.product;
 
-import com.framework.loippi.dao.product.ShopGoodsDao;
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.mybatis.paginator.domain.PageList;
-import com.framework.loippi.result.sys.GoodsStocksListView;
-import com.framework.loippi.service.TwiterIdService;
-import com.framework.loippi.service.impl.GenericServiceImpl;
-
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.GoodsUtils;
-import com.framework.loippi.utils.JacksonUtil;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.vo.goods.GoodsSpecVo;
-import com.google.common.collect.Lists;
-import org.apache.poi.ss.formula.functions.T;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.framework.loippi.dao.product.ShopGoodsSpecDao;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.service.product.ShopGoodsSpecService;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.framework.loippi.dao.product.ShopGoodsDao;
+import com.framework.loippi.dao.product.ShopGoodsSpecDao;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.mybatis.paginator.domain.PageList;
+import com.framework.loippi.result.sys.GoodsStocksListView;
+import com.framework.loippi.service.impl.GenericServiceImpl;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.Paramap;
+import com.google.common.collect.Lists;
 
 /**
  * SERVICE - ShopGoodsSpec(商品规格表)
@@ -114,6 +107,11 @@ public class ShopGoodsSpecServiceImpl extends GenericServiceImpl<ShopGoodsSpec, 
     public Page<GoodsStocksListView> findGoodsStocksInfo(Pageable pageable) {
         PageList<GoodsStocksListView> result=shopGoodsSpecDao.findGoodsStocksInfo(pageable.getParameter(), pageable.getPageBounds());
         return new Page<GoodsStocksListView>(result, result.getPaginator().getTotalCount(), pageable);
+    }
+
+    @Override
+    public ShopGoodsSpec findByspecGoodsSerial(String specGoodsSerial) {
+        return shopGoodsSpecDao.findByspecGoodsSerial(specGoodsSerial);
     }
 
 }

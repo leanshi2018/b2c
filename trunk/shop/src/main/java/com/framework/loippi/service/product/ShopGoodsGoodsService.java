@@ -1,5 +1,8 @@
 package com.framework.loippi.service.product;
 
+import java.util.List;
+import java.util.Map;
+
 import com.framework.loippi.entity.product.ShopGoodsGoods;
 import com.framework.loippi.service.GenericService;
 
@@ -11,4 +14,7 @@ import com.framework.loippi.service.GenericService;
  */
 public interface ShopGoodsGoodsService  extends GenericService<ShopGoodsGoods, Long> {
 
+	List<ShopGoodsGoods> findGoodsGoodsByGoodsId(Long goodsId1);
+
+	ShopGoodsGoods findGoodsGoods(Map<String, Object> map1);
 }

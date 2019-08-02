@@ -1,25 +1,22 @@
 package com.framework.loippi.service.impl.order;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.order.ShopOrderGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsDao;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * SERVICE - ShopOrderGoods(订单商品表)
@@ -96,6 +93,11 @@ public class ShopOrderGoodsServiceImpl extends GenericServiceImpl<ShopOrderGoods
     @Override
     public void updateBatchForShipmentNum(List<ShopOrderGoods> shopOrderGoodsList) {
         shopOrderGoodsDao.updateBatchForShipmentNum(shopOrderGoodsList);
+    }
+
+    @Override
+    public List<ShopOrderGoods> listByOrderId(Long id) {
+        return shopOrderGoodsDao.listByOrderId(id);
     }
 
 }

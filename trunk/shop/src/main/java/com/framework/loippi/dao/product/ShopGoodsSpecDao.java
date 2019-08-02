@@ -1,15 +1,13 @@
 package com.framework.loippi.dao.product;
 
-import com.framework.loippi.entity.product.ShopGoods;
+import java.util.List;
+import java.util.Map;
+
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.mybatis.paginator.domain.PageBounds;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.result.sys.GoodsStocksListView;
-import org.apache.poi.ss.formula.functions.T;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * DAO - ShopGoodsSpec(商品规格表)
@@ -36,4 +34,6 @@ public interface ShopGoodsSpecDao extends GenericDao<ShopGoodsSpec, Long> {
     ShopGoodsSpec findByGoodsId(Long goodsId);
 
     PageList<GoodsStocksListView> findGoodsStocksInfo(Object var1, PageBounds var2);
+
+	ShopGoodsSpec findByspecGoodsSerial(String specGoodsSerial);
 }

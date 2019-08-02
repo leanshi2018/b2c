@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import net.sf.json.JSONObject;
+
 import java.io.BufferedOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +13,10 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
 
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -40,6 +45,7 @@ import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
+import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.order.ShopOrderLog;
 import com.framework.loippi.entity.order.ShopOrderLogistics;
 import com.framework.loippi.entity.product.ShopGoods;
@@ -69,6 +75,7 @@ import com.framework.loippi.service.user.RdMmAddInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.ware.RdInventoryWarningService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
@@ -122,6 +129,8 @@ public class OrderSysController extends GenericController {
     private ShopOrderLogisticsService shopOrderLogisticsService;
     @Resource
     private UserService userService;
+    @Resource
+    private RdInventoryWarningService inventoryWarningService;
     // 订单编辑中
     private static final int ORDER_EDITING = 0;
     // 订单编辑完成
@@ -185,21 +194,335 @@ public class OrderSysController extends GenericController {
         return "trade/shop_order/other_list";
     }
 
+
+    private static String secretkey = "1073f238-1971-4890-bfc4-fd903d90d7eb10294";//秘钥
+    private static String customerID = "10294";//客户编号
+
     /**
      *  待发货订单连接第三方发货
      * @param request
      * @param response
-     * @param orderSnList
+     * @param ids
+     * @param typeExperss 发货类型 1选择发货  0所有发货
      * @throws Exception
      */
-    @RequestMapping(value = {"/admin/order/expressOrder"})
-    public void expressOrder(HttpServletRequest request, HttpServletResponse response, String[] orderSnList ) throws Exception{
+    @RequestMapping(value = {"/admin/order/expressOrder"}, method = RequestMethod.POST)
+    public void expressOrder(HttpServletRequest request, HttpServletResponse response, Long[] ids ,String typeExperss) throws Exception{
+
+        System.out.println("*******************");
+        System.out.println("ids:"+ids);
+        System.out.println("typeExperss:"+typeExperss);
+        System.out.println("*******************");
+
+        if (typeExperss.equals("1")){//选择发货
+            System.out.println("进来了选择发货");
+            if (ids.length>0){
+                for (Long id : ids) {
+                    Map<String, Object> resMap = orderShip(id);//发货返回信息
+                    String resultS = (String)resMap.get("res");
+                    if (!"".equals(resultS)){
+                        Map maps = (Map) JSON.parse(resultS);
+                        String success = (String)maps.get("success");//是否成功
+                        String orderSn = (String)maps.get("CsRefNo");//订单编号
+                        if (success.equals("success")){//发货成功
+                            String trackingNo = (String)maps.get("TrackingNo");//运单号
+                            if (!"".equals(trackingNo)){// 订单状态：待收货 提交状态：已提交 失败原因：""  +运单号
+                                System.out.println("待收货");
+                                Integer orderState = 30;
+                                Integer submitStatus = 10;
+                                String failInfo = "";
+                                orderService.updateOrderStatus(orderSn,orderState,submitStatus,failInfo,trackingNo);
+                            }else{//状订单态：仓库在备货 提交状态：已提交 失败原因：""
+                                System.out.println("仓库在备货");
+                                orderService.updateOrderStatus(orderSn,25,10,"","");
+                            }
+
+                            List<Map<String,Object>> products = (List<Map<String,Object>>)resMap.get("Products");//发货的数据
+                            for (Map<String, Object> product : products) {
+                                String sku = (String)product.get("SKU");//发货商品规格编号
+                                Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
+                                ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
+                                Long goodsSpecId = goodsSpec.getId();//商品规格id
+                                inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514",goodsSpecId,quantity);
+                            }
+                        }
+                        if (success.equals("failure")) {//发货失败   提交状态：提交失败 失败原因：failInfo
+                            String failInfo = (String)maps.get("Info");//失败信息
+                            System.out.println("failInfo");
+                            orderService.updateOrderStatus(orderSn,20,20,failInfo,"");
+                        }
+                    }
+                }
+            }
+        }
+
+        if (typeExperss.equals("0")){//全部发货
+            System.out.println("进来了全部发货");
+            List<ShopOrder> orderList = orderService.findStatu20();//所有代发货订单
+            for (ShopOrder shopOrder : orderList) {
+                Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
+                String resultS = (String)resMap.get("res");
+                if (!"".equals(resultS)){
+                    Map maps = (Map) JSON.parse(resultS);
+                    String success = (String)maps.get("success");//是否成功
+                    String orderSn = (String)maps.get("CsRefNo");//订单编号
+                    if (success.equals("success")){//发货成功
+                        String trackingNo = (String)maps.get("TrackingNo");//运单号
+                        if (!"".equals(trackingNo)){// 订单状态：待收货 提交状态：已提交 失败原因："" +运单号
+                            System.out.println("待收货");
+                            Integer orderState = 30;
+                            Integer submitStatus = 10;
+                            String failInfo = "";
+                            orderService.updateOrderStatus(orderSn,orderState,submitStatus,failInfo,trackingNo);
+                        }else{//状订单态：仓库在备货 提交状态：已提交 失败原因：""
+                            System.out.println("仓库在备货");
+                            orderService.updateOrderStatus(orderSn,25,10,"","");
+                        }
+                        List<Map<String,Object>> products = (List<Map<String,Object>>)resMap.get("Products");//发货的数据
+                        for (Map<String, Object> product : products) {
+                            String sku = (String)product.get("SKU");//发货商品规格编号
+                            Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
+                            ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
+                            Long goodsSpecId = goodsSpec.getId();//商品规格id
+                            inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514",goodsSpecId,quantity);
+                        }
+                    }
+                    if (success.equals("failure")) {//发货失败   提交状态：提交失败 失败原因：failInfo
+                        String failInfo = (String)maps.get("Info");//失败信息
+                        System.out.println("failInfo");
+                        orderService.updateOrderStatus(orderSn,20,20,failInfo,"");
+                    }
+                }
+            }
+        }
 
 
-
-        request.getRequestDispatcher("/admin/order/otherList").forward(request, response);//请求转发
+       // request.getRequestDispatcher("/admin/order/otherList").forward(request, response);//请求转发
     }
 
+    /**
+     * 连接第三方发货
+     * @param id
+     * @return
+     */
+    public Map<String,Object> orderShip(Long id) {
+        Map<String,Object> map = new HashMap<String,Object>();//strorderinfo参数
+        map.put("Style","1");
+        map.put("CustomerID",customerID);
+        map.put("ChannelInfoID","CNZT3");
+
+        ShopOrder shopOrder = orderService.find(id);
+        String orderSn = shopOrder.getOrderSn();//订单编号
+        map.put("CsRefNo",orderSn);//订单号
+        String buyerName = shopOrder.getBuyerName();//买家名称
+        String buyerPhone = shopOrder.getBuyerPhone();//买家手机号码
+        Long addressId = shopOrder.getAddressId();
+        ShopOrderAddress orderAddress = orderAddressService.find(addressId);//订单地址信息
+        String trueName = orderAddress.getTrueName();//收件人姓名
+        map.put("ShipToName",trueName);
+
+        String mobPhone = orderAddress.getMobPhone();//收件人电话号码
+        map.put("ShipToPhoneNumber","mobPhone");
+
+        Long provincedId = orderAddress.getProvinceId();//省级id
+        Long cityId = orderAddress.getCityId();//市级ID
+        Long areaId = orderAddress.getAreaId();//地区ID
+        String zipCode = orderAddress.getZipCode();//邮编
+        ShopCommonArea commonAreaProvinced = areaService.find(provincedId);//省
+        ShopCommonArea commonAreaCity = areaService.find(cityId);//市
+        ShopCommonArea commonAreaArea = areaService.find(areaId);//地区
+        String provinced = commonAreaProvinced.getAreaName();
+        String city = commonAreaCity.getAreaName();
+        String area = commonAreaArea.getAreaName();
+        String address = area+orderAddress.getAddress();//地址//收件人地址行1
+
+        map.put("ShipToCountry",provinced);
+        map.put("ShipToState",provinced);
+        map.put("ShipToCity",city);
+        map.put("ShipToAdress1",address);
+
+        map.put("ShipToAdress2","");
+        map.put("ShipToCompanyName","");
+        map.put("OrderStatus","1");//订单状态--(草稿=1),(确认=3)
+        map.put("TrackingNo","");
+        map.put("CusRemark","");
+        map.put("CODType","");
+        map.put("CODMoney","");
+        map.put("IDCardNo","");
+        map.put("AgentNo","");
+        map.put("BillQty","");
+        map.put("WarehouseId","5200");
+
+        List<ShopOrderGoods> orderGoodsList = shopOrderGoodsService.listByOrderId(id);//订单所有商品
+        List<Map<String,Object>> productLists = new ArrayList<Map<String,Object>>();//商品list
+        for (ShopOrderGoods orderGoods : orderGoodsList) {
+
+            int goodsNum = orderGoods.getGoodsNum();//商品数量
+            Long specId = orderGoods.getSpecId();//商品规格索引id
+
+            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(specId);//订单里商品的规格
+            String specGoodsSpec = goodsSpec.getSpecGoodsSpec();
+            //{"6544521286435999744":"24g"}
+            String[] specs = specGoodsSpec.split(",");
+            if (specs.length==1){
+                Map<String,Object> productMap = new HashMap<String,Object>();//单个商品
+                productMap.put("ProducingArea","");
+                productMap.put("HSCode","");
+
+                String[] splits = specs[0].split("\"");
+                Long goodsId1 = goodsSpec.getGoodsId();//组合商品id
+                Long specId1 = Long.valueOf(splits[1]);//商品规格id
+                int total = 0;//商品数量
+                List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsService.findGoodsGoodsByGoodsId(goodsId1);//查看是否组合商品
+                if (goodsGoodsList!=null&&goodsGoodsList.size()!=0&&goodsGoodsList.size()==1){//是组合商品
+
+                    ShopGoodsSpec goodsSpec1 = shopGoodsSpecService.find(specId1);//参与组合商品规格数据
+                    productMap.put("SKU",goodsSpec1.getSpecGoodsSerial());//物品SKU
+                    productMap.put("Price",goodsSpec1.getSpecRetailPrice());//物品价格
+                    productMap.put("Weight",goodsSpec1.getWeight());
+                    ShopGoods shopGoods = shopGoodsService.find(goodsSpec1.getGoodsId());//参与组合商品信息
+                    productMap.put("EnName",shopGoods.getGoodsName());//物品名称
+                    productMap.put("CnName",shopGoods.getGoodsName());//物品名称
+
+                    for (ShopGoodsGoods goodsGoods : goodsGoodsList) {
+                        int joinNum = goodsGoods.getJoinNum();//参与组合商品数量
+                        total = joinNum*goodsNum;
+                    }
+                    productMap.put("MaterialQuantity",total);//物品数量
+
+                }
+
+                if (goodsGoodsList==null||goodsGoodsList.size()==0){//不是组合商品
+                    total =goodsNum;
+                    productMap.put("MaterialQuantity",total);//物品数量
+                    productMap.put("SKU",goodsSpec.getSpecGoodsSerial());//物品SKU
+                    productMap.put("Price",goodsSpec.getSpecRetailPrice());//物品价格
+                    productMap.put("Weight",goodsSpec.getWeight());
+                    ShopGoods shopGoods = shopGoodsService.find(goodsSpec.getGoodsId());//参与组合商品信息
+                    productMap.put("EnName",shopGoods.getGoodsName());//物品名称
+                    productMap.put("CnName",shopGoods.getGoodsName());//物品名称
+                }
+
+                if (productLists.size()==0){
+                    productLists.add(productMap);
+                }else{
+                    int h = 10000;
+                    for (int i = 0; i < productLists.size(); i++) {
+                        Map<String,Object> pMap = productLists.get(i);
+                        if (pMap.get("SKU").equals(productMap.get("SKU"))) {
+                            h = i;
+                        }
+                    }
+                    if (h!=10000){//list里面有
+                        Map<String,Object> p = productLists.get(h);//里面原来的数据
+                        int quantity = (int)p.get("MaterialQuantity");//里面原来商品数量
+                        total = quantity +total;//总的数量
+                        p.put("MaterialQuantity",total);
+                        //移除原来的
+                        productLists.remove(h);
+                        //添加合并数据
+                        productLists.add(p);
+
+                    }else{//list里面还没有
+                        productLists.add(productMap);
+                    }
+                }
+
+            }
+
+            //{"6544521286435999744":"24g","6544522466675396608":"22g","6544414763865083904":"3#船长正红"}
+            if (specs.length>1){
+                Long goodsId = goodsSpec.getGoodsId();//组合商品id
+                for (int j=0;j<specs.length;j++) {
+                    Map<String,Object> productMap = new HashMap<String,Object>();
+                    productMap.put("ProducingArea","");
+                    productMap.put("HSCode","");
+                                /*
+                                Map<String,Object> productMap = new HashMap<String,Object>();
+                                    productMap.put("EnName","OLOMI植萃精华修护面膜");
+                                    productMap.put("CnName","OLOMI植萃精华修护面膜");
+                                * */
+
+                    String[] splits = specs[j].split("\"");
+                    Long specId2 = Long.valueOf(splits[1]);
+                    ShopGoodsSpec goodsSpec1= shopGoodsSpecService.find(specId2);//参与组合商品规格数据
+                    productMap.put("SKU",goodsSpec1.getSpecGoodsSerial());
+                    productMap.put("Weight",goodsSpec1.getWeight());//物品SKU
+                    productMap.put("Price",goodsSpec1.getSpecRetailPrice());//物品价格
+
+                    Long goodsId1 = goodsSpec1.getGoodsId();//参与组合商品里商品id
+                    ShopGoods shopGoods = shopGoodsService.find(goodsId1);//参与组合商品信息
+                    productMap.put("EnName",shopGoods.getGoodsName());//物品名称
+                    productMap.put("CnName",shopGoods.getGoodsName());//物品名称
+
+                    Map<String,Object> map1 = new HashMap<>();
+                    map1.put("goodId",goodsId);
+                    map1.put("combineGoodsId",goodsId1);
+                    ShopGoodsGoods goodsGoods = shopGoodsGoodsService.findGoodsGoods(map1);
+                    int joinNum = goodsGoods.getJoinNum();//组合商品里商品数量
+                    int total = joinNum*goodsNum;//总数量
+                    productMap.put("MaterialQuantity",total);
+
+                    if (productLists.size()==0){
+                        productLists.add(productMap);
+                    }else{
+                        int h = 10000;
+                        for (int i = 0; i < productLists.size(); i++) {
+                            Map<String,Object> pMap = productLists.get(i);
+                            if (pMap.get("SKU").equals(productMap.get("SKU"))) {
+                                h = i;
+                            }
+                        }
+                        if (h!=10000){//list里面有
+                            Map<String,Object> p = productLists.get(h);//里面原来的数据
+                            int quantity = (int)p.get("MaterialQuantity");//里面原来商品数量
+                            total = quantity +total;//总的数量
+                            p.put("MaterialQuantity",total);
+                            //移除原来的
+                            productLists.remove(h);
+                            //添加合并数据
+                            productLists.add(p);
+
+                        }else{//list里面还没有
+                            productLists.add(productMap);
+                        }
+                    }
+
+                }
+            }
+        }
+        map.put("Products",productLists);
+        JSONObject jsonObject = JSONObject.fromObject(map);
+
+        //发货
+        String url = "http://119.23.163.12/webservice/APIWebService.asmx";// 提供接口的地址
+        String soapaction = "http://tempuri.org/";// 域名，这是在server定义的
+        String res = "";
+        try {
+            Service service = new Service();
+            Call call = (Call) service.createCall();
+            call.setTargetEndpointAddress(url);
+            call.setOperationName(new QName(soapaction,"AddorUpdateOrders")); // 设置要调用哪个方法
+            call.addParameter(new QName(soapaction, "strorderinfo"), // 设置要传递的参数
+                    org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+            call.addParameter(new QName(soapaction,"secretkey"),
+                    org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+            call.setReturnType(org.apache.axis.encoding.XMLType.XSD_STRING);// （标准的类型）
+            call.setUseSOAPAction(true);
+            call.setSOAPActionURI(soapaction + "AddorUpdateOrders");
+            res = String.valueOf(call.invoke(new Object[] { jsonObject.toString(),secretkey}));// 调用方法并传递参数
+            System.out.println(res);
+            //{ "success":"success","Info":"订单保存并提交成功!","CsRefNo":"AP353609897201369088","OrderNo":"M102940002962190","TrackingNo":"75165047072640","Enmessage":""}
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        Map<String,Object> resultMap = new HashMap<String,Object>();
+        resultMap.put("res",res);
+        resultMap.put("Products",productLists);
+
+        return resultMap;
+    }
 
     /**
      * 详情
