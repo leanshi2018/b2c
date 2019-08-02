@@ -111,12 +111,12 @@ public class SubordinateUserInformationResult {
         }else{
             result.setTotalMoney(BigDecimal.ZERO);
         }
-        if (periodSumPpv!=null && shopMemberGrade.getRankClass()!=0){
+        if (periodSumPpv!=null){
             result.setPeriodMoney(Optional.ofNullable(periodSumPpv.getTotalmoney()).orElse(BigDecimal.ZERO));
             result.setPeriodPv(Optional.ofNullable(periodSumPpv.getTotalPpv()).orElse(BigDecimal.ZERO));
         }else{
-            result.setMonthMoney(BigDecimal.ZERO);
-            result.setMonthPpv(BigDecimal.ZERO);
+            result.setPeriodMoney(BigDecimal.ZERO);
+            result.setPeriodPv(BigDecimal.ZERO);
         }
         result.setRaSpoStatus(raSponsorStatus);
         return result;
