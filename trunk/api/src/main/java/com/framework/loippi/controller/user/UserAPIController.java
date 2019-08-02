@@ -292,8 +292,9 @@ public class UserAPIController extends BaseController {
     public String UserProfile(HttpServletRequest request) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
-        RdRaBinding rdRaBinding=rdRaBindingService.find("rdCode",member.getMmCode());
-        return ApiUtils.success(UserProfileResult.build2(rdMmBasicInfo,rdRaBinding));
+        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("nMcode",member.getMmCode());
+        //RdRaBinding rdRaBinding=rdRaBindingService.find("rdCode",member.getMmCode());
+        return ApiUtils.success(UserProfileResult.build3(rdMmBasicInfo,oldSysRelationship));
     }
 
     /**
@@ -1062,12 +1063,12 @@ public class UserAPIController extends BaseController {
         if (Optional.ofNullable(rdMmRelation.getRank()).orElse(-1) != -1) {
             shopMemberGrade = rdRanksService.find("rankId", rdMmRelation.getRank());
         }
-        String startTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 10, 1, "yyyy-MM");
+        /*String startTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 10, 1, "yyyy-MM");
         String endTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 2, 1, "yyyy-MM");
         OrderSumPpv orderSumMonthlyPpv = shopOrderService
-            .sumPpv(Paramap.create().put("startTime", startTime).put("endTime", endTime).put("buyerId", memeberId));
+            .sumPpv(Paramap.create().put("startTime", startTime).put("endTime", endTime).put("buyerId", memeberId));*/
         OrderSumPpv orderSumAccumulatedPpv = shopOrderService.sumPpv(Paramap.create().put("buyerId", memeberId));
-/*        //查找当前周期订单数据
+        //查找当前周期订单数据
         String periodCode = periodService.getSysPeriodService(new Date());
         OrderSumPpv periodSumPpv = new OrderSumPpv();
         if(periodCode==null){
@@ -1080,9 +1081,9 @@ public class UserAPIController extends BaseController {
         BigDecimal buyerId = shopOrderService.findOrderRetail(Paramap.create().put("buyerId", memeberId));//查询出零售订单总额
         if(buyerId!=null){
             retail = buyerId.add(retail);
-        }*/
+        }
         return ApiUtils.success(SubordinateUserInformationResult
-            .build(rdMmBasicInfo, shopMemberGrade, orderSumMonthlyPpv, orderSumAccumulatedPpv));
+            .build2(rdMmBasicInfo, shopMemberGrade, periodSumPpv, orderSumAccumulatedPpv,rdMmRelation.getRaSponsorStatus()));
     }
 
 }
