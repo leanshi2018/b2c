@@ -219,7 +219,7 @@ public class OrderSysController extends GenericController {
      * @param typeExperss 发货类型 1选择发货  0所有发货
      * @throws Exception
      */
-    @RequestMapping(value = {"/admin/order/expressOrder"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/admin/order/expressOrder"}, method = RequestMethod.POST)
     public void expressOrder(HttpServletRequest request, HttpServletResponse response, Long[] ids, String typeExperss) throws Exception{
        /* Long[] ids = new Long[1];
         ids[0] = 6562977106358177792l;//,Long[] ids
@@ -424,7 +424,7 @@ public class OrderSysController extends GenericController {
         map.put("ShipToName",trueName);
 
         String mobPhone = orderAddress.getMobPhone();//收件人电话号码
-        map.put("ShipToPhoneNumber","mobPhone");
+        map.put("ShipToPhoneNumber",mobPhone);
 
         Long provincedId = orderAddress.getProvinceId();//省级id
         Long cityId = orderAddress.getCityId();//市级ID
@@ -539,11 +539,6 @@ public class OrderSysController extends GenericController {
                     Map<String,Object> productMap = new HashMap<String,Object>();
                     productMap.put("ProducingArea","");
                     productMap.put("HSCode","");
-                                /*
-                                Map<String,Object> productMap = new HashMap<String,Object>();
-                                    productMap.put("EnName","OLOMI植萃精华修护面膜");
-                                    productMap.put("CnName","OLOMI植萃精华修护面膜");
-                                * */
 
                     String[] splits = specs[j].split("\"");
                     Long specId2 = Long.valueOf(splits[1]);
