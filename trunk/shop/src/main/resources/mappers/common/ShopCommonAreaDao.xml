@@ -172,4 +172,12 @@
 		shop_common_area b on b.id = a.area_parent_id
 		WHERE sca.id = #{areaId}
 	</select>
+
+	<!--findByAreaName-->
+	<select id="findByAreaName" parameterType="string" resultMap="ShopCommonAreaResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	SHOP_COMMON_AREA
+		WHERE	area_name=#{areaName}
+	</select>
+
 </mapper> 

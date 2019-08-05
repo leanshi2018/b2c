@@ -1,10 +1,11 @@
 package com.framework.loippi.service.common;
 
+import java.util.List;
+import java.util.Map;
+
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.vo.address.MemberAddresVo;
-
-import java.util.Map;
 
 /**
  * SERVICE - ShopCommonArea(地区表)
@@ -20,4 +21,5 @@ public interface ShopCommonAreaService  extends GenericService<ShopCommonArea, L
      */
     MemberAddresVo findByAreaId(Map<String, Object> params);
 
+    List<ShopCommonArea> findByAreaName(String areaName);
 }

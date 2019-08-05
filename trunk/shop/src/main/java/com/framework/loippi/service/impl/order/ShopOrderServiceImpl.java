@@ -663,13 +663,25 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
                 orderAddressDao.insert(orderAddress);
             }else{
-                ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCountryCode());
-                orderAddress.setAreaId(shopCommonArea.getId());
-                //if ()
-                orderAddress.setCityId(shopCommonArea.getAreaParentId());
-                ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
-                orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
-                orderAddressDao.insert(orderAddress);
+                List<ShopCommonArea> shopCommonAreas = areaService.findByAreaName(address.getAddCountryCode());//区
+                if (shopCommonAreas.size()>1){
+                    ShopCommonArea shopCommonCity = areaService.find("areaName", address.getAddCityCode());//市
+                    orderAddress.setCityId(shopCommonCity.getId());
+                    orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                    for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                        if (shopCommonArea.getAreaParentId()==shopCommonCity.getId()){
+                            orderAddress.setAreaId(shopCommonArea.getId());
+                        }
+                    }
+                }else{
+                    ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
+                    orderAddress.setAreaId(shopCommonArea.getId());
+                    //if ()
+                    orderAddress.setCityId(shopCommonArea.getAreaParentId());
+                    ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
+                    orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
+                    orderAddressDao.insert(orderAddress);
+                }
             }
 
         }
