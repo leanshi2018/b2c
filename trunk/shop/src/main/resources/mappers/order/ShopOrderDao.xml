@@ -83,6 +83,8 @@
         <result property="refundPoint" column="refund_point"/>
         <result property="refundPpv" column="refund_ppv"/>
         <result property="cancelTime" column="cancel_time"/>
+        <result property="submitStatus" column="submit_status"/>
+        <result property="failInfo" column="fail_info"/>
     </resultMap>
 
     <resultMap id="OrderViewResultMap" type="com.framework.loippi.result.sys.OrderView">
@@ -1380,6 +1382,28 @@
     <select id="countOrderPPVRefundStateNot0" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         SELECT sum(ppv) FROM shop_order WHERE buyer_id = #{buyerId} AND payment_state = 1 AND creation_period = #{creationPeriod} AND (refund_state != 0 OR return_state != 0)
     </select>
+
+    <!--代发货订单-->
+    <select id="findStatu20" parameterType="java.util.Map" resultMap="ShopOrderResultMap">
+        SELECT id FROM shop_order WHERE order_state=20
+    </select>
+
+    <!--发货修改状态和提交信息-->
+    <update id="updateOrderStatus" parameterType="java.util.Map" >
+        UPDATE shop_order
+        SET
+        order_state = #{orderState},
+        submit_status = #{submitStatus},
+        fail_info = #{failInfo},
+        shipping_express_id = #{shippingExpressId},
+        shipping_express_code = #{shippingExpressCode},
+        shipping_name = #{shippingName},
+        shipping_time = #{shippingTime},
+        shipping_code = #{shippingCode}
+        WHERE
+        order_sn = #{orderSn}
+    </update>
+
 
     <!--&lt;!&ndash; 根据不同的时间段查出相应的订单量 &ndash;&gt;-->
     <!--<select id="countorderbuy" resultType="com.framework.loippi.vo.order.OrderCountVo" parameterType="map">-->

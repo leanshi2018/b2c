@@ -1,14 +1,13 @@
 package com.framework.loippi.service.product;
 
+import java.util.List;
+import java.util.Map;
+
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.result.sys.GoodsStocksListView;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
-import org.apache.poi.ss.formula.functions.T;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * SERVICE - ShopGoodsSpec(商品规格表)
@@ -36,5 +35,7 @@ public interface ShopGoodsSpecService extends GenericService<ShopGoodsSpec, Long
 
     Page<GoodsStocksListView> findGoodsStocksInfo(Pageable pageable);
 
-    //Map<String, Object> getGoodsSpecBySpecId(Long goodsId, Long goodsSpecId);
+	ShopGoodsSpec findByspecGoodsSerial(String specGoodsSerial);
+
+	//Map<String, Object> getGoodsSpecBySpecId(Long goodsId, Long goodsSpecId);
 }

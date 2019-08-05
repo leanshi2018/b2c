@@ -12,4 +12,5 @@ import com.framework.loippi.service.GenericService;
  */
 public interface RdGoodsAdjustmentService  extends GenericService<RdGoodsAdjustment, Long> {
 
+	void insert(RdGoodsAdjustment rdGoodsAdjustment);
 }

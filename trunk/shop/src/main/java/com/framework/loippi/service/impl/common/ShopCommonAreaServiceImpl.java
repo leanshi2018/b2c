@@ -1,15 +1,16 @@
 package com.framework.loippi.service.impl.common;
 
-import com.framework.loippi.service.impl.GenericServiceImpl;
-import com.framework.loippi.vo.address.MemberAddresVo;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.framework.loippi.dao.common.ShopCommonAreaDao;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.service.common.ShopCommonAreaService;
-
-import java.util.Map;
+import com.framework.loippi.service.impl.GenericServiceImpl;
+import com.framework.loippi.vo.address.MemberAddresVo;
 
 /**
  * SERVICE - ShopCommonArea(地区表)
@@ -32,5 +33,10 @@ public class ShopCommonAreaServiceImpl extends GenericServiceImpl<ShopCommonArea
 	@Override
 	public MemberAddresVo findByAreaId(Map<String, Object> params) {
 		return shopCommonAreaDao.findByAreaId(params);
+	}
+
+	@Override
+	public List<ShopCommonArea> findByAreaName(String areaName) {
+		return shopCommonAreaDao.findByAreaName(areaName);
 	}
 }

@@ -306,4 +306,8 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
     OrderSumPpv findByPeriod(Paramap periodCode);
 
     BigDecimal findOrderRetail(Paramap buyerId);
+
+	List<ShopOrder> findStatu20();
+
+	void updateOrderStatus(String orderSn, Integer orderState, Integer submitStatus, String failInfo, String trackingNo);
 }

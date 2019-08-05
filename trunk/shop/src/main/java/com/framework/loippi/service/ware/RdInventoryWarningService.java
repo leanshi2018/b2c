@@ -12,4 +12,5 @@ import com.framework.loippi.service.GenericService;
  */
 public interface RdInventoryWarningService  extends GenericService<RdInventoryWarning, Long> {
 
+	void updateInventoryByWareCodeAndSpecId(String s, Long goodsSpecId,Integer quantity);
 }

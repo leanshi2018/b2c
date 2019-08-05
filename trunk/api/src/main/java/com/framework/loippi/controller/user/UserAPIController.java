@@ -168,11 +168,15 @@ public class UserAPIController extends BaseController {
             periodMi = shopOrderService.countOrderPPVByMCodeAndPeriod(member.getMmCode(), period);
             if (periodMi==null||"".equals(periodMi)){
                 periodMi = new BigDecimal("0.00");
+            }else {
+                periodMi = periodMi.setScale(2);//保留两位小数
             }
         }else{
             period = "业务期未开始";
             endDate = "业务期未开始";
         }
+
+
         result.setPeriod(period);
         result.setEndDate(endDate);
         result.setPeriodMi(periodMi);

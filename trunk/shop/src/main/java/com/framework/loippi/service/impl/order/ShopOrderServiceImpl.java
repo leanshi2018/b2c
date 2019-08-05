@@ -353,6 +353,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         }
 
         shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoodsList);
+
+
+
+
+
+
+
         // 更新订单
         ShopOrder newOrder = new ShopOrder();
         newOrder.setId(order.getId());
@@ -656,13 +663,25 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
                 orderAddressDao.insert(orderAddress);
             }else{
-                ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCountryCode());
-                orderAddress.setAreaId(shopCommonArea.getId());
-                //if ()
-                orderAddress.setCityId(shopCommonArea.getAreaParentId());
-                ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
-                orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
-                orderAddressDao.insert(orderAddress);
+                List<ShopCommonArea> shopCommonAreas = areaService.findByAreaName(address.getAddCountryCode());//区
+                if (shopCommonAreas.size()>1){
+                    ShopCommonArea shopCommonCity = areaService.find("areaName", address.getAddCityCode());//市
+                    orderAddress.setCityId(shopCommonCity.getId());
+                    orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                    for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                        if (shopCommonArea.getAreaParentId()==shopCommonCity.getId()){
+                            orderAddress.setAreaId(shopCommonArea.getId());
+                        }
+                    }
+                }else{
+                    ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
+                    orderAddress.setAreaId(shopCommonArea.getId());
+                    //if ()
+                    orderAddress.setCityId(shopCommonArea.getAreaParentId());
+                    ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
+                    orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
+                    orderAddressDao.insert(orderAddress);
+                }
             }
 
         }
@@ -2862,4 +2881,26 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     public BigDecimal findOrderRetail(Paramap buyerId) {
         return orderDao.findOrderRetail(buyerId);
     }
+
+    @Override
+    public List<ShopOrder> findStatu20() {
+        return orderDao.findStatu20();
+    }
+
+    @Override
+    public void updateOrderStatus(String orderSn, Integer orderState, Integer submitStatus, String failInfo, String trackingNo) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderSn",orderSn);
+        map.put("orderState",orderState);
+        map.put("submitStatus",submitStatus);
+        map.put("failInfo",failInfo);
+        map.put("shippingCode",trackingNo);
+        ShopCommonExpress express = shopCommonExpressDao.find(44l);
+        map.put("shippingExpressCode",Optional.ofNullable(express.getECode()).orElse(""));
+        map.put("shippingExpressId",Optional.ofNullable(express.getId()).orElse(-1L));
+        map.put("shippingName",Optional.ofNullable(express.getEName()).orElse(""));
+        map.put("shippingTime",new Date());
+        orderDao.updateOrderStatus(map);
+    }
+
 }

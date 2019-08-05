@@ -1,12 +1,10 @@
 package com.framework.loippi.service.order;
 
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.service.GenericService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-
 import java.util.List;
 import java.util.Map;
+
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.service.GenericService;
 
 /**
  * SERVICE - ShopOrderGoods(订单商品表)
@@ -39,4 +37,5 @@ public interface ShopOrderGoodsService extends GenericService<ShopOrderGoods, Lo
 
     void updateBatchForShipmentNum(List<ShopOrderGoods> shopOrderGoodsList);
 
+    List<ShopOrderGoods> listByOrderId(Long id);
 }

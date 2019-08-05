@@ -160,4 +160,8 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     OrderSumPpv findByPeriod(Paramap periodCode);
 
     BigDecimal findOrderRetail(Paramap buyerId);
+
+	List<ShopOrder> findStatu20();
+
+	void updateOrderStatus(Map<String, Object> map);
 }

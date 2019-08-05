@@ -361,6 +361,18 @@ public class ShopOrder implements GenericEntity {
     @Column(name = "cancel_time" )
     private java.util.Date cancelTime;
 
+    /**
+     *提交状态  未提交：0   已提交：10  提交失败：20  默认：0
+     */
+    @Column(name = "submit_status" )
+    private Integer submitStatus;
+
+    /**
+     *提交失败原因
+     */
+    @Column(name = "fail_info" )
+    private String failInfo;
+
 /*********************添加*********************/
     /**
      * 订单商品

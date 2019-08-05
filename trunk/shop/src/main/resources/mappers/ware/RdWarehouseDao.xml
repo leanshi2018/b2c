@@ -187,5 +187,10 @@
 			<include refid="where_column" />
 		</where>
 	</select>
-	
+
+	<select id="findByCode" parameterType="java.lang.String" resultMap="RdWarehouseResultMap">
+		SELECT	* FROM 	RD_WAREHOUSE where WARE_CODE=#{wareCode}
+	</select>
+
+
 </mapper> 

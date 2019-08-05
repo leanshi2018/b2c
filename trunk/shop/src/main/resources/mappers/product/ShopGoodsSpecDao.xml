@@ -344,4 +344,10 @@
         AND spec_isopen !=3
     </select>
 
+    <!--根据商品编号查-->
+    <select id="findByspecGoodsSerial" resultMap="ShopGoodsSpecResultMap" parameterType="string">
+        select
+        <include refid="base_column"/>
+        from shop_goods_spec where spec_goods_serial=#{specGoodsSerial}
+    </select>
 </mapper> 
