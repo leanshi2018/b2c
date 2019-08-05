@@ -74,7 +74,7 @@ public class CommonController extends BaseController {
     private QiniuService qiniuService;
 
     /**
-     * 发送短信验证码： 向第三方发送短信验证码
+     * 发送短信验证码： 向第三方发送短信验证码  Integer msgType:0-注册1-忘记密码2-验证手机号3-修改手机号4-pc端登录
      */
     @RequestMapping(value = "/api/common/msg.json", method = {RequestMethod.POST})
     public
