@@ -320,7 +320,7 @@ public class OrderSysController extends GenericController {
         }
 
         System.out.println("发货完成！");
-        request.getRequestDispatcher("/admin/order/otherList").forward(request, response);//请求转发
+        //request.getRequestDispatcher("/admin/order/otherList").forward(request, response);//请求转发
     }
 
     /**
