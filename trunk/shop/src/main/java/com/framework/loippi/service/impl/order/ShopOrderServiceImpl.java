@@ -1,16 +1,12 @@
 package com.framework.loippi.service.impl.order;
 
 
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -70,14 +66,6 @@ import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
-import com.framework.loippi.entity.user.RdGoodsAdjustment;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.entity.user.RdMmAddInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAdjust;
 import com.framework.loippi.enus.ActivityTypeEnus;
@@ -106,12 +94,6 @@ import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
 import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAccountLogService;
-import com.framework.loippi.service.user.RdMmAddInfoService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.wallet.ShopWalletLogService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.support.Page;
@@ -234,6 +216,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private ShopOrderLogisticsDao shopOrderLogisticsDao;
     @Resource
     private RdMmIntegralRuleService rdMmIntegralRuleService;
+    @Resource
+    private RetailProfitService retailProfitService;
 
 
     @Autowired
@@ -1577,6 +1561,31 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         updateOrder.setOrderState(OrderState.ORDER_STATE_FINISH); //订单状态
         updateOrder.setFinnshedTime(new Date());
         orderDao.update(updateOrder);
+        //###############################零售利润###################################################
+        if(order.getOrderType()==1){//如果当前确认收货订单为零售订单，则产生零售利润，否则，跳过
+            String buyerId = order.getBuyerId()+"";
+            RetailProfit retailProfit = new RetailProfit();
+            retailProfit.setBuyerId(buyerId);
+            retailProfit.setCreateTime(new Date());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.DATE, 8);
+            retailProfit.setExpectTime(calendar.getTime());
+            retailProfit.setOrderId(order.getId());
+            retailProfit.setOrderSn(order.getOrderSn());
+            retailProfit.setState(0);
+            List<ShopOrderGoods> shopOrderGoodses = order.getShopOrderGoodses();
+            BigDecimal profit=BigDecimal.ZERO;
+            if(shopOrderGoodses!=null&&shopOrderGoodses.size()>0){
+                for (ShopOrderGoods shopOrderGoods : shopOrderGoodses) {
+                    ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
+                    profit=profit.add(shopGoods.getGoodsRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));
+                }
+            }
+            retailProfit.setProfits(profit);
+            retailProfitService.save(retailProfit);
+        }
+        //##########################################################################################
         /*********************订单日志*********************/
         ShopOrderLog orderLog = new ShopOrderLog();
         orderLog.setId(twiterIdService.getTwiterId());
