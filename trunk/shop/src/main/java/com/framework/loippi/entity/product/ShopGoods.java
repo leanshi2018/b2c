@@ -133,6 +133,12 @@ public class ShopGoods implements GenericEntity {
     private java.math.BigDecimal goodsRetailPrice;
 
     /**
+     * 零售利润
+     */
+    @Column(name = "goods_retail_profit")
+    private java.math.BigDecimal goodsRetailProfit;
+
+    /**
      * 会员价格
      */
     @Column(name = "goods_member_price")

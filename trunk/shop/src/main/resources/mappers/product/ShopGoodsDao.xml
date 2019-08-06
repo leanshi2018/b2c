@@ -23,6 +23,7 @@
     <result property="goodsImage" column="goods_image"/>
     <result property="goodsImageMore" column="goods_image_more"/>
     <result property="goodsRetailPrice" column="goods_retail_price"/>
+    <result property="goodsRetailProfit" column="goods_retail_profit"/>
     <result property="goodsMemberPrice" column="goods_member_price"/>
     <result property="goodsBigPrice" column="goods_big_price"/>
     <result property="ppv" column="ppv"/>
@@ -63,7 +64,7 @@
   <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
   <sql id="base_column">
         id ,goods_serial ,member_ship ,goods_name ,goods_subtitle ,goods_keywords ,gc_id ,gc_name ,brand_id ,brand_name ,
-        type_id ,spec_open ,spec_id ,spec_name ,goods_image ,goods_image_more ,goods_retail_price ,goods_member_price ,
+        type_id ,spec_open ,spec_id ,spec_name ,goods_image ,goods_image_more ,goods_retail_price ,goods_retail_profit,goods_member_price ,
         goods_big_price ,ppv ,big_ppv,weight,shelf_life ,goods_show ,goods_click ,goods_state ,create_time ,mobile_body ,goods_spec ,update_time ,
         transport_id ,goods_close_reason ,commentnum ,salenum ,goods_collect ,is_del ,stock ,sort ,gc_levle ,release_time ,details ,evaluateRate ,state
         ,goods_type,sale_population_ids,sale_population_name
@@ -71,7 +72,7 @@
 
   <sql id="base_value_column">
         #{id},#{goodsSerial},#{memberShip},#{goodsName},#{goodsSubtitle},#{goodsKeywords},#{gcId},#{gcName},#{brandId},#{brandName},#{typeId},#{specOpen},
-        #{specId},#{specName},#{goodsImage},#{goodsImageMore},#{goodsRetailPrice},#{goodsMemberPrice},#{goodsBigPrice},#{ppv},#{bigPpv},#{weight},#{shelfLife},#{goodsShow},#{goodsClick},
+        #{specId},#{specName},#{goodsImage},#{goodsImageMore},#{goodsRetailPrice},#{goodsRetailProfit},#{goodsMemberPrice},#{goodsBigPrice},#{ppv},#{bigPpv},#{weight},#{shelfLife},#{goodsShow},#{goodsClick},
         #{goodsState},#{createTime},#{mobileBody},#{goodsSpec},#{updateTime},#{transportId},#{goodsCloseReason},#{commentnum},#{salenum},#{goodsCollect},#{isDel},
         #{stock},#{sort},#{gcLevle},#{releaseTime},#{details},#{evaluaterate},#{state}
         ,#{goodsType},#{salePopulationIds},#{salePopulationName}
@@ -129,6 +130,9 @@
     </if>
     <if test="goodsRetailPrice != null and goodsRetailPrice != ''">
       AND goods_retail_price = #{goodsRetailPrice,jdbcType=DECIMAL}
+    </if>
+    <if test="goodsRetailProfit != null and goodsRetailProfit != ''">
+      AND goods_retail_profit = #{goodsRetailProfit,jdbcType=DECIMAL}
     </if>
     <if test="goodsMemberPrice != null and goodsMemberPrice != ''">
       AND goods_member_price = #{goodsMemberPrice,jdbcType=DECIMAL}
@@ -319,6 +323,9 @@
     </if>
     <if test="goodsRetailPrice != null">
       goods_retail_price = #{goodsRetailPrice,jdbcType=DECIMAL},
+    </if>
+    <if test="goodsRetailProfit != null">
+      goods_retail_profit = #{goodsRetailProfit,jdbcType=DECIMAL},
     </if>
     <if test="goodsMemberPrice != null">
       goods_member_price = #{goodsMemberPrice,jdbcType=DECIMAL},
