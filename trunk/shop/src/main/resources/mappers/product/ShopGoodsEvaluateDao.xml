@@ -474,6 +474,17 @@
         </where>
     </select>
 
+    <!-- 时间倒序分页查询-->
+    <select id="findByPageTimeDesc" resultMap="ShopGoodsEvaluateResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_EVALUATE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        order by create_time desc
+    </select>
+
 
     <select id="findWithReplyNumAndLikeCount" resultMap="ShopGoodsEvaluateResultMap">
         select
