@@ -673,6 +673,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             orderAddress.setAreaId(shopCommonArea.getId());
                         }
                     }
+                    orderAddressDao.insert(orderAddress);
                 }else{
                     ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
                     orderAddress.setAreaId(shopCommonArea.getId());
