@@ -1,6 +1,5 @@
 package com.framework.loippi.controller.user;
 
-import com.framework.loippi.utils.*;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.math.BigDecimal;
@@ -38,6 +37,14 @@ import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Constants;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.PostUtil;
+import com.framework.loippi.utils.SmsUtil;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
 
 /**
  * Created by Administrator on 2017/6/18.
@@ -252,7 +259,6 @@ public class AuthcAPIController extends BaseController {
 
         return authsLoginResult;
     }
-
     /**
      * 注册时初始化会员参数
      */
