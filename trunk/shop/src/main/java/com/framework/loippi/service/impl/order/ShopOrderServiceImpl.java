@@ -1575,10 +1575,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             retailProfit.setOrderId(order.getId());
             retailProfit.setOrderSn(order.getOrderSn());
             retailProfit.setState(0);
-            List<ShopOrderGoods> shopOrderGoodses = order.getShopOrderGoodses();
             BigDecimal profit=BigDecimal.ZERO;
-            if(shopOrderGoodses!=null&&shopOrderGoodses.size()>0){
-                for (ShopOrderGoods shopOrderGoods : shopOrderGoodses) {
+            List<ShopOrderGoods> shopOrderGoodsList = shopOrderGoodsService.findList("orderId", order.getId());
+            if(shopOrderGoodsList!=null&&shopOrderGoodsList.size()>0){
+                for (ShopOrderGoods shopOrderGoods : shopOrderGoodsList) {
                     ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
                     profit=profit.add(shopGoods.getGoodsRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));
                 }
