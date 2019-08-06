@@ -436,7 +436,7 @@ public class OrderSysController extends GenericController {
         String provinced = commonAreaProvinced.getAreaName();
         String city = commonAreaCity.getAreaName();
         String area = commonAreaArea.getAreaName();
-        String address = area+orderAddress.getAddress();//地址//收件人地址行1
+        String address = provinced+city+area+orderAddress.getAddress();//地址//收件人地址行1
 
         map.put("ShipToCountry",provinced);
         map.put("ShipToState",provinced);
