@@ -255,7 +255,7 @@ public class ShopGoodsEvaluateServiceImpl extends GenericServiceImpl<ShopGoodsEv
     @Override
     public Page<ShopGoodsEvaluate> findWithGoodsByPage(Pageable pageable, String prex) {
         PageList<ShopGoodsEvaluate> shopGoodsEvaluatePage = shopGoodsEvaluateDao
-            .findByPage(pageable.getParameter(), pageable.getPageBounds());
+            .findByPageTimeDesc(pageable.getParameter(), pageable.getPageBounds());
         List<Long> longList = new ArrayList<>();
         List<Long> memberList = new ArrayList<>();
         for (ShopGoodsEvaluate item : shopGoodsEvaluatePage) {

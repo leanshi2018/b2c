@@ -37,4 +37,5 @@ public interface ShopGoodsEvaluateDao extends GenericDao<ShopGoodsEvaluate, Long
     //根据多个关键字获取关键字评论数量
     List<ShopGoodsEvaluateKeywords> countGevalContent(Map<String, Object> var1);
 
+    PageList<ShopGoodsEvaluate> findByPageTimeDesc(Object parameter, PageBounds pageBounds);
 }

@@ -198,6 +198,14 @@ public class UserAPIController extends BaseController {
         if(member==null){
             return ApiUtils.error("请登录后再进行老系统会员绑定操作");
         }
+        String mmCode = member.getMmCode();
+        RdMmRelation mmRelation = rdMmRelationService.find("mmCode", mmCode);
+        if(mmRelation==null){
+            return ApiUtils.error("当前登录用户信息异常");
+        }
+        if(mmRelation.getNOFlag()==2){
+            return ApiUtils.error("当前登录会员已经是老系统会员");
+        }
         if (StringUtils.isEmpty(oMCode)) {
             return ApiUtils.error("老系统会员编号为空");
         }
@@ -231,7 +239,7 @@ public class UserAPIController extends BaseController {
         } else if ("0".equals(str.trim())) {
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
             Integer raSponsorStatus = rdMmRelation.getRaSponsorStatus();
-            if(raSponsorStatus==1){//如果需要修改会员在新系统绑定状态为永久状态，则需要判断其推荐人是否与中间表中推荐人一致
+            if(raSponsorStatus==1){//如果需要修改会员在新系统绑定状态为永久状态，
                 OldSysRelationship oldSysRelationship1 = oldSysRelationshipService.find("nMcode", rdMmRelation.getSponsorCode());
                 if (oldSysRelationship1==null){//说明中间表没有其推荐人，即永久推荐人和需要绑定老系统会员对应不上
                     return ApiUtils.error("新系统会员直接推荐人无法与将要绑定老系统直接推荐人匹配，不予进行老系统会员绑定");

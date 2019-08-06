@@ -56,10 +56,12 @@ public class AuthsRegisterParam {
     private String memberTrueName;
 
     //邀请码
+    @NotEmpty
     private String invitCode;
     /**
      * 验证码
      */
+    @NotEmpty
     private String code;
 
 }
