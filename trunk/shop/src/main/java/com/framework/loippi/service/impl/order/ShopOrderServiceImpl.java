@@ -1,12 +1,17 @@
 package com.framework.loippi.service.impl.order;
 
 
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -66,6 +71,15 @@ import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
+import com.framework.loippi.entity.user.RdGoodsAdjustment;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RetailProfit;
+import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAdjust;
 import com.framework.loippi.enus.ActivityTypeEnus;
@@ -94,6 +108,13 @@ import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
 import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.wallet.ShopWalletLogService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.support.Page;
@@ -653,7 +674,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     orderAddress.setCityId(shopCommonCity.getId());
                     orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
                     for (ShopCommonArea shopCommonArea : shopCommonAreas) {
-                        if (shopCommonArea.getAreaParentId()==shopCommonCity.getId()){
+                        if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
                             orderAddress.setAreaId(shopCommonArea.getId());
                         }
                     }
