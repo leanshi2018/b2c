@@ -142,6 +142,7 @@ public class ShopActivityServiceImpl extends GenericServiceImpl<ShopActivity, Lo
     //停止活动
     public void stopShopActivityById(Long id) {
         shopActivityDao.stopShopActivityById(id);
+        shopActivityGoodsDao.stopShopActivityGoodsByAcId(id);
     }
 
     /**

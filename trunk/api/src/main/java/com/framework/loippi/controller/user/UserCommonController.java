@@ -120,6 +120,12 @@ public class UserCommonController extends BaseController {
         if (StringUtils.isBlank(content) || StringUtils.isBlank(title)) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
+        if(content.length()>200){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "意见反馈内容超出长度");
+        }
+        if(title.length()>100){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "意见反馈标题超出长度");
+        }
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         Long userId = Long.parseLong(member.getMmCode());
         ShopCommonFeedback shopFeedback = new ShopCommonFeedback();

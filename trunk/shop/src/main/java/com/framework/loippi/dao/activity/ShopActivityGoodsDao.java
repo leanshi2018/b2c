@@ -24,4 +24,9 @@ public interface ShopActivityGoodsDao extends GenericDao<ShopActivityGoods, Long
      */
     List<ShopActivityGoods> findActivityGoods(Map<String, Object> var1);
 
+    /**
+     * 根据活动id结束活动商品
+     * @param id
+     */
+    void stopShopActivityGoodsByAcId(Long id);
 }
