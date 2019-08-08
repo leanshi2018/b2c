@@ -1772,6 +1772,45 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                         RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                         rdMmRelation.setRank(rdRanks.getRankId());
+                        //如果会员升级为vip则查询当期会员是否存在没有发放的零售利润奖励
+                        List<RetailProfit> list=retailProfitService.findNoGrantByCode(rdMmRelation.getMmCode());
+                        if(list!=null&&list.size()>0){
+                            for (RetailProfit retailProfit : list) {
+                                RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", retailProfit.getReceiptorId());
+                                if(rdMmAccountInfo!=null){
+                                    //生成积分日志表
+                                    RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                                    rdMmAccountLog.setMmCode(retailProfit.getReceiptorId());
+                                    RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode", retailProfit.getReceiptorId());
+                                    rdMmAccountLog.setMmNickName(basicInfo.getMmNickName());
+                                    rdMmAccountLog.setTransTypeCode("BA");
+                                    rdMmAccountLog.setAccType("SBB");
+                                    rdMmAccountLog.setTrSourceType("CMP");
+                                    rdMmAccountLog.setTrOrderOid(retailProfit.getOrderId());
+                                    rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getBonusBlance());
+                                    List<RdMmIntegralRule> rules = rdMmIntegralRuleService.findAll();
+                                    BigDecimal amount = retailProfit.getProfits().multiply(new BigDecimal(rules.get(0).getRsCountBonusPoint())).divide(new BigDecimal(100),2);
+                                    rdMmAccountLog.setAmount(amount);
+                                    rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getBonusBlance().add(amount));
+                                    rdMmAccountLog.setTransDate(new Date());
+                                    String periodStr = rdSysPeriodDao.getSysPeriodService(new Date());
+                                    if(periodStr!=null){
+                                        rdMmAccountLog.setTransPeriod(period);
+                                    }
+                                    rdMmAccountLog.setTransDesc("零售利润奖励发放");
+                                    rdMmAccountLog.setStatus(3);
+                                    rdMmAccountLogService.save(rdMmAccountLog);
+                                    //修改积分账户
+                                    rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().add(amount));
+                                    rdMmAccountInfoService.update(rdMmAccountInfo);
+                                    //修改零售利润
+                                    retailProfit.setReceiptorId(rdMmRelation.getSponsorCode());
+                                    retailProfit.setActualTime(new Date());
+                                    retailProfit.setState(1);
+                                    retailProfitService.update(retailProfit);
+                                }
+                            }
+                        }
                     }
                     //目前不进行代理会员升级降级处理
                     /*if (ppv.compareTo(agencyPpv) == -1 && (ppv.add(orderPpv)).compareTo(agencyPpv) != -1) {
@@ -2555,6 +2594,45 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                             RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                             rdMmRelation.setRank(rdRanks.getRankId());
+                            //如果会员升级为vip则查询当期会员是否存在没有发放的零售利润奖励
+                            List<RetailProfit> list=retailProfitService.findNoGrantByCode(rdMmRelation.getMmCode());
+                            if(list!=null&&list.size()>0){
+                                for (RetailProfit retailProfit : list) {
+                                    RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", retailProfit.getReceiptorId());
+                                    if(rdMmAccountInfo!=null){
+                                        //生成积分日志表
+                                        RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                                        rdMmAccountLog.setMmCode(retailProfit.getReceiptorId());
+                                        RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode", retailProfit.getReceiptorId());
+                                        rdMmAccountLog.setMmNickName(basicInfo.getMmNickName());
+                                        rdMmAccountLog.setTransTypeCode("BA");
+                                        rdMmAccountLog.setAccType("SBB");
+                                        rdMmAccountLog.setTrSourceType("CMP");
+                                        rdMmAccountLog.setTrOrderOid(retailProfit.getOrderId());
+                                        rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getBonusBlance());
+                                        List<RdMmIntegralRule> rules = rdMmIntegralRuleService.findAll();
+                                        BigDecimal amount = retailProfit.getProfits().multiply(new BigDecimal(rules.get(0).getRsCountBonusPoint())).divide(new BigDecimal(100),2);
+                                        rdMmAccountLog.setAmount(amount);
+                                        rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getBonusBlance().add(amount));
+                                        rdMmAccountLog.setTransDate(new Date());
+                                        String periodStr = rdSysPeriodDao.getSysPeriodService(new Date());
+                                        if(periodStr!=null){
+                                            rdMmAccountLog.setTransPeriod(period);
+                                        }
+                                        rdMmAccountLog.setTransDesc("零售利润奖励发放");
+                                        rdMmAccountLog.setStatus(3);
+                                        rdMmAccountLogService.save(rdMmAccountLog);
+                                        //修改积分账户
+                                        rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().add(amount));
+                                        rdMmAccountInfoService.update(rdMmAccountInfo);
+                                        //修改零售利润
+                                        retailProfit.setReceiptorId(rdMmRelation.getSponsorCode());
+                                        retailProfit.setActualTime(new Date());
+                                        retailProfit.setState(1);
+                                        retailProfitService.update(retailProfit);
+                                    }
+                                }
+                            }
                         }
                         /*if (ppv.compareTo(agencyPpv) == -1 && (ppv.add(orderPpv)).compareTo(agencyPpv) != -1) {
                             RdRanks rdRanks = rdRanksService.find("rankClass", 2);
