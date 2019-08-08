@@ -297,11 +297,11 @@ public class RefundReturnSysController extends GenericController {
     @RequestMapping("/admin/refundreturn/refund")
     public String refund(Model model, @RequestParam Long id,
                          @RequestParam(required = false, value = "adminMessage", defaultValue = "") String adminMessage,
-                         @RequestParam(required = false, value = "returntype", defaultValue = "") String returntype,
-                         @RequestParam(required = false, value = "orderpaytype", defaultValue = "") String orderpaytype,
-                         @RequestParam(required = false, value = "refundAmount", defaultValue = "0") String refundAmount,
-                         @RequestParam(required = false, value = "refundPpv", defaultValue = "0") String refundPpv,
-                         @RequestParam(required = false, value = "refundPoint", defaultValue = "0") Integer refundPoint,
+                         @RequestParam(required = false, value = "returntype", defaultValue = "") String returntype,//returntype 值为0时表示人工确认后打钱给用户  1表示自动返款给用户
+                         @RequestParam(required = false, value = "orderpaytype", defaultValue = "") String orderpaytype,//订单支付类型
+                         @RequestParam(required = false, value = "refundAmount", defaultValue = "0") String refundAmount,//退款金额
+                         @RequestParam(required = false, value = "refundPpv", defaultValue = "0") String refundPpv,//退款pv
+                         @RequestParam(required = false, value = "refundPoint", defaultValue = "0") Integer refundPoint,//退款积分
                          HttpServletRequest request, HttpServletResponse response) {
 
         ShopRefundReturn refundReturn = refundReturnService.find(id);

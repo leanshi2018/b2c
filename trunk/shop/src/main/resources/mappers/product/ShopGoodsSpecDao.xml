@@ -11,6 +11,7 @@
         <result property="specName" column="spec_name"/>
         <result property="specBigPrice" column="spec_big_price"/>
         <result property="specRetailPrice" column="spec_retail_price"/>
+        <result property="specRetailProfit" column="spec_retail_profit"/>
         <result property="specMemberPrice" column="spec_member_price"/>
         <result property="specGoodsStorage" column="spec_goods_storage"/>
         <result property="specSalenum" column="spec_salenum"/>
@@ -29,11 +30,11 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,goods_id ,spec_name ,spec_big_price ,spec_retail_price ,spec_member_price ,spec_goods_storage ,spec_salenum ,spec_goods_color ,spec_goods_serial ,spec_goods_spec ,spec_isopen ,spec_bar_code,spec_pic,ppv,big_ppv,weight,shelf_life
+		 id ,goods_id ,spec_name ,spec_big_price ,spec_retail_price ,spec_retail_profit,spec_member_price ,spec_goods_storage ,spec_salenum ,spec_goods_color ,spec_goods_serial ,spec_goods_spec ,spec_isopen ,spec_bar_code,spec_pic,ppv,big_ppv,weight,shelf_life
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{goodsId},#{specName},#{specBigPrice},#{specRetailPrice},#{specMemberPrice},#{specGoodsStorage},#{specSalenum},#{specGoodsColor},#{specGoodsSerial},#{specGoodsSpec},#{specIsopen},#{specBarCode},#{specPic},#{ppv},#{bigPpv},#{weight},#{shelfLife}
+		 #{id},#{goodsId},#{specName},#{specBigPrice},#{specRetailPrice},#{specRetailProfit},#{specMemberPrice},#{specGoodsStorage},#{specSalenum},#{specGoodsColor},#{specGoodsSerial},#{specGoodsSpec},#{specIsopen},#{specBarCode},#{specPic},#{ppv},#{bigPpv},#{weight},#{shelfLife}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -52,6 +53,9 @@
         </if>
         <if test="specRetailPrice != null">
             AND spec_retail_price = #{specRetailPrice}
+        </if>
+        <if test="specRetailProfit != null">
+            AND spec_retail_profit = #{specRetailProfit}
         </if>
         <if test="specMemberPrice != null">
             AND spec_member_price = #{specMemberPrice}
@@ -125,6 +129,9 @@
         </if>
         <if test="specRetailPrice != null">
             spec_retail_price = #{specRetailPrice},
+        </if>
+        <if test="specRetailProfit != null">
+            spec_retail_profit = #{specRetailProfit},
         </if>
         <if test="specMemberPrice != null">
             spec_member_price = #{specMemberPrice},

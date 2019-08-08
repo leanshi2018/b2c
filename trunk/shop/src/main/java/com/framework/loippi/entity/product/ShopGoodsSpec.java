@@ -57,6 +57,12 @@ public class ShopGoodsSpec implements GenericEntity {
     private BigDecimal specRetailPrice;
 
     /**
+     * 零售利润
+     */
+    @Column(name = "spec_retail_profit")
+    private BigDecimal specRetailProfit;
+
+    /**
      * 会员价
      */
     @Column(name = "spec_member_price")
