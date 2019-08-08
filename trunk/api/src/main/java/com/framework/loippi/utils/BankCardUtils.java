@@ -142,18 +142,17 @@ public class BankCardUtils {
         JSONObject jsonObject = new JSONObject(result);
         Map maps = (Map) JSON.parse(jsonObject.toString());
 
-        String code = (String)maps.get("code");
+        int code = (int)maps.get("code");
         System.out.println("code="+code);
-        if (code.equals("400")){
+        if (code==400){
             result=(String)maps.get("msg");
             return result;
         }
-        String data=(String)maps.get("data");
+        JSONObject data=(JSONObject)maps.get("data");
         System.out.println("data="+data);
-        JSONObject jsonDate = new JSONObject(data);
-        Map mapDate = (Map) JSON.parse(jsonDate.toString());
-        String res = (String)mapDate.get("result");
-        if (code.equals("200") && res.equals("0")){
+        Map mapDate = (Map) JSON.parse(data.toString());
+        int res = (int)mapDate.get("result");
+        if (code==200 && res==0){
             result="1";
         }else{
             result=(String)maps.get("msg");
