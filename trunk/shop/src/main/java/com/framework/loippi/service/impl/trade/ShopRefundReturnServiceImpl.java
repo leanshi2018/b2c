@@ -7,22 +7,26 @@ import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.order.ShopOrderGoodsDao;
+import com.framework.loippi.dao.product.ShopGoodsSpecDao;
 import com.framework.loippi.dao.trade.ShopRefundReturnDao;
 import com.framework.loippi.dao.trade.ShopReturnLogDao;
 import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
 
 import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.dao.user.RetailProfitDao;
 import com.framework.loippi.dao.user.ShopMemberPaymentTallyDao;
 import com.framework.loippi.dao.walet.ShopWalletLogDao;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
 
 import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RetailProfit;
 import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.walet.LgTypeEnum;
 import com.framework.loippi.entity.walet.ShopWalletLog;
@@ -71,7 +75,11 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
 
     @Autowired
     private ShopOrderDao orderDao;
+    @Autowired
+    private ShopGoodsSpecDao shopGoodsSpecDao;
 
+    @Autowired
+    private RetailProfitDao retailProfitDao;
     @Autowired
     private ShopMemberPaymentTallyDao paymentTallyDao;
     @Autowired
@@ -346,6 +354,25 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
         returnLog.setOperator("系统"); //操作人
         //保存退货日志
         returnLogDao.insert(returnLog);
+
+        //查询当前订单是否对应有零售利润记录，如果有，根据退款或者退货退款修改零售利润金额  Long refundId, String adminMessage,String type
+        if(order.getOrderType()==1){//如果是零售订单 查询出零售利润记录
+            List<RetailProfit> profits = retailProfitDao.findByParams(Paramap.create().put("orderId",order.getId()).put("state",0));
+            if(profits!=null&&profits.size()>0){
+                RetailProfit retailProfit = profits.get(0);
+                BigDecimal cut=BigDecimal.ZERO;
+                //根据退款记录表查询退款
+                List<ShopReturnOrderGoods> shopReturnOrderGoods = shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",refundReturn.getId()));
+                if(shopReturnOrderGoods!=null&&shopReturnOrderGoods.size()>0){
+                    for (ShopReturnOrderGoods shopReturnOrderGood : shopReturnOrderGoods) {
+                        ShopGoodsSpec shopGoodsSpec = shopGoodsSpecDao.find(shopReturnOrderGood.getSpecId());
+                        cut=cut.add(shopGoodsSpec.getSpecRetailProfit().multiply(new BigDecimal(shopReturnOrderGood.getGoodsNum())));
+                    }
+                }
+                retailProfit.setProfits(retailProfit.getProfits().subtract(cut));
+                retailProfitDao.update(retailProfit);
+            }
+        }
     }
 
     /********************* 扩展查询 *********************/
