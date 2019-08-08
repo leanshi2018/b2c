@@ -148,11 +148,11 @@ public class BankCardUtils {
             result=(String)maps.get("msg");
             return result;
         }
-        JSONObject data=(JSONObject)maps.get("data");
+        com.alibaba.fastjson.JSONObject data=(com.alibaba.fastjson.JSONObject)maps.get("data");
         System.out.println("data="+data);
         Map mapDate = (Map) JSON.parse(data.toString());
         int res = (int)mapDate.get("result");
-        if (code==200 && res==0){
+        if (code==200){
             result="1";
         }else{
             result=(String)maps.get("msg");
