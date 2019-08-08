@@ -225,4 +225,8 @@
 		delete from
 		SHOP_ACTIVITY_GOODS where activity_id = #{activityId}
 	</delete>
+
+    <update id="shopActivityGoodsDao" parameterType="Long">
+        update SHOP_ACTIVITY_GOODS set status = 4 where activity_id = #{activityId}
+    </update>
 </mapper> 

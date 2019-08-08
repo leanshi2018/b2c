@@ -1563,28 +1563,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         updateOrder.setFinnshedTime(new Date());
         orderDao.update(updateOrder);
         //###############################零售利润###################################################
-        if(order.getOrderType()==1){//如果当前确认收货订单为零售订单，则产生零售利润，否则，跳过
-            String buyerId = order.getBuyerId()+"";
-            RetailProfit retailProfit = new RetailProfit();
-            retailProfit.setBuyerId(buyerId);
-            retailProfit.setCreateTime(new Date());
+        if(order.getOrderType()==1){//如果当前确认收货订单为零售订单，查看零售订单，修改预期发放时间
+            RetailProfit retailProfit = retailProfitService.find("orderId", order.getId());
+            if(retailProfit==null){
+                log.info(order.getOrderSn()+"订单支付未产生零售利润");
+            }
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
             calendar.add(Calendar.DATE, 8);
             retailProfit.setExpectTime(calendar.getTime());
-            retailProfit.setOrderId(order.getId());
-            retailProfit.setOrderSn(order.getOrderSn());
-            retailProfit.setState(0);
-            BigDecimal profit=BigDecimal.ZERO;
-            List<ShopOrderGoods> shopOrderGoodsList = shopOrderGoodsService.findList("orderId", order.getId());
-            if(shopOrderGoodsList!=null&&shopOrderGoodsList.size()>0){
-                for (ShopOrderGoods shopOrderGoods : shopOrderGoodsList) {
-                    ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
-                    profit=profit.add(shopGoods.getGoodsRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));
-                }
-            }
-            retailProfit.setProfits(profit);
-            retailProfitService.save(retailProfit);
+            retailProfitService.update(retailProfit);
         }
         //##########################################################################################
         /*********************订单日志*********************/
@@ -1721,6 +1709,25 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 */
                 order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
                 order.setPaymentState(OrderState.PAYMENT_STATE_YES);
+                if(order.getOrderType()==1){//如果当前确认收货订单为零售订单，则产生零售利润，否则，跳过
+                    String buyerId = order.getBuyerId()+"";
+                    RetailProfit retailProfit = new RetailProfit();
+                    retailProfit.setBuyerId(buyerId);
+                    retailProfit.setCreateTime(new Date());
+                    retailProfit.setOrderId(order.getId());
+                    retailProfit.setOrderSn(order.getOrderSn());
+                    retailProfit.setState(0);
+                    BigDecimal profit=BigDecimal.ZERO;
+                    List<ShopOrderGoods> shopOrderGoodsList = shopOrderGoodsService.findList("orderId", order.getId());
+                    if(shopOrderGoodsList!=null&&shopOrderGoodsList.size()>0){
+                        for (ShopOrderGoods shopOrderGoods : shopOrderGoodsList) {
+                            ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
+                            profit=profit.add(shopGoods.getGoodsRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));
+                        }
+                    }
+                    retailProfit.setProfits(profit);
+                    retailProfitService.save(retailProfit);
+                }
                 order.setLockState(OrderState.ORDER_LOCK_STATE_NO);
                 order.setPaymentTime(new Date());
                 String period = rdSysPeriodDao.getSysPeriodService(new Date());//TODO 2019/7/15 15:51 修改by zc
@@ -2472,6 +2479,29 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     ShopOrder newOrder = new ShopOrder();
                     newOrder.setOrderState(OrderState.ORDER_STATE_UNFILLED);
                     newOrder.setPaymentState(OrderState.PAYMENT_STATE_YES);
+                    if(order.getOrderType()==1){//如果当前确认收货订单为零售订单，则产生零售利润，否则，跳过
+                        String buyerId = order.getBuyerId()+"";
+                        RetailProfit retailProfit = new RetailProfit();
+                        retailProfit.setBuyerId(buyerId);
+                        retailProfit.setCreateTime(new Date());
+                        /*Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(new Date());
+                        calendar.add(Calendar.DATE, 8);
+                        retailProfit.setExpectTime(calendar.getTime());*/
+                        retailProfit.setOrderId(order.getId());
+                        retailProfit.setOrderSn(order.getOrderSn());
+                        retailProfit.setState(0);
+                        BigDecimal profit=BigDecimal.ZERO;
+                        List<ShopOrderGoods> shopOrderGoodsList = shopOrderGoodsService.findList("orderId", order.getId());
+                        if(shopOrderGoodsList!=null&&shopOrderGoodsList.size()>0){
+                            for (ShopOrderGoods shopOrderGoods : shopOrderGoodsList) {
+                                ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
+                                profit=profit.add(shopGoods.getGoodsRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));
+                            }
+                        }
+                        retailProfit.setProfits(profit);
+                        retailProfitService.save(retailProfit);
+                    }
                     newOrder.setPaymentTime(new Date());
                     String period = rdSysPeriodDao.getSysPeriodService(new Date());
                     order.setCreationPeriod(period);
