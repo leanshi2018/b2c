@@ -88,7 +88,7 @@ public class ShopActivityGoods implements GenericEntity {
     private Integer sort;
 
     /**
-     * 1-待审核 2-已通过  3-已拒绝
+     * 1-待审核 2-已通过  3-已拒绝  4-已结束
      */
     @Column(name = "status")
     private Integer status;
