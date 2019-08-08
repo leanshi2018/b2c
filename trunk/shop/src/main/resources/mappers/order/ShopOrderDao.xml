@@ -111,6 +111,8 @@
         <result property="logisticType" column="logistic_type"/>
         <result property="shippingExpressCode" column="shipping_express_code"/>
         <result property="shippingCode" column="shipping_code"/>
+        <result property="submitStatus" column="submit_status"/>
+        <result property="failInfo" column="fail_info"/>
         <result property="cancelTime" column="cancel_time"/>
     </resultMap>
 
@@ -770,6 +772,8 @@
         so.payment_name,
         so.shipping_express_code,
         so.shipping_code,
+        so.submit_status,
+        so.fail_info,
         so.pay_sn
         from
         shop_order so left join shop_order_address sod on so.address_id = sod.id
