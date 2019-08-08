@@ -17,7 +17,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TimeZone;
 
 import javax.crypto.Mac;
@@ -25,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.json.JSONObject;
 
+import com.alibaba.fastjson.JSON;
 import com.framework.loippi.param.user.UserAddBankCardsParam;
 
 
@@ -140,18 +140,23 @@ public class BankCardUtils {
         //String resultS = deGet(url,headers,null);
 
         JSONObject jsonObject = new JSONObject(result);
-        String code= Optional.ofNullable(jsonObject.getString("code")).orElse("");
+        Map maps = (Map) JSON.parse(jsonObject.toString());
+
+        String code = (String)maps.get("code");
+        System.out.println("code="+code);
         if (code.equals("400")){
-            result=Optional.ofNullable(jsonObject.getString("msg")).orElse("");
+            result=(String)maps.get("msg");
             return result;
         }
-        String res=Optional.ofNullable(jsonObject.getJSONObject("data").getString("result")).orElse("");
-        System.out.println("res="+res);
-        //String description=Optional.ofNullable(jsonObject.getJSONObject("result").getString("description")).orElse("");
+        String data=(String)maps.get("data");
+        System.out.println("data="+data);
+        JSONObject jsonDate = new JSONObject(data);
+        Map mapDate = (Map) JSON.parse(jsonDate.toString());
+        String res = (String)mapDate.get("result");
         if (code.equals("200") && res.equals("0")){
             result="1";
         }else{
-            result=Optional.ofNullable(jsonObject.getString("msg")).orElse("");
+            result=(String)maps.get("msg");
         }
         System.out.println(result);
         return result;
