@@ -175,10 +175,6 @@ public class OrderSysController extends GenericController {
 
     @RequestMapping(value = {"/admin/order/otherList"})
     public String otherList(Pageable pageable, ModelMap model, OrderView param,String orderTypeStr ) {
-        System.out.println("pageable:"+pageable);
-        System.out.println("model:"+model);
-        System.out.println("param:"+param);
-        System.out.println("orderTypeStr:"+orderTypeStr);
         // 自营订单
         param.setStoreId(0L);
         pageable.setParameter(param);

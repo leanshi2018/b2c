@@ -1,13 +1,10 @@
 package com.framework.loippi.result.sys;
 
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.utils.validator.Words;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import org.hibernate.validator.constraints.Length;
 
 
 /**
@@ -179,6 +176,9 @@ public class OrderView {
     private List<Long> ids;
 
     private Long unequalStoreId;
+
+    private Integer submitStatus;
+    private String failInfo;
 
 
 

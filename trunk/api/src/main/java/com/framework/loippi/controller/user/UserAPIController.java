@@ -32,7 +32,6 @@ import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRaBinding;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
@@ -667,6 +666,7 @@ public class UserAPIController extends BaseController {
     //添加银行卡
     @RequestMapping(value = "/addBankCards.json")
     public String addBankCards(@Valid UserAddBankCardsParam param, HttpServletRequest request) {
+        System.out.println("进来了添加银行卡");
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if (member == null) {
             return ApiUtils.error("请登录");
@@ -679,6 +679,8 @@ public class UserAPIController extends BaseController {
             e.printStackTrace();
             return ApiUtils.error("填写相关信息有误");
         }
+
+        System.out.println(result);//1 验证成功
 
         if (!result.equals("1")) {
             return ApiUtils.error(result);
