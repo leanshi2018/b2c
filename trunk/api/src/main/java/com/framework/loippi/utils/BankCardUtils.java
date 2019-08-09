@@ -114,7 +114,7 @@ public class BankCardUtils {
             }
 
             // 定义 BufferedReader输入流来读取URL的响应
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
             String line;
             //String result = "";
             while ((line = in.readLine()) != null) {
@@ -138,7 +138,8 @@ public class BankCardUtils {
 
 
         //String resultS = deGet(url,headers,null);
-
+        //{"msg":"","success":true,"code":200,"data":{"result":0,"order_no":"609328563237294080","desc":"认证信息匹配","msg":"一致"}}
+        //{"msg":"","success":true,"code":200,"data":{"result":1,"order_no":"609328326196203520","desc":"认证信息不匹配","msg":"不一致"}}
         JSONObject jsonObject = new JSONObject(result);
         Map maps = (Map) JSON.parse(jsonObject.toString());
 
@@ -152,10 +153,12 @@ public class BankCardUtils {
         System.out.println("data="+data);
         Map mapDate = (Map) JSON.parse(data.toString());
         int res = (int)mapDate.get("result");
-        if (code==200){
+        String desc = (String)mapDate.get("desc");
+        String msg = (String)mapDate.get("msg");
+        if (code==200&&res==0){
             result="1";
         }else{
-            result=(String)maps.get("msg");
+            result=desc+","+msg;
         }
         System.out.println(result);
         return result;
@@ -176,44 +179,6 @@ public class BankCardUtils {
         return sb.toString();
     }
 
-    /*public static String paramsResult (Map<String, Object> params ) {
-        String s = "";
-        for (Map.Entry map : params.entrySet()) {
-            if (s != "") {
-                s = s + "&";
-            }
-            s = s + map.getKey() + "=" + map.getValue();
-        }
-        return s;
-    }
-
-    public static String deGet (String uri,Map<String, String> headers,Map<String,Object> data) {
-        CloseableHttpClient client = HttpClients.createDefault();
-        List<NameValuePair> params = new ArrayList();
-        if(data != null) {
-            Iterator iterator = data.entrySet().iterator();
-            while(iterator.hasNext()) {
-                Map.Entry entry = (Map.Entry)iterator.next();
-                params.add(new BasicNameValuePair(entry.getKey() + "", entry.getValue() + ""));
-            }
-        }
-        try {
-            HttpGet get = new HttpGet(uri);
-            if(headers != null) {
-                Iterator iterator1 = headers.entrySet().iterator();
-                while(iterator1.hasNext()) {
-                    Map.Entry<String, String> entry = (Map.Entry)iterator1.next();
-                    get.addHeader((String)entry.getKey(), (String)entry.getValue());
-                }
-            }
-            HttpResponse response = client.execute(get);
-            HttpEntity entity = response.getEntity();
-            return EntityUtils.toString(entity, "UTF-8").trim();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
 
 
 }
