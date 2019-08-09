@@ -1,21 +1,8 @@
 package com.framework.loippi.job;
 
-<<<<<<< HEAD
-=======
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.consts.PaymentTallyState;
-import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
-import com.framework.loippi.dao.user.*;
-import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.support.Pageable;
-
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
->>>>>>> 3c33c9a63f1e981f5601356fae2d5d6f004fa84d
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +17,20 @@ import org.springframework.stereotype.Service;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
+import com.framework.loippi.dao.user.RdMmAccountInfoDao;
+import com.framework.loippi.dao.user.RdMmAccountLogDao;
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
+import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.dao.user.RdSysPeriodDao;
+import com.framework.loippi.dao.user.RetailProfitDao;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RetailProfit;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
@@ -103,14 +103,12 @@ public class ShopOrderJob {
             pageSize = orderList.size();
         } while (pageSize == 500);
     }
-<<<<<<< HEAD
-=======
 
-    @Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
+    //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
+    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
     public void grant(){
         System.out.println("###############################执行定时任务#####################################");
-        /*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expectTime = format.format(new Date());
         List<RetailProfit> list=retailProfitDao.findTimeMature(expectTime);
         System.out.println(list.size());
@@ -170,11 +168,7 @@ public class ShopOrderJob {
                     }
                 }
             }
-        }*/
+        }
     }
 
-
-
-
->>>>>>> 3c33c9a63f1e981f5601356fae2d5d6f004fa84d
 }
