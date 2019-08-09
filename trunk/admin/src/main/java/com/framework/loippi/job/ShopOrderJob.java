@@ -94,11 +94,11 @@ public class ShopOrderJob {
         } while (pageSize == 500);
     }
 
-    @Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
+    //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
+    @Scheduled(cron = "0 25 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
     public void grant(){
         System.out.println("###############################执行定时任务#####################################");
-        /*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expectTime = format.format(new Date());
         List<RetailProfit> list=retailProfitDao.findTimeMature(expectTime);
         System.out.println(list.size());
@@ -158,7 +158,7 @@ public class ShopOrderJob {
                     }
                 }
             }
-        }*/
+        }
     }
 
 
