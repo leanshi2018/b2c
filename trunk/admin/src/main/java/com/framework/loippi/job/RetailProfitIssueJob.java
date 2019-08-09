@@ -1,9 +1,8 @@
 package com.framework.loippi.job;
 
-import com.framework.loippi.consts.ActivityStatus;
+
 import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
 import com.framework.loippi.dao.user.*;
-import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.user.*;
 import com.framework.loippi.utils.Paramap;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -19,11 +19,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-@Component
+@Service
 @EnableScheduling
 @Lazy(false)
 @Transactional
-public class RetailProfitIssue {
+public class RetailProfitIssueJob {
     @Autowired
     private RetailProfitDao retailProfitDao;
     @Autowired
@@ -42,8 +42,8 @@ public class RetailProfitIssue {
     /**
      * 查询可以发放的零售利润记录，并发放
      */
-    @Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "0 0 * * * ? ")  //每隔一小时执行一次
+    //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
+    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
     public synchronized void grant() {
         System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -95,6 +95,9 @@ public class RetailProfitIssue {
                                 //修改零售利润
                                 retailProfit.setReceiptorId(rdMmRelation.getSponsorCode());
                                 retailProfit.setActualTime(new Date());
+                                if(period!=null){
+                                    retailProfit.setActualPeriod(period);
+                                }
                                 retailProfit.setState(1);
                                 retailProfitDao.update(retailProfit);
                             }
