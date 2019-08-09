@@ -6,17 +6,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
-import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
-import javax.annotation.Resource;
 
-import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.utils.Paramap;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmAccountLogDao;
