@@ -1,24 +1,24 @@
 package com.framework.loippi.job;
 
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.consts.PaymentTallyState;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.support.Pageable;
-
-
 import java.util.Date;
 import java.util.List;
+
 import javax.annotation.Resource;
 
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.validator.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.validator.DateUtils;
 
 /**   暂时屏蔽
  * 功能：根据设置定时更新订单
@@ -73,10 +73,4 @@ public class ShopOrderJob {
             pageSize = orderList.size();
         } while (pageSize == 500);
     }
-
-
-
-
-
-
 }

@@ -1,11 +1,14 @@
 package com.framework.loippi.job;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import javax.annotation.Resource;
 
-import org.osgi.service.component.annotations.Component;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
@@ -14,11 +17,18 @@ import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.dao.user.RetailProfitDao;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RetailProfit;
+import com.framework.loippi.utils.Paramap;
 
-@Component
+@Service
 @EnableScheduling
 @Lazy(false)
-public class RetailProfitIssue {
+public class RetailProfitIssueJob {
     @Resource
     private RetailProfitDao retailProfitDao;
     @Resource
@@ -40,7 +50,7 @@ public class RetailProfitIssue {
     @Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
     //@Scheduled(cron = "0 0 * * * ? ")  //每隔一小时执行一次
     public  void grant() {
-        /*System.out.println("###############################执行定时任务#####################################");
+        System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expectTime = format.format(new Date());
         List<RetailProfit> list=retailProfitDao.findTimeMature(expectTime);
@@ -98,6 +108,6 @@ public class RetailProfitIssue {
                     }
                 }
             }
-        }*/
+        }
     }
 }
