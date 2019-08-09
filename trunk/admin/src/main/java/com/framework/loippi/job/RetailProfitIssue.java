@@ -1,42 +1,37 @@
 package com.framework.loippi.job;
 
-import com.framework.loippi.consts.ActivityStatus;
-import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
-import com.framework.loippi.dao.user.*;
-import com.framework.loippi.entity.activity.ShopActivity;
-import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.utils.Paramap;
+import javax.annotation.Resource;
+
 import org.osgi.service.component.annotations.Component;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
+import com.framework.loippi.dao.user.RdMmAccountInfoDao;
+import com.framework.loippi.dao.user.RdMmAccountLogDao;
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
+import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.dao.user.RdSysPeriodDao;
+import com.framework.loippi.dao.user.RetailProfitDao;
 
 @Component
 @EnableScheduling
 @Lazy(false)
-@Transactional
 public class RetailProfitIssue {
-    @Autowired
+    @Resource
     private RetailProfitDao retailProfitDao;
-    @Autowired
+    @Resource
     private RdMmRelationDao rdMmRelationDao;
-    @Autowired
+    @Resource
     private RdMmAccountInfoDao rdMmAccountInfoDao;
-    @Autowired
+    @Resource
     private RdMmAccountLogDao rdMmAccountLogDao;
-    @Autowired
+    @Resource
     private RdMmIntegralRuleDao rdMmIntegralRuleDao;
-    @Autowired
+    @Resource
     private RdMmBasicInfoDao rdMmBasicInfoDao;
-    @Autowired
+    @Resource
     private RdSysPeriodDao rdSysPeriodDao;
 
     /**
@@ -44,11 +39,12 @@ public class RetailProfitIssue {
      */
     @Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
     //@Scheduled(cron = "0 0 * * * ? ")  //每隔一小时执行一次
-    public synchronized void grant() {
-        System.out.println("###############################执行定时任务#####################################");
+    public  void grant() {
+        /*System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expectTime = format.format(new Date());
         List<RetailProfit> list=retailProfitDao.findTimeMature(expectTime);
+        System.out.println(list.size());
         if(list!=null&&list.size()>0){
             for (RetailProfit retailProfit : list) {
                 //根据retailProfit对应记录进行零售利润发放
@@ -102,6 +98,6 @@ public class RetailProfitIssue {
                     }
                 }
             }
-        }
+        }*/
     }
 }
