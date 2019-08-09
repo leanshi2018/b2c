@@ -19,4 +19,9 @@ import java.util.Map;
 public class RetailProfitServiceImpl extends GenericServiceImpl<RetailProfit, Long> implements RetailProfitService {
     @Autowired
     private RetailProfitDao retailProfitDao;
+
+    @Override
+    public List<RetailProfit> findNoGrantByCode(String mmCode) {
+        return retailProfitDao.findNoGrantByCode(mmCode);
+    }
 }

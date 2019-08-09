@@ -175,5 +175,19 @@
 			<include refid="where_column" />
 		</where>
 	</select>
+
+	<select id="findTimeMature" parameterType="string" resultMap="RetailProfitResultMap">
+		select
+		<include refid="base_column" />
+		FROM retail_profit
+		where expect_time >= #{expectTime} and state = 0
+	</select>
+
+	<select id="findNoGrantByCode" parameterType="string" resultMap="RetailProfitResultMap">
+		select
+		<include refid="base_column" />
+		FROM retail_profit
+		where receiptor_id = #{receiptorId} and state = 2
+	</select>
 	
 </mapper> 
