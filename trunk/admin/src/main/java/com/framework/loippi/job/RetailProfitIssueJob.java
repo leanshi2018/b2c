@@ -1,3 +1,4 @@
+/*
 package com.framework.loippi.job;
 
 import java.math.BigDecimal;
@@ -49,12 +50,14 @@ public class RetailProfitIssueJob {
     @Resource
     private RdSysPeriodDao rdSysPeriodDao;
 
-    /**
+    */
+/**
      * 查询可以发放的零售利润记录，并发放
-     */
+     *//*
+
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
     @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
-    public synchronized void grant() {
+    public void grant(){
         System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expectTime = format.format(new Date());
@@ -119,3 +122,4 @@ public class RetailProfitIssueJob {
         }
     }
 }
+*/
