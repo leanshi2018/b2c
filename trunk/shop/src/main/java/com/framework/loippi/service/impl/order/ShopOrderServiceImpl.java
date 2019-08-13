@@ -488,7 +488,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             RetailProfit retailProfit = retailProfitService.find("orderId",order.getId());
             if(retailProfit!=null){
                 retailProfit.setState(-1);
-                retailProfit.setRemark("代发货订单取消");
+                retailProfit.setRemark("待发货订单取消");
                 retailProfitService.update(retailProfit);
             }
         }
