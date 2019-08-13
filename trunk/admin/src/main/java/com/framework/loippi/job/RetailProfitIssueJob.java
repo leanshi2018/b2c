@@ -1,18 +1,20 @@
 /*
 package com.framework.loippi.job;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
-import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
 import javax.annotation.Resource;
 
-import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.utils.Paramap;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmAccountLogDao;
@@ -20,11 +22,13 @@ import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.dao.user.RetailProfitDao;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RetailProfit;
+import com.framework.loippi.utils.Paramap;
 
 @Service
 @EnableScheduling
