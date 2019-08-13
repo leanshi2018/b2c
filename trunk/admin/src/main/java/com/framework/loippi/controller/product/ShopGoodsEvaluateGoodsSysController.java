@@ -1,10 +1,40 @@
 package com.framework.loippi.controller.product;
 
-import com.cloopen.rest.sdk.utils.DateUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Validator;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.RequestContext;
+
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.GoodsState;
 import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
@@ -16,6 +46,7 @@ import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
+import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
@@ -24,23 +55,6 @@ import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.validator.DateUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.support.RequestContext;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Validator;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * 评论管理
@@ -60,6 +74,8 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
     private ShopGoodsService shopGoodsService;
     @Resource
     private ShopOrderGoodsService shopOrderGoodsService;
+    @Resource
+    private ShopOrderService shopOrderService;
     @Autowired
     private TUserSettingService tUserSettingService;
     @Resource
@@ -199,11 +215,33 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             int points = 0;
             try {
                 points = Integer.parseInt(message);
+                System.out.println(points);
+                if (points!=1&&points!=0.5){
+                    model.addAttribute("msg", "分配积分系数不正确");
+                    return Constants.MSG_URL;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 model.addAttribute("msg", "积分必须为数字");
                 return Constants.MSG_URL;
             }
+
+            String adminName="";//操作人
+            Subject subject = SecurityUtils.getSubject();
+            if (subject != null) {
+                Principal principal = (Principal) subject.getPrincipal();
+                if (principal != null && principal.getId() != null) {
+                    adminName=principal.getUsername();
+                }
+            }
+
+            System.out.println("adminName="+adminName);
+
+            ShopOrderGoods shopOrderGoods = shopOrderGoodsService.find(shopGoodsEvaluate.getGevalOrdergoodsid());//订单商品
+            BigDecimal price = shopOrderGoods.getVipPrice();//vip价格
+
+            points = price.intValue()*points;
+
             evaluate.setExchangePoints(points);
             evaluateGoodsService.update(evaluate);
             RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", shopGoodsEvaluate.getGevalFrommemberid());
@@ -220,9 +258,9 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             rdMmAccountLog.setTransDate(new Date());
             //转出无需审核直接成功
             rdMmAccountLog.setStatus(3);
-            rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
+            rdMmAccountLog.setCreationBy(adminName);
             rdMmAccountLog.setCreationTime(new Date());
-            rdMmAccountLog.setAutohrizeBy(shopMember.getMmNickName());
+            rdMmAccountLog.setAutohrizeBy(adminName);
             rdMmAccountLog.setAutohrizeTime(new Date());
             rdMmAccountInfo.setRedemptionBlance(rdMmAccountInfo.getRedemptionBlance().add(BigDecimal.valueOf(points)));
             rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getRedemptionBlance());
