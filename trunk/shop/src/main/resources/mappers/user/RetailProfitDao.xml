@@ -17,15 +17,18 @@
 		<result property="orderSn" column="order_sn" />
 		<result property="state" column="state" />
 		<result property="remark" column="remark" />
+		<result property="createPeriod" column="create_period" />
+		<result property="expectPeriod" column="expect_period" />
+		<result property="actualPeriod" column="actual_period" />
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 id ,buyer_id ,receiptor_id ,create_time,expect_time ,actual_time ,profits ,order_id ,order_sn ,state ,remark
+		 id ,buyer_id ,receiptor_id ,create_time,expect_time ,actual_time ,profits ,order_id ,order_sn ,state ,remark,create_period,expect_period,actual_period
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{id},#{buyerId},#{receiptorId},#{createTime},#{expectTime},#{actualTime},#{profits},#{orderId},#{orderSn},#{state},#{remark}
+		 #{id},#{buyerId},#{receiptorId},#{createTime},#{expectTime},#{actualTime},#{profits},#{orderId},#{orderSn},#{state},#{remark},#{createPeriod},#{expectPeriod},#{actualPeriod}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -63,6 +66,15 @@
 		<if test="remark != null and remark != ''">
 			AND remark = #{remark,jdbcType=VARCHAR}
 		</if>
+		<if test="createPeriod != null and createPeriod != ''">
+			AND create_period = #{createPeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="expectPeriod != null and expectPeriod != ''">
+			AND expect_period = #{expectPeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="actualPeriod != null and actualPeriod != ''">
+			AND actual_period = #{actualPeriod,jdbcType=VARCHAR}
+		</if>
 	</sql>
 	
 	<!-- 设置语句 -->
@@ -99,6 +111,15 @@
 		</if>
 		<if test="remark != null and remark != ''">
 			remark = #{remark,jdbcType=VARCHAR},
+		</if>
+		<if test="createPeriod != null and createPeriod != ''">
+			create_period = #{createPeriod,jdbcType=VARCHAR},
+		</if>
+		<if test="expectPeriod != null and expectPeriod != ''">
+			expect_period = #{expectPeriod,jdbcType=VARCHAR},
+		</if>
+		<if test="actualPeriod != null and actualPeriod != ''">
+			actual_period = #{actualPeriod,jdbcType=VARCHAR},
 		</if>
 	</sql>
 
@@ -180,7 +201,7 @@
 		select
 		<include refid="base_column" />
 		FROM retail_profit
-		where expect_time >= #{expectTime} and state = 0
+		where expect_time &lt;= #{expectTime} and state = 0
 	</select>
 
 	<select id="findNoGrantByCode" parameterType="string" resultMap="RetailProfitResultMap">

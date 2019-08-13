@@ -52,4 +52,13 @@ public class RetailProfit implements GenericEntity {
 
     @Column(name = "remark" )
     private String remark;//备注
+
+    @Column(name = "create_period" )
+    private String createPeriod;//零售利润产生周期
+
+    @Column(name = "expect_period" )
+    private String expectPeriod;//零售利润预计发放周期
+
+    @Column(name = "actual_period" )
+    private String actualPeriod;//零售利润实际发放周期
 }

@@ -1,12 +1,18 @@
+/*
 package com.framework.loippi.job;
 
+
+import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
 import javax.annotation.Resource;
 
-import org.osgi.service.component.annotations.Component;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.utils.Paramap;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmAccountLogDao;
@@ -15,10 +21,16 @@ import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.dao.user.RetailProfitDao;
 
-@Component
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+@Service
 @EnableScheduling
 @Lazy(false)
-public class RetailProfitIssue {
+@Transactional
+public class RetailProfitIssueJob {
     @Resource
     private RetailProfitDao retailProfitDao;
     @Resource
@@ -34,13 +46,15 @@ public class RetailProfitIssue {
     @Resource
     private RdSysPeriodDao rdSysPeriodDao;
 
-    /**
+    */
+/**
      * 查询可以发放的零售利润记录，并发放
-     */
-    @Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "0 0 * * * ? ")  //每隔一小时执行一次
-    public  void grant() {
-        /*System.out.println("###############################执行定时任务#####################################");
+     *//*
+
+    //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
+    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
+    public void grant(){
+        System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expectTime = format.format(new Date());
         List<RetailProfit> list=retailProfitDao.findTimeMature(expectTime);
@@ -91,6 +105,9 @@ public class RetailProfitIssue {
                                 //修改零售利润
                                 retailProfit.setReceiptorId(rdMmRelation.getSponsorCode());
                                 retailProfit.setActualTime(new Date());
+                                if(period!=null){
+                                    retailProfit.setActualPeriod(period);
+                                }
                                 retailProfit.setState(1);
                                 retailProfitDao.update(retailProfit);
                             }
@@ -98,6 +115,7 @@ public class RetailProfitIssue {
                     }
                 }
             }
-        }*/
+        }
     }
 }
+*/
