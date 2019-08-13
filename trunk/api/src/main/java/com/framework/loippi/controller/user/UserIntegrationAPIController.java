@@ -11,6 +11,8 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.service.user.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,12 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.entity.user.RdMmBank;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.IntegrationBuildResult;
@@ -34,13 +30,6 @@ import com.framework.loippi.result.user.IntegrationListResult;
 import com.framework.loippi.result.user.IntegrationMemberListResult;
 import com.framework.loippi.result.user.UserIntegrationListResult;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAccountLogService;
-import com.framework.loippi.service.user.RdMmBankService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdNewVipDetailService;
-import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
@@ -73,7 +62,10 @@ public class UserIntegrationAPIController extends BaseController {
     private RdRanksService rdRanksService;
     @Resource
     private RdMmRelationService rdMmRelationService;
-
+    @Resource
+    private MemberQualificationService memberQualificationService;
+    @Resource
+    private RetailProfitService retailProfitService;
     //积分列表
     @RequestMapping(value = "/list.json")
     public String list(HttpServletRequest request) {
@@ -233,7 +225,6 @@ public class UserIntegrationAPIController extends BaseController {
             .put("memberList", integrationMemberListResultList));
     }
 
-    //购物积分用户列表
     @RequestMapping(value = "/shp/memberList.json")
     public String memberList(HttpServletRequest request) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
@@ -248,7 +239,56 @@ public class UserIntegrationAPIController extends BaseController {
         }
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
         List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
-            .build(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList);
+                .build(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList);
+        return ApiUtils.success(Paramap.create().put("memberList", integrationMemberListResultList));
+    }
+
+    /**
+     * //购物积分用户列表
+     * @param request
+     * @param periodCode 周期编号
+     * @param sorting 排序种类 1：按mi值升序 2：按mi值降序  3：按加入时间升序 4.按加入时间降序 5.按会员级别升序  6.按会员级别降序 7.按照已发放零售利润升序 8.按照已发放零售利润降序
+     * @return
+     */
+    @RequestMapping(value = "/shp/memberList2.json")
+    public String memberList2(HttpServletRequest request,
+                             @RequestParam(value = "periodCode",required = true) String periodCode,
+                             @RequestParam(value = "sorting",required = true)Integer sorting) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode",member.getMmCode()).put("periodCode",periodCode));
+        //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode","900000011").put("periodCode",periodCode));
+        if(list==null||list.size()==0){
+            return ApiUtils.success("当前周期当前会员对应资格信息尚未统计");
+        }
+        List<String> mmCodes = new ArrayList();
+        for (MemberQualification item : list) {
+            mmCodes.add(item.getMCode());
+        }
+        List<RdMmBasicInfo> rdMmBasicInfoList = new ArrayList<>();
+        List<RdMmRelation> rdMmRelationList = new ArrayList<>();
+        if (mmCodes != null && mmCodes.size() > 0) {
+            rdMmBasicInfoList = rdMmBasicInfoService.findList("mmCodes", mmCodes);
+            rdMmRelationList = rdMmRelationService.findList("mmCodes", mmCodes);
+        }
+        //查询从每一个会员获得的零售利润
+        HashMap<String, BigDecimal> hashMap = new HashMap<>();
+        for (String mmCode : mmCodes) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("buyerId",mmCode);
+            map.put("receiptorId",member.getMmCode());
+            //map.put("receiptorId","900000011");
+            map.put("actualPeriod",periodCode);
+            map.put("state",1);
+            BigDecimal result=retailProfitService.findTotalProfit(map);
+            if(result!=null){
+                hashMap.put(mmCode,result);
+            }else {
+                hashMap.put(mmCode,BigDecimal.ZERO);
+            }
+        }
+        List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
+        List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
+            .build3(list,rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap);
         return ApiUtils.success(Paramap.create().put("memberList", integrationMemberListResultList));
     }
 

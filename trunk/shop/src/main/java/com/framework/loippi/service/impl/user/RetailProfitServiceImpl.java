@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 @Service
@@ -26,5 +28,10 @@ public class RetailProfitServiceImpl extends GenericServiceImpl<RetailProfit, Lo
     @Override
     public List<RetailProfit> findNoGrantByCode(String mmCode) {
         return retailProfitDao.findNoGrantByCode(mmCode);
+    }
+
+    @Override
+    public BigDecimal findTotalProfit(HashMap<String, Object> map) {
+        return retailProfitDao.findTotalProfit(map);
     }
 }

@@ -210,5 +210,22 @@
 		FROM retail_profit
 		where receiptor_id = #{receiptorId} and state = 2
 	</select>
-	
+
+	<select id="findTotalProfit" parameterType="map" resultType="java.math.BigDecimal">
+		select sum(profits) from retail_profit
+		<where>
+			<if test="buyerId != null and buyerId != ''">
+				and buyer_id = #{buyerId}
+			</if>
+			<if test="receiptorId != null and receiptorId != ''">
+				and receiptor_id = #{receiptorId}
+			</if>
+			<if test="actualPeriod != null and actualPeriod != ''">
+				and actual_period = #{actualPeriod}
+			</if>
+			<if test="state != null">
+				and state = #{state}
+			</if>
+		</where>
+	</select>
 </mapper> 
