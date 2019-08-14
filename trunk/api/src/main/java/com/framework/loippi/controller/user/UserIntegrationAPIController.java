@@ -2,17 +2,16 @@ package com.framework.loippi.controller.user;
 
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-<<<<<<< HEAD
-=======
-import com.framework.loippi.dao.user.RdSysPeriodDao;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.service.user.*;
->>>>>>> 54acfb25d358984a3c3dba2b3b75a7517fcb01d8
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -29,6 +29,7 @@ import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.IntegrationBuildResult;
