@@ -16,4 +16,7 @@ public interface RdSysPeriodService  extends GenericService<RdSysPeriod, Long> {
     String getSysPeriodService(Date date);
 
     RdSysPeriod getPeriodService(Date date);
+
+    RdSysPeriod findLastPeriod();
+
 }

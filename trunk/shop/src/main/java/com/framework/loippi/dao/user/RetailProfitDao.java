@@ -2,6 +2,7 @@ package com.framework.loippi.dao.user;
 
 import com.framework.loippi.entity.user.RetailProfit;
 import com.framework.loippi.mybatis.dao.GenericDao;
+import com.framework.loippi.utils.Paramap;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -23,4 +24,8 @@ public interface RetailProfitDao extends GenericDao<RetailProfit, Long> {
     List<RetailProfit> findNoGrantByCode(String mmCode);
 
     BigDecimal findTotalProfit(HashMap<String, Object> map);
+
+    BigDecimal findPeriodPay(Paramap put);
+
+    BigDecimal findPeriodNoPay(Paramap put);
 }

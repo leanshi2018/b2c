@@ -13,6 +13,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.service.user.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -27,14 +29,6 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrowse;
-import com.framework.loippi.entity.user.OldSysRelationship;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmBank;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.entity.user.RdSysPeriod;
-import com.framework.loippi.entity.user.ShopMemberFavorites;
 import com.framework.loippi.enus.SocialType;
 import com.framework.loippi.enus.UserLoginType;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -54,15 +48,6 @@ import com.framework.loippi.service.product.ShopGoodsBrowseService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateService;
 import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.service.user.OldSysRelationshipService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmBankService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdRaBindingService;
-import com.framework.loippi.service.user.RdRanksService;
-import com.framework.loippi.service.user.RdSysPeriodService;
-import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.BankCardUtils;
@@ -121,6 +106,10 @@ public class UserAPIController extends BaseController {
     private ShopGoodsEvaluateSensitivityService evaluateSensitivityService;
     @Resource
     private RdSysPeriodService periodService;
+    @Resource
+    private MemberQualificationService memberQualificationService;
+    @Resource
+    private RetailProfitService retailProfitService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -859,7 +848,8 @@ public class UserAPIController extends BaseController {
         pager.setParameter(params);
         pager.setOrderProperty("create_time");
         pager.setOrderDirection(Order.Direction.DESC);
-        List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findByPage(pager).getContent();
+        //List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findByPage(pager).getContent();
+        List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findFootById(pager).getContent();
         List<Long> goodsIds = new ArrayList<>();
         for (ShopGoodsBrowse itemBrowse : shopGoodsBrowseList) {
             goodsIds.add(itemBrowse.getBrowseGoodsId());
@@ -1095,5 +1085,80 @@ public class UserAPIController extends BaseController {
         return ApiUtils.success(SubordinateUserInformationResult
             .build2(rdMmBasicInfo, shopMemberGrade, periodSumPpv, orderSumAccumulatedPpv,rdMmRelation.getRaSponsorStatus()));
     }
+    /**
+     * 分销用户信息
+     *
+     * @param memeberId 用户id
+     */
+    @RequestMapping(value = "/subordinateUserInformationNew.json", method = RequestMethod.POST)
+    public String subordinateUserInformationNew(HttpServletRequest request, String memeberId,String periodStr) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        if(StringUtil.isEmpty(memeberId)){
+            ApiUtils.error("请传入需要查询会员的会员编号");
+        }
+        if(StringUtil.isEmpty(periodStr)){
+            ApiUtils.error("请传入需要查询的周期编号");
+        }
+        MemberQualification memberQualification=memberQualificationService.findByCodeAndPeriod(Paramap.create().put("mCode",memeberId).put("periodCode",periodStr));
+        if(memberQualification==null){
+            ApiUtils.error("当前筛选条件下尚未统计出会员信息");
+        }
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memeberId);
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", memeberId);
+        RdRanks shopMemberGrade = null;
+        if (Optional.ofNullable(rdMmRelation.getRank()).orElse(-1) != -1) {
+            shopMemberGrade = rdRanksService.find("rankId", rdMmRelation.getRank());
+        }
+        OrderSumPpv periodSumPpv = new OrderSumPpv();
+        if(periodStr==null){
+            RdSysPeriod sysPeriod=periodService.findLastPeriod();
+            periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",sysPeriod.getPeriodCode()));
+        }else {
+            periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",periodStr));
+        }
+        BigDecimal retail = new BigDecimal("0.00");
+        BigDecimal buyerId = shopOrderService.findOrderRetail(Paramap.create().put("buyerId", memeberId).put("creationPeriod",periodStr));//查询出零售订单总额
+        if(buyerId!=null){
+            retail = buyerId.add(retail);
+        }
+        Paramap paramap = Paramap.create();
+        //查询已发放零售利润
+        BigDecimal pay=BigDecimal.ZERO;
+        BigDecimal payD=retailProfitService.findPeriodPay(Paramap.create().put("buyerId", memeberId).put("actualPeriod",periodStr));
+        if(payD!=null){
+            pay=pay.add(payD);
+        }
+        //查询待发放零售利润
+        BigDecimal nopay=BigDecimal.ZERO;
+        BigDecimal nopayD=retailProfitService.findPeriodNoPay(Paramap.create().put("buyerId", memeberId).put("createTime",periodStr));
+        if(nopayD!=null){
+            nopay=nopay.add(nopayD);
+        }
+        boolean flag = member.getMmCode().equals(rdMmRelation.getSponsorCode());
+        paramap.put("showFlag",flag);
+        SubordinateUserInformationResult subordinateUserInformationResult = SubordinateUserInformationResult
+                .build3(memberQualification,rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay);
+        paramap.put("data",subordinateUserInformationResult);
+        return ApiUtils.success(paramap);
+    }
 
+    /**
+     * 个人业绩
+     * @param request
+     * @param periodCode
+     * @param memeberId
+     * @return
+     */
+    @RequestMapping(value = "/selfPerformance.json", method = RequestMethod.POST)
+    public String selfPerformance(HttpServletRequest request, String periodCode, String memeberId) {
+        if (StringUtils.isEmpty(memeberId)){
+            return ApiUtils.error("该会员编号为空");
+        }
+        if (StringUtils.isEmpty(periodCode)){
+            
+        }
+
+        return null;
+    }
 }
