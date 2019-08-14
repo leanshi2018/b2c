@@ -15,6 +15,8 @@ import javax.validation.Valid;
 
 import com.framework.loippi.entity.user.*;
 import com.framework.loippi.service.user.*;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -844,18 +846,23 @@ public class UserAPIController extends BaseController {
             params.put("createTime", Dateutil.parseStrFromToDate(day, "yyyy-MM-dd"));
         }
         params.put("browseMemberId", member.getMmCode());
-        Pageable pager = new Pageable(pageNumber, pageSize);
+        int size=pageSize;
+        int currentPage=pageNumber;
+        PageHelper.startPage(currentPage,size,true);
+        /*Pageable pager = new Pageable(pageNumber, pageSize);
         pager.setParameter(params);
         pager.setOrderProperty("create_time");
         pager.setOrderDirection(Order.Direction.DESC);
-        //List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findByPage(pager).getContent();
-        List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findFootById(pager).getContent();
+        List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findByPage(pager).getContent();*/
+        List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findFootByIdAndTime(params);
+        PageInfo<ShopGoodsBrowse> pageInfo = new PageInfo<>(shopGoodsBrowseList);
+        List<ShopGoodsBrowse> list = pageInfo.getList();
         List<Long> goodsIds = new ArrayList<>();
-        for (ShopGoodsBrowse itemBrowse : shopGoodsBrowseList) {
+        for (ShopGoodsBrowse itemBrowse : list) {
             goodsIds.add(itemBrowse.getBrowseGoodsId());
         }
         Map<Long, ShopGoods> mapGoods = shopGoodsService.findGoodsMap(goodsIds);
-        return ApiUtils.success(UserFootprintsResult.build(shopGoodsBrowseList, mapGoods, member));
+        return ApiUtils.success(UserFootprintsResult.build(list, mapGoods, member));
     }
 
     //删除我的足迹

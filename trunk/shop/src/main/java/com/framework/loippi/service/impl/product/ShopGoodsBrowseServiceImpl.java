@@ -10,6 +10,7 @@ import com.framework.loippi.support.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,5 +39,10 @@ public class ShopGoodsBrowseServiceImpl extends GenericServiceImpl<ShopGoodsBrow
 	@Override
 	public Page<ShopGoodsBrowse> findFootById(Pageable pager) {
 		return shopGoodsBrowseDao.findFootById(pager);
+	}
+
+	@Override
+	public List<ShopGoodsBrowse> findFootByIdAndTime(Map<String, Object> params) {
+		return shopGoodsBrowseDao.findFootByIdAndTime(params);
 	}
 }
