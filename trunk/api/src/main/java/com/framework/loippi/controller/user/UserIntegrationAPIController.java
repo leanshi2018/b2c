@@ -245,17 +245,22 @@ public class UserIntegrationAPIController extends BaseController {
 
     /**
      * //购物积分用户列表
-     * @param request
+     * @param
      * @param periodCode 周期编号
      * @param sorting 排序种类 1：按mi值升序 2：按mi值降序  3：按加入时间升序 4.按加入时间降序 5.按会员级别升序  6.按会员级别降序 7.按照已发放零售利润升序 8.按照已发放零售利润降序
      * @return
      */
-    @RequestMapping(value = "/shp/memberList2.json")
-    public String memberList2(HttpServletRequest request,
+    @RequestMapping(value = "/shp/memberListNew.json")
+    public String memberListNew(HttpServletRequest request,
                              @RequestParam(value = "periodCode",required = true) String periodCode,
                              @RequestParam(value = "sorting",required = true)Integer sorting) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
-        List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode",member.getMmCode()).put("periodCode",periodCode));
+        //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode",member.getMmCode()).put("periodCode",periodCode));
+        HashMap<String, Object> map1 = new HashMap<>();
+        map1.put("sponsorCode",member.getMmCode());
+        //map1.put("sponsorCode","900000011");
+        map1.put("periodCode",periodCode);
+        List<MemberQualification> list =memberQualificationService.findBySponsorCodeAndPeriodCode(map1);
         //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode","900000011").put("periodCode",periodCode));
         if(list==null||list.size()==0){
             return ApiUtils.success("当前周期当前会员对应资格信息尚未统计");
@@ -288,7 +293,7 @@ public class UserIntegrationAPIController extends BaseController {
         }
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
         List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
-            .build3(list,rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap);
+                .build3(list,rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap);
         return ApiUtils.success(Paramap.create().put("memberList", integrationMemberListResultList));
     }
 

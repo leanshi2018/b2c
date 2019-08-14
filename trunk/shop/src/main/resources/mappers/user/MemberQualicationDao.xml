@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.MemberQualificationDao">
+
+	<resultMap id="MemberQualicationResultMap" type="com.framework.loippi.entity.user.MemberQualification">
+		<result column="id_rd_dis_qlf" property="idRdDisQlf" />
+		<result column="PERIOD_CODE" property="periodCode" />
+		<result column="MM_CODE" property="mCode" />
+		<result column="MM_NAME" property="mName" />
+		<result column="SPONSOR_CODE" property="sponsorCode" />
+		<result column="SPONSOR_NAME" property="sponsorName" />
+		<result column="MM_STATUS" property="mStatus" />
+		<result column="RA_STATUS" property="raStatus" />
+		<result column="RA_SHOP_YN"  property="raShopYn" />
+		<result column="PPV" property="ppv" />
+
+		<result column="PPV_RETAIL" property="ppvRetail" />
+		<result column="APPV_INIT" property="appvInit" />
+		<result column="APPV_FINAL" property="appvFinal" />
+		<result column="A_RETAIL_INIT" property="retailInit" />
+		<result column="A_RETAIL" property="retail" />
+		<result column="A_RETAIL_FINAL" property="retailFinal" />
+		<result column="RANK_P2" property="rankP2" />
+		<result column="RANK_P1" property="rankP1" />
+		<result column="RANK_P0" property="rankP0" />
+		<result column="RANK_AC" property="rankAc" />
+
+		<result column="RANK_RECORD_HIGH" property="rankRecordHigh" />
+		<result column="LEAF_YN" property="leafYn" />
+		<result column="ORPHAN" property="orphan" />
+		<result column="LAYER" property="layer" />
+		<result column="G7PV" property="g7pv" />
+		<result column="NPV" property="npv" />
+		<result column="GPV_FLAGSHIP" property="gpvFlagship" />
+		<result column="GROUP_RANK_MAX" property="groupRankMax" />
+		<result column="DD_RANK2_NUMBER" property="ddRank2Number" />
+		<result column="DD_AC_NUMBER" property="ddAcNumber" />
+
+		<result column="DL_RANK4_NUMBER" property="dlRank4Number" />
+		<result column="DL_RANK5_NUMBER" property="dlRank5Number" />
+		<result column="DL_RANK6_NUMBER" property="dlRank6Number" />
+		<result column="DL_RANK7_NUMBER" property="dlRank7Number" />
+		<result column="DL_RANK8_NUMBER" property="dlRank8Number" />
+		<result column="PPV_QUALIFIED" property="ppvqualified" />
+		<result column="TOURISM_QUALIFIED" property="tourismQualified" />
+		<result column="CAR_QUALIFIED" property="carQualified" />
+		<result column="DIVIDEND_QUALIFIED" property="dividendQualified" />
+	</resultMap>
+
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 id_rd_dis_qlf,PERIOD_CODE,MM_CODE,MM_NAME,SPONSOR_CODE,SPONSOR_NAME,MM_STATUS,RA_STATUS,RA_SHOP_YN,PPV,PPV_RETAIL,APPV_INIT,APPV_FINAL,A_RETAIL_INIT,A_RETAIL,A_RETAIL_FINAL,
+		 RANK_P2,RANK_P1,RANK_P0,RANK_AC,RANK_RECORD_HIGH,LEAF_YN,ORPHAN,LAYER,G7PV,NPV,GPV_FLAGSHIP,GROUP_RANK_MAX,DD_RANK2_NUMBER,DD_AC_NUMBER,DL_RANK4_NUMBER,DL_RANK5_NUMBER,
+		 DL_RANK6_NUMBER,DL_RANK7_NUMBER,DL_RANK8_NUMBER,PPV_QUALIFIED,TOURISM_QUALIFIED,CAR_QUALIFIED,DIVIDEND_QUALIFIED
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{idRdDisQlf},#{periodCode},#{mCode},#{mName},#{sponsorCode},#{sponsorName},#{mStatus},#{raStatus},#{raShopYn},#{ppv},#{ppvRetail},#{appvInit},#{appvFinal},#{retailInit},#{retail},#{retailFinal},#{rankP2},#{rankP1},#{rankP0},
+		 #{rankAc},#{rankRecordHigh},#{leafYn},#{orphan},#{layer},#{g7pv},#{npv},#{gpvFlagship},#{groupRankMax},#{ddRank2Number},#{ddAcNumber},#{dlRank4Number},#{dlRank5Number},#{dlRank6Number},#{dlRank7Number},#{dlRank8Number},
+		 #{ppvqualified},#{tourismQualified},#{carQualified},#{dividendQualified}
+	</sql>
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="idRdDisQlf != null">
+			AND id_rd_dis_qlf = #{idRdDisQlf,jdbcType=INTEGER}
+		</if>
+		<if test="periodCode != null and periodCode != ''">
+			AND PERIOD_CODE = #{periodCode,jdbcType=VARCHAR}
+		</if>
+		<if test="mCode != null and mCode != ''">
+			AND MM_CODE = #{mCode,jdbcType=VARCHAR}
+		</if>
+		<if test="mName != null and mName != ''">
+			AND MM_NAME = #{mName,jdbcType=VARCHAR}
+		</if>
+		<if test="sponsorCode != null and sponsorCode != ''">
+			AND SPONSOR_CODE = #{sponsorCode,jdbcType=VARCHAR}
+		</if>
+		<if test="sponsorName != null and sponsorName != ''">
+			AND SPONSOR_NAME = #{sponsorName,jdbcType=VARCHAR}
+		</if>
+		<if test="mStatus != null">
+			AND MM_STATUS = #{mStatus,jdbcType=INTEGER}
+		</if>
+		<if test="raStatus != null">
+			AND RA_STATUS = #{raStatus,jdbcType=INTEGER}
+		</if>
+		<if test="raShopYn != null">
+			AND RA_SHOP_YN = #{raShopYn,jdbcType=INTEGER}
+		</if>
+		<if test="ppv != null">
+			AND PPV = #{ppv,jdbcType=DECIMAL}
+		</if>
+		<if test="ppvRetail != null">
+			AND PPV_RETAIL = #{ppvRetail,jdbcType=DECIMAL}
+		</if>
+		<if test="appvInit != null">
+			AND APPV_INIT = #{appvInit,jdbcType=DECIMAL}
+		</if>
+		<if test="appvFinal != null">
+			AND APPV_FINAL = #{appvFinal,jdbcType=DECIMAL}
+		</if>
+		<if test="retailInit != null">
+			AND A_RETAIL_INIT = #{retailInit,jdbcType=DECIMAL}
+		</if>
+		<if test="retail != null">
+			AND A_RETAIL = #{retail,jdbcType=DECIMAL}
+		</if>
+		<if test="retailFinal != null">
+			AND A_RETAIL_FINAL = #{retailFinal,jdbcType=DECIMAL}
+		</if>
+		<if test="rankP2 != null">
+			AND RANK_P2 = #{rankP2,jdbcType=INTEGER}
+		</if>
+		<if test="rankP1 != null">
+			AND RANK_P1 = #{rankP1,jdbcType=INTEGER}
+		</if>
+		<if test="rankP0 != null">
+			AND RANK_P0 = #{rankP0,jdbcType=INTEGER}
+		</if>
+		<if test="rankAc != null">
+			AND RANK_AC = #{rankAc,jdbcType=INTEGER}
+		</if>
+		<if test="rankRecordHigh != null">
+			AND RANK_RECORD_HIGH = #{rankRecordHigh,jdbcType=INTEGER}
+		</if>
+		<if test="leafYn != null">
+			AND LEAF_YN = #{leafYn,jdbcType=INTEGER}
+		</if>
+		<if test="orphan != null">
+			AND ORPHAN = #{orphan,jdbcType=INTEGER}
+		</if>
+		<if test="layer != null">
+			AND LAYER = #{layer,jdbcType=INTEGER}
+		</if>
+		<if test="g7pv != null">
+			AND G7PV = #{g7pv,jdbcType=DECIMAL}
+		</if>
+		<if test="npv != null">
+			AND NPV = #{npv,jdbcType=DECIMAL}
+		</if>
+		<if test="gpvFlagship != null">
+			AND GPV_FLAGSHIP = #{gpvFlagship,jdbcType=DECIMAL}
+		</if>
+		<if test="groupRankMax != null">
+			AND GROUP_RANK_MAX = #{groupRankMax,jdbcType=INTEGER}
+		</if>
+		<if test="ddRank2Number != null">
+			AND DD_RANK2_NUMBER = #{ddRank2Number,jdbcType=INTEGER}
+		</if>
+		<if test="ddAcNumber != null">
+			AND DD_AC_NUMBER = #{ddAcNumber,jdbcType=INTEGER}
+		</if>
+		<if test="dlRank4Number != null">
+			AND DL_RANK4_NUMBER = #{dlRank4Number,jdbcType=INTEGER}
+		</if>
+		<if test="dlRank5Number != null'">
+			AND DL_RANK5_NUMBER = #{dlRank5Number,jdbcType=INTEGER}
+		</if>
+		<if test="dlRank6Number != null">
+			AND DL_RANK6_NUMBER = #{dlRank6Number,jdbcType=INTEGER}
+		</if>
+		<if test="dlRank7Number != null">
+			AND DL_RANK7_NUMBER = #{dlRank7Number,jdbcType=INTEGER}
+		</if>
+		<if test="dlRank8Number != null">
+			AND DL_RANK8_NUMBER = #{dlRank8Number,jdbcType=INTEGER}
+		</if>
+		<if test="ppvqualified != null">
+			AND PPV_QUALIFIED = #{ppvqualified,jdbcType=INTEGER}
+		</if>
+		<if test="tourismQualified != null">
+			AND TOURISM_QUALIFIED = #{tourismQualified,jdbcType=INTEGER}
+		</if>
+		<if test="carQualified != null">
+			AND CAR_QUALIFIED = #{carQualified,jdbcType=INTEGER}
+		</if>
+		<if test="dividendQualified != null">
+			AND DIVIDEND_QUALIFIED = #{dividendQualified,jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="idRdDisQlf != null">
+			id_rd_dis_qlf = #{idRdDisQlf,jdbcType=INTEGER},
+		</if>
+		<if test="periodCode != null and periodCode != ''">
+			PERIOD_CODE = #{periodCode,jdbcType=VARCHAR},
+		</if>
+		<if test="mCode != null and mCode != ''">
+			MM_CODE = #{mCode,jdbcType=VARCHAR},
+		</if>
+		<if test="mName != null and mName != ''">
+			MM_NAME = #{mName,jdbcType=VARCHAR},
+		</if>
+		<if test="sponsorCode != null and sponsorCode != ''">
+			SPONSOR_CODE = #{sponsorCode,jdbcType=VARCHAR},
+		</if>
+		<if test="sponsorName != null and sponsorName != ''">
+			SPONSOR_NAME = #{sponsorName,jdbcType=VARCHAR},
+		</if>
+		<if test="mStatus != null">
+			MM_STATUS = #{mStatus,jdbcType=INTEGER},
+		</if>
+		<if test="raStatus != null">
+			RA_STATUS = #{raStatus,jdbcType=INTEGER},
+		</if>
+		<if test="raShopYn != null">
+			RA_SHOP_YN = #{raShopYn,jdbcType=INTEGER},
+		</if>
+		<if test="ppv != null">
+			PPV = #{ppv,jdbcType=DECIMAL},
+		</if>
+		<if test="ppvRetail != null">
+			PPV_RETAIL = #{ppvRetail,jdbcType=DECIMAL},
+		</if>
+		<if test="appvInit != null">
+			APPV_INIT = #{appvInit,jdbcType=DECIMAL},
+		</if>
+		<if test="appvFinal != null">
+			APPV_FINAL = #{appvFinal,jdbcType=DECIMAL},
+		</if>
+		<if test="retailInit != null">
+			A_RETAIL_INIT = #{retailInit,jdbcType=DECIMAL},
+		</if>
+		<if test="retail != null">
+			A_RETAIL = #{retail,jdbcType=DECIMAL},
+		</if>
+		<if test="retailFinal != null">
+			A_RETAIL_FINAL = #{retailFinal,jdbcType=DECIMAL},
+		</if>
+		<if test="rankP2 != null">
+			RANK_P2 = #{rankP2,jdbcType=INTEGER},
+		</if>
+		<if test="rankP1 != null">
+			RANK_P1 = #{rankP1,jdbcType=INTEGER},
+		</if>
+		<if test="rankP0 != null">
+			RANK_P0 = #{rankP0,jdbcType=INTEGER},
+		</if>
+		<if test="rankAc != null">
+			RANK_AC = #{rankAc,jdbcType=INTEGER},
+		</if>
+		<if test="rankRecordHigh != null">
+			RANK_RECORD_HIGH = #{rankRecordHigh,jdbcType=INTEGER},
+		</if>
+		<if test="leafYn != null">
+			LEAF_YN = #{leafYn,jdbcType=INTEGER},
+		</if>
+		<if test="orphan != null">
+			ORPHAN = #{orphan,jdbcType=INTEGER},
+		</if>
+		<if test="layer != null">
+			LAYER = #{layer,jdbcType=INTEGER},
+		</if>
+		<if test="g7pv != null">
+			G7PV = #{g7pv,jdbcType=DECIMAL},
+		</if>
+		<if test="npv != null">
+			NPV = #{npv,jdbcType=DECIMAL},
+		</if>
+		<if test="gpvFlagship != null">
+			GPV_FLAGSHIP = #{gpvFlagship,jdbcType=DECIMAL},
+		</if>
+		<if test="groupRankMax != null">
+			GROUP_RANK_MAX = #{groupRankMax,jdbcType=INTEGER},
+		</if>
+		<if test="ddRank2Number != null">
+			DD_RANK2_NUMBER = #{ddRank2Number,jdbcType=INTEGER},
+		</if>
+		<if test="ddAcNumber != null">
+			DD_AC_NUMBER = #{ddAcNumber,jdbcType=INTEGER},
+		</if>
+		<if test="dlRank4Number != null">
+			DL_RANK4_NUMBER = #{dlRank4Number,jdbcType=INTEGER},
+		</if>
+		<if test="dlRank5Number != null'">
+			DL_RANK5_NUMBER = #{dlRank5Number,jdbcType=INTEGER},
+		</if>
+		<if test="dlRank6Number != null">
+			DL_RANK6_NUMBER = #{dlRank6Number,jdbcType=INTEGER},
+		</if>
+		<if test="dlRank7Number != null">
+			DL_RANK7_NUMBER = #{dlRank7Number,jdbcType=INTEGER},
+		</if>
+		<if test="dlRank8Number != null">
+			DL_RANK8_NUMBER = #{dlRank8Number,jdbcType=INTEGER},
+		</if>
+		<if test="ppvqualified != null">
+			PPV_QUALIFIED = #{ppvqualified,jdbcType=INTEGER},
+		</if>
+		<if test="tourismQualified != null">
+			TOURISM_QUALIFIED = #{tourismQualified,jdbcType=INTEGER},
+		</if>
+		<if test="carQualified != null">
+			CAR_QUALIFIED = #{carQualified,jdbcType=INTEGER},
+		</if>
+		<if test="dividendQualified != null">
+			DIVIDEND_QUALIFIED = #{dividendQualified,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="MemberQualicationResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	rd_dis_qualification
+		WHERE	id_rd_dis_qlf=#{idRdDisQlf,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="MemberQualicationResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	rd_dis_qualification
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM rd_dis_qualification
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.MemberQualification">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+	          <!--SELECT LAST_INSERT_ID() AS ID    -->
+	    <!--</selectKey>  -->
+		INSERT rd_dis_qualification
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+<!--	<update id="update" parameterType="com.framework.loippi.entity.user.MemberQualification">
+		UPDATE	rd_dis_qualification
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	MM_CODE = #{mmCode}
+	</update>-->
+	
+	<!-- 删除单条记录 -->
+<!--	<delete id="delete">
+		DELETE	FROM rd_dis_qualification
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>-->
+	
+	<!-- 删除多条记录-->
+<!--	<delete id="deleteAll">
+		DELETE	FROM rd_dis_qualification
+		WHERE	ID	IN
+    	<foreach item="RdMmRelationId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdMmRelationId} 
+		</foreach>
+	</delete>-->
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="MemberQualicationResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	rd_dis_qualification
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="MemberQualicationResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM rd_dis_qualification
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+
+	<select id="findBySponsorCodeAndPeriodCode" parameterType="map" resultMap="MemberQualicationResultMap">
+		select <include refid="base_column" />
+		from rd_dis_qualification
+		<where>
+			<if test="sponsorCode != null and sponsorCode != ''">
+				and SPONSOR_CODE = #{sponsorCode}
+			</if>
+			<if test="periodCode != null and periodCode != ''">
+				and PERIOD_CODE = #{periodCode}
+			</if>
+		</where>
+	</select>
+	
+</mapper> 
