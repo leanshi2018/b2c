@@ -285,48 +285,6 @@ public class IntegrationMemberListResult {
         }
         return userIntegrationListResultList;
     }
-
-    public static void main(String[] args) {
-        ArrayList<IntegrationMemberListResult> userIntegrationListResultList = new ArrayList<>();
-        IntegrationMemberListResult i1 = new IntegrationMemberListResult();
-        Calendar instance = Calendar.getInstance();
-        Date time = instance.getTime();
-        i1.setGradeId(1);
-        i1.setTotalPv(new BigDecimal("10.00"));
-        i1.setJoinTime(time);
-        System.out.println(time);
-        IntegrationMemberListResult i2 = new IntegrationMemberListResult();
-        i2.setGradeId(3);
-        i2.setTotalPv(new BigDecimal("30.00"));
-        instance.add(Calendar.DATE,1);
-        Date time1 = instance.getTime();
-        i2.setJoinTime(time1);
-        System.out.println(time1);
-        IntegrationMemberListResult i3 = new IntegrationMemberListResult();
-        i3.setGradeId(2);
-        i3.setTotalPv(new BigDecimal("20.00"));
-        instance.add(Calendar.DATE,-2);
-        Date time2 = instance.getTime();
-        i3.setJoinTime(time2);
-        System.out.println(time2);
-        userIntegrationListResultList.add(i1);
-        userIntegrationListResultList.add(i2);
-        userIntegrationListResultList.add(i3);
-        System.out.println(userIntegrationListResultList+"排序前");
-        Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
-            @Override
-            public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
-                if(o1.getJoinTime().compareTo(o2.getJoinTime())==1){
-                    return 1;
-                }else if(o1.getJoinTime().compareTo(o2.getJoinTime())==0){
-                    return 0;
-                }
-                return -1;
-            }
-        });
-        System.out.println(userIntegrationListResultList+"排序后");
-    }
-
 //    public static List<IntegrationMemberListResult> build3(List<ShopMember> shopMemberList,List<ShopMemberGrade> shopMemberGradeList) {
 //        List<IntegrationMemberListResult> integrationMemberListResultList=new ArrayList<>();
 //

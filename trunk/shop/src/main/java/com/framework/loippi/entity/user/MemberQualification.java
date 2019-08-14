@@ -77,6 +77,12 @@ public class MemberQualification implements GenericEntity {
     private int groupRankMax;//团队最高级别（包括本人）
     @Column(name = "DD_RANK2_NUMBER" )
     private int ddRank2Number;//直接推荐代理的人数，代理级别为2
+    @Column(name = "DD_AC_NUMBER" )
+    private int ddAcNumber;//直接推荐复消合格人数
+    @Column(name = "DL_RANK4_NUMBER" )
+    private int dlRank4Number;//下级4级会员网络条数
+    @Column(name = "DL_RANK5_NUMBER" )
+    private int dlRank5Number;//下级5级会员网络条数
     @Column(name = "DL_RANK6_NUMBER" )
     private int dlRank6Number;//下属3级代理店网络数
     @Column(name = "DL_RANK7_NUMBER" )
