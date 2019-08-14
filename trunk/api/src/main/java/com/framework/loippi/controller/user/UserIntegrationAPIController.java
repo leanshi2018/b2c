@@ -245,10 +245,10 @@ public class UserIntegrationAPIController extends BaseController {
         ArrayList<String> strings = new ArrayList<>();
         strings.add(periodCode);
         RdSysPeriod sysPeriod=sysPeriodDao.findByPeriodCode(periodCode);
-        if(sysPeriod!=null&&sysPeriod.getPrePeriod()!=null){
+        if(sysPeriod!=null&&sysPeriod.getPrePeriod()!=null&&!"".equals(sysPeriod.getPrePeriod())){
             strings.add(sysPeriod.getPrePeriod());
             RdSysPeriod sysPeriod1=sysPeriodDao.findByPeriodCode(sysPeriod.getPrePeriod());
-            if(sysPeriod1!=null&&sysPeriod1.getPrePeriod()!=null){
+            if(sysPeriod1!=null&&sysPeriod1.getPrePeriod()!=null&&!"".equals(sysPeriod1.getPrePeriod())){
                 strings.add(sysPeriod1.getPrePeriod());
             }
         }
