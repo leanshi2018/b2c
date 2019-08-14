@@ -1142,4 +1142,23 @@ public class UserAPIController extends BaseController {
         paramap.put("data",subordinateUserInformationResult);
         return ApiUtils.success(paramap);
     }
+
+    /**
+     * 个人业绩
+     * @param request
+     * @param periodCode
+     * @param memeberId
+     * @return
+     */
+    @RequestMapping(value = "/selfPerformance.json", method = RequestMethod.POST)
+    public String selfPerformance(HttpServletRequest request, String periodCode, String memeberId) {
+        if (StringUtils.isEmpty(memeberId)){
+            return ApiUtils.error("该会员编号为空");
+        }
+        if (StringUtils.isEmpty(periodCode)){
+            
+        }
+
+        return null;
+    }
 }
