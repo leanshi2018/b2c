@@ -179,4 +179,12 @@
 			<![CDATA[and END_DATE >= #{data}]]>
 		</where>
 	</select>
+
+	<select id="findByPeriodCode" parameterType="string" resultMap="RdSysPeriodResultMap">
+		SELECT * FROM RD_SYS_PERIOD where PERIOD_CODE = #{periodCode}
+	</select>
+
+	<select id="findLastPeriod" resultMap="RdSysPeriodResultMap">
+		SELECT * FROM RD_SYS_PERIOD order by PERIOD_CODE desc limit 0,1
+	</select>
 </mapper> 
