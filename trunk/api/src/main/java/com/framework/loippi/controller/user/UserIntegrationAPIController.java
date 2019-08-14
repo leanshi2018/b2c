@@ -2,15 +2,12 @@ package com.framework.loippi.controller.user;
 
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.user.*;
 import com.framework.loippi.service.user.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -66,6 +63,8 @@ public class UserIntegrationAPIController extends BaseController {
     private MemberQualificationService memberQualificationService;
     @Resource
     private RetailProfitService retailProfitService;
+    @Resource
+    private RdSysPeriodDao sysPeriodDao;
     //积分列表
     @RequestMapping(value = "/list.json")
     public String list(HttpServletRequest request) {
@@ -242,6 +241,19 @@ public class UserIntegrationAPIController extends BaseController {
                 .build(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList);
         return ApiUtils.success(Paramap.create().put("memberList", integrationMemberListResultList));
     }
+    private ArrayList<String> findTreePeriod(String periodCode){
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add(periodCode);
+        RdSysPeriod sysPeriod=sysPeriodDao.findByPeriodCode(periodCode);
+        if(sysPeriod!=null&&sysPeriod.getPrePeriod()!=null){
+            strings.add(sysPeriod.getPrePeriod());
+            RdSysPeriod sysPeriod1=sysPeriodDao.findByPeriodCode(sysPeriod.getPrePeriod());
+            if(sysPeriod1!=null&&sysPeriod1.getPrePeriod()!=null){
+                strings.add(sysPeriod1.getPrePeriod());
+            }
+        }
+        return strings;
+    }
 
     /**
      * //购物积分用户列表
@@ -252,9 +264,21 @@ public class UserIntegrationAPIController extends BaseController {
      */
     @RequestMapping(value = "/shp/memberListNew.json")
     public String memberListNew(HttpServletRequest request,
-                             @RequestParam(value = "periodCode",required = true) String periodCode,
+                             @RequestParam(value = "periodCode",required = false) String periodCode,
                              @RequestParam(value = "sorting",required = true)Integer sorting) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        Paramap paramap = Paramap.create();
+        ArrayList<String> treePeriod = new ArrayList<String>();
+        if(periodCode==null||"".equals(periodCode)){//如果传入周期参数为空，则查询当前周期
+            RdSysPeriod sysPeriod = sysPeriodDao.getPeriodService(new Date());
+            if(sysPeriod!=null){
+                treePeriod = findTreePeriod(sysPeriod.getPeriodCode());
+            }else {//当前时间没有周期，查询最近的一个周期
+                RdSysPeriod lastPeriod=sysPeriodDao.findLastPeriod();
+                treePeriod = findTreePeriod(lastPeriod.getPeriodCode());
+            }
+            paramap.put("periodCodeList",treePeriod);
+        }
         //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode",member.getMmCode()).put("periodCode",periodCode));
         HashMap<String, Object> map1 = new HashMap<>();
         map1.put("sponsorCode",member.getMmCode());
@@ -294,7 +318,8 @@ public class UserIntegrationAPIController extends BaseController {
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
         List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
                 .build3(list,rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap);
-        return ApiUtils.success(Paramap.create().put("memberList", integrationMemberListResultList));
+        paramap.put("memberList", integrationMemberListResultList);
+        return ApiUtils.success(paramap);
     }
 
     //购物积分搜索用户
@@ -335,6 +360,7 @@ public class UserIntegrationAPIController extends BaseController {
 
         List<IntegrationMemberListResult> integrationMemberListResult = IntegrationMemberListResult
             .build(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList);
+
         return ApiUtils.success(Paramap.create().put("member", integrationMemberListResult));
     }
 

@@ -17,4 +17,9 @@ public interface RdSysPeriodDao  extends GenericDao<RdSysPeriod, Long> {
     String getSysPeriodService(Date date);
 
 	RdSysPeriod getPeriodService(Date date);
+
+    RdSysPeriod findByPeriodCode(String periodCode);
+
+    RdSysPeriod findLastPeriod();
+
 }
