@@ -5,6 +5,7 @@ import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,4 +23,6 @@ public interface ShopGoodsBrowseDao  extends GenericDao<ShopGoodsBrowse, Long> {
     Long deleteMemberFavorites(Map<String, Object> var1);
 
     Page<ShopGoodsBrowse> findFootById(Pageable pager);
+
+    List<ShopGoodsBrowse> findFootByIdAndTime(Map<String, Object> params);
 }
