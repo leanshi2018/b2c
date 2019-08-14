@@ -38,4 +38,9 @@ public class RdSysPeriodServiceImpl extends GenericServiceImpl<RdSysPeriod, Long
 	public RdSysPeriod getPeriodService(Date date) {
 		return rdSysPeriodDao.getPeriodService(date);
 	}
+
+	@Override
+	public RdSysPeriod findLastPeriod() {
+		return rdSysPeriodDao.findLastPeriod();
+	}
 }

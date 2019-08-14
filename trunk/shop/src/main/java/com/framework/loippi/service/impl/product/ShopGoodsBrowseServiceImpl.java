@@ -4,6 +4,9 @@ import com.framework.loippi.dao.product.ShopGoodsBrowseDao;
 import com.framework.loippi.entity.product.ShopGoodsBrowse;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.product.ShopGoodsBrowseService;
+import com.framework.loippi.support.Message;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +33,10 @@ public class ShopGoodsBrowseServiceImpl extends GenericServiceImpl<ShopGoodsBrow
 	@Override
 	public Long deleteMemberFavorites(Map<String, Object> var1) {
 		return shopGoodsBrowseDao.deleteMemberFavorites(var1);
+	}
+
+	@Override
+	public Page<ShopGoodsBrowse> findFootById(Pageable pager) {
+		return shopGoodsBrowseDao.findFootById(pager);
 	}
 }

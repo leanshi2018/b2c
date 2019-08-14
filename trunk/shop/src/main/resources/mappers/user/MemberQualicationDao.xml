@@ -390,5 +390,8 @@
 			</if>
 		</where>
 	</select>
-	
+
+	<select id="findByCodeAndPeriod" parameterType="com.framework.loippi.utils.Paramap" resultMap="MemberQualicationResultMap">
+		select * from rd_dis_qualification where PERIOD_CODE = #{periodCode} and MM_CODE = #{mCode}
+	</select>
 </mapper> 
