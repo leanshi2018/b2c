@@ -359,8 +359,23 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
         shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoodsList);
 
-
-
+        //更新零售利润记录预计发放时间
+        if(order.getOrderType().equals(1)){//如果是零售订单，查询出零售利润记录
+            RetailProfit retailProfit = retailProfitService.find("orderId",order.getId());
+            if(retailProfit!=null){
+                if(retailProfit.getExpectTime()==null){
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+                    calendar.add(Calendar.DATE, 10);
+                    retailProfit.setExpectTime(calendar.getTime());
+                    String periodCode = rdSysPeriodDao.getSysPeriodService(retailProfit.getExpectTime());
+                    if(periodCode!=null){
+                        retailProfit.setExpectPeriod(periodCode);
+                    }
+                    retailProfitService.update(retailProfit);
+                }
+            }
+        }
 
 
 
@@ -1592,7 +1607,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         updateOrder.setFinnshedTime(new Date());
         orderDao.update(updateOrder);
         //###############################零售利润###################################################
-        if(order.getOrderType()==1){//如果当前确认收货订单为零售订单，查看零售订单，修改预期发放时间
+/*        if(order.getOrderType()==1){//如果当前确认收货订单为零售订单，查看零售订单，修改预期发放时间
             RetailProfit retailProfit = retailProfitService.find("orderId", order.getId());
             if(retailProfit==null){
                 log.info(order.getOrderSn()+"订单支付未产生零售利润");
@@ -1607,7 +1622,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
                 retailProfitService.update(retailProfit);
             }
-        }
+        }*/
         //##########################################################################################
         /*********************订单日志*********************/
         ShopOrderLog orderLog = new ShopOrderLog();
@@ -1748,6 +1763,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     RetailProfit retailProfit = new RetailProfit();
                     retailProfit.setBuyerId(buyerId);
                     retailProfit.setCreateTime(new Date());
+                    RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", buyerId);
+                    if(rdMmRelation!=null&&rdMmRelation.getSponsorCode()!=null){
+                        retailProfit.setReceiptorId(rdMmRelation.getSponsorCode());
+                    }
                     String periodCode = rdSysPeriodDao.getSysPeriodService(new Date());
                     if(periodCode!=null){
                         retailProfit.setCreatePeriod(periodCode);
@@ -2562,6 +2581,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         RetailProfit retailProfit = new RetailProfit();
                         retailProfit.setBuyerId(buyerId);
                         retailProfit.setCreateTime(new Date());
+                        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode",buyerId);
+                        if(rdMmRelation!=null&&rdMmRelation.getSponsorCode()!=null){
+                            retailProfit.setReceiptorId(rdMmRelation.getSponsorCode());
+                        }
                         String per = rdSysPeriodDao.getSysPeriodService(new Date());
                         if(per!=null){
                             retailProfit.setCreatePeriod(per);

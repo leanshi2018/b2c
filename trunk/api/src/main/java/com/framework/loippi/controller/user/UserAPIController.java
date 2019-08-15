@@ -1132,13 +1132,13 @@ public class UserAPIController extends BaseController {
         Paramap paramap = Paramap.create();
         //查询已发放零售利润
         BigDecimal pay=BigDecimal.ZERO;
-        BigDecimal payD=retailProfitService.findPeriodPay(Paramap.create().put("buyerId", memeberId).put("actualPeriod",periodStr));
+        BigDecimal payD=retailProfitService.findPeriodPay(Paramap.create().put("buyerId", memeberId).put("createPeriod",periodStr));
         if(payD!=null){
             pay=pay.add(payD);
         }
         //查询待发放零售利润
         BigDecimal nopay=BigDecimal.ZERO;
-        BigDecimal nopayD=retailProfitService.findPeriodNoPay(Paramap.create().put("buyerId", memeberId).put("createTime",periodStr));
+        BigDecimal nopayD=retailProfitService.findPeriodNoPay(Paramap.create().put("buyerId", memeberId).put("createPeriod",periodStr));
         if(nopayD!=null){
             nopay=nopay.add(nopayD);
         }
