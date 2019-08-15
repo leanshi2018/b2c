@@ -178,7 +178,7 @@ public class SelfPerformanceResult {
 		result.setBonusDevpShare(bonusDevpShare);
 		result.setBonusLdSum(bonusLdSum);
 		result.setBonusSum(bonusSum);
-
+		result.setPeriodCodeList(periodCodeList);
 		return result;
 	}
 
@@ -236,6 +236,7 @@ public class SelfPerformanceResult {
 		result.setNpvMi(npvMi);
 		result.setAddVIPNumber(addVIPNumber);
 		result.setRankStr(rankStr);
+		result.setPeriodCodeList(periodCodeList);
 		return result;
 	}
 
