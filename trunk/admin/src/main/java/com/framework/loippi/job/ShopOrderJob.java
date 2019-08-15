@@ -3,11 +3,19 @@ package com.framework.loippi.job;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.framework.loippi.dao.product.ShopGoodsSpecDao;
+import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
+import com.framework.loippi.service.trade.ShopRefundReturnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -52,6 +60,8 @@ public class ShopOrderJob {
     @Resource
     private ShopOrderService orderService;
     @Resource
+    private ShopRefundReturnService shopRefundReturnService;
+    @Resource
     private RetailProfitDao retailProfitDao;
     @Resource
     private RdMmRelationDao rdMmRelationDao;
@@ -65,6 +75,10 @@ public class ShopOrderJob {
     private RdMmBasicInfoDao rdMmBasicInfoDao;
     @Resource
     private RdSysPeriodDao rdSysPeriodDao;
+    @Resource
+    private ShopReturnOrderGoodsDao shopReturnOrderGoodsDao;
+    @Resource
+    private ShopGoodsSpecDao shopGoodsSpecDao;
 
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 //
@@ -170,5 +184,40 @@ public class ShopOrderJob {
             }
         }
     }
-
+/*    @Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
+    public void test(){
+        List<RetailProfit> retailProfits = retailProfitDao.findAll();
+        System.out.println(retailProfits.size());
+        int a =0;
+        //ArrayList<Long> longs = new ArrayList<>();
+        HashMap<Long, BigDecimal> hashMap = new HashMap<>();
+        for (RetailProfit retailProfit : retailProfits) {
+            BigDecimal profits = retailProfit.getProfits();
+            BigDecimal cut=BigDecimal.ZERO;
+            List<ShopRefundReturn> list=shopRefundReturnService.findByOrderId(retailProfit.getOrderId());
+            if(list!=null&&list.size()>0){
+                for (ShopRefundReturn shopRefundReturn : list) {
+                    List<ShopReturnOrderGoods> shopReturnOrderGoods = shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",shopRefundReturn.getId()));
+                    if(shopReturnOrderGoods!=null&&shopReturnOrderGoods.size()>0){
+                        for (ShopReturnOrderGoods shopReturnOrderGood : shopReturnOrderGoods) {
+                            ShopGoodsSpec shopGoodsSpec = shopGoodsSpecDao.find(shopReturnOrderGood.getSpecId());
+                            cut=cut.add(shopGoodsSpec.getSpecRetailProfit().multiply(new BigDecimal(shopReturnOrderGood.getGoodsNum())));
+                        }
+                    }
+                }
+                profits=profits.subtract(cut);
+                retailProfit.setProfits(profits);
+                //longs.add(retailProfit.getId());
+                hashMap.put(retailProfit.getId(),profits);
+                retailProfitDao.update(retailProfit);
+            }else {
+                a++;
+            }
+        }
+        System.out.println(a);
+        System.out.println(hashMap.size());
+        System.out.println("#######################################");
+        System.out.println(hashMap);
+        System.out.println("#######################################");
+    }*/
 }

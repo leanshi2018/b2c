@@ -6,6 +6,8 @@ import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.vo.refund.ShopRefundReturnVo;
 
+import java.util.List;
+
 /**
  * SERVICE - ShopRefundReturn(退款退货)
  *
@@ -63,4 +65,6 @@ public interface ShopRefundReturnService extends GenericService<ShopRefundReturn
      * 查询售后订单+售后订单商品
      */
     Page listWithGoods(Pageable pageable);
+
+    List<ShopRefundReturn> findByOrderId(long orderId);
 }

@@ -287,7 +287,9 @@ public class UserIntegrationAPIController extends BaseController {
         List<MemberQualification> list =memberQualificationService.findBySponsorCodeAndPeriodCode(map1);
         //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode","900000011").put("periodCode",periodCode));
         if(list==null||list.size()==0){
-            return ApiUtils.success("当前周期当前会员对应资格信息尚未统计");
+            ArrayList<MemberQualification> list1 = new ArrayList<>();
+            paramap.put("memberList",list1);
+            return ApiUtils.success(paramap);
         }
         List<String> mmCodes = new ArrayList();
         for (MemberQualification item : list) {
