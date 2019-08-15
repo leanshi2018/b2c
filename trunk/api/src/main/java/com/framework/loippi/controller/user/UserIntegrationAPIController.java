@@ -310,7 +310,8 @@ public class UserIntegrationAPIController extends BaseController {
         List<MemberQualification> list =memberQualificationService.findBySponsorCodeAndPeriodCode(map1);
         //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode","900000011").put("periodCode",periodCode));
         if(list==null||list.size()==0){
-            paramap.put("memberList",null);
+            ArrayList<MemberQualification> list1 = new ArrayList<>();
+            paramap.put("memberList",list1);
             return ApiUtils.success(paramap);
         }
         List<String> mmCodes = new ArrayList();
