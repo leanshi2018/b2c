@@ -1213,7 +1213,7 @@ public class UserAPIController extends BaseController {
         }
         String prePeriod2 = "";//上上一周期
         if (!StringUtils.isEmpty(prePeriod)){//为空
-            RdSysPeriod period1 = periodService.findByPeriodCode(periodCode);
+            RdSysPeriod period1 = periodService.findByPeriodCode(prePeriod);
             prePeriod2 = period1.getPrePeriod();
         }
         SysPeriodCode.add(periodCode);
