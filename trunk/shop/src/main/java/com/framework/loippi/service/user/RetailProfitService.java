@@ -1,5 +1,9 @@
 package com.framework.loippi.service.user;
 
+import com.framework.loippi.entity.user.RetailProfit;
+import com.framework.loippi.service.GenericService;
+import com.framework.loippi.utils.Paramap;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -24,4 +28,7 @@ public interface RetailProfitService extends GenericService<RetailProfit, Long> 
     BigDecimal findTotalProfit(HashMap<String, Object> map);
 
 	BigDecimal countProfit(Paramap put);
+    BigDecimal findPeriodPay(Paramap put);
+
+    BigDecimal findPeriodNoPay(Paramap put);
 }

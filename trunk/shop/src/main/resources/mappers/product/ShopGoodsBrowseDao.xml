@@ -240,4 +240,18 @@
         </where>
     </select>
 
+    <select id="findFootById" resultMap="ShopGoodsBrowseResultMap" parameterType="com.framework.loippi.support.Pageable">
+        SELECT
+        a.*
+        FROM SHOP_GOODS_BROWSE as a inner join shop_goods as b on a.browse_goods_id = b.id
+        where b.goods_type != 2 and a.browse_member_id = #{browseMemberId} and a.create_time = #{createTime}
+    </select>
+
+    <select id="findFootByIdAndTime" parameterType="map" resultMap="ShopGoodsBrowseResultMap">
+        SELECT
+        a.*
+        FROM SHOP_GOODS_BROWSE as a inner join shop_goods as b on a.browse_goods_id = b.id
+        where b.goods_type != 2 and a.browse_member_id = #{browseMemberId} and a.create_time = #{createTime}
+    </select>
+
 </mapper> 

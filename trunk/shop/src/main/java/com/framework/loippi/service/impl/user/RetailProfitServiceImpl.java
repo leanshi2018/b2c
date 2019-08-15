@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
+import com.framework.loippi.utils.Paramap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,4 +34,15 @@ public class RetailProfitServiceImpl extends GenericServiceImpl<RetailProfit, Lo
     public BigDecimal countProfit(Paramap put) {
         return retailProfitDao.countProfit(put);
     }
+    @Override
+    public BigDecimal findPeriodPay(Paramap put) {
+        return retailProfitDao.findPeriodPay(put);
+    }
+
+    @Override
+    public BigDecimal findPeriodNoPay(Paramap put) {
+        return retailProfitDao.findPeriodNoPay(put);
+    }
+
+
 }

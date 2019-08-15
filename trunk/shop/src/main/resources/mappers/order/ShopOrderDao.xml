@@ -1379,6 +1379,9 @@
         <if test="buyerId !=null and buyerId != ''">
             and buyer_id = #{buyerId}
         </if>
+        <if test="creationPeriod !=null and creationPeriod != ''">
+            AND creation_period = #{creationPeriod}
+        </if>
         and payment_state = 1 and order_state != 0 and order_type = 1
     </select>
 

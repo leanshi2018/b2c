@@ -11,4 +11,6 @@ public interface MemberQualificationDao extends GenericDao<MemberQualification, 
     List<MemberQualification> findBySponsorCodeAndPeriodCode(HashMap<String, Object> map1);
 
 	MemberQualification findByMCodeAndPeriodCode(Paramap putMap);
+
+    MemberQualification findByCodeAndPeriod(Paramap put);
 }

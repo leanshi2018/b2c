@@ -20,4 +20,5 @@ public interface RdSysPeriodService  extends GenericService<RdSysPeriod, Long> {
     RdSysPeriod findLastPeriod();
 
     RdSysPeriod findByPeriodCode(String periodCode);
+
 }

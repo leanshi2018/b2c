@@ -13,6 +13,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.service.user.*;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -118,7 +122,6 @@ public class UserAPIController extends BaseController {
     private RdRanksService rdRanksService;
     @Resource
     private RdMmAccountInfoService rdMmAccountInfoService;
-
     @Resource
     private OldSysRelationshipService oldSysRelationshipService;
     @Resource
@@ -135,6 +138,8 @@ public class UserAPIController extends BaseController {
     private RetailProfitService retailProfitService;
     @Resource
     private RdBonusMasterService rdBonusMasterService;
+    @Resource
+    private MemberQualificationService memberQualificationService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -869,17 +874,23 @@ public class UserAPIController extends BaseController {
             params.put("createTime", Dateutil.parseStrFromToDate(day, "yyyy-MM-dd"));
         }
         params.put("browseMemberId", member.getMmCode());
-        Pageable pager = new Pageable(pageNumber, pageSize);
+        int size=pageSize;
+        int currentPage=pageNumber;
+        PageHelper.startPage(currentPage,size,true);
+        /*Pageable pager = new Pageable(pageNumber, pageSize);
         pager.setParameter(params);
         pager.setOrderProperty("create_time");
         pager.setOrderDirection(Order.Direction.DESC);
-        List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findByPage(pager).getContent();
+        List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findByPage(pager).getContent();*/
+        List<ShopGoodsBrowse> shopGoodsBrowseList = shopGoodsBrowseService.findFootByIdAndTime(params);
+        PageInfo<ShopGoodsBrowse> pageInfo = new PageInfo<>(shopGoodsBrowseList);
+        List<ShopGoodsBrowse> list = pageInfo.getList();
         List<Long> goodsIds = new ArrayList<>();
-        for (ShopGoodsBrowse itemBrowse : shopGoodsBrowseList) {
+        for (ShopGoodsBrowse itemBrowse : list) {
             goodsIds.add(itemBrowse.getBrowseGoodsId());
         }
         Map<Long, ShopGoods> mapGoods = shopGoodsService.findGoodsMap(goodsIds);
-        return ApiUtils.success(UserFootprintsResult.build(shopGoodsBrowseList, mapGoods, member));
+        return ApiUtils.success(UserFootprintsResult.build(list, mapGoods, member));
     }
 
     //删除我的足迹
@@ -1109,6 +1120,63 @@ public class UserAPIController extends BaseController {
         return ApiUtils.success(SubordinateUserInformationResult
             .build2(rdMmBasicInfo, shopMemberGrade, periodSumPpv, orderSumAccumulatedPpv,rdMmRelation.getRaSponsorStatus()));
     }
+    /**
+     * 分销用户信息
+     *
+     * @param memeberId 用户id
+     */
+    @RequestMapping(value = "/subordinateUserInformationNew.json", method = RequestMethod.POST)
+    public String subordinateUserInformationNew(HttpServletRequest request, String memeberId,String periodStr) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        if(StringUtil.isEmpty(memeberId)){
+            ApiUtils.error("请传入需要查询会员的会员编号");
+        }
+        if(StringUtil.isEmpty(periodStr)){
+            ApiUtils.error("请传入需要查询的周期编号");
+        }
+        MemberQualification memberQualification=memberQualificationService.findByCodeAndPeriod(Paramap.create().put("mCode",memeberId).put("periodCode",periodStr));
+        if(memberQualification==null){
+            ApiUtils.error("当前筛选条件下尚未统计出会员信息");
+        }
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memeberId);
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", memeberId);
+        RdRanks shopMemberGrade = null;
+        if (Optional.ofNullable(rdMmRelation.getRank()).orElse(-1) != -1) {
+            shopMemberGrade = rdRanksService.find("rankId", rdMmRelation.getRank());
+        }
+        OrderSumPpv periodSumPpv = new OrderSumPpv();
+        if(periodStr==null){
+            RdSysPeriod sysPeriod=periodService.findLastPeriod();
+            periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",sysPeriod.getPeriodCode()));
+        }else {
+            periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",periodStr));
+        }
+        BigDecimal retail = new BigDecimal("0.00");
+        BigDecimal buyerId = shopOrderService.findOrderRetail(Paramap.create().put("buyerId", memeberId).put("creationPeriod",periodStr));//查询出零售订单总额
+        if(buyerId!=null){
+            retail = buyerId.add(retail);
+        }
+        Paramap paramap = Paramap.create();
+        //查询已发放零售利润
+        BigDecimal pay=BigDecimal.ZERO;
+        BigDecimal payD=retailProfitService.findPeriodPay(Paramap.create().put("buyerId", memeberId).put("createPeriod",periodStr));
+        if(payD!=null){
+            pay=pay.add(payD);
+        }
+        //查询待发放零售利润
+        BigDecimal nopay=BigDecimal.ZERO;
+        BigDecimal nopayD=retailProfitService.findPeriodNoPay(Paramap.create().put("buyerId", memeberId).put("createPeriod",periodStr));
+        if(nopayD!=null){
+            nopay=nopay.add(nopayD);
+        }
+        boolean flag = member.getMmCode().equals(rdMmRelation.getSponsorCode());
+        paramap.put("showFlag",flag);
+        SubordinateUserInformationResult subordinateUserInformationResult = SubordinateUserInformationResult
+                .build3(memberQualification,rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay);
+        paramap.put("data",subordinateUserInformationResult);
+        return ApiUtils.success(paramap);
+    }
 
     /**
      * 个人业绩
@@ -1155,5 +1223,4 @@ public class UserAPIController extends BaseController {
 
         return ApiUtils.success(result);
     }
-
 }
