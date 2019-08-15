@@ -449,6 +449,10 @@
         FROM SHOP_REFUND_RETURN
         WHERE ID=#{id,jdbcType=BIGINT}
     </select>
+
+    <select id="findByOrderId" parameterType="long" resultMap="shopRefundReturnResultMap">
+        select * from SHOP_REFUND_RETURN where order_id = #{orderId}
+    </select>
     <!--<select id="findOrderGoodsAdminVoList" resultMap="shopRefundReturnResultMap2">-->
     <!--select-->
     <!--srr.refund_sn,-->

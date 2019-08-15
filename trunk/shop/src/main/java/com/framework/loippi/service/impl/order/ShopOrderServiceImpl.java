@@ -3086,6 +3086,21 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         map.put("shippingName",Optional.ofNullable(express.getEName()).orElse(""));
         map.put("shippingTime",new Date());
         orderDao.updateOrderStatus(map);
+        //根据订单编号查询是否有零售利润  如果有，设置预期发放时间
+        RetailProfit retailProfit = retailProfitService.find("orderSn",orderSn);
+        if(retailProfit!=null){
+            if(retailProfit.getExpectTime()==null){
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DATE, 10);
+                retailProfit.setExpectTime(calendar.getTime());
+                String periodCode = rdSysPeriodDao.getSysPeriodService(retailProfit.getExpectTime());
+                if(periodCode!=null){
+                    retailProfit.setExpectPeriod(periodCode);
+                }
+                retailProfitService.update(retailProfit);
+            }
+        }
     }
 
 }
