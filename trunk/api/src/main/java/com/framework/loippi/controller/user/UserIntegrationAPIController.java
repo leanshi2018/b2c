@@ -269,21 +269,27 @@ public class UserIntegrationAPIController extends BaseController {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         Paramap paramap = Paramap.create();
         ArrayList<String> treePeriod = new ArrayList<String>();
+        String code="";
         if(periodCode==null||"".equals(periodCode)){//如果传入周期参数为空，则查询当前周期
+
             RdSysPeriod sysPeriod = sysPeriodDao.getPeriodService(new Date());
             if(sysPeriod!=null){
+                code=sysPeriod.getPeriodCode();
                 treePeriod = findTreePeriod(sysPeriod.getPeriodCode());
             }else {//当前时间没有周期，查询最近的一个周期
                 RdSysPeriod lastPeriod=sysPeriodDao.findLastPeriod();
+                code=lastPeriod.getPeriodCode();
                 treePeriod = findTreePeriod(lastPeriod.getPeriodCode());
             }
             paramap.put("periodCodeList",treePeriod);
+        }else {
+            code=periodCode;
         }
         //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode",member.getMmCode()).put("periodCode",periodCode));
         HashMap<String, Object> map1 = new HashMap<>();
         map1.put("sponsorCode",member.getMmCode());
         //map1.put("sponsorCode","900000011");
-        map1.put("periodCode",periodCode);
+        map1.put("periodCode",code);
         List<MemberQualification> list =memberQualificationService.findBySponsorCodeAndPeriodCode(map1);
         //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode","900000011").put("periodCode",periodCode));
         if(list==null||list.size()==0){
