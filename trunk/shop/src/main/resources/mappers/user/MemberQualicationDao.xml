@@ -36,6 +36,7 @@
 		<result column="NPV" property="npv" />
 		<result column="GPV_FLAGSHIP" property="gpvFlagship" />
 		<result column="GROUP_RANK_MAX" property="groupRankMax" />
+		<result column="DD_NEW_VIP_NUMBER" property="ddNewVIPNumber" />
 		<result column="DD_RANK2_NUMBER" property="ddRank2Number" />
 		<result column="DD_AC_NUMBER" property="ddAcNumber" />
 
@@ -53,13 +54,13 @@
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 id_rd_dis_qlf,PERIOD_CODE,MM_CODE,MM_NAME,SPONSOR_CODE,SPONSOR_NAME,MM_STATUS,RA_STATUS,RA_SHOP_YN,PPV,PPV_RETAIL,APPV_INIT,APPV_FINAL,A_RETAIL_INIT,A_RETAIL,A_RETAIL_FINAL,
-		 RANK_P2,RANK_P1,RANK_P0,RANK_AC,RANK_RECORD_HIGH,LEAF_YN,ORPHAN,LAYER,G7PV,NPV,GPV_FLAGSHIP,GROUP_RANK_MAX,DD_RANK2_NUMBER,DD_AC_NUMBER,DL_RANK4_NUMBER,DL_RANK5_NUMBER,
+		 RANK_P2,RANK_P1,RANK_P0,RANK_AC,RANK_RECORD_HIGH,LEAF_YN,ORPHAN,LAYER,G7PV,NPV,GPV_FLAGSHIP,GROUP_RANK_MAX,DD_NEW_VIP_NUMBER,DD_RANK2_NUMBER,DD_AC_NUMBER,DL_RANK4_NUMBER,DL_RANK5_NUMBER,
 		 DL_RANK6_NUMBER,DL_RANK7_NUMBER,DL_RANK8_NUMBER,PPV_QUALIFIED,TOURISM_QUALIFIED,CAR_QUALIFIED,DIVIDEND_QUALIFIED
 	</sql>
 	
 	<sql id="base_value_column">
 		 #{idRdDisQlf},#{periodCode},#{mCode},#{mName},#{sponsorCode},#{sponsorName},#{mStatus},#{raStatus},#{raShopYn},#{ppv},#{ppvRetail},#{appvInit},#{appvFinal},#{retailInit},#{retail},#{retailFinal},#{rankP2},#{rankP1},#{rankP0},
-		 #{rankAc},#{rankRecordHigh},#{leafYn},#{orphan},#{layer},#{g7pv},#{npv},#{gpvFlagship},#{groupRankMax},#{ddRank2Number},#{ddAcNumber},#{dlRank4Number},#{dlRank5Number},#{dlRank6Number},#{dlRank7Number},#{dlRank8Number},
+		 #{rankAc},#{rankRecordHigh},#{leafYn},#{orphan},#{layer},#{g7pv},#{npv},#{gpvFlagship},#{groupRankMax},#{ddNewVIPNumber},#{ddRank2Number},#{ddAcNumber},#{dlRank4Number},#{dlRank5Number},#{dlRank6Number},#{dlRank7Number},#{dlRank8Number},
 		 #{ppvqualified},#{tourismQualified},#{carQualified},#{dividendQualified}
 	</sql>
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -147,6 +148,9 @@
 		</if>
 		<if test="groupRankMax != null">
 			AND GROUP_RANK_MAX = #{groupRankMax,jdbcType=INTEGER}
+		</if>
+		<if test="ddNewVIPNumber != null">
+			AND DD_NEW_VIP_NUMBER = #{ddNewVIPNumber,jdbcType=INTEGER}
 		</if>
 		<if test="ddRank2Number != null">
 			AND DD_RANK2_NUMBER = #{ddRank2Number,jdbcType=INTEGER}
@@ -390,5 +394,19 @@
 			</if>
 		</where>
 	</select>
-	
+
+	<!--findByMCodeAndPeriodCode-->
+	<select id="findBySponsorCodeAndPeriodCode" parameterType="map" resultMap="MemberQualicationResultMap">
+		select <include refid="base_column" />
+		from rd_dis_qualification
+		<where>
+			<if test="mCode != null and mCode != ''">
+				and MM_CODE = #{mCode}
+			</if>
+			<if test="periodCode != null and periodCode != ''">
+				and PERIOD_CODE = #{periodCode}
+			</if>
+		</where>
+	</select>
+
 </mapper> 

@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
@@ -32,7 +33,6 @@ import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.OldSysRelationshipService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.utils.Paramap;
-import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -294,6 +294,11 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         qyMap.put("mmCodes", mmCodes);
         List<RdMmBasicInfo> list = rdMmBasicInfoDao.findByParams(qyMap);
         return list;
+    }
+
+    @Override
+    public RdMmBasicInfo findByMCode(String mCode) {
+        return rdMmBasicInfoDao.findByMCode(mCode);
     }
 
 
