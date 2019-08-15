@@ -31,6 +31,16 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrowse;
+import com.framework.loippi.entity.user.MemberQualification;
+import com.framework.loippi.entity.user.OldSysRelationship;
+import com.framework.loippi.entity.user.RdBonusMaster;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmBank;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RdSysPeriod;
+import com.framework.loippi.entity.user.ShopMemberFavorites;
 import com.framework.loippi.enus.SocialType;
 import com.framework.loippi.enus.UserLoginType;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -38,6 +48,7 @@ import com.framework.loippi.param.user.UserAddBankCardsParam;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.BankCardsListResult;
 import com.framework.loippi.result.user.PersonCenterResult;
+import com.framework.loippi.result.user.SelfPerformanceResult;
 import com.framework.loippi.result.user.SubordinateUserInformationResult;
 import com.framework.loippi.result.user.UserCollectResult;
 import com.framework.loippi.result.user.UserFootprintsResult;
@@ -50,6 +61,18 @@ import com.framework.loippi.service.product.ShopGoodsBrowseService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateService;
 import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.user.MemberQualificationService;
+import com.framework.loippi.service.user.OldSysRelationshipService;
+import com.framework.loippi.service.user.RdBonusMasterService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmBankService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRaBindingService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RdSysPeriodService;
+import com.framework.loippi.service.user.RetailProfitService;
+import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.BankCardUtils;
@@ -99,7 +122,6 @@ public class UserAPIController extends BaseController {
     private RdRanksService rdRanksService;
     @Resource
     private RdMmAccountInfoService rdMmAccountInfoService;
-
     @Resource
     private OldSysRelationshipService oldSysRelationshipService;
     @Resource
@@ -109,9 +131,15 @@ public class UserAPIController extends BaseController {
     @Resource
     private RdSysPeriodService periodService;
     @Resource
-    private MemberQualificationService memberQualificationService;
+    private RdMmBasicInfoService mmBasicInfoService;
+    @Resource
+    private MemberQualificationService qualificationService;
     @Resource
     private RetailProfitService retailProfitService;
+    @Resource
+    private RdBonusMasterService rdBonusMasterService;
+    @Resource
+    private MemberQualificationService memberQualificationService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -1154,18 +1182,45 @@ public class UserAPIController extends BaseController {
      * 个人业绩
      * @param request
      * @param periodCode
-     * @param memeberId
+     * @param mCode
      * @return
      */
     @RequestMapping(value = "/selfPerformance.json", method = RequestMethod.POST)
-    public String selfPerformance(HttpServletRequest request, String periodCode, String memeberId) {
-        if (StringUtils.isEmpty(memeberId)){
+    public String selfPerformance(HttpServletRequest request, String periodCode, String mCode) {
+        if (StringUtils.isEmpty(mCode)){
             return ApiUtils.error("该会员编号为空");
         }
         if (StringUtils.isEmpty(periodCode)){
-            
+            RdSysPeriod period = periodService.findLastPeriod();
+            if (period!=null){
+                periodCode = period.getPeriodCode();
+            }
+        }
+        //会员基础信息
+        RdMmBasicInfo basicInfo = mmBasicInfoService.findByMCode(mCode);
+
+        RdSysPeriod period = periodService.findByPeriodCode(periodCode);
+
+        SelfPerformanceResult result = null;
+        MemberQualification qualification = qualificationService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
+        //当期零售利润
+        BigDecimal profits1 = retailProfitService.countProfit(Paramap.create().put("buyerId",mCode).put("createPeriod",periodCode).put("state",1));
+        if (profits1==null){
+            profits1 = new BigDecimal("0.00");
+        }
+        if (period.getCalStatus()==3){ //发布完
+            RdBonusMaster bonusMaster = rdBonusMasterService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
+            result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,bonusMaster);
+        }else {
+            //当期待发放零售利润
+            BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("buyerId",mCode).put("createPeriod",periodCode).put("state",2));
+            if (profits2==null){
+                profits2 = new BigDecimal("0.00");
+            }
+            result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2);
         }
 
-        return null;
+
+        return ApiUtils.success(result);
     }
 }

@@ -1,5 +1,9 @@
 package com.framework.loippi.service.impl.user;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+
 import com.framework.loippi.utils.Paramap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,17 +13,7 @@ import com.framework.loippi.dao.user.RetailProfitDao;
 import com.framework.loippi.entity.user.RetailProfit;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RetailProfitService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.framework.loippi.utils.Paramap;
 @Service
 @Transactional
 public class RetailProfitServiceImpl extends GenericServiceImpl<RetailProfit, Long> implements RetailProfitService {
@@ -36,6 +30,10 @@ public class RetailProfitServiceImpl extends GenericServiceImpl<RetailProfit, Lo
         return retailProfitDao.findTotalProfit(map);
     }
 
+    @Override
+    public BigDecimal countProfit(Paramap put) {
+        return retailProfitDao.countProfit(put);
+    }
     @Override
     public BigDecimal findPeriodPay(Paramap put) {
         return retailProfitDao.findPeriodPay(put);

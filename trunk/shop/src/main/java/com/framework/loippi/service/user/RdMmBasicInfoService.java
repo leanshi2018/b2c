@@ -1,13 +1,12 @@
 package com.framework.loippi.service.user;
 
 
+import java.util.List;
+
 import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.service.GenericService;
-
-import java.util.List;
 
 /**
  * SERVICE - RdMmBasicInfo(会员基础信息)
@@ -33,4 +32,5 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
     List<RdMmBasicInfo> findShopMember(List<String> mmCode);
 
 
+	RdMmBasicInfo findByMCode(String mCode);
 }

@@ -379,4 +379,11 @@
 			<include refid="where_column"/>
 		</where>
 	</select>
+
+	<!-- 根据code查询 -->
+	<select id="findByMCode" parameterType="string" resultMap="RdMmBasicInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_BASIC_INFO
+		WHERE	MM_CODE=#{id,jdbcType=BIGINT}
+	</select>
 </mapper> 

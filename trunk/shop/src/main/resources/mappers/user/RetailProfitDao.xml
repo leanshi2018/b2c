@@ -254,4 +254,19 @@
 			and (state = 0 or state = 2)
 		</where>
 	</select>
+
+	<select id="countProfit" parameterType="map" resultType="java.math.BigDecimal">
+		select sum(profits) from retail_profit
+		<where>
+			<if test="buyerId != null and buyerId != ''">
+				and buyer_id = #{buyerId}
+			</if>
+			<if test="createPeriod != null and createPeriod != ''">
+				and create_period  = #{createPeriod}
+			</if>
+			<if test="state != null">
+				and state = #{state}
+			</if>
+		</where>
+	</select>
 </mapper> 
