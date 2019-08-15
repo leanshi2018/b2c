@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdBonusMasterDao">
+
+    <resultMap id="RdBonusMasterResultMap" type="com.framework.loippi.entity.user.RdBonusMaster">
+        <id property="idRdBonusMaster" column="ID_RD_BONUS_MASTER"  />
+        <result property="periodCode" column="PERIOD_CODE" />
+        <result property="mCode" column="MM_CODE" />
+        <result property="bonusRetail" column="BONUS_RETAIL" />
+        <result property="bonusNewVip" column="BONUS_NEW_VIP" />
+        <result property="bonusDevp1" column="BONUS_DEVP_1" />
+        <result property="bonusDevp2" column="BONUS_DEVP_2" />
+        <result property="bonusDevpShare" column="BONUS_DEVP_SHARE" />
+        <result property="bonusDevpSum" column="BONUS_DEVP_SUM" />
+        <result property="bonusLdDirect" column="BONUS_LD_DIRECT" />
+        <result property="bonusLdIndirect" column="BONUS_LD_INDIRECT" />
+        <result property="bonusLdSupport" column="BONUS_LD_SUPPORT" />
+        <result property="bonusLdSum" column="BONUS_LD_SUM" />
+        <result property="chargeService" column="CHARGE_SERVICE" />
+        <result property="bonusSum" column="BONUS_SUM" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 ID_RD_BONUS_MASTER ,PERIOD_CODE ,MM_CODE ,BONUS_RETAIL ,BONUS_NEW_VIP ,BONUS_DEVP_1 ,BONUS_DEVP_2 ,BONUS_DEVP_SHARE ,BONUS_DEVP_SUM ,BONUS_LD_DIRECT ,BONUS_LD_INDIRECT ,BONUS_LD_SUPPORT ,BONUS_LD_SUM ,CHARGE_SERVICE ,BONUS_SUM
+	</sql>
+
+    <sql id="base_value_column">
+		 #{idRdBonusMaster},#{periodCode},#{mCode},#{bonusRetail},#{bonusNewVip},#{bonusDevp1},#{bonusDevp2},#{bonusDevpShare},#{bonusDevpSum},#{bonusLdDirect},#{bonusLdIndirect},#{bonusLdSupport},#{bonusLdSum},#{chargeService},#{bonusSum}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="idRdBonusMaster != null and idRdBonusMaster != ''">
+            AND ID_RD_BONUS_MASTER = #{idRdBonusMaster,jdbcType=INTEGER}
+        </if>
+        <if test="periodCode != null and periodCode != ''">
+            AND PERIOD_CODE = #{periodCode,jdbcType=VARCHAR}
+        </if>
+        <if test="mCode != null and mCode != ''">
+            AND MM_CODE = #{mCode,jdbcType=VARCHAR}
+        </if>
+        <if test="bonusRetail != null">
+            AND BONUS_RETAIL = #{bonusRetail,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusNewVip != null">
+            AND BONUS_NEW_VIP = #{bonusNewVip,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusDevp1 != null">
+            AND BONUS_DEVP_1 = #{bonusDevp1,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusDevp2 != null">
+            AND BONUS_DEVP_2 = #{bonusDevp2,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusDevpShare != null">
+            AND BONUS_DEVP_SHARE = #{bonusDevpShare,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusDevpSum != null">
+            AND BONUS_DEVP_SUM = #{bonusDevpSum,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusLdDirect != null">
+            AND BONUS_LD_DIRECT = #{bonusLdDirect,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusLdIndirect != null">
+            AND BONUS_LD_INDIRECT = #{bonusLdIndirect,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusLdSupport != null">
+            AND BONUS_LD_SUPPORT = #{bonusLdSupport,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusLdSum != null">
+            AND BONUS_LD_SUM = #{bonusLdSum,jdbcType=DECIMAL}
+        </if>
+        <if test="chargeService != null">
+            AND CHARGE_SERVICE = #{chargeService,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusSum != null">
+            AND BONUS_SUM = #{bonusSum,jdbcType=DECIMAL}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="idRdBonusMaster != null and idRdBonusMaster != ''">
+            AND ID_RD_BONUS_MASTER = #{idRdBonusMaster,jdbcType=INTEGER}
+        </if>
+        <if test="periodCode != null and periodCode != ''">
+            AND PERIOD_CODE = #{periodCode,jdbcType=VARCHAR}
+        </if>
+        <if test="mCode != null and mCode != ''">
+            AND MM_CODE = #{mCode,jdbcType=VARCHAR}
+        </if>
+        <if test="bonusRetail != null">
+            AND BONUS_RETAIL = #{bonusRetail,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusNewVip != null">
+            AND BONUS_NEW_VIP = #{bonusNewVip,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusDevp1 != null">
+            AND BONUS_DEVP_1 = #{bonusDevp1,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusDevp2 != null">
+            AND BONUS_DEVP_2 = #{bonusDevp2,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusDevpShare != null">
+            AND BONUS_DEVP_SHARE = #{bonusDevpShare,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusDevpSum != null">
+            AND BONUS_DEVP_SUM = #{bonusDevpSum,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusLdDirect != null">
+            AND BONUS_LD_DIRECT = #{bonusLdDirect,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusLdIndirect != null">
+            AND BONUS_LD_INDIRECT = #{bonusLdIndirect,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusLdSupport != null">
+            AND BONUS_LD_SUPPORT = #{bonusLdSupport,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusLdSum != null">
+            AND BONUS_LD_SUM = #{bonusLdSum,jdbcType=DECIMAL}
+        </if>
+        <if test="chargeService != null">
+            AND CHARGE_SERVICE = #{chargeService,jdbcType=DECIMAL}
+        </if>
+        <if test="bonusSum != null">
+            AND BONUS_SUM = #{bonusSum,jdbcType=DECIMAL}
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdBonusMasterResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_bonus_master
+        WHERE	ID_RD_BONUS_MASTER=#{idRdBonusMaster,jdbcType=INTEGER}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdBonusMasterResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_bonus_master
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_bonus_master
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.RdBonusMaster">
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="OID">-->
+        <!--SELECT LAST_INSERT_ID() AS OID-->
+        <!--</selectKey>  -->
+        INSERT rd_bonus_master
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.RdBonusMaster">
+        UPDATE	rd_bonus_master
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	ID_RD_BONUS_MASTER = #{idRdBonusMaster,jdbcType=INTEGER}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM RD_MM_BANK
+		WHERE	ID_RD_BONUS_MASTER = #{idRdBonusMaster,jdbcType=INTEGER}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_bonus_master
+        WHERE	ID_RD_BONUS_MASTER	IN
+        <foreach item="idRdBonusMaster" index="index" collection="ids" open="(" separator="," close=")">
+            #{idRdBonusMaster}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdBonusMasterResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_bonus_master
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdBonusMasterResultMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_bonus_master
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <select id="findByMCodeAndPeriodCode" parameterType="com.framework.loippi.utils.Paramap" resultMap="RdBonusMasterResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_bonus_master
+        where PERIOD_CODE = #{periodCode} and MM_CODE = #{mCode}
+    </select>
+
+</mapper>

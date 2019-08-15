@@ -1,11 +1,8 @@
 package com.framework.loippi.dao.user;
 
 
-import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.mybatis.dao.GenericDao;
-
-import java.util.List;
 
 /**
  * DAO - RdMmBasicInfo(会员基础信息)
@@ -24,5 +21,5 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
     int sumShare();
 
 
-
+	RdMmBasicInfo findByMCode(String mCode);
 }

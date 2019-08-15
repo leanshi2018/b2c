@@ -8,6 +8,10 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
+import com.framework.loippi.entity.user.RetailProfit;
+import com.framework.loippi.mybatis.dao.GenericDao;
+import com.framework.loippi.utils.Paramap;
+
 public interface RetailProfitDao extends GenericDao<RetailProfit, Long> {
     /**
      * 根据当前时间查询已经达到发放时间且状态未发放的零售利润记录
@@ -25,6 +29,7 @@ public interface RetailProfitDao extends GenericDao<RetailProfit, Long> {
 
     BigDecimal findTotalProfit(HashMap<String, Object> map);
 
+	BigDecimal countProfit(Paramap put);
     BigDecimal findPeriodPay(Paramap put);
 
     BigDecimal findPeriodNoPay(Paramap put);

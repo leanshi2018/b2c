@@ -1,14 +1,14 @@
 package com.framework.loippi.entity.user;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * 会员资格表信息
@@ -77,6 +77,8 @@ public class MemberQualification implements GenericEntity {
     private int groupRankMax;//团队最高级别（包括本人）
     @Column(name = "DD_RANK2_NUMBER" )
     private int ddRank2Number;//直接推荐代理的人数，代理级别为2
+    @Column(name = "DD_NEW_VIP_NUMBER" )
+    private int ddNewVIPNumber;//新晋vip人数
     @Column(name = "DD_AC_NUMBER" )
     private int ddAcNumber;//直接推荐复消合格人数
     @Column(name = "DL_RANK4_NUMBER" )
