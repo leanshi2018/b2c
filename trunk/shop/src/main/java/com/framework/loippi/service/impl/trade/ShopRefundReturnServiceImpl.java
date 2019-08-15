@@ -388,6 +388,11 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
         return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
     }
 
+    @Override
+    public List<ShopRefundReturn> findByOrderId(long orderId) {
+        return shopRefundReturnDao.findByOrderId(orderId);
+    }
+
 //    @Override
 //    public Page findOrderGoodsAdminVoList(Pageable pageable) {
 ////        PageList<OrderAdminVo> result = shopRefundReturnDao.findOrderGoodsAdminVoList(pageable.getParameter(), pageable.getPageBounds());

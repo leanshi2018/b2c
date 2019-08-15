@@ -10,6 +10,8 @@ import com.framework.loippi.vo.refund.ReturnGoodsVo;
 import com.framework.loippi.vo.refund.ShopRefundReturnVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * DAO - ShopRefundReturn(退货退款)
  *
@@ -35,4 +37,5 @@ public interface ShopRefundReturnDao extends GenericDao<ShopRefundReturn, Long> 
      */
     PageList<ReturnGoodsVo> listRefundReturnVoWithGoods(Object parameter, PageBounds pageBounds);
 
+    List<ShopRefundReturn> findByOrderId(long orderId);
 }
