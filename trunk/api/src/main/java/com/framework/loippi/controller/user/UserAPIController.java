@@ -13,10 +13,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.service.user.*;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -87,6 +83,8 @@ import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.address.MemberAddresVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
 import com.framework.loippi.vo.order.OrderSumPpv;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -1208,16 +1206,30 @@ public class UserAPIController extends BaseController {
         if (profits1==null){
             profits1 = new BigDecimal("0.00");
         }
+        List<String> SysPeriodCode =new ArrayList<String>();
+        String prePeriod = period.getPrePeriod();//上一周期
+        if (prePeriod==null){
+            prePeriod  = "";
+        }
+        String prePeriod2 = "";//上上一周期
+        if (!StringUtils.isEmpty(prePeriod)){//为空
+            RdSysPeriod period1 = periodService.findByPeriodCode(periodCode);
+            prePeriod2 = period1.getPrePeriod();
+        }
+        SysPeriodCode.add(periodCode);
+        SysPeriodCode.add(prePeriod);
+        SysPeriodCode.add(prePeriod2);
+
         if (period.getCalStatus()==3){ //发布完
             RdBonusMaster bonusMaster = rdBonusMasterService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
-            result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,bonusMaster);
+            result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,bonusMaster,SysPeriodCode);
         }else {
             //当期待发放零售利润
             BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("buyerId",mCode).put("createPeriod",periodCode).put("state",2));
             if (profits2==null){
                 profits2 = new BigDecimal("0.00");
             }
-            result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2);
+            result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2,SysPeriodCode);
         }
 
 

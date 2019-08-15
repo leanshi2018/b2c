@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import com.framework.loippi.entity.user.MemberQualification;
@@ -78,9 +79,9 @@ public class SelfPerformanceResult {
 	 */
 	private BigDecimal bonusSum;
 	/**
-	 * 当期预估会员级别  RANK_AC
+	 * 上一周期  RANK_AC
 	 */
-	//private String rankACStr;
+	private List<String> periodCodeList;
 	/**
 	 * 当期待发放零售利润   retail_profit  state=2  profits
 	 */
@@ -90,7 +91,7 @@ public class SelfPerformanceResult {
 	 */
 	private int lookType;
 
-	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, RdBonusMaster bonusMaster) {
+	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, RdBonusMaster bonusMaster,List<String> periodCodeList) {
 		Optional<RdMmBasicInfo> optionalBasicInfo = Optional.ofNullable(profile);
 		Optional<RdBonusMaster> optionalBonusMaster = Optional.ofNullable(bonusMaster);
 		SelfPerformanceResult result = new SelfPerformanceResult();
@@ -181,7 +182,7 @@ public class SelfPerformanceResult {
 		return result;
 	}
 
-	public static SelfPerformanceResult build2(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, BigDecimal profits2) {
+	public static SelfPerformanceResult build2(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, BigDecimal profits2,List<String> periodCodeList) {
 		Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
 		SelfPerformanceResult result = new SelfPerformanceResult();
 		result.setMmNickName(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
