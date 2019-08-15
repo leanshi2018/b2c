@@ -1,68 +1,20 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.consts.*;
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.controller.AppConstants;
-import com.framework.loippi.controller.BaseController;
-import com.framework.loippi.controller.StateResult;
-import com.framework.loippi.controller.common.KuaidiAPIController;
-import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
-import com.framework.loippi.entity.PayCommon;
-import com.framework.loippi.entity.common.ShopCommonArea;
-import com.framework.loippi.entity.common.ShopCommonExpress;
-import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.order.*;
-import com.framework.loippi.entity.trade.ShopRefundReturn;
-import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAddInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-
-import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.enus.RefundReturnState;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.param.cart.CartAddParam;
-import com.framework.loippi.param.order.OrderSubmitParam;
-import com.framework.loippi.param.order.RefundReturnParam;
-import com.framework.loippi.result.app.order.*;
-import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.result.evaluate.EvaluateOrderGoodsResult;
-import com.framework.loippi.result.evaluate.EvaluationCenterGoodsResult;
-import com.framework.loippi.result.order.RefundOrderResult;
-import com.framework.loippi.service.KuaidiService;
-import com.framework.loippi.service.RedisService;
-import com.framework.loippi.service.alipay.AlipayMobileService;
-import com.framework.loippi.service.common.ShopCommonAreaService;
-import com.framework.loippi.service.common.ShopCommonExpressService;
-import com.framework.loippi.service.integration.RdMmIntegralRuleService;
-import com.framework.loippi.service.order.*;
-import com.framework.loippi.service.product.ShopGoodsEvaluateService;
-import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
-import com.framework.loippi.service.trade.ShopRefundReturnService;
-import com.framework.loippi.service.trade.ShopReturnOrderGoodsService;
-import com.framework.loippi.service.union.UnionpayService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAddInfoService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-
-import com.framework.loippi.service.user.RdRanksService;
-import com.framework.loippi.service.wechat.WechatMobileService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.*;
-import com.framework.loippi.utils.unionpay.pc.gwj.util.JsonUtil;
-import com.framework.loippi.vo.order.ShopOrderVo;
-import com.framework.loippi.vo.refund.ReturnGoodsVo;
-import com.framework.loippi.vo.refund.ShopRefundReturnVo;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.regexp.RE;
-import org.hibernate.validator.constraints.ModCheck;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -71,11 +23,71 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.*;
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.OrderState;
+import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
+import com.framework.loippi.controller.AppConstants;
+import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.controller.StateResult;
+import com.framework.loippi.entity.PayCommon;
+import com.framework.loippi.entity.common.ShopCommonArea;
+import com.framework.loippi.entity.common.ShopCommonExpress;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderAddress;
+import com.framework.loippi.entity.order.ShopOrderDiscountType;
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.order.ShopOrderPay;
+import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.enus.RefundReturnState;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.param.cart.CartAddParam;
+import com.framework.loippi.param.order.OrderSubmitParam;
+import com.framework.loippi.param.order.RefundReturnParam;
+import com.framework.loippi.result.app.order.ApplyRefundReturnResult;
+import com.framework.loippi.result.app.order.OrderDetailResult;
+import com.framework.loippi.result.app.order.OrderResult;
+import com.framework.loippi.result.app.order.OrderSubmitResult;
+import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.evaluate.EvaluateOrderGoodsResult;
+import com.framework.loippi.result.order.RefundOrderResult;
+import com.framework.loippi.service.KuaidiService;
+import com.framework.loippi.service.RedisService;
+import com.framework.loippi.service.alipay.AlipayMobileService;
+import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.common.ShopCommonExpressService;
+import com.framework.loippi.service.integration.RdMmIntegralRuleService;
+import com.framework.loippi.service.order.ShopOrderAddressService;
+import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
+import com.framework.loippi.service.order.ShopOrderGoodsService;
+import com.framework.loippi.service.order.ShopOrderPayService;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopGoodsEvaluateService;
+import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
+import com.framework.loippi.service.trade.ShopRefundReturnService;
+import com.framework.loippi.service.union.UnionpayService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.wechat.WechatMobileService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.vo.order.ShopOrderVo;
+import com.framework.loippi.vo.refund.ReturnGoodsVo;
 
 /**
  * API - 订单模块接口
@@ -645,7 +657,6 @@ public class OrderAPIController extends BaseController {
         }
         Paramap paramap = Paramap.create()
             .put("buyerId", member.getMmCode())
-            .put("evaluationStatus", OrderState.ORDER_EVALUATION_NO)
             .put("orderId", orderId);
         pager.setParameter(paramap);
         ShopOrder shopOrder = orderService.find(orderId);
