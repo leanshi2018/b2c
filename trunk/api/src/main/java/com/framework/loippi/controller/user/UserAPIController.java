@@ -1128,14 +1128,14 @@ public class UserAPIController extends BaseController {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
         if(StringUtil.isEmpty(memeberId)){
-            ApiUtils.error("请传入需要查询会员的会员编号");
+            return ApiUtils.error("请传入需要查询会员的会员编号");
         }
         if(StringUtil.isEmpty(periodStr)){
-            ApiUtils.error("请传入需要查询的周期编号");
+            return ApiUtils.error("请传入需要查询的周期编号");
         }
         MemberQualification memberQualification=memberQualificationService.findByCodeAndPeriod(Paramap.create().put("mCode",memeberId).put("periodCode",periodStr));
         if(memberQualification==null){
-            ApiUtils.error("当前筛选条件下尚未统计出会员信息");
+            return ApiUtils.error("当前筛选条件下尚未统计出会员信息");
         }
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memeberId);
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", memeberId);
