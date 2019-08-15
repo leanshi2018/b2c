@@ -1217,8 +1217,12 @@ public class UserAPIController extends BaseController {
             prePeriod2 = period1.getPrePeriod();
         }
         SysPeriodCode.add(periodCode);
-        SysPeriodCode.add(prePeriod);
-        SysPeriodCode.add(prePeriod2);
+        if (!"".equals(prePeriod)){
+            SysPeriodCode.add(prePeriod);
+        }
+        if (!"".equals(prePeriod2)){
+            SysPeriodCode.add(prePeriod2);
+        }
 
         if (period.getCalStatus()==3){ //发布完
             RdBonusMaster bonusMaster = rdBonusMasterService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
