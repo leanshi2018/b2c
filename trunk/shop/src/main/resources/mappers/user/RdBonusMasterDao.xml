@@ -204,7 +204,7 @@
         </where>
     </select>
 
-    <select id="findByMCodeAndPeriodCode" parameterType="map" resultMap="RdBonusMasterResultMap">
+    <select id="findByMCodeAndPeriodCode" parameterType="com.framework.loippi.utils.Paramap" resultMap="RdBonusMasterResultMap">
         SELECT	<include refid="base_column" />
         FROM 	rd_bonus_master
         where PERIOD_CODE = #{periodCode} and MM_CODE = #{mCode}
