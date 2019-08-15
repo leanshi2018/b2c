@@ -48,6 +48,8 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 			rdMmRelation.setRank(3);
 		}
 		rdMmRelation.setNOFlag(2);
+		rdMmRelation.setRaShopYn(1);
+		rdMmRelation.setRaStatus(1);
 		oldSysRelationship.setNYnRegistered(1);
 		oldSysRelationship.setNMcode(rdMmRelation.getMmCode());
         oldSysRelationship.setUpdateTime(new Date());
@@ -61,6 +63,8 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 			rdMmRelation.setRank(3);
 		}
 		rdMmRelation.setNOFlag(2);
+		rdMmRelation.setRaShopYn(1);
+		rdMmRelation.setRaStatus(1);
 		rdMmRelation.setRaSponsorStatus(1);
 		rdMmRelation.setSponsorCode(basicInfo.getMmCode());
 		rdMmRelation.setSponsorName(basicInfo.getMmName());

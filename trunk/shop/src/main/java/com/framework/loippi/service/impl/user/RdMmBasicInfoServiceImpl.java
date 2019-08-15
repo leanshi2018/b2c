@@ -124,6 +124,8 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             rdMmRelation.setSponsorName(oldRdMmBasicInfoList.get(0).getMmName());
             rdMmRelation.setRaSponsorStatus(1);
             rdMmRelation.setNOFlag(1);
+            rdMmRelation.setRaStatus(0);
+            rdMmRelation.setRaShopYn(0);
         }
         //老用户
         if (registerType == 2) {
@@ -175,6 +177,8 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
                 }*/
             rdMmRelation.setRank(3);//如果是老会员注册，直接将等级设置为初级代理店 TODO 2019-07-19修改业务需求
             rdMmRelation.setNOFlag(2);
+            rdMmRelation.setRaStatus(1);
+            rdMmRelation.setRaShopYn(1);
             //}
             oldSysRelationship.setNYnRegistered(1);
             //oldSysRelationship.setNMcode(newMmCode);
