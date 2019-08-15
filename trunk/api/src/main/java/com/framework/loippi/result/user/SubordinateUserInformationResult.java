@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,7 +43,8 @@ public class SubordinateUserInformationResult {
     /**
      * 加入时间
      */
-    private Date createTime;
+    //private Date createTime;
+    private String createTime;
 
     //累计购货额
     private BigDecimal totalMoney;
@@ -158,9 +160,14 @@ public class SubordinateUserInformationResult {
         result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
         result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
         result.setRaSpoStatus(Optional.ofNullable(rdMmRelation.getRaSponsorStatus()).orElse(null));//设置会员状态 永久 间接
-        result.setCreateTime(Optional.ofNullable(rdMmBasicInfo.getCreationDate()).orElse(null));//设置会员加入时间
+        Date creationDate = rdMmBasicInfo.getCreationDate();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String formatStr = format.format(creationDate);
+        result.setCreateTime(formatStr);//设置会员加入时间
         result.setTotalMoney(Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO));//设置累计购货额
-        result.setPeriodMoney(Optional.ofNullable(periodSumPpv.getTotalmoney()).orElse(BigDecimal.ZERO));//设置当期累计购货额
+        Optional<OrderSumPpv> optional = Optional.ofNullable(periodSumPpv);
+        result.setPeriodMoney(optional.map(OrderSumPpv::getTotalmoney).orElse(BigDecimal.ZERO));
+        //result.setPeriodMoney(Optional.ofNullable(periodSumPpv.getTotalmoney()).orElse(BigDecimal.ZERO));//设置当期累计购货额
         result.setRetailMoney(retail);//设置零售订单总金额
         result.setRetailProfitsNoPay(nopay);//设置未发放的零售利润
         result.setRetailProfits(pay);//设置已发放的零售利润
