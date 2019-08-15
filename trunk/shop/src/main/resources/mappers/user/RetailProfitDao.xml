@@ -235,8 +235,8 @@
 			<if test="buyerId != null and buyerId != ''">
 				and buyer_id = #{buyerId}
 			</if>
-			<if test="actualPeriod != null and actualPeriod != ''">
-				and actual_period = #{actualPeriod}
+			<if test="createPeriod != null and createPeriod != ''">
+				and create_period = #{createPeriod}
 			</if>
 			and state = 1
 		</where>
@@ -248,8 +248,8 @@
 			<if test="buyerId != null and buyerId != ''">
 				and buyer_id = #{buyerId}
 			</if>
-			<if test="createTime != null and createTime != ''">
-				and create_time = #{createTime}
+			<if test="createPeriod != null and createPeriod != ''">
+				and create_period = #{createPeriod}
 			</if>
 			and (state = 0 or state = 2)
 		</where>
