@@ -396,7 +396,7 @@
 	</select>
 
 	<!--findByMCodeAndPeriodCode-->
-	<select id="findBySponsorCodeAndPeriodCode" parameterType="map" resultMap="MemberQualicationResultMap">
+	<select id="findByMCodeAndPeriodCode" parameterType="com.framework.loippi.utils.Paramap" resultMap="MemberQualicationResultMap">
 		select <include refid="base_column" />
 		from rd_dis_qualification
 		<where>
