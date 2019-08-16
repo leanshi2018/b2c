@@ -1192,6 +1192,8 @@ public class UserAPIController extends BaseController {
             RdSysPeriod period = periodService.findLastPeriod();
             if (period!=null){
                 periodCode = period.getPeriodCode();
+            }else {
+                return ApiUtils.error("周期该没有");
             }
         }
         //会员基础信息
