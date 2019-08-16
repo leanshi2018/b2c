@@ -80,6 +80,7 @@ public class IntegrationMemberListResult {
                 integrationMemberListResult.setMemberName(Optional.ofNullable(item.getMmNickName()).orElse(""));
                 integrationMemberListResult.setId( Optional.ofNullable(item.getMmCode()).orElse("-1"));
                 integrationMemberListResult.setMemberAvatar(Optional.ofNullable(item.getMmAvatar()).orElse(""));
+                integrationMemberListResult.setJoinTime(Optional.ofNullable(item.getCreationDate()).orElse(null));
                 String mmCode = item.getMmCode();
                 for (RdMmRelation rdMmRelation : rdMmRelationList) {
                     if(rdMmRelation.getMmCode().equals(mmCode)){
