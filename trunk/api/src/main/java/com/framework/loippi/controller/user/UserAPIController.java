@@ -1199,7 +1199,7 @@ public class UserAPIController extends BaseController {
 
         RdSysPeriod period = periodService.findByPeriodCode(periodCode);
 
-        SelfPerformanceResult result = null;
+        SelfPerformanceResult result = new SelfPerformanceResult();
         MemberQualification qualification = qualificationService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
         //当期零售利润
         BigDecimal profits1 = retailProfitService.countProfit(Paramap.create().put("buyerId",mCode).put("createPeriod",periodCode).put("state",1));
