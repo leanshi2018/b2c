@@ -259,8 +259,8 @@
 	<select id="countProfit" parameterType="com.framework.loippi.utils.Paramap" resultType="java.math.BigDecimal">
 		select sum(profits) from retail_profit
 		<where>
-			<if test="buyerId != null and buyerId != ''">
-				and buyer_id = #{buyerId}
+			<if test="receiptorId != null and receiptorId != ''">
+				and receiptor_id = #{receiptorId}
 			</if>
 			<if test="createPeriod != null and createPeriod != ''">
 				and create_period  = #{createPeriod}
