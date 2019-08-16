@@ -56,7 +56,12 @@ public class EvaluateOrderGoodsResult {
     /**
      * 评价内容
      */
-    private String gevalContent;
+    private ShopGoodsEvaluate shopGoodsEvaluate;
+    /**
+     * 是否已评价
+     */
+    private int typeStatus;
+
 
     public static List<EvaluateOrderGoodsResult> build(List<ShopOrderGoods> shopOrderGoodsList,ShopOrder shopOrder ,List<ShopGoodsEvaluate> evaluateList) {
         List<EvaluateOrderGoodsResult> results = new ArrayList<>();
@@ -78,7 +83,10 @@ public class EvaluateOrderGoodsResult {
                 }
                 for (ShopGoodsEvaluate goodsEvaluate : evaluateList) {
                     if (goodsEvaluate.getGevalOrdergoodsid().longValue()==item.getId().longValue()){
-                        evaluateOrderGoodsResult.setGevalContent(goodsEvaluate.getGevalContent());
+                        evaluateOrderGoodsResult.setShopGoodsEvaluate(goodsEvaluate);
+                        evaluateOrderGoodsResult.setTypeStatus(1);
+                    }else {
+                        evaluateOrderGoodsResult.setTypeStatus(0);
                     }
                 }
                 results.add(evaluateOrderGoodsResult);
