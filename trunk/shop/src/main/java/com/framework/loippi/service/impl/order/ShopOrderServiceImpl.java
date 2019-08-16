@@ -2666,7 +2666,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().add(amount));
                                         rdMmAccountInfoService.update(rdMmAccountInfo);
                                         //修改零售利润
-                                        retailProfit.setReceiptorId(rdMmRelation.getSponsorCode());
+                                        retailProfit.setReceiptorId(rdMmRelation.getMmCode());//TODO
                                         retailProfit.setActualTime(new Date());
                                         String periodCode = rdSysPeriodDao.getSysPeriodService(retailProfit.getActualTime());
                                         if(periodCode!=null){
