@@ -176,6 +176,7 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
                     goods.setSpecId(goodsSpec.getId());
                     goods.setGoodsMemberPrice(goodsSpec.getSpecMemberPrice());
                     goods.setGoodsRetailPrice(goodsSpec.getSpecRetailPrice());
+                    goods.setGoodsRetailProfit(goodsSpec.getSpecRetailProfit());//TODO
                     goods.setGoodsBigPrice(goodsSpec.getSpecBigPrice());
                     goods.setPpv(goodsSpec.getPpv());
                     goods.setBigPpv(goodsSpec.getBigPpv());
@@ -194,6 +195,7 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
             goodsSpec.setSpecBigPrice(goods.getGoodsBigPrice());
             goodsSpec.setSpecMemberPrice(goods.getGoodsMemberPrice());
             goodsSpec.setSpecRetailPrice(goods.getGoodsRetailPrice());
+            goodsSpec.setSpecRetailProfit(goods.getGoodsRetailProfit());//TODO
             goodsSpec.setPpv(goods.getPpv());
             goodsSpec.setBigPpv(goods.getBigPpv());
 
@@ -211,6 +213,7 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
             goods.setSpecId(goodsSpec.getId());
             goods.setGoodsMemberPrice(goodsSpec.getSpecMemberPrice());
             goods.setGoodsRetailPrice(goodsSpec.getSpecRetailPrice());
+            goods.setGoodsRetailProfit(goods.getGoodsRetailProfit());
             goods.setGoodsBigPrice(goodsSpec.getSpecBigPrice());
             goods.setPpv(goodsSpec.getPpv());
             goods.setBigPpv(goodsSpec.getBigPpv());
@@ -225,6 +228,7 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
             tagGoods.setSpecId(goods.getSpecId());
             tagGoods.setGoodsMemberPrice(goods.getGoodsMemberPrice());
             tagGoods.setGoodsRetailPrice(goods.getGoodsRetailPrice());
+            tagGoods.setGoodsRetailProfit(goods.getGoodsRetailProfit());
             tagGoods.setGoodsBigPrice(goods.getGoodsBigPrice());
             tagGoods.setPpv(goods.getPpv());
             tagGoods.setBigPpv(goods.getBigPpv());

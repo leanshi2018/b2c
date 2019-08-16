@@ -25,9 +25,13 @@ public class IntegrationMemberListResult {
     private String id;
 
     /**
-     * 会员名称
+     * 会员昵称
      */
     private String memberName;
+    /**
+     * 会员真实姓名
+     */
+    private String trueName;
     /**
      * 会员头像
      */
@@ -76,6 +80,7 @@ public class IntegrationMemberListResult {
                 integrationMemberListResult.setMemberName(Optional.ofNullable(item.getMmNickName()).orElse(""));
                 integrationMemberListResult.setId( Optional.ofNullable(item.getMmCode()).orElse("-1"));
                 integrationMemberListResult.setMemberAvatar(Optional.ofNullable(item.getMmAvatar()).orElse(""));
+                integrationMemberListResult.setJoinTime(Optional.ofNullable(item.getCreationDate()).orElse(null));
                 String mmCode = item.getMmCode();
                 for (RdMmRelation rdMmRelation : rdMmRelationList) {
                     if(rdMmRelation.getMmCode().equals(mmCode)){
@@ -283,6 +288,132 @@ public class IntegrationMemberListResult {
                 }
             });
         }
+        return userIntegrationListResultList;
+    }
+
+    public static List<IntegrationMemberListResult> build4(List<RdMmBasicInfo> rdMmBasicInfoList, List<RdMmRelation> rdMmRelationList, List<RdRanks> shopMemberGradeList, Integer sorting, HashMap<String, BigDecimal> hashMap) {
+        List<IntegrationMemberListResult> userIntegrationListResultList=new ArrayList<>();
+        Map<Integer,String> map=new HashMap<>();
+        for (RdRanks item:shopMemberGradeList) {
+            map.put(item.getRankId(),item.getRankName());
+        }
+        for (RdMmRelation rdMmRelation : rdMmRelationList) {
+            IntegrationMemberListResult memberInfo = new IntegrationMemberListResult();
+            memberInfo.setId(rdMmRelation.getMmCode());
+            memberInfo.setRaSpoStatus(rdMmRelation.getRaSponsorStatus());
+            for (RdMmBasicInfo rdMmBasicInfo : rdMmBasicInfoList) {
+                if(rdMmBasicInfo.getMmCode().equals(rdMmRelation.getMmCode())){
+                    memberInfo.setMemberName(rdMmBasicInfo.getMmNickName());
+                    memberInfo.setMemberAvatar(rdMmBasicInfo.getMmAvatar());
+                    memberInfo.setMemberMobile(rdMmBasicInfo.getMobile());
+                    memberInfo.setJoinTime(rdMmBasicInfo.getCreationDate());
+                    memberInfo.setTrueName(Optional.ofNullable(rdMmBasicInfo.getMmName()).orElse(""));
+                }
+            }
+            if((rdMmRelation.getRank()+"")!=null){
+                memberInfo.setGradeId(rdMmRelation.getRank());
+                if(map.get(rdMmRelation.getRank())!=null){
+                    memberInfo.setGradeName(map.get(rdMmRelation.getRank()));
+                }else {
+                    memberInfo.setGradeName("");
+                }
+            }else {
+                memberInfo.setGradeId(0);
+                memberInfo.setGradeName(map.get(0));
+            }
+            //memberInfo.setTotalPv(Optional.ofNullable(memberQualification.getPpv()).orElse(BigDecimal.ZERO));
+            BigDecimal decimal = hashMap.get(rdMmRelation.getMmCode());
+            memberInfo.setRetailProfit(decimal);
+            userIntegrationListResultList.add(memberInfo);
+            //对集合进行排序
+
+
+            //按照加入时间升序
+            if(sorting.equals(3)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getJoinTime().compareTo(o2.getJoinTime())==1){
+                            return 1;
+                        }else if(o1.getJoinTime().compareTo(o2.getJoinTime())==0){
+                            return 0;
+                        }
+                        return -1;
+                    }
+                });
+            }
+            //按照加入时间降序
+            if(sorting.equals(4)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getJoinTime().compareTo(o2.getJoinTime())==1){
+                            return -1;
+                        }else if(o1.getJoinTime().compareTo(o2.getJoinTime())==0){
+                            return 0;
+                        }
+                        return 1;
+                    }
+                });
+            }
+            //按照级别升序
+            if(sorting.equals(5)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getGradeId()>o2.getGradeId()){
+                            return 1;
+                        }else if(o1.getGradeId()==o2.getGradeId()){
+                            return 0;
+                        }
+                        return -1;
+                    }
+                });
+            }
+            //按照级别降序
+            if(sorting.equals(6)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getGradeId()>o2.getGradeId()){
+                            return -1;
+                        }else if(o1.getGradeId()==o2.getGradeId()){
+                            return 0;
+                        }
+                        return 1;
+                    }
+                });
+            }
+            //按照已发放零售利润升序
+            if(sorting.equals(7)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getRetailProfit().compareTo(o2.getRetailProfit())==1){
+                            return 1;
+                        }else if(o1.getRetailProfit().compareTo(o2.getRetailProfit())==0){
+                            return 0;
+                        }
+                        return -1;
+                    }
+                });
+            }
+            //按照已发放零售利润降序
+            if(sorting.equals(8)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getRetailProfit().compareTo(o2.getRetailProfit())==1){
+                            return -1;
+                        }else if(o1.getRetailProfit().compareTo(o2.getRetailProfit())==0){
+                            return 0;
+                        }
+                        return 1;
+                    }
+                });
+            }
+        }
+
         return userIntegrationListResultList;
     }
 //    public static List<IntegrationMemberListResult> build3(List<ShopMember> shopMemberList,List<ShopMemberGrade> shopMemberGradeList) {

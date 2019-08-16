@@ -220,12 +220,13 @@
 			<if test="receiptorId != null and receiptorId != ''">
 				and receiptor_id = #{receiptorId}
 			</if>
-			<if test="actualPeriod != null and actualPeriod != ''">
-				and actual_period = #{actualPeriod}
+			<if test="createPeriod != null and createPeriod != ''">
+				and create_period = #{createPeriod}
 			</if>
-			<if test="state != null">
+			and (state = 0 or state = 1)
+			<!--<if test="state != null">
 				and state = #{state}
-			</if>
+			</if>-->
 		</where>
 	</select>
 
