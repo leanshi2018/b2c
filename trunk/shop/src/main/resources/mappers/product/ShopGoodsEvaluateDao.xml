@@ -530,7 +530,7 @@
     </update>
 
     <!--findByOrderId-->
-    <select id="findByPage" parameterType="java.lang.Long" resultMap="ShopGoodsEvaluateResultMap">
+    <select id="findByOrderId" parameterType="java.lang.Long" resultMap="ShopGoodsEvaluateResultMap">
         SELECT
         <include refid="base_column"/>
         FROM SHOP_GOODS_EVALUATE
