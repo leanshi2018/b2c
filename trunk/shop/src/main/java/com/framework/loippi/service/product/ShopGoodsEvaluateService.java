@@ -1,16 +1,15 @@
 package com.framework.loippi.service.product;
 
+import java.util.List;
+import java.util.Map;
+
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 import com.framework.loippi.entity.product.ShopGoodsEvaluateKeywords;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
-
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * SERVICE - ShopGoodsEvaluate(信誉商品评价表)
@@ -43,4 +42,5 @@ public interface ShopGoodsEvaluateService extends GenericService<ShopGoodsEvalua
     //根据多个商品id查询商品评价比率信息
     List<ShopGoodsEvaluateKeywords> countGevalContent(List<String> gevalContents,Long goodsId);
 
+	List<ShopGoodsEvaluate> findByOrderId(Long orderId);
 }

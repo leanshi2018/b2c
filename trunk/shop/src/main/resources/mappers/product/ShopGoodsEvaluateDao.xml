@@ -529,4 +529,14 @@
         WHERE ID = #{evalId,jdbcType=BIGINT}
     </update>
 
+    <!--findByOrderId-->
+    <select id="findByPage" resultMap="ShopGoodsEvaluateResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_GOODS_EVALUATE
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
 </mapper>

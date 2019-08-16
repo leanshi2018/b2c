@@ -39,6 +39,7 @@ import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.order.ShopOrderPay;
+import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAddInfo;
@@ -661,7 +662,8 @@ public class OrderAPIController extends BaseController {
         pager.setParameter(paramap);
         ShopOrder shopOrder = orderService.find(orderId);
         Page<ShopOrderGoods> shopOrderGoodsPage = orderGoodsService.findByPage(pager);
-        return ApiUtils.success(EvaluateOrderGoodsResult.build(shopOrderGoodsPage.getContent(), shopOrder));
+        List<ShopGoodsEvaluate> evaluateList = shopGoodsEvaluateService.findByOrderId(orderId);
+        return ApiUtils.success(EvaluateOrderGoodsResult.build(shopOrderGoodsPage.getContent(), shopOrder, evaluateList));
     }
 
 //
