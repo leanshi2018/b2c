@@ -264,7 +264,7 @@ public class ShopGoodsSysController extends GenericController {
         List<ShopGoods> list = byPage.getContent();
 
         //商品分类查询及回显
-        List<ShopGoodsClass> goodsClasses = new ArrayList<>();
+        List<ShopGoodsClass> goodsClasses = new ArrayList<>();//二级分类
         List<ShopGoodsClass> firstGoodsClasses = new ArrayList<>();
         List<ShopGoodsClass> shopGoodsClassList = shopGoodsClassService.findAll();
         for (ShopGoodsClass item : shopGoodsClassList) {

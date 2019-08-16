@@ -13,6 +13,7 @@ import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmRelationService;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -73,5 +74,10 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 		oldSysRelationship.setUpdateTime(new Date());
 		oldSysRelationshipDao.update(oldSysRelationship);
 		rdMmRelationDao.update(rdMmRelation);
+	}
+
+	@Override
+	public List<RdMmRelation> findBySponsorCode(String mmCode) {
+		return rdMmRelationDao.findBySponsorCode(mmCode);
 	}
 }
