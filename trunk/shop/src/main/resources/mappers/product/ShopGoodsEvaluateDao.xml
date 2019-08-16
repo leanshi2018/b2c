@@ -529,14 +529,11 @@
         WHERE ID = #{evalId,jdbcType=BIGINT}
     </update>
 
-    <!--findByOrderId-->
     <select id="findByOrderId" parameterType="java.lang.Long" resultMap="ShopGoodsEvaluateResultMap">
         SELECT
         <include refid="base_column"/>
         FROM SHOP_GOODS_EVALUATE
-        <where>1=1
-            <include refid="where_column"/>
-        </where>
+        where geval_orderid = #{gevalOrderid}
     </select>
 
 </mapper>
