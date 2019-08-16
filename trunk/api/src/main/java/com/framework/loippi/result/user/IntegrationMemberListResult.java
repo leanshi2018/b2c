@@ -25,9 +25,13 @@ public class IntegrationMemberListResult {
     private String id;
 
     /**
-     * 会员名称
+     * 会员昵称
      */
     private String memberName;
+    /**
+     * 会员真实姓名
+     */
+    private String trueName;
     /**
      * 会员头像
      */
@@ -302,6 +306,7 @@ public class IntegrationMemberListResult {
                     memberInfo.setMemberAvatar(rdMmBasicInfo.getMmAvatar());
                     memberInfo.setMemberMobile(rdMmBasicInfo.getMobile());
                     memberInfo.setJoinTime(rdMmBasicInfo.getCreationDate());
+                    memberInfo.setTrueName(Optional.ofNullable(rdMmBasicInfo.getMmName()).orElse(""));
                 }
             }
             if((rdMmRelation.getRank()+"")!=null){
