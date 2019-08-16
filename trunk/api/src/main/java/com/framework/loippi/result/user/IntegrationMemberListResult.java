@@ -408,7 +408,7 @@ public class IntegrationMemberListResult {
             }
         }
 
-        return null;
+        return userIntegrationListResultList;
     }
 //    public static List<IntegrationMemberListResult> build3(List<ShopMember> shopMemberList,List<ShopMemberGrade> shopMemberGradeList) {
 //        List<IntegrationMemberListResult> integrationMemberListResultList=new ArrayList<>();
