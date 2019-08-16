@@ -1196,7 +1196,9 @@ public class UserAPIController extends BaseController {
         }
         //会员基础信息
         RdMmBasicInfo basicInfo = mmBasicInfoService.findByMCode(mCode);
-
+        if (basicInfo==null){
+            return ApiUtils.error("找不到该会员信息！");
+        }
         RdSysPeriod period = periodService.findByPeriodCode(periodCode);
 
         SelfPerformanceResult result = new SelfPerformanceResult();
@@ -1214,7 +1216,9 @@ public class UserAPIController extends BaseController {
         String prePeriod2 = "";//上上一周期
         if (!StringUtils.isEmpty(prePeriod)){//为空
             RdSysPeriod period1 = periodService.findByPeriodCode(prePeriod);
-            prePeriod2 = period1.getPrePeriod();
+            if (period1!=null){
+                prePeriod2 = period1.getPrePeriod();
+            }
         }
         SysPeriodCode.add(periodCode);
         if (!"".equals(prePeriod)){
