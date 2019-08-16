@@ -309,26 +309,34 @@ public class UserIntegrationAPIController extends BaseController {
             code=periodCode;
         }
         //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode",member.getMmCode()).put("periodCode",periodCode));
-        HashMap<String, Object> map1 = new HashMap<>();
+        /*HashMap<String, Object> map1 = new HashMap<>();
         map1.put("sponsorCode",member.getMmCode());
         //map1.put("sponsorCode","900000011");
-        map1.put("periodCode",code);
-        List<MemberQualification> list =memberQualificationService.findBySponsorCodeAndPeriodCode(map1);
+        map1.put("periodCode",code);*/
+        //List<MemberQualification> list =memberQualificationService.findBySponsorCodeAndPeriodCode(map1);
         //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode","900000011").put("periodCode",periodCode));
-        if(list==null||list.size()==0){
-            ArrayList<MemberQualification> list1 = new ArrayList<>();
-            paramap.put("memberList",list1);
-            return ApiUtils.success(paramap);
-        }
-        List<String> mmCodes = new ArrayList();
-        for (MemberQualification item : list) {
-            mmCodes.add(item.getMCode());
+        //if(list==null||list.size()==0){
+        //   ArrayList<MemberQualification> list1 = new ArrayList<>();
+        //  paramap.put("memberList",list1);
+        //   return ApiUtils.success(paramap);
+        //}
+        //List<String> mmCodes = new ArrayList();
+        //for (MemberQualification item : list) {
+        //    mmCodes.add(item.getMCode());
+        //}
+        //List<RdMmBasicInfo> rdMmBasicInfoList = new ArrayList<>();
+        //List<RdMmRelation> rdMmRelationList = rdMmRelationService.findList("sponsorCode", member.getMmCode());
+        List<RdMmRelation> rdMmRelationList = rdMmRelationService.findBySponsorCode( member.getMmCode());
+        ArrayList<String> mmCodes = new ArrayList<>();
+        if(rdMmRelationList!=null&&rdMmRelationList.size()>0){
+            for (RdMmRelation rdMmRelation : rdMmRelationList) {
+                mmCodes.add(rdMmRelation.getMmCode());
+            }
         }
         List<RdMmBasicInfo> rdMmBasicInfoList = new ArrayList<>();
-        List<RdMmRelation> rdMmRelationList = new ArrayList<>();
         if (mmCodes != null && mmCodes.size() > 0) {
             rdMmBasicInfoList = rdMmBasicInfoService.findList("mmCodes", mmCodes);
-            rdMmRelationList = rdMmRelationService.findList("mmCodes", mmCodes);
+            //rdMmRelationList = rdMmRelationService.findList("mmCodes", mmCodes);
         }
         //查询从每一个会员获得的零售利润
         HashMap<String, BigDecimal> hashMap = new HashMap<>();
@@ -336,9 +344,8 @@ public class UserIntegrationAPIController extends BaseController {
             HashMap<String, Object> map = new HashMap<>();
             map.put("buyerId",mmCode);
             map.put("receiptorId",member.getMmCode());
-            //map.put("receiptorId","900000011");
-            map.put("actualPeriod",periodCode);
-            map.put("state",1);
+            map.put("createPeriod",code);
+            //map.put("state",1);
             BigDecimal result=retailProfitService.findTotalProfit(map);
             if(result!=null){
                 hashMap.put(mmCode,result);
@@ -348,7 +355,7 @@ public class UserIntegrationAPIController extends BaseController {
         }
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
         List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
-                .build3(list,rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap);
+                .build4(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap);
         paramap.put("memberList", integrationMemberListResultList);
         return ApiUtils.success(paramap);
     }
