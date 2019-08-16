@@ -77,7 +77,7 @@ public class EvaluateOrderGoodsResult {
                     evaluateOrderGoodsResult.setPpv(item.getPpv());
                 }
                 for (ShopGoodsEvaluate goodsEvaluate : evaluateList) {
-                    if (goodsEvaluate.getGevalOrdergoodsid()==item.getId()){
+                    if (goodsEvaluate.getGevalOrdergoodsid().longValue()==item.getId().longValue()){
                         evaluateOrderGoodsResult.setGevalContent(goodsEvaluate.getGevalContent());
                     }
                 }
