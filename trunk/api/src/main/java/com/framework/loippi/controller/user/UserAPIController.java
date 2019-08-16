@@ -1204,7 +1204,7 @@ public class UserAPIController extends BaseController {
         SelfPerformanceResult result = new SelfPerformanceResult();
         MemberQualification qualification = qualificationService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
         //当期零售利润
-        BigDecimal profits1 = retailProfitService.countProfit(Paramap.create().put("buyerId",mCode).put("createPeriod",periodCode).put("state",1));
+        BigDecimal profits1 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",1));
         if (profits1==null){
             profits1 = new BigDecimal("0.00");
         }
@@ -1233,7 +1233,7 @@ public class UserAPIController extends BaseController {
             result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,bonusMaster,SysPeriodCode);
         }else {
             //当期待发放零售利润
-            BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("buyerId",mCode).put("createPeriod",periodCode).put("state",2));
+            BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",2));
             if (profits2==null){
                 profits2 = new BigDecimal("0.00");
             }
