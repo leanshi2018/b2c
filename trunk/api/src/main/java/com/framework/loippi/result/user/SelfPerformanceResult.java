@@ -146,12 +146,17 @@ public class SelfPerformanceResult {
 		result.setAddVIPNumber(addVIPNumber);
 		result.setRankStr(rankStr);
 
+		BigDecimal bonusNewVIP = new BigDecimal("0.00");
 		BigDecimal bonusDevp1 = new BigDecimal("0.00");
 		BigDecimal bonusDevp2 = new BigDecimal("0.00");
 		BigDecimal bonusDevpShare = new BigDecimal("0.00");
 		BigDecimal bonusLdSum = new BigDecimal("0.00");
 		BigDecimal bonusSum = new BigDecimal("0.00");
 		if (bonusMaster!=null){
+			bonusNewVIP = bonusMaster.getBonusNewVip();
+			if (bonusNewVIP==null){
+				bonusNewVIP = new BigDecimal("0.00");
+			}
 			bonusDevp1 = bonusMaster.getBonusDevp1();
 			if (bonusDevp1==null){
 				bonusDevp1 = new BigDecimal("0.00");
@@ -173,6 +178,7 @@ public class SelfPerformanceResult {
 				bonusSum = new BigDecimal("0.00");
 			}
 		}
+		result.setBonusNewVIP(bonusNewVIP);
 		result.setBonusDevp1(bonusDevp1);
 		result.setBonusDevp2(bonusDevp2);
 		result.setBonusDevpShare(bonusDevpShare);
