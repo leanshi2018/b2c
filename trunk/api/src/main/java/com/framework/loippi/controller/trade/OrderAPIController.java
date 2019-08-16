@@ -662,8 +662,25 @@ public class OrderAPIController extends BaseController {
         pager.setParameter(paramap);
         ShopOrder shopOrder = orderService.find(orderId);
         Page<ShopOrderGoods> shopOrderGoodsPage = orderGoodsService.findByPage(pager);
+        return ApiUtils.success(EvaluateOrderGoodsResult.build(shopOrderGoodsPage.getContent(), shopOrder));
+    }
+
+
+    @RequestMapping("/api/order/evaluate/forwardTwo")
+    @ResponseBody
+    public String toApplyEvaluate2(Pageable pager, HttpServletRequest request, Long orderId) throws Exception {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (orderId == null) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        Paramap paramap = Paramap.create()
+            .put("buyerId", member.getMmCode())
+            .put("orderId", orderId);
+        pager.setParameter(paramap);
+        ShopOrder shopOrder = orderService.find(orderId);
+        Page<ShopOrderGoods> shopOrderGoodsPage = orderGoodsService.findByPage(pager);
         List<ShopGoodsEvaluate> evaluateList = shopGoodsEvaluateService.findByOrderId(orderId);
-        return ApiUtils.success(EvaluateOrderGoodsResult.build(shopOrderGoodsPage.getContent(), shopOrder, evaluateList));
+        return ApiUtils.success(EvaluateOrderGoodsResult.build1(shopOrderGoodsPage.getContent(), shopOrder, evaluateList));
     }
 
 //
