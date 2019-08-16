@@ -1,6 +1,18 @@
 package com.framework.loippi.service.impl.product;
 
-import com.framework.loippi.consts.Constants;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.controller.StateResult;
 import com.framework.loippi.dao.order.ShopOrderDao;
@@ -10,33 +22,27 @@ import com.framework.loippi.dao.product.ShopGoodsEvaluateDao;
 import com.framework.loippi.dao.product.ShopGoodsEvaluateLikeDao;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.product.*;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsEvaluate;
+import com.framework.loippi.entity.product.ShopGoodsEvaluateKeywords;
+import com.framework.loippi.entity.product.ShopGoodsEvaluateLike;
+import com.framework.loippi.entity.product.ShopGoodsEvaluateSetting;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
-import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * SERVICE - ShopGoodsEvaluate(信誉商品评价表)
@@ -339,5 +345,10 @@ public class ShopGoodsEvaluateServiceImpl extends GenericServiceImpl<ShopGoodsEv
         List<ShopGoodsEvaluateKeywords> shopGoodsEvaluateKeywordsList = shopGoodsEvaluateDao
             .countGevalContent(Paramap.create().put("gevalContents", gevalContents).put("gevalGoodsid", goodsId).put("gevalState",0));
         return shopGoodsEvaluateKeywordsList;
+    }
+
+    @Override
+    public List<ShopGoodsEvaluate> findByOrderId(Long gevalOrderid) {
+        return shopGoodsEvaluateDao.findByOrderId(gevalOrderid);
     }
 }

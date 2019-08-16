@@ -1,18 +1,16 @@
 package com.framework.loippi.result.evaluate;
 
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.product.ShopGoodsEvaluate;
-import com.framework.loippi.mybatis.ext.annotation.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 
 /**
  * 用户订单待评价的商品列表返回app结果
@@ -55,8 +53,17 @@ public class EvaluateOrderGoodsResult {
      * pv值
      */
     private BigDecimal ppv;
+    /**
+     * 评价内容
+     */
+    private ShopGoodsEvaluate shopGoodsEvaluate;
+    /**
+     * 是否已评价
+     */
+    private int typeStatus;
 
-    public static List<EvaluateOrderGoodsResult> build(List<ShopOrderGoods> shopOrderGoodsList,ShopOrder shopOrder) {
+
+    public static List<EvaluateOrderGoodsResult> build(List<ShopOrderGoods> shopOrderGoodsList,ShopOrder shopOrder ,List<ShopGoodsEvaluate> evaluateList) {
         List<EvaluateOrderGoodsResult> results = new ArrayList<>();
         if(shopOrderGoodsList!=null && shopOrderGoodsList.size()>0){
             for (ShopOrderGoods item:shopOrderGoodsList) {
@@ -73,6 +80,14 @@ public class EvaluateOrderGoodsResult {
                     evaluateOrderGoodsResult.setPpv(item.getBigPpv());
                 }else{
                     evaluateOrderGoodsResult.setPpv(item.getPpv());
+                }
+                for (ShopGoodsEvaluate goodsEvaluate : evaluateList) {
+                    if (goodsEvaluate.getGevalOrdergoodsid().longValue()==item.getId().longValue()){
+                        evaluateOrderGoodsResult.setShopGoodsEvaluate(goodsEvaluate);
+                        evaluateOrderGoodsResult.setTypeStatus(1);
+                    }else {
+                        evaluateOrderGoodsResult.setTypeStatus(0);
+                    }
                 }
                 results.add(evaluateOrderGoodsResult);
             }
