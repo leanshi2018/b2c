@@ -3,10 +3,7 @@ package com.framework.loippi.job;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -184,10 +181,43 @@ public class ShopOrderJob {
             }
         }
     }
-/*    @Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
+    @Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
     public void test(){
         List<RetailProfit> retailProfits = retailProfitDao.findAll();
         System.out.println(retailProfits.size());
+        int num=0;
+        if(retailProfits!=null&&retailProfits.size()>0){
+            for (RetailProfit retailProfit : retailProfits) {
+                long orderId = retailProfit.getOrderId();
+                ShopOrder shopOrder = orderService.find(orderId);
+                if(shopOrder.getShippingTime()!=null){
+                    Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
+                    ca.setTime(shopOrder.getShippingTime()); //设置时间为当前时间
+                    ca.add(Calendar.DATE, 10);//
+                    retailProfit.setExpectTime(ca.getTime());
+                    String period = rdSysPeriodDao.getSysPeriodService(ca.getTime());
+                    if(period!=null){
+                        retailProfit.setExpectPeriod(period);
+                    }
+                    retailProfitDao.update(retailProfit);
+                    num++;
+                }
+            }
+        }
+        System.out.println(num);
+
+
+
+
+
+
+
+
+
+
+
+
+/*        System.out.println(retailProfits.size());
         int a =0;
         //ArrayList<Long> longs = new ArrayList<>();
         HashMap<Long, BigDecimal> hashMap = new HashMap<>();
@@ -218,6 +248,6 @@ public class ShopOrderJob {
         System.out.println(hashMap.size());
         System.out.println("#######################################");
         System.out.println(hashMap);
-        System.out.println("#######################################");
-    }*/
+        System.out.println("#######################################");*/
+    }
 }
