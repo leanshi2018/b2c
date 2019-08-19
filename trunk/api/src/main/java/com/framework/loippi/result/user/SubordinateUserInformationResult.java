@@ -171,7 +171,8 @@ public class SubordinateUserInformationResult {
         result.setRetailMoney(retail);//设置零售订单总金额
         result.setRetailProfitsNoPay(nopay);//设置未发放的零售利润
         result.setRetailProfits(pay);//设置已发放的零售利润
-        result.setPeriodPv(Optional.ofNullable(memberQualification.getPpv()).orElse(BigDecimal.ZERO));//设置当期会员获得PV值
+        //result.setPeriodPv(Optional.ofNullable(memberQualification.getPpv()).orElse(BigDecimal.ZERO));//设置当期会员获得PV值
+        result.setPeriodPv(optional.map(OrderSumPpv::getTotalPpv).orElse(BigDecimal.ZERO));//设置当期会员获得PV值
         result.setMCode(Optional.ofNullable(rdMmBasicInfo.getMmCode()).orElse(""));//设置会员编号
         result.setSponsorCode(Optional.ofNullable(memberQualification.getSponsorCode()).orElse(""));//设置当周期推荐人
         result.setPeriodCode(Optional.ofNullable(memberQualification.getPeriodCode()).orElse(""));//设置统计周期
