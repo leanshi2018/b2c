@@ -850,6 +850,9 @@
         <if test="creationPeriod != null and creationPeriod != ''">
             AND so.creation_period = #{creationPeriod}
         </if>
+        <if test="shippingCode != null and shippingCode != ''">
+            AND so.shipping_code = #{shippingCode}
+        </if>
         <if test="logisticType != null and logisticType != ''">
             AND so.logistic_type = #{logisticType}
         </if>
