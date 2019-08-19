@@ -1812,6 +1812,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         List<RetailProfit> list=retailProfitService.findNoGrantByCode(rdMmRelation.getMmCode());
                         if(list!=null&&list.size()>0){
                             for (RetailProfit retailProfit : list) {
+                                if(retailProfit.getProfits()!=null&&retailProfit.getProfits().compareTo(BigDecimal.ZERO)!=1){
+                                    continue;
+                                }
                                 RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", retailProfit.getReceiptorId());
                                 if(rdMmAccountInfo!=null){
                                     //生成积分日志表
@@ -2638,6 +2641,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             List<RetailProfit> list=retailProfitService.findNoGrantByCode(rdMmRelation.getMmCode());
                             if(list!=null&&list.size()>0){
                                 for (RetailProfit retailProfit : list) {
+                                    if(retailProfit.getProfits()!=null&&retailProfit.getProfits().compareTo(BigDecimal.ZERO)!=1){
+                                        continue;
+                                    }
                                     RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", retailProfit.getReceiptorId());
                                     if(rdMmAccountInfo!=null){
                                         //生成积分日志表

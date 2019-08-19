@@ -125,6 +125,9 @@ public class ShopOrderJob {
         System.out.println(list.size());
         if(list!=null&&list.size()>0){
             for (RetailProfit retailProfit : list) {
+                if(retailProfit.getProfits()!=null&&retailProfit.getProfits().compareTo(BigDecimal.ZERO)!=1){
+                    continue;
+                }
                 //根据retailProfit对应记录进行零售利润发放
                 List<RdMmRelation> rdMmRelations = rdMmRelationDao.findByParams(Paramap.create().put("mmCode",retailProfit.getBuyerId()));
                 if(rdMmRelations!=null&&rdMmRelations.size()>0){
@@ -181,6 +184,7 @@ public class ShopOrderJob {
             }
         }
     }
+/*
     @Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
     public void test(){
         List<RetailProfit> retailProfits = retailProfitDao.findAll();
@@ -216,6 +220,7 @@ public class ShopOrderJob {
 
 
 
+*/
 
 /*        System.out.println(retailProfits.size());
         int a =0;
@@ -249,5 +254,5 @@ public class ShopOrderJob {
         System.out.println("#######################################");
         System.out.println(hashMap);
         System.out.println("#######################################");*/
-    }
+    //}
 }
