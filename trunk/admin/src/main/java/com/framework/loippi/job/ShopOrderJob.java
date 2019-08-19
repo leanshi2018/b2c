@@ -177,7 +177,8 @@ public class ShopOrderJob {
             }
         }
     }
-    @Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
+    //@Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
+ /*   @Scheduled(cron = "0 35 15 * * ? " )  //每天上午十点执行一次
     public void test(){
         List<RetailProfit> retailProfits = retailProfitDao.findAll();
         System.out.println(retailProfits.size());
@@ -200,7 +201,7 @@ public class ShopOrderJob {
                 }
             }
         }
-        System.out.println(num);
+        System.out.println(num);*/
 
 
 
@@ -245,5 +246,5 @@ public class ShopOrderJob {
         System.out.println("#######################################");
         System.out.println(hashMap);
         System.out.println("#######################################");*/
-    }
+    //}
 }
