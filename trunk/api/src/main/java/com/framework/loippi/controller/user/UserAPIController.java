@@ -1189,7 +1189,7 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error("该会员编号为空");
         }
         if (StringUtils.isEmpty(periodCode)){
-            RdSysPeriod period = periodService.findLastPeriod();
+            RdSysPeriod period = periodService.getPeriodService(new Date());
             if (period!=null){
                 periodCode = period.getPeriodCode();
             }else {
@@ -1209,6 +1209,10 @@ public class UserAPIController extends BaseController {
         BigDecimal profits1 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",1));
         if (profits1==null){
             profits1 = new BigDecimal("0.00");
+        }
+        BigDecimal bugMi = shopOrderService.countOrderPPVByMCodeAndPeriod(mCode, periodCode);
+        if (bugMi==null){
+            bugMi = new BigDecimal("0.00");
         }
         List<String> SysPeriodCode =new ArrayList<String>();
         String prePeriod = period.getPrePeriod();//上一周期
@@ -1232,14 +1236,14 @@ public class UserAPIController extends BaseController {
 
         if (period.getCalStatus()==3){ //发布完
             RdBonusMaster bonusMaster = rdBonusMasterService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
-            result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,bonusMaster,SysPeriodCode);
+            result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,bonusMaster,SysPeriodCode,bugMi);
         }else {
             //当期待发放零售利润
             BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",2));
             if (profits2==null){
                 profits2 = new BigDecimal("0.00");
             }
-            result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2,SysPeriodCode);
+            result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2,SysPeriodCode,bugMi);
         }
 
 
