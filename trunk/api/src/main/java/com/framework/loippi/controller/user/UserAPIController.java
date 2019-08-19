@@ -1192,17 +1192,21 @@ public class UserAPIController extends BaseController {
             RdSysPeriod period = periodService.findLastPeriod();
             if (period!=null){
                 periodCode = period.getPeriodCode();
+            }else {
+                return ApiUtils.error("周期该没有");
             }
         }
         //会员基础信息
         RdMmBasicInfo basicInfo = mmBasicInfoService.findByMCode(mCode);
-
+        if (basicInfo==null){
+            return ApiUtils.error("找不到该会员信息！");
+        }
         RdSysPeriod period = periodService.findByPeriodCode(periodCode);
 
-        SelfPerformanceResult result = null;
+        SelfPerformanceResult result = new SelfPerformanceResult();
         MemberQualification qualification = qualificationService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
         //当期零售利润
-        BigDecimal profits1 = retailProfitService.countProfit(Paramap.create().put("buyerId",mCode).put("createPeriod",periodCode).put("state",1));
+        BigDecimal profits1 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",1));
         if (profits1==null){
             profits1 = new BigDecimal("0.00");
         }
@@ -1214,7 +1218,9 @@ public class UserAPIController extends BaseController {
         String prePeriod2 = "";//上上一周期
         if (!StringUtils.isEmpty(prePeriod)){//为空
             RdSysPeriod period1 = periodService.findByPeriodCode(prePeriod);
-            prePeriod2 = period1.getPrePeriod();
+            if (period1!=null){
+                prePeriod2 = period1.getPrePeriod();
+            }
         }
         SysPeriodCode.add(periodCode);
         if (!"".equals(prePeriod)){
@@ -1229,7 +1235,7 @@ public class UserAPIController extends BaseController {
             result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,bonusMaster,SysPeriodCode);
         }else {
             //当期待发放零售利润
-            BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("buyerId",mCode).put("createPeriod",periodCode).put("state",2));
+            BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",2));
             if (profits2==null){
                 profits2 = new BigDecimal("0.00");
             }

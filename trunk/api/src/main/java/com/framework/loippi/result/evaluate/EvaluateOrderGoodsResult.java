@@ -63,7 +63,30 @@ public class EvaluateOrderGoodsResult {
     private int typeStatus;
 
 
-    public static List<EvaluateOrderGoodsResult> build(List<ShopOrderGoods> shopOrderGoodsList,ShopOrder shopOrder ,List<ShopGoodsEvaluate> evaluateList) {
+    public static List<EvaluateOrderGoodsResult> build(List<ShopOrderGoods> shopOrderGoodsList,ShopOrder shopOrder) {
+        List<EvaluateOrderGoodsResult> results = new ArrayList<>();
+        if(shopOrderGoodsList!=null && shopOrderGoodsList.size()>0){
+            for (ShopOrderGoods item:shopOrderGoodsList) {
+                EvaluateOrderGoodsResult evaluateOrderGoodsResult=new EvaluateOrderGoodsResult();
+                evaluateOrderGoodsResult.setGevalOrdergoodsid(item.getId());
+                evaluateOrderGoodsResult.setGevalGoodsid(item.getGoodsId());
+                evaluateOrderGoodsResult.setGevalGoodsname(item.getGoodsName());
+                evaluateOrderGoodsResult.setGoodsImage(item.getGoodsImage());
+                evaluateOrderGoodsResult.setGevalGoodsprice(item.getGoodsPayPrice());
+                evaluateOrderGoodsResult.setGoodsNum(item.getGoodsNum());
+                evaluateOrderGoodsResult.setSpecInfo(item.getSpecInfo());
+                evaluateOrderGoodsResult.setBrandName(shopOrder.getBrandName());
+                if (shopOrder.getOrderType()==3){
+                    evaluateOrderGoodsResult.setPpv(item.getBigPpv());
+                }else{
+                    evaluateOrderGoodsResult.setPpv(item.getPpv());
+                }
+                results.add(evaluateOrderGoodsResult);
+            }
+        }
+        return results;
+    }
+    public static List<EvaluateOrderGoodsResult> build1(List<ShopOrderGoods> shopOrderGoodsList,ShopOrder shopOrder ,List<ShopGoodsEvaluate> evaluateList) {
         List<EvaluateOrderGoodsResult> results = new ArrayList<>();
         if(shopOrderGoodsList!=null && shopOrderGoodsList.size()>0){
             for (ShopOrderGoods item:shopOrderGoodsList) {

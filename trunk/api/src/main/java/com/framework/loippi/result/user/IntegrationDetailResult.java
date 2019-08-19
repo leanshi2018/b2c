@@ -68,6 +68,9 @@ public class IntegrationDetailResult {
    /** 交易前余额 */
     private BigDecimal blanceBefore;
 
+    /** 交易说明 */
+    private String transDesc;
+
     /** 交易时间 */
     private String transDate;
     /** 交易状态
@@ -111,6 +114,7 @@ public class IntegrationDetailResult {
                  integrationListResult.setTransTypeCode(Optional.ofNullable(rdMmAccountLog.getTransTypeCode()).orElse(""));
                  integrationListResult.setStatus(Optional.ofNullable(rdMmAccountLog.getStatus()).orElse(0));
                  integrationListResult.setTrMmCode(Optional.ofNullable(rdMmAccountLog.getTrMmCode()).orElse(""));
+                 integrationListResult.setTransDesc(Optional.ofNullable(rdMmAccountLog.getTransDesc()).orElse(""));
                  if (rdMmAccountLog.getTrMmCode()!=null){
                      integrationListResult.setTrMmName(shopMember.getMmNickName());
                  }else{
