@@ -1,7 +1,8 @@
 package com.framework.loippi.result.user;
 
-import com.framework.loippi.entity.user.RdMmAddInfo;
 import lombok.Data;
+
+import com.framework.loippi.entity.user.RdMmAddInfo;
 
 /**
  * Created by Administrator on 2017/6/23.
@@ -32,7 +33,7 @@ public class UserAddrsAddResult {
         addr.setIsDefault(param.getDefaultadd());
         addr.setProvince(param.getAddProvinceCode());
         addr.setCity(param.getAddCityCode());
-        addr.setCounty(param.getAddCityCode());
+        addr.setCounty(param.getAddCountryCode());
         return addr;
     }
 }
