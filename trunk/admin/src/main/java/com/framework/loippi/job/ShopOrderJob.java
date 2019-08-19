@@ -4,6 +4,7 @@ package com.framework.loippi.job;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -28,6 +29,9 @@ import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.dao.user.RetailProfitDao;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
@@ -179,7 +183,7 @@ public class ShopOrderJob {
             }
         }
     }
-/*    @Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
+    @Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
     public void test(){
         List<RetailProfit> retailProfits = retailProfitDao.findAll();
         System.out.println(retailProfits.size());
@@ -214,5 +218,5 @@ public class ShopOrderJob {
         System.out.println("#######################################");
         System.out.println(hashMap);
         System.out.println("#######################################");
-    }*/
+    }
 }
