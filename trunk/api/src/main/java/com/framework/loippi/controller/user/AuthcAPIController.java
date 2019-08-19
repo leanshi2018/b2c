@@ -307,7 +307,7 @@ public class AuthcAPIController extends BaseController {
     public String verifyOldUser(HttpServletRequest request, String oMCode, String password) {
         String resultString = "";
         //验证正确,需要查询老用户信息
-        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("oMcode", oMCode);
+        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("oMcode", oMCode.trim());
         //用户信息是否同步
         if (oldSysRelationship != null) {
             if (oldSysRelationship.getNYnRegistered() == 1) {
@@ -316,7 +316,7 @@ public class AuthcAPIController extends BaseController {
             try {
                 resultString = PostUtil.postRequest(
                         "http://admin.fkcn.com/m/user/verify",
-                        oMCode, password);
+                        oMCode.trim(), password);
             } catch (Exception e) {
                 e.printStackTrace();
                 return ApiUtils.error("验证老用户发生错误");

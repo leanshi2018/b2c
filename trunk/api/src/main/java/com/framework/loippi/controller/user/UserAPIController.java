@@ -229,7 +229,7 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error("老系统会员二级密码为空");
         }
         //1.根据会员提供老系统会员编号查询中间表中该会员是否已经注册
-        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("oMcode", oMCode);
+        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("oMcode", oMCode.trim());
         if(oldSysRelationship==null){
             return ApiUtils.error("将要进行绑定的老系统会员不存在或尚未在新系统同步");
         }
@@ -241,7 +241,7 @@ public class UserAPIController extends BaseController {
         try {
             resultString = PostUtil.postRequest(
                     "http://admin.fkcn.com/m/user/verify",
-                    oMCode, password);
+                    oMCode.trim(), password);
         } catch (Exception e) {
             e.printStackTrace();
             return ApiUtils.error("验证老用户发生错误");
