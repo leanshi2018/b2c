@@ -223,7 +223,7 @@
 			<if test="createPeriod != null and createPeriod != ''">
 				and create_period = #{createPeriod}
 			</if>
-			and (state = 0 or state = 1)
+			and (state = 0 or state = 1 or state = 2)
 			<!--<if test="state != null">
 				and state = #{state}
 			</if>-->
