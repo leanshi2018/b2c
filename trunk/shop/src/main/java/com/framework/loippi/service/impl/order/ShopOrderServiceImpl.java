@@ -506,6 +506,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     rdMmRelation.setARetail(money.subtract(orderMoney));
                     rdMmRelation.setRank(0);
                     rdMmRelationService.update(rdMmRelation);
+                }else {
+                    rdMmRelation.setAPpv(ppv.subtract(orderPpv));
+                    rdMmRelation.setARetail(money.subtract(orderMoney));
+                    rdMmRelationService.update(rdMmRelation);
                 }
             }
         }
