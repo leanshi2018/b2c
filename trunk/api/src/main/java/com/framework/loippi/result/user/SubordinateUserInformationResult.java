@@ -180,5 +180,32 @@ public class SubordinateUserInformationResult {
         result.setPeriodTeamPv(Optional.ofNullable(memberQualification.getNpv()).orElse(BigDecimal.ZERO));//设置整组MI
         return result;
     }
+
+    public static SubordinateUserInformationResult build4(RdMmBasicInfo rdMmBasicInfo, RdMmRelation rdMmRelation, OrderSumPpv periodSumPpv, RdRanks shopMemberGrade, BigDecimal retail, BigDecimal pay, BigDecimal nopay, String periodStr) {
+        SubordinateUserInformationResult result = new SubordinateUserInformationResult();
+        result.setAvatar(Optional.ofNullable(rdMmBasicInfo.getMmAvatar()).orElse(""));//设置头像
+        result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
+        result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
+        result.setRaSpoStatus(Optional.ofNullable(rdMmRelation.getRaSponsorStatus()).orElse(null));//设置会员状态 永久 间接
+        Date creationDate = rdMmBasicInfo.getCreationDate();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String formatStr = format.format(creationDate);
+        result.setCreateTime(formatStr);//设置会员加入时间
+        result.setTotalMoney(Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO));//设置累计购货额
+        Optional<OrderSumPpv> optional = Optional.ofNullable(periodSumPpv);
+        result.setPeriodMoney(optional.map(OrderSumPpv::getTotalmoney).orElse(BigDecimal.ZERO));
+        //result.setPeriodMoney(Optional.ofNullable(periodSumPpv.getTotalmoney()).orElse(BigDecimal.ZERO));//设置当期累计购货额
+        result.setRetailMoney(retail);//设置零售订单总金额
+        result.setRetailProfitsNoPay(nopay);//设置未发放的零售利润
+        result.setRetailProfits(pay);//设置已发放的零售利润
+        //result.setPeriodPv(Optional.ofNullable(memberQualification.getPpv()).orElse(BigDecimal.ZERO));//设置当期会员获得PV值
+        result.setPeriodPv(optional.map(OrderSumPpv::getTotalPpv).orElse(BigDecimal.ZERO));//设置当期会员获得PV值
+        result.setMCode(Optional.ofNullable(rdMmBasicInfo.getMmCode()).orElse(""));//设置会员编号
+        result.setSponsorCode(Optional.ofNullable(rdMmRelation.getSponsorCode()).orElse(""));//设置当周期推荐人
+        result.setPeriodCode(periodStr);//设置统计周期
+        result.setPeriodGroupPv(BigDecimal.ZERO);//设置小组MI
+        result.setPeriodTeamPv(BigDecimal.ZERO);//设置整组MI
+        return result;
+    }
 }
 

@@ -1135,9 +1135,6 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error("请传入需要查询的周期编号");
         }
         MemberQualification memberQualification=memberQualificationService.findByCodeAndPeriod(Paramap.create().put("mCode",memeberId).put("periodCode",periodStr));
-        if(memberQualification==null){
-            return ApiUtils.error("当前筛选条件下尚未统计出会员信息");
-        }
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memeberId);
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", memeberId);
         RdRanks shopMemberGrade = null;
@@ -1147,6 +1144,7 @@ public class UserAPIController extends BaseController {
         OrderSumPpv periodSumPpv = new OrderSumPpv();
         if(periodStr==null){
             RdSysPeriod sysPeriod=periodService.findLastPeriod();
+            periodStr=sysPeriod.getPeriodCode();
             periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",sysPeriod.getPeriodCode()));
         }else {
             periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",periodStr));
@@ -1171,10 +1169,18 @@ public class UserAPIController extends BaseController {
         }
         boolean flag = member.getMmCode().equals(rdMmRelation.getSponsorCode());
         paramap.put("showFlag",flag);
-        SubordinateUserInformationResult subordinateUserInformationResult = SubordinateUserInformationResult
-                .build3(memberQualification,rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay);
-        paramap.put("data",subordinateUserInformationResult);
-        return ApiUtils.success(paramap);
+        if(memberQualification==null){
+            SubordinateUserInformationResult subordinateUserInformationResult = SubordinateUserInformationResult
+                    .build4(rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay,periodStr);
+            paramap.put("data",subordinateUserInformationResult);
+            return ApiUtils.success(paramap);
+            //return ApiUtils.error("当前筛选条件下尚未统计出会员信息");
+        }else {
+            SubordinateUserInformationResult subordinateUserInformationResult = SubordinateUserInformationResult
+                    .build3(memberQualification,rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay);
+            paramap.put("data",subordinateUserInformationResult);
+            return ApiUtils.success(paramap);
+        }
     }
 
     /**
