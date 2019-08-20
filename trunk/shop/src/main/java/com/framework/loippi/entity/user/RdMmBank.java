@@ -1,12 +1,12 @@
 package com.framework.loippi.entity.user;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 会员银行卡信息
@@ -53,6 +53,10 @@ public class RdMmBank implements GenericEntity {
 	/** 银行详细信息 */
 	@Column(name = "BANK_DETAIL" )
 	private String bankDetail;
+
+	/** 手机 */
+	@Column(name = "MOBILE" )
+	private String mobile;
 	
 	/** 有效期:MM/YY */
 	@Column(name = "VALID_THRU" )
