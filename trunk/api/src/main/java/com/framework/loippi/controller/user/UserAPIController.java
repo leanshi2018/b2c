@@ -710,6 +710,7 @@ public class UserAPIController extends BaseController {
         rdMmBank.setMmCode(member.getMmCode());
         rdMmBank.setAccCode(param.getAccCode());
         rdMmBank.setBankDetail(param.getBankDetail());
+        rdMmBank.setMobile(param.getMobile());
         rdMmBank.setAccName(param.getAccName());
         rdMmBank.setAccType("1");
         List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
@@ -1246,9 +1247,14 @@ public class UserAPIController extends BaseController {
         }else {
             //当期待发放零售利润
             BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",2));
+            BigDecimal profits0 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",0));
             if (profits2==null){
                 profits2 = new BigDecimal("0.00");
             }
+            if (profits0==null){
+                profits0 = new BigDecimal("0.00");
+            }
+            profits2 = profits2.add(profits0);
             result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2,SysPeriodCode,bugMi);
         }
 
