@@ -490,7 +490,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             && order.getOrderState() != OrderState.ORDER_STATE_UNFILLED) {
             throw new RuntimeException("订单状态错误！");
         }
-        if(order.getOrderState() != OrderState.ORDER_STATE_UNFILLED){
+        if(order.getOrderState() == OrderState.ORDER_STATE_UNFILLED){
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", order.getBuyerId() + "");
             if(rdMmRelation!=null){
                 BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
