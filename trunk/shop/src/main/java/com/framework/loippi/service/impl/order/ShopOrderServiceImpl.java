@@ -490,6 +490,25 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             && order.getOrderState() != OrderState.ORDER_STATE_UNFILLED) {
             throw new RuntimeException("订单状态错误！");
         }
+        if(order.getOrderState() != OrderState.ORDER_STATE_UNFILLED){
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", order.getBuyerId() + "");
+            if(rdMmRelation!=null){
+                BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
+                BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
+                        .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO));
+                BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
+                BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
+                BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
+                //BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
+                //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
+                if (money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
+                    rdMmRelation.setAPpv(ppv.subtract(orderPpv));
+                    rdMmRelation.setARetail(money.subtract(orderMoney));
+                    rdMmRelation.setRank(0);
+                    rdMmRelationService.update(rdMmRelation);
+                }
+            }
+        }
 
         // 拼团过程和拼团成功不允许取消订单；
 //        if (order.getOrderType() == OrderState.ORDER_TYPE_GROUP) {
