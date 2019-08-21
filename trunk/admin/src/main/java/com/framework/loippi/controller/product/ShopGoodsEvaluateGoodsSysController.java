@@ -212,10 +212,9 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
         }
         //type=1 表示管理员是进行积分分配
         if (type == 1) {
-            int points = 0;
+            Double points = 0.00;
             try {
-                points = Integer.parseInt(message);
-                System.out.println(points);
+                points = Double.valueOf(message);
                 if (points!=1&&points!=0.5){
                     model.addAttribute("msg", "分配积分系数不正确");
                     return Constants.MSG_URL;
@@ -240,9 +239,9 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             ShopOrderGoods shopOrderGoods = shopOrderGoodsService.find(shopGoodsEvaluate.getGevalOrdergoodsid());//订单商品
             BigDecimal price = shopOrderGoods.getVipPrice();//vip价格
 
-            points = price.intValue()*points;
+            BigDecimal multiply = price.multiply(new BigDecimal(points));
 
-            evaluate.setExchangePoints(points);
+            evaluate.setExchangePoints(multiply.intValue());
             evaluateGoodsService.update(evaluate);
             RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", shopGoodsEvaluate.getGevalFrommemberid());
             RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", shopMember.getMmCode());
@@ -267,7 +266,7 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
             rdMmAccountLogList.add(rdMmAccountLog);
             Integer transNumber = rdMmAccountInfoService
-                .saveAccountInfo(rdMmAccountInfo, points, IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+                .saveAccountInfo(rdMmAccountInfo, multiply.intValue(), IntegrationNameConsts.BOP, rdMmAccountLogList, null);
             model.addAttribute("msg", "积分分配成功");
         }
         return Constants.MSG_URL;
