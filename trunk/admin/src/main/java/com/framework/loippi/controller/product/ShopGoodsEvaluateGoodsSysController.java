@@ -238,8 +238,9 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
 
             ShopOrderGoods shopOrderGoods = shopOrderGoodsService.find(shopGoodsEvaluate.getGevalOrdergoodsid());//订单商品
             BigDecimal price = shopOrderGoods.getVipPrice();//vip价格
+            Integer goodsNum = shopOrderGoods.getGoodsNum();
 
-            BigDecimal multiply = price.multiply(new BigDecimal(points));
+            BigDecimal multiply = price.multiply(new BigDecimal(points)).multiply(new BigDecimal(goodsNum));
 
             evaluate.setExchangePoints(multiply.intValue());
             evaluateGoodsService.update(evaluate);
