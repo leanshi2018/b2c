@@ -37,7 +37,7 @@ public class QiniuConfig {
      * @return
      */
     public String getUpToken(String bucketName,String key) {
-        return auth.uploadToken(bucketName);
+        return auth.uploadToken(bucketName,key,14400,null,true);
     }
 
     /**
