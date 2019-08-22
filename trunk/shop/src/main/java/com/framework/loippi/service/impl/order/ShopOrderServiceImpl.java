@@ -1291,17 +1291,20 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
 
             BigDecimal available = BigDecimal.valueOf(0);
+            BigDecimal availableBefore = BigDecimal.valueOf(0);
             //用户积分 = 原有积分 + 退还积分
             if (order.getOrderType() == 5) {
                 rdMmAccountLog.setTransTypeCode("OT");
                 rdMmAccountLog.setAccType("SRB");
                 rdMmAccountLog.setTrSourceType("");
+                availableBefore = rdMmAccountInfo.getWalletBlance();
                 available = rdMmAccountInfo.getWalletBlance().add(BigDecimal.valueOf(order.getUsePointNum()));
                 rdMmAccountInfo.setRedemptionBlance(available);
             } else {
                 rdMmAccountLog.setTransTypeCode("OT");
                 rdMmAccountLog.setAccType("SWB");
                 rdMmAccountLog.setTrSourceType("OWB");
+                availableBefore = rdMmAccountInfo.getWalletBlance();
                 available = rdMmAccountInfo.getWalletBlance().add(BigDecimal.valueOf(order.getUsePointNum()));
                 rdMmAccountInfo.setWalletBlance(available);
             }
@@ -1310,7 +1313,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             rdMmAccountLog.setMmCode(rdMmBasicInfo.getMmCode());
             rdMmAccountLog.setMmNickName(rdMmBasicInfo.getMmNickName());
             rdMmAccountLog.setTrMmCode(rdMmBasicInfo.getMmCode());
-            rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
+            rdMmAccountLog.setBlanceBefore(availableBefore);
             rdMmAccountLog.setAmount(BigDecimal.valueOf(order.getUsePointNum()));
             rdMmAccountLog.setBlanceAfter(available);
             //无需审核直接成功
