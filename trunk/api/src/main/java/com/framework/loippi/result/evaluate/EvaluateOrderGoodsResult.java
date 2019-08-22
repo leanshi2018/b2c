@@ -108,7 +108,8 @@ public class EvaluateOrderGoodsResult {
                     if (goodsEvaluate.getGevalOrdergoodsid().longValue()==item.getId().longValue()){
                         evaluateOrderGoodsResult.setShopGoodsEvaluate(goodsEvaluate);
                         evaluateOrderGoodsResult.setTypeStatus(1);
-                    }else {
+                    }
+                    if (goodsEvaluate.getGevalOrdergoodsid().longValue()!=item.getId().longValue()){
                         evaluateOrderGoodsResult.setTypeStatus(0);
                     }
                 }
