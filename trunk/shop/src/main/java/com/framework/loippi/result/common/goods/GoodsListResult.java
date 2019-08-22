@@ -157,7 +157,8 @@ public class GoodsListResult {
             GoodsListResult result = new GoodsListResult();
             result.setItemId(Optional.ofNullable(item.getGoodsId()).orElse(-1L));
             result.setTitle(Optional.ofNullable(item.getGoodsName()).orElse(""));
-            result.setImage(Optional.ofNullable(prefix + item.getGoodsImage()).orElse(""));
+            //result.setImage(Optional.ofNullable(prefix + item.getGoodsImage()).orElse(""));
+            result.setImage(Optional.ofNullable(prefix + item.getRecommendImage()).orElse(""));
             result.setGoodsType(Optional.ofNullable(item.getGoodsType()).orElse(1));
             result.setFavNumber(Optional.ofNullable(item.getGoodsCollect()).orElse(1));
             result.setRecommendId(item.getId());
