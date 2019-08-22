@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -80,6 +81,7 @@ import com.framework.loippi.utils.PostUtil;
 import com.framework.loippi.utils.SmsUtil;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.utils.qiniu.QiniuConfig;
 import com.framework.loippi.vo.address.MemberAddresVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
 import com.framework.loippi.vo.order.OrderSumPpv;
@@ -1260,5 +1262,16 @@ public class UserAPIController extends BaseController {
 
 
         return ApiUtils.success(result);
+    }
+
+    /**
+     * 获取七牛云凭证
+     */
+    @RequestMapping(value = "/getToken.json", method = RequestMethod.GET)
+    public String getToken(HttpServletRequest request) {
+        QiniuConfig qiniuConfig = new QiniuConfig();
+        String key = UUID.randomUUID().toString().replaceAll("-", "");
+        String upToken = qiniuConfig.getUpToken(QiniuConfig.bucket, key);
+        return ApiUtils.success(upToken);
     }
 }
