@@ -254,7 +254,7 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
             rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
             rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getRedemptionBlance());
-            rdMmAccountLog.setAmount(BigDecimal.valueOf(points));
+            rdMmAccountLog.setAmount(new BigDecimal(multiply.intValue()));
             rdMmAccountLog.setTransDate(new Date());
             //转出无需审核直接成功
             rdMmAccountLog.setStatus(3);
@@ -262,7 +262,7 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             rdMmAccountLog.setCreationTime(new Date());
             rdMmAccountLog.setAutohrizeBy(adminName);
             rdMmAccountLog.setAutohrizeTime(new Date());
-            rdMmAccountInfo.setRedemptionBlance(rdMmAccountInfo.getRedemptionBlance().add(BigDecimal.valueOf(points)));
+            rdMmAccountInfo.setRedemptionBlance(rdMmAccountInfo.getRedemptionBlance().add(new BigDecimal(multiply.intValue())));
             rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getRedemptionBlance());
             List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
             rdMmAccountLogList.add(rdMmAccountLog);
