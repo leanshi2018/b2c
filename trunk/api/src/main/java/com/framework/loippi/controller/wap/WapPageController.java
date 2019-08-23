@@ -87,7 +87,7 @@ public class WapPageController extends BaseController {
 
     @RequestMapping(value = "/oldLogin", method = RequestMethod.GET)
     public String oldLogin(ModelMap model, HttpServletRequest request) {
-        return "/wap/oldLogin.html";
+        return "/wap/oldLogin";
     }
 
     @RequestMapping(value = "/oldRegister", method = RequestMethod.GET)
