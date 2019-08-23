@@ -1,17 +1,18 @@
 package com.framework.loippi.controller.wap;
 
-import com.framework.loippi.controller.BaseController;
-import com.framework.loippi.dto.oss.AliyunOss;
-import com.framework.loippi.entity.common.ShopCommonDocument;
-import com.framework.loippi.service.common.ShopCommonDocumentService;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.dto.oss.AliyunOss;
+import com.framework.loippi.entity.common.ShopCommonDocument;
+import com.framework.loippi.service.common.ShopCommonDocumentService;
 
 /**
  * Created by longbh on 2017/8/12.
@@ -76,6 +77,23 @@ public class WapPageController extends BaseController {
         model.addAttribute("qrcode", AliyunOss.uploadQRcord2Oss(code,"code"));
         model.addAttribute("downloadUrl", downloadUrl);
         return "/wap/download";
+    }
+
+    @RequestMapping(value = "/loginSuccessful", method = RequestMethod.GET)
+    public String loginSuccessful(ModelMap model, String name, HttpServletRequest request) {
+        model.addAttribute("name", name);
+        return "/wap/loginSuccessful";
+    }
+
+    @RequestMapping(value = "/oldLogin", method = RequestMethod.GET)
+    public String oldLogin(ModelMap model, HttpServletRequest request) {
+        return "/wap/oldLogin";
+    }
+
+    @RequestMapping(value = "/oldRegister", method = RequestMethod.GET)
+    public String oldRegister(ModelMap model, String name, HttpServletRequest request) {
+        model.addAttribute("name", name);
+        return "/wap/oldRegister";
     }
 
 }
