@@ -80,7 +80,8 @@ public class WapPageController extends BaseController {
     }
 
     @RequestMapping(value = "/loginSuccessful", method = RequestMethod.GET)
-    public String loginSuccessful(ModelMap model, HttpServletRequest request) {
+    public String loginSuccessful(ModelMap model, String name, HttpServletRequest request) {
+        model.addAttribute("name", name);
         return "/wap/loginSuccessful";
     }
 
@@ -90,7 +91,8 @@ public class WapPageController extends BaseController {
     }
 
     @RequestMapping(value = "/oldRegister", method = RequestMethod.GET)
-    public String oldRegister(ModelMap model, HttpServletRequest request) {
+    public String oldRegister(ModelMap model, String name, HttpServletRequest request) {
+        model.addAttribute("name", name);
         return "/wap/oldRegister";
     }
 
