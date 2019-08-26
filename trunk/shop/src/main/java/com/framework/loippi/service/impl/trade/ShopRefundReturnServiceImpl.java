@@ -204,12 +204,11 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
             Long msgId = twiterIdService.getTwiterId();
             message.setId(msgId);
             shopCommonMessageDao.insert(message);
-            message.setId(msgId);
             ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
             shopMemberMessage.setBizType(3);
             shopMemberMessage.setCreateTime(new Date());
             shopMemberMessage.setId(twiterIdService.getTwiterId());
-            shopMemberMessage.setIsRead(1);
+            shopMemberMessage.setIsRead(0);
             shopMemberMessage.setMsgId(msgId);
             shopMemberMessage.setUid(refundReturn.getBuyerId());
             shopMemberMessageDao.insert(shopMemberMessage);

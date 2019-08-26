@@ -504,6 +504,28 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     rdMmRelation.setARetail(money.subtract(orderMoney));
                     rdMmRelation.setRank(0);
                     rdMmRelationService.update(rdMmRelation);
+                    //进行用户降级通知
+                    ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                    shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
+                    shopCommonMessage.setType(1);
+                    shopCommonMessage.setOnLine(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setBizType(2);
+                    shopCommonMessage.setIsTop(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setTitle("很遗憾，等级降了");
+                    shopCommonMessage.setContent("您已从VIP会员变成普通会员,多多购物可提升等级哦");
+                    Long msgId = twiterIdService.getTwiterId();
+                    shopCommonMessage.setId(msgId);
+                    shopCommonMessageDao.insert(shopCommonMessage);
+                    ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                    shopMemberMessage.setBizType(2);
+                    shopMemberMessage.setCreateTime(new Date());
+                    shopMemberMessage.setId(twiterIdService.getTwiterId());
+                    shopMemberMessage.setIsRead(0);
+                    shopMemberMessage.setMsgId(msgId);
+                    shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+                    shopMemberMessageDao.insert(shopMemberMessage);
                 }else {
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
                     rdMmRelation.setARetail(money.subtract(orderMoney));
@@ -1829,6 +1851,28 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                     if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                        //进行用户升级通知
+                        ShopCommonMessage message=new ShopCommonMessage();
+                        message.setSendUid(rdMmRelation.getMmCode());
+                        message.setType(1);
+                        message.setOnLine(1);
+                        message.setCreateTime(new Date());
+                        message.setBizType(2);
+                        message.setIsTop(1);
+                        message.setCreateTime(new Date());
+                        message.setTitle("恭喜，升级啦");
+                        message.setContent("您已从普通会员升级成VIP会员,祝您购物愉快");
+                        Long msgId = twiterIdService.getTwiterId();
+                        message.setId(msgId);
+                        shopCommonMessageDao.insert(message);
+                        ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                        shopMemberMessage.setBizType(2);
+                        shopMemberMessage.setCreateTime(new Date());
+                        shopMemberMessage.setId(twiterIdService.getTwiterId());
+                        shopMemberMessage.setIsRead(0);
+                        shopMemberMessage.setMsgId(msgId);
+                        shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+                        shopMemberMessageDao.insert(shopMemberMessage);
                         RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                         rdMmRelation.setRank(rdRanks.getRankId());
                         //如果会员升级为vip则查询当期会员是否存在没有发放的零售利润奖励
@@ -2658,6 +2702,28 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
                         //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                         if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                            //进行用户升级通知
+                            ShopCommonMessage message=new ShopCommonMessage();
+                            message.setSendUid(rdMmRelation.getMmCode());
+                            message.setType(1);
+                            message.setOnLine(1);
+                            message.setCreateTime(new Date());
+                            message.setBizType(2);
+                            message.setIsTop(1);
+                            message.setCreateTime(new Date());
+                            message.setTitle("恭喜，升级啦");
+                            message.setContent("您已从普通会员升级成VIP会员,祝您购物愉快");
+                            Long msgId = twiterIdService.getTwiterId();
+                            message.setId(msgId);
+                            shopCommonMessageDao.insert(message);
+                            ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                            shopMemberMessage.setBizType(2);
+                            shopMemberMessage.setCreateTime(new Date());
+                            shopMemberMessage.setId(twiterIdService.getTwiterId());
+                            shopMemberMessage.setIsRead(0);
+                            shopMemberMessage.setMsgId(msgId);
+                            shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+                            shopMemberMessageDao.insert(shopMemberMessage);
                             RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                             rdMmRelation.setRank(rdRanks.getRankId());
                             //如果会员升级为vip则查询当期会员是否存在没有发放的零售利润奖励
@@ -2843,6 +2909,28 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 //******************************************降级到普通会员****************************************************************** TODO 修改by zc 2019-07-24
                 if (aRetail.compareTo(vipMoney)!=-1&&orderMoney.compareTo(vipMoney)==-1&&rdMmRelation.getNOFlag()==1) {//新会员 退款之前累计购买额大于等于360退款之后小于360降级vip
                     rdMmRelation.setRank(0);
+                    //进行用户降级通知
+                    ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                    shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
+                    shopCommonMessage.setType(1);
+                    shopCommonMessage.setOnLine(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setBizType(2);
+                    shopCommonMessage.setIsTop(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setTitle("很遗憾，等级降了");
+                    shopCommonMessage.setContent("您已从VIP会员变成普通会员,多多购物可提升等级哦");
+                    Long msgId = twiterIdService.getTwiterId();
+                    shopCommonMessage.setId(msgId);
+                    shopCommonMessageDao.insert(shopCommonMessage);
+                    ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                    shopMemberMessage.setBizType(2);
+                    shopMemberMessage.setCreateTime(new Date());
+                    shopMemberMessage.setId(twiterIdService.getTwiterId());
+                    shopMemberMessage.setIsRead(0);
+                    shopMemberMessage.setMsgId(msgId);
+                    shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+                    shopMemberMessageDao.insert(shopMemberMessage);
                 }
                 //************************************************************************************************************
                 //之前大于升级vip的价位 加上这个售后金额小于vip的价位
