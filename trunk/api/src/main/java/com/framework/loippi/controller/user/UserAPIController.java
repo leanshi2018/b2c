@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -1268,9 +1267,9 @@ public class UserAPIController extends BaseController {
      * 获取七牛云凭证
      */
     @RequestMapping(value = "/getToken.json", method = RequestMethod.GET)
-    public String getToken(HttpServletRequest request) {
+    public String getToken(HttpServletRequest request,String key) {
         QiniuConfig qiniuConfig = new QiniuConfig();
-        String key = UUID.randomUUID().toString().replaceAll("-", "");
+        //String key = UUID.randomUUID().toString().replaceAll("-", "");
         String upToken = qiniuConfig.getUpToken(QiniuConfig.bucket, key);
         return ApiUtils.success(upToken);
     }

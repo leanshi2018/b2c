@@ -2,14 +2,16 @@ package com.framework.loippi.controller.user;
 
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.framework.loippi.dao.user.RdSysPeriodDao;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.service.user.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +20,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.user.MemberQualification;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBank;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.IntegrationBuildResult;
@@ -27,6 +40,15 @@ import com.framework.loippi.result.user.IntegrationListResult;
 import com.framework.loippi.result.user.IntegrationMemberListResult;
 import com.framework.loippi.result.user.UserIntegrationListResult;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
+import com.framework.loippi.service.user.MemberQualificationService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmBankService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdNewVipDetailService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
@@ -191,7 +213,7 @@ public class UserIntegrationAPIController extends BaseController {
     //奖励积分提现确认
     @RequestMapping(value = "/bop/cashWithdrawal/finish.json")
     public String bopCashWithdrawal(HttpServletRequest request, int bankCardId, int integration, String paypassword) {
-        if ("".equals(paypassword)) {
+        /*if ("".equals(paypassword)) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
 
@@ -236,7 +258,9 @@ public class UserIntegrationAPIController extends BaseController {
         return ApiUtils.success(Paramap.create().put("bankCardCode",
             "****     ****     ****     " + rdMmBank.getAccCode().substring(rdMmBank.getAccCode().length() - 4))
             .put("transferOutMoney", integration)
-            .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));
+            .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));*/
+
+        return ApiUtils.error("该功能在升级，请耐心等待！");
     }
 
     //购物积分转出
@@ -301,9 +325,12 @@ public class UserIntegrationAPIController extends BaseController {
         return strings;
     }
 
+
+
+
     /**
      * //购物积分用户列表
-     * @param
+     * @param request
      * @param periodCode 周期编号
      * @param sorting 排序种类 1：按mi值升序 2：按mi值降序  3：按加入时间升序 4.按加入时间降序 5.按会员级别升序  6.按会员级别降序 7.按照已发放零售利润升序 8.按照已发放零售利润降序
      * @return

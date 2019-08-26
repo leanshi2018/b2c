@@ -3,26 +3,21 @@ package com.framework.loippi.job;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.*;
-
 import javax.annotation.Resource;
-
-import com.framework.loippi.dao.product.ShopGoodsSpecDao;
-import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.entity.trade.ShopRefundReturn;
-import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
-import com.framework.loippi.service.trade.ShopRefundReturnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
+import com.framework.loippi.dao.product.ShopGoodsSpecDao;
+import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmAccountLogDao;
 import com.framework.loippi.dao.user.RdMmBasicInfoDao;
@@ -37,6 +32,7 @@ import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RetailProfit;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.validator.DateUtils;
@@ -116,7 +112,7 @@ public class ShopOrderJob {
     }
 
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    @Scheduled(cron = "0 25 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
     public void grant(){
         System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -184,8 +180,13 @@ public class ShopOrderJob {
             }
         }
     }
+
+    //@Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
+ /*   @Scheduled(cron = "0 35 15 * * ? " )  //每天上午十点执行一次
+=======
 /*
     @Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
+>>>>>>> 1635638c2fa1292e31c1f8c3ff987b085cc9c756
     public void test(){
         List<RetailProfit> retailProfits = retailProfitDao.findAll();
         System.out.println(retailProfits.size());
@@ -208,19 +209,7 @@ public class ShopOrderJob {
                 }
             }
         }
-        System.out.println(num);
-
-
-
-
-
-
-
-
-
-
-
-*/
+        System.out.println(num);*/
 
 /*        System.out.println(retailProfits.size());
         int a =0;
