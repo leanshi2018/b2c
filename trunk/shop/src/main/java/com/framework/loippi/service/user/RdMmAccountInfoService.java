@@ -18,8 +18,8 @@ public interface RdMmAccountInfoService  extends GenericService<RdMmAccountInfo,
     /**
      * 保存积分并生成记录日志
      * @param rdMmAccountInfo
-     * @param integration
+     *
      */
-    Integer saveAccountInfo(RdMmAccountInfo rdMmAccountInfo,Integer integration,Integer type,List<RdMmAccountLog> rdMmAccountLogList,RdMmAccountInfo accentMmAccountInfo);
+    Integer saveAccountInfo(RdMmAccountInfo rdMmAccountInfo,Integer type,List<RdMmAccountLog> rdMmAccountLogList,RdMmAccountInfo accentMmAccountInfo);
 
 }

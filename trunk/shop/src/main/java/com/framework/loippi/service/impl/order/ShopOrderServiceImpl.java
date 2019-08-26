@@ -422,23 +422,21 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         message.setIsTop(1);
         message.setCreateTime(new Date());
         message.setBizType(3);
-        message.setCreateTime(new Date());
         message.setTitle(" 订单编号：" + order.getOrderSn());
         StringBuffer shareUrl = new StringBuffer();
         shareUrl.append("<ol class='list-paddingleft-2' style='list-style-type: decimal;'>");
         shareUrl.append("<li><p>卖家已发货</p></li>");
         shareUrl.append("<li><p>物流单号：" + shippingCode + "</p></li>");
-        shareUrl.append("<li><p>请耐心等候物流</p></li>");
+        shareUrl.append("<li><p>，请耐心等候物流</p></li>");
         message.setContent(shareUrl.toString());
         Long msgId = twiterIdService.getTwiterId();
         message.setId(msgId);
         shopCommonMessageDao.insert(message);
-        message.setId(msgId);
         ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
         shopMemberMessage.setBizType(3);
         shopMemberMessage.setCreateTime(new Date());
         shopMemberMessage.setId(twiterIdService.getTwiterId());
-        shopMemberMessage.setIsRead(1);
+        shopMemberMessage.setIsRead(0);//TODO 2019-08-26修改为默认创建为未读信息
         shopMemberMessage.setMsgId(msgId);
         shopMemberMessage.setUid(order.getBuyerId());
         shopMemberMessageDao.insert(shopMemberMessage);
@@ -1666,13 +1664,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         message.setCreateTime(new Date());
         message.setBizType(3);
         message.setIsTop(1);
-        message.setCreateTime(new Date());
         message.setTitle(" 订单编号：" + order.getOrderSn());
         StringBuffer shareUrl = new StringBuffer();
         shareUrl.append("<ol class='list-paddingleft-2' style='list-style-type: decimal;'>");
         shareUrl.append("<li><p>已签收</p></li>");
         shareUrl.append("<li><p>物流单号：" + order.getShippingCode() + "</p></li>");
-        shareUrl.append("<li><p>去评价可获得奖励积分哦~</p></li>");
+        shareUrl.append("<li><p>，去评价可获得奖励积分哦~</p></li>");
         message.setContent(shareUrl.toString());
         Long msgId = twiterIdService.getTwiterId();
         message.setId(msgId);
@@ -1682,7 +1679,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         shopMemberMessage.setBizType(3);
         shopMemberMessage.setCreateTime(new Date());
         shopMemberMessage.setId(twiterIdService.getTwiterId());
-        shopMemberMessage.setIsRead(1);
+        shopMemberMessage.setIsRead(0);//TODO 修改2019-08-26
         shopMemberMessage.setMsgId(msgId);
         shopMemberMessage.setUid(order.getBuyerId());
         shopMemberMessageDao.insert(shopMemberMessage);

@@ -136,10 +136,56 @@ public class UserIntegrationAPIController extends BaseController {
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
         rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(walletBlance));
         Integer transNumber = rdMmAccountInfoService
-            .saveAccountInfo(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+            .saveAccountInfo(rdMmAccountInfo,  IntegrationNameConsts.BOP, rdMmAccountLogList, null);
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
             .put("bopIntegration", rdMmAccountInfo.getBonusBlance()).put("transferInPoints", walletBlance)
             .put("shpIntegration", rdMmAccountInfo.getWalletBlance()));
+    }
+
+    //奖励积分转出确认
+    @RequestMapping(value = "/bop/transferOut/finishNew.json")
+    public String transferOutFinishNew(HttpServletRequest request, Double integration, String paypassword) {
+        if (integration == null || "".equals(paypassword)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request
+                .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+        RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        if (integration <= 0) {
+            return ApiUtils.error("所转积分不合理");
+        }
+        if (rdMmAccountInfo.getPaymentPwd() == null) {
+            return ApiUtils.error("你还未设置支付密码");
+        }
+        if (!Digests.validatePassword(paypassword, rdMmAccountInfo.getPaymentPwd())) {
+            return ApiUtils.error("支付密码错误");
+        }
+
+        if (rdMmAccountInfo.getBonusBlance().compareTo(BigDecimal.valueOf(integration)) == -1) {
+            return ApiUtils.error("转出积分大于可转出积分");
+        }
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        BigDecimal walletBlance = BigDecimal
+                .valueOf(integration * Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0) * 0.01);
+        List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
+        RdMmAccountLog rdMmAccountLogSP = IntegrationBuildResult
+                .bonusSPNew(shopMember, rdMmAccountInfo, integration, walletBlance);
+        RdMmAccountLog rdMmAccountLogBT = IntegrationBuildResult.WalletBT(shopMember, rdMmAccountInfo, walletBlance);
+        rdMmAccountLogList.add(rdMmAccountLogSP);
+        rdMmAccountLogList.add(rdMmAccountLogBT);
+        rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
+        rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(walletBlance));
+        Integer transNumber = rdMmAccountInfoService
+                .saveAccountInfo(rdMmAccountInfo,IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+        return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
+                .put("bopIntegration", rdMmAccountInfo.getBonusBlance()).put("transferInPoints", walletBlance)
+                .put("shpIntegration", rdMmAccountInfo.getWalletBlance()));
     }
 
     //奖励积分提现确认

@@ -38,7 +38,7 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 	}
 
 	@Override
-	public Integer saveAccountInfo(RdMmAccountInfo rdMmAccountInfo, Integer integration,Integer type,List<RdMmAccountLog> rdMmAccountLogList,RdMmAccountInfo accentMmAccountInfo) {
+	public Integer saveAccountInfo(RdMmAccountInfo rdMmAccountInfo,Integer type,List<RdMmAccountLog> rdMmAccountLogList,RdMmAccountInfo accentMmAccountInfo) {
 
 		//业务周期
 //		rdMmAccountLog.setTransPeriod(DateUtil.dateToStr(new Date(),"yyyy-MM"));
