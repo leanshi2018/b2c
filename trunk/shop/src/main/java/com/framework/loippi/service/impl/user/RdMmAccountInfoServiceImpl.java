@@ -38,7 +38,7 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 	}
 
 	@Override
-	public Integer saveAccountInfo(RdMmAccountInfo rdMmAccountInfo,Integer type,List<RdMmAccountLog> rdMmAccountLogList,RdMmAccountInfo accentMmAccountInfo) {
+	public Integer saveAccountInfo(RdMmAccountInfo rdMmAccountInfo, Integer integration,Integer type,List<RdMmAccountLog> rdMmAccountLogList,RdMmAccountInfo accentMmAccountInfo) {
 
 		//业务周期
 //		rdMmAccountLog.setTransPeriod(DateUtil.dateToStr(new Date(),"yyyy-MM"));
@@ -56,5 +56,23 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 				rdMmAccountLogDao.insert(rdMmAccountLogList.get(1));
 			}
             return rdMmAccountLogList.get(0).getTransNumber();
+	}
+
+	@Override
+	public Integer saveAccountInfoNew(RdMmAccountInfo rdMmAccountInfo, Double integration, int bop, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo) {
+		if (rdMmAccountInfo!=null){
+			rdMmAccountInfoDao.update(rdMmAccountInfo);
+		}
+		if (accentMmAccountInfo!=null){
+			rdMmAccountInfoDao.update(accentMmAccountInfo);
+		}
+		String period = rdSysPeriodDao.getSysPeriodService(new Date());
+		rdMmAccountLogList.get(0).setTransPeriod(period);
+		rdMmAccountLogDao.insert(rdMmAccountLogList.get(0));
+		if (rdMmAccountLogList.size()>1){
+			rdMmAccountLogList.get(1).setTransPeriod(period);
+			rdMmAccountLogDao.insert(rdMmAccountLogList.get(1));
+		}
+		return rdMmAccountLogList.get(0).getTransNumber();
 	}
 }

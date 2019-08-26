@@ -158,7 +158,7 @@ public class UserIntegrationAPIController extends BaseController {
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
         rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(walletBlance));
         Integer transNumber = rdMmAccountInfoService
-            .saveAccountInfo(rdMmAccountInfo,  IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+            .saveAccountInfo(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null);
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
             .put("bopIntegration", rdMmAccountInfo.getBonusBlance()).put("transferInPoints", walletBlance)
             .put("shpIntegration", rdMmAccountInfo.getWalletBlance()));
@@ -204,7 +204,7 @@ public class UserIntegrationAPIController extends BaseController {
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
         rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(walletBlance));
         Integer transNumber = rdMmAccountInfoService
-                .saveAccountInfo(rdMmAccountInfo,IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+                .saveAccountInfoNew(rdMmAccountInfo,integration,IntegrationNameConsts.BOP, rdMmAccountLogList, null);
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
                 .put("bopIntegration", rdMmAccountInfo.getBonusBlance()).put("transferInPoints", walletBlance)
                 .put("shpIntegration", rdMmAccountInfo.getWalletBlance()));
