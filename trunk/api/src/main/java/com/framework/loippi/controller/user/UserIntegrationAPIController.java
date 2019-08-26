@@ -212,8 +212,8 @@ public class UserIntegrationAPIController extends BaseController {
 
     //奖励积分提现确认
     @RequestMapping(value = "/bop/cashWithdrawal/finish.json")
-    public String bopCashWithdrawal(HttpServletRequest request, int bankCardId, int integration, String paypassword) {
-        /*if ("".equals(paypassword)) {
+    public String bopCashWithdrawal(HttpServletRequest request, int bankCardId, Double integration, String paypassword) {
+/*        if ("".equals(paypassword)) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
 
@@ -253,7 +253,7 @@ public class UserIntegrationAPIController extends BaseController {
         RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd, bankCardId);
         rdMmAccountLogList.add(rdMmAccountLog);
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
-        Integer transNumber = rdMmAccountInfoService.saveAccountInfo(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+        Integer transNumber = rdMmAccountInfoService.saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null);
         // TODO: 2018/12/28 待处理
         return ApiUtils.success(Paramap.create().put("bankCardCode",
             "****     ****     ****     " + rdMmBank.getAccCode().substring(rdMmBank.getAccCode().length() - 4))
@@ -454,7 +454,7 @@ public class UserIntegrationAPIController extends BaseController {
 
     //购物积分转出确认
     @RequestMapping(value = "/shp/transferOut/finish.json")
-    public String shpTransferOutFinsh(HttpServletRequest request, Long accentMemberId, Integer integration,
+    public String shpTransferOutFinsh(HttpServletRequest request, Long accentMemberId, Double integration,
         String paypassword, String message) {
         if (accentMemberId == null || integration == null || "".equals(paypassword)) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
@@ -507,7 +507,7 @@ public class UserIntegrationAPIController extends BaseController {
         rdMmAccountLogList.add(rdMmAccountLogTT);
         rdMmAccountLogList.add(rdMmAccountLogTF);
         Integer transNumber = rdMmAccountInfoService
-            .saveAccountInfo(rdMmAccountInfo, integration, IntegrationNameConsts.SHP, rdMmAccountLogList,
+            .saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.SHP, rdMmAccountLogList,
                 accentMmAccountInfo);
         // TODO: 2018/12/28 待实现 
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)

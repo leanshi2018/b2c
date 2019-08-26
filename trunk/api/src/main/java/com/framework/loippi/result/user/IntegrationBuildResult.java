@@ -64,7 +64,7 @@ public class IntegrationBuildResult extends RdMmAccountLog {
         rdMmAccountLog.setTransDate(new Date());
         return rdMmAccountLog;
     }
-    public static RdMmAccountLog bonusWD(RdMmBasicInfo shopMember,RdMmAccountInfo rdMmAccountInfo,Integer integration,BigDecimal bonusPointWd,Integer bankCardId) {
+    public static RdMmAccountLog bonusWD(RdMmBasicInfo shopMember,RdMmAccountInfo rdMmAccountInfo,Double integration,BigDecimal bonusPointWd,Integer bankCardId) {
         RdMmAccountLog rdMmAccountLog=new RdMmAccountLog();
         rdMmAccountLog.setTransTypeCode("WD");
         rdMmAccountLog.setAccType("");
@@ -106,7 +106,7 @@ public class IntegrationBuildResult extends RdMmAccountLog {
         rdMmAccountLog.setTransDate(new Date());
         return rdMmAccountLog;
     }
-    public static RdMmAccountLog WalletTT(RdMmBasicInfo shopMember,RdMmAccountInfo rdMmAccountInfo,Integer integration,RdMmBasicInfo accentMember) {
+    public static RdMmAccountLog WalletTT(RdMmBasicInfo shopMember,RdMmAccountInfo rdMmAccountInfo,Double integration,RdMmBasicInfo accentMember) {
         RdMmAccountLog rdMmAccountLog=new RdMmAccountLog();
         rdMmAccountLog.setTransTypeCode("TT");
         rdMmAccountLog.setAccType("");
@@ -126,7 +126,7 @@ public class IntegrationBuildResult extends RdMmAccountLog {
         rdMmAccountLog.setTransDate(new Date());
         return rdMmAccountLog;
     }
-    public static RdMmAccountLog WalletTF(RdMmBasicInfo shopMember,RdMmAccountInfo rdMmAccountInfo,Integer integration,RdMmBasicInfo accentMember) {
+    public static RdMmAccountLog WalletTF(RdMmBasicInfo shopMember,RdMmAccountInfo rdMmAccountInfo,Double integration,RdMmBasicInfo accentMember) {
         RdMmAccountLog rdMmAccountLog=new RdMmAccountLog();
         rdMmAccountLog.setTransTypeCode("TF");
         rdMmAccountLog.setAccType("SWB");
