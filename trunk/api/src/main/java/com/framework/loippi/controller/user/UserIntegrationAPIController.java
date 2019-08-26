@@ -26,6 +26,8 @@ import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBank;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
@@ -165,7 +167,7 @@ public class UserIntegrationAPIController extends BaseController {
     //奖励积分提现确认
     @RequestMapping(value = "/bop/cashWithdrawal/finish.json")
     public String bopCashWithdrawal(HttpServletRequest request, int bankCardId, int integration, String paypassword) {
-        if ("".equals(paypassword)) {
+        /*if ("".equals(paypassword)) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
 
@@ -210,7 +212,9 @@ public class UserIntegrationAPIController extends BaseController {
         return ApiUtils.success(Paramap.create().put("bankCardCode",
             "****     ****     ****     " + rdMmBank.getAccCode().substring(rdMmBank.getAccCode().length() - 4))
             .put("transferOutMoney", integration)
-            .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));
+            .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));*/
+
+        return ApiUtils.error("该功能在升级，请耐心等待！");
     }
 
     //购物积分转出
