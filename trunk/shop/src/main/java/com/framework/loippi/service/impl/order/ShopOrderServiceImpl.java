@@ -1914,6 +1914,28 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     retailProfit.setActualTime(new Date());
                                     retailProfit.setState(1);
                                     retailProfitService.update(retailProfit);
+                                    //设置零售利润积分发放通知
+                                    ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                                    shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
+                                    shopCommonMessage.setType(1);
+                                    shopCommonMessage.setOnLine(1);
+                                    shopCommonMessage.setCreateTime(new Date());
+                                    shopCommonMessage.setBizType(2);
+                                    shopCommonMessage.setIsTop(1);
+                                    shopCommonMessage.setCreateTime(new Date());
+                                    shopCommonMessage.setTitle("积分到账通知");
+                                    shopCommonMessage.setContent("您从零售订单："+retailProfit.getOrderSn()+"获得"+amount+"点积分，已加入奖励积分账户");
+                                    Long msgId1 = twiterIdService.getTwiterId();
+                                    shopCommonMessage.setId(msgId1);
+                                    shopCommonMessageDao.insert(shopCommonMessage);
+                                    ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                                    shopMemberMessage1.setBizType(2);
+                                    shopMemberMessage1.setCreateTime(new Date());
+                                    shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                                    shopMemberMessage1.setIsRead(0);
+                                    shopMemberMessage1.setMsgId(msgId);
+                                    shopMemberMessage1.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+                                    shopMemberMessageDao.insert(shopMemberMessage1);
                                 }
                             }
                         }
@@ -2769,6 +2791,28 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                         }
                                         retailProfit.setState(1);
                                         retailProfitService.update(retailProfit);
+                                        //设置零售利润积分发放通知
+                                        ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                                        shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
+                                        shopCommonMessage.setType(1);
+                                        shopCommonMessage.setOnLine(1);
+                                        shopCommonMessage.setCreateTime(new Date());
+                                        shopCommonMessage.setBizType(2);
+                                        shopCommonMessage.setIsTop(1);
+                                        shopCommonMessage.setCreateTime(new Date());
+                                        shopCommonMessage.setTitle("积分到账通知");
+                                        shopCommonMessage.setContent("您从零售订单："+retailProfit.getOrderSn()+"获得"+amount+"点积分，已加入奖励积分账户");
+                                        Long msgId1 = twiterIdService.getTwiterId();
+                                        shopCommonMessage.setId(msgId1);
+                                        shopCommonMessageDao.insert(shopCommonMessage);
+                                        ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                                        shopMemberMessage1.setBizType(2);
+                                        shopMemberMessage1.setCreateTime(new Date());
+                                        shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                                        shopMemberMessage1.setIsRead(0);
+                                        shopMemberMessage1.setMsgId(msgId);
+                                        shopMemberMessage1.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+                                        shopMemberMessageDao.insert(shopMemberMessage1);
                                     }
                                 }
                             }
