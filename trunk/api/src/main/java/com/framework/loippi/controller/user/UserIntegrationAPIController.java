@@ -435,10 +435,10 @@ public class UserIntegrationAPIController extends BaseController {
                 mmCodes.add(item.getMmCode());
             }
             if (mmCodes != null && mmCodes.size() > 0) {
-                /*rdMmBasicInfoList = rdMmBasicInfoService
-                    .findList(Paramap.create().put("mmCodes", mmCodes).put("info", info));*/
                 rdMmBasicInfoList = rdMmBasicInfoService
-                        .findByKeyWord(Paramap.create().put("mmCodes", mmCodes).put("info", info));
+                    .findList(Paramap.create().put("mmCodes", mmCodes).put("info", info));
+                /*rdMmBasicInfoList = rdMmBasicInfoService
+                        .findByKeyWord(Paramap.create().put("mmCodes", mmCodes).put("info", info));*/
             }
 
         } else {
