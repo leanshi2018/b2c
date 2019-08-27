@@ -629,6 +629,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 returnPoint(order.getBuyerId(), order,orderLog.getOperator());
             }
         }
+        if(order.getPaymentState()==0&&order.getUsePointNum()>0){
+            //退回积分
+            returnPoint(order.getBuyerId(), order,orderLog.getOperator());
+        }
     }
 
     @Override
