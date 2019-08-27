@@ -3,6 +3,9 @@ package com.framework.loippi.dao.user;
 
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.mybatis.dao.GenericDao;
+import com.framework.loippi.utils.Paramap;
+
+import java.util.List;
 
 /**
  * DAO - RdMmBasicInfo(会员基础信息)
@@ -22,4 +25,6 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
 
 
 	RdMmBasicInfo findByMCode(String mCode);
+
+    List<RdMmBasicInfo> findByKeyWord(Paramap put);
 }

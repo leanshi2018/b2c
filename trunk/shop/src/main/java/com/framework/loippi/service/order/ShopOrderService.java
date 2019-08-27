@@ -311,5 +311,5 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
 	void updateOrderStatus(String orderSn, Integer orderState, Integer submitStatus, String failInfo, String trackingNo);
 
-    void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);
+    /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

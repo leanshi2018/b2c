@@ -410,6 +410,13 @@ public class UserIntegrationAPIController extends BaseController {
         return ApiUtils.success(paramap);
     }
 
+    /**
+     *
+     * @param request
+     * @param info
+     * @param type 1搜索全部 2搜索自己
+     * @return
+     */
     //购物积分搜索用户
     @RequestMapping(value = "/shp/searchMember.json")
     public String shpMemberList(HttpServletRequest request, String info,
@@ -428,8 +435,10 @@ public class UserIntegrationAPIController extends BaseController {
                 mmCodes.add(item.getMmCode());
             }
             if (mmCodes != null && mmCodes.size() > 0) {
+                /*rdMmBasicInfoList = rdMmBasicInfoService
+                    .findList(Paramap.create().put("mmCodes", mmCodes).put("info", info));*/
                 rdMmBasicInfoList = rdMmBasicInfoService
-                    .findList(Paramap.create().put("mmCodes", mmCodes).put("info", info));
+                        .findByKeyWord(Paramap.create().put("mmCodes", mmCodes).put("info", info));
             }
 
         } else {
