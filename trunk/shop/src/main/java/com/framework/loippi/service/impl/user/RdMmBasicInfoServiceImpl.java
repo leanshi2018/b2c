@@ -305,5 +305,10 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         return rdMmBasicInfoDao.findByMCode(mCode);
     }
 
+    @Override
+    public List<RdMmBasicInfo> findByKeyWord(Paramap put) {
+        return rdMmBasicInfoDao.findByKeyWord(put);
+    }
+
 
 }

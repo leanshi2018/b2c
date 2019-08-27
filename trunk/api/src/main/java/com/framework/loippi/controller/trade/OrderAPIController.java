@@ -493,7 +493,7 @@ public class OrderAPIController extends BaseController {
         return ApiUtils.success(model);
     }
 
-    /**
+/*    *//**
      * 去付款
      *
      * @param paysn 支付订单编码
@@ -502,7 +502,7 @@ public class OrderAPIController extends BaseController {
      * @param integration 积分
      * @param paypassword 支付密码
      * @param paymentType 1在线支付 2货到付款
-     */
+     *//*
     @RequestMapping("/api/order/payNew")
     @ResponseBody
     public String payOrderNew(@RequestParam(value = "paysn") String paysn,
@@ -619,7 +619,7 @@ public class OrderAPIController extends BaseController {
         }
 
         return ApiUtils.success(model);
-    }
+    }*/
 
     /**
      * TODO 要更新 跳转到申请售后

@@ -386,4 +386,20 @@
 		FROM	RD_MM_BASIC_INFO
 		WHERE	MM_CODE=#{id,jdbcType=BIGINT}
 	</select>
+
+	<select id="findByKeyWord" parameterType="map" resultMap="RdMmBasicInfoResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_BASIC_INFO
+		<where>
+			<if test="mmCodes != null">
+				and MM_CODE in
+				<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="info != null and info != ''">
+				and (MM_CODE like '%#{info}%' or MOBILE like '%#{info}%' or MM_NICK_NAME like '%#{info}%')
+			</if>
+		</where>
+	</select>
 </mapper> 

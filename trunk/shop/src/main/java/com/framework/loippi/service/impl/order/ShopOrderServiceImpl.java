@@ -2625,7 +2625,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         rdMmAccountInfoService.update(rdMmAccountInfo);
         rdMmAccountLogService.save(rdMmAccountLog);
     }
-    @Override
+/*    @Override
     public void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay,
                                     int shoppingPointSr) {//购物积分购物比例
         //第一步 判断积分是否正确
@@ -2697,7 +2697,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
         rdMmAccountInfoService.update(rdMmAccountInfo);
         rdMmAccountLogService.save(rdMmAccountLog);
-    }
+    }*/
 
     @Override
     public ShopOrder findWithOrderGoodsById(Long orderId) {

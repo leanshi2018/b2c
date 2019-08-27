@@ -7,6 +7,7 @@ import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.service.GenericService;
+import com.framework.loippi.utils.Paramap;
 
 /**
  * SERVICE - RdMmBasicInfo(会员基础信息)
@@ -33,4 +34,6 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
 
 
 	RdMmBasicInfo findByMCode(String mCode);
+
+    List<RdMmBasicInfo> findByKeyWord(Paramap put);
 }
