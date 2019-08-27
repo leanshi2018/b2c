@@ -2625,6 +2625,79 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         rdMmAccountInfoService.update(rdMmAccountInfo);
         rdMmAccountLogService.save(rdMmAccountLog);
     }
+    @Override
+    public void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay,
+                                    int shoppingPointSr) {//购物积分购物比例
+        //第一步 判断积分是否正确
+        if (integration < 0) {
+            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能小于0");
+        }
+        //积分
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", shopMember.getMmCode());
+
+        if (rdMmAccountInfo == null) {
+            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "用户积分不正确");
+        }
+        if (rdMmAccountInfo.getWalletStatus() != 0) {
+            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "用户积分未激活或者已冻结 ");
+        }
+
+        if (rdMmAccountInfo.getWalletBlance().compareTo(BigDecimal.valueOf(integration)) == -1) {
+            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能大于拥有积分");
+        }
+
+        BigDecimal shoppingPoints = new BigDecimal(integration * shoppingPointSr * 0.01);
+        if (shoppingPoints.compareTo(pay.getPayAmount()) == 1) {
+            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要抵现的不能大于订单金额");
+        }
+        //修改订单价格
+        List<ShopOrder> orderList = super.findList("paySn", paysn);
+        Long orderId = 0L;
+        if (orderList != null && orderList.size() > 0) {
+            for (ShopOrder order : orderList) {
+                if (order.getOrderState() != 10) {
+                    throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单已支付");
+                }
+                orderId = order.getId();
+                int pointNum = 0;
+                pointNum = new BigDecimal(
+                        (order.getOrderAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration))
+                        .setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(0) + pointNum);//设置订单所用积分数量
+                order.setPointRmbNum(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
+                        .add(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+                order.setOrderAmount(order.getOrderAmount()
+                        .subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+                orderDao.update(order);
+            }
+        } else {
+            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单不存在");
+        }
+        //更新用户购物积分
+        RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+        rdMmAccountLog.setTransTypeCode("OP");
+        rdMmAccountLog.setAccType("");
+        rdMmAccountLog.setTrSourceType("SWB");
+        rdMmAccountLog.setMmCode(shopMember.getMmCode());
+        rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
+        rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
+        rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
+        rdMmAccountLog.setAmount(BigDecimal.valueOf(integration));
+        rdMmAccountLog.setTransDate(new Date());
+        String period = rdSysPeriodDao.getSysPeriodService(new Date());
+        rdMmAccountLog.setTransPeriod(period);
+        rdMmAccountLog.setTrOrderOid(orderId);
+        //无需审核直接成功
+        rdMmAccountLog.setStatus(3);
+        rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
+        rdMmAccountLog.setCreationTime(new Date());
+        rdMmAccountLog.setAutohrizeBy(shopMember.getMmNickName());
+        rdMmAccountLog.setAutohrizeTime(new Date());
+        rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().subtract(BigDecimal.valueOf(integration)));
+        rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
+        rdMmAccountInfoService.update(rdMmAccountInfo);
+        rdMmAccountLogService.save(rdMmAccountLog);
+    }
 
     @Override
     public ShopOrder findWithOrderGoodsById(Long orderId) {
@@ -3263,5 +3336,4 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             }
         }
     }
-
 }
