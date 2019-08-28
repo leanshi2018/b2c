@@ -1,5 +1,8 @@
 package com.framework.loippi.controller.product;
 
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.order.ShopOrder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -235,6 +238,12 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             }
 
             System.out.println("adminName="+adminName);
+            String orderno = shopGoodsEvaluate.getGevalOrderno();
+            ShopOrder shopOrder = shopOrderService.find(Long.parseLong(orderno));
+            String orderSn = "";
+            if(shopOrder!=null){
+                orderSn = shopOrder.getOrderSn();
+            }
 
             ShopOrderGoods shopOrderGoods = shopOrderGoodsService.find(shopGoodsEvaluate.getGevalOrdergoodsid());//订单商品
             BigDecimal price = shopOrderGoods.getVipPrice();//vip价格
@@ -242,7 +251,7 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
 
             BigDecimal multiply = price.multiply(new BigDecimal(points)).multiply(new BigDecimal(goodsNum));
 
-            evaluate.setExchangePoints(multiply.intValue());
+            evaluate.setExchangePoints(multiply);
             evaluateGoodsService.update(evaluate);
             RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", shopGoodsEvaluate.getGevalFrommemberid());
             RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", shopMember.getMmCode());
@@ -254,7 +263,7 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
             rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
             rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getRedemptionBlance());
-            rdMmAccountLog.setAmount(new BigDecimal(multiply.intValue()));
+            rdMmAccountLog.setAmount(multiply);
             rdMmAccountLog.setTransDate(new Date());
             //转出无需审核直接成功
             rdMmAccountLog.setStatus(3);
@@ -262,12 +271,33 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             rdMmAccountLog.setCreationTime(new Date());
             rdMmAccountLog.setAutohrizeBy(adminName);
             rdMmAccountLog.setAutohrizeTime(new Date());
-            rdMmAccountInfo.setRedemptionBlance(rdMmAccountInfo.getRedemptionBlance().add(new BigDecimal(multiply.intValue())));
+            rdMmAccountInfo.setRedemptionBlance(rdMmAccountInfo.getRedemptionBlance().add(multiply));
             rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getRedemptionBlance());
             List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
             rdMmAccountLogList.add(rdMmAccountLog);
-            Integer transNumber = rdMmAccountInfoService
-                .saveAccountInfo(rdMmAccountInfo, multiply.intValue(), IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+            ShopCommonMessage shopCommonMessage = new ShopCommonMessage();
+            shopCommonMessage.setSendUid(rdMmAccountInfo.getMmCode());
+            shopCommonMessage.setType(1);
+            shopCommonMessage.setOnLine(1);
+            shopCommonMessage.setCreateTime(new Date());
+            shopCommonMessage.setBizType(2);
+            shopCommonMessage.setIsTop(1);
+            shopCommonMessage.setTitle("积分到账通知");
+
+            shopCommonMessage.setContent("您因评论订单："+orderSn+"获得换购积分"+multiply+"点，已加入换购积分账户");
+            Long msgId = twiterIdService.getTwiterId();
+            shopCommonMessage.setId(msgId);
+            ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
+            shopMemberMessage.setBizType(2);
+            shopMemberMessage.setCreateTime(new Date());
+            shopMemberMessage.setId(twiterIdService.getTwiterId());
+            shopMemberMessage.setIsRead(0);//TODO 修改2019-08-26
+            shopMemberMessage.setMsgId(msgId);
+            shopMemberMessage.setUid(Long.parseLong(rdMmAccountInfo.getMmCode()));
+            rdMmAccountInfoService
+                .saveAccountInfo2(rdMmAccountInfo, IntegrationNameConsts.PUI, rdMmAccountLogList, null,shopCommonMessage,shopMemberMessage);
+            /*Integer transNumber = rdMmAccountInfoService
+                .saveAccountInfo(rdMmAccountInfo, multiply.intValue(), IntegrationNameConsts.BOP, rdMmAccountLogList, null);*/
             model.addAttribute("msg", "积分分配成功");
         }
         return Constants.MSG_URL;
