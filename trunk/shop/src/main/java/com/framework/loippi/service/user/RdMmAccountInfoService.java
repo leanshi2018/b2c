@@ -1,6 +1,8 @@
 package com.framework.loippi.service.user;
 
 
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
@@ -23,4 +25,6 @@ public interface RdMmAccountInfoService  extends GenericService<RdMmAccountInfo,
     Integer saveAccountInfo(RdMmAccountInfo rdMmAccountInfo,Integer integration,Integer type,List<RdMmAccountLog> rdMmAccountLogList,RdMmAccountInfo accentMmAccountInfo);
 
     Integer saveAccountInfoNew(RdMmAccountInfo rdMmAccountInfo, Double integration, int bop, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo);
+
+    void saveAccountInfo2(RdMmAccountInfo rdMmAccountInfo, int pui, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo, ShopCommonMessage shopCommonMessage, ShopMemberMessage shopMemberMessage);
 }
