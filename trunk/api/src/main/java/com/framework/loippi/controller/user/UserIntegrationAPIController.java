@@ -206,8 +206,8 @@ public class UserIntegrationAPIController extends BaseController {
         Integer transNumber = rdMmAccountInfoService
                 .saveAccountInfoNew(rdMmAccountInfo,integration,IntegrationNameConsts.BOP, rdMmAccountLogList, null);
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
-                .put("bopIntegration", rdMmAccountInfo.getBonusBlance()).put("transferInPoints", walletBlance)
-                .put("shpIntegration", rdMmAccountInfo.getWalletBlance()));
+                .put("bopIntegration", rdMmAccountInfo.getBonusBlance().setScale(2,BigDecimal.ROUND_HALF_UP)).put("transferInPoints", walletBlance.setScale(2,BigDecimal.ROUND_HALF_UP))
+                .put("shpIntegration", rdMmAccountInfo.getWalletBlance().setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
     //奖励积分提现确认
@@ -521,7 +521,7 @@ public class UserIntegrationAPIController extends BaseController {
         // TODO: 2018/12/28 待实现 
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
             .put("memberName", accentMember.getMmNickName()).put("memberMobile", accentMember.getMobile())
-            .put("shpIntegration", rdMmAccountInfo.getWalletBlance()));
+            .put("shpIntegration", rdMmAccountInfo.getWalletBlance().setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
     //积分明细列表
