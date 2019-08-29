@@ -778,7 +778,12 @@ public class UserAPIController extends BaseController {
         } else {
             rdMmBank.setDefaultbank(0);
         }
-        rdMmBankService.save(rdMmBank);
+        RdMmBank bank = rdMmBankService.findByCodeAndAccCode(member.getMmCode(),param.getAccCode());
+        if (bank!=null){
+            return ApiUtils.error("该银行卡号已存在");
+        }else {
+            rdMmBankService.save(rdMmBank);
+        }
         return ApiUtils.success();
     }
 

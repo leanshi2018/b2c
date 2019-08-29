@@ -1,11 +1,15 @@
 package com.framework.loippi.service.impl.user;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.user.RdMmBankDao;
 import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmBankService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 /**
  * SERVICE - RdMmBank(会员银行卡信息)
  * 
@@ -39,5 +43,13 @@ public class RdMmBankServiceImpl extends GenericServiceImpl<RdMmBank, Long> impl
 			result = 1;
 		}
 		return result;
+	}
+
+	@Override
+	public RdMmBank findByCodeAndAccCode(String mmCode, String accCode) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("mmCode",mmCode);
+		map.put("accCode",accCode);
+		return rdMmBankDao.findByCodeAndAccCode(map);
 	}
 }
