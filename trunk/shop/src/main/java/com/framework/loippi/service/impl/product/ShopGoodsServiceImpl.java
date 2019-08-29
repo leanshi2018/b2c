@@ -1,41 +1,37 @@
 package com.framework.loippi.service.impl.product;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.activity.ShopActivityGoodsSpecDao;
 import com.framework.loippi.dao.cart.ShopCartDao;
-import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.order.ShopOrderGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsGoodsDao;
-import com.framework.loippi.entity.activity.ShopActivityGoods;
-import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
-import com.framework.loippi.entity.cart.ShopCart;
-import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.entity.ware.RdInventoryWarning;
-import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.result.common.goods.IdNameDto;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.vo.goods.BrandListVo;
-import com.framework.loippi.vo.goods.GoodsExcel;
-import com.framework.loippi.vo.goods.ShopGoodsVo;
 import com.framework.loippi.vo.stats.StatsCountVo;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.*;
 
 /**
  * SERVICE - ShopGoods(商品表)
@@ -275,7 +271,7 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
             saveToGoodsSpec(goods, goodsSpecJson);
             return 1;
         } else {
-            if (oldGoodsSp.equals(goodsSp) && StringUtil.isEmpty(goodsSpecJson)) {
+            if (oldGoodsSp.equals(goodsSp) && !StringUtil.isEmpty(goodsSpecJson)) {
                 if (!StringUtil.isEmpty(goodsSpecJson)) {
                     //准备创建表shop_goods_sepc的实体类对象
                     List<ShopGoodsSpec> goodsSpecs = JacksonUtil.convertList(goodsSpecJson, ShopGoodsSpec.class);

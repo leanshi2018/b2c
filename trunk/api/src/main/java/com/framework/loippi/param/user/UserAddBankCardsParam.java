@@ -3,9 +3,10 @@ package com.framework.loippi.param.user;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * Param - 银行卡-新增
@@ -53,5 +54,17 @@ public class UserAddBankCardsParam {
      */
     @NotNull
     private String idCard;
+
+    /**
+     * 身份证正面照片
+     */
+    @NotNull
+    private String idCardFacade;
+
+    /**
+     * 身份证反面照片
+     */
+    @NotNull
+    private String idCardBack;
 
 }
