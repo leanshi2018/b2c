@@ -2887,7 +2887,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                         shopMemberMessage1.setCreateTime(new Date());
                                         shopMemberMessage1.setId(twiterIdService.getTwiterId());
                                         shopMemberMessage1.setIsRead(0);
-                                        shopMemberMessage1.setMsgId(msgId);
+                                        shopMemberMessage1.setMsgId(msgId1);
                                         shopMemberMessage1.setUid(Long.parseLong(rdMmRelation.getMmCode()));
                                         shopMemberMessageDao.insert(shopMemberMessage1);
                                     }
@@ -2917,6 +2917,28 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
                 //换购订单 扣除换购积分 并生成记录
                 if ("10".equals(paymentId)) {
+                    //设置换购积分消息通知
+                    ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                    shopCommonMessage.setSendUid(memberId);
+                    shopCommonMessage.setType(1);
+                    shopCommonMessage.setOnLine(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setBizType(2);
+                    shopCommonMessage.setIsTop(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setTitle("积分扣减通知");
+                    shopCommonMessage.setContent("您因支付换购订单："+order.getOrderSn()+"订单扣减"+order.getOrderAmount()+"点积分，请在换购积分账户查看明细");
+                    Long msgId1 = twiterIdService.getTwiterId();
+                    shopCommonMessage.setId(msgId1);
+                    shopCommonMessageDao.insert(shopCommonMessage);
+                    ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                    shopMemberMessage1.setBizType(2);
+                    shopMemberMessage1.setCreateTime(new Date());
+                    shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                    shopMemberMessage1.setIsRead(0);
+                    shopMemberMessage1.setMsgId(msgId1);
+                    shopMemberMessage1.setUid(Long.parseLong(memberId));
+                    shopMemberMessageDao.insert(shopMemberMessage1);
                     RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", shopMember.getMmCode());
                     RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
                     rdMmAccountLog.setTransTypeCode("EG");
