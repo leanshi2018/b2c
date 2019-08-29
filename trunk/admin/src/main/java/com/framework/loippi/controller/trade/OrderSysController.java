@@ -387,7 +387,7 @@ public class OrderSysController extends GenericController {
             rdGoodsAdjustment.setGoodsSpec(shopGoodsSpec.getSpecGoodsSpec());
             rdGoodsAdjustment.setStockNow(shopGoodsSpec.getSpecGoodsStorage().longValue());
             rdGoodsAdjustment.setStockInto(Long.valueOf(orderGoods.getGoodsNum()));
-            rdGoodsAdjustment.setCreateTime(new Date());
+            rdGoodsAdjustment.setCreateTime(shopGoods.getCreateTime());
             rdGoodsAdjustment.setWareCode(warehouse.getWareCode());
             rdGoodsAdjustment.setSign(1);
             rdGoodsAdjustment.setAutohrizeTime(new Date());
