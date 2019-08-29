@@ -36,4 +36,10 @@ public interface ShopMemberMessageDao extends GenericDao<ShopMemberMessage, Long
     List<UserMessageDto> findMessagePageByIsRead(Paramap paramap);
 
     void addTrainRecordBatch(List<ShopMemberMessage> shopMemberMessageList);
+
+    Integer findMessageRemindNum(long uid);
+
+    Integer findMessageOrderNum(long uid);
+
+    Integer findMessageLeaveNum(long uid);
 }
