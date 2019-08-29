@@ -17,6 +17,8 @@
 		<result property="mobile" column="MOBILE" />
 		<result property="validThru" column="VALID_THRU" />
 		<result property="cvv2" column="CVV2" />
+		<result property="idCardFacade" column="ID_CARD_FACADE" />
+		<result property="idCardBack" column="ID_CARD_BACK" />
 		<result property="defaultbank" column="DEFAULTBANK" />
 		<result property="paymentDefault" column="PAYMENT_DEFAULT" />
 		<result property="withdrawDefault" column="WITHDRAW_DEFAULT" />
@@ -25,11 +27,11 @@
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 OID ,MM_CODE ,ACC_TYPE ,CURRENCY ,ACC_CODE ,ACC_NAME ,BANK_CODE ,BANK_DETAIL ,MOBILE ,VALID_THRU ,CVV2 ,DEFAULTBANK ,PAYMENT_DEFAULT ,WITHDRAW_DEFAULT ,RECHARGE_DEFAULT
+		 OID ,MM_CODE ,ACC_TYPE ,CURRENCY ,ACC_CODE ,ACC_NAME ,BANK_CODE ,BANK_DETAIL ,MOBILE ,VALID_THRU ,CVV2 ,ID_CARD_FACADE ,ID_CARD_BACK ,DEFAULTBANK ,PAYMENT_DEFAULT ,WITHDRAW_DEFAULT ,RECHARGE_DEFAULT
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{oid},#{mmCode},#{accType},#{currency},#{accCode},#{accName},#{bankCode},#{bankDetail},#{mobile},#{validThru},#{cvv2},#{defaultbank},#{paymentDefault},#{withdrawDefault},#{rechargeDefault}
+		 #{oid},#{mmCode},#{accType},#{currency},#{accCode},#{accName},#{bankCode},#{bankDetail},#{mobile},#{validThru},#{cvv2},#{idCardFacade},#{idCardBack},#{defaultbank},#{paymentDefault},#{withdrawDefault},#{rechargeDefault}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -66,6 +68,12 @@
 		</if>
 		<if test="cvv2 != null and cvv2 != ''">
 			AND CVV2 = #{cvv2,jdbcType=VARCHAR}
+		</if>
+		<if test="idCardFacade != null and idCardFacade != ''">
+			AND ID_CARD_FACADE = #{idCardFacade,jdbcType=VARCHAR}
+		</if>
+		<if test="idCardBack != null and idCardBack != ''">
+			AND ID_CARD_BACK = #{idCardBack,jdbcType=VARCHAR}
 		</if>
 		<if test="defaultbank != null and defaultbank != ''">
 			AND DEFAULTBANK = #{defaultbank,jdbcType=INTEGER}
@@ -115,6 +123,12 @@
 		</if>
 		<if test="cvv2 != null and cvv2 != ''">
 			CVV2 = #{cvv2,jdbcType=VARCHAR},
+		</if>
+		<if test="idCardFacade != null and idCardFacade != ''">
+			AND ID_CARD_FACADE = #{idCardFacade,jdbcType=VARCHAR}
+		</if>
+		<if test="idCardBack != null and idCardBack != ''">
+			AND ID_CARD_BACK = #{idCardBack,jdbcType=VARCHAR}
 		</if>
 		<if test="defaultbank != null">
 			DEFAULTBANK = #{defaultbank,jdbcType=INTEGER},

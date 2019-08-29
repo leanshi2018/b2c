@@ -737,6 +737,51 @@ public class UserAPIController extends BaseController {
         return ApiUtils.success();
     }
 
+    //添加银行卡
+    @RequestMapping(value = "/addBankCardsTwo.json")
+    public String addBankCardsTwo(@Valid UserAddBankCardsParam param, HttpServletRequest request) {
+        System.out.println("进来了添加银行卡");
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (member == null) {
+            return ApiUtils.error("请登录");
+        }
+        //银行卡的验证
+        String result = "";
+        try {
+            result = BankCardUtils.vaildBankCard(param);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiUtils.error("填写相关信息有误");
+        }
+
+        System.out.println(result);//1 验证成功
+
+        if (!result.equals("1")) {
+            return ApiUtils.error(result);
+        }
+        //判断手机验证码是否正确
+        if (!SmsUtil.valicodeIstrue(param.getMobile(), param.getCode(), redisService)) {
+            return ApiUtils.error(Xerror.VALID_CODE_ERROR);
+        }
+        RdMmBank rdMmBank = new RdMmBank();
+        rdMmBank.setMmCode(member.getMmCode());
+        rdMmBank.setAccCode(param.getAccCode());
+        rdMmBank.setBankDetail(param.getBankDetail());
+        rdMmBank.setMobile(param.getMobile());
+        rdMmBank.setAccName(param.getAccName());
+        rdMmBank.setAccType("1");
+        rdMmBank.setIdCardFacade(param.getIdCardFacade());
+        rdMmBank.setIdCardBack(param.getIdCardBack());
+        List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
+        if (rdMmBankList.size() == 0) {
+            rdMmBank.setDefaultbank(1);
+        } else {
+            rdMmBank.setDefaultbank(0);
+        }
+        rdMmBankService.save(rdMmBank);
+        return ApiUtils.success();
+    }
+
     //设置默认银行卡
     @RequestMapping(value = "/setdefaultBankCards.json")
     public String addBankCards(HttpServletRequest request, Integer Id) {
