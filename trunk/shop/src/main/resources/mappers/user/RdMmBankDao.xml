@@ -226,5 +226,13 @@
 			<include refid="where_column" />
 		</where>
 	</select>
-	
+
+	<!--findByCodeAndAccCode-->
+	<select id="findByParams" parameterType="map" resultMap="RdMmBankResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_MM_BANK
+		where MM_CODE = #{mmCode} and ACC_CODE = #{accCode}
+	</select>
+
+
 </mapper> 
