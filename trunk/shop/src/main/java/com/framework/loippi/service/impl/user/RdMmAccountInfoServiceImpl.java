@@ -1,9 +1,13 @@
 package com.framework.loippi.service.impl.user;
 
 
+import com.framework.loippi.dao.ShopCommonMessageDao;
+import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmAccountLogDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
 
@@ -30,6 +34,10 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 	private RdMmAccountLogDao rdMmAccountLogDao;
 	@Autowired
 	private RdSysPeriodDao rdSysPeriodDao;
+	@Autowired
+	private ShopCommonMessageDao shopCommonMessageDao;
+	@Autowired
+	private ShopMemberMessageDao shopMemberMessageDao;
 	
 	
 	@Autowired
@@ -56,5 +64,42 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 				rdMmAccountLogDao.insert(rdMmAccountLogList.get(1));
 			}
             return rdMmAccountLogList.get(0).getTransNumber();
+	}
+
+	@Override
+	public Integer saveAccountInfoNew(RdMmAccountInfo rdMmAccountInfo, Double integration, int bop, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo) {
+		if (rdMmAccountInfo!=null){
+			rdMmAccountInfoDao.update(rdMmAccountInfo);
+		}
+		if (accentMmAccountInfo!=null){
+			rdMmAccountInfoDao.update(accentMmAccountInfo);
+		}
+		String period = rdSysPeriodDao.getSysPeriodService(new Date());
+		rdMmAccountLogList.get(0).setTransPeriod(period);
+		rdMmAccountLogDao.insert(rdMmAccountLogList.get(0));
+		if (rdMmAccountLogList.size()>1){
+			rdMmAccountLogList.get(1).setTransPeriod(period);
+			rdMmAccountLogDao.insert(rdMmAccountLogList.get(1));
+		}
+		return rdMmAccountLogList.get(0).getTransNumber();
+	}
+
+	@Override
+	public void saveAccountInfo2(RdMmAccountInfo rdMmAccountInfo, int pui, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo, ShopCommonMessage shopCommonMessage, ShopMemberMessage shopMemberMessage) {
+		if (rdMmAccountInfo!=null){
+			rdMmAccountInfoDao.update(rdMmAccountInfo);
+		}
+		if (accentMmAccountInfo!=null){
+			rdMmAccountInfoDao.update(accentMmAccountInfo);
+		}
+		String period = rdSysPeriodDao.getSysPeriodService(new Date());
+		rdMmAccountLogList.get(0).setTransPeriod(period);
+		rdMmAccountLogDao.insert(rdMmAccountLogList.get(0));
+		if (rdMmAccountLogList.size()>1){
+			rdMmAccountLogList.get(1).setTransPeriod(period);
+			rdMmAccountLogDao.insert(rdMmAccountLogList.get(1));
+		}
+		shopCommonMessageDao.insert(shopCommonMessage);
+		shopMemberMessageDao.insert(shopMemberMessage);
 	}
 }

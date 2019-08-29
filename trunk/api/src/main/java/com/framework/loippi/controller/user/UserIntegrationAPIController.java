@@ -12,6 +12,7 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,10 @@ import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.user.MemberQualification;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
@@ -159,10 +164,56 @@ public class UserIntegrationAPIController extends BaseController {
             .put("shpIntegration", rdMmAccountInfo.getWalletBlance()));
     }
 
+    //奖励积分转出确认
+    @RequestMapping(value = "/bop/transferOut/finishNew.json")
+    public String transferOutFinishNew(HttpServletRequest request, Double integration, String paypassword) {
+        if (integration == null || "".equals(paypassword)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request
+                .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+        RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        if (integration <= 0) {
+            return ApiUtils.error("所转积分不合理");
+        }
+        if (rdMmAccountInfo.getPaymentPwd() == null) {
+            return ApiUtils.error("你还未设置支付密码");
+        }
+        if (!Digests.validatePassword(paypassword, rdMmAccountInfo.getPaymentPwd())) {
+            return ApiUtils.error("支付密码错误");
+        }
+
+        if (rdMmAccountInfo.getBonusBlance().compareTo(BigDecimal.valueOf(integration)) == -1) {
+            return ApiUtils.error("转出积分大于可转出积分");
+        }
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        BigDecimal walletBlance = BigDecimal
+                .valueOf(integration * Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0) * 0.01);
+        List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
+        RdMmAccountLog rdMmAccountLogSP = IntegrationBuildResult
+                .bonusSPNew(shopMember, rdMmAccountInfo, integration, walletBlance);
+        RdMmAccountLog rdMmAccountLogBT = IntegrationBuildResult.WalletBT(shopMember, rdMmAccountInfo, walletBlance);
+        rdMmAccountLogList.add(rdMmAccountLogSP);
+        rdMmAccountLogList.add(rdMmAccountLogBT);
+        rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
+        rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(walletBlance));
+        Integer transNumber = rdMmAccountInfoService
+                .saveAccountInfoNew(rdMmAccountInfo,integration,IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+        return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
+                .put("bopIntegration", rdMmAccountInfo.getBonusBlance().setScale(2,BigDecimal.ROUND_HALF_UP)).put("transferInPoints", walletBlance.setScale(2,BigDecimal.ROUND_HALF_UP))
+                .put("shpIntegration", rdMmAccountInfo.getWalletBlance().setScale(2,BigDecimal.ROUND_HALF_UP)));
+    }
+
     //奖励积分提现确认
     @RequestMapping(value = "/bop/cashWithdrawal/finish.json")
-    public String bopCashWithdrawal(HttpServletRequest request, int bankCardId, int integration, String paypassword) {
-        /*if ("".equals(paypassword)) {
+    public String bopCashWithdrawal(HttpServletRequest request, int bankCardId, Double integration, String paypassword) {
+        if ("".equals(paypassword)) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
 
@@ -202,14 +253,14 @@ public class UserIntegrationAPIController extends BaseController {
         RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd, bankCardId);
         rdMmAccountLogList.add(rdMmAccountLog);
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
-        Integer transNumber = rdMmAccountInfoService.saveAccountInfo(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+        Integer transNumber = rdMmAccountInfoService.saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null);
         // TODO: 2018/12/28 待处理
         return ApiUtils.success(Paramap.create().put("bankCardCode",
             "****     ****     ****     " + rdMmBank.getAccCode().substring(rdMmBank.getAccCode().length() - 4))
             .put("transferOutMoney", integration)
-            .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));*/
+            .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));
 
-        return ApiUtils.error("该功能在升级，请耐心等待！");
+        /*return ApiUtils.error("该功能在升级，请耐心等待！");*/
     }
 
     //购物积分转出
@@ -274,9 +325,12 @@ public class UserIntegrationAPIController extends BaseController {
         return strings;
     }
 
+
+
+
     /**
      * //购物积分用户列表
-     * @param
+     * @param request
      * @param periodCode 周期编号
      * @param sorting 排序种类 1：按mi值升序 2：按mi值降序  3：按加入时间升序 4.按加入时间降序 5.按会员级别升序  6.按会员级别降序 7.按照已发放零售利润升序 8.按照已发放零售利润降序
      * @return
@@ -356,6 +410,13 @@ public class UserIntegrationAPIController extends BaseController {
         return ApiUtils.success(paramap);
     }
 
+    /**
+     *
+     * @param request
+     * @param info
+     * @param type 1搜索全部 2搜索自己
+     * @return
+     */
     //购物积分搜索用户
     @RequestMapping(value = "/shp/searchMember.json")
     public String shpMemberList(HttpServletRequest request, String info,
@@ -376,6 +437,8 @@ public class UserIntegrationAPIController extends BaseController {
             if (mmCodes != null && mmCodes.size() > 0) {
                 rdMmBasicInfoList = rdMmBasicInfoService
                     .findList(Paramap.create().put("mmCodes", mmCodes).put("info", info));
+                /*rdMmBasicInfoList = rdMmBasicInfoService
+                        .findByKeyWord(Paramap.create().put("mmCodes", mmCodes).put("info", info));*/
             }
 
         } else {
@@ -400,7 +463,7 @@ public class UserIntegrationAPIController extends BaseController {
 
     //购物积分转出确认
     @RequestMapping(value = "/shp/transferOut/finish.json")
-    public String shpTransferOutFinsh(HttpServletRequest request, Long accentMemberId, Integer integration,
+    public String shpTransferOutFinsh(HttpServletRequest request, Long accentMemberId, Double integration,
         String paypassword, String message) {
         if (accentMemberId == null || integration == null || "".equals(paypassword)) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
@@ -453,12 +516,12 @@ public class UserIntegrationAPIController extends BaseController {
         rdMmAccountLogList.add(rdMmAccountLogTT);
         rdMmAccountLogList.add(rdMmAccountLogTF);
         Integer transNumber = rdMmAccountInfoService
-            .saveAccountInfo(rdMmAccountInfo, integration, IntegrationNameConsts.SHP, rdMmAccountLogList,
+            .saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.SHP, rdMmAccountLogList,
                 accentMmAccountInfo);
         // TODO: 2018/12/28 待实现 
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
             .put("memberName", accentMember.getMmNickName()).put("memberMobile", accentMember.getMobile())
-            .put("shpIntegration", rdMmAccountInfo.getWalletBlance()));
+            .put("shpIntegration", rdMmAccountInfo.getWalletBlance().setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
     //积分明细列表

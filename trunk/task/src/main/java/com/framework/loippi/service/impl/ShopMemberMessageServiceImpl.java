@@ -154,7 +154,7 @@ public class ShopMemberMessageServiceImpl extends GenericServiceImpl<ShopMemberM
         memberMsg.setId(twiterIdService.getTwiterId());
         memberMsg.setMsgId(twiterId);
         memberMsg.setBizType(4);
-        memberMsg.setIsRead(1);
+        memberMsg.setIsRead(0);
         memberMsg.setCreateTime(new Date());
         memberMsg.setUid(memberId);
         shopMemberMessageDao.insert(memberMsg);

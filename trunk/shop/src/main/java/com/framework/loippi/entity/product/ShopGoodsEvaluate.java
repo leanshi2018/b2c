@@ -143,7 +143,7 @@ public class ShopGoodsEvaluate implements GenericEntity {
      * 评价获取的换购积分
      */
     @Column(name = "exchange_points")
-    private Integer exchangePoints;
+    private BigDecimal exchangePoints;
 
     /**
      * 创建时间

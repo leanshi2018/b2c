@@ -48,7 +48,7 @@ public class OrderSubmitResult {
     public static OrderSubmitResult build(RdMmIntegralRule rdMmIntegralRule,ShopOrderPay orderPay, RdMmAccountInfo rdMmAccountInfo) {
         OrderSubmitResult orderSubmitResult = new OrderSubmitResult();
         orderSubmitResult.setOrderPaySn(orderPay.getPaySn());
-        orderSubmitResult.setIntegration(rdMmAccountInfo.getWalletBlance());
+        orderSubmitResult.setIntegration(rdMmAccountInfo.getWalletBlance().setScale(2));
         orderSubmitResult.setOrderTotalPrice(orderPay.getPayAmount());
         if (rdMmIntegralRule==null || rdMmIntegralRule.getShoppingPointSr()==null){
             orderSubmitResult.setProportion(0d);
