@@ -1269,6 +1269,18 @@ public class UserAPIController extends BaseController {
         if (profits1==null){
             profits1 = new BigDecimal("0.00");
         }
+
+        //当期待发放零售利润
+        BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",2));
+        BigDecimal profits0 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",0));
+        if (profits2==null){
+            profits2 = new BigDecimal("0.00");
+        }
+        if (profits0==null){
+            profits0 = new BigDecimal("0.00");
+        }
+        profits2 = profits2.add(profits0);
+
         BigDecimal bugMi = shopOrderService.countOrderPPVByMCodeAndPeriod(mCode, periodCode);
         if (bugMi==null){
             bugMi = new BigDecimal("0.00");
@@ -1297,16 +1309,6 @@ public class UserAPIController extends BaseController {
             RdBonusMaster bonusMaster = rdBonusMasterService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
             result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,bonusMaster,SysPeriodCode,bugMi);
         }else {
-            //当期待发放零售利润
-            BigDecimal profits2 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",2));
-            BigDecimal profits0 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",0));
-            if (profits2==null){
-                profits2 = new BigDecimal("0.00");
-            }
-            if (profits0==null){
-                profits0 = new BigDecimal("0.00");
-            }
-            profits2 = profits2.add(profits0);
             result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2,SysPeriodCode,bugMi);
         }
 
