@@ -227,7 +227,6 @@
 		</where>
 	</select>
 
-	<!--findByCodeAndAccCode-->
 	<select id="findByCodeAndAccCode" parameterType="map" resultMap="RdMmBankResultMap">
 		SELECT	<include refid="base_column" />
 		FROM 	RD_MM_BANK
