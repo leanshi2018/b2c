@@ -66,6 +66,10 @@ public class RdMmBank implements GenericEntity {
 	@Column(name = "CVV2" )
 	private String cvv2;
 
+	/** 身份证号 */
+	@Column(name = "ID_CARD_CODE" )
+	private String idCardCode;
+
 	/** 身份证正面照片 */
 	@Column(name = "ID_CARD_FACADE" )
 	private String idCardFacade;
