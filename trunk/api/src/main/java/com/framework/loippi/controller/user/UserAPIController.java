@@ -757,6 +757,7 @@ public class UserAPIController extends BaseController {
         rdMmBank.setMobile(param.getMobile());
         rdMmBank.setAccName(param.getAccName());
         rdMmBank.setAccType("1");
+        rdMmBank.setIdCardCode(param.getIdCard());
         rdMmBank.setIdCardFacade(param.getIdCardFacade());
         rdMmBank.setIdCardBack(param.getIdCardBack());
         List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
