@@ -1320,7 +1320,7 @@ public class UserAPIController extends BaseController {
 
         if (period.getCalStatus()==3){ //发布完
             RdBonusMaster bonusMaster = rdBonusMasterService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
-            result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,bonusMaster,SysPeriodCode,bugMi);
+            result = SelfPerformanceResult.build1(basicInfo,qualification,profits1,profits2,bonusMaster,SysPeriodCode,bugMi);
         }else {
             result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2,SysPeriodCode,bugMi);
         }
