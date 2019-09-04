@@ -1,6 +1,5 @@
 package com.framework.loippi.service;
 
-import com.framework.loippi.dto.ShopMemberDto;
 import com.framework.loippi.dto.UserMessageDto;
 import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.support.Page;
@@ -54,4 +53,9 @@ public interface ShopMemberMessageService extends GenericService <ShopMemberMess
 
     void addTrainRecordBatch(List<ShopMemberMessage> shopMemberMessageList);
 
+    Integer findMessageRemindNum(long parseLong);
+
+    Integer findMessageOrderNum(long parseLong);
+
+    Integer findMessageLeaveNum(long parseLong);
 }

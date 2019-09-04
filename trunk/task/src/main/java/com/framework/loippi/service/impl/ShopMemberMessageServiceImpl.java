@@ -2,7 +2,6 @@ package com.framework.loippi.service.impl;
 
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
-import com.framework.loippi.dto.ShopMemberDto;
 import com.framework.loippi.dto.UserMessageDto;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
@@ -163,5 +162,20 @@ public class ShopMemberMessageServiceImpl extends GenericServiceImpl<ShopMemberM
     @Override
     public void addTrainRecordBatch(List<ShopMemberMessage> shopMemberMessageList) {
         shopMemberMessageDao.addTrainRecordBatch(shopMemberMessageList);
+    }
+
+    @Override
+    public Integer findMessageRemindNum(long uid) {
+        return shopMemberMessageDao.findMessageRemindNum(uid);
+    }
+
+    @Override
+    public Integer findMessageOrderNum(long uid) {
+        return shopMemberMessageDao.findMessageOrderNum(uid);
+    }
+
+    @Override
+    public Integer findMessageLeaveNum(long uid) {
+        return shopMemberMessageDao.findMessageLeaveNum(uid);
     }
 }

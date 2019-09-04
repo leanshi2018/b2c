@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.service.ShopMemberMessageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -142,7 +143,8 @@ public class UserAPIController extends BaseController {
     private RdBonusMasterService rdBonusMasterService;
     @Resource
     private MemberQualificationService memberQualificationService;
-
+    @Resource
+    private ShopMemberMessageService shopMemberMessageService;
     @Resource
     private RdMmBankDiscernService rdMmBankDiscernService;
     @Value("#{properties['wap.server']}")
@@ -165,6 +167,16 @@ public class UserAPIController extends BaseController {
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
         PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks);
+        //查询会员提醒消息数量
+        Integer remindNum=shopMemberMessageService.findMessageRemindNum(Long.parseLong(member.getMmCode()));
+        //查询会员订单消息数量
+        Integer orderNum=shopMemberMessageService.findMessageOrderNum(Long.parseLong(member.getMmCode()));
+        //查询会员留言消息数量
+        Integer leaveNum=shopMemberMessageService.findMessageLeaveNum(Long.parseLong(member.getMmCode()));
+        result.setMessageRemindNum(remindNum);
+        result.setMessageOrderNum(orderNum);
+        result.setMessageLeaveNum(leaveNum);
+        result.setMessageNum(remindNum+orderNum+leaveNum);
         //各种状态订单数量信息
         List<CountOrderStatusVo> countOrderStatusVoList = shopOrderService
             .countOrderStatus(Paramap.create().put("buyerId", shopMember.getMmCode()).put("isDel",0));

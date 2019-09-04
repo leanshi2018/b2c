@@ -58,9 +58,21 @@ public class PersonCenterResult {
 
 
     /**
-     * 消息数
+     * 未读消息总数
      */
     private Integer messageNum;
+    /**
+     * 未读提醒消息数
+     */
+    private Integer messageRemindNum;
+    /**
+     * 未读订单消息数
+     */
+    private Integer messageOrderNum;
+    /**
+     * 未读留言消息数
+     */
+    private Integer messageLeaveNum;
 
     /**
      * 未付款订单数
