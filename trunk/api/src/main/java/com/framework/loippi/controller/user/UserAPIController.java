@@ -783,11 +783,14 @@ public class UserAPIController extends BaseController {
 
     //识别验证次数
     @RequestMapping(value = "/discernCardTimes.json")
-    public String discernCardTimes(HttpServletRequest request,String mmCode) {
+    public String discernCardTimes(HttpServletRequest request) {
         System.out.println("进来了识别验证次数");
-        if (mmCode==null||"".equals(mmCode)){
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (member == null) {
             return ApiUtils.error("请登录");
         }
+        String mmCode = member.getMmCode();
+        
         Date date = new Date();
         java.text.SimpleDateFormat form = new java.text.SimpleDateFormat("yyyy-MM-dd");
         String format = form.format(date);
