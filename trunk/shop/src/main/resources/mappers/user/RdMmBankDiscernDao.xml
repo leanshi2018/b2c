@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdMmBankDiscernDao">
+
+    <resultMap id="RdMmBankDiscernResultMap" type="com.framework.loippi.entity.user.RdMmBankDiscern">
+        <id property="id" column="ID"  />
+        <result property="mmCode" column="MM_CODE" />
+        <result property="discernDate" column="DISCERN_DATE" />
+        <result property="numTimes" column="NUM_TIMES" />
+    </resultMap>
+
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 ID ,MM_CODE ,DISCERN_DATE ,NUM_TIMES
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{mmCode},#{discernDate},#{numTimes}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND ID = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+            AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+        </if>
+        <if test="discernDate != null and discernDate != ''">
+            AND DISCERN_DATE = #{discernDate}
+        </if>
+        <if test="numTimes != null">
+            AND NUM_TIMES = #{numTimes,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+            AND ID = #{id,jdbcType=INTEGER},
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+            AND MM_CODE = #{mmCode,jdbcType=VARCHAR},
+        </if>
+        <if test="discernDate != null and discernDate != ''">
+            AND DISCERN_DATE = #{discernDate},
+        </if>
+        <if test="numTimes != null">
+            AND NUM_TIMES = #{numTimes,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdMmBankDiscernResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_mm_bank_discern
+        WHERE	ID = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdMmBankDiscernResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_mm_bank_discern
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_mm_bank_discern
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmBankDiscern">
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="OID">-->
+        <!--SELECT LAST_INSERT_ID() AS OID-->
+        <!--</selectKey>  -->
+        INSERT rd_mm_bank_discern
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.RdMmBankDiscern">
+        UPDATE	rd_mm_bank_discern
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	ID = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateMember" parameterType="com.framework.loippi.entity.user.RdMmBankDiscern">
+        UPDATE	rd_mm_bank_discern
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	MM_CODE = #{mmCode}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_mm_bank_discern
+		WHERE	ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_mm_bank_discern
+        WHERE	ID	IN
+        <foreach item="RdMmBankDiscernId" index="index" collection="ids" open="(" separator="," close=")">
+            #{RdMmBankDiscernId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdMmBankDiscernResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_mm_bank_discern
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdMmBankDiscernResultMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_mm_bank_discern
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <select id="findByMCode" parameterType="string" resultMap="RdMmBankDiscernResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_mm_bank_discern
+        where MM_CODE = #{mmCode}
+    </select>
+
+    <update id="updateTimesByMCode" parameterType="map" >
+        UPDATE rd_mm_bank_discern
+        SET
+        NUM_TIMES = #{numTimes}
+        WHERE
+        MM_CODE = #{mmCode}
+    </update>
+
+    <update id="updateDateAndTimesByMCode" parameterType="map" >
+        UPDATE rd_mm_bank_discern
+        SET
+        NUM_TIMES = #{numTimes},
+        DISCERN_DATE = #{discernDate}
+        WHERE
+        MM_CODE = #{mmCode}
+    </update>
+</mapper>

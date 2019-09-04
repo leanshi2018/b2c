@@ -32,6 +32,7 @@ import com.framework.loippi.entity.user.OldSysRelationship;
 import com.framework.loippi.entity.user.RdBonusMaster;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmBank;
+import com.framework.loippi.entity.user.RdMmBankDiscern;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
@@ -61,6 +62,7 @@ import com.framework.loippi.service.user.MemberQualificationService;
 import com.framework.loippi.service.user.OldSysRelationshipService;
 import com.framework.loippi.service.user.RdBonusMasterService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmBankDiscernService;
 import com.framework.loippi.service.user.RdMmBankService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
@@ -73,6 +75,7 @@ import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.BankCardUtils;
 import com.framework.loippi.utils.Constants;
+import com.framework.loippi.utils.DateConverter;
 import com.framework.loippi.utils.Dateutil;
 import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.Paramap;
@@ -139,6 +142,9 @@ public class UserAPIController extends BaseController {
     private RdBonusMasterService rdBonusMasterService;
     @Resource
     private MemberQualificationService memberQualificationService;
+
+    @Resource
+    private RdMmBankDiscernService rdMmBankDiscernService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -772,6 +778,46 @@ public class UserAPIController extends BaseController {
         }else {
             rdMmBankService.save(rdMmBank);
         }
+        return ApiUtils.success();
+    }
+
+    //识别验证次数
+    @RequestMapping(value = "/discernCardTimes.json")
+    public String discernCardTimes(HttpServletRequest request,String mmCode) {
+        System.out.println("进来了识别验证次数");
+        if (mmCode==null||"".equals(mmCode)){
+            return ApiUtils.error("请登录");
+        }
+        Date date = new Date();
+        java.text.SimpleDateFormat form = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String format = form.format(date);
+        DateConverter dateConverter = new DateConverter();
+        Date endDate = dateConverter.convert(format);
+
+        RdMmBankDiscern bankDiscern = rdMmBankDiscernService.findByMCode(mmCode);
+        if (bankDiscern==null){//没有验证识别过
+            //添加信息
+            RdMmBankDiscern rdMmBankDiscern = new RdMmBankDiscern();
+            rdMmBankDiscern.setMmCode(mmCode);
+            rdMmBankDiscern.setDiscernDate(endDate);
+            rdMmBankDiscern.setNumTimes(1);
+            rdMmBankDiscernService.save(rdMmBankDiscern);
+        }else{
+            Date discernDate = bankDiscern.getDiscernDate();
+            int compareTo = date.compareTo(discernDate);//小于返回-1，大于返回1，相等返回0
+            if (compareTo==0){
+                Integer numTimes = bankDiscern.getNumTimes();
+                if (numTimes<3){
+                    numTimes = numTimes + 1;
+                    rdMmBankDiscernService.updateTimesByMCode(numTimes,mmCode);
+                }else {
+                    return ApiUtils.error("今日识别验证超过次数！");
+                }
+            }else {
+                rdMmBankDiscernService.updateDateAndTimesByMCode(endDate,1,mmCode);//更新日期和次数
+            }
+        }
+
         return ApiUtils.success();
     }
 
