@@ -13,7 +13,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.framework.loippi.service.ShopMemberMessageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -52,6 +51,7 @@ import com.framework.loippi.result.user.UserCollectResult;
 import com.framework.loippi.result.user.UserFootprintsResult;
 import com.framework.loippi.result.user.UserProfileResult;
 import com.framework.loippi.service.RedisService;
+import com.framework.loippi.service.ShopMemberMessageService;
 import com.framework.loippi.service.common.ShopAppService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.order.ShopOrderService;
@@ -819,7 +819,8 @@ public class UserAPIController extends BaseController {
             rdMmBankDiscernService.save(rdMmBankDiscern);
         }else{
             Date discernDate = bankDiscern.getDiscernDate();
-            int compareTo = date.compareTo(discernDate);//小于返回-1，大于返回1，相等返回0
+            int compareTo = endDate.compareTo(discernDate);//小于返回-1，大于返回1，相等返回0
+
             if (compareTo==0){
                 Integer numTimes = bankDiscern.getNumTimes();
                 if (numTimes<3){
