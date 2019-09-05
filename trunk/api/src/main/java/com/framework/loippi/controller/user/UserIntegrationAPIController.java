@@ -277,7 +277,7 @@ public class UserIntegrationAPIController extends BaseController {
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
         ArrayList<ShopCommonMessage> shopCommonMessages = new ArrayList<>();
         ArrayList<ShopMemberMessage> shopMemberMessages = new ArrayList<>();
-        ShopCommonMessage commonMessage1 = new ShopCommonMessage();
+/*        ShopCommonMessage commonMessage1 = new ShopCommonMessage();
         Long msgid = twiterIdService.getTwiterId();
         commonMessage1.setId(msgid);
         commonMessage1.setTitle("积分提现");
@@ -297,7 +297,7 @@ public class UserIntegrationAPIController extends BaseController {
         shopMemberMessage.setIsRead(0);
         shopMemberMessage.setCreateTime(new Date());
         shopMemberMessage.setUid(Long.parseLong(member.getMmCode()));
-        shopMemberMessages.add(shopMemberMessage);
+        shopMemberMessages.add(shopMemberMessage);*/
         Integer transNumber = rdMmAccountInfoService.saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null, shopCommonMessages, shopMemberMessages);
         // TODO: 2018/12/28 待处理
         return ApiUtils.success(Paramap.create().put("bankCardCode",
