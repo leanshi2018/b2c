@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 打赏积分
@@ -26,6 +27,10 @@ public class MessageListResult {
     private String content;
     /** 创建时间 */
     private Date createTime;
+    /**
+     * 业务id（对于订单来讲为订单id）
+     */
+    private Long bizId;
 
 
     public static List<MessageListResult> build(List<UserMessageDto> memberMessageList) {
@@ -37,6 +42,7 @@ public class MessageListResult {
                messageListResult.setContent(item.getContent());
                messageListResult.setCreateTime(item.getCreateTime());
                messageListResult.setTitle(item.getTitle());
+               messageListResult.setBizId(Optional.ofNullable(item.getBizId()).orElse(0L));
                messageListResultList.add(messageListResult);
            }
        }

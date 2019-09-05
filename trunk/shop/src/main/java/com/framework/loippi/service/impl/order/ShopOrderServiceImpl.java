@@ -422,6 +422,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         message.setIsTop(1);
         message.setCreateTime(new Date());
         message.setBizType(3);
+        message.setBizId(orderId);
         message.setTitle(" 订单编号：" + order.getOrderSn());
         StringBuffer shareUrl = new StringBuffer();
         shareUrl.append("<ol class='list-paddingleft-2' style='list-style-type: decimal;'>");
@@ -1692,6 +1693,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         message.setOnLine(1);
         message.setCreateTime(new Date());
         message.setBizType(3);
+        message.setBizId(orderId);
         message.setIsTop(1);
         message.setTitle(" 订单编号：" + order.getOrderSn());
         StringBuffer shareUrl = new StringBuffer();
