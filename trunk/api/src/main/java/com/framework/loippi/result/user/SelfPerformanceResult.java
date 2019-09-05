@@ -91,12 +91,13 @@ public class SelfPerformanceResult {
 	 */
 	private int lookType;
 
-	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, RdBonusMaster bonusMaster,List<String> periodCodeList, BigDecimal bugMi) {
+	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, BigDecimal profits2, RdBonusMaster bonusMaster,List<String> periodCodeList, BigDecimal bugMi) {
 		Optional<RdMmBasicInfo> optionalBasicInfo = Optional.ofNullable(profile);
 		Optional<RdBonusMaster> optionalBonusMaster = Optional.ofNullable(bonusMaster);
 		SelfPerformanceResult result = new SelfPerformanceResult();
 		result.setMmNickName(optionalBasicInfo.map(RdMmBasicInfo::getMmNickName).orElse(""));
 		result.setProfits1(profits1);
+		result.setProfits2(profits2);
 		result.setLookType(2);
 		BigDecimal g7pvMi = new BigDecimal("0.00");
 		BigDecimal npvMi = new BigDecimal("0.00");
@@ -174,8 +175,8 @@ public class SelfPerformanceResult {
 			}
 		}
 		result.setBonusNewVIP(bonusNewVIP);
-		result.setBonusDevp1(bonusDevp1);
-		result.setBonusDevp2(bonusDevp2);
+		result.setBonusDevp1(bonusDevp1.setScale(2,BigDecimal.ROUND_HALF_UP));
+		result.setBonusDevp2(bonusDevp2.setScale(2,BigDecimal.ROUND_HALF_UP));
 		result.setBonusDevpShare(bonusDevpShare);
 		result.setBonusLdSum(bonusLdSum);
 		result.setBonusSum(bonusSum);

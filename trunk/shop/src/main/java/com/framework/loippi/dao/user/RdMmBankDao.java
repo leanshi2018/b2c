@@ -1,5 +1,7 @@
 package com.framework.loippi.dao.user;
 
+import java.util.Map;
+
 import com.framework.loippi.entity.user.RdMmBank;
 
 import com.framework.loippi.mybatis.dao.GenericDao;
@@ -12,4 +14,6 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  */
 public interface RdMmBankDao  extends GenericDao<RdMmBank, Long> {
     void updateMember(RdMmBank rdMmBank);
+
+	RdMmBank findByCodeAndAccCode(Map<String, Object> map);
 }
