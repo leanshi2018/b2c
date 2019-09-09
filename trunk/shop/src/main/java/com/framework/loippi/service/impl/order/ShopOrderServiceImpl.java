@@ -499,10 +499,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                 BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
                 //BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
+                if(order.getOrderType()==1){
+                    rdMmRelation.setARetail(money.subtract(orderMoney));
+                }
                 //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                 if (money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
-                    rdMmRelation.setARetail(money.subtract(orderMoney));
                     rdMmRelation.setRank(0);
                     rdMmRelationService.update(rdMmRelation);
                     //进行用户降级通知
@@ -1877,6 +1879,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                     BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
                     BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
+                    if(order.getOrderType()==1){
+                        rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
+                    }
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                     if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                         //进行用户升级通知
@@ -1903,7 +1908,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         shopMemberMessageDao.insert(shopMemberMessage);
                         RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                         rdMmRelation.setRank(rdRanks.getRankId());
-                        rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                         //如果会员升级为vip则查询当期会员是否存在没有发放的零售利润奖励
                         List<RetailProfit> list=retailProfitService.findNoGrantByCode(rdMmRelation.getMmCode());
                         if(list!=null&&list.size()>0){
@@ -2823,6 +2827,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                         BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
                         BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
+                        if(order.getOrderType()==1){
+                            rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
+                        }
                         //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                         if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                             //进行用户升级通知
@@ -2849,7 +2856,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             shopMemberMessageDao.insert(shopMemberMessage);
                             RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                             rdMmRelation.setRank(rdRanks.getRankId());
-                            rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                             //如果会员升级为vip则查询当期会员是否存在没有发放的零售利润奖励
                             List<RetailProfit> list=retailProfitService.findNoGrantByCode(rdMmRelation.getMmCode());
                             if(list!=null&&list.size()>0){
@@ -3067,7 +3073,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if (aPpv.compareTo(BigDecimal.ZERO) != 0) {
                     orderPpv = aPpv.subtract(refundReturn.getPpv());
                 }
-
+                if(order.getOrderType()==1){
+                    rdMmRelation.setARetail(orderMoney);
+                }
                 /*//降级到vip会员
                 if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 1);
@@ -3076,7 +3084,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 //******************************************降级到普通会员****************************************************************** TODO 修改by zc 2019-07-24
                 if (aRetail.compareTo(vipMoney)!=-1&&orderMoney.compareTo(vipMoney)==-1&&rdMmRelation.getNOFlag()==1) {//新会员 退款之前累计购买额大于等于360退款之后小于360降级vip
                     rdMmRelation.setRank(0);
-                    rdMmRelation.setARetail(orderMoney);
                     //进行用户降级通知
                     ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
                     shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
