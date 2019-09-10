@@ -69,6 +69,8 @@ public class GoodsListResult {
     private String goodsShareUrl;
     //精品推荐
     private Long recommendId;
+    //参与组合商品数量
+    private Integer joinNum;
 
     public static List<GoodsListResult> build(List<ShopGoods> items, String prefix, Map<Long, ShopMemberFavorites> favoritesMap, String wapServer) {
         if (CollectionUtils.isEmpty(items)) {
