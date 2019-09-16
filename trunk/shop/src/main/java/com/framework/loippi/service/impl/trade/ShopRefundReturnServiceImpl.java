@@ -163,6 +163,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
             message.setOnLine(1);
             message.setCreateTime(new Date());
             message.setBizType(3);
+            message.setBizId(refundReturn.getOrderId());
             message.setIsTop(1);
             message.setCreateTime(new Date());
             message.setTitle(" 订单编号："+refundReturn.getOrderSn());

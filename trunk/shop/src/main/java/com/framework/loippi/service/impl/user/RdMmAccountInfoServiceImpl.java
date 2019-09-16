@@ -16,6 +16,7 @@ import com.framework.loippi.service.user.RdMmAccountInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 	}
 
 	@Override
-	public Integer saveAccountInfoNew(RdMmAccountInfo rdMmAccountInfo, Double integration, int bop, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo) {
+	public Integer saveAccountInfoNew(RdMmAccountInfo rdMmAccountInfo, Double integration, int bop, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo, ArrayList<ShopCommonMessage> shopCommonMessages, ArrayList<ShopMemberMessage> shopMemberMessages) {
 		if (rdMmAccountInfo!=null){
 			rdMmAccountInfoDao.update(rdMmAccountInfo);
 		}
@@ -80,6 +81,16 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 		if (rdMmAccountLogList.size()>1){
 			rdMmAccountLogList.get(1).setTransPeriod(period);
 			rdMmAccountLogDao.insert(rdMmAccountLogList.get(1));
+		}
+		if(shopCommonMessages!=null&&shopCommonMessages.size()>0){
+			for (ShopCommonMessage shopCommonMessage : shopCommonMessages) {
+				shopCommonMessageDao.insert(shopCommonMessage);
+			}
+		}
+		if(shopMemberMessages!=null&&shopMemberMessages.size()>0){
+			for (ShopMemberMessage shopMemberMessage : shopMemberMessages) {
+				shopMemberMessageDao.insert(shopMemberMessage);
+			}
 		}
 		return rdMmAccountLogList.get(0).getTransNumber();
 	}

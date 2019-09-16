@@ -12,6 +12,8 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -198,10 +200,33 @@ public class UserIntegrationAPIController extends BaseController {
         RdMmAccountLog rdMmAccountLogBT = IntegrationBuildResult.WalletBT(shopMember, rdMmAccountInfo, walletBlance);
         rdMmAccountLogList.add(rdMmAccountLogSP);
         rdMmAccountLogList.add(rdMmAccountLogBT);
+        ArrayList<ShopCommonMessage> shopCommonMessages = new ArrayList<>();
+        ArrayList<ShopMemberMessage> shopMemberMessages = new ArrayList<>();
+        ShopCommonMessage commonMessage1 = new ShopCommonMessage();
+        Long msgid = twiterIdService.getTwiterId();
+        commonMessage1.setId(msgid);
+        commonMessage1.setTitle("积分转换");
+        commonMessage1.setBizId(0L);
+        commonMessage1.setBizType(2);
+        commonMessage1.setContent("您已成功将"+integration+"点奖励积分转换为"+walletBlance+"点购物积分，祝您购物愉快");
+        commonMessage1.setCreateTime(new Date());
+        commonMessage1.setSendUid(member.getMmCode());
+        commonMessage1.setType(1);
+        commonMessage1.setOnLine(1);
+        commonMessage1.setIsTop(1);
+        shopCommonMessages.add(commonMessage1);
+        ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
+        shopMemberMessage.setId(twiterIdService.getTwiterId());
+        shopMemberMessage.setMsgId(msgid);
+        shopMemberMessage.setBizType(2);
+        shopMemberMessage.setIsRead(0);
+        shopMemberMessage.setCreateTime(new Date());
+        shopMemberMessage.setUid(Long.parseLong(member.getMmCode()));
+        shopMemberMessages.add(shopMemberMessage);
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
         rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(walletBlance));
         Integer transNumber = rdMmAccountInfoService
-                .saveAccountInfoNew(rdMmAccountInfo,integration,IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+                .saveAccountInfoNew(rdMmAccountInfo,integration,IntegrationNameConsts.BOP, rdMmAccountLogList, null,shopCommonMessages,shopMemberMessages);
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
                 .put("bopIntegration", rdMmAccountInfo.getBonusBlance().setScale(2,BigDecimal.ROUND_HALF_UP)).put("transferInPoints", walletBlance.setScale(2,BigDecimal.ROUND_HALF_UP))
                 .put("shpIntegration", rdMmAccountInfo.getWalletBlance().setScale(2,BigDecimal.ROUND_HALF_UP)));
@@ -250,7 +275,30 @@ public class UserIntegrationAPIController extends BaseController {
         RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd, bankCardId);
         rdMmAccountLogList.add(rdMmAccountLog);
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
-        Integer transNumber = rdMmAccountInfoService.saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null);
+        ArrayList<ShopCommonMessage> shopCommonMessages = new ArrayList<>();
+        ArrayList<ShopMemberMessage> shopMemberMessages = new ArrayList<>();
+/*        ShopCommonMessage commonMessage1 = new ShopCommonMessage();
+        Long msgid = twiterIdService.getTwiterId();
+        commonMessage1.setId(msgid);
+        commonMessage1.setTitle("积分提现");
+        commonMessage1.setBizId(0L);
+        commonMessage1.setBizType(2);
+        commonMessage1.setContent("您已成功将"+integration+"点奖励积分提现到银行卡"+bankCardId+"，请在奖励积分账户查看明细");
+        commonMessage1.setCreateTime(new Date());
+        commonMessage1.setSendUid(member.getMmCode());
+        commonMessage1.setType(1);
+        commonMessage1.setOnLine(1);
+        commonMessage1.setIsTop(1);
+        shopCommonMessages.add(commonMessage1);
+        ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
+        shopMemberMessage.setId(twiterIdService.getTwiterId());
+        shopMemberMessage.setMsgId(msgid);
+        shopMemberMessage.setBizType(2);
+        shopMemberMessage.setIsRead(0);
+        shopMemberMessage.setCreateTime(new Date());
+        shopMemberMessage.setUid(Long.parseLong(member.getMmCode()));
+        shopMemberMessages.add(shopMemberMessage);*/
+        Integer transNumber = rdMmAccountInfoService.saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null, shopCommonMessages, shopMemberMessages);
         // TODO: 2018/12/28 待处理
         return ApiUtils.success(Paramap.create().put("bankCardCode",
             "****     ****     ****     " + rdMmBank.getAccCode().substring(rdMmBank.getAccCode().length() - 4))
@@ -469,6 +517,9 @@ public class UserIntegrationAPIController extends BaseController {
             .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        if(shopMember.getMmCode().equals(accentMemberId+"")){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "转出账户不能是自己");
+        }
         if (integration <= 0) {
             return ApiUtils.error("所转积分不合理");
         }
@@ -512,9 +563,55 @@ public class UserIntegrationAPIController extends BaseController {
         List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
         rdMmAccountLogList.add(rdMmAccountLogTT);
         rdMmAccountLogList.add(rdMmAccountLogTF);
+        ArrayList<ShopCommonMessage> shopCommonMessages = new ArrayList<>();
+        ArrayList<ShopMemberMessage> shopMemberMessages = new ArrayList<>();
+        //转出者积分账户消息通知生成
+        ShopCommonMessage commonMessage1 = new ShopCommonMessage();
+        Long msgid = twiterIdService.getTwiterId();
+        commonMessage1.setId(msgid);
+        commonMessage1.setTitle("积分扣减");
+        commonMessage1.setBizId(0L);
+        commonMessage1.setBizType(2);
+        commonMessage1.setContent("您已成功将"+integration+"点购物积分转给"+accentMemberId+"会员");
+        commonMessage1.setCreateTime(new Date());
+        commonMessage1.setSendUid(member.getMmCode());
+        commonMessage1.setType(1);
+        commonMessage1.setOnLine(1);
+        commonMessage1.setIsTop(1);
+        shopCommonMessages.add(commonMessage1);
+        ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
+        shopMemberMessage.setId(twiterIdService.getTwiterId());
+        shopMemberMessage.setMsgId(msgid);
+        shopMemberMessage.setBizType(2);
+        shopMemberMessage.setIsRead(0);
+        shopMemberMessage.setCreateTime(new Date());
+        shopMemberMessage.setUid(Long.parseLong(member.getMmCode()));
+        shopMemberMessages.add(shopMemberMessage);
+        //接收者积分账户消息通知生成
+        ShopCommonMessage commonMessage2 = new ShopCommonMessage();
+        Long msgid1 = twiterIdService.getTwiterId();
+        commonMessage2.setId(msgid1);
+        commonMessage2.setTitle("积分到账");
+        commonMessage2.setBizId(0L);
+        commonMessage2.setBizType(2);
+        commonMessage2.setContent("您已成功收到"+member.getMmCode()+"会员转来的购物积分"+integration+"点，请在购物积分账户查看明细");
+        commonMessage2.setCreateTime(new Date());
+        commonMessage2.setSendUid(accentMemberId+"");
+        commonMessage2.setType(1);
+        commonMessage2.setOnLine(1);
+        commonMessage2.setIsTop(1);
+        shopCommonMessages.add(commonMessage2);
+        ShopMemberMessage shopMemberMessage2 = new ShopMemberMessage();
+        shopMemberMessage2.setId(twiterIdService.getTwiterId());
+        shopMemberMessage2.setMsgId(msgid1);
+        shopMemberMessage2.setBizType(2);
+        shopMemberMessage2.setIsRead(0);
+        shopMemberMessage2.setCreateTime(new Date());
+        shopMemberMessage2.setUid(accentMemberId);
+        shopMemberMessages.add(shopMemberMessage2);
         Integer transNumber = rdMmAccountInfoService
             .saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.SHP, rdMmAccountLogList,
-                accentMmAccountInfo);
+                accentMmAccountInfo, shopCommonMessages, shopMemberMessages);
         // TODO: 2018/12/28 待实现 
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
             .put("memberName", accentMember.getMmNickName()).put("memberMobile", accentMember.getMobile())

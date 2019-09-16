@@ -149,6 +149,7 @@ public class GoodsController extends BaseController {
                 build.add(0, GoodsListResult.buildItem(shopGoods, prefix, wapServer));
             }
         }
+        build=shopGoodsGoodsService.addJoinNum(build,goodsId);
         resultMap.put("goodsList", build);
         return ApiUtils.success(resultMap);
 //        }else{

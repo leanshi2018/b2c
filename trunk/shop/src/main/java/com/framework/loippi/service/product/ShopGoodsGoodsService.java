@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.entity.product.ShopGoodsGoods;
+import com.framework.loippi.result.common.goods.GoodsListResult;
 import com.framework.loippi.service.GenericService;
 
 /**
@@ -17,4 +18,6 @@ public interface ShopGoodsGoodsService  extends GenericService<ShopGoodsGoods, L
 	List<ShopGoodsGoods> findGoodsGoodsByGoodsId(Long goodsId1);
 
 	ShopGoodsGoods findGoodsGoods(Map<String, Object> map1);
+
+    List<GoodsListResult> addJoinNum(List<GoodsListResult> build, Long goodsId);
 }

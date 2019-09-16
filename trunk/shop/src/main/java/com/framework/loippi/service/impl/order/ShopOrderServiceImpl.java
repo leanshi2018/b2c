@@ -422,6 +422,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         message.setIsTop(1);
         message.setCreateTime(new Date());
         message.setBizType(3);
+        message.setBizId(orderId);
         message.setTitle(" 订单编号：" + order.getOrderSn());
         StringBuffer shareUrl = new StringBuffer();
         shareUrl.append("<ol class='list-paddingleft-2' style='list-style-type: decimal;'>");
@@ -498,10 +499,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                 BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
                 //BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
+                if(order.getOrderType()==1){
+                    rdMmRelation.setARetail(money.subtract(orderMoney));
+                }
                 //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                 if (money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
-                    rdMmRelation.setARetail(money.subtract(orderMoney));
                     rdMmRelation.setRank(0);
                     rdMmRelationService.update(rdMmRelation);
                     //进行用户降级通知
@@ -528,7 +531,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     shopMemberMessageDao.insert(shopMemberMessage);
                 }else {
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
-                    rdMmRelation.setARetail(money.subtract(orderMoney));
                     rdMmRelationService.update(rdMmRelation);
                 }
             }
@@ -1349,6 +1351,28 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             rdMmAccountLog.setTransDate(new Date());
             rdMmAccountLogService.save(rdMmAccountLog);
             rdMmAccountInfoService.update(rdMmAccountInfo);
+            //退还积分消息
+            ShopCommonMessage shopCommonMessage = new ShopCommonMessage();
+            Long twiterId = twiterIdService.getTwiterId();
+            shopCommonMessage.setId(twiterId);
+            shopCommonMessage.setBizId(order.getId());
+            shopCommonMessage.setBizType(2);
+            shopCommonMessage.setTitle("获得积分");
+            shopCommonMessage.setContent("您因取消订单【订单号"+order.getOrderSn()+"】，获得购物积分"+order.getUsePointNum()+"，已加入购物积分账户");
+            shopCommonMessage.setCreateTime(new Date());
+            shopCommonMessage.setSendUid(order.getBuyerId()+"");
+            shopCommonMessage.setType(1);
+            shopCommonMessage.setOnLine(1);
+            shopCommonMessage.setIsTop(1);
+            shopCommonMessageDao.insert(shopCommonMessage);
+            ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
+            shopMemberMessage.setId(twiterIdService.getTwiterId());
+            shopMemberMessage.setMsgId(twiterId);
+            shopMemberMessage.setBizType(2);
+            shopMemberMessage.setCreateTime(new Date());
+            shopMemberMessage.setUid(order.getBuyerId());
+            shopMemberMessage.setIsRead(0);
+            shopMemberMessageDao.insert(shopMemberMessage);
         }
 //        }
     }
@@ -1692,6 +1716,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         message.setOnLine(1);
         message.setCreateTime(new Date());
         message.setBizType(3);
+        message.setBizId(orderId);
         message.setIsTop(1);
         message.setTitle(" 订单编号：" + order.getOrderSn());
         StringBuffer shareUrl = new StringBuffer();
@@ -1842,6 +1867,29 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 order.setTradeSn(tradeSn);
                 order.setPaymentBranch(paymentBranch);
                 orderDao.update(order);
+                if(order.getUsePointNum()>0){//如果订单支付使用了积分，则创建使用积分消息
+                    ShopCommonMessage message=new ShopCommonMessage();
+                    message.setSendUid(order.getBuyerId()+"");
+                    message.setType(1);
+                    message.setOnLine(1);
+                    message.setCreateTime(new Date());
+                    message.setBizType(2);
+                    message.setIsTop(1);
+                    message.setCreateTime(new Date());
+                    message.setTitle("积分消费");
+                    message.setContent("您因订单支付【订单号"+order.getOrderSn()+"】，扣减购物积分"+order.getUsePointNum()+"，请在购物积分账户查看明细");
+                    Long msgId = twiterIdService.getTwiterId();
+                    message.setId(msgId);
+                    shopCommonMessageDao.insert(message);
+                    ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                    shopMemberMessage.setBizType(2);
+                    shopMemberMessage.setCreateTime(new Date());
+                    shopMemberMessage.setId(twiterIdService.getTwiterId());
+                    shopMemberMessage.setIsRead(0);
+                    shopMemberMessage.setMsgId(msgId);
+                    shopMemberMessage.setUid(order.getBuyerId());
+                    shopMemberMessageDao.insert(shopMemberMessage);
+                }
                 orderTotalAmount += order.getOrderAmount().doubleValue();
                 //Modify by zc 2019-07-18 TODO
                 RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
@@ -1853,6 +1901,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                     BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
                     BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
+                    if(order.getOrderType()==1){
+                        rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
+                    }
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                     if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                         //进行用户升级通知
@@ -1961,7 +2012,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     //        e.printStackTrace();
                     //    }
                     ////}
-                    rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                     rdMmRelation.setAPpv(ppv.add(orderPpv));
                     rdMmRelationService.update(rdMmRelation);
                 }
@@ -2799,6 +2849,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                         BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
                         BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
+                        if(order.getOrderType()==1){
+                            rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
+                        }
                         //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                         if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                             //进行用户升级通知
@@ -2910,7 +2963,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         //        e.printStackTrace();
                         //    }
                         ////}
-                        rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                         rdMmRelation.setAPpv(ppv.add(orderPpv));
                         rdMmRelationService.update(rdMmRelation);
                     }
@@ -2997,6 +3049,28 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             BigDecimal money = Optional.ofNullable(order.getRefundAmount()).orElse(BigDecimal.valueOf(0));
             BigDecimal ppv = Optional.ofNullable(order.getRefundPpv()).orElse(BigDecimal.ZERO);
             BigDecimal point = Optional.ofNullable(order.getRefundPoint()).orElse(BigDecimal.valueOf(0));
+            //退还积分消息
+            ShopCommonMessage shopCommonMessage = new ShopCommonMessage();
+            Long twiterId = twiterIdService.getTwiterId();
+            shopCommonMessage.setId(twiterId);
+            shopCommonMessage.setBizId(order.getId());
+            shopCommonMessage.setBizType(2);
+            shopCommonMessage.setTitle("获得积分");
+            shopCommonMessage.setContent("您因订单退款【订单号"+order.getOrderSn()+"】，获得购物积分"+point+"，已加入购物积分账户");
+            shopCommonMessage.setCreateTime(new Date());
+            shopCommonMessage.setSendUid(order.getBuyerId()+"");
+            shopCommonMessage.setType(1);
+            shopCommonMessage.setOnLine(1);
+            shopCommonMessage.setIsTop(1);
+            shopCommonMessageDao.insert(shopCommonMessage);
+            ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
+            shopMemberMessage.setId(twiterIdService.getTwiterId());
+            shopMemberMessage.setMsgId(twiterId);
+            shopMemberMessage.setBizType(2);
+            shopMemberMessage.setCreateTime(new Date());
+            shopMemberMessage.setUid(order.getBuyerId());
+            shopMemberMessage.setIsRead(0);
+            shopMemberMessageDao.insert(shopMemberMessage);
             ShopOrder newShopOrder = new ShopOrder();
             newShopOrder.setId(order.getId());
             newShopOrder.setRefundAmount(money.add(refundReturn.getRefundAmount()));
@@ -3043,7 +3117,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if (aPpv.compareTo(BigDecimal.ZERO) != 0) {
                     orderPpv = aPpv.subtract(refundReturn.getPpv());
                 }
-
+                if(order.getOrderType()==1){
+                    rdMmRelation.setARetail(orderMoney);
+                }
                 /*//降级到vip会员
                 if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 1);
@@ -3053,27 +3129,27 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if (aRetail.compareTo(vipMoney)!=-1&&orderMoney.compareTo(vipMoney)==-1&&rdMmRelation.getNOFlag()==1) {//新会员 退款之前累计购买额大于等于360退款之后小于360降级vip
                     rdMmRelation.setRank(0);
                     //进行用户降级通知
-                    ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
-                    shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
-                    shopCommonMessage.setType(1);
-                    shopCommonMessage.setOnLine(1);
-                    shopCommonMessage.setCreateTime(new Date());
-                    shopCommonMessage.setBizType(2);
-                    shopCommonMessage.setIsTop(1);
-                    shopCommonMessage.setCreateTime(new Date());
-                    shopCommonMessage.setTitle("很遗憾，等级降了");
-                    shopCommonMessage.setContent("您已从VIP会员变成普通会员,多多购物可提升等级哦");
+                    ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
+                    shopCommonMessage1.setSendUid(rdMmRelation.getMmCode());
+                    shopCommonMessage1.setType(1);
+                    shopCommonMessage1.setOnLine(1);
+                    shopCommonMessage1.setCreateTime(new Date());
+                    shopCommonMessage1.setBizType(2);
+                    shopCommonMessage1.setIsTop(1);
+                    shopCommonMessage1.setCreateTime(new Date());
+                    shopCommonMessage1.setTitle("很遗憾，等级降了");
+                    shopCommonMessage1.setContent("您已从VIP会员变成普通会员,多多购物可提升等级哦");
                     Long msgId = twiterIdService.getTwiterId();
-                    shopCommonMessage.setId(msgId);
-                    shopCommonMessageDao.insert(shopCommonMessage);
-                    ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
-                    shopMemberMessage.setBizType(2);
-                    shopMemberMessage.setCreateTime(new Date());
-                    shopMemberMessage.setId(twiterIdService.getTwiterId());
-                    shopMemberMessage.setIsRead(0);
-                    shopMemberMessage.setMsgId(msgId);
-                    shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
-                    shopMemberMessageDao.insert(shopMemberMessage);
+                    shopCommonMessage1.setId(msgId);
+                    shopCommonMessageDao.insert(shopCommonMessage1);
+                    ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                    shopMemberMessage1.setBizType(2);
+                    shopMemberMessage1.setCreateTime(new Date());
+                    shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                    shopMemberMessage1.setIsRead(0);
+                    shopMemberMessage1.setMsgId(msgId);
+                    shopMemberMessage1.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+                    shopMemberMessageDao.insert(shopMemberMessage1);
                 }
                 //************************************************************************************************************
                 //之前大于升级vip的价位 加上这个售后金额小于vip的价位
@@ -3092,7 +3168,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 //    e.printStackTrace();
                 //}
 
-                rdMmRelation.setARetail(orderMoney);
                 if (order.getPpv().compareTo(BigDecimal.ZERO) != 0) {
                     rdMmRelation.setAPpv(orderPpv);
                 }
@@ -3129,8 +3204,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if (aRetail.compareTo(vipMoney) != -1 && orderMoney.compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 0);
                     rdMmRelation.setRank(rdRanks.getRankId());
+                    rdMmRelation.setARetail(orderMoney);
                 }
-                rdMmRelation.setARetail(orderMoney);
                 if (order.getPpv().compareTo(BigDecimal.ZERO) != 0) {
                     rdMmRelation.setAPpv(orderPpv);
                 }
