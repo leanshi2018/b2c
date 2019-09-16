@@ -1,24 +1,15 @@
 package com.framework.loippi.service.impl.common;
 
 
-import com.framework.loippi.dao.product.ShopGoodsDao;
-import com.framework.loippi.dao.product.ShopGoodsGoodsDao;
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsGoods;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.service.common.ProductService;
-import com.framework.loippi.service.product.ShopGoodsSpecService;
-
-import com.framework.loippi.utils.JacksonUtil;
-import com.framework.loippi.utils.Paramap;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import com.framework.loippi.dao.product.ShopGoodsDao;
+import com.framework.loippi.dao.product.ShopGoodsGoodsDao;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.service.common.ProductService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -48,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
             newGoods.setSalenum(salenum < 0 ? 0 : salenum);
             shopGoodsDao.update(newGoods);
             //组合商品不但要扣在组合商品上面 还要扣组合的具体商品
-            if (goods.getGoodsType()==3){
+            /*if (goods.getGoodsType()==3){
                 ShopGoodsSpec spec=shopGoodsSpecService.find(goodsSpec.getId());
                 Map<String, String> specMap = JacksonUtil.readJsonToMap(spec.getSpecGoodsSpec());
                 Map<String, String> goodsMap = JacksonUtil.readJsonToMap(spec.getSpecName());
@@ -76,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
                     shopGoods.setSalenum(salenum < 0 ? 0 : salenum);
                     shopGoodsDao.update(shopGoods);
                 }
-            }
+            }*/
         }
     }
 }
