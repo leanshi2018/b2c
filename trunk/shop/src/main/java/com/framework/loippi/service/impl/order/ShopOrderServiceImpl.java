@@ -1867,7 +1867,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 order.setTradeSn(tradeSn);
                 order.setPaymentBranch(paymentBranch);
                 orderDao.update(order);
-                if(order.getUsePointNum()>0){//如果订单支付使用了积分，则创建使用积分消息
+                if(order.getUsePointNum()!=null&&order.getUsePointNum()>0){//如果订单支付使用了积分，则创建使用积分消息
                     ShopCommonMessage message=new ShopCommonMessage();
                     message.setSendUid(order.getBuyerId()+"");
                     message.setType(1);
