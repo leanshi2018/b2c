@@ -1905,7 +1905,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                     }
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                    if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                    if (order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                         //进行用户升级通知
                         ShopCommonMessage message=new ShopCommonMessage();
                         message.setSendUid(rdMmRelation.getMmCode());
@@ -2853,7 +2853,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                         }
                         //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                        if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                        if (order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                             //进行用户升级通知
                             ShopCommonMessage message=new ShopCommonMessage();
                             message.setSendUid(rdMmRelation.getMmCode());
