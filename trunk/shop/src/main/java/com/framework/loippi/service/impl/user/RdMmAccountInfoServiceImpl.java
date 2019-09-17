@@ -1,6 +1,13 @@
 package com.framework.loippi.service.impl.user;
 
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
@@ -10,15 +17,8 @@ import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
-
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * SERVICE - RdMmAccountInfo(会员账户信息)
@@ -69,11 +69,11 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 
 	@Override
 	public Integer saveAccountInfoNew(RdMmAccountInfo rdMmAccountInfo, Double integration, int bop, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo, ArrayList<ShopCommonMessage> shopCommonMessages, ArrayList<ShopMemberMessage> shopMemberMessages) {
-		if (rdMmAccountInfo!=null){
-			rdMmAccountInfoDao.update(rdMmAccountInfo);
-		}
 		if (accentMmAccountInfo!=null){
 			rdMmAccountInfoDao.update(accentMmAccountInfo);
+		}
+		if (rdMmAccountInfo!=null){
+			rdMmAccountInfoDao.update(rdMmAccountInfo);
 		}
 		String period = rdSysPeriodDao.getSysPeriodService(new Date());
 		rdMmAccountLogList.get(0).setTransPeriod(period);
