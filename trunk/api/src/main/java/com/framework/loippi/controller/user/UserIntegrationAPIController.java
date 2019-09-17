@@ -12,8 +12,6 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.framework.loippi.entity.ShopCommonMessage;
-import com.framework.loippi.entity.ShopMemberMessage;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
@@ -517,6 +517,9 @@ public class UserIntegrationAPIController extends BaseController {
             .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        if(shopMember.getMmCode().equals(accentMemberId+"")){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "转出账户不能是自己");
+        }
         if (integration <= 0) {
             return ApiUtils.error("所转积分不合理");
         }
