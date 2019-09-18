@@ -1,9 +1,16 @@
 package com.framework.loippi.service.impl.user;
 
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,5 +119,13 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 		}
 		shopCommonMessageDao.insert(shopCommonMessage);
 		shopMemberMessageDao.insert(shopMemberMessage);
+	}
+
+	@Override
+	public void updateAddBonusBlance(String mmCode, BigDecimal bonusBlance) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("mmCode",mmCode);
+		map.put("bonusBlance",bonusBlance);
+		rdMmAccountInfoDao.updateAddBonusBlance(map);
 	}
 }

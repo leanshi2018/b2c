@@ -24,6 +24,7 @@
 		<result property="transPeriod" column="TRANS_PERIOD" />
 		<result property="transDesc" column="TRANS_DESC" />
 		<result property="status" column="STATUS" />
+		<result property="accStatus" column="ACC_STATUS" />
 		<result property="washedYn" column="WASHED_YN" />
 		<result property="orignTransNumber" column="ORIGN_TRANS_NUMBER" />
 		<result property="creationBy" column="CREATION_BY" />
@@ -39,17 +40,17 @@
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 TRANS_NUMBER ,BATCH_NUMBER ,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC ,PRESENTATION_FEE_NOW,ACTUAL_WITHDRAWALS
+		 TRANS_NUMBER ,BATCH_NUMBER ,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,ACC_STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC ,PRESENTATION_FEE_NOW,ACTUAL_WITHDRAWALS
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{transNumber},#{batchNumber},#{mmCode},#{mmNickName},#{transTypeCode},#{accType},#{trSourceType},#{trMmCode},#{trBankOid},#{trOrderOid},#{currencyCode},#{blanceBefore},#{amount},#{blanceAfter},#{transDate},#{transPeriod},#{transDesc},#{status},#{washedYn},#{orignTransNumber},#{creationBy},#{creationTime},#{updateBy},#{updateTime},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{presentationFeeNow},#{actualWithdrawals}
+		 #{transNumber},#{batchNumber},#{mmCode},#{mmNickName},#{transTypeCode},#{accType},#{trSourceType},#{trMmCode},#{trBankOid},#{trOrderOid},#{currencyCode},#{blanceBefore},#{amount},#{blanceAfter},#{transDate},#{transPeriod},#{transDesc},#{status},#{accStatus},#{washedYn},#{orignTransNumber},#{creationBy},#{creationTime},#{updateBy},#{updateTime},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{presentationFeeNow},#{actualWithdrawals}
 	</sql>
 	<sql id="base_list_column">
 		TRANS_NUMBER,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC
 	</sql>
 	<sql id="base_list_value_column">
-		#{item.transNumber},#{item.mmCode},#{item.mmNickName},#{item.transTypeCode},#{item.accType},#{item.trSourceType},#{item.trMmCode},#{item.trBankOid},#{item.trOrderOid},#{item.currencyCode},#{item.blanceBefore},#{item.amount},#{item.blanceAfter},#{item.transDate},#{item.transPeriod},#{item.transDesc},#{item.status}
+		#{item.transNumber},#{item.mmCode},#{item.mmNickName},#{item.transTypeCode},#{item.accType},#{item.trSourceType},#{item.trMmCode},#{item.trBankOid},#{item.trOrderOid},#{item.currencyCode},#{item.blanceBefore},#{item.amount},#{item.blanceAfter},#{item.transDate},#{item.transPeriod},#{item.transDesc},#{item.status},#{item.accStatus}
 		 ,#{item.washedYn},#{item.orignTransNumber},#{item.creationBy},#{item.creationTime},#{item.updateBy},#{item.updateTime},#{item.autohrizeBy},#{item.autohrizeTime},#{item.autohrizeDesc}
 	</sql>
 	
@@ -106,8 +107,11 @@
 		<if test="transDesc != null and transDesc != ''">
 			AND TRANS_DESC = #{transDesc,jdbcType=VARCHAR}
 		</if>
-		<if test="status != null and status != ''">
+		<if test="status != null">
 			AND STATUS = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="accStatus != null">
+			AND accStatus = #{accStatus,jdbcType=INTEGER}
 		</if>
 		<if test="washedYn != null and washedYn != ''">
 			AND WASHED_YN = #{washedYn,jdbcType=INTEGER}
@@ -211,6 +215,9 @@
 		</if>
 		<if test="status != null">
 			STATUS = #{status,jdbcType=INTEGER},
+		</if>
+		<if test="accStatus != null">
+			AND accStatus = #{accStatus,jdbcType=INTEGER}
 		</if>
 		<if test="washedYn != null">
 			WASHED_YN = #{washedYn,jdbcType=INTEGER},
@@ -332,5 +339,22 @@
 		</where>
 		order by TRANS_DATE desc
 	</select>
-	
+
+	<select id="findByTransNumber" parameterType="java.lang.Integer" resultMap="RdMmAccountLogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	RD_MM_ACCOUNT_LOG
+		WHERE	TRANS_NUMBER=#{transNumber}
+	</select>
+
+	<update id="updateCancellWD" parameterType="java.util.Map" >
+        UPDATE RD_MM_ACCOUNT_LOG
+        SET
+        STATUS = #{status},
+        ACC_STATUS = #{accStatus},
+        TRANS_PERIOD = #{transPeriod},
+        AUTOHRIZE_DESC = #{autohrizeDesc},
+        AUTOHRIZE_TIME = #{autohrizeTime}
+        WHERE TRANS_NUMBER = #{transNumber}
+    </update>
+
 </mapper> 

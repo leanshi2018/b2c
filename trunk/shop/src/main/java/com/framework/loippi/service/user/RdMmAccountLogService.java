@@ -12,4 +12,7 @@ import com.framework.loippi.service.GenericService;
  */
 public interface RdMmAccountLogService  extends GenericService<RdMmAccountLog, Long> {
 
+	RdMmAccountLog findByTransNumber(Integer transNumber);
+
+	int updateCancellWD(Integer transNumber);
 }

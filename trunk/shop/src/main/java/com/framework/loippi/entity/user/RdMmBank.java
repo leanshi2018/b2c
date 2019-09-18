@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 import com.framework.loippi.mybatis.eitity.GenericEntity;
 import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.mybatis.ext.annotation.Table;
@@ -93,5 +95,28 @@ public class RdMmBank implements GenericEntity {
 	/** 默认充值账户 */
 	@Column(name = "RECHARGE_DEFAULT" )
 	private String rechargeDefault;
-	
+
+	/** 是否签约  否：0    是：1 */
+	@Column(name = "BANK_SIGNING" )
+	private Integer bankSigning;
+
+	/** 签约状态   未提交签约：0   签约审核中：1   签约审核通过：2 */
+	@Column(name = "SIGNING_STATUS" )
+	private Integer signingStatus;
+
+	/** 签约图片 */
+	@Column(name = "SIGNING_IMAGE" )
+	private String signingImage;
+
+	/** 申请签约时间 */
+	@Column(name = "CREATE_TIME" )
+	private Date createTime;
+
+	/** 授权人 */
+	@Column(name = "AUTOHRIZE_BY" )
+	private String autohrizeBy;
+
+	/** 授权时间 */
+	@Column(name = "AUTOHRIZE_TIME" )
+	private Date autohrizeTime;
 }

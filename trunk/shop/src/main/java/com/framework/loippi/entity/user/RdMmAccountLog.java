@@ -1,15 +1,15 @@
 package com.framework.loippi.entity.user;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 会员账户交易日志表
@@ -133,7 +133,13 @@ CSH：现金 */
 3：已授权 */
 	@Column(name = "STATUS" )
 	private Integer status;
-	
+
+	/**
+	 *提现交易标志 0：未完成 1：失败  2：成功
+	 */
+	@Column(name = "ACC_STATUS" )
+	private Integer accStatus;
+
 	/** 冲正标记
 0：否
 1：是（冲正单） */

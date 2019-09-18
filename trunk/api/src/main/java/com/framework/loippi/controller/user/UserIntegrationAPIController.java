@@ -260,6 +260,12 @@ public class UserIntegrationAPIController extends BaseController {
         if (rdMmBank == null) {
             return ApiUtils.error("不存在该银行卡");
         }
+        if (rdMmBank.getBankSigning()==0){
+            if (rdMmBank.getSigningStatus()==1){
+                return ApiUtils.error("该银行卡签约正在审核中，审核通过后再提现");
+            }
+            return ApiUtils.error("该银行卡还未签约或签约失败");
+        }
 
         List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
             .findList(Paramap.create().put("order", "RID desc"));
@@ -307,6 +313,32 @@ public class UserIntegrationAPIController extends BaseController {
 
         /*return ApiUtils.error("该功能在升级，请耐心等待！");*/
     }
+
+    //取消奖励积分提现申请
+    @RequestMapping(value = "/bop/CancellWD.json")
+    public String bopCancellWD(HttpServletRequest request, Integer transNumber) {
+
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmAccountLog accountLog = RdMmAccountLogService.findByTransNumber(transNumber);
+        if (accountLog==null){
+            return ApiUtils.error("该提现申请不存在");
+        }
+        BigDecimal amount = accountLog.getAmount();//提现金额
+        String mmCode = accountLog.getMmCode();
+        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode", mmCode);
+        BigDecimal bonusBlance = accountInfo.getBonusBlance();//奖励账户余额
+        //取消提现申请
+        int i = RdMmAccountLogService.updateCancellWD(transNumber);
+        if (i==1){
+            bonusBlance = bonusBlance.add(amount);
+            //修改奖励积分余额
+            rdMmAccountInfoService.updateAddBonusBlance(mmCode,bonusBlance);
+            return ApiUtils.success();
+        }else{
+            return ApiUtils.error("取消失败");
+        }
+    }
+
 
     //购物积分转出
     @RequestMapping(value = "/shp/transferOut.json")

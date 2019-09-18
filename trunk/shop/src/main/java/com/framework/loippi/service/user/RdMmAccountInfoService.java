@@ -1,14 +1,15 @@
 package com.framework.loippi.service.user;
 
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.service.GenericService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * SERVICE - RdMmAccountInfo(会员账户信息)
@@ -27,4 +28,6 @@ public interface RdMmAccountInfoService  extends GenericService<RdMmAccountInfo,
     Integer saveAccountInfoNew(RdMmAccountInfo rdMmAccountInfo, Double integration, int bop, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo, ArrayList<ShopCommonMessage> shopCommonMessages, ArrayList<ShopMemberMessage> shopMemberMessages);
 
     void saveAccountInfo2(RdMmAccountInfo rdMmAccountInfo, int pui, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo, ShopCommonMessage shopCommonMessage, ShopMemberMessage shopMemberMessage);
+
+	void updateAddBonusBlance(String mmCode, BigDecimal bonusBlance);
 }

@@ -194,5 +194,9 @@
 			<include refid="where_column" />
 		</where>
 	</select>
-	
+
+	<update id="updateAddBonusBlance" parameterType="map">
+        update RD_MM_ACCOUNT_INFO set BONUS_BLANCE = #{bonusBlance} where MM_CODE = #{mmCode}
+    </update>
+
 </mapper> 
