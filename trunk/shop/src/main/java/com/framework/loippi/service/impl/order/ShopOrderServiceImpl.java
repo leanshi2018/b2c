@@ -503,7 +503,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     rdMmRelation.setARetail(money.subtract(orderMoney));
                 }
                 //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                if (money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
+                if (order.getOrderType()==1&&money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
                     rdMmRelation.setRank(0);
                     rdMmRelationService.update(rdMmRelation);
@@ -1867,7 +1867,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 order.setTradeSn(tradeSn);
                 order.setPaymentBranch(paymentBranch);
                 orderDao.update(order);
-                if(order.getUsePointNum()>0){//如果订单支付使用了积分，则创建使用积分消息
+                if(order.getUsePointNum()!=null&&order.getUsePointNum()>0){//如果订单支付使用了积分，则创建使用积分消息
                     ShopCommonMessage message=new ShopCommonMessage();
                     message.setSendUid(order.getBuyerId()+"");
                     message.setType(1);
@@ -1905,7 +1905,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                     }
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                    if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                    if (order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                         //进行用户升级通知
                         ShopCommonMessage message=new ShopCommonMessage();
                         message.setSendUid(rdMmRelation.getMmCode());
@@ -2853,7 +2853,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                         }
                         //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                        if (money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                        if (order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                             //进行用户升级通知
                             ShopCommonMessage message=new ShopCommonMessage();
                             message.setSendUid(rdMmRelation.getMmCode());
@@ -3126,7 +3126,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }*/
                 //******************************************降级到普通会员****************************************************************** TODO 修改by zc 2019-07-24
-                if (aRetail.compareTo(vipMoney)!=-1&&orderMoney.compareTo(vipMoney)==-1&&rdMmRelation.getNOFlag()==1) {//新会员 退款之前累计购买额大于等于360退款之后小于360降级vip
+                if (order.getOrderType()==1&&aRetail.compareTo(vipMoney)!=-1&&orderMoney.compareTo(vipMoney)==-1&&rdMmRelation.getNOFlag()==1) {//新会员 退款之前累计购买额大于等于360退款之后小于360降级vip
                     rdMmRelation.setRank(0);
                     //进行用户降级通知
                     ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
