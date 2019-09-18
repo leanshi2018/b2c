@@ -1,6 +1,16 @@
 package com.framework.loippi.service.impl.user;
 
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
@@ -10,15 +20,8 @@ import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
-
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * SERVICE - RdMmAccountInfo(会员账户信息)
@@ -112,5 +115,13 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 		}
 		shopCommonMessageDao.insert(shopCommonMessage);
 		shopMemberMessageDao.insert(shopMemberMessage);
+	}
+
+	@Override
+	public void updateAddBonusBlance(String mmCode, BigDecimal bonusBlance) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("mmCode",mmCode);
+		map.put("bonusBlance",bonusBlance);
+		rdMmAccountInfoDao.updateAddBonusBlance(map);
 	}
 }

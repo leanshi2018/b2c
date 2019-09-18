@@ -24,15 +24,23 @@
 		<result property="paymentDefault" column="PAYMENT_DEFAULT" />
 		<result property="withdrawDefault" column="WITHDRAW_DEFAULT" />
 		<result property="rechargeDefault" column="RECHARGE_DEFAULT" />
+		<result property="bankSigning" column="BANK_SIGNING" />
+		<result property="signingStatus" column="SIGNING_STATUS" />
+		<result property="signingImage" column="SIGNING_IMAGE" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="autohrizeBy" column="AUTOHRIZE_BY" />
+		<result property="autohrizeTime" column="AUTOHRIZE_TIME" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 OID ,MM_CODE ,ACC_TYPE ,CURRENCY ,ACC_CODE ,ACC_NAME ,BANK_CODE ,BANK_DETAIL ,MOBILE ,VALID_THRU ,CVV2 ,ID_CARD_CODE ,ID_CARD_FACADE ,ID_CARD_BACK ,DEFAULTBANK ,PAYMENT_DEFAULT ,WITHDRAW_DEFAULT ,RECHARGE_DEFAULT
+		 OID ,MM_CODE ,ACC_TYPE ,CURRENCY ,ACC_CODE ,ACC_NAME ,BANK_CODE ,BANK_DETAIL ,MOBILE ,VALID_THRU ,CVV2 ,ID_CARD_CODE ,ID_CARD_FACADE ,ID_CARD_BACK ,
+		 DEFAULTBANK ,PAYMENT_DEFAULT ,WITHDRAW_DEFAULT ,RECHARGE_DEFAULT ,BANK_SIGNING ,SIGNING_STATUS ,SIGNING_IMAGE ,CREATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{oid},#{mmCode},#{accType},#{currency},#{accCode},#{accName},#{bankCode},#{bankDetail},#{mobile},#{validThru},#{cvv2},#{idCardCode},#{idCardFacade},#{idCardBack},#{defaultbank},#{paymentDefault},#{withdrawDefault},#{rechargeDefault}
+		 #{oid},#{mmCode},#{accType},#{currency},#{accCode},#{accName},#{bankCode},#{bankDetail},#{mobile},#{validThru},#{cvv2},#{idCardCode},#{idCardFacade},
+		 #{idCardBack},#{defaultbank},#{paymentDefault},#{withdrawDefault},#{rechargeDefault},#{bankSigning},#{signingStatus},#{signingImage},#{createTime},#{autohrizeBy},#{autohrizeTime}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -79,7 +87,7 @@
 		<if test="idCardBack != null and idCardBack != ''">
 			AND ID_CARD_BACK = #{idCardBack,jdbcType=VARCHAR}
 		</if>
-		<if test="defaultbank != null and defaultbank != ''">
+		<if test="defaultbank != null">
 			AND DEFAULTBANK = #{defaultbank,jdbcType=INTEGER}
 		</if>
 		<if test="paymentDefault != null and paymentDefault != ''">
@@ -90,6 +98,24 @@
 		</if>
 		<if test="rechargeDefault != null and rechargeDefault != ''">
 			AND RECHARGE_DEFAULT = #{rechargeDefault,jdbcType=VARCHAR}
+		</if>
+		<if test="bankSigning != null">
+			AND BANK_SIGNING = #{bankSigning,jdbcType=INTEGER}
+		</if>
+		<if test="signingStatus != null">
+			AND SIGNING_STATUS = #{signingStatus,jdbcType=INTEGER}
+		</if>
+		<if test="signingImage != null and signingImage != ''">
+			AND SIGNING_IMAGE = #{signingImage,jdbcType=VARCHAR}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND CREATE_TIME = #{createTime}
+		</if>
+		<if test="autohrizeBy != null and autohrizeBy != ''">
+			AND AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR}
+		</if>
+		<if test="autohrizeTime != null and autohrizeTime != ''">
+			AND AUTOHRIZE_TIME = #{autohrizeTime}
 		</if>
 	</sql>
 	
@@ -148,6 +174,24 @@
 		</if>
 		<if test="rechargeDefault != null and rechargeDefault != ''">
 			RECHARGE_DEFAULT = #{rechargeDefault,jdbcType=VARCHAR},
+		</if>
+		<if test="bankSigning != null">
+			AND BANK_SIGNING = #{bankSigning,jdbcType=INTEGER}
+		</if>
+		<if test="signingStatus != null">
+			AND SIGNING_STATUS = #{signingStatus,jdbcType=INTEGER}
+		</if>
+		<if test="signingImage != null and signingImage != ''">
+			AND SIGNING_IMAGE = #{signingImage,jdbcType=VARCHAR}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND CREATE_TIME = #{createTime}
+		</if>
+		<if test="autohrizeBy != null and autohrizeBy != ''">
+			AND AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR}
+		</if>
+		<if test="autohrizeTime != null and autohrizeTime != ''">
+			AND AUTOHRIZE_TIME = #{autohrizeTime}
 		</if>
 	</sql>
 
@@ -240,5 +284,13 @@
 		where MM_CODE = #{mmCode} and ACC_CODE = #{accCode}
 	</select>
 
+	<update id="updateBankSigning" parameterType="map">
+		UPDATE	RD_MM_BANK
+		SET
+		SIGNING_IMAGE = #{signingImage},
+		SIGNING_STATUS = #{signingStatus},
+		CREATE_TIME = #{createTime}
+		WHERE	OID = #{oid}
+	</update>
 
 </mapper> 

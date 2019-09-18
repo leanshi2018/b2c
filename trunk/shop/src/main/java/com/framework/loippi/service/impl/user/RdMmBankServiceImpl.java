@@ -1,5 +1,6 @@
 package com.framework.loippi.service.impl.user;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,5 +52,15 @@ public class RdMmBankServiceImpl extends GenericServiceImpl<RdMmBank, Long> impl
 		map.put("mmCode",mmCode);
 		map.put("accCode",accCode);
 		return rdMmBankDao.findByCodeAndAccCode(map);
+	}
+
+	@Override
+	public void updateBankSigning(Integer oId, String signingImage) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("oid",oId);
+		map.put("signingImage",signingImage);
+		map.put("signingStatus",1);
+		map.put("createTime",new Date());
+		rdMmBankDao.updateBankSigning(map);
 	}
 }

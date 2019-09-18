@@ -738,6 +738,9 @@ public class UserAPIController extends BaseController {
         } else {
             rdMmBank.setDefaultbank(0);
         }
+        if (rdMmBankList.size()>0){
+            return ApiUtils.error("已有绑定银行卡");
+        }
         rdMmBankService.save(rdMmBank);
         return ApiUtils.success();
     }
@@ -784,6 +787,11 @@ public class UserAPIController extends BaseController {
         } else {
             rdMmBank.setDefaultbank(0);
         }
+
+        if (rdMmBankList.size()>0){
+            return ApiUtils.error("已有绑定银行卡");
+        }
+
         RdMmBank bank = rdMmBankService.findByCodeAndAccCode(member.getMmCode(),param.getAccCode());
         if (bank!=null){
             return ApiUtils.error("该银行卡号已存在");
@@ -837,6 +845,28 @@ public class UserAPIController extends BaseController {
         return ApiUtils.success();
     }
 
+    //银行卡签约
+    @RequestMapping(value = "/bankSigning.json", method = RequestMethod.POST)
+    public String bankSigning(@RequestParam(value = "oId",required = false) Integer oId,
+                              @RequestParam(value = "signingImage",required = false) String signingImage,
+                              HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (member == null) {
+            return ApiUtils.error("请登录");
+        }
+        String mmCode = member.getMmCode();
+
+        if (oId==null){
+            return ApiUtils.error("银行卡编号为空");
+        }
+        if (com.alibaba.druid.util.StringUtils.isEmpty(signingImage)){
+            signingImage = "";
+        }
+        rdMmBankService.updateBankSigning(oId,signingImage);
+
+        return ApiUtils.success();
+    }
+
     //设置默认银行卡
     @RequestMapping(value = "/setdefaultBankCards.json")
     public String addBankCards(HttpServletRequest request, Integer Id) {
@@ -855,6 +885,9 @@ public class UserAPIController extends BaseController {
         RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(Id + ""));
         if (rdMmBank == null) {
             return ApiUtils.error("不存在的银行卡");
+        }
+        if (rdMmBank.getSigningStatus()==1){
+            return ApiUtils.error("该银行卡正在签约审核中，暂不能删除");
         }
         rdMmBankService.delete(Long.parseLong(Id + ""));
         if (rdMmBank.getDefaultbank() == 1) { //如果删除的是默认的 则寻找一个自动为默认
