@@ -118,5 +118,8 @@ public class RdMmRelation implements GenericEntity {
 	/** 新会员注册老会员注册标识 新会员：1 老会员：2 */
 	@Column(name = "N_O_FLAG" )
 	private Integer nOFlag;
-	
+
+	/** 用户累计购买额 */
+	@Column(name = "A_TOTAL" )
+	private BigDecimal aTotal;
 }
