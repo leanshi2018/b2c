@@ -1,12 +1,13 @@
 package com.framework.loippi.result.user;
 
-import com.framework.loippi.entity.user.RdMmBank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.framework.loippi.entity.user.RdMmBank;
 
 /**
  * 打赏积分
@@ -24,6 +25,10 @@ public class BankCardsListResult {
     private String accCode;
     /** 是否是默认提现卡 1是 0不是 */
     private Integer defaultbank;
+    /** 是否签约  否：0    是：1 */
+    private Integer bankSigning;
+    /** 签约状态   未提交签约：0   签约审核中：1   签约审核通过：2 */
+    private Integer signingStatus;
 
 
     public static List<BankCardsListResult> build(List<RdMmBank> rdMmBankList) {
@@ -37,6 +42,8 @@ public class BankCardsListResult {
                 bankCardsListResult.setAccCode(info);
                 bankCardsListResult.setDefaultbank(item.getDefaultbank());
                 bankCardsListResult.setId(item.getOid());
+                bankCardsListResult.setBankSigning(item.getBankSigning());
+                bankCardsListResult.setSigningStatus(item.getSigningStatus());
                 bankCardsListResultList.add(bankCardsListResult);
             }
         }
