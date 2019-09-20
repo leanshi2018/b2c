@@ -156,7 +156,7 @@
 			AND PUSH_STATUS = #{pushStatus}
 		</if>
 		<if test="info !=null and info != ''">
-			AND (MOBILE like CONCAT('%',#{info},'%') or MM_NICK_NAME like CONCAT('%',#{info},'%'))
+			AND (MOBILE like CONCAT('%',#{info},'%') or MM_NICK_NAME like CONCAT('%',#{info},'%')or MM_CODE like CONCAT('%',#{info},'%'))
 		</if>
 		<if test="verificationNickName !=null and verificationNickName != '' and verificationMobile != null and verificationMobile != ''">
 			AND (MM_NICK_NAME = #{verificationNickName} or MOBILE = #{verificationMobile})
