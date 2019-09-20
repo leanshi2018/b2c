@@ -24,6 +24,7 @@
 		<result property="paymentDefault" column="PAYMENT_DEFAULT" />
 		<result property="withdrawDefault" column="WITHDRAW_DEFAULT" />
 		<result property="rechargeDefault" column="RECHARGE_DEFAULT" />
+		<result property="inValid" column="INVALID" />
 		<result property="bankSigning" column="BANK_SIGNING" />
 		<result property="signingStatus" column="SIGNING_STATUS" />
 		<result property="signingImage" column="SIGNING_IMAGE" />
@@ -35,12 +36,12 @@
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 OID ,MM_CODE ,ACC_TYPE ,CURRENCY ,ACC_CODE ,ACC_NAME ,BANK_CODE ,BANK_DETAIL ,MOBILE ,VALID_THRU ,CVV2 ,ID_CARD_CODE ,ID_CARD_FACADE ,ID_CARD_BACK ,
-		 DEFAULTBANK ,PAYMENT_DEFAULT ,WITHDRAW_DEFAULT ,RECHARGE_DEFAULT ,BANK_SIGNING ,SIGNING_STATUS ,SIGNING_IMAGE ,CREATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME
+		 DEFAULTBANK ,PAYMENT_DEFAULT ,WITHDRAW_DEFAULT ,RECHARGE_DEFAULT ,INVALID ,BANK_SIGNING ,SIGNING_STATUS ,SIGNING_IMAGE ,CREATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME
 	</sql>
 	
 	<sql id="base_value_column">
 		 #{oid},#{mmCode},#{accType},#{currency},#{accCode},#{accName},#{bankCode},#{bankDetail},#{mobile},#{validThru},#{cvv2},#{idCardCode},#{idCardFacade},
-		 #{idCardBack},#{defaultbank},#{paymentDefault},#{withdrawDefault},#{rechargeDefault},#{bankSigning},#{signingStatus},#{signingImage},#{createTime},#{autohrizeBy},#{autohrizeTime}
+		 #{idCardBack},#{defaultbank},#{paymentDefault},#{withdrawDefault},#{rechargeDefault},#{inValid},#{bankSigning},#{signingStatus},#{signingImage},#{createTime},#{autohrizeBy},#{autohrizeTime}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -98,6 +99,9 @@
 		</if>
 		<if test="rechargeDefault != null and rechargeDefault != ''">
 			AND RECHARGE_DEFAULT = #{rechargeDefault,jdbcType=VARCHAR}
+		</if>
+		<if test="inValid != null">
+			AND INVALID = #{inValid,jdbcType=INTEGER}
 		</if>
 		<if test="bankSigning != null">
 			AND BANK_SIGNING = #{bankSigning,jdbcType=INTEGER}
@@ -174,6 +178,9 @@
 		</if>
 		<if test="rechargeDefault != null and rechargeDefault != ''">
 			RECHARGE_DEFAULT = #{rechargeDefault,jdbcType=VARCHAR},
+		</if>
+		<if test="inValid != null">
+			AND INVALID = #{inValid,jdbcType=INTEGER}
 		</if>
 		<if test="bankSigning != null">
 			AND BANK_SIGNING = #{bankSigning,jdbcType=INTEGER}
@@ -273,7 +280,7 @@
 		SELECT
 		<include refid="base_column" />
 		FROM RD_MM_BANK
-		<where> 1=1
+		<where> INVALID =1
 			<include refid="where_column" />
 		</where>
 	</select>
@@ -299,6 +306,14 @@
 			DEFAULTBANK = #{defaultbank}
 		</set>
 		WHERE	MM_CODE = #{mmCode}
+	</update>
+
+	<update id="deleteById" parameterType="java.lang.Long">
+		UPDATE	RD_MM_BANK SET INVALID = 0 WHERE OID = #{oId}
+	</update>
+
+	<update id="updateInValid" parameterType="java.lang.Integer">
+		UPDATE	RD_MM_BANK SET INVALID = 1 WHERE OID = #{oId}
 	</update>
 
 </mapper> 
