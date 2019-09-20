@@ -1,6 +1,7 @@
 package com.framework.loippi.service.impl.order;
 
 
+import com.framework.loippi.dao.user.RdMmRelationDao;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -219,6 +220,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private ShopGoodsFreightService shopGoodsFreightService;
     @Resource
     private RdMmRelationService rdMmRelationService;
+    @Resource
+    private RdMmRelationDao rdMmRelationDao;
     @Resource
     private RdRanksService rdRanksService;
     @Resource
@@ -508,7 +511,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
                     rdMmRelation.setATotal(aTotal.subtract(orderMoney));
                     rdMmRelation.setRank(0);
-                    rdMmRelationService.updateEntity(rdMmRelation);
+                    rdMmRelationDao.update(rdMmRelation);
                     //进行用户降级通知
                     ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
                     shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
@@ -534,7 +537,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }else {
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
                     rdMmRelation.setATotal(aTotal.subtract(orderMoney));
-                    rdMmRelationService.updateEntity(rdMmRelation);
+                    rdMmRelationDao.update(rdMmRelation);
                 }
             }
         }
