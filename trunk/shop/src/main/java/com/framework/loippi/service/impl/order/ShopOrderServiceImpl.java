@@ -506,8 +506,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                 if (order.getOrderType()==1&&money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
+                    rdMmRelation.setATotal(aTotal.subtract(orderMoney));
                     rdMmRelation.setRank(0);
-                    rdMmRelationService.update(rdMmRelation);
+                    rdMmRelationService.updateEntity(rdMmRelation);
                     //进行用户降级通知
                     ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
                     shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
@@ -533,7 +534,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }else {
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
                     rdMmRelation.setATotal(aTotal.subtract(orderMoney));
-                    rdMmRelationService.update(rdMmRelation);
+                    rdMmRelationService.updateEntity(rdMmRelation);
                 }
             }
         }
