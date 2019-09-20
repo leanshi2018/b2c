@@ -493,6 +493,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", order.getBuyerId() + "");
             if(rdMmRelation!=null){
                 BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
+                BigDecimal aTotal = Optional.ofNullable(rdMmRelation.getATotal()).orElse(BigDecimal.ZERO);//获得累计购买额
                 BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
                         .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO));
                 BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
@@ -531,6 +532,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     shopMemberMessageDao.insert(shopMemberMessage);
                 }else {
                     rdMmRelation.setAPpv(ppv.subtract(orderPpv));
+                    rdMmRelation.setATotal(aTotal.subtract(orderMoney));
                     rdMmRelationService.update(rdMmRelation);
                 }
             }
@@ -1895,6 +1897,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
                 if (rdMmRelation != null) {
                     BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
+                    BigDecimal aTotal = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计购买额
                     BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
                             .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO));
                     BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
@@ -2013,6 +2016,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     //    }
                     ////}
                     rdMmRelation.setAPpv(ppv.add(orderPpv));
+                    rdMmRelation.setATotal(aTotal.add(orderMoney));
                     rdMmRelationService.update(rdMmRelation);
                 }
             }
@@ -2843,6 +2847,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
                     if (rdMmRelation != null) {//新会员判断累计购买额并影响等级
                         BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
+                        BigDecimal aTotal = Optional.ofNullable(rdMmRelation.getATotal()).orElse(BigDecimal.ZERO);//获得累计购买额
                         BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
                                 .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO));
                         BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
@@ -2964,6 +2969,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         //    }
                         ////}
                         rdMmRelation.setAPpv(ppv.add(orderPpv));
+                        rdMmRelation.setATotal(aTotal.add(orderMoney));
                         rdMmRelationService.update(rdMmRelation);
                     }
                 }
@@ -3101,6 +3107,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", order.getBuyerId());
             if (rdMmRelation != null) {
                 BigDecimal aRetail = rdMmRelation.getARetail();
+                BigDecimal aTotal = rdMmRelation.getATotal();
                 BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
                 //退积分也要转换为钱 用于分辨用户会员等级升降
                 List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
@@ -3111,12 +3118,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
                 int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
                 BigDecimal orderMoney = aRetail.subtract(refundReturn.getRefundAmount().add(new BigDecimal(refundReturn.getRewardPointAmount().doubleValue() * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+                BigDecimal orderMoneyTotal =aTotal.subtract(refundReturn.getRefundAmount().add(new BigDecimal(refundReturn.getRewardPointAmount().doubleValue() * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
                 BigDecimal aPpv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                 BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
                 BigDecimal orderPpv = BigDecimal.ZERO;
-                if (aPpv.compareTo(BigDecimal.ZERO) != 0) {
+                /*if (aPpv.compareTo(BigDecimal.ZERO) != 0) {
                     orderPpv = aPpv.subtract(refundReturn.getPpv());
-                }
+                }*/
+                rdMmRelation.setATotal(orderMoneyTotal);
+                rdMmRelation.setAPpv(aPpv.subtract(refundReturn.getPpv()));
                 if(order.getOrderType()==1){
                     rdMmRelation.setARetail(orderMoney);
                 }
@@ -3168,9 +3178,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 //    e.printStackTrace();
                 //}
 
-                if (order.getPpv().compareTo(BigDecimal.ZERO) != 0) {
+                /*if (order.getPpv().compareTo(BigDecimal.ZERO) != 0) {
                     rdMmRelation.setAPpv(orderPpv);
-                }
+                }*/
                 rdMmRelationService.update(rdMmRelation);
             }
 
@@ -3187,28 +3197,32 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", order.getBuyerId());
             if (rdMmRelation != null) {
                 BigDecimal aRetail = rdMmRelation.getARetail();
+                BigDecimal aTotal = rdMmRelation.getATotal();
                 BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
                 BigDecimal orderMoney = aRetail.subtract(refundReturn.getRefundAmount());
+                BigDecimal orderMoneyTotal = aTotal.subtract(refundReturn.getRefundAmount());
                 BigDecimal aPpv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                 BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
                 BigDecimal orderPpv = BigDecimal.ZERO;
-                if (aPpv.compareTo(BigDecimal.ZERO) != 0) {
+                /*if (aPpv.compareTo(BigDecimal.ZERO) != 0) {
                     orderPpv = aPpv.subtract(refundReturn.getPpv());
-                }
+                }*/
                 /*//降级到vip会员
                 if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }*/
                 //之前大于升级vip的价位 加上这个售后金额小于vip的价位
-                if (aRetail.compareTo(vipMoney) != -1 && orderMoney.compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
+                if (order.getOrderType()==1&&aRetail.compareTo(vipMoney) != -1 && orderMoney.compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 0);
                     rdMmRelation.setRank(rdRanks.getRankId());
                     rdMmRelation.setARetail(orderMoney);
                 }
-                if (order.getPpv().compareTo(BigDecimal.ZERO) != 0) {
+                /*if (order.getPpv().compareTo(BigDecimal.ZERO) != 0) {
                     rdMmRelation.setAPpv(orderPpv);
-                }
+                }*/
+                rdMmRelation.setATotal(orderMoneyTotal);
+                rdMmRelation.setAPpv(aPpv.subtract(refundReturn.getPpv()));
                 rdMmRelationService.update(rdMmRelation);
             }
         }

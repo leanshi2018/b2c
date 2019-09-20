@@ -164,7 +164,7 @@ public class SubordinateUserInformationResult {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String formatStr = format.format(creationDate);
         result.setCreateTime(formatStr);//设置会员加入时间
-        result.setTotalMoney(Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO));//设置累计购货额
+        result.setTotalMoney(Optional.ofNullable(rdMmRelation.getATotal()).orElse(BigDecimal.ZERO));//设置累计购货额
         Optional<OrderSumPpv> optional = Optional.ofNullable(periodSumPpv);
         result.setPeriodMoney(optional.map(OrderSumPpv::getTotalmoney).orElse(BigDecimal.ZERO));
         //result.setPeriodMoney(Optional.ofNullable(periodSumPpv.getTotalmoney()).orElse(BigDecimal.ZERO));//设置当期累计购货额
@@ -191,7 +191,7 @@ public class SubordinateUserInformationResult {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String formatStr = format.format(creationDate);
         result.setCreateTime(formatStr);//设置会员加入时间
-        result.setTotalMoney(Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO));//设置累计购货额
+        result.setTotalMoney(Optional.ofNullable(rdMmRelation.getATotal()).orElse(BigDecimal.ZERO));//设置累计购货额
         Optional<OrderSumPpv> optional = Optional.ofNullable(periodSumPpv);
         result.setPeriodMoney(optional.map(OrderSumPpv::getTotalmoney).orElse(BigDecimal.ZERO));
         //result.setPeriodMoney(Optional.ofNullable(periodSumPpv.getTotalmoney()).orElse(BigDecimal.ZERO));//设置当期累计购货额

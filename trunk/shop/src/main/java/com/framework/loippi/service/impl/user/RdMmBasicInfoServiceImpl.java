@@ -105,6 +105,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         rdMmAccountInfo.setPaymentPhone(rdMmBasicInfo.getMobile());
         rdMmRelation.setMmCode(newMmCode);
         rdMmRelation.setAPpv(BigDecimal.ZERO);
+        rdMmRelation.setATotal(BigDecimal.ZERO);
         RdMmEdit rdMmEdit = new RdMmEdit();
         rdMmEdit.setMmCode(newMmCode);
         //会员等级相关

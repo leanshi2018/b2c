@@ -29,15 +29,16 @@
 		<result property="raBindingDate" column="RA_BINDING_DATE" />
 		<result property="isVip" column="IS_VIP" />
 		<result property="nOFlag" column="N_O_FLAG" />
+		<result property="aTotal" column="A_TOTAL" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 MM_CODE ,RANK ,RANK_NOW  ,RANK_PERIOD ,A_RETAIL ,LOGIN_PWD ,PWD_INIT_YN ,MM_STATUS ,MM_POINT_STATUS ,STATUS_PERIOD ,SPONSOR_CODE ,SPONSOR_NAME ,PLACEMENT_CODE ,RA_SPONSOR_STATUS ,RA_STATUS ,RA_SHOP_YN ,RA_CODE ,RA_NICK_NAME ,RA_BINDING_DATE ,IS_VIP,A_PPV,N_O_FLAG
+		 MM_CODE ,RANK ,RANK_NOW  ,RANK_PERIOD ,A_RETAIL ,LOGIN_PWD ,PWD_INIT_YN ,MM_STATUS ,MM_POINT_STATUS ,STATUS_PERIOD ,SPONSOR_CODE ,SPONSOR_NAME ,PLACEMENT_CODE ,RA_SPONSOR_STATUS ,RA_STATUS ,RA_SHOP_YN ,RA_CODE ,RA_NICK_NAME ,RA_BINDING_DATE ,IS_VIP,A_PPV,N_O_FLAG,A_TOTAL
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{mmCode},#{rank},#{rankNow},#{rankPeriod},#{aRetail},#{loginPwd},#{pwdInitYn},#{mmStatus},#{mmPointStatus},#{statusPeriod},#{sponsorCode},#{sponsorName},#{placementCode},#{raSponsorStatus},#{raStatus},#{raShopYn},#{raCode},#{raNickName},#{raBindingDate},#{isVip},#{aPpv},#{nOFlag}
+		 #{mmCode},#{rank},#{rankNow},#{rankPeriod},#{aRetail},#{loginPwd},#{pwdInitYn},#{mmStatus},#{mmPointStatus},#{statusPeriod},#{sponsorCode},#{sponsorName},#{placementCode},#{raSponsorStatus},#{raStatus},#{raShopYn},#{raCode},#{raNickName},#{raBindingDate},#{isVip},#{aPpv},#{nOFlag},#{aTotal}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -108,6 +109,9 @@
 		</if>
 		<if test="nOFlag != null and nOFlag != ''">
 			AND N_O_FLAG = #{nOFlag}
+		</if>
+		<if test="aTotal != null and aTotal != ''">
+			AND A_TOTAL = #{aTotal}
 		</if>
 		<if test="mmCodes!=null and mmCodes!= ''">
 			and MM_CODE in
@@ -185,6 +189,9 @@
 		</if>
 		<if test="nOFlag != null">
 			N_O_FLAG = #{nOFlag,jdbcType=INTEGER},
+		</if>
+		<if test="aTotal != null and aTotal != ''">
+			A_TOTAL = #{aTotal},
 		</if>
 	</sql>
 
