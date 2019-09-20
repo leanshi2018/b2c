@@ -96,6 +96,10 @@ public class RdMmBank implements GenericEntity {
 	@Column(name = "RECHARGE_DEFAULT" )
 	private String rechargeDefault;
 
+	/** 是否有效  否：0    是：1 */
+	@Column(name = "INVALID" )
+	private Integer inValid;
+
 	/** 是否签约  否：0    是：1 */
 	@Column(name = "BANK_SIGNING" )
 	private Integer bankSigning;

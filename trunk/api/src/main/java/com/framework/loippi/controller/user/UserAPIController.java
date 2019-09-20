@@ -789,12 +789,21 @@ public class UserAPIController extends BaseController {
         }
 
         if (rdMmBankList.size()>0){
-            return ApiUtils.error("已有绑定银行卡");
+            for (RdMmBank mmBank : rdMmBankList) {
+                if (mmBank.getInValid()==1){
+                    return ApiUtils.error("已有绑定银行卡");
+                }
+            }
         }
 
         RdMmBank bank = rdMmBankService.findByCodeAndAccCode(member.getMmCode(),param.getAccCode());
         if (bank!=null){
-            return ApiUtils.error("该银行卡号已存在");
+            if (bank.getInValid()==1){
+                return ApiUtils.error("该银行卡号已存在");
+            }
+            if (bank.getInValid()==0){
+                rdMmBankService.updateInValid(bank.getOid());
+            }
         }else {
             rdMmBankService.save(rdMmBank);
         }
@@ -889,7 +898,8 @@ public class UserAPIController extends BaseController {
         if (rdMmBank.getSigningStatus()==1){
             return ApiUtils.error("该银行卡正在签约审核中，暂不能删除");
         }
-        rdMmBankService.delete(Long.parseLong(Id + ""));
+        rdMmBankService.deleteById(Long.parseLong(Id + ""));
+
         if (rdMmBank.getDefaultbank() == 1) { //如果删除的是默认的 则寻找一个自动为默认
             List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
             if (rdMmBankList != null && rdMmBankList.size() > 0) {

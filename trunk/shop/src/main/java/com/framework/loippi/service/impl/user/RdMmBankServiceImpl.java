@@ -68,4 +68,14 @@ public class RdMmBankServiceImpl extends GenericServiceImpl<RdMmBank, Long> impl
 	public void updateDefaultbank(RdMmBank mmBank) {
 		rdMmBankDao.updateDefaultbank(mmBank);
 	}
+
+	@Override
+	public void deleteById(long oId) {
+		rdMmBankDao.deleteById(oId);
+	}
+
+	@Override
+	public void updateInValid(Integer oid) {
+		rdMmBankDao.updateInValid(oid);
+	}
 }
