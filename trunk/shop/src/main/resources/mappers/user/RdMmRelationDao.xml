@@ -190,7 +190,7 @@
 		<if test="nOFlag != null">
 			N_O_FLAG = #{nOFlag,jdbcType=INTEGER},
 		</if>
-		<if test="aTotal != null and aTotal != ''">
+		<if test="aTotal != null">
 			A_TOTAL = #{aTotal},
 		</if>
 	</sql>
