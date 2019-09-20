@@ -895,7 +895,7 @@ public class UserAPIController extends BaseController {
             if (rdMmBankList != null && rdMmBankList.size() > 0) {
                 RdMmBank mmBank = rdMmBankList.get(0);
                 mmBank.setDefaultbank(1);
-                rdMmBankService.update(mmBank);
+                rdMmBankService.updateDefaultbank(mmBank);
             }
         }
         return ApiUtils.success();

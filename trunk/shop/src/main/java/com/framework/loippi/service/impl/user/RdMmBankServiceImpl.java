@@ -63,4 +63,9 @@ public class RdMmBankServiceImpl extends GenericServiceImpl<RdMmBank, Long> impl
 		map.put("createTime",new Date());
 		rdMmBankDao.updateBankSigning(map);
 	}
+
+	@Override
+	public void updateDefaultbank(RdMmBank mmBank) {
+		rdMmBankDao.updateDefaultbank(mmBank);
+	}
 }
