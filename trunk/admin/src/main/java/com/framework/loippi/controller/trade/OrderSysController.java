@@ -601,7 +601,17 @@ public class OrderSysController extends GenericController {
                 }
             }
         }
-        map.put("Products",productLists);
+/*********************************************排除洗发水*************************************************/
+        List<Map<String,Object>> productListss = new ArrayList<Map<String,Object>>();//商品list
+        for (Map<String, Object> product : productLists) {
+            if (!product.get("SKU").equals("6972190330042")){//不是洗发水
+                productListss.add(product);
+            }
+        }
+
+        map.put("Products",productListss);
+/**********************************************************************************************/
+        //map.put("Products",productLists);
         JSONObject jsonObject = JSONObject.fromObject(map);
 
         //发货
