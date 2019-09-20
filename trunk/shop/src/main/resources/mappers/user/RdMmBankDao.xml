@@ -293,4 +293,12 @@
 		WHERE	OID = #{oid}
 	</update>
 
+	<update id="updateDefaultbank" parameterType="com.framework.loippi.entity.user.RdMmBank">
+		UPDATE	RD_MM_BANK
+		<set>
+			DEFAULTBANK = #{defaultbank}
+		</set>
+		WHERE	MM_CODE = #{mmCode}
+	</update>
+
 </mapper> 

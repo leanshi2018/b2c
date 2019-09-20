@@ -18,4 +18,6 @@ public interface RdMmBankDao  extends GenericDao<RdMmBank, Long> {
 	RdMmBank findByCodeAndAccCode(Map<String, Object> map);
 
 	void updateBankSigning(Map<String, Object> map);
+
+	void updateDefaultbank(RdMmBank mmBank);
 }

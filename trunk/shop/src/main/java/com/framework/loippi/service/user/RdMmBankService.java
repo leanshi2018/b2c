@@ -15,4 +15,6 @@ public interface RdMmBankService  extends GenericService<RdMmBank, Long> {
 	RdMmBank findByCodeAndAccCode(String mmCode, String accCode);
 
 	void updateBankSigning(Integer oId, String signingImage);
+
+	void updateDefaultbank(RdMmBank mmBank);
 }
