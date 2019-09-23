@@ -781,6 +781,9 @@ public class UserAPIController extends BaseController {
         rdMmBank.setIdCardCode(param.getIdCard());
         rdMmBank.setIdCardFacade(param.getIdCardFacade());
         rdMmBank.setIdCardBack(param.getIdCardBack());
+        rdMmBank.setInValid(1);
+        rdMmBank.setBankSigning(0);
+        rdMmBank.setSigningStatus(0);
         List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
         if (rdMmBankList.size() == 0) {
             rdMmBank.setDefaultbank(1);
