@@ -297,7 +297,7 @@
 		SIGNING_IMAGE = #{signingImage},
 		SIGNING_STATUS = #{signingStatus},
 		CREATE_TIME = #{createTime}
-		WHEREOID = #{oid}
+		WHERE OID = #{oid}
 	</update>
 
 	<update id="updateDefaultbank" parameterType="map">
