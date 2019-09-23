@@ -65,8 +65,11 @@ public class RdMmBankServiceImpl extends GenericServiceImpl<RdMmBank, Long> impl
 	}
 
 	@Override
-	public void updateDefaultbank(RdMmBank mmBank) {
-		rdMmBankDao.updateDefaultbank(mmBank);
+	public void updateDefaultbank(Integer oId,Integer defaultbank) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("oid",oId);
+		map.put("defaultbank",defaultbank);
+		rdMmBankDao.updateDefaultbank(map);
 	}
 
 	@Override

@@ -16,7 +16,7 @@ public interface RdMmBankService  extends GenericService<RdMmBank, Long> {
 
 	void updateBankSigning(Integer oId, String signingImage);
 
-	void updateDefaultbank(RdMmBank mmBank);
+	void updateDefaultbank(Integer oId,Integer defaultbank);
 
 	void deleteById(long oId);
 

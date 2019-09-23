@@ -903,9 +903,22 @@ public class UserAPIController extends BaseController {
         if (rdMmBank.getDefaultbank() == 1) { //如果删除的是默认的 则寻找一个自动为默认
             List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
             if (rdMmBankList != null && rdMmBankList.size() > 0) {
-                RdMmBank mmBank = rdMmBankList.get(0);
-                mmBank.setDefaultbank(1);
-                rdMmBankService.updateDefaultbank(mmBank);
+                int i = 0;
+                RdMmBank mBank = null;
+                for (RdMmBank mmBank : rdMmBankList) {
+                    if (mmBank.getInValid()==1){
+                        i = 1;
+                        mBank = mmBank;
+                    }
+                }
+                if (i==1){
+                    if (mBank!=null) {
+                        mBank.setDefaultbank(1);
+                        Integer oid = mBank.getOid();
+                        Integer defaultbank = mBank.getDefaultbank();
+                        rdMmBankService.updateDefaultbank(oid,defaultbank);
+                    }
+                }
             }
         }
         return ApiUtils.success();

@@ -297,15 +297,14 @@
 		SIGNING_IMAGE = #{signingImage},
 		SIGNING_STATUS = #{signingStatus},
 		CREATE_TIME = #{createTime}
-		WHERE	OID = #{oid}
+		WHEREOID = #{oid}
 	</update>
 
-	<update id="updateDefaultbank" parameterType="com.framework.loippi.entity.user.RdMmBank">
+	<update id="updateDefaultbank" parameterType="map">
 		UPDATE	RD_MM_BANK
-		<set>
+		set
 			DEFAULTBANK = #{defaultbank}
-		</set>
-		WHERE	MM_CODE = #{mmCode}
+		WHERE	OID = #{oid}
 	</update>
 
 	<update id="deleteById" parameterType="java.lang.Long">
