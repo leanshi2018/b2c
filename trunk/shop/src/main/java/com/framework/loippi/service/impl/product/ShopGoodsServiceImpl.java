@@ -288,6 +288,7 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
                             gs.setSpecIsopen(goodsSpec.getSpecIsopen());
                             //价格
                             gs.setSpecRetailPrice(goodsSpec.getSpecRetailPrice());
+                            gs.setSpecRetailProfit(goodsSpec.getSpecRetailProfit());
                             gs.setSpecMemberPrice(goodsSpec.getSpecMemberPrice());
                             gs.setSpecBigPrice(goodsSpec.getSpecBigPrice());
                             gs.setPpv(goodsSpec.getPpv());
