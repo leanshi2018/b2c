@@ -104,7 +104,7 @@ public class RdMmBank implements GenericEntity {
 	@Column(name = "BANK_SIGNING" )
 	private Integer bankSigning;
 
-	/** 签约状态   未提交签约：0   签约审核中：1   签约审核通过：2 */
+	/** 签约状态    签约审核中：1   签约审核通过：2 */
 	@Column(name = "SIGNING_STATUS" )
 	private Integer signingStatus;
 
