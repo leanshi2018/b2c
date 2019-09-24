@@ -260,12 +260,12 @@ public class UserIntegrationAPIController extends BaseController {
         if (rdMmBank == null) {
             return ApiUtils.error("不存在该银行卡");
         }
-        if (rdMmBank.getBankSigning()==0){
+        /*if (rdMmBank.getBankSigning()==0){
             if (rdMmBank.getSigningStatus()==1){
                 return ApiUtils.error("该银行卡签约正在审核中，审核通过后再提现");
             }
             return ApiUtils.error("该银行卡还未签约或签约失败");
-        }
+        }*/
 
         List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
             .findList(Paramap.create().put("order", "RID desc"));
