@@ -230,7 +230,7 @@ public class OrderSysController extends GenericController {
                             Map<String, Object> resMap = orderShip(id);//发货返回信息
                             String resultS = (String) resMap.get("res");
                             if (!"".equals(resultS)) {
-                                if(!resultS.equals("生成订单出错！System.ArgumentOutOfRangeException: 长度不能小于 0。")){
+                                if(resultS.substring(0,1).equals("{")){
                                     Map maps = (Map) JSON.parse(resultS);
                                     String success = (String) maps.get("success");//是否成功
                                     String orderSn = (String) maps.get("CsRefNo");//订单编号
@@ -289,7 +289,7 @@ public class OrderSysController extends GenericController {
                 Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
                 String resultS = (String)resMap.get("res");
                 if (!"".equals(resultS)){
-                    if(!resultS.equals("生成订单出错！System.ArgumentOutOfRangeException: 长度不能小于 0。")) {
+                    if(resultS.substring(0,1).equals("{")){
                         Map maps = (Map) JSON.parse(resultS);
                         String success = (String) maps.get("success");//是否成功
                         String orderSn = (String) maps.get("CsRefNo");//订单编号
