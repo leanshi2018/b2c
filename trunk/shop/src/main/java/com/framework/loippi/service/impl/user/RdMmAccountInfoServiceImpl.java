@@ -1,6 +1,10 @@
 package com.framework.loippi.service.impl.user;
 
 
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,11 +76,11 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 
 	@Override
 	public Integer saveAccountInfoNew(RdMmAccountInfo rdMmAccountInfo, Double integration, int bop, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo, ArrayList<ShopCommonMessage> shopCommonMessages, ArrayList<ShopMemberMessage> shopMemberMessages) {
-		if (rdMmAccountInfo!=null){
-			rdMmAccountInfoDao.update(rdMmAccountInfo);
-		}
 		if (accentMmAccountInfo!=null){
 			rdMmAccountInfoDao.update(accentMmAccountInfo);
+		}
+		if (rdMmAccountInfo!=null){
+			rdMmAccountInfoDao.update(rdMmAccountInfo);
 		}
 		String period = rdSysPeriodDao.getSysPeriodService(new Date());
 		rdMmAccountLogList.get(0).setTransPeriod(period);
