@@ -899,9 +899,9 @@ public class UserAPIController extends BaseController {
         if (rdMmBank == null) {
             return ApiUtils.error("不存在的银行卡");
         }
-        if (rdMmBank.getSigningStatus()==1){
+        /*if (rdMmBank.getSigningStatus()==1){
             return ApiUtils.error("该银行卡正在签约审核中，暂不能删除");
-        }
+        }*/
         rdMmBankService.deleteById(Long.parseLong(Id + ""));
 
         if (rdMmBank.getDefaultbank() == 1) { //如果删除的是默认的 则寻找一个自动为默认
