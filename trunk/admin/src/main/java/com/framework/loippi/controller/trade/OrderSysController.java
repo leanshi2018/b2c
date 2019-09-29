@@ -428,7 +428,7 @@ public class OrderSysController extends GenericController {
         Map<String,Object> map = new HashMap<String,Object>();//strorderinfo参数
         map.put("Style","1");
         map.put("CustomerID",customerID);
-        map.put("ChannelInfoID","CNZT3");
+        map.put("ChannelInfoID","CNZT-B");
 
         ShopOrder shopOrder = orderService.find(id);
         String orderSn = shopOrder.getOrderSn();//订单编号
