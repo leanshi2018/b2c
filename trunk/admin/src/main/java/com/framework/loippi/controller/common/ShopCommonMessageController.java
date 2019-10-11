@@ -145,18 +145,21 @@ public class ShopCommonMessageController extends GenericController {
 
                 message.setId(msgId);
                 if (message.getType() == 3) {
+                    HashMap<String, String> extras = new HashMap<>();
+                    extras.put("page","homepage");
+                    extras.put("goodsId","kunkun250");
                     //发送消息 极光推送
                     if (sendUidSort == null) {
-                        List<RdMmBasicInfo> shopMemberList = rdMmBasicInfoService.findList(Paramap.create().put("pushStatus", 1));
+                        /*List<RdMmBasicInfo> shopMemberList = rdMmBasicInfoService.findList(Paramap.create().put("pushStatus", 1));
                         int length = shopMemberList.size();
                         sendUidSort = new String[length];
                         for (int i = 0; i < length; i++) {
                             sendUidSort[i] = shopMemberList.get(i).getMmCode() + "";
-                        }
-                        JpushUtils.push2all(message.getContent());
+                        }*/
+                        JpushUtils.push2alias(message.getContent(), extras, 0);
                     }
                     else {
-                        JpushUtils.push2alias(message.getContent(), sendUidSort, null, 0);
+                        JpushUtils.push2alias(message.getContent(), sendUidSort, extras, 0);
                     }
                     //JpushUtils.push2alias(message.getContent(), sendUidSort, null, 0);
                     pushService.sendMessage(message.getContent(), sendUidSort);

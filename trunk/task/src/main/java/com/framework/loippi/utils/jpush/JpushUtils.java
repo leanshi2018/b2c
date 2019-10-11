@@ -83,6 +83,49 @@ public class JpushUtils {
                 .setMessage(Message.newBuilder().setMsgContent(content).build())
                 //生产 环境设置   .setOptions(Options.newBuilder().setApnsProduction(true).setTimeToLive(60*60).build())
                 .setOptions(Options.newBuilder().setTimeToLive(60 * 60).build())
+                .setOptions(Options.newBuilder().setTimeToLive(60 * 60).build())
+                .setNotification(Notification.newBuilder()
+                        .addPlatformNotification(IosNotification.newBuilder()
+                                .setAlert(content)
+                                .setBadge(count)
+                                .setSound("happy.caf")
+                                .addExtras(extras)
+                                .build())
+                        .addPlatformNotification(AndroidNotification.newBuilder()
+                                .setAlert(content)
+                                .addExtras(extras)
+                                .build())
+                        .build())
+                .build();
+        ;
+        try {
+            PushResult result = jpushClient.sendPush(payload);
+            if (result.getOriginalContent() != null) {
+                Map<String, Object> data = JacksonUtil.convertMap(result.getOriginalContent());
+                return data.get("msg_id") + "";
+            }
+            return result.getOriginalContent();
+        } catch (APIConnectionException e) {
+            log.info(e.getMessage());
+            System.err.println(e.getMessage());
+        } catch (APIRequestException e) {
+            log.info(e.getMessage());
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public static String push2alias(String content, Map<String, String> extras, int count) {
+        JPushClient jpushClient = new JPushClient(masterSecret, appKey);
+        content=StripHT(content);
+        //消息一小时，会清除
+        PushPayload payload = PushPayload.newBuilder()
+                .setPlatform(Platform.all())
+                .setAudience(Audience.all())
+                .setMessage(Message.newBuilder().setMsgContent(content).build())
+                //生产 环境设置   .setOptions(Options.newBuilder().setApnsProduction(true).setTimeToLive(60*60).build())
+                .setOptions(Options.newBuilder().setTimeToLive(60 * 60).build())
+                .setOptions(Options.newBuilder().setTimeToLive(60 * 60).build())
                 .setNotification(Notification.newBuilder()
                         .addPlatformNotification(IosNotification.newBuilder()
                                 .setAlert(content)
