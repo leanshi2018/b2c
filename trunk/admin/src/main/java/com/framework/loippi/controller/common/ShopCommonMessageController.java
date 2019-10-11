@@ -153,8 +153,12 @@ public class ShopCommonMessageController extends GenericController {
                         for (int i = 0; i < length; i++) {
                             sendUidSort[i] = shopMemberList.get(i).getMmCode() + "";
                         }
+                        JpushUtils.push2all(message.getContent());
                     }
-                    JpushUtils.push2alias(message.getContent(), sendUidSort, null, 0);
+                    else {
+                        JpushUtils.push2alias(message.getContent(), sendUidSort, null, 0);
+                    }
+                    //JpushUtils.push2alias(message.getContent(), sendUidSort, null, 0);
                     pushService.sendMessage(message.getContent(), sendUidSort);
                 } else if (message.getType() == 2) {
                     //短信发送
