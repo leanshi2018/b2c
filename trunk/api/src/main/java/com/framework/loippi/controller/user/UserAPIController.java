@@ -781,6 +781,10 @@ public class UserAPIController extends BaseController {
         rdMmBank.setIdCardCode(param.getIdCard());
         rdMmBank.setIdCardFacade(param.getIdCardFacade());
         rdMmBank.setIdCardBack(param.getIdCardBack());
+        rdMmBank.setInValid(1);
+        rdMmBank.setBankSigning(0);
+        rdMmBank.setSigningStatus(1);
+        rdMmBank.setCreateTime(new Date());
         List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
         if (rdMmBankList.size() == 0) {
             rdMmBank.setDefaultbank(1);
@@ -895,17 +899,30 @@ public class UserAPIController extends BaseController {
         if (rdMmBank == null) {
             return ApiUtils.error("不存在的银行卡");
         }
-        if (rdMmBank.getSigningStatus()==1){
+        /*if (rdMmBank.getSigningStatus()==1){
             return ApiUtils.error("该银行卡正在签约审核中，暂不能删除");
-        }
+        }*/
         rdMmBankService.deleteById(Long.parseLong(Id + ""));
 
         if (rdMmBank.getDefaultbank() == 1) { //如果删除的是默认的 则寻找一个自动为默认
             List<RdMmBank> rdMmBankList = rdMmBankService.findList("mmCode", member.getMmCode());
             if (rdMmBankList != null && rdMmBankList.size() > 0) {
-                RdMmBank mmBank = rdMmBankList.get(0);
-                mmBank.setDefaultbank(1);
-                rdMmBankService.updateDefaultbank(mmBank);
+                int i = 0;
+                RdMmBank mBank = null;
+                for (RdMmBank mmBank : rdMmBankList) {
+                    if (mmBank.getInValid()==1){
+                        i = 1;
+                        mBank = mmBank;
+                    }
+                }
+                if (i==1){
+                    if (mBank!=null) {
+                        mBank.setDefaultbank(1);
+                        Integer oid = mBank.getOid();
+                        Integer defaultbank = mBank.getDefaultbank();
+                        rdMmBankService.updateDefaultbank(oid,defaultbank);
+                    }
+                }
             }
         }
         return ApiUtils.success();

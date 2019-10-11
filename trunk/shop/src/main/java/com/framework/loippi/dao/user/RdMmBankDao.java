@@ -19,7 +19,7 @@ public interface RdMmBankDao  extends GenericDao<RdMmBank, Long> {
 
 	void updateBankSigning(Map<String, Object> map);
 
-	void updateDefaultbank(RdMmBank mmBank);
+	void updateDefaultbank(Map<String, Object> map);
 
 	void deleteById(long oId);
 

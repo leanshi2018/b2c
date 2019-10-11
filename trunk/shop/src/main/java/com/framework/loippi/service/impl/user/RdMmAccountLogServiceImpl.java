@@ -48,7 +48,7 @@ public class RdMmAccountLogServiceImpl extends GenericServiceImpl<RdMmAccountLog
 		map.put("status",-2);
 		map.put("accStatus",1);
 		map.put("transPeriod",period);
-		map.put("autohrizeDesc","用户本人取消");
+		map.put("autohrizeDesc","用户主动取消");
 		map.put("autohrizeTime",new Date());
 		return rdMmAccountLogDao.updateCancellWD(map);
 	}
