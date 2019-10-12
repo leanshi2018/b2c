@@ -91,8 +91,6 @@ import com.ibm.icu.text.SimpleDateFormat;
 @RequestMapping("/api/user")
 public class UserAPIController extends BaseController {
     @Resource
-    private ShopCommonAreaService commonAreaService;
-    @Resource
     private ShopMemberFavoritesService shopMemberFavoritesService;
     @Resource
     private ShopGoodsService shopGoodsService;
@@ -1440,43 +1438,5 @@ public class UserAPIController extends BaseController {
         //String key = UUID.randomUUID().toString().replaceAll("-", "");
         String upToken = qiniuConfig.getUpToken(QiniuConfig.bucket, key);
         return ApiUtils.success(upToken);
-    }
-
-    @RequestMapping(value = "/getArea", method = RequestMethod.POST)
-    @ResponseBody
-    public List<Map<String, Object>> getArea(@RequestParam(value = "id") String parentid) {
-        List<Map<String, Object>> list = new ArrayList<>();
-        Paramap paramap = Paramap.create().put("isDel", 0).put("areaParentId", 0);
-        List<ShopCommonArea> areas = commonAreaService.findList(paramap);
-        for (ShopCommonArea area : areas) {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("id",area.getId()+"");
-            map.put("pid",area.getAreaParentId()+"");
-            map.put("name",area.getAreaName());
-            List<Map<String, Object>> list1 = new ArrayList<>();
-            Paramap paramap1 = Paramap.create().put("isDel", 0).put("areaParentId", area.getId());
-            List<ShopCommonArea> areas1 = commonAreaService.findList(paramap1);
-            for (ShopCommonArea area1 : areas1) {
-                HashMap<String, Object> map1 = new HashMap<>();
-                map1.put("id",area1.getId()+"");
-                map1.put("pid",area1.getAreaParentId()+"");
-                map1.put("name",area1.getAreaName());
-                List<Map<String, Object>> list2 = new ArrayList<>();
-                Paramap paramap2 = Paramap.create().put("isDel", 0).put("areaParentId", area1.getId());
-                List<ShopCommonArea> areas2 = commonAreaService.findList(paramap2);
-                for (ShopCommonArea area2 : areas2) {
-                    HashMap<String, Object> map2 = new HashMap<>();
-                    map2.put("id",area2.getId()+"");
-                    map2.put("pid",area2.getAreaParentId()+"");
-                    map2.put("name",area2.getAreaName());
-                    list1.add(map2);
-                }
-                map1.put("child",list2);
-                list1.add(map1);
-            }
-            map.put("child",list1);
-            list.add(map);
-        }
-        return list;
     }
 }
