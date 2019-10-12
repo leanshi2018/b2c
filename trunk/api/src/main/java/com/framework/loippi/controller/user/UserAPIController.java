@@ -13,6 +13,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.entity.common.ShopCommonArea;
+import com.framework.loippi.utils.*;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -73,17 +76,6 @@ import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.BankCardUtils;
-import com.framework.loippi.utils.Constants;
-import com.framework.loippi.utils.DateConverter;
-import com.framework.loippi.utils.Dateutil;
-import com.framework.loippi.utils.Digests;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.PostUtil;
-import com.framework.loippi.utils.SmsUtil;
-import com.framework.loippi.utils.StringUtil;
-import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.utils.qiniu.QiniuConfig;
 import com.framework.loippi.vo.address.MemberAddresVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
@@ -98,7 +90,8 @@ import com.ibm.icu.text.SimpleDateFormat;
 @ResponseBody
 @RequestMapping("/api/user")
 public class UserAPIController extends BaseController {
-
+    @Resource
+    private ShopCommonAreaService commonAreaService;
     @Resource
     private ShopMemberFavoritesService shopMemberFavoritesService;
     @Resource
@@ -1447,5 +1440,43 @@ public class UserAPIController extends BaseController {
         //String key = UUID.randomUUID().toString().replaceAll("-", "");
         String upToken = qiniuConfig.getUpToken(QiniuConfig.bucket, key);
         return ApiUtils.success(upToken);
+    }
+
+    @RequestMapping(value = "/getArea", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String, Object>> getArea(@RequestParam(value = "id") String parentid) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Paramap paramap = Paramap.create().put("isDel", 0).put("areaParentId", 0);
+        List<ShopCommonArea> areas = commonAreaService.findList(paramap);
+        for (ShopCommonArea area : areas) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("id",area.getId()+"");
+            map.put("pid",area.getAreaParentId()+"");
+            map.put("name",area.getAreaName());
+            List<Map<String, Object>> list1 = new ArrayList<>();
+            Paramap paramap1 = Paramap.create().put("isDel", 0).put("areaParentId", area.getId());
+            List<ShopCommonArea> areas1 = commonAreaService.findList(paramap1);
+            for (ShopCommonArea area1 : areas1) {
+                HashMap<String, Object> map1 = new HashMap<>();
+                map1.put("id",area1.getId()+"");
+                map1.put("pid",area1.getAreaParentId()+"");
+                map1.put("name",area1.getAreaName());
+                List<Map<String, Object>> list2 = new ArrayList<>();
+                Paramap paramap2 = Paramap.create().put("isDel", 0).put("areaParentId", area1.getId());
+                List<ShopCommonArea> areas2 = commonAreaService.findList(paramap2);
+                for (ShopCommonArea area2 : areas2) {
+                    HashMap<String, Object> map2 = new HashMap<>();
+                    map2.put("id",area2.getId()+"");
+                    map2.put("pid",area2.getAreaParentId()+"");
+                    map2.put("name",area2.getAreaName());
+                    list1.add(map2);
+                }
+                map1.put("child",list2);
+                list1.add(map1);
+            }
+            map.put("child",list1);
+            list.add(map);
+        }
+        return list;
     }
 }
