@@ -1180,6 +1180,33 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
         // todo 推荐反拥
         BigDecimal orderAmount = new BigDecimal(0);
+        /***********************换货订单修改库存***************************/
+/*        for (ShopReturnOrderGoods shopReturnOrderGoods : shopReturnOrderGoodsList) {
+            ShopOrderGoods orderGoods = new ShopOrderGoods();
+            ShopOrderGoods shopOrderGoods=orderGoodsDao.find(shopReturnOrderGoods.getOrderGoodsId());
+        }
+        ShopGoodsSpec goodsSpec = new ShopGoodsSpec();
+        goodsSpec.setId(cartOrderVo.getSpecId());
+        goodsSpec.setGoodsId(cartOrderVo.getGoodsId());
+        goodsSpec.setSpecSalenum(cartOrderVo.getGoodsNum().intValue());
+        ShopGoods goods = goodsDao.find(cartOrderVo.getGoodsId());
+        ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find(cartOrderVo.getSpecId());
+        if (cartOrderVo.getGoodsNum() > shopGoodsSpec.getSpecGoodsStorage()) {
+            throw new RuntimeException("购买数量大于库存");
+        }
+        productService.updateStorage(goodsSpec, goods);
+        if (cartOrderVo.getActivityId() != null) {
+            List<ShopActivityGoodsSpec> shopActivityGoodsSpecList = shopActivityGoodsSpecService.findList(
+                    Paramap.create().put("activityId", cartOrderVo.getActivityId())
+                            .put("specId", cartOrderVo.getSpecId()));
+            if (shopActivityGoodsSpecList != null && shopActivityGoodsSpecList.size() > 0) {
+                ShopActivityGoodsSpec shopActivityGoodsSpec = shopActivityGoodsSpecList.get(0);
+                shopActivityGoodsSpec
+                        .setActivityStock(shopActivityGoodsSpec.getActivityStock() - cartOrderVo.getGoodsNum());
+                shopActivityGoodsSpecService.update(shopActivityGoodsSpec);
+            }
+        }*/
+        /**************************************************/
         /*********************订单项*********************/
         for (ShopReturnOrderGoods shopReturnOrderGoods : shopReturnOrderGoodsList) {
             ShopOrderGoods orderGoods = new ShopOrderGoods();
@@ -1216,12 +1243,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 shopReturnOrderGoods.getPrice().multiply(BigDecimal.valueOf(shopReturnOrderGoods.getGoodsNum()))
                     .setScale(2, BigDecimal.ROUND_HALF_DOWN));
             /*********************更新商品库存+销售数量*********************/
-//                ShopGoodsSpec goodsSpec = new ShopGoodsSpec();
-//                goodsSpec.setId(shopReturnOrderGoods.getSpecId());
-//                goodsSpec.setGoodsId(shopReturnOrderGoods.getGoodsId());
-//                goodsSpec.setSpecSalenum(shopReturnOrderGoods.getGoodsNum().intValue());
-//                ShopGoods goods = goodsDao.find(shopReturnOrderGoods.getGoodsId());
-//                productService.updateStorage(goodsSpec, goods);
+               ShopGoodsSpec goodsSpec = new ShopGoodsSpec();
+                goodsSpec.setId(shopReturnOrderGoods.getSpecId());
+                goodsSpec.setGoodsId(shopReturnOrderGoods.getGoodsId());
+                goodsSpec.setSpecSalenum(shopReturnOrderGoods.getGoodsNum().intValue());
+               ShopGoods goods = goodsDao.find(shopReturnOrderGoods.getGoodsId());
+                productService.updateStorage(goodsSpec, goods);
         }
         // 商品总价格
         order.setGoodsAmount(orderAmount);

@@ -13,6 +13,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.entity.common.ShopCommonArea;
+import com.framework.loippi.utils.*;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -73,17 +76,6 @@ import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.BankCardUtils;
-import com.framework.loippi.utils.Constants;
-import com.framework.loippi.utils.DateConverter;
-import com.framework.loippi.utils.Dateutil;
-import com.framework.loippi.utils.Digests;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.PostUtil;
-import com.framework.loippi.utils.SmsUtil;
-import com.framework.loippi.utils.StringUtil;
-import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.utils.qiniu.QiniuConfig;
 import com.framework.loippi.vo.address.MemberAddresVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
@@ -98,7 +90,6 @@ import com.ibm.icu.text.SimpleDateFormat;
 @ResponseBody
 @RequestMapping("/api/user")
 public class UserAPIController extends BaseController {
-
     @Resource
     private ShopMemberFavoritesService shopMemberFavoritesService;
     @Resource
