@@ -312,13 +312,13 @@ public class OrderSysController extends GenericController {
                                     orderService.updateOrderStatus(orderSn, 25, 10, "", "");
                                 }
                                 List<Map<String, Object>> products = (List<Map<String, Object>>) resMap.get("Products");//发货的数据
-                                for (Map<String, Object> product : products) {
+                                /*for (Map<String, Object> product : products) {
                                     String sku = (String) product.get("SKU");//发货商品规格编号
                                     Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
                                     ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
                                     Long goodsSpecId = goodsSpec.getId();//商品规格id
                                     inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", goodsSpecId, quantity);
-                                }
+                                }*/
 
                                 List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
                                 List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
@@ -397,6 +397,9 @@ public class OrderSysController extends GenericController {
             rdGoodsAdjustment.setAutohrizeTime(new Date());
             rdGoodsAdjustment.setStatus(1L);
             rdGoodsAdjustmentService.insert(rdGoodsAdjustment);
+
+            inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", orderGoods.getSpecId(), orderGoods.getGoodsNum());
+
             //新增订单商品物流信息表
             ShopOrderLogistics shopOrderLogistics = new ShopOrderLogistics();
             shopOrderLogistics.setGoodsId(shopGoodsSpec.getGoodsId());
