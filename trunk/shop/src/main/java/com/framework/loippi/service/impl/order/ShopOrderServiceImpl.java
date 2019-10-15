@@ -1734,7 +1734,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         shareUrl.append("<ol class='list-paddingleft-2' style='list-style-type: decimal;'>");
         shareUrl.append("<li><p>已签收</p></li>");
         shareUrl.append("<li><p>物流单号：" + order.getShippingCode() + "</p></li>");
-        shareUrl.append("<li><p>，去评价可获得奖励积分哦~</p></li>");
+        shareUrl.append("<li><p>去评价可获得换购积分哦~</p></li>");
         message.setContent(shareUrl.toString());
         Long msgId = twiterIdService.getTwiterId();
         message.setId(msgId);
