@@ -218,6 +218,13 @@ public class UserAPIController extends BaseController {
         return ApiUtils.success(result);
     }
 
+    /**
+     * 绑定老系统会员
+     * @param request
+     * @param oMCode
+     * @param password
+     * @return
+     */
     @RequestMapping(value = "/binding.json", method = RequestMethod.POST)
     public String binding(HttpServletRequest request, String oMCode, String password) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);

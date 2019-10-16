@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.MemberRelationLogDao">
+
+	<resultMap id="MemberRelationLogResultMap" type="com.framework.loippi.entity.user.MemberRelationLog">
+		<result column="id" property="id" />
+		<result column="rank_before" property="rankBefore" />
+		<result column="rank_after" property="rankAfter" />
+		<result column="retail_before" property="retailBefore" />
+		<result column="retail_after" property="retailAfter" />
+		<result column="pwd_before" property="pwdBefore" />
+		<result column="pwd_after" property="pwdAfter" />
+		<result column="mm_status_before" property="mStatusBefore" />
+		<result column="mm_status_after"  property="mStatusAfter" />
+		<result column="spo_code_before" property="spoCodeBefore" />
+
+		<result column="spo_code_after" property="spoCodeAfter" />
+		<result column="ra_spo_status_before" property="raSpoStatusBefore" />
+		<result column="ra_spo_status_after" property="raSpoStatusAfter" />
+		<result column="pv_before" property="pvBefore" />
+		<result column="pv_after" property="pvAfter" />
+		<result column="new_old_flag_before" property="newOldFlagBefore" />
+		<result column="new_old_flag_after" property="newOldFlagAfter" />
+		<result column="category" property="category" />
+		<result column="create_time" property="createTime" />
+		<result column="mm_code" property="mCode" />
+	</resultMap>
+
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 id,rank_before,rank_after,retail_before,retail_after,pwd_before,pwd_after,mm_status_before,mm_status_after,
+		 spo_code_before,spo_code_after,ra_spo_status_before,ra_spo_status_after,
+		 pv_before,pv_after,new_old_flag_before,new_old_flag_after,category,create_time,mm_code
+	</sql>
+
+	<sql id="base_value_column">
+		 #{id},#{rankBefore},#{rankAfter},#{retailBefore},#{retailAfter},#{pwdBefore},#{pwdAfter},#{mStatusBefore},#{mStatusAfter},#{spoCodeBefore},
+		 #{spoCodeAfter},#{raSpoStatusBefore},#{raSpoStatusAfter},#{pvBefore},#{pvAfter},#{newOldFlagBefore},#{newOldFlagAfter},#{category},#{createTime},#{mCode}
+	</sql>
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null">
+			AND id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="rankBefore != null">
+			AND rank_before = #{rankBefore,jdbcType=INTEGER}
+		</if>
+		<if test="rankAfter != null">
+			AND rank_after = #{rankAfter,jdbcType=INTEGER}
+		</if>
+		<if test="retailBefore != null">
+			AND retail_before = #{retailBefore,jdbcType=DECIMAL}
+		</if>
+		<if test="retailAfter != null">
+			AND retail_after = #{retailAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="pwdBefore != null and pwdBefore != ''">
+			AND pwd_before = #{pwdBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="pwdAfter != null and pwdAfter != ''">
+			AND pwd_after = #{pwdAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="mStatusBefore != null">
+			AND mm_status_before = #{mStatusBefore,jdbcType=INTEGER}
+		</if>
+		<if test="mStatusAfter != null">
+			AND mm_status_after = #{mStatusAfter,jdbcType=INTEGER}
+		</if>
+		<if test="spoCodeBefore != null and spoCodeBefore != ''">
+			AND spo_code_before = #{spoCodeBefore,jdbcType=VARCHAR}
+		</if>
+		<if test="spoCodeAfter != null and spoCodeAfter != ''">
+			AND spo_code_after = #{spoCodeAfter,jdbcType=VARCHAR}
+		</if>
+		<if test="raSpoStatusBefore != null">
+			AND ra_spo_status_before = #{raSpoStatusBefore,jdbcType=INTEGER}
+		</if>
+		<if test="raSpoStatusAfter != null">
+			AND ra_spo_status_after = #{raSpoStatusAfter,jdbcType=INTEGER}
+		</if>
+		<if test="pvBefore != null">
+			AND pv_before = #{pvBefore,jdbcType=DECIMAL}
+		</if>
+		<if test="pvAfter != null">
+			AND pv_after = #{pvAfter,jdbcType=DECIMAL}
+		</if>
+		<if test="newOldFlagBefore != null">
+			AND new_old_flag_before = #{newOldFlagBefore,jdbcType=INTEGER}
+		</if>
+		<if test="newOldFlagAfter != null">
+			AND new_old_flag_after = #{newOldFlagAfter,jdbcType=INTEGER}
+		</if>
+		<if test="category != null">
+			AND category = #{category,jdbcType=INTEGER}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND create_time = #{createTime}
+		</if>
+		<if test="mCode != null and mCode != ''">
+			AND mm_code = #{mCode,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="id != null">
+			id = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="rankBefore != null">
+			rank_before = #{rankBefore,jdbcType=INTEGER},
+		</if>
+		<if test="rankAfter != null">
+			rank_after = #{rankAfter,jdbcType=INTEGER},
+		</if>
+		<if test="retailBefore != null">
+			retail_before = #{retailBefore,jdbcType=DECIMAL},
+		</if>
+		<if test="retailAfter != null">
+			retail_after = #{retailAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="pwdBefore != null and pwdBefore != ''">
+			pwd_before = #{pwdBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="pwdAfter != null and pwdAfter != ''">
+			pwd_after = #{pwdAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="mStatusBefore != null">
+			mm_status_before = #{mStatusBefore,jdbcType=INTEGER},
+		</if>
+		<if test="mStatusAfter != null">
+			mm_status_after = #{mStatusAfter,jdbcType=INTEGER},
+		</if>
+		<if test="spoCodeBefore != null and spoCodeBefore != ''">
+			spo_code_before = #{spoCodeBefore,jdbcType=VARCHAR},
+		</if>
+		<if test="spoCodeAfter != null and spoCodeAfter != ''">
+			spo_code_after = #{spoCodeAfter,jdbcType=VARCHAR},
+		</if>
+		<if test="raSpoStatusBefore != null">
+			ra_spo_status_before = #{raSpoStatusBefore,jdbcType=INTEGER},
+		</if>
+		<if test="raSpoStatusAfter != null">
+			ra_spo_status_after = #{raSpoStatusAfter,jdbcType=INTEGER},
+		</if>
+		<if test="pvBefore != null">
+			pv_before = #{pvBefore,jdbcType=DECIMAL},
+		</if>
+		<if test="pvAfter != null">
+			pv_after = #{pvAfter,jdbcType=DECIMAL},
+		</if>
+		<if test="newOldFlagBefore != null">
+			new_old_flag_before = #{newOldFlagBefore,jdbcType=INTEGER},
+		</if>
+		<if test="newOldFlagAfter != null">
+			new_old_flag_after = #{newOldFlagAfter,jdbcType=INTEGER},
+		</if>
+		<if test="category != null">
+			category = #{category,jdbcType=INTEGER},
+		</if>
+		<if test="createTime != null and createTime != ''">
+			create_time = #{createTime},
+		</if>
+		<if test="mCode != null and mCode != ''">
+			mm_code = #{mCode,jdbcType=VARCHAR},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="MemberRelationLogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	rd_mm_relation_log
+		WHERE	id=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="MemberRelationLogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	rd_mm_relation_log
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM rd_mm_relation_log
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.MemberRelationLog">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+	          <!--SELECT LAST_INSERT_ID() AS ID    -->
+	    <!--</selectKey>  -->
+		INSERT rd_mm_relation_log
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+<!--	<update id="update" parameterType="com.framework.loippi.entity.user.MemberQualification">
+		UPDATE	rd_dis_qualification
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	MM_CODE = #{mmCode}
+	</update>-->
+	
+	<!-- 删除单条记录 -->
+<!--	<delete id="delete">
+		DELETE	FROM rd_dis_qualification
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>-->
+	
+	<!-- 删除多条记录-->
+<!--	<delete id="deleteAll">
+		DELETE	FROM rd_dis_qualification
+		WHERE	ID	IN
+    	<foreach item="RdMmRelationId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{RdMmRelationId} 
+		</foreach>
+	</delete>-->
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="MemberRelationLogResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	rd_mm_relation_log
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="MemberRelationLogResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM rd_mm_relation_log
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+
+</mapper>

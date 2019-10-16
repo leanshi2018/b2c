@@ -1,5 +1,8 @@
 package com.framework.loippi.service.impl.user;
 
+import com.framework.loippi.dao.user.MemberRelationLogDao;
+import com.framework.loippi.entity.user.MemberRelationLog;
+import com.framework.loippi.service.TwiterIdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +28,12 @@ import java.util.List;
 @Service
 @Transactional
 public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Long> implements RdMmRelationService {
-	
+	@Autowired
+	private TwiterIdService twiterIdService;
 	@Autowired
 	private RdMmRelationDao rdMmRelationDao;
-
+	@Autowired
+	private MemberRelationLogDao memberRelationLogDao;
 	@Autowired
 	private  OldSysRelationshipDao oldSysRelationshipDao;
 	
@@ -45,24 +50,51 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 	 */
 	@Override
 	public void badingAndUpgrade(RdMmRelation rdMmRelation, OldSysRelationship oldSysRelationship) throws Exception{
+		MemberRelationLog relationLog = new MemberRelationLog();
+		relationLog.setId(twiterIdService.getTwiterId());
+		relationLog.setRankBefore(rdMmRelation.getRank());
 		if(rdMmRelation.getRank()<3){
 			rdMmRelation.setRank(3);
+			relationLog.setRankAfter(3);
+		}else {
+			relationLog.setRankAfter(rdMmRelation.getRank());
 		}
+		relationLog.setNewOldFlagBefore(1);
+		relationLog.setNewOldFlagAfter(2);
+		relationLog.setCategory(8);
+		relationLog.setCreateTime(new Date());
+		relationLog.setMCode(rdMmRelation.getMmCode());
 		rdMmRelation.setNOFlag(2);
 		rdMmRelation.setRaShopYn(1);
 		rdMmRelation.setRaStatus(1);
 		oldSysRelationship.setNYnRegistered(1);
 		oldSysRelationship.setNMcode(rdMmRelation.getMmCode());
         oldSysRelationship.setUpdateTime(new Date());
+		memberRelationLogDao.insert(relationLog);
 		oldSysRelationshipDao.update(oldSysRelationship);
 		rdMmRelationDao.update(rdMmRelation);
 	}
 
 	@Override
 	public void badingAndUpgrade2(RdMmRelation rdMmRelation, OldSysRelationship oldSysRelationship, RdMmBasicInfo basicInfo) throws Exception {
+		MemberRelationLog relationLog = new MemberRelationLog();
+		relationLog.setId(twiterIdService.getTwiterId());
+		relationLog.setRankBefore(rdMmRelation.getRank());
 		if(rdMmRelation.getRank()<3){
 			rdMmRelation.setRank(3);
+			relationLog.setRankAfter(3);
+		}else {
+			relationLog.setRankAfter(rdMmRelation.getRank());
 		}
+		relationLog.setNewOldFlagBefore(1);
+		relationLog.setNewOldFlagAfter(2);
+		relationLog.setCategory(8);
+		relationLog.setCreateTime(new Date());
+		relationLog.setMCode(rdMmRelation.getMmCode());
+		relationLog.setSpoCodeBefore(rdMmRelation.getSponsorCode());
+		relationLog.setSpoCodeBefore(basicInfo.getMmCode());
+		relationLog.setRaSpoStatusBefore(0);
+		relationLog.setRaSpoStatusAfter(1);
 		rdMmRelation.setNOFlag(2);
 		rdMmRelation.setRaShopYn(1);
 		rdMmRelation.setRaStatus(1);
@@ -72,6 +104,7 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 		oldSysRelationship.setNYnRegistered(1);
 		oldSysRelationship.setNMcode(rdMmRelation.getMmCode());
 		oldSysRelationship.setUpdateTime(new Date());
+		memberRelationLogDao.insert(relationLog);
 		oldSysRelationshipDao.update(oldSysRelationship);
 		rdMmRelationDao.update(rdMmRelation);
 	}
