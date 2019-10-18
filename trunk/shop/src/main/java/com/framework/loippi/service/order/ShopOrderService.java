@@ -240,6 +240,8 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
      */
     void ProcessingIntegrals(String paysn, Integer integration, RdMmBasicInfo shopMember, ShopOrderPay pay, Integer shoppingPointSr);
 
+    void ProcessingIntegralsCoupon(String paysn, Integer integration, RdMmBasicInfo shopMember, ShopOrderPay pay, Integer shoppingPointSr);
+
     ShopOrder findWithOrderGoodsById(Long orderId);
 
     /**
