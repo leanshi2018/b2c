@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.coupon.CouponDao">
+    <resultMap id="couponResultMap" type="com.framework.loippi.entity.coupon.Coupon">
+        <id property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="couponName" column="coupon_name"/>
+        <result property="couponValue" column="coupon_value"/>
+        <result property="reduceType" column="reduce_type"/>
+        <result property="minAmount" column="min_amount"/>
+        <result property="minMi" column="min_mi"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="useScope" column="use_scope"/>
+        <result property="scopeRemark" column="scope_remark"/>
+        <result property="receiveType" column="receive_type"/>
+        <result property="sendStartTime" column="send_start_time"/>
+        <result property="sendEndTime" column="send_end_time"/>
+        <result property="useStartTime" column="use_start_time"/>
+        <result property="useEndTime" column="use_end_time"/>
+        <result property="personLimitNum" column="person_limit_num"/>
+        <result property="totalLimitNum" column="total_limit_num"/>
+        <result property="receivedNum" column="received_num"/>
+        <result property="rankLimit" column="rank_limit"/>
+        <result property="useNumLimit" column="use_num_limit"/>
+        <result property="channel" column="channel"/>
+        <result property="status" column="status"/>
+        <result property="auditOpinion" column="audit_opinion"/>
+        <result property="remark" column="remark"/>
+        <result property="createId" column="create_id"/>
+        <result property="createName" column="create_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="auditId" column="audit_id"/>
+        <result property="auditName" column="audit_name"/>
+        <result property="auditTime" column="audit_time"/>
+        <result property="updateId" column="update_id"/>
+        <result property="updateName" column="update_name"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,store_id ,store_name ,coupon_name ,coupon_value ,reduce_type ,min_amount ,min_mi ,brand_id ,brand_name ,use_scope ,scope_remark ,receive_type ,send_start_time,
+        send_end_time ,use_start_time ,use_end_time ,person_limit_num ,total_limit_num ,received_num ,rank_limit ,use_num_limit ,channel ,status,audit_opinion,remark,
+        create_id,create_name,create_time,audit_id,audit_name,audit_time,update_id,update_name,update_time
+    </sql>
+
+    <sql id="base_value_column">
+        #{id},#{storeId},#{storeName},#{couponName},#{couponValue},#{reduceType},#{minAmount},#{minMi},#{brandId},#{brandName},
+        #{useScope},#{scopeRemark},#{receiveType},#{sendStartTime},#{sendEndTime},#{useStartTime},#{useEndTime},#{personLimitNum},#{totalLimitNum},#{receivedNum},
+        #{rankLimit},#{useNumLimit},#{channel},#{status},#{auditOpinion},#{remark},#{createId},#{createName},#{createTime},#{auditId},
+        #{auditName},#{auditTime},#{updateId},#{updateName},#{updateTime}
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="storeId != null">
+            AND store_id = #{storeId,jdbcType=BIGINT}
+        </if>
+        <if test="storeName != null and storeName != ''">
+            AND store_name = #{storeName,,jdbcType=VARCHAR}
+        </if>
+        <if test="couponName != null and couponName != ''">
+            AND coupon_name = #{couponName,jdbcType=VARCHAR}
+        </if>
+        <if test="couponValue != null and couponValue != ''">
+            AND coupon_value = #{couponValue,jdbcType=DECIMAL}
+        </if>
+        <if test="reduceType != null">
+            AND reduce_type = #{reduceType,jdbcType=INTEGER}
+        </if>
+        <if test="minAmount != null and minAmount != ''">
+            AND min_amount = #{minAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="minMi != null and minMi != ''">
+            AND min_mi = #{minMi,jdbcType=DECIMAL}
+        </if>
+        <if test="brandId != null">
+            AND brand_id = #{brandId,jdbcType=BIGINT}
+        </if>
+        <if test="brandName != null and brandName != ''">
+            AND brand_name = #{brandName,jdbcType=VARCHAR}
+        </if>
+        <if test="useScope != null">
+            AND use_scope = #{useScope,jdbcType=INTEGER}
+        </if>
+        <if test="scopeRemark != null and scopeRemark != ''">
+            AND scope_remark = #{scopeRemark,jdbcType=VARCHAR}
+        </if>
+        <if test="receiveType != null">
+            AND receive_type = #{receiveType,jdbcType=INTEGER}
+        </if>
+        <if test="sendStartTime != null">
+            AND send_start_time = #{sendStartTime,jdbcType=DATETIME}
+        </if>
+        <if test="sendEndTime != null">
+            AND send_end_time = #{sendEndTime,jdbcType=DATETIME}
+        </if>
+        <if test="useStartTime != null">
+            AND use_start_time = #{useStartTime,jdbcType=DATETIME}
+        </if>
+        <if test="useEndTime != null">
+            AND use_end_time = #{useEndTime,jdbcType=DATETIME}
+        </if>
+        <if test="personLimitNum != null">
+            AND person_limit_num = #{personLimitNum,jdbcType=INTEGER}
+        </if>
+        <if test="totalLimitNum != null">
+            AND total_limit_num = #{totalLimitNum,jdbcType=BIGINT}
+        </if>
+        <if test="receivedNum != null">
+            AND received_num = #{receivedNum,jdbcType=BIGINT}
+        </if>
+        <if test="rankLimit != null and rankLimit != ''">
+            AND rank_limit = #{rankLimit,jdbcType=VARCHAR}
+        </if>
+        <if test="useNumLimit != null">
+            AND use_num_limit = #{useNumLimit,jdbcType=INTEGER}
+        </if>
+        <if test="channel != null">
+            AND channel = #{channel,jdbcType=INTEGER}
+        </if>
+        <if test="status != null">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="auditOpinion != null and auditOpinion != ''">
+            AND audit_opinion = #{auditOpinion,jdbcType=VARCHAR}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+        <if test="createId != null">
+            AND create_id = #{createId,jdbcType=BIGINT}
+        </if>
+        <if test="createName != null and createName != ''">
+            AND create_name = #{createName,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null">
+            and create_time = #{createTime,jdbcType=DATETIME}
+        </if>
+        <if test="auditId != null">
+            AND audit_id = #{auditId,jdbcType=BIGINT}
+        </if>
+        <if test="auditName != null and auditName != ''">
+            AND audit_name = #{auditName,jdbcType=VARCHAR}
+        </if>
+        <if test="auditTime != null">
+            and audit_time = #{auditTime,jdbcType=DATETIME}
+        </if>
+        <if test="updateId != null">
+            AND update_id = #{updateId,jdbcType=BIGINT}
+        </if>
+        <if test="updateName != null and updateName != ''">
+            AND update_name = #{updateName,jdbcType=VARCHAR}
+        </if>
+        <if test="updateTime != null">
+            and update_time = #{updateTime,jdbcType=DATETIME}
+        </if>
+    </sql>
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="storeId != null">
+            store_id = #{storeId,jdbcType=BIGINT},
+        </if>
+        <if test="storeName != null and storeName != ''">
+            store_name = #{storeName,,jdbcType=VARCHAR},
+        </if>
+        <if test="couponName != null and couponName != ''">
+            coupon_name = #{couponName,jdbcType=VARCHAR},
+        </if>
+        <if test="couponValue != null and couponValue != ''">
+            coupon_value = #{couponValue,jdbcType=DECIMAL},
+        </if>
+        <if test="reduceType != null">
+            reduce_type = #{reduceType,jdbcType=INTEGER},
+        </if>
+        <if test="minAmount != null and minAmount != ''">
+            min_amount = #{minAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="minMi != null and minMi != ''">
+            min_mi = #{minMi,jdbcType=DECIMAL},
+        </if>
+        <if test="brandId != null">
+            brand_id = #{brandId,jdbcType=BIGINT},
+        </if>
+        <if test="brandName != null and brandName != ''">
+            brand_name = #{brandName,jdbcType=VARCHAR},
+        </if>
+        <if test="useScope != null">
+            use_scope = #{useScope,jdbcType=INTEGER},
+        </if>
+        <if test="scopeRemark != null and scopeRemark != ''">
+            scope_remark = #{scopeRemark,jdbcType=VARCHAR},
+        </if>
+        <if test="receiveType != null">
+            receive_type = #{receiveType,jdbcType=INTEGER},
+        </if>
+        <if test="sendStartTime != null">
+            send_start_time = #{sendStartTime,jdbcType=DATETIME},
+        </if>
+        <if test="sendEndTime != null">
+            send_end_time = #{sendEndTime,jdbcType=DATETIME},
+        </if>
+        <if test="useStartTime != null">
+            use_start_time = #{useStartTime,jdbcType=DATETIME},
+        </if>
+        <if test="useEndTime != null">
+            use_end_time = #{useEndTime,jdbcType=DATETIME},
+        </if>
+        <if test="personLimitNum != null">
+            person_limit_num = #{personLimitNum,jdbcType=INTEGER},
+        </if>
+        <if test="totalLimitNum != null">
+            total_limit_num = #{totalLimitNum,jdbcType=BIGINT},
+        </if>
+        <if test="receivedNum != null">
+            received_num = #{receivedNum,jdbcType=BIGINT},
+        </if>
+        <if test="rankLimit != null and rankLimit != ''">
+            rank_limit = #{rankLimit,jdbcType=VARCHAR},
+        </if>
+        <if test="useNumLimit != null">
+            use_num_limit = #{useNumLimit,jdbcType=INTEGER},
+        </if>
+        <if test="channel != null">
+            channel = #{channel,jdbcType=INTEGER},
+        </if>
+        <if test="status != null">
+            status = #{status,jdbcType=INTEGER},
+        </if>
+        <if test="auditOpinion != null and auditOpinion != ''">
+            audit_opinion = #{auditOpinion,jdbcType=VARCHAR},
+        </if>
+        <if test="remark != null and remark != ''">
+            remark = #{remark,jdbcType=VARCHAR},
+        </if>
+        <if test="createId != null">
+            create_id = #{createId,jdbcType=BIGINT},
+        </if>
+        <if test="createName != null and createName != ''">
+            create_name = #{createName,jdbcType=VARCHAR},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=DATETIME},
+        </if>
+        <if test="auditId != null">
+            audit_id = #{auditId,jdbcType=BIGINT},
+        </if>
+        <if test="auditName != null and auditName != ''">
+            audit_name = #{auditName,jdbcType=VARCHAR},
+        </if>
+        <if test="auditTime != null">
+            audit_time = #{auditTime,jdbcType=DATETIME},
+        </if>
+        <if test="updateId != null">
+            update_id = #{updateId,jdbcType=BIGINT},
+        </if>
+        <if test="updateName != null and updateName != ''">
+            update_name = #{updateName,jdbcType=VARCHAR},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime,jdbcType=DATETIME},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="couponResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="couponResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_coupon
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.coupon.Coupon">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT rd_coupon
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.coupon.Coupon">
+        UPDATE rd_coupon
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE FROM rd_coupon
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_coupon
+        WHERE ID IN
+        <foreach item="CouponId" index="index" collection="ids" open="(" separator="," close=")">
+            #{CouponId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="couponResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="couponResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        order by use_start_time desc ,send_start_time desc
+    </select>
+
+</mapper>
