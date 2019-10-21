@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.coupon.CouponUserDao">
+    <resultMap id="couponUserResultMap" type="com.framework.loippi.entity.coupon.CouponUser">
+        <id property="id" column="id"/>
+        <result property="mCode" column="mm_code"/>
+        <result property="couponId" column="coupon_id"/>
+        <result property="ownNum" column="own_num"/>
+        <result property="useAbleNum" column="use_able_num"/>
+        <result property="useNum" column="use_num"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,mm_code ,coupon_id ,own_num ,use_able_num ,use_num
+    </sql>
+
+    <sql id="base_value_column">
+        #{id},#{mCode},#{couponId},#{ownNum},#{useAbleNum},#{useNum}
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="mCode != null and mCode != ''">
+            AND mm_code = #{mCode,,jdbcType=VARCHAR}
+        </if>
+        <if test="couponId != null">
+            AND coupon_id = #{couponId,jdbcType=BIGINT}
+        </if>
+        <if test="ownNum != null">
+            AND own_num = #{ownNum,jdbcType=INTEGER}
+        </if>
+        <if test="useAbleNum != null">
+            AND use_able_num = #{useAbleNum,jdbcType=INTEGER}
+        </if>
+        <if test="useNum != null">
+            AND use_num = #{useNum,jdbcType=INTEGER}
+        </if>
+    </sql>
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="mCode != null and mCode != ''">
+            mm_code = #{mCode,,jdbcType=VARCHAR},
+        </if>
+        <if test="couponId != null">
+            coupon_id = #{couponId,jdbcType=BIGINT},
+        </if>
+        <if test="ownNum != null">
+            own_num = #{ownNum,jdbcType=INTEGER},
+        </if>
+        <if test="useAbleNum != null">
+            use_able_num = #{useAbleNum,jdbcType=INTEGER},
+        </if>
+        <if test="useNum != null">
+            use_num = #{useNum,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="couponUserResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon_user
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="couponUserResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon_user
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_coupon_user
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.coupon.CouponUser">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT rd_coupon_user
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.coupon.CouponUser">
+        UPDATE rd_coupon_user
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE FROM rd_coupon_user
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_coupon_user
+        WHERE ID IN
+        <foreach item="Id" index="index" collection="ids" open="(" separator="," close=")">
+            #{Id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="couponUserResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon_user
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="couponUserResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon_user
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        order by own_num desc
+    </select>
+    
+</mapper>
