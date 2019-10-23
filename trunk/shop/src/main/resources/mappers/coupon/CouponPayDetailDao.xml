@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.coupon.CouponPayDetailDao">
+    <resultMap id="couponPayDetailResultMap" type="com.framework.loippi.entity.coupon.CouponPayDetail">
+        <id property="id" column="id"/>
+        <result property="couponOrderSn" column="coupon_order_sn"/>
+        <result property="receiveId" column="receive_id"/>
+        <result property="receiveNickName" column="receive_nick_name"/>
+        <result property="couponId" column="coupon_id"/>
+        <result property="couponName" column="coupon_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="paymentId" column="payment_id"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="paymentState" column="payment_state"/>
+        <result property="paymentTime" column="payment_time"/>
+        <result property="couponAmount" column="coupon_amount"/>
+        <result property="couponNumber" column="coupon_number"/>
+        <result property="pointAmount" column="point_amount"/>
+        <result property="refundState" column="refund_state"/>
+        <result property="refundCouponNum" column="refund_coupon_num"/>
+        <result property="refundAmount" column="refund_amount"/>
+        <result property="refundTime" column="refund_time"/>
+        <result property="cancelTime" column="cancel_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,coupon_order_sn ,receive_id ,receive_nick_name ,coupon_id ,coupon_name ,create_time ,payment_id ,payment_name ,payment_state ,
+        payment_time ,coupon_amount ,coupon_number ,point_amount ,refund_state ,refund_coupon_num ,refund_amount ,refund_time ,cancel_time ,update_time
+    </sql>
+
+    <sql id="base_value_column">
+        #{id},#{couponOrderSn},#{receiveId},#{receiveNickName},#{couponId},#{couponName},#{createTime},#{paymentId},#{paymentName},#{paymentState},
+        #{paymentTime},#{couponAmount},#{couponNumber},#{pointAmount},#{refundState},#{refundCouponNum},#{refundAmount},#{refundTime},#{cancelTime},#{updateTime}
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="couponOrderSn != null and couponOrderSn != ''">
+            AND coupon_order_sn = #{couponOrderSn,,jdbcType=VARCHAR}
+        </if>
+        <if test="receiveId != null and receiveId != ''">
+            AND receive_id = #{receiveId,jdbcType=VARCHAR}
+        </if>
+        <if test="receiveNickName != null and receiveNickName != ''">
+            AND receive_nick_name = #{receiveNickName,jdbcType=VARCHAR}
+        </if>
+        <if test="couponId != null">
+            AND coupon_id = #{couponId,jdbcType=BIGINT}
+        </if>
+        <if test="couponName != null and coupon_name != ''">
+            AND coupon_name = #{couponName,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null">
+            AND create_time = #{createTime,jdbcType=DATETIME}
+        </if>
+        <if test="paymentId != null">
+            AND payment_id = #{paymentId,jdbcType=BIGINT}
+        </if>
+        <if test="paymentName != null and paymentName != ''">
+            AND payment_name = #{paymentName,jdbcType=VARCHAR}
+        </if>
+        <if test="paymentState != null">
+            AND payment_state = #{paymentState,jdbcType=INTEGER}
+        </if>
+
+        <if test="paymentTime != null">
+            AND payment_time = #{paymentTime,jdbcType=DATETIME}
+        </if>
+        <if test="couponAmount != null and couponAmount != ''">
+            AND coupon_amount = #{couponAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="couponNumber != null">
+            AND coupon_number = #{couponNumber,jdbcType=INTEGER}
+        </if>
+        <if test="pointAmount != null and pointAmount != ''">
+            AND point_amount = #{pointAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="refundState != null">
+            AND refund_state = #{refundState,jdbcType=INTEGER}
+        </if>
+        <if test="refundCouponNum != null">
+            AND refund_coupon_num = #{refundCouponNum,jdbcType=INTEGER}
+        </if>
+        <if test="refundAmount != null and pointAmount != ''">
+            AND refund_amount = #{refundAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="refundTime != null">
+            AND refund_time = #{refundTime,jdbcType=DATETIME}
+        </if>
+        <if test="cancelTime != null">
+            AND cancel_time = #{cancelTime,jdbcType=DATETIME}
+        </if>
+        <if test="updateTime != null">
+            AND update_time = #{updateTime,jdbcType=DATETIME}
+        </if>
+
+    </sql>
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="couponOrderSn != null and couponOrderSn != ''">
+            coupon_order_sn = #{couponOrderSn,,jdbcType=VARCHAR},
+        </if>
+        <if test="receiveId != null and receiveId != ''">
+            receive_id = #{receiveId,jdbcType=VARCHAR},
+        </if>
+        <if test="receiveNickName != null and receiveNickName != ''">
+            receive_nick_name = #{receiveNickName,jdbcType=VARCHAR},
+        </if>
+        <if test="couponId != null">
+            coupon_id = #{couponId,jdbcType=BIGINT},
+        </if>
+        <if test="couponName != null and coupon_name != ''">
+            coupon_name = #{couponName,jdbcType=VARCHAR},
+        </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=DATETIME},
+        </if>
+        <if test="paymentId != null">
+            payment_id = #{paymentId,jdbcType=BIGINT},
+        </if>
+        <if test="paymentName != null and paymentName != ''">
+            payment_name = #{paymentName,jdbcType=VARCHAR},
+        </if>
+        <if test="paymentState != null">
+            payment_state = #{paymentState,jdbcType=INTEGER},
+        </if>
+
+        <if test="paymentTime != null">
+            payment_time = #{paymentTime,jdbcType=DATETIME},
+        </if>
+        <if test="couponAmount != null and couponAmount != ''">
+            coupon_amount = #{couponAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="couponNumber != null">
+            coupon_number = #{couponNumber,jdbcType=INTEGER},
+        </if>
+        <if test="pointAmount != null and pointAmount != ''">
+            point_amount = #{pointAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="refundState != null">
+            refund_state = #{refundState,jdbcType=INTEGER},
+        </if>
+        <if test="refundCouponNum != null">
+            refund_coupon_num = #{refundCouponNum,jdbcType=INTEGER},
+        </if>
+        <if test="refundAmount != null and pointAmount != ''">
+            refund_amount = #{refundAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="refundTime != null">
+            refund_time = #{refundTime,jdbcType=DATETIME},
+        </if>
+        <if test="cancelTime != null">
+            cancel_time = #{cancelTime,jdbcType=DATETIME},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime,jdbcType=DATETIME},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="couponPayDetailResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="couponPayDetailResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_coupon
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.coupon.CouponPayDetail">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT rd_coupon
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.coupon.CouponPayDetail">
+        UPDATE rd_coupon
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE FROM rd_coupon
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_coupon
+        WHERE ID IN
+        <foreach item="CouponId" index="index" collection="ids" open="(" separator="," close=")">
+            #{CouponId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="couponPayDetailResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="couponPayDetailResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        order by use_start_time desc ,send_start_time desc
+    </select>
+
+</mapper>

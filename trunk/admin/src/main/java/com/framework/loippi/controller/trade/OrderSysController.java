@@ -618,7 +618,29 @@ public class OrderSysController extends GenericController {
 
         map.put("Products",productListss);*/
 /**********************************************************************************************/
-        map.put("Products",productLists);
+
+/*******************************添加清洁剂瓶盖（6972190330202-1）*************************************/
+        List<Map<String,Object>> productListss = new ArrayList<Map<String,Object>>();//商品list
+        for (Map<String, Object> product : productLists) {
+            if (product.get("SKU").equals("6972190330202")){//是OLOMI橘油多效清洁剂
+                Map<String,Object> productMap = new HashMap<String,Object>();//单个商品
+                productMap.put("ProducingArea","");
+                productMap.put("HSCode","");
+                int quantity = (int)product.get("MaterialQuantity");//数量
+                productMap.put("MaterialQuantity",quantity);//物品数量
+                productMap.put("SKU","6972190330202-1");//物品SKU
+                productMap.put("Price",0);//物品价格
+                productMap.put("Weight",0);
+                productMap.put("EnName","OLOMI橘油多效清洁剂-喷头");//物品名称
+                productMap.put("CnName","OLOMI橘油多效清洁剂-喷头");//物品名称
+
+                productListss.add(productMap);
+            }
+        }
+
+        map.put("Products",productListss);
+/**********************************************************************************************/
+        //map.put("Products",productLists);
         JSONObject jsonObject = JSONObject.fromObject(map);
 
         //发货

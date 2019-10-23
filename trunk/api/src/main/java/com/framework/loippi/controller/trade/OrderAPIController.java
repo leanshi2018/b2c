@@ -494,14 +494,13 @@ public class OrderAPIController extends BaseController {
     }
 
     /**
-     * 去付款
+     * 优惠券付款
      *
      * @param paysn 支付订单编码
      * @param paymentCode 支付代码名称: ZFB YL weiscan
      * @param paymentId 支付方式索引id
      * @param integration 积分
      * @param paypassword 支付密码
-     * @param paymentType 1在线支付 2货到付款
      */
     @RequestMapping("/api/order/payCoupon")
     @ResponseBody
@@ -510,8 +509,8 @@ public class OrderAPIController extends BaseController {
         @RequestParam(defaultValue = "0") String paymentId,
         @RequestParam(defaultValue = "0") Integer integration,
         @RequestParam(defaultValue = "0") String paypassword,
-        @RequestParam(defaultValue = "1") Integer paymentType,
         HttpServletRequest request) {
+
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
@@ -550,12 +549,6 @@ public class OrderAPIController extends BaseController {
         System.out.println("##########################################");
         ShopOrderPay pay = orderPayService.findBySn(paysn);
 
-        //货到付款判断
-        if (paymentType == 2) {
-            if (pay.getPaymentType() != 2) {
-                return ApiUtils.error("该订单不是货到付款,请选择支付方式");
-            }
-        }
         PayCommon payCommon = new PayCommon();
         payCommon.setOutTradeNo(pay.getPaySn());
         if ("balancePaymentPlugin".equals(paymentCode)) {
