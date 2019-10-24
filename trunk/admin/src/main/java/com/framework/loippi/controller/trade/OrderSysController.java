@@ -622,6 +622,7 @@ public class OrderSysController extends GenericController {
 /*******************************添加清洁剂瓶盖（6972190330202-1）*************************************/
         List<Map<String,Object>> productListss = new ArrayList<Map<String,Object>>();//商品list
         for (Map<String, Object> product : productLists) {
+            productListss.add(product);
             if (product.get("SKU").equals("6972190330202")){//是OLOMI橘油多效清洁剂
                 Map<String,Object> productMap = new HashMap<String,Object>();//单个商品
                 productMap.put("ProducingArea","");

@@ -3,16 +3,20 @@ package com.framework.loippi.service.impl.coupon;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.dao.coupon.CouponDetailDao;
 import com.framework.loippi.dao.coupon.CouponPayDetailDao;
+import com.framework.loippi.dao.coupon.CouponPayLogDao;
 import com.framework.loippi.dao.coupon.CouponUserDao;
 import com.framework.loippi.dao.order.ShopOrderPayDao;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
+import com.framework.loippi.entity.coupon.CouponPayLog;
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.service.TwiterIdService;
@@ -21,6 +25,7 @@ import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.SnowFlake;
 
 /**
  * @author :ldq
@@ -45,6 +50,8 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 	private CouponDetailDao couponDetailDao;
 	@Autowired
 	private CouponUserDao couponUserDao;
+	@Autowired
+	private CouponPayLogDao couponPayLogDao;
 
 	@Override
 	public ShopOrderPay addOrderReturnPaySn(String memberId, Long couponId, Integer couponNumber) {
@@ -70,7 +77,50 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		//订单总价格
 		BigDecimal orderTotal = couponPrice.multiply(new BigDecimal(couponNumber));
 
+		/***************************订单保存*****************************/
+		//优惠券订单表
+		CouponPayDetail couponPayDetail = new CouponPayDetail();
+		couponPayDetail.setId(twiterIdService.getTwiterId());
+		SnowFlake snowFlake = new SnowFlake(0, 0);
+		couponPayDetail.setCouponOrderSn("AP" + snowFlake.nextId());
+		couponPayDetail.setReceiveId(memberId);
+		couponPayDetail.setReceiveNickName(member.getMmNickName());
+		couponPayDetail.setCouponId(couponId);
+		couponPayDetail.setCouponName(coupon.getCouponName());
+		couponPayDetail.setCreateTime(new Date());
+		//没有支付id 暂时为0L
+		couponPayDetail.setPaymentId(0l);
+		couponPayDetail.setPaymentName("");
+		if (orderTotal.compareTo(new BigDecimal("0"))==0){//订单总价格为0，视为已经支付订单
+			couponPayDetail.setPaymentState(1);
+		}else if (orderTotal.compareTo(new BigDecimal("0"))==1){//订单总价格大于0
+			couponPayDetail.setPaymentState(0);
+		}else {
+			throw new IllegalStateException("创建订单平台错误");
+		}
+		couponPayDetail.setCouponAmount(orderTotal);
+		couponPayDetail.setCouponNumber(couponNumber);
+		couponPayDetail.setUpdateTime(new Date());
+		couponPayDetailDao.insertCouponPay(couponPayDetail);
 
-		return null;
+		/*********************保存日志*********************/
+		CouponPayLog payLog = new CouponPayLog();
+		payLog.setId(twiterIdService.getTwiterId());
+		payLog.setOperator(member.getMmCode().toString());
+		payLog.setChangeState(OrderState.PAYMENT_STATE_YES + "");//下一步 已付款或者取消
+		payLog.setCouponPayId(couponPayDetail.getId());
+		payLog.setOrderState(OrderState.PAYMENT_STATE_NO + "");
+		payLog.setStateInfo("提交订单");
+		payLog.setCreateTime(new Date());
+		couponPayLogDao.insert(payLog);
+
+		//根据payId查询订单列表
+		orderPay.setOrderCreateTime(new Date());
+		orderPay.setPayAmount(orderTotal);
+		orderPay.setOrderTotalPrice(orderTotal);
+		orderPay.setOrderId(couponPayDetail.getId());
+		orderPay.setOrderSn(couponPayDetail.getCouponOrderSn());
+
+		return orderPay;
 	}
 }

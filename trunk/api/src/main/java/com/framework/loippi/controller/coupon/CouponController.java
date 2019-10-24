@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.coupon;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,11 +88,38 @@ public class CouponController extends BaseController {
 		RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
 		RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
 
-		//提交订单,返回订单支付实体
-		ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
+		//优惠券信息
+		Coupon coupon = couponService.find(couponId);
+		Date startTime = coupon.getSendStartTime();//优惠券发放开始时间
+		Date endTime = coupon.getSendEndTime();//优惠券发放结束时间
+
+		Calendar date = Calendar.getInstance();
+		date.setTime(new Date());
+
+		Calendar begin = Calendar.getInstance();
+		begin.setTime(startTime);
+
+		Calendar end = Calendar.getInstance();
+		end.setTime(endTime);
+
+		if (date.after(begin) && date.before(end)) {
+			System.out.println("在区间");
+			//提交订单,返回订单支付实体
+			ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
+			return ApiUtils.success();
+		} else {
+			System.out.println("不在区间");
+			if (date.before(begin)){
+				return ApiUtils.error("该优惠券还未到发放时间");
+			}
+			if (date.after(end)){
+				return ApiUtils.error("该优惠券发放已结束");
+			}
+			return ApiUtils.error("该优惠券发放出现错误");
+		}
 
 
-		return ApiUtils.success();
+
 	}
 
 }

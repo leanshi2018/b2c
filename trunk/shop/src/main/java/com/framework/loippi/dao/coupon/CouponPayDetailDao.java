@@ -9,4 +9,5 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  * @description:dubbo com.framework.loippi.dao.coupon
  */
 public interface CouponPayDetailDao extends GenericDao<CouponPayDetail, Long> {
+	void insertCouponPay(CouponPayDetail couponPayDetail);
 }

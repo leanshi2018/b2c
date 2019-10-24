@@ -169,7 +169,7 @@
     <select id="find" resultMap="couponPayDetailResultMap">
         SELECT
         <include refid="base_column"/>
-        FROM rd_coupon
+        FROM rd_coupon_pay_detail
         WHERE ID=#{id,jdbcType=BIGINT}
     </select>
 
@@ -177,12 +177,12 @@
     <select id="findAll" resultMap="couponPayDetailResultMap">
         SELECT
         <include refid="base_column"/>
-        FROM rd_coupon
+        FROM rd_coupon_pay_detail
     </select>
 
     <!-- 统计记录数 -->
     <select id="count" resultType="long">
-        SELECT COUNT(*) FROM rd_coupon
+        SELECT COUNT(*) FROM rd_coupon_pay_detail
         <where>
             <include refid="where_column"/>
         </where>
@@ -193,7 +193,7 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID() AS ID
         </selectKey>
-        INSERT rd_coupon
+        INSERT rd_coupon_pay_detail
         (
         <include refid="base_column"/>
         )
@@ -202,7 +202,7 @@
 
     <!-- 修改 -->
     <update id="update" parameterType="com.framework.loippi.entity.coupon.CouponPayDetail">
-        UPDATE rd_coupon
+        UPDATE rd_coupon_pay_detail
         <set>
             <include refid="set_column"/>
         </set>
@@ -211,13 +211,13 @@
 
     <!-- 删除单条记录 -->
     <delete id="delete">
-        DELETE FROM rd_coupon
+        DELETE FROM rd_coupon_pay_detail
         WHERE ID = #{id,jdbcType=BIGINT}
     </delete>
 
     <!-- 删除多条记录-->
     <delete id="deleteAll">
-        DELETE FROM rd_coupon
+        DELETE FROM rd_coupon_pay_detail
         WHERE ID IN
         <foreach item="CouponId" index="index" collection="ids" open="(" separator="," close=")">
             #{CouponId}
@@ -228,7 +228,7 @@
     <select id="findByParams" resultMap="couponPayDetailResultMap">
         SELECT
         <include refid="base_column"/>
-        FROM rd_coupon
+        FROM rd_coupon_pay_detail
         <where>1=1
             <include refid="where_column"/>
         </where>
@@ -238,11 +238,18 @@
     <select id="findByPage" resultMap="couponPayDetailResultMap">
         SELECT
         <include refid="base_column"/>
-        FROM rd_coupon
+        FROM rd_coupon_pay_detail
         <where>1=1
             <include refid="where_column"/>
         </where>
         order by use_start_time desc ,send_start_time desc
     </select>
+
+    <insert id="insertCouponPay" parameterType="com.framework.loippi.entity.coupon.CouponPayDetail">
+        insert into rd_order (id,coupon_order_sn,receive_id,receive_nick_name,coupon_id,coupon_name,create_time,
+                                payment_id,payment_name,payment_state,coupon_amount,coupon_number,update_time)
+        values(#{id},#{couponOrderSn},#{receiveId},#{receiveNickName},#{couponId},#{couponName},#{createTime},
+                #{paymentId},#{paymentName},#{paymentState},#{couponAmount},#{couponNumber},#{updateTime})
+    </insert>
 
 </mapper>
