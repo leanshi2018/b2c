@@ -257,6 +257,9 @@ public class OrderAPIController extends BaseController {
             shopOrderDiscountType.setPreferentialType(type);
         }
         if(giftId!=null){
+            if(giftNum==null){
+                return ApiUtils.error("赠送数量不可以为空");
+            }
             ShopGoods shopGoods = shopGoodsService.find(giftId);
             if(shopGoods==null){
                 return ApiUtils.error("所选赠品不存在");

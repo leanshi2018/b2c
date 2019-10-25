@@ -370,15 +370,28 @@ public class CartAPIController extends BaseController {
                     giftsNum=result.getNeedToPay().divideToIntegralValue(new BigDecimal("360")).intValue();
                     ShopGoods goods = goodsService.find(6573037643838263296L);//OLOMI酵素多效洗衣凝珠
                     ShopGoods goods1 = goodsService.find(6573038322627645440L);//OLOMI母婴抑菌倍护洗衣凝珠
+                    ShopGoods goods2 = goodsService.find(6552743534695288832L);//OLOMI母婴抑菌倍护洗衣凝珠
                     shopGoods.add(goods);
                     shopGoods.add(goods1);
-                }else if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1){
+                    shopGoods.add(goods2);
+                }else if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))==-1){
                     flag=1;
                     giftsNum=result.getActualTotalPpv().divideToIntegralValue(new BigDecimal("25")).intValue();
                     ShopGoods goods = goodsService.find(6573037643838263296L);//OLOMI酵素多效洗衣凝珠
                     ShopGoods goods1 = goodsService.find(6573038322627645440L);//OLOMI母婴抑菌倍护洗衣凝珠
+                    ShopGoods goods2 = goodsService.find(6552743534695288832L);//OLOMI母婴抑菌倍护洗衣凝珠
                     shopGoods.add(goods);
                     shopGoods.add(goods1);
+                    shopGoods.add(goods2);
+                }else if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1){
+                    flag=1;
+                    giftsNum=result.getActualTotalPpv().divideToIntegralValue(new BigDecimal("50")).intValue();
+                    ShopGoods goods = goodsService.find(6573037643838263296L);//OLOMI酵素多效洗衣凝珠
+                    ShopGoods goods1 = goodsService.find(6573038322627645440L);//OLOMI母婴抑菌倍护洗衣凝珠
+                    ShopGoods goods2 = goodsService.find(6552743534695288832L);//OLOMI母婴抑菌倍护洗衣凝珠
+                    shopGoods.add(goods);
+                    shopGoods.add(goods1);
+                    shopGoods.add(goods2);
                 }
             }
             result=result.build3(result,shopGoods,flag,giftsNum);
