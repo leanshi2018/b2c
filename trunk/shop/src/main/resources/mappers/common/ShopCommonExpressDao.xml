@@ -10,6 +10,7 @@
         <result property="eName" column="e_name"/>
         <result property="eState" column="e_state"/>
         <result property="eCode" column="e_code"/>
+        <result property="eExpressCode" column="e_express_code"/>
         <result property="eLetter" column="e_letter"/>
         <result property="eOrder" column="e_order"/>
         <result property="eUrl" column="e_url"/>
@@ -18,11 +19,11 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,e_name ,e_state ,e_code ,e_letter ,e_order ,e_url ,is_del 
+		 id ,e_name ,e_state ,e_code ,e_express_code ,e_letter ,e_order ,e_url ,is_del
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{eName},#{eState},#{eCode},#{eLetter},#{eOrder},#{eUrl},#{isDel}
+		 #{id},#{eName},#{eState},#{eCode},#{eExpressCode},#{eLetter},#{eOrder},#{eUrl},#{isDel}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -38,6 +39,9 @@
         </if>
         <if test="eCode != null and eCode != ''">
             AND e_code = #{eCode,jdbcType=VARCHAR}
+        </if>
+        <if test="eExpressCode != null and eExpressCode != ''">
+            AND e_express_code = #{eExpressCode,jdbcType=VARCHAR}
         </if>
         <if test="eLetter != null and eLetter != ''">
             AND e_letter = #{eLetter,jdbcType=VARCHAR}
@@ -69,6 +73,9 @@
         </if>
         <if test="eCode != null and eCode != ''">
             e_code = #{eCode,jdbcType=VARCHAR},
+        </if>
+        <if test="eExpressCode != null and eCode != ''">
+            e_express_code = #{eExpressCode,jdbcType=VARCHAR},
         </if>
         <if test="eLetter != null and eLetter != ''">
             e_letter = #{eLetter,jdbcType=VARCHAR},
@@ -171,6 +178,12 @@
         <where>1=1
             <include refid="where_column"/>
         </where>
+    </select>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="ShopCommonExpressResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_EXPRESS where id = #{id}
     </select>
 
 </mapper> 

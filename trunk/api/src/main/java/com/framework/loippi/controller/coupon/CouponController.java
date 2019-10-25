@@ -3,6 +3,7 @@ package com.framework.loippi.controller.coupon;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -16,16 +17,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponService;
+import com.framework.loippi.service.integration.RdMmIntegralRuleService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
+import com.framework.loippi.utils.Paramap;
 
 /**
  * @author :ldq
@@ -45,6 +50,10 @@ public class CouponController extends BaseController {
 	private RdMmBasicInfoService rdMmBasicInfoService;
 	@Resource
 	private RdMmRelationService rdMmRelationService;
+	@Resource
+	private RdMmIntegralRuleService rdMmIntegralRuleService;
+	@Resource
+	private RdMmAccountInfoService rdMmAccountInfoService;
 
 	/**
 	 * 优惠券详情
@@ -78,11 +87,13 @@ public class CouponController extends BaseController {
 	 */
 	@RequestMapping(value = "/order/submit", method = RequestMethod.POST)
 	@ResponseBody
-	public String orderSubmit(@RequestParam Long couponId, Integer couponNumber,HttpServletRequest request) {
+	public String orderSubmit(@RequestParam Long couponId, Integer couponNumber,HttpServletRequest request,String memberId) {
 		if (couponId == null) {
 			return jsonFail();
 		}
-		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+
+		//AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+		RdMmBasicInfo member = rdMmBasicInfoService.findByMCode(memberId);
 
 		//订单类型相关
 		RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
@@ -106,7 +117,13 @@ public class CouponController extends BaseController {
 			System.out.println("在区间");
 			//提交订单,返回订单支付实体
 			ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
-			return ApiUtils.success();
+			List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+					.findList(Paramap.create().put("order", "RID desc"));
+			RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+			if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+				rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+			}
+			return ApiUtils.success(CouponPaySubmitResult.build(rdMmIntegralRule,orderPay,rdMmAccountInfoService.find("mmCode", member.getMmCode())));
 		} else {
 			System.out.println("不在区间");
 			if (date.before(begin)){
@@ -117,8 +134,6 @@ public class CouponController extends BaseController {
 			}
 			return ApiUtils.error("该优惠券发放出现错误");
 		}
-
-
 
 	}
 

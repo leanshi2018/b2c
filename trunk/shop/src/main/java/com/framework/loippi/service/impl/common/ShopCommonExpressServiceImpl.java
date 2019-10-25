@@ -1,12 +1,12 @@
 package com.framework.loippi.service.impl.common;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.common.ShopCommonExpressDao;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.service.common.ShopCommonExpressService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 
 /**
@@ -30,5 +30,10 @@ public class ShopCommonExpressServiceImpl extends GenericServiceImpl<ShopCommonE
     @Override
     public ShopCommonExpress findByOrderId(Long orderId) {
         return shopCommonExpressDao.findByOrderId(orderId);
+    }
+
+    @Override
+    public ShopCommonExpress findById(Long id) {
+        return shopCommonExpressDao.findById(id);
     }
 }

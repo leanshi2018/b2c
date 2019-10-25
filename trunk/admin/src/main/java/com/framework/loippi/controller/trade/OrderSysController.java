@@ -49,6 +49,7 @@ import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.order.ShopOrderLog;
 import com.framework.loippi.entity.order.ShopOrderLogistics;
+import com.framework.loippi.entity.product.ShopExpressSpecialGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
@@ -72,6 +73,7 @@ import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderLogService;
 import com.framework.loippi.service.order.ShopOrderLogisticsService;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopExpressSpecialGoodsService;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
@@ -144,6 +146,8 @@ public class OrderSysController extends GenericController {
     private RdWareAdjustService rdWareAdjustService;
     @Resource
     private RdGoodsAdjustmentService rdGoodsAdjustmentService;
+    @Resource
+    private ShopExpressSpecialGoodsService shopExpressSpecialGoodsService;
     // 订单编辑中
     private static final int ORDER_EDITING = 0;
     // 订单编辑完成
@@ -431,7 +435,7 @@ public class OrderSysController extends GenericController {
         Map<String,Object> map = new HashMap<String,Object>();//strorderinfo参数
         map.put("Style","1");
         map.put("CustomerID",customerID);
-        map.put("ChannelInfoID","CNZT-B");
+        //map.put("ChannelInfoID","CNZT-B");
 
         ShopOrder shopOrder = orderService.find(id);
         String orderSn = shopOrder.getOrderSn();//订单编号
@@ -619,8 +623,18 @@ public class OrderSysController extends GenericController {
         map.put("Products",productListss);*/
 /**********************************************************************************************/
 
+        //特殊快递渠道商品
+        List<ShopExpressSpecialGoods> specialGoodsList = shopExpressSpecialGoodsService.findByState(0);
+        Map<String,String> specialGoodsMap = new HashMap<String,String>();
+        for (ShopExpressSpecialGoods specialGoods : specialGoodsList) {
+            String specGoodsSerial = specialGoods.getSpecGoodsSerial();
+            ShopCommonExpress express = commonExpressService.findById(specialGoods.getExpressId());
+            String expressCode = express.getEExpressCode();
+            specialGoodsMap.put(specGoodsSerial,expressCode);
+        }
 /*******************************添加清洁剂瓶盖（6972190330202-1）*************************************/
         List<Map<String,Object>> productListss = new ArrayList<Map<String,Object>>();//商品list
+        String eExpressCode = "CNZT-B";//第三方物流单号
         for (Map<String, Object> product : productLists) {
             productListss.add(product);
             if (product.get("SKU").equals("6972190330202")){//是OLOMI橘油多效清洁剂
@@ -637,7 +651,15 @@ public class OrderSysController extends GenericController {
 
                 productListss.add(productMap);
             }
+
+            //查看是否是特殊快递渠道商品
+            String sku = (String)product.get("SKU");
+            if (specialGoodsMap.containsKey(sku)){//存在
+                eExpressCode = specialGoodsMap.get(sku);
+            }
+
         }
+        map.put("ChannelInfoID",eExpressCode);
 
         map.put("Products",productListss);
 /**********************************************************************************************/

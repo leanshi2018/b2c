@@ -1,8 +1,9 @@
 package com.framework.loippi.dao.common;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.mybatis.dao.GenericDao;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * DAO - ShopCommonExpress(快递公司)
@@ -14,4 +15,5 @@ public interface ShopCommonExpressDao  extends GenericDao<ShopCommonExpress, Lon
 
     ShopCommonExpress findByOrderId(@Param("orderId") Long orderId);
 
+	ShopCommonExpress findById(Long id);
 }
