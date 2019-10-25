@@ -99,6 +99,10 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
                                      String couponIds, Integer isPp, Integer platform, Long groupBuyActivityId, Long groupOrderId,
                                      ShopOrderDiscountType shopOrderDiscountType, Integer logisticType, Integer paymentType);
 
+    ShopOrderPay addOrderReturnPaySnNew(String cartIds, String mmCode, Map<String, Object> orderMsgMap, Long addressId,
+                                        String couponIds, Integer isPp, Integer platformApp, Long groupBuyActivityId, Long groupOrderId,
+                                        ShopOrderDiscountType shopOrderDiscountType, Integer logisticType, Integer paymentType, Long giftId, Integer giftNum);
+
     ShopOrderPay addReplacementOrder(Long goodsId,Integer count,Long specId,Long memberId);
     /**
      * 根据支付单号更改 订单支付方式id和支付方式名称
@@ -312,6 +316,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 	List<ShopOrder> findStatu20();
 
 	void updateOrderStatus(String orderSn, Integer orderState, Integer submitStatus, String failInfo, String trackingNo);
+
 
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

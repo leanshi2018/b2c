@@ -1,13 +1,11 @@
 package com.framework.loippi.result.app.order;
 
+import com.framework.loippi.vo.gifts.Gifts;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import com.cloopen.rest.sdk.utils.DateUtil;
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
@@ -97,6 +95,11 @@ public class OrderDetailResult {
      * 订单商品
      */
     List<OrderGoods> orderGoodsList;
+    /**
+     * 2019-10-24 准备双11用
+     * 赠品列表
+     */
+    List<ShopOrderGoods> giftOrderGoodsList;
 
     /**
      * 支付表编号
@@ -292,6 +295,15 @@ public class OrderDetailResult {
             orderDetailResult.setPaymentType(2);
         }
         orderDetailResult.setOrderTypeStr(ShopOrderDiscountTypeConsts.convert(order.getOrderType()));
+        //********************************************************************
+        ArrayList<ShopOrderGoods> giftsGoods = new ArrayList<>();
+        List<ShopOrderGoods> shopOrderGoods = order.getShopOrderGoods();
+        for (ShopOrderGoods shopOrderGood : shopOrderGoods) {
+            if(shopOrderGood.getIsPresentation()!=null&&shopOrderGood.getIsPresentation()==1){
+                giftsGoods.add(shopOrderGood);
+            }
+        }
+        orderDetailResult.setGiftOrderGoodsList(giftsGoods);
         return orderDetailResult;
     }
 }

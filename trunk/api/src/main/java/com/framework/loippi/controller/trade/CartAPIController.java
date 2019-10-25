@@ -8,6 +8,7 @@ import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsFreight;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
@@ -25,6 +26,7 @@ import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
 import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
+import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.user.*;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
@@ -37,11 +39,10 @@ import com.google.common.collect.Lists;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -80,7 +81,8 @@ public class CartAPIController extends BaseController {
     private RdRanksService rdRanksService;
     @Resource
     private RdMmAccountInfoService rdMmAccountInfoService;
-
+    @Resource
+    private ShopGoodsService goodsService;
     /**
      * 购物车列表
      */
@@ -263,6 +265,149 @@ public class CartAPIController extends BaseController {
     }
 
     /**
+     * 购物车结算新 TODO
+     */
+    @RequestMapping(value = "/api/cart/checkoutNew", method = RequestMethod.POST)
+    @ResponseBody
+    public String checkoutNew(@RequestParam String cartIds, Long groupBuyActivityId, Long shopOrderTypeId,
+                           @RequestParam(defaultValue = "1") Integer logisticType,
+                           HttpServletRequest request, Long addressId) {
+        if (StringUtils.isBlank(cartIds)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+
+        //订单类型相关
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        //查看该会员类型下 所有可选择的订单类型
+        Integer type = 1; //默认显示零售价
+        List<ShopOrderDiscountType> orderDiscountTypeList = new ArrayList<>();
+        if (rdRanks != null && rdRanks.getRankClass() != null && rdRanks.getRankClass() > 0) {
+            type = 2;
+            orderDiscountTypeList = shopOrderDiscountTypeService.findAll();
+        }
+
+        // 获取收货地址
+        RdMmAddInfo addr = null;
+        if (addressId != null) {
+            addr = rdMmAddInfoService.find("aid", addressId);
+        } else {
+            List<RdMmAddInfo> addrList = rdMmAddInfoService.findList("mmCode", member.getMmCode());
+            if (CollectionUtils.isNotEmpty(addrList)) {
+                addr = addrList.stream()
+                        .filter(item -> item.getDefaultadd() != null && item.getDefaultadd() == 1)
+                        .findFirst()
+                        .orElse(addrList.get(0));
+            }
+        }
+        if (logisticType == 2) {
+            addr = null;
+        }
+        ShopOrderDiscountType shopOrderDiscountType = null;
+        if (shopOrderTypeId != null) {
+            shopOrderDiscountType = shopOrderDiscountTypeService.find(shopOrderTypeId);
+            if (shopOrderDiscountType != null) {
+                type = shopOrderDiscountType.getPreferentialType();
+                if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_MEMBER
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PREFERENTIAL
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL) {
+                    type = ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL;
+                    shopOrderDiscountType.setPreferentialType(type);
+                }
+            }
+        }
+        if (shopOrderDiscountType == null) {
+            shopOrderDiscountType = new ShopOrderDiscountType();
+            shopOrderDiscountType.setId(-1L);
+            shopOrderDiscountType.setPreferentialType(type);
+        }
+        Map<String, Object> map = cartService
+                .queryTotalPrice(cartIds, member.getMmCode(), null, groupBuyActivityId, shopOrderDiscountType, addr);
+        // 购物车数据
+        if (map.get("error").equals("true")) {
+            return ApiUtils.error("商品属性发生改变,请重新结算");
+        }
+        List<ShopCart> cartList = Lists.newArrayList();
+        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
+            String[] cartId = cartIds.split(",");
+            if (cartId != null && cartId.length > 0) {
+                cartList = cartService.findList("ids", cartId);
+            }
+        }
+        if (CollectionUtils.isEmpty(cartList)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        CartCheckOutResult result = CartCheckOutResult
+                .build(map, cartList, addr, shopOrderTypeId, shopOrderDiscountType);
+        if (log.isDebugEnabled()) {
+            log.debug(JacksonUtil.toJson(result));
+        }
+
+        // TODO: 2018/12/14 自提地址 自提地址 id为-1 表示平台地址
+        RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", -1);
+        List<ShopOrderDiscountType> shopOrderDiscountTypeList = new ArrayList<>();
+        if (rdRanks != null && rdRanks.getRankClass() != null && rdRanks.getRankClass() > 0) {
+            shopOrderDiscountTypeList = shopOrderDiscountTypeService.findList("totalPpv", result.getTotalPpv());
+        }
+        result = result.build2(result, shopOrderDiscountTypeList, rdRanks, rdMmBasicInfo, shopMemberAddress,
+                orderDiscountTypeList);
+        /*********************************************************************************************************************/
+        Integer flag=0;
+        Integer giftsNum=0;
+        ArrayList<ShopGoods> shopGoods = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date startTime = format.parse("2019-10-23 00:00:00");
+            Date endTime = format.parse("2019-11-23 23:59:59");
+            Date nowTime = new Date();
+            boolean b = belongCalendar(nowTime, startTime, endTime);
+            if(b){
+                if(rdMmRelation.getRank()==0&&result.getNeedToPay().compareTo(new BigDecimal("360"))!=-1){
+                    flag=1;
+                    giftsNum=result.getNeedToPay().divideToIntegralValue(new BigDecimal("360")).intValue();
+                    ShopGoods goods = goodsService.find(6573037643838263296L);//OLOMI酵素多效洗衣凝珠
+                    ShopGoods goods1 = goodsService.find(6573038322627645440L);//OLOMI母婴抑菌倍护洗衣凝珠
+                    shopGoods.add(goods);
+                    shopGoods.add(goods1);
+                }else if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1){
+                    flag=1;
+                    giftsNum=result.getActualTotalPpv().divideToIntegralValue(new BigDecimal("25")).intValue();
+                    ShopGoods goods = goodsService.find(6573037643838263296L);//OLOMI酵素多效洗衣凝珠
+                    ShopGoods goods1 = goodsService.find(6573038322627645440L);//OLOMI母婴抑菌倍护洗衣凝珠
+                    shopGoods.add(goods);
+                    shopGoods.add(goods1);
+                }
+            }
+            result=result.build3(result,shopGoods,flag,giftsNum);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return ApiUtils.success(result);
+    }
+
+    public static boolean belongCalendar(Date nowTime, Date beginTime, Date endTime) {
+        //设置当前时间
+        Calendar date = Calendar.getInstance();
+        date.setTime(nowTime);
+        //设置开始时间
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(beginTime);
+        //设置结束时间
+        Calendar end = Calendar.getInstance();
+        end.setTime(endTime);
+        //处于开始时间之后，和结束时间之前的判断
+        if (date.after(begin) && date.before(end)) {
+         return true;
+        } else {
+         return false;
+        }
+    }
+
+    /**
      * 立即购买
      */
     @RequestMapping(value = "/api/cart/buyNow", method = RequestMethod.POST)
@@ -328,5 +473,42 @@ public class CartAPIController extends BaseController {
         }
     }
 
+    /**
+     * 再次购买
+     */
 
+    @RequestMapping(value = "/api/cart/buyAgainNew", method = RequestMethod.POST)
+    @ResponseBody
+    public String buyAgainNew(Long orderId, HttpServletRequest request) {
+        try {
+            if (orderId == null) {
+                ApiUtils.error(Xerror.PARAM_INVALID);
+            }
+            AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+            ShopOrder order = orderService.findWithOrderGoodsById(orderId);
+            if (order == null || order.getShopOrderGoodses() == null || order.getShopOrderGoodses().size() < 1) {
+                ApiUtils.error("没有购买记录");
+            }
+            List<ShopCart> cartList = new ArrayList<>();
+            for (ShopOrderGoods item : order.getShopOrderGoodses()) {
+                ShopCart cart = new ShopCart();
+                cart.setGoodsId(item.getGoodsId());
+                cart.setMemberId(Long.parseLong(item.getBuyerId()));
+                cart.setGoodsNum(item.getGoodsNum());
+                cart.setSpecId(item.getSpecId());
+                cart.setActivityId(item.getActivityId());
+                cart.setActivityType(item.getActivityType());
+                if(item.getIsPresentation()==null||item.getIsPresentation()!=1){
+                    cartList.add(cart);
+                }
+            }
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+            RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+            List<Long> list = cartService.saveCartList(cartList, member.getMmCode(),rdRanks);
+            return checkoutNew(Joiner.on(",").join(list), null, -1L, 1, request, null);
+        } catch (Exception e) {
+            log.error("再次购买错误", e);
+            return ApiUtils.error(e.getMessage());
+        }
+    }
 }
