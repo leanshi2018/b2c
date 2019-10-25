@@ -255,7 +255,7 @@ public class RefundReturnSysController extends GenericController {
             List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsService.findList("returnOrderId",refundId);
             for (ShopReturnOrderGoods item:shopReturnOrderGoodsList) {
                 BigDecimal num = new BigDecimal(Integer.toString(item.getGoodsNum()));
-                totalPpv=totalPpv.add(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO).subtract(num));//2019/10/25修改by zc
+                totalPpv=totalPpv.add(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO).multiply(num));//2019/10/25修改by zc
 //                totalPpv+=Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO);
             }
             model.addAttribute("shopReturnOrderGoodsList", shopReturnOrderGoodsList);
