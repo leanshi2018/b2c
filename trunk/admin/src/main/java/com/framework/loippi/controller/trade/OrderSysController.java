@@ -254,13 +254,13 @@ public class OrderSysController extends GenericController {
                                             }
 
                                             List<Map<String, Object>> products = (List<Map<String, Object>>) resMap.get("Products");//发货的数据
-                                            for (Map<String, Object> product : products) {
+                                            /*for (Map<String, Object> product : products) {
                                                 String sku = (String) product.get("SKU");//发货商品规格编号
                                                 Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
                                                 ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
                                                 Long goodsSpecId = goodsSpec.getId();//商品规格id
                                                 inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", goodsSpecId, quantity);
-                                            }
+                                            }*/
 
                                             List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
                                             List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
@@ -618,7 +618,30 @@ public class OrderSysController extends GenericController {
 
         map.put("Products",productListss);*/
 /**********************************************************************************************/
-        map.put("Products",productLists);
+
+/*******************************添加清洁剂瓶盖（6972190330202-1）*************************************/
+        List<Map<String,Object>> productListss = new ArrayList<Map<String,Object>>();//商品list
+        for (Map<String, Object> product : productLists) {
+            productListss.add(product);
+            if (product.get("SKU").equals("6972190330202")){//是OLOMI橘油多效清洁剂
+                Map<String,Object> productMap = new HashMap<String,Object>();//单个商品
+                productMap.put("ProducingArea","");
+                productMap.put("HSCode","");
+                int quantity = (int)product.get("MaterialQuantity");//数量
+                productMap.put("MaterialQuantity",quantity);//物品数量
+                productMap.put("SKU","6972190330202-1");//物品SKU
+                productMap.put("Price",0);//物品价格
+                productMap.put("Weight",0);
+                productMap.put("EnName","OLOMI橘油多效清洁剂-喷头");//物品名称
+                productMap.put("CnName","OLOMI橘油多效清洁剂-喷头");//物品名称
+
+                productListss.add(productMap);
+            }
+        }
+
+        map.put("Products",productListss);
+/**********************************************************************************************/
+        //map.put("Products",productLists);
         JSONObject jsonObject = JSONObject.fromObject(map);
 
         //发货

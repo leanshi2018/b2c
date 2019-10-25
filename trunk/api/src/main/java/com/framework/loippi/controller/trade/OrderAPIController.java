@@ -573,6 +573,127 @@ public class OrderAPIController extends BaseController {
         return ApiUtils.success(model);
     }
 
+    /**
+     * 优惠券付款
+     *
+     * @param paysn 支付订单编码
+     * @param paymentCode 支付代码名称: ZFB YL weiscan
+     * @param paymentId 支付方式索引id
+     * @param integration 积分
+     * @param paypassword 支付密码
+     */
+    @RequestMapping("/api/order/payCoupon")
+    @ResponseBody
+    public String payOrderCoupon(@RequestParam(value = "paysn") String paysn,
+        @RequestParam(defaultValue = "pointsPaymentPlugin") String paymentCode,
+        @RequestParam(defaultValue = "0") String paymentId,
+        @RequestParam(defaultValue = "0") Integer integration,
+        @RequestParam(defaultValue = "0") String paypassword,
+        HttpServletRequest request) {
+
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        //处理购物积分
+        //获取购物积分购物比例
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+            .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
+        if (integration != 0) {
+            if (rdMmAccountInfo.getPaymentPwd() == null) {
+                return ApiUtils.error("你还未设置支付密码");
+            }
+            if (!Digests.validatePassword(paypassword, rdMmAccountInfo.getPaymentPwd())) {
+                return ApiUtils.error("支付密码错误");
+            }
+            if (rdMmAccountInfo.getWalletStatus() != 0) {
+                return ApiUtils.error("购物积分账户状态未激活或者已被冻结");
+            }
+            ShopOrderPay pay = orderPayService.findBySn(paysn);
+            //处理积分支付
+            orderService.ProcessingIntegralsCoupon(paysn, integration, shopMember, pay, shoppingPointSr);
+        }
+
+        List<ShopOrder> orderList = orderService.findList("paySn", paysn);
+        if (CollectionUtils.isEmpty(orderList)) {
+            return ApiUtils.error("订单不存在");
+        }
+
+        System.out.println("##########################################");
+        System.out
+            .println("###  订单支付编号：" + paysn + "  |  支付方式名称：" + paymentCode + " |  支付方式索引id：" + paymentId + "#########");
+        System.out.println("##########################################");
+        ShopOrderPay pay = orderPayService.findBySn(paysn);
+
+        PayCommon payCommon = new PayCommon();
+        payCommon.setOutTradeNo(pay.getPaySn());
+        if ("balancePaymentPlugin".equals(paymentCode)) {
+            payCommon.setPayAmount(pay.getPayAmount());
+        } else {
+            //payCommon.setPayAmount(new BigDecimal(0.01));
+            payCommon.setPayAmount(pay.getPayAmount());
+        }
+        payCommon.setTitle("订单支付");
+        payCommon.setBody(pay.getPaySn() + "订单支付");
+        payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
+        payCommon.setReturnUrl(server + "/payment/payfront");
+        String sHtmlText = "";
+        Map<String, Object> model = new HashMap<String, Object>();
+        if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("alipayMobilePaymentPlugin")) {
+            orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            System.out.println("dd:" + PaymentTallyState.PAYMENTTALLY_TREM_PC);
+            paymentTallyService.savePaymentTally(paymentCode, "支付宝", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            //修改订单付款信息
+            sHtmlText = alipayMobileService.toPay(payCommon);//TODO
+            model.put("tocodeurl", sHtmlText);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("YL")) {
+            //修改订单付款信息
+            orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            paymentTallyService.savePaymentTally(paymentCode, "银联", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            sHtmlText = unionpayService.prePay(payCommon, request);//构造提交银联的表单
+            model.put("tocodeurl", sHtmlText);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("weixinMobilePaymentPlugin")) {
+            //修改订单付款信息
+            orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            paymentTallyService.savePaymentTally(paymentCode, "微信支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
+            model.put("tocodeurl", tocodeurl);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("balancePaymentPlugin")) {//余额支付
+//            Map<String, Object> data = orderService.payWallet(payCommon, member.getMmCode());
+//            model.putAll(data);
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("pointsPaymentPlugin")) {//积分全额支付
+            // TODO: 2018/12/18
+            //积分全额支付判断
+            if (paymentCode.equals("pointsPaymentPlugin")) {
+                if (pay.getPayAmount().compareTo(new BigDecimal(0)) != 0) {
+                    return ApiUtils.error("该订单不符合购物积分全抵现,请选择支付方式");
+                }
+            }
+            paymentTallyService.savePaymentTally(paymentCode, "积分全抵扣", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
+            Map<String, Object> data = orderService
+                .updateOrderpay(payCommon, member.getMmCode(), "在线支付-购物积分", paymentCode, paymentId);
+            model.putAll(data);
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("cashOnDeliveryPlugin")) {//货到付款
+            // TODO: 2018/12/18
+            paymentTallyService.savePaymentTally(paymentCode, "货到付款", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
+            Map<String, Object> data = orderService
+                .updateOrderpay(payCommon, member.getMmCode(), "货到付款", paymentCode, paymentId);
+            model.putAll(data);
+        }
+
+        return ApiUtils.success(model);
+    }
+
 /*    *//**
      * 去付款
      *

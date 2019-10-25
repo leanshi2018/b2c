@@ -1,13 +1,14 @@
 package com.framework.loippi.entity.coupon;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * 优惠券实体
@@ -35,6 +36,10 @@ public class Coupon implements GenericEntity {
      * 优惠券名称
      */
     private String couponName;
+    /**
+     * 优惠券售价
+     */
+    private BigDecimal couponPrice;
     /**
      * 优惠券面值  针对于折扣卷为折扣大小
      */
