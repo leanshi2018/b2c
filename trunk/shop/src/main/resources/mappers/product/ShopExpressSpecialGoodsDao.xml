@@ -171,12 +171,7 @@
     </select>
 
     <select id="findByState" parameterType="java.lang.Integer" resultMap="ShopExpressSpecialGoodsResultMap">
-        SELECT
-        <include refid="base_column" />
-        FROM shop_express_special_goods
-        <where> e_state=#{eState}
-            <include refid="where_column" />
-        </where>
+         SELECT * FROM shop_express_special_goods where e_state=#{eState}
     </select>
 
 </mapper>
