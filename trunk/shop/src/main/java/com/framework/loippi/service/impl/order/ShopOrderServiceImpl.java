@@ -2,6 +2,7 @@ package com.framework.loippi.service.impl.order;
 
 
 import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.service.product.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -106,9 +107,6 @@ import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.product.ShopCartService;
-import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
-import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAccountLogService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
@@ -242,7 +240,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private RdMmIntegralRuleService rdMmIntegralRuleService;
     @Resource
     private RetailProfitService retailProfitService;
-
+    @Resource
+    private ShopGoodsService shopGoodsService;
+    @Resource
+    private ShopGoodsSpecService shopGoodsSpecService;
 
     @Autowired
     public void setGenericDao() {
@@ -431,7 +432,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         shareUrl.append("<ol class='list-paddingleft-2' style='list-style-type: decimal;'>");
         shareUrl.append("<li><p>卖家已发货</p></li>");
         shareUrl.append("<li><p>物流单号：" + shippingCode + "</p></li>");
-        shareUrl.append("<li><p>，请耐心等候物流</p></li>");
+        shareUrl.append("<li><p>请耐心等候物流</p></li>");
         message.setContent(shareUrl.toString());
         Long msgId = twiterIdService.getTwiterId();
         message.setId(msgId);
@@ -977,6 +978,365 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
 
             }
+            /*********************保存日志*********************/
+            ShopOrderLog orderLog = new ShopOrderLog();
+            orderLog.setId(twiterIdService.getTwiterId());
+            orderLog.setOperator(member.getMmCode().toString());
+            orderLog.setChangeState(OrderState.ORDER_STATE_UNFILLED + "");
+            orderLog.setOrderId(order.getId());
+            orderLog.setOrderState(OrderState.ORDER_STATE_NO_PATMENT + "");
+            orderLog.setStateInfo("提交订单");
+            orderLog.setCreateTime(new Date());
+            orderLogDao.insert(orderLog);
+        }
+
+        //根据payId查询订单列表
+        orderPay.setOrderCreateTime(new Date());
+        orderPay.setPayAmount(orderSettlement.getOrderAmount());
+        orderPay.setOrderTotalPrice(orderSettlement.getGoodsAmount());
+        orderPay.setOrderId(orderId);
+        orderPay.setPaymentType(paymentType);
+        return orderPay;
+    }
+
+    /**
+     *
+     * @param cartIds     多个购物车id
+     * @param memberId    用户id
+     * @param orderMsgMap 存储买家留言信息,键为店铺id,值为店铺留言
+     * @param addressId   收货地址id
+     * @param couponIds   优惠券id
+     * @param isPp        优惠积分支付
+     * @param platform    0 微信端 1app
+     * @param groupBuyActivityId 团购活动id
+     * @param groupOrderId 开团订单id
+     * @param shopOrderDiscountType 优惠订单类型
+     * @param logisticType 快递1 自提2
+     * @param paymentType 1在线支付 2货到付款
+     * @param giftNum
+     * @return
+     */
+    @Override
+    public ShopOrderPay addOrderReturnPaySnNew(String cartIds, String memberId, Map<String, Object> orderMsgMap,
+                                               Long addressId, String couponIds, Integer isPp, Integer platform, Long groupBuyActivityId,
+                                               Long groupOrderId, ShopOrderDiscountType shopOrderDiscountType, Integer logisticType, Integer paymentType, Long giftId, Integer giftNum) {
+        // 平台优惠券id
+        Long couponId = null;
+        // 单个订单id
+        Long orderId = null;
+        //通过用户id查询用户信息
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", memberId);
+        //创建一个新的订单支付编号
+        String paySn = "P" + Dateutil.getDateString();
+        ShopOrderPay orderPay = new ShopOrderPay();
+        orderPay.setId(twiterIdService.getTwiterId());
+        orderPay.setPaySn(paySn);
+        orderPay.setBuyerId(Long.parseLong(memberId));
+        orderPay.setApiPayState("0");//设置支付状态0
+        //保存订单支付表
+        orderPayDao.insert(orderPay);
+        //1快递 2自提
+        ShopOrderAddress orderAddress = new ShopOrderAddress();
+        RdMmAddInfo address = null;
+        if (logisticType == 1) {
+            /*********************保存发货地址*********************/
+            address = rdMmAddInfoService.find("aid", addressId);
+            if (address == null) {
+                throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXIT, "收货地址不能为空");
+            }
+            orderAddress.setIsDefault(Optional.ofNullable(address.getDefaultadd()).orElse(0).toString());
+            orderAddress.setId(twiterIdService.getTwiterId());
+            orderAddress.setMemberId(Long.parseLong(address.getMmCode()));
+            orderAddress.setTrueName(address.getConsigneeName());
+            orderAddress.setAddress(address.getAddDetial());
+            orderAddress.setMobPhone(address.getMobile());
+            orderAddress
+                    .setAreaInfo(address.getAddProvinceCode() + address.getAddCityCode() + address.getAddCountryCode());
+            if ("".equals(address.getAddCountryCode())){
+                ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCityCode());
+                orderAddress.setAreaId(shopCommonArea.getId());
+                orderAddress.setCityId(shopCommonArea.getId());
+                orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
+                orderAddressDao.insert(orderAddress);
+            }else{
+                List<ShopCommonArea> shopCommonAreas = areaService.findByAreaName(address.getAddCountryCode());//区
+                if (shopCommonAreas.size()>1){
+                    ShopCommonArea shopCommonCity = areaService.find("areaName", address.getAddCityCode());//市
+                    orderAddress.setCityId(shopCommonCity.getId());
+                    orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                    for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                        if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
+                            orderAddress.setAreaId(shopCommonArea.getId());
+                        }
+                    }
+                    orderAddressDao.insert(orderAddress);
+                }else{
+                    ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
+                    orderAddress.setAreaId(shopCommonArea.getId());
+                    //if ()
+                    orderAddress.setCityId(shopCommonArea.getAreaParentId());
+                    ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
+                    orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
+                    orderAddressDao.insert(orderAddress);
+                }
+            }
+
+        }
+        if (logisticType == 2) {
+            /*********************保存发货地址*********************/
+            orderAddress.setMemberId(Long.parseLong(memberId));
+            orderAddress.setIsDefault("0");
+            orderAddress.setTrueName((String) orderMsgMap.get("userName"));
+            orderAddress.setMobPhone((String) orderMsgMap.get("userPhone"));
+            orderAddress.setAreaInfo("自提没有保存收货地址");
+            orderAddress.setId(twiterIdService.getTwiterId());
+            orderAddress.setAreaId(-1L);
+            orderAddress.setCityId(-1L);
+            orderAddress.setProvinceId(-1L);
+            orderAddress.setAddress("");
+            orderAddressDao.insert(orderAddress);
+
+        }
+
+        /********************* 购物车计算信息 *********************/
+        List<CartInfo> cartInfoList = cartService.queryCartInfoList(cartIds, shopOrderDiscountType, address, memberId);
+        if (CollectionUtils.isEmpty(cartInfoList)) {
+            throw new RuntimeException("购物车不存在");
+        }
+        /*********************订单相关金额计算*********************/
+        OrderSettlement orderSettlement = getAmount(cartInfoList, couponIds, isPp);
+        /*********************保存订单+订单项*********************/
+        for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
+            ShopOrder order = new ShopOrder();
+            //该项目只有自营
+            order.setStoreId(0L);
+            order.setLogisticType(logisticType);
+            order.setStoreName("自营商店");
+            order.setId(twiterIdService.getTwiterId());
+            orderId = order.getId();
+            order.setBrandId(orderVo.getBrandId());
+            order.setBrandName(orderVo.getBrandName());
+            order.setBuyerId(Long.parseLong(member.getMmCode()));
+            order.setBuyerName(member.getMmNickName());
+            order.setPredepositAmount(BigDecimal.ZERO);
+            //没有支付id 暂时为0L
+            order.setPaymentId(0L);
+            order.setPaymentCode("");
+            order.setShippingExpressId(0L);
+            order.setEvalsellerStatus(0L);
+            order.setOrderPointscount(0);
+            // 发货地址id,暂时写死
+            order.setDaddressId(0L);
+            order.setAddressId(orderAddress.getId());
+            //支付表id
+            order.setPayId(orderPay.getId());
+            //订单类型
+            order.setOrderType(shopOrderDiscountType.getPreferentialType());
+            //订单类型id
+            order.setShopOrderTypeId(shopOrderDiscountType.getId());
+            //若支付完成
+            if (orderSettlement.getOrderAmount().doubleValue() == 0) {//购物车集合计算所需支付金额为0 视为已经支付订单
+                order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                order.setPaymentState(OrderState.PAYMENT_STATE_YES); //付款状态
+                order.setPaymentTime(new Date());
+                String period = rdSysPeriodDao.getSysPeriodService(new Date());
+                order.setCreationPeriod(period);
+
+            } //未支付完成
+            else if (orderSettlement.getOrderAmount().doubleValue() > 0) {
+                order.setOrderState(OrderState.ORDER_STATE_NO_PATMENT);
+                order.setPaymentState(OrderState.PAYMENT_STATE_NO);
+            } else {
+                throw new RuntimeException("订单计算出错");
+            }
+            SnowFlake snowFlake = new SnowFlake(0, 0);
+            if (platform == OrderState.PLATFORM_WECHAT) {
+                order.setOrderSn("WX" + snowFlake.nextId());
+            } else if (platform == OrderState.PLATFORM_APP) {
+                order.setOrderSn("AP" + snowFlake.nextId());
+            } else if (platform == OrderState.PLATFORM_PC) {
+                order.setOrderSn("PC" + snowFlake.nextId());
+            } else {
+                throw new IllegalStateException("创建订单平台错误");
+            }
+
+            order.setBuyerPhone(member.getMobile());
+            order.setIsDel(0);
+            order.setPaySn(paySn); //支付表编号
+            order.setLockState(OrderState.ORDER_LOCK_STATE_NO); //订单锁定状态:正常
+            if (paymentType == 1) {
+                order.setPaymentName("在线支付"); //支付方式名称
+            } else {
+                order.setPaymentName("货到付款"); //支付方式名称
+            }
+
+            order.setOrderPlatform(platform);
+            order.setEvaluationStatus(0);
+            order.setCreateTime(new Date()); //订单生成时间
+            order.setBarterState(OrderState.BARTER_STATE_NO);//无退货
+            order.setBarterNum(0);//换货数量初始化为0
+            order.setOrderMessage(Optional.ofNullable(orderMsgMap.get("orderMessages")).orElse("") + ""); //订单留言
+            // TODO 发送队列
+            // order.setGiftCoupon(JacksonUtil.toJson(cartVo.getGiftCoupons())); // 赠送优惠卷集合
+            /********************* 相关金额赋值 *********************/
+            /**********应付统计************/
+            // 无其他费用（运费等) 订单总价格=商品总价格
+            // 订单总价格
+            order.setOrderTotalPrice(orderVo.getOrderAmount());
+            //运费
+            order.setShippingFee(orderVo.getFreightAmount());
+            //优惠金额
+            order.setDiscount(orderVo.getCouponAmount());
+            // 商品总价格
+            order.setGoodsAmount(orderVo.getGoodsAmount());
+            //订单pv值
+            order.setPpv(orderVo.getPpv());
+            //订单运费优惠价格
+            order.setShippingPreferentialFee(orderVo.getPreferentialFreightAmount());
+            order.setOrderPlatform(2);
+            /**********支付统计************/
+            // 现金支付
+            order.setOrderAmount(orderVo.getOrderAmount());
+            // 使用积分抵扣金额
+            order.setPointRmbNum(Optional.ofNullable(orderVo.getRewardPointPrice()).orElse(BigDecimal.ZERO));
+            // 优惠券金额
+//            order.setCouponId(orderVo.getCouponId()); //优惠券id
+//            order.setCouponPrice(orderVo.getCouponPrice());
+            // 店铺优惠券（代金券）
+//            order.setVoucherId(orderVo.getVoucherId());
+//            order.setVoucherPrice(orderVo.getVoucherPrice());
+
+            //            // 优惠总金额
+            //            order.setDiscount(orderVo.getDiscount());
+            //            //促销优惠金额
+            //            order.setPromoPrice(orderVo.getPromoPrice());
+            orderDao.insertEntity(order);
+            // todo 推荐反拥
+
+            /*********************订单项*********************/
+            for (CartOrderVo cartOrderVo : orderVo.getCartOrderVoList()) {
+                ShopOrderGoods orderGoods = new ShopOrderGoods();
+                orderGoods.setId(twiterIdService.getTwiterId());
+                orderGoods.setGoodsId(cartOrderVo.getGoodsId());
+                orderGoods.setGoodsImage(cartOrderVo.getGoodsImages());
+                orderGoods.setGoodsName(cartOrderVo.getGoodsName());
+                orderGoods.setGoodsNum(cartOrderVo.getGoodsNum().intValue());
+                orderGoods.setSpecId(cartOrderVo.getSpecId());
+                orderGoods.setSpecInfo(cartOrderVo.getSpecInfo());
+                orderGoods.setBuyerId(order.getBuyerId() + "");
+                orderGoods.setOrderId(order.getId());
+                orderGoods.setEvaluationStatus(0);
+                orderGoods.setGoodsReturnnum(0);
+                orderGoods.setGoodsBarternum(0);
+                orderGoods.setShippingGoodsNum(0);
+                orderGoods.setGoodsType(cartOrderVo.getGoodsType());
+                orderGoods.setWeight(cartOrderVo.getWeight());
+                // TODO 金额总汇
+                //零售价
+                orderGoods.setMarketPrice(cartOrderVo.getGoodsRetailPrice());
+                //大单价
+                orderGoods.setGoodsPrice(cartOrderVo.getGoodsBigPrice());
+                //会员价
+                orderGoods.setVipPrice(cartOrderVo.getGoodsMemberPrice());
+                if (shopOrderDiscountType.getPreferentialType() == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_MEMBER) {
+                    orderGoods.setGoodsPayPrice(cartOrderVo.getGoodsMemberPrice());
+                } else if (shopOrderDiscountType.getPreferentialType()
+                        == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
+                    orderGoods.setGoodsPayPrice(cartOrderVo.getGoodsBigPrice());
+                } else if (shopOrderDiscountType.getPreferentialType()
+                        == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PREFERENTIAL) {
+                    BigDecimal money = cartOrderVo.getGoodsRetailPrice()
+                            .subtract(shopOrderDiscountType.getPreferential());
+                    if (money.compareTo(new BigDecimal("0")) == -1) {
+                        money = new BigDecimal("0");
+                    }
+                    orderGoods.setGoodsPayPrice(money);
+                } else {
+                    orderGoods.setGoodsPayPrice(cartOrderVo.getGoodsRetailPrice());
+                }
+                orderGoods.setPpv(cartOrderVo.getPpv());
+                orderGoods.setBigPpv(cartOrderVo.getBigPpv());
+                orderGoods.setRewardPointPrice(cartOrderVo.getGoodsRewardPointPrice());
+                orderGoods.setActivityId(cartOrderVo.getActivityId());
+                orderGoods.setActivityType(cartOrderVo.getActivityType());
+                orderGoods.setStoresId(0L);
+
+                //默认0
+                orderGoods.setShippingExpressId(0L);
+                orderGoodsDao.insert(orderGoods);
+                //删除购物数据
+                cartService.delete(cartOrderVo.getId());
+                /*********************更新商品库存+销售数量*********************/
+                ShopGoodsSpec goodsSpec = new ShopGoodsSpec();
+                goodsSpec.setId(cartOrderVo.getSpecId());
+                goodsSpec.setGoodsId(cartOrderVo.getGoodsId());
+                goodsSpec.setSpecSalenum(cartOrderVo.getGoodsNum().intValue());
+                ShopGoods goods = goodsDao.find(cartOrderVo.getGoodsId());
+                ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find(cartOrderVo.getSpecId());
+                if (cartOrderVo.getGoodsNum() > shopGoodsSpec.getSpecGoodsStorage()) {
+                    throw new RuntimeException("购买数量大于库存");
+                }
+                productService.updateStorage(goodsSpec, goods);
+                if (cartOrderVo.getActivityId() != null) {
+                    List<ShopActivityGoodsSpec> shopActivityGoodsSpecList = shopActivityGoodsSpecService.findList(
+                            Paramap.create().put("activityId", cartOrderVo.getActivityId())
+                                    .put("specId", cartOrderVo.getSpecId()));
+                    if (shopActivityGoodsSpecList != null && shopActivityGoodsSpecList.size() > 0) {
+                        ShopActivityGoodsSpec shopActivityGoodsSpec = shopActivityGoodsSpecList.get(0);
+                        shopActivityGoodsSpec
+                                .setActivityStock(shopActivityGoodsSpec.getActivityStock() - cartOrderVo.getGoodsNum());
+                        shopActivityGoodsSpecService.update(shopActivityGoodsSpec);
+                    }
+                }
+
+            }
+
+            /*处理2019年双十一活动**********************开始*********************/ //TODO
+            if(giftId!=null){
+                ShopGoods shopGoods = shopGoodsService.find(giftId);
+                if(shopGoods==null){
+                    throw new RuntimeException("所选赠品不存在");
+                }
+                ShopGoodsSpec goodsSpec = shopGoodsSpecService.find("goodsId", giftId);
+                if(goodsSpec==null){
+                    throw new RuntimeException("所选赠品不存在");
+                }
+                if(goodsSpec.getSpecGoodsStorage()<giftNum){
+                    throw new RuntimeException("所选赠品已赠完，请选择其他类型赠品");
+                }
+                ShopOrderGoods orderGoods = new ShopOrderGoods();
+                orderGoods.setId(twiterIdService.getTwiterId());
+                orderGoods.setOrderId(order.getId());
+                orderGoods.setGoodsId(giftId);
+                orderGoods.setGoodsName(shopGoods.getGoodsName());
+                orderGoods.setSpecId(goodsSpec.getId());
+                //大单价
+                orderGoods.setGoodsPrice(goodsSpec.getSpecBigPrice());
+                orderGoods.setGoodsNum(giftNum);
+                orderGoods.setGoodsImage(shopGoods.getGoodsImage());
+                orderGoods.setGoodsReturnnum(0);
+                orderGoods.setGoodsType(shopGoods.getGoodsType());
+                orderGoods.setRefundAmount(BigDecimal.ZERO);
+                orderGoods.setStoresId(0L);
+                orderGoods.setEvaluationStatus(0);
+                orderGoods.setGoodsPayPrice(BigDecimal.ZERO);
+                orderGoods.setBuyerId(order.getBuyerId() + "");
+                orderGoods.setIsPresentation(1);
+                orderGoods.setMarketPrice(goodsSpec.getSpecRetailPrice());
+                orderGoods.setPpv(goodsSpec.getPpv());
+                orderGoods.setBigPpv(goodsSpec.getBigPpv());
+                orderGoods.setShippingExpressId(0L);
+                orderGoods.setVipPrice(goodsSpec.getSpecMemberPrice());
+                orderGoods.setWeight(goodsSpec.getWeight());
+                orderGoods.setShippingGoodsNum(0);
+                orderGoodsDao.insert(orderGoods);
+                ShopGoodsSpec goodsSpec1 = new ShopGoodsSpec();
+                goodsSpec1.setId(goodsSpec.getId());
+                goodsSpec1.setGoodsId(shopGoods.getId());
+                goodsSpec1.setSpecSalenum(giftNum);
+                productService.updateStorage(goodsSpec1, shopGoods);
+            }
+            /*处理2019年双十一活动**********************结束*********************/
 
             /*********************保存日志*********************/
             ShopOrderLog orderLog = new ShopOrderLog();

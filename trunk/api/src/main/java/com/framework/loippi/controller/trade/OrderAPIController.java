@@ -1,5 +1,10 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.support.Message;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -142,7 +147,10 @@ public class OrderAPIController extends BaseController {
     private RdRanksService rdRanksService;
     @Resource
     private RedisService redisService;
-
+    @Resource
+    private ShopGoodsService shopGoodsService;
+    @Resource
+    private ShopGoodsSpecService shopGoodsSpecService;
 
     /**
      * 提交订单
@@ -204,6 +212,78 @@ public class OrderAPIController extends BaseController {
             .build(rdMmIntegralRule, orderPay, rdMmAccountInfoService.find("mmCode", member.getMmCode())));
     }
 
+    /**
+     * 提交订单
+     */
+    @RequestMapping(value = "/api/order/submitNew")
+    @ResponseBody
+    public String submitOrderNew(@Valid OrderSubmitParam param, BindingResult vResult, HttpServletRequest request,@RequestParam(required = false,value = "giftId")Long giftId,Integer giftNum) {
+        if (vResult.hasErrors()) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        // 订单留言
+        Map<String, Object> orderMsgMap = new HashMap<>();
+        if (StringUtils.isNotBlank(param.getOrderMessages())) {//验证是否有留言信息
+            orderMsgMap.put("orderMessages", param.getOrderMessages());
+        }
+        if (param.getLogisticType() == 2) {//如果订单为自提 需要记录自提人姓名和电话
+            orderMsgMap.put("userName", param.getUserName());
+            orderMsgMap.put("userPhone", param.getUserPhone());
+        }
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        Integer type = 1; //默认显示零售价  判断商品是按零售价还是会员价出售
+        if (rdRanks.getRankClass() > 0) {
+            type = 2;
+        }
+        ShopOrderDiscountType shopOrderDiscountType = null;//订单优惠类型
+        if (param.getShopOrderTypeId() != -1) {
+            shopOrderDiscountType = shopOrderDiscountTypeService.find(param.getShopOrderTypeId());
+            if (shopOrderDiscountType != null) {
+                type = shopOrderDiscountType.getPreferentialType();
+                if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_MEMBER
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PREFERENTIAL
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL) {
+                    type = ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL;
+                    shopOrderDiscountType.setPreferentialType(type);
+                }
+            }
+        }
+        if (shopOrderDiscountType == null) {
+            shopOrderDiscountType = new ShopOrderDiscountType();
+            shopOrderDiscountType.setId(-1L);
+            shopOrderDiscountType.setPreferentialType(type);
+        }
+        if(giftId!=null){
+            ShopGoods shopGoods = shopGoodsService.find(giftId);
+            if(shopGoods==null){
+                return ApiUtils.error("所选赠品不存在");
+            }
+            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find("goodsId", giftId);
+            if(goodsSpec==null){
+                return ApiUtils.error("所选赠品不存在");
+            }
+            if(goodsSpec.getSpecGoodsStorage()<giftNum){
+                return ApiUtils.error("所选赠品已赠完，请选择其他类型赠品");
+            }
+        }
+        //提交订单,返回订单支付实体
+        ShopOrderPay orderPay = orderService.addOrderReturnPaySnNew(param.getCartIds(), member.getMmCode()
+                , orderMsgMap, param.getAddressId()
+                , null, param.getIsPp()
+                , OrderState.PLATFORM_APP, param.getGroupBuyActivityId()
+                , param.getGroupOrderId(), shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),giftId,giftNum);
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        return ApiUtils.success(OrderSubmitResult
+                .build(rdMmIntegralRule, orderPay, rdMmAccountInfoService.find("mmCode", member.getMmCode())));
+    }
     /**
      * 订单列表
      */

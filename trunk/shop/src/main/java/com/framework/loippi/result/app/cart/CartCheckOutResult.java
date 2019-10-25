@@ -3,12 +3,14 @@ package com.framework.loippi.result.app.cart;
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
+import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.utils.NumberUtils;
 import com.framework.loippi.vo.cart.ShopCartVo;
+import com.framework.loippi.vo.gifts.Gifts;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -24,7 +26,17 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class CartCheckOutResult {
+    /*************************************2019双11用********************************************/
+    /**
+     * 是否显示赠品 0：不显示 1：显示
+     */
+    private Integer showFlag;
 
+    /**
+     * 赠品集合
+     */
+    public List<Gifts> gifts;
+    /*************************************2019双11用********************************************/
     /**
      * 有没有收货地址
      */
@@ -340,6 +352,22 @@ public class CartCheckOutResult {
         }
         result.setUserInfo(userInfo);
         result.setSelectShopOrderTypeList(selectShopOrderTypeList);
+        return result;
+    }
+    /*********************************************************************************************************************************************************/
+    public static CartCheckOutResult build3(CartCheckOutResult result, List<ShopGoods> shopGoods, Integer flag,Integer giftsNum) {
+        result.setShowFlag(flag);
+        ArrayList<Gifts> gifts = new ArrayList<>();
+        for (ShopGoods goods : shopGoods) {
+            Gifts gift = new Gifts();
+            gift.setGoodsId(goods.getId());
+            gift.setGoodsName(goods.getGoodsName());
+            gift.setGoodsImage(goods.getGoodsImage());
+            gift.setStock(goods.getStock());
+            gift.setGiftsNum(giftsNum);
+            gifts.add(gift);
+        }
+        result.setGifts(gifts);
         return result;
     }
 }

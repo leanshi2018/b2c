@@ -83,7 +83,27 @@ public class BaseGoodsResult {
 
         List<T> results = Lists.newArrayList();
         for (ShopOrderGoods shopOrderGood : shopOrderGoods) {
-            Optional<ShopOrderGoods> optOrderGoods = Optional.ofNullable(shopOrderGood);
+            if(shopOrderGood.getIsPresentation()==null||shopOrderGood.getIsPresentation()==0){
+                Optional<ShopOrderGoods> optOrderGoods = Optional.ofNullable(shopOrderGood);
+                T baseGoodsResult = fun.callback(shopOrderGood);
+                baseGoodsResult.setGoodsId(optOrderGoods.map(ShopOrderGoods::getGoodsId).orElse(-1L));
+                baseGoodsResult.setGoodsName(optOrderGoods.map(ShopOrderGoods::getGoodsName).orElse(""));
+//            baseGoodsResult.setGoodsStorePrice(NumberUtils.format(shopOrderGood.getGoodsPayPrice()));
+                // todo 订单实际支付价格
+                baseGoodsResult.setGoodsMarketPrice(NumberUtils.format(shopOrderGood.getGoodsPayPrice()));
+                baseGoodsResult.setDefaultImage(optOrderGoods.map(ShopOrderGoods::getGoodsImage).orElse(""));
+                baseGoodsResult.setQuantity(optOrderGoods.map(ShopOrderGoods::getGoodsNum).orElse(0));
+                baseGoodsResult.setSpecInfo(optOrderGoods.map(ShopOrderGoods::getSpecInfo).orElse(""));
+                baseGoodsResult.setSpecId(optOrderGoods.map(ShopOrderGoods::getSpecId).orElse(-1L));
+                baseGoodsResult.setPpv(optOrderGoods.map(ShopOrderGoods::getPpv).orElse(BigDecimal.ZERO));
+//            if (shopOrderGood.getShippingExpressId()!=null && shopOrderGood.getShippingCode()!=null && !"".equals(shopOrderGood.getShippingCode())){
+//                baseGoodsResult.setIsShipment(1);
+//            }else{
+//                baseGoodsResult.setIsShipment(0);
+//            }
+                results.add(baseGoodsResult);
+            }
+/*            Optional<ShopOrderGoods> optOrderGoods = Optional.ofNullable(shopOrderGood);
             T baseGoodsResult = fun.callback(shopOrderGood);
             baseGoodsResult.setGoodsId(optOrderGoods.map(ShopOrderGoods::getGoodsId).orElse(-1L));
             baseGoodsResult.setGoodsName(optOrderGoods.map(ShopOrderGoods::getGoodsName).orElse(""));
@@ -100,7 +120,7 @@ public class BaseGoodsResult {
 //            }else{
 //                baseGoodsResult.setIsShipment(0);
 //            }
-            results.add(baseGoodsResult);
+            results.add(baseGoodsResult);*/
         }
 
         return results;
