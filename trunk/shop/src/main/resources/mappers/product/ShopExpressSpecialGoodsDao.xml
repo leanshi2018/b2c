@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopExpressSpecialGoodsDao">
+
+    <resultMap id="ShopExpressSpecialGoodsResultMap" type="com.framework.loippi.entity.product.ShopExpressSpecialGoods">
+        <id property="id" column="id"  />
+        <result property="goodsSpecId" column="goods_spec_id" />
+        <result property="goodsId" column="goods_id" />
+        <result property="specGoodsSerial" column="spec_goods_serial" />
+        <result property="expressId" column="express_id" />
+        <result property="expLevel" column="exp_level" />
+        <result property="eState" column="e_state" />
+        <result property="creationBy" column="creation_by" />
+        <result property="creationTime" column="creation_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,goods_spec_id ,goods_id ,spec_goods_serial ,express_id ,e_state ,creation_by ,creation_time ,update_by ,update_time
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{goodsSpecId},#{goodsId},#{specGoodsSerial},#{expressId},#{eState},#{creationBy},#{creationTime},#{updateBy},#{updateTime}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="goodsSpecId != null and goodsSpecId != ''">
+            AND goods_spec_id = #{goodsSpecId,jdbcType=BIGINT}
+        </if>
+        <if test="goodsId != null and goodsId != ''">
+            AND goods_id = #{goodsId,jdbcType=BIGINT}
+        </if>
+        <if test="specGoodsSerial != null and specGoodsSerial != ''">
+            AND spec_goods_serial = #{specGoodsSerial,jdbcType=VARCHAR}
+        </if>
+        <if test="expressId != null and expressId != ''">
+            AND express_id = #{expressId,jdbcType=BIGINT}
+        </if>
+        <if test="eState != null">
+            AND e_state = #{eState,jdbcType=INTEGER}
+        </if>
+        <if test="creationBy != null and creationBy != ''">
+            AND creation_by = #{creationBy,jdbcType=VARCHAR}
+        </if>
+        <if test="creationTime != null">
+            and creation_time = #{creationTime,jdbcType=DATETIME}
+        </if>
+        <if test="updateBy != null and updateBy != ''">
+            AND update_by = #{updateBy,jdbcType=VARCHAR}
+        </if>
+        <if test="updateTime != null">
+            and update_time = #{updateTime,jdbcType=DATETIME}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="goodsSpecId != null and goodsSpecId != ''">
+            goods_spec_id = #{goodsSpecId,jdbcType=BIGINT},
+        </if>
+        <if test="goodsId != null and goodsId != ''">
+            goods_id = #{goodsId,jdbcType=BIGINT},
+        </if>
+        <if test="specGoodsSerial != null and specGoodsSerial != ''">
+            spec_goods_serial = #{specGoodsSerial,jdbcType=VARCHAR},
+        </if>
+        <if test="expressId != null and expressId != ''">
+            express_id = #{expressId,jdbcType=BIGINT},
+        </if>
+        <if test="eState != null">
+            e_state = #{eState,jdbcType=INTEGER},
+        </if>
+        <if test="creationBy != null and creationBy != ''">
+            creation_by = #{creationBy,jdbcType=VARCHAR},
+        </if>
+        <if test="creationTime != null">
+            creation_time = #{creationTime,jdbcType=DATETIME},
+        </if>
+        <if test="updateBy != null and updateBy != ''">
+            update_by = #{updateBy,jdbcType=VARCHAR},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime,jdbcType=DATETIME},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopExpressSpecialGoodsResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	shop_express_special_goods
+        WHERE	id=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopExpressSpecialGoodsResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	shop_express_special_goods
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM shop_express_special_goods
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopExpressSpecialGoods">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        INSERT shop_express_special_goods
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopExpressSpecialGoods">
+        UPDATE	shop_express_special_goods
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM shop_express_special_goods
+		WHERE	id = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM shop_express_special_goods
+        WHERE	id	IN
+        <foreach item="ShopExpressSpecialGoodsId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopGoodsLikeId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopExpressSpecialGoodsResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	shop_express_special_goods
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopExpressSpecialGoodsResultMap">
+        SELECT
+        <include refid="base_column" />
+        FROM shop_express_special_goods
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <select id="findByState" parameterType="java.lang.Integer" resultMap="ShopExpressSpecialGoodsResultMap">
+         SELECT * FROM shop_express_special_goods where e_state=#{eState}
+    </select>
+
+</mapper>

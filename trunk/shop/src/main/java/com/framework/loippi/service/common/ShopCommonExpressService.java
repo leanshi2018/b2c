@@ -13,4 +13,5 @@ public interface ShopCommonExpressService extends GenericService<ShopCommonExpre
 
     public ShopCommonExpress findByOrderId(Long orderId);
 
+	ShopCommonExpress findById(Long expressId);
 }

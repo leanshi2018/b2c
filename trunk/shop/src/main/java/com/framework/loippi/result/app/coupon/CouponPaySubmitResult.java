@@ -40,15 +40,14 @@ public class CouponPaySubmitResult {
 
 	public static CouponPaySubmitResult build(RdMmIntegralRule rdMmIntegralRule, ShopOrderPay orderPay, RdMmAccountInfo rdMmAccountInfo) {
 		CouponPaySubmitResult couponPaySubmitResult = new CouponPaySubmitResult();
-		/*couponPaySubmitResult.setCouponOrderSn(orderPay.getPaySn());
+		couponPaySubmitResult.setCouponOrderSn(orderPay.getPaySn());
 		couponPaySubmitResult.setIntegration(rdMmAccountInfo.getWalletBlance().setScale(2));
 		couponPaySubmitResult.setOrderTotalPrice(orderPay.getPayAmount());
 		if (rdMmIntegralRule==null || rdMmIntegralRule.getShoppingPointSr()==null){
-			orderSubmitResult.setProportion(0d);
+			couponPaySubmitResult.setProportion(0d);
 		}else{
-			orderSubmitResult.setProportion(rdMmIntegralRule.getShoppingPointSr().doubleValue()*0.01);
+			couponPaySubmitResult.setProportion(rdMmIntegralRule.getShoppingPointSr().doubleValue()*0.01);
 		}
-		orderSubmitResult.setPaymentType(Optional.ofNullable(orderPay.getPaymentType()).orElse(1));*/
 		return couponPaySubmitResult;
 	}
 
