@@ -553,7 +553,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                 //运费
                 BigDecimal freightAmount = shopGoodsFreightService.CalculateFreight(addr.getAddProvinceCode(), totalWeight);
                 //运费优惠
-                BigDecimal preferentialFreightAmount = shopGoodsFreightRuleService.CalculateFreightDiscount(memberId, cartInfo.getGoodsTotalPrice());
+                BigDecimal preferentialFreightAmount = shopGoodsFreightRuleService.CalculateFreightDiscount(memberId, cartInfo.getActualGoodsTotalPrice());
                 if (freightAmount.compareTo(new BigDecimal("0")) == 0) {
                     cartInfo.setFreightAmount(new BigDecimal("0"));
                     cartInfo.setPreferentialFreightAmount(new BigDecimal("0"));
