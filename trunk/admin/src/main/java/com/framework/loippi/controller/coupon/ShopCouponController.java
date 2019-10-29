@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.coupon;
 
+import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.coupon.Coupon;
@@ -42,30 +43,43 @@ public class ShopCouponController extends GenericController {
         return Message.success("优惠券名称可使用");
     }*/
 
+    /**
+     * 优惠券创建
+     * @param request
+     * @param coupon 优惠券对象
+     * @param model
+     * @param attr
+     * @return
+     */
     @RequestMapping(value = "/saveCoupon")
-    public
-    @ResponseBody
-    Message saveCoupon(HttpServletRequest request, @ModelAttribute Coupon coupon, ModelMap model, RedirectAttributes attr) {
+    public String saveCoupon(HttpServletRequest request, @ModelAttribute Coupon coupon, ModelMap model, RedirectAttributes attr) {
         if(StringUtil.isEmpty(coupon.getCouponName())){
-            return Message.error("优惠券名称不可以为空");
+            model.addAttribute("msg", "优惠券名称不可以为空");
+            return Constants.MSG_URL;
         }
         if(coupon.getCouponValue()==null){
-            return Message.error("优惠券面值不可以为空");
+            model.addAttribute("msg", "优惠券面值不可以为空");
+            return Constants.MSG_URL;
         }
         if(coupon.getReduceType()==null){
-            return Message.error("优惠券优惠类型不可以为空");
+            model.addAttribute("msg", "优惠券优惠类型不可以为空");
+            return Constants.MSG_URL;
         }
         if(coupon.getUseScope()==null){
-            return Message.error("优惠券使用范围不可以为空");
+            model.addAttribute("msg", "优惠券使用范围不可以为空");
+            return Constants.MSG_URL;
         }
         if(coupon.getReceiveType()==null){
-            return Message.error("优惠券获取方式不可以为空");
+            model.addAttribute("msg", "优惠券获取方式不可以为空");
+            return Constants.MSG_URL;
         }
         if(coupon.getPersonLimitNum()==null){
-            return Message.error("优惠券会员领取数量限制不可以为空");
+            model.addAttribute("msg", "优惠券会员领取数量限制不可以为空");
+            return Constants.MSG_URL;
         }
         if(coupon.getTotalLimitNum()==null){
-            return Message.error("优惠券总发行数量不可以为空");
+            model.addAttribute("msg", "优惠券总发行数量不可以为空");
+            return Constants.MSG_URL;
         }
         initCoupon(coupon);
         Subject subject = SecurityUtils.getSubject();
@@ -78,15 +92,21 @@ public class ShopCouponController extends GenericController {
             }
         }
         System.out.println(coupon);
+        Long flag = couponService.save(coupon);
+        if(flag!=1){
+            model.addAttribute("msg", "添加优惠券失败");
+            return Constants.MSG_URL;
+        }
         return null;
     }
     private void initCoupon(Coupon coupon){
         Long id = twiterIdService.getTwiterId();
         coupon.setId(id);
-        coupon.setStoreId(Optional.ofNullable(coupon.getStoreId()).orElse(0L));//设置店家id，如果未设置，默认自营商户：0
+        /*coupon.setStoreId(Optional.ofNullable(coupon.getStoreId()).orElse(0L));//设置店家id，如果未设置，默认自营商户：0
         coupon.setStoreName(Optional.ofNullable(coupon.getStoreName()).orElse("自营商店"));//设置卖家店铺名称，默认自营商店
         coupon.setBrandId(Optional.ofNullable(coupon.getBrandId()).orElse(6544150183754600448L));//设置品牌id，如果未设置，默认自营品牌：0
-        coupon.setBrandName(Optional.ofNullable(coupon.getBrandName()).orElse("OLOMI"));
+        coupon.setBrandName(Optional.ofNullable(coupon.getBrandName()).orElse("OLOMI"));*/
         coupon.setReceivedNum(0L);//设置已发放优惠券数量为0
+        coupon.setStatus(1);//设置带审核状态
     }
 }

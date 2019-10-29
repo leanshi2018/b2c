@@ -13,8 +13,10 @@
         <result property="minMi" column="min_mi"/>
         <result property="brandId" column="brand_id"/>
         <result property="brandName" column="brand_name"/>
+        <result property="image" column="image"/>
         <result property="useScope" column="use_scope"/>
         <result property="scopeRemark" column="scope_remark"/>
+        <result property="useMoneyFlag" column="use_money_flag"/>
         <result property="receiveType" column="receive_type"/>
         <result property="sendStartTime" column="send_start_time"/>
         <result property="sendEndTime" column="send_end_time"/>
@@ -42,14 +44,14 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,store_id ,store_name ,coupon_name ,coupon_price ,coupon_value ,reduce_type ,min_amount ,min_mi ,brand_id ,brand_name ,use_scope ,scope_remark ,receive_type ,send_start_time,
+        id ,store_id ,store_name ,coupon_name ,coupon_price ,coupon_value ,reduce_type ,min_amount ,min_mi ,brand_id ,brand_name ,image,use_scope ,scope_remark ,use_money_flag,receive_type ,send_start_time,
         send_end_time ,use_start_time ,use_end_time ,person_limit_num ,total_limit_num ,received_num ,rank_limit ,use_num_limit ,channel ,status,audit_opinion,remark,
         create_id,create_name,create_time,audit_id,audit_name,audit_time,update_id,update_name,update_time
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{storeId},#{storeName},#{couponName},#{couponPrice},#{couponValue},#{reduceType},#{minAmount},#{minMi},#{brandId},#{brandName},
-        #{useScope},#{scopeRemark},#{receiveType},#{sendStartTime},#{sendEndTime},#{useStartTime},#{useEndTime},#{personLimitNum},#{totalLimitNum},#{receivedNum},
+        #{id},#{storeId},#{storeName},#{couponName},#{couponPrice},#{couponValue},#{reduceType},#{minAmount},#{minMi},#{brandId},#{brandName},#{image},
+        #{useScope},#{scopeRemark},#{useMoneyFlag},#{receiveType},#{sendStartTime},#{sendEndTime},#{useStartTime},#{useEndTime},#{personLimitNum},#{totalLimitNum},#{receivedNum},
         #{rankLimit},#{useNumLimit},#{channel},#{status},#{auditOpinion},#{remark},#{createId},#{createName},#{createTime},#{auditId},
         #{auditName},#{auditTime},#{updateId},#{updateName},#{updateTime}
     </sql>
@@ -89,11 +91,17 @@
         <if test="brandName != null and brandName != ''">
             AND brand_name = #{brandName,jdbcType=VARCHAR}
         </if>
+        <if test="image != null and image != ''">
+            AND image = #{image,jdbcType=VARCHAR}
+        </if>
         <if test="useScope != null">
             AND use_scope = #{useScope,jdbcType=INTEGER}
         </if>
         <if test="scopeRemark != null and scopeRemark != ''">
             AND scope_remark = #{scopeRemark,jdbcType=VARCHAR}
+        </if>
+        <if test="useMoneyFlag != null">
+            AND use_money_flag = #{useMoneyFlag,jdbcType=INTEGER}
         </if>
         <if test="receiveType != null">
             AND receive_type = #{receiveType,jdbcType=INTEGER}
@@ -200,11 +208,17 @@
         <if test="brandName != null and brandName != ''">
             brand_name = #{brandName,jdbcType=VARCHAR},
         </if>
+        <if test="image != null and image != ''">
+            image = #{image,jdbcType=VARCHAR},
+        </if>
         <if test="useScope != null">
             use_scope = #{useScope,jdbcType=INTEGER},
         </if>
         <if test="scopeRemark != null and scopeRemark != ''">
             scope_remark = #{scopeRemark,jdbcType=VARCHAR},
+        </if>
+        <if test="useMoneyFlag != null">
+            use_money_flag = #{useMoneyFlag,jdbcType=INTEGER},
         </if>
         <if test="receiveType != null">
             receive_type = #{receiveType,jdbcType=INTEGER},
