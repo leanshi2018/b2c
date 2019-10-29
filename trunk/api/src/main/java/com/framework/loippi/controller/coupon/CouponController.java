@@ -22,6 +22,7 @@ import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
+import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
@@ -87,13 +88,13 @@ public class CouponController extends BaseController {
 	 */
 	@RequestMapping(value = "/order/submit", method = RequestMethod.POST)
 	@ResponseBody
-	public String orderSubmit(@RequestParam Long couponId, Integer couponNumber,HttpServletRequest request,String memberId) {
+	public String orderSubmit(@RequestParam Long couponId, Integer couponNumber,HttpServletRequest request) {
 		if (couponId == null) {
 			return jsonFail();
 		}
 
-		//AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
-		RdMmBasicInfo member = rdMmBasicInfoService.findByMCode(memberId);
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+		//RdMmBasicInfo member = rdMmBasicInfoService.findByMCode(memberId);
 
 		//订单类型相关
 		RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
