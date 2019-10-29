@@ -32,4 +32,8 @@ public class ActivityGuide implements GenericEntity, Cloneable {
      * 是否使用
      */
     private Integer isUse;
+    /**
+     * 跳转路径标题
+     */
+    private String title;
 }
