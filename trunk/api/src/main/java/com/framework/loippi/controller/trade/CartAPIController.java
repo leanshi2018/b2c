@@ -360,25 +360,84 @@ public class CartAPIController extends BaseController {
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date startTime = format.parse("2019-10-23 00:00:00");
-            Date endTime = format.parse("2019-11-23 23:59:59");
+            Date startTime = format.parse("2019-10-01 00:00:00");
+            Date endTime = format.parse("2019-11-12 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
             if(b){
                 if(rdMmRelation.getRank()==0&&result.getNeedToPay().compareTo(new BigDecimal("360"))!=-1){
                     flag=1;
                     giftsNum=result.getNeedToPay().divideToIntegralValue(new BigDecimal("360")).intValue();
-                    ShopGoods goods = goodsService.find(6573037643838263296L);//OLOMI酵素多效洗衣凝珠
-                    ShopGoods goods1 = goodsService.find(6573038322627645440L);//OLOMI母婴抑菌倍护洗衣凝珠
-                    shopGoods.add(goods);
-                    shopGoods.add(goods1);
-                }else if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1){
+                    ShopGoods goods = goodsService.find(6587959889232924672L);//老棉农棉柔巾20*20cm*100抽*3包/提
+                    ShopGoods goods1 = goodsService.find(6587960502192705536L);//老棉农棉柔巾（加厚款）20*20cm*60抽*3包/提
+                    ShopGoods goods2 = goodsService.find(6587961856550244352L);//老棉农婴儿棉柔巾 10*20cm*100抽*6包/提
+                    ShopGoods goods3 = goodsService.find(6573038322627645440L);//OLOMI母婴抑菌倍护洗衣凝珠
+                    ShopGoods goods4 = goodsService.find(6552743534695288832L);//OLOMI植萃精华保湿面膜
+                    ShopGoods goods5 = goodsService.find(6552746788883795968L);//OLOMI植萃精华修护面膜
+                    if (goods!=null){
+                        shopGoods.add(goods);
+                    }
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                    if (goods2!=null){
+                        shopGoods.add(goods2);
+                    }
+                    if (goods3!=null){
+                        shopGoods.add(goods3);
+                    }
+                    if (goods4!=null){
+                        shopGoods.add(goods4);
+                    }
+                    if (goods5!=null){
+                        shopGoods.add(goods5);
+                    }
+                }else if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))==-1){
                     flag=1;
                     giftsNum=result.getActualTotalPpv().divideToIntegralValue(new BigDecimal("25")).intValue();
-                    ShopGoods goods = goodsService.find(6573037643838263296L);//OLOMI酵素多效洗衣凝珠
-                    ShopGoods goods1 = goodsService.find(6573038322627645440L);//OLOMI母婴抑菌倍护洗衣凝珠
-                    shopGoods.add(goods);
-                    shopGoods.add(goods1);
+                    ShopGoods goods = goodsService.find(6587959889232924672L);//老棉农棉柔巾20*20cm*100抽*3包/提
+                    ShopGoods goods1 = goodsService.find(6587960502192705536L);//老棉农棉柔巾（加厚款）20*20cm*60抽*3包/提
+                    ShopGoods goods2 = goodsService.find(6587961856550244352L);//老棉农婴儿棉柔巾 10*20cm*100抽*6包/提
+                    ShopGoods goods3 = goodsService.find(6573038322627645440L);//OLOMI母婴抑菌倍护洗衣凝珠
+                    ShopGoods goods4 = goodsService.find(6552743534695288832L);//OLOMI植萃精华保湿面膜
+                    ShopGoods goods5 = goodsService.find(6552746788883795968L);//OLOMI植萃精华修护面膜
+                    if (goods!=null){
+                        shopGoods.add(goods);
+                    }
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                    if (goods2!=null){
+                        shopGoods.add(goods2);
+                    }
+                    if (goods3!=null){
+                        shopGoods.add(goods3);
+                    }
+                    if (goods4!=null){
+                        shopGoods.add(goods4);
+                    }
+                    if (goods5!=null){
+                        shopGoods.add(goods5);
+                    }
+                }else if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1){
+                    flag=1;
+                    giftsNum=result.getActualTotalPpv().divideToIntegralValue(new BigDecimal("50")).intValue();
+                    ShopGoods goods = goodsService.find(6552806260624855040L);//OLOMI氨基酸温和修护洁面乳
+                    ShopGoods goods1 = goodsService.find(6587956972564254720L);//OLOMI橙花精油温和卸妆水
+                    ShopGoods goods2 = goodsService.find(6592325180272414720L);//【组合套装】家具清洁套装
+                    ShopGoods goods3 = goodsService.find(6573037643838263296L);//OLOMI酵素多效洗衣凝珠
+                    if (goods!=null){
+                        shopGoods.add(goods);
+                    }
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                    if (goods2!=null){
+                        shopGoods.add(goods2);
+                    }
+                    if (goods3!=null){
+                        shopGoods.add(goods3);
+                    }
                 }
             }
             result=result.build3(result,shopGoods,flag,giftsNum);

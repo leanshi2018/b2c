@@ -1,9 +1,11 @@
 package com.framework.loippi.controller.user;
 
+import com.framework.loippi.entity.activity.ActivityGuide;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.user.*;
 import com.framework.loippi.result.user.IntegrationMemberListResult;
 import com.framework.loippi.result.user.SubordinateUserInformationResult;
+import com.framework.loippi.service.activity.ActivityGuideService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.*;
@@ -378,26 +380,20 @@ public class AuthcAPIController extends BaseController {
     //    redisService.save(sessionId, raMember);
     //    return ApiUtils.success(raMember);
     //}
-/*    @Resource
-    private ShopCommonAreaService commonAreaService;
+    @Resource
+    private ActivityGuideService activityGuideService;
 
-    @RequestMapping(value = "/getArea", method = RequestMethod.POST)
+    @RequestMapping(value = "/getActivityGuide", method = RequestMethod.POST)
     @ResponseBody
-    public List<ShopCommonArea> getArea() {
-        List<ShopCommonArea> list = new ArrayList<>();
-        Paramap paramap = Paramap.create().put("isDel", 0).put("areaParentId", 0);
-        List<ShopCommonArea> areas = commonAreaService.findList(paramap);
-        for (ShopCommonArea area : areas) {
-            Paramap paramap1 = Paramap.create().put("isDel", 0).put("areaParentId", area.getId());
-            List<ShopCommonArea> areas1 = commonAreaService.findList(paramap1);
-            for (ShopCommonArea area1 : areas1) {
-                Paramap paramap2 = Paramap.create().put("isDel", 0).put("areaParentId", area1.getId());
-                List<ShopCommonArea> areas2 = commonAreaService.findList(paramap2);
-                area1.setChildern(areas2);
+    public String getActivityGuide() {
+        List<ActivityGuide> list = activityGuideService.findAll();
+        if (list!=null&&list.size()>0){
+            for (ActivityGuide activityGuide : list) {
+                if(activityGuide.getIsUse()!=null&&activityGuide.getIsUse()==1){
+                    return ApiUtils.success(activityGuide);
+                }
             }
-            area.setChildern(areas1);
-            list.add(area);
         }
-        return list;
-    }*/
+        return ApiUtils.error("当前无正在使用的活动指南");
+    }
 }
