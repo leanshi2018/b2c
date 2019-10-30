@@ -307,18 +307,18 @@ public class RefundReturnSysController extends GenericController {
 
         ShopRefundReturn refundReturn = refundReturnService.find(id);
         //**************************update by zc 2019-10-30**********************************************
-        List<ShopReturnOrderGoods> list = shopReturnOrderGoodsService.findList("returnOrderId",id);
-        BigDecimal totalSum = BigDecimal.ZERO;
-        if(list!=null&&list.size()>0){
-            for (ShopReturnOrderGoods shopReturnOrderGoods : list) {
-                totalSum=totalSum.add(shopReturnOrderGoods.getPrice().multiply(new BigDecimal(shopReturnOrderGoods.getGoodsNum())));
-            }
-        }
-        Double refundAmountD = Double.valueOf(refundAmount);
-        Double all = refundAmountD + refundPoint;
-        BigDecimal decimalAll = new BigDecimal(all);
-        if(decimalAll.compareTo(totalSum)==1){
+        Long orderId = refundReturn.getOrderId();
+        ShopOrder shopOrder = orderService.find(orderId);
+        BigDecimal totalSumMoney = shopOrder.getOrderAmount().subtract(shopOrder.getRefundAmount());
+        BigDecimal totalSumPoint = shopOrder.getPointRmbNum().subtract(shopOrder.getRefundPoint());
+        BigDecimal decimalMoney = new BigDecimal(refundAmount);
+        BigDecimal decimalPoint = new BigDecimal(refundPoint);
+        if(decimalMoney.compareTo(totalSumMoney)==1){
             model.addAttribute("msg", "退款金额大于可退款金额");
+            return Constants.MSG_URL;
+        }
+        if(decimalPoint.compareTo(totalSumPoint)==1){
+            model.addAttribute("msg", "退款积分大于可退款积分");
             return Constants.MSG_URL;
         }
         //************************************************************************
