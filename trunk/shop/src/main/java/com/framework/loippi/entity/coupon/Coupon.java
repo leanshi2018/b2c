@@ -25,7 +25,7 @@ public class Coupon implements GenericEntity {
      */
     private Long id;
     /**
-     * 店家id   默认自营商户0
+     * 店家id
      */
     private Long storeId;
     /**
@@ -65,7 +65,11 @@ public class Coupon implements GenericEntity {
      */
     private String brandName;
     /**
-     * 使用范围 0：不限  1：限制品牌 2：限制店铺 3：适用于品类 4：适用于组合商品  5：使用于单品 6：适用于多种商品 9：组合条件使用
+     * 优惠券图片
+     */
+    private String image;
+    /**
+     * 使用范围 0：不限  1：适用于品类 2：适用于组合商品 3：使用于单品 4：适用于多种商品 9：组合条件使用
      */
     private Integer useScope;
     /**
@@ -73,7 +77,11 @@ public class Coupon implements GenericEntity {
      */
     private String scopeRemark;
     /**
-     * 获得方式 1：免费领取 2：付费领取 3：自动发放
+     * 是否属于付费购买优惠券  0：免费 1：付费
+     */
+    private Integer useMoneyFlag;
+    /**
+     * 获得方式 1：手动领取  2：自动发放
      */
     private Integer receiveType;
     /**
