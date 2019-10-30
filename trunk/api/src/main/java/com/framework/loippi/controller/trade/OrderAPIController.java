@@ -1,10 +1,5 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.service.product.ShopGoodsSpecService;
-import com.framework.loippi.support.Message;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -44,7 +39,9 @@ import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.order.ShopOrderPay;
+import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAddInfo;
@@ -75,6 +72,8 @@ import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderPayService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.union.UnionpayService;
@@ -585,7 +584,7 @@ public class OrderAPIController extends BaseController {
      * @param integration 积分
      * @param paypassword 支付密码
      */
-    @RequestMapping("/api/order/payCoupon")
+    /*@RequestMapping("/api/order/payCoupon")
     @ResponseBody
     public String payOrderCoupon(@RequestParam(value = "paysn") String paysn,
         @RequestParam(defaultValue = "pointsPaymentPlugin") String paymentCode,
@@ -695,7 +694,7 @@ public class OrderAPIController extends BaseController {
         }
 
         return ApiUtils.success(model);
-    }
+    }*/
 
 /*    *//**
      * 去付款
