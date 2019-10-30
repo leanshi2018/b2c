@@ -1,5 +1,24 @@
 package com.framework.loippi.controller.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.RequestContext;
+
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.dto.MessageTemplateDto;
@@ -21,14 +40,6 @@ import com.framework.loippi.utils.ParameterUtils;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.jpush.JpushUtils;
 import com.framework.loippi.utils.sms.AldayuUtil;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.RequestContext;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  * Controller -
@@ -81,7 +92,7 @@ public class ShopCommonMessageController extends GenericController {
     }*/
     @RequestMapping("/index")
    public String index(Model model) {
-        model.addAttribute("shopCommonMessage", null);
+        model.addAttribute("shopCommonMessage", "ceshi");
         return "common/notification_message/index";
     }
 

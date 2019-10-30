@@ -1,5 +1,30 @@
 package com.framework.loippi.controller.trade;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.framework.loippi.consts.CartConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
@@ -9,25 +34,24 @@ import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsFreight;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.enus.ActivityTypeEnus.EnumType;
 import com.framework.loippi.mybatis.paginator.domain.Order.Direction;
 import com.framework.loippi.param.cart.CartAddParam;
 import com.framework.loippi.result.app.cart.CartCheckOutResult;
 import com.framework.loippi.result.app.cart.CartResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.service.activity.ShopActivityService;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
-import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
-import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.service.user.*;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.JacksonUtil;
@@ -36,27 +60,6 @@ import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.cart.ShopCartVo;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * 功能： api购物车模块接口 类名：CartAPIController 日期：2017/11/20  10:40 作者：czl 详细说明： 修改备注:
@@ -360,7 +363,7 @@ public class CartAPIController extends BaseController {
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date startTime = format.parse("2019-10-01 00:00:00");
+            Date startTime = format.parse("2019-11-01 00:00:00");
             Date endTime = format.parse("2019-11-12 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
