@@ -306,6 +306,22 @@ public class RefundReturnSysController extends GenericController {
                          HttpServletRequest request, HttpServletResponse response) {
 
         ShopRefundReturn refundReturn = refundReturnService.find(id);
+        //**************************update by zc 2019-10-30**********************************************
+        List<ShopReturnOrderGoods> list = shopReturnOrderGoodsService.findList("returnOrderId",id);
+        BigDecimal totalSum = BigDecimal.ZERO;
+        if(list!=null&&list.size()>0){
+            for (ShopReturnOrderGoods shopReturnOrderGoods : list) {
+                totalSum=totalSum.add(shopReturnOrderGoods.getPrice().multiply(new BigDecimal(shopReturnOrderGoods.getGoodsNum())));
+            }
+        }
+        Double refundAmountD = Double.valueOf(refundAmount);
+        Double all = refundAmountD + refundPoint;
+        BigDecimal decimalAll = new BigDecimal(all);
+        if(decimalAll.compareTo(totalSum)==1){
+            model.addAttribute("msg", "退款金额大于可退款金额");
+            return Constants.MSG_URL;
+        }
+        //************************************************************************
         if (refundReturn.getRefundType()==3 && "2".equals(returntype)){
             // TODO: 2019/1/5 换单
             List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsService.findList("returnOrderId",id);

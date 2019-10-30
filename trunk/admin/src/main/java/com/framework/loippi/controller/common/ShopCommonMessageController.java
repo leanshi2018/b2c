@@ -81,7 +81,8 @@ public class ShopCommonMessageController extends GenericController {
     }*/
     @RequestMapping("/index")
    public String index(Model model) {
-        model.addAttribute("shopCommonMessage", null);
+        model.addAttribute("shopCommonMessage", "ceshi");
+        System.out.println(model);
         return "common/notification_message/index";
     }
 
