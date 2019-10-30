@@ -67,18 +67,23 @@ public class ShopCommonMessageController extends GenericController {
         return "common/shop_common_message/list";
     }
 
-//    @RequestMapping("/index")
-//    public String index(Model model, Pageable pageable,ShopCommonMessage shopCommonMessage) {
-//        shopCommonMessage.setBizType(3);
-//        shopCommonMessage.setSendUid(0+"");
-//        pageable.setParameter(shopCommonMessage);
-//        pageable.setOrderProperty("create_time");
-//        pageable.setOrderDirection(Order.Direction.DESC);
-//        Page<ShopCommonMessage> results = shopCommonMessageService.findByPage(pageable);//结果集
-//        model.addAttribute("page", results);
-//        model.addAttribute("param", shopCommonMessage);
-//        return "common/shop_common_message/index";
-//    }
+/*    @RequestMapping("/index")
+   public String index(Model model, Pageable pageable,ShopCommonMessage shopCommonMessage) {
+        shopCommonMessage.setBizType(3);
+        shopCommonMessage.setSendUid(0+"");
+        pageable.setParameter(shopCommonMessage);
+        pageable.setOrderProperty("create_time");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        Page<ShopCommonMessage> results = shopCommonMessageService.findByPage(pageable);//结果集
+        model.addAttribute("page", results);
+        model.addAttribute("param", shopCommonMessage);
+        return "common/shop_common_message/index";
+    }*/
+    @RequestMapping("/index")
+   public String index(Model model) {
+        model.addAttribute("shopCommonMessage", null);
+        return "common/notification_message/index";
+    }
 
     /**
      * 更新发布状态
