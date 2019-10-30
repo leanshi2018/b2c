@@ -2,8 +2,6 @@ package com.framework.loippi.service.impl.order;
 
 
 
-import com.framework.loippi.dao.user.RdMmRelationDao;
-import com.framework.loippi.service.product.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -109,6 +107,11 @@ import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
+import com.framework.loippi.service.product.ShopGoodsFreightService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAccountLogService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
@@ -1056,14 +1059,23 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     .setAreaInfo(address.getAddProvinceCode() + address.getAddCityCode() + address.getAddCountryCode());
             if ("".equals(address.getAddCountryCode())){
                 ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCityCode());
+                if (shopCommonArea==null) {
+                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                }
                 orderAddress.setAreaId(shopCommonArea.getId());
                 orderAddress.setCityId(shopCommonArea.getId());
                 orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
                 orderAddressDao.insert(orderAddress);
             }else{
                 List<ShopCommonArea> shopCommonAreas = areaService.findByAreaName(address.getAddCountryCode());//区
+                if (CollectionUtils.isEmpty(shopCommonAreas)) {
+                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                }
                 if (shopCommonAreas.size()>1){
                     ShopCommonArea shopCommonCity = areaService.find("areaName", address.getAddCityCode());//市
+                    if (shopCommonCity==null) {
+                        throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                    }
                     orderAddress.setCityId(shopCommonCity.getId());
                     orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
                     for (ShopCommonArea shopCommonArea : shopCommonAreas) {
@@ -1078,6 +1090,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     //if ()
                     orderAddress.setCityId(shopCommonArea.getAreaParentId());
                     ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
+                    if (shopCommonArea2==null) {
+                        throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                    }
                     orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
                     orderAddressDao.insert(orderAddress);
                 }
