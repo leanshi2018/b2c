@@ -3,23 +3,28 @@ package com.framework.loippi.controller.coupon;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.Principal;
+import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.support.Message;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.StringUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller("shopCouponController")
@@ -31,17 +36,38 @@ public class ShopCouponController extends GenericController {
     @Resource
     private TwiterIdService twiterIdService;
 
-/*    @RequestMapping(value = "/checkCouponName")
-    public Message checkCouponName(HttpServletRequest request, String couponName) {
-        if(StringUtil.isEmpty(couponName)){
-            return Message.error("优惠券名称不可以为空");
+    /**
+     * 优惠券列表
+     * @param model
+     * @param pageNo
+     * @param pageSize
+     * @param coupon
+     * @param sendTimeStr
+     * @param useTimeStr
+     * @return
+     */
+    public String list(ModelMap model,
+                       @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                       @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
+                       @ModelAttribute Coupon coupon,
+                       @RequestParam(required = false, value = "sendTimeStr") String sendTimeStr,
+                       @RequestParam(required = false, value = "useTimeStr") String useTimeStr) {
+        Pageable pager = new Pageable();
+        pager.setPageSize(pageSize);
+        pager.setPageNumber(pageNo);
+        pager.setOrderProperty("createTime");
+        pager.setOrderDirection(Order.Direction.DESC);
+        if (!StringUtil.isEmpty(sendTimeStr)) {
+            coupon.setSearchSendTime(sendTimeStr);
         }
-        Coupon coupon = couponService.find("couponName", couponName);
-        if(coupon!=null){
-            return Message.error("优惠券名称已存在，请确认一个新的优惠券名称");
+        if (!StringUtil.isEmpty(useTimeStr)) {
+            coupon.setSearchUseTime(useTimeStr);
         }
-        return Message.success("优惠券名称可使用");
-    }*/
+        pager.setParameter(coupon);
+        Page<Coupon> couponList = couponService.findByPage(pager);
+        model.addAttribute("page", couponList);
+        return "";//TODO 优惠券展示freemaker页面
+    }
 
     /**
      * 优惠券创建
@@ -52,7 +78,9 @@ public class ShopCouponController extends GenericController {
      * @return
      */
     @RequestMapping(value = "/saveCoupon")
-    public String saveCoupon(HttpServletRequest request, @ModelAttribute Coupon coupon, ModelMap model, RedirectAttributes attr) {
+    public String saveCoupon(HttpServletRequest request, @ModelAttribute Coupon coupon, ModelMap model, RedirectAttributes attr,
+    @RequestParam(required = false, value = "couponId") Long couponId
+    ) {
         if(StringUtil.isEmpty(coupon.getCouponName())){
             model.addAttribute("msg", "优惠券名称不可以为空");
             return Constants.MSG_URL;
@@ -81,32 +109,28 @@ public class ShopCouponController extends GenericController {
             model.addAttribute("msg", "优惠券总发行数量不可以为空");
             return Constants.MSG_URL;
         }
-        initCoupon(coupon);
+        coupon.setId(couponId);
         Subject subject = SecurityUtils.getSubject();
         if(subject!=null){
             Principal principal = (Principal) subject.getPrincipal();
             if (principal != null && principal.getId() != null) {
-                coupon.setCreateId(principal.getId());
-                coupon.setCreateName(principal.getUsername());
-                coupon.setCreateTime(new Date());
+                Long id = principal.getId();
+                String username = principal.getUsername();
+                Map<String, String> map =couponService.saveOrEditCoupon(coupon,id,username);
+                if (map == null || StringUtil.isEmpty(map.get("code"))) {
+                    model.addAttribute("msg", "保存活动信息失败！");
+                    return Constants.MSG_URL;
+                }
+
+                String code = map.get("code");
+                if (StringUtil.isEmpty(code) || code.equals("0")) {
+                    String errorMsg = map.get("msg");
+                    model.addAttribute("msg", errorMsg);
+                    return Constants.MSG_URL;
+                }
             }
         }
-        System.out.println(coupon);
-        Long flag = couponService.save(coupon);
-        if(flag!=1){
-            model.addAttribute("msg", "添加优惠券失败");
-            return Constants.MSG_URL;
-        }
-        return null;
-    }
-    private void initCoupon(Coupon coupon){
-        Long id = twiterIdService.getTwiterId();
-        coupon.setId(id);
-        /*coupon.setStoreId(Optional.ofNullable(coupon.getStoreId()).orElse(0L));//设置店家id，如果未设置，默认自营商户：0
-        coupon.setStoreName(Optional.ofNullable(coupon.getStoreName()).orElse("自营商店"));//设置卖家店铺名称，默认自营商店
-        coupon.setBrandId(Optional.ofNullable(coupon.getBrandId()).orElse(6544150183754600448L));//设置品牌id，如果未设置，默认自营品牌：0
-        coupon.setBrandName(Optional.ofNullable(coupon.getBrandName()).orElse("OLOMI"));*/
-        coupon.setReceivedNum(0L);//设置已发放优惠券数量为0
-        coupon.setStatus(1);//设置带审核状态
+        model.addAttribute("msg", "请登录后再进行优惠券相关操作");
+        return Constants.MSG_URL;
     }
 }
