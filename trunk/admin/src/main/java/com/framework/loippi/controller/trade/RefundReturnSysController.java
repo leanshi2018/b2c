@@ -309,8 +309,8 @@ public class RefundReturnSysController extends GenericController {
         //**************************update by zc 2019-10-30**********************************************
         Long orderId = refundReturn.getOrderId();
         ShopOrder shopOrder = orderService.find(orderId);
-        BigDecimal totalSumMoney = shopOrder.getOrderAmount().subtract(shopOrder.getRefundAmount());
-        BigDecimal totalSumPoint = shopOrder.getPointRmbNum().subtract(shopOrder.getRefundPoint());
+        BigDecimal totalSumMoney = shopOrder.getOrderAmount().subtract(Optional.ofNullable(shopOrder.getRefundAmount()).orElse(BigDecimal.ZERO));
+        BigDecimal totalSumPoint = shopOrder.getPointRmbNum().subtract(Optional.ofNullable(shopOrder.getRefundPoint()).orElse(BigDecimal.ZERO));
         BigDecimal decimalMoney = new BigDecimal(refundAmount);
         BigDecimal decimalPoint = new BigDecimal(refundPoint);
         if(decimalMoney.compareTo(totalSumMoney)==1){
