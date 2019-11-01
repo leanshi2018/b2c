@@ -1,6 +1,7 @@
 package com.framework.loippi.service.impl.coupon;
 
 import com.framework.loippi.dao.coupon.CouponDao;
+import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
@@ -10,6 +11,7 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 优惠券业务层
@@ -54,5 +56,21 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
             }
         }
         return resultMap;
+    }
+
+    /**
+     * 优惠券审核
+     * @param coupon
+     * @param targetStatus
+     * @param user
+     * @throws Exception
+     */
+    @Override
+    public void updateCouponState(Coupon coupon, Integer targetStatus, Principal user) throws Exception {
+        coupon.setStatus(targetStatus);
+        coupon.setUpdateId(Optional.ofNullable(user.getId()).orElse(0L));//设置修改人id
+        coupon.setUpdateName(Optional.ofNullable(user.getUsername()).orElse(""));//设置修改人姓名
+        coupon.setUpdateTime(new Date());
+        couponDao.update(coupon);
     }
 }

@@ -10,4 +10,6 @@ import java.util.Map;
  */
 public interface CouponService extends GenericService<Coupon, Long> {
     Map<String, String> saveOrEditCoupon(Coupon coupon,Long id, String username);
+
+    void updateCouponState(Coupon coupon, Integer targetStatus, com.framework.loippi.entity.Principal user) throws Exception;
 }
