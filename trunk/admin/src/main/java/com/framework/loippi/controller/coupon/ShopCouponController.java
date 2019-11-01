@@ -3,6 +3,7 @@ package com.framework.loippi.controller.coupon;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.Principal;
+import com.framework.loippi.entity.User;
 import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -46,7 +47,8 @@ public class ShopCouponController extends GenericController {
      * @param useTimeStr
      * @return
      */
-    public String list(ModelMap model,
+    @RequestMapping(value = "/queryCouponConditions",method = RequestMethod.POST)
+    public String queryCouponConditions(ModelMap model,
                        @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
                        @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
                        @ModelAttribute Coupon coupon,
@@ -77,9 +79,9 @@ public class ShopCouponController extends GenericController {
      * @param attr
      * @return
      */
-    @RequestMapping(value = "/saveCoupon")
+    @RequestMapping(value = "/saveCoupon",method = RequestMethod.POST)
     public String saveCoupon(HttpServletRequest request, @ModelAttribute Coupon coupon, ModelMap model, RedirectAttributes attr,
-    @RequestParam(required = false, value = "couponId") Long couponId
+                             @RequestParam(required = false, value = "couponId") Long couponId
     ) {
         if(StringUtil.isEmpty(coupon.getCouponName())){
             model.addAttribute("msg", "优惠券名称不可以为空");
@@ -87,6 +89,10 @@ public class ShopCouponController extends GenericController {
         }
         if(coupon.getCouponValue()==null){
             model.addAttribute("msg", "优惠券面值不可以为空");
+            return Constants.MSG_URL;
+        }
+        if(coupon.getWhetherPresent()==null){
+            model.addAttribute("msg", "优惠券需注明是否可以赠送");
             return Constants.MSG_URL;
         }
         if(coupon.getReduceType()==null){
@@ -132,5 +138,82 @@ public class ShopCouponController extends GenericController {
         }
         model.addAttribute("msg", "请登录后再进行优惠券相关操作");
         return Constants.MSG_URL;
+    }
+
+    /**
+     * 优惠券信息查询
+     * @param request
+     * @param model
+     * @param attr
+     * @param couponId 优惠券id
+     * @return
+     */
+    @RequestMapping(value = "/viewCouponContent",method = RequestMethod.POST)
+    public String viewCouponContent(HttpServletRequest request,  ModelMap model, RedirectAttributes attr,
+                             @RequestParam(required = true, value = "couponId") Long couponId
+    ) {
+        if(couponId==null){
+            model.addAttribute("msg", "请传入查询当前优惠券id");
+            return Constants.MSG_URL;
+        }
+        Coupon coupon = couponService.find(couponId);
+        if(coupon==null){
+            model.addAttribute("msg", "当前id对应优惠券不存在");
+            return Constants.MSG_URL;
+        }
+        model.addAttribute("coupon",coupon);
+        return "";//TODO 跳转到展示优惠券详情页面
+    }
+
+    /**
+     * 根据优惠券id对优惠券进行审核
+     * @param request
+     * @param model
+     * @param attr
+     * @param couponId 优惠券id
+     * @return
+     */
+    @RequestMapping(value = "/auditCoupon",method = RequestMethod.POST)
+    public String auditCoupon(HttpServletRequest request,  ModelMap model, RedirectAttributes attr,
+                                    @RequestParam(required = true, value = "couponId") Long couponId,
+                                    @RequestParam(required = true, value = "targetStatus") Integer targetStatus
+    ) {
+        if(couponId==null){
+            model.addAttribute("msg", "请传入查询当前优惠券id");
+            return Constants.MSG_URL;
+        }
+        if(targetStatus!=3&&targetStatus!=4){
+            model.addAttribute("msg", "是否审核通过状态码不正确");
+            return Constants.MSG_URL;
+        }
+        Coupon coupon = couponService.find(couponId);
+        if(coupon==null){
+            model.addAttribute("msg", "当前id对应优惠券不存在");
+            return Constants.MSG_URL;
+        }
+        Integer status = coupon.getStatus();
+        if(status!=1){
+            model.addAttribute("msg", "当前优惠券不处于待审核状态");
+            return Constants.MSG_URL;
+        }
+        Principal user = (Principal) SecurityUtils.getSubject().getPrincipal();
+        if(user==null){
+            model.addAttribute("msg", "请登录后进行审核操作");
+            return Constants.MSG_URL;
+        }
+        try {
+            couponService.updateCouponState(coupon,targetStatus,user);
+            if(targetStatus==3){
+                model.addAttribute("msg", "审核成功");
+            }
+            if(targetStatus==4){
+                model.addAttribute("msg", "审核失败");
+            }
+            return null;//TODO 审核通过后跳转页面
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("msg", "网络异常，请稍后重试");
+            return Constants.MSG_URL;
+        }
     }
 }

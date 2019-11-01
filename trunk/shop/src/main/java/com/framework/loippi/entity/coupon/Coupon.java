@@ -82,6 +82,11 @@ public class Coupon implements GenericEntity {
     @Column(name = "image")
     private String image;
     /**
+     * 是否可以赠送  0：不可以 1：可以
+     */
+    @Column(name = "whether_present")
+    private Integer whetherPresent;
+    /**
      * 使用范围 0：不限  1：适用于品类 2：适用于组合商品 3：使用于单品 4：适用于多种商品 9：组合条件使用
      */
     @Column(name = "use_scope")
