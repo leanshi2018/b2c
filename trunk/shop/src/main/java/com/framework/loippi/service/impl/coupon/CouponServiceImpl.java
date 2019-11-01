@@ -1,7 +1,6 @@
 package com.framework.loippi.service.impl.coupon;
 
 import com.framework.loippi.dao.coupon.CouponDao;
-import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
@@ -65,12 +64,12 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
      * @param user
      * @throws Exception
      */
-    @Override
+    /*@Override
     public void updateCouponState(Coupon coupon, Integer targetStatus, Principal user) throws Exception {
         coupon.setStatus(targetStatus);
         coupon.setUpdateId(Optional.ofNullable(user.getId()).orElse(0L));//设置修改人id
         coupon.setUpdateName(Optional.ofNullable(user.getUsername()).orElse(""));//设置修改人姓名
         coupon.setUpdateTime(new Date());
         couponDao.update(coupon);
-    }
+    }*/
 }
