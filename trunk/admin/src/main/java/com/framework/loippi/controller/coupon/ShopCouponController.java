@@ -202,7 +202,7 @@ public class ShopCouponController extends GenericController {
             return Constants.MSG_URL;
         }
         try {
-            couponService.updateCouponState(coupon,targetStatus,user);
+            /*couponService.updateCouponState(coupon,targetStatus,user);*/
             if(targetStatus==3){
                 model.addAttribute("msg", "审核成功");
             }
