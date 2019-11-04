@@ -2172,7 +2172,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         // 更新
         order.setPaymentCode(payment.getPluginId()); //支付方式名称代码
         order.setPaymentId(payment.getId()); //支付方式id
-        order.setPaymentName(order.getPaymentName() + payment.getPluginName()); //支付方式名称
+        order.setPaymentName(payment.getPluginName()); //支付方式名称
 //        order.setLockState(OrderState.ORDER_LOCK_STATE_YES);
         order.setPrevLockState(null);
         order.setPrevOrderState(OrderState.ORDER_STATE_NO_PATMENT);
