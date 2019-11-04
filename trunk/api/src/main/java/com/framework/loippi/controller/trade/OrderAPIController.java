@@ -472,7 +472,7 @@ public class OrderAPIController extends BaseController {
         }
         int i = 0;
         try {
-            String[] strings = integration.split(".");
+            String[] strings = integration.split("\\.");
             String string = strings[0];
             i = Integer.parseInt(string);
         } catch (NumberFormatException e) {
