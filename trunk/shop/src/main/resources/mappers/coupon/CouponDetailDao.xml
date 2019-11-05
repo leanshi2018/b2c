@@ -234,5 +234,17 @@
         </where>
         order by own_num desc
     </select>
-    
+
+    <!--批量修改-->
+    <update id="updateList" parameterType="java.util.List">
+        <foreach collection="list" index="index" item="item" open="" separator=";" close="">
+            update rd_coupon_detail
+            <set>
+                hold_id=#{item.holdId},
+                hold_nick_name=#{item.holdNickName},
+                hold_time=#{item.holdTime}
+            </set>
+            WHERE id = #{item.id}
+        </foreach>
+    </update>
 </mapper>

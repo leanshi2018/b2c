@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.coupon.CouponTransLogDao">
+    <resultMap id="couponTransLogResultMap" type="com.framework.loippi.entity.coupon.CouponTransLog">
+        <id property="id" column="id"/>
+        <result property="turnId" column="turn_id"/>
+        <result property="turnNickName" column="turn_nick_name"/>
+        <result property="acceptId" column="accept_id"/>
+        <result property="acceptNickName" column="accept_nick_name"/>
+        <result property="remark" column="remark"/>
+        <result property="transTime" column="trans_time"/>
+        <result property="transPeriod" column="trans_period"/>
+        <result property="couponId" column="coupon_id"/>
+        <result property="couponName" column="coupon_name"/>
+        <result property="couponSn" column="coupon_sn"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,turn_id ,turn_nick_name ,accept_id ,accept_nick_name ,remark ,trans_time ,trans_period ,coupon_id ,coupon_name ,coupon_sn
+    </sql>
+
+    <sql id="base_value_column">
+        #{id},#{turnId},#{turnNickName},#{acceptId},#{acceptNickName},#{remark},#{transTime},#{transPeriod},#{couponId},#{couponName},#{couponSn}
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="turnId != null and turnId != ''">
+            AND turn_id = #{turnId,jdbcType=VARCHAR}
+        </if>
+        <if test="turnNickName != null and turnNickName != ''">
+            AND turn_nick_name = #{turnNickName,jdbcType=VARCHAR}
+        </if>
+        <if test="acceptId != null and acceptId != ''">
+            AND accept_id = #{acceptId,jdbcType=VARCHAR}
+        </if>
+        <if test="acceptNickName != null and acceptNickName != ''">
+            AND accept_nick_name = #{acceptNickName,jdbcType=VARCHAR}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+        <if test="transTime != null">
+            AND trans_time = #{transTime,jdbcType=DATETIME}
+        </if>
+        <if test="transPeriod != null and transPeriod != ''">
+            AND trans_period = #{transPeriod,jdbcType=VARCHAR}
+        </if>
+        <if test="couponId != null">
+            AND coupon_id = #{couponId,jdbcType=BIGINT}
+        </if>
+        <if test="couponName != null and couponName != ''">
+            AND coupon_name = #{couponName,jdbcType=VARCHAR}
+        </if>
+        <if test="couponSn != null and couponSn != ''">
+            AND coupon_sn = #{couponSn,jdbcType=VARCHAR}
+        </if>
+    </sql>
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="turnId != null and turnId != ''">
+            turn_id = #{turnId,jdbcType=VARCHAR},
+        </if>
+        <if test="turnNickName != null and turnNickName != ''">
+            turn_nick_name = #{turnNickName,jdbcType=VARCHAR},
+        </if>
+        <if test="acceptId != null and acceptId != ''">
+            accept_id = #{acceptId,jdbcType=VARCHAR},
+        </if>
+        <if test="acceptNickName != null and acceptNickName != ''">
+            accept_nick_name = #{acceptNickName,jdbcType=VARCHAR},
+        </if>
+        <if test="remark != null and remark != ''">
+            remark = #{remark,jdbcType=VARCHAR},
+        </if>
+        <if test="transTime != null">
+            trans_time = #{transTime,jdbcType=DATETIME},
+        </if>
+        <if test="transPeriod != null and transPeriod != ''">
+            trans_period = #{transPeriod,jdbcType=VARCHAR},
+        </if>
+        <if test="couponId != null">
+            coupon_id = #{couponId,jdbcType=BIGINT},
+        </if>
+        <if test="couponName != null and couponName != ''">
+            coupon_name = #{couponName,jdbcType=VARCHAR},
+        </if>
+        <if test="couponSn != null and couponSn != ''">
+            coupon_sn = #{couponSn,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="couponTransLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon_trans_log
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="couponTransLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon_trans_log
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_coupon_trans_log
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.coupon.CouponTransLog">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT rd_coupon_trans_log
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.coupon.CouponTransLog">
+        UPDATE rd_coupon_trans_log
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE FROM rd_coupon_trans_log
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_coupon_trans_log
+        WHERE ID IN
+        <foreach item="CouponTransLogId" index="index" collection="ids" open="(" separator="," close=")">
+            #{CouponTransLogId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="couponTransLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="couponTransLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_coupon
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        order by trans_time desc
+    </select>
+
+    <!--批量插入-->
+    <insert id="insertList" parameterType="java.util.List">
+        INSERT rd_coupon_trans_log
+        (<include refid="base_column"/>)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.turnId},#{item.turnNickName},#{item.acceptId},#{item.acceptNickName},#{item.remark},#{item.transTime},
+            #{item.transPeriod},#{item.couponId},#{item.couponName},#{item.couponSn})
+        </foreach>
+    </insert>
+</mapper>
