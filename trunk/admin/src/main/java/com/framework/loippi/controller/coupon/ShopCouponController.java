@@ -182,7 +182,7 @@ public class ShopCouponController extends GenericController {
             model.addAttribute("msg", "请传入查询当前优惠券id");
             return Constants.MSG_URL;
         }
-        if(targetStatus!=3&&targetStatus!=4){
+        if(targetStatus!=2&&targetStatus!=3){
             model.addAttribute("msg", "是否审核通过状态码不正确");
             return Constants.MSG_URL;
         }
@@ -202,11 +202,11 @@ public class ShopCouponController extends GenericController {
             return Constants.MSG_URL;
         }
         try {
-            /*couponService.updateCouponState(coupon,targetStatus,user);*/
-            if(targetStatus==3){
+            couponService.updateCouponState(coupon,targetStatus,user.getId(),user.getUsername());
+            if(targetStatus==2){
                 model.addAttribute("msg", "审核成功");
             }
-            if(targetStatus==4){
+            if(targetStatus==3){
                 model.addAttribute("msg", "审核失败");
             }
             return null;//TODO 审核通过后跳转页面

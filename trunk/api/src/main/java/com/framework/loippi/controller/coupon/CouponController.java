@@ -11,6 +11,10 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.coupon.CouponUser;
+import com.framework.loippi.result.common.coupon.CouponTransInfoResult;
+import com.framework.loippi.result.user.PersonCenterResult;
+import com.framework.loippi.service.coupon.CouponUserService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -62,6 +66,8 @@ public class CouponController extends BaseController {
 	private CouponPayDetailService couponPayDetailService;
 	@Resource
 	private CouponService couponService;
+	@Resource
+	private CouponUserService couponUserService;
 	@Resource
 	private RdMmBasicInfoService rdMmBasicInfoService;
 	@Resource
@@ -286,4 +292,94 @@ public class CouponController extends BaseController {
 		return ApiUtils.success(model);
 	}
 
+	/**
+	 * 获取当前登录用户指定优惠券信息
+	 * @param request
+	 * @param couponId
+	 * @return
+	 */
+	@RequestMapping(value = "/detail/couponid", method = RequestMethod.POST)
+	public String getCouponById(HttpServletRequest request, Long couponId) {
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+		if(member==null){
+			return ApiUtils.error("请登录后进行此操作");
+		}
+		if(couponId==null){
+			return ApiUtils.error("请选择需要赠送的优惠券");
+		}
+		Coupon coupon = couponService.find(couponId);
+		if(coupon==null){
+			return ApiUtils.error("当前优惠券不存在");
+		}
+		if(coupon.getStatus()!=2){
+			return ApiUtils.error("当前优惠券状态不正确");
+		}
+		if(coupon.getWhetherPresent()!=1){
+			return ApiUtils.error("当前优惠券不可以赠送他人");
+		}
+		if(new Date().getTime()>coupon.getUseEndTime().getTime()){
+			return ApiUtils.error("当前优惠券已过期，不可赠送他人");
+		}
+		List<CouponUser> list = couponUserService.findList(Paramap.create().put("mCode", member.getMmCode()).put("couponId", couponId));
+		if(list==null||list.size()==0){
+			return ApiUtils.error("当前登录用户无该优惠券记录");
+		}
+		CouponUser couponUser = list.get(0);
+		CouponTransInfoResult result = CouponTransInfoResult.build(coupon, couponUser);
+		return ApiUtils.success(result);
+	}
+
+	/**
+	 * 优惠券转让
+	 * @param request
+	 * @param couponId 优惠券id
+	 * @param transNum 转让数量
+	 * @param recipientCode 接收人会员编号
+	 * @return
+	 */
+	@RequestMapping(value = "/trans/coupon", method = RequestMethod.POST)
+	public String transactionCoupon(HttpServletRequest request, Long couponId,Integer transNum,String recipientCode) {
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+		if(member==null){
+			return ApiUtils.error("请登录后进行此操作");
+		}
+		if(couponId==null){
+			return ApiUtils.error("请选择需要赠送的优惠券");
+		}
+		Coupon coupon = couponService.find(couponId);
+		if(coupon==null){
+			return ApiUtils.error("当前优惠券不存在");
+		}
+		if(coupon.getStatus()!=2){
+			return ApiUtils.error("当前优惠券状态不正确");
+		}
+		if(coupon.getWhetherPresent()!=1){
+			return ApiUtils.error("当前优惠券不可以赠送他人");
+		}
+		if(new Date().getTime()>coupon.getUseEndTime().getTime()){
+			return ApiUtils.error("当前优惠券已过期，不可赠送他人");
+		}
+		List<CouponUser> list = couponUserService.findList(Paramap.create().put("mCode", member.getMmCode()).put("couponId", couponId));
+		if(list==null||list.size()==0){
+			return ApiUtils.error("当前登录用户无该优惠券记录");
+		}
+		CouponUser couponUser = list.get(0);
+		Integer ownNum = couponUser.getOwnNum();
+		if(transNum>ownNum){
+			return ApiUtils.error("当前转让优惠券数量大于会员拥有数量");
+		}
+		try {
+			HashMap<String,Object> result=couponService.transactionCoupon(member.getMmCode(),member.getNickname(),recipientCode,coupon,couponUser,transNum);
+			Boolean flag = (Boolean) result.get("flag");
+			String msg = (String) result.get("msg");
+			if (flag){
+				return ApiUtils.success(msg);
+			}else {
+				return ApiUtils.error(msg);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ApiUtils.error("网络异常，请稍后重试");
+		}
+	}
 }
