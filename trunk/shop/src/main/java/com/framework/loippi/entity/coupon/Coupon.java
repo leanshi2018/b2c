@@ -157,7 +157,7 @@ public class Coupon implements GenericEntity {
     @Column(name = "channel")
     private Integer channel;
     /**
-     * 1、新建；2、提交审核；3、审核通过；4、审核失败；5、上架；6、下架
+     * 1、新建（待审核）；2、审核通过(上架)；3、审核失败；4、下架
      */
     @Column(name = "status")
     private Integer status;

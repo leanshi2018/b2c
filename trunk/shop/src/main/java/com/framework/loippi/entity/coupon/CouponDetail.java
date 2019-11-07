@@ -106,6 +106,11 @@ public class CouponDetail implements GenericEntity {
     @Column(name = "use_order_id")
     private Long useOrderId;
     /**
+     * 购买优惠券关联订单id
+     */
+    @Column(name = "buy_order_id")
+    private Long buyOrderId;
+    /**
      * 退款状态 0：无需退款（非交易性优惠券）1：未退款 2：已退款
      */
     @Column(name = "refund_state")

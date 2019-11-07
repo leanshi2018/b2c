@@ -390,4 +390,12 @@
         order by use_start_time desc ,send_start_time desc
     </select>
 
+    <!--查询指定时间超过优惠券使用时间，即优惠券过期-->
+    <select id="findOverdueCoupon" parameterType="com.framework.loippi.utils.Paramap" resultMap="couponResultMap">
+        select
+        <include refid="base_column"/>
+        FROM rd_coupon
+        where status = #{status} and use_end_time &lt; #{searchUseTime}
+    </select>
+
 </mapper>

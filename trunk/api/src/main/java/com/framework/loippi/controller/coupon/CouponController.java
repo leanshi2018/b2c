@@ -1,20 +1,22 @@
 package com.framework.loippi.controller.coupon;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.coupon.CouponTransLog;
 import com.framework.loippi.entity.coupon.CouponUser;
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.common.coupon.CouponTransInfoResult;
 import com.framework.loippi.result.user.PersonCenterResult;
+import com.framework.loippi.service.coupon.CouponTransLogService;
 import com.framework.loippi.service.coupon.CouponUserService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -30,9 +32,6 @@ import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderPay;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.service.alipay.AlipayMobileService;
@@ -67,11 +66,15 @@ public class CouponController extends BaseController {
 	@Resource
 	private CouponService couponService;
 	@Resource
+	private CouponTransLogService couponTransLogService;
+	@Resource
 	private CouponUserService couponUserService;
 	@Resource
 	private RdMmBasicInfoService rdMmBasicInfoService;
 	@Resource
 	private RdMmRelationService rdMmRelationService;
+	@Resource
+	private RdRanksService rdRanksService;
 	@Resource
 	private RdMmIntegralRuleService rdMmIntegralRuleService;
 	@Resource
@@ -299,7 +302,7 @@ public class CouponController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/detail/couponid", method = RequestMethod.POST)
-	public String getCouponById(HttpServletRequest request, Long couponId) {
+	public String getCouponById(HttpServletRequest request, Long couponId,Pageable pageable) {
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
 		if(member==null){
 			return ApiUtils.error("请登录后进行此操作");
@@ -325,7 +328,25 @@ public class CouponController extends BaseController {
 			return ApiUtils.error("当前登录用户无该优惠券记录");
 		}
 		CouponUser couponUser = list.get(0);
-		CouponTransInfoResult result = CouponTransInfoResult.build(coupon, couponUser);
+		pageable.setOrderDirection(Order.Direction.DESC);
+		pageable.setOrderProperty("trans_time");
+		pageable.setParameter(Paramap.create().put("turnId", member.getMmCode()));
+		Page<CouponTransLog> logs =couponTransLogService.findByPage(pageable);
+		List<CouponTransLog> transLogs = logs.getContent();
+		List<String> mmCodes = new ArrayList();
+		if(transLogs!=null&&transLogs.size()>0){
+			for (CouponTransLog log : transLogs) {
+				mmCodes.add(log.getAcceptId());
+			}
+		}
+		List<RdMmBasicInfo> rdMmBasicInfoList = new ArrayList<>();
+		List<RdMmRelation> rdMmRelationList = new ArrayList<>();
+		if (mmCodes != null && mmCodes.size() > 0) {
+			rdMmBasicInfoList = rdMmBasicInfoService.findList("mmCodes", mmCodes);
+			rdMmRelationList = rdMmRelationService.findList("mmCodes", mmCodes);
+		}
+		List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
+		CouponTransInfoResult result = CouponTransInfoResult.build(coupon, couponUser,rdMmBasicInfoList,rdMmRelationList,shopMemberGradeList);
 		return ApiUtils.success(result);
 	}
 
