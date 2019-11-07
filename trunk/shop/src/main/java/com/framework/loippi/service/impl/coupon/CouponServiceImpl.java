@@ -186,4 +186,9 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         coupon.setUpdateTime(new Date());
         couponDao.update(coupon);
     }
+
+    @Override
+    public List<Coupon> findOverdueCoupon(Paramap put) {
+        return couponDao.findOverdueCoupon(put);
+    }
 }
