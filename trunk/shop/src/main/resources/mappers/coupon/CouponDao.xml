@@ -14,6 +14,7 @@
         <result property="brandId" column="brand_id"/>
         <result property="brandName" column="brand_name"/>
         <result property="image" column="image"/>
+        <result property="whetherPresent" column="whether_present"/>
         <result property="useScope" column="use_scope"/>
         <result property="scopeRemark" column="scope_remark"/>
         <result property="useMoneyFlag" column="use_money_flag"/>
@@ -44,13 +45,13 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,store_id ,store_name ,coupon_name ,coupon_price ,coupon_value ,reduce_type ,min_amount ,min_mi ,brand_id ,brand_name ,image,use_scope ,scope_remark ,use_money_flag,receive_type ,send_start_time,
+        id ,store_id ,store_name ,coupon_name ,coupon_price ,coupon_value ,reduce_type ,min_amount ,min_mi ,brand_id ,brand_name ,image,whether_present,use_scope ,scope_remark ,use_money_flag,receive_type ,send_start_time,
         send_end_time ,use_start_time ,use_end_time ,person_limit_num ,total_limit_num ,received_num ,rank_limit ,use_num_limit ,channel ,status,audit_opinion,remark,
         create_id,create_name,create_time,audit_id,audit_name,audit_time,update_id,update_name,update_time
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{storeId},#{storeName},#{couponName},#{couponPrice},#{couponValue},#{reduceType},#{minAmount},#{minMi},#{brandId},#{brandName},#{image},
+        #{id},#{storeId},#{storeName},#{couponName},#{couponPrice},#{couponValue},#{reduceType},#{minAmount},#{minMi},#{brandId},#{brandName},#{image},#{whetherPresent},
         #{useScope},#{scopeRemark},#{useMoneyFlag},#{receiveType},#{sendStartTime},#{sendEndTime},#{useStartTime},#{useEndTime},#{personLimitNum},#{totalLimitNum},#{receivedNum},
         #{rankLimit},#{useNumLimit},#{channel},#{status},#{auditOpinion},#{remark},#{createId},#{createName},#{createTime},#{auditId},
         #{auditName},#{auditTime},#{updateId},#{updateName},#{updateTime}
@@ -93,6 +94,9 @@
         </if>
         <if test="image != null and image != ''">
             AND image = #{image,jdbcType=VARCHAR}
+        </if>
+        <if test="whetherPresent != null">
+            AND whether_present = #{whetherPresent,jdbcType=INTEGER}
         </if>
         <if test="useScope != null">
             AND use_scope = #{useScope,jdbcType=INTEGER}
@@ -172,6 +176,18 @@
         <if test="updateTime != null">
             and update_time = #{updateTime,jdbcType=DATETIME}
         </if>
+        <if test="searchSendTime !=null and searchSendTime != ''">
+            <![CDATA[and send_start_time <= #{searchSendTime}]]>
+        </if>
+        <if test="searchSendTime !=null and searchSendTime != ''">
+            <![CDATA[and send_end_time >= #{searchSendTime}]]>
+        </if>
+        <if test="searchUseTime !=null and searchUseTime != ''">
+            <![CDATA[and use_start_time <= #{searchUseTime}]]>
+        </if>
+        <if test="searchUseTime !=null and searchUseTime != ''">
+            <![CDATA[and use_end_time >= #{searchUseTime}]]>
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
@@ -210,6 +226,9 @@
         </if>
         <if test="image != null and image != ''">
             image = #{image,jdbcType=VARCHAR},
+        </if>
+        <if test="whetherPresent != null">
+            whether_present = #{whetherPresent,jdbcType=INTEGER},
         </if>
         <if test="useScope != null">
             use_scope = #{useScope,jdbcType=INTEGER},
@@ -369,6 +388,14 @@
             <include refid="where_column"/>
         </where>
         order by use_start_time desc ,send_start_time desc
+    </select>
+
+    <!--查询指定时间超过优惠券使用时间，即优惠券过期-->
+    <select id="findOverdueCoupon" parameterType="com.framework.loippi.utils.Paramap" resultMap="couponResultMap">
+        select
+        <include refid="base_column"/>
+        FROM rd_coupon
+        where status = #{status} and use_end_time &lt; #{searchUseTime}
     </select>
 
 </mapper>

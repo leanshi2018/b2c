@@ -46,6 +46,13 @@
             <version>6.1.0.Alpha5</version>
             <scope>compile</scope>
         </dependency>
+        <!--添加system依赖，获取当前操作用户信息-->
+        <!--<dependency>
+            <groupId>com.ewhale</groupId>
+            <artifactId>system</artifactId>
+            <version>0.1</version>
+            <scope>compile</scope>
+        </dependency>-->
 
     </dependencies>
 

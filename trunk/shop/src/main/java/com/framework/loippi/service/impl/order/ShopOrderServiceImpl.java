@@ -504,7 +504,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
                 BigDecimal aTotal = Optional.ofNullable(rdMmRelation.getATotal()).orElse(BigDecimal.ZERO);//获得累计购买额
                 BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
-                        .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO));
+                        .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)));
                 BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
                 BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                 BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
@@ -2172,7 +2172,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         // 更新
         order.setPaymentCode(payment.getPluginId()); //支付方式名称代码
         order.setPaymentId(payment.getId()); //支付方式id
-        order.setPaymentName(order.getPaymentName() + payment.getPluginName()); //支付方式名称
+        order.setPaymentName(payment.getPluginName()); //支付方式名称
 //        order.setLockState(OrderState.ORDER_LOCK_STATE_YES);
         order.setPrevLockState(null);
         order.setPrevOrderState(OrderState.ORDER_STATE_NO_PATMENT);
@@ -2285,7 +2285,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
                     BigDecimal aTotal = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计购买额
                     BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
-                            .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO));
+                            .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO));
                     BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
                     BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                     BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);

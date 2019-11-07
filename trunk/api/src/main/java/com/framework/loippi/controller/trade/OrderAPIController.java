@@ -462,10 +462,23 @@ public class OrderAPIController extends BaseController {
     public String payOrder(@RequestParam(value = "paysn") String paysn,
         @RequestParam(defaultValue = "pointsPaymentPlugin") String paymentCode,
         @RequestParam(defaultValue = "0") String paymentId,
-        @RequestParam(defaultValue = "0") Integer integration,
+        @RequestParam(defaultValue = "0") String integration,
+        //@RequestParam(defaultValue = "0") Integer integration,
         @RequestParam(defaultValue = "0") String paypassword,
         @RequestParam(defaultValue = "1") Integer paymentType,
         HttpServletRequest request) {
+        if(integration==null&&"".equals(integration)){
+            return ApiUtils.error("请输入支付的积分金额");
+        }
+        int i = 0;
+        try {
+            String[] strings = integration.split("\\.");
+            String string = strings[0];
+            i = Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return ApiUtils.error("输入积分数额有误");
+        }
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
@@ -478,7 +491,8 @@ public class OrderAPIController extends BaseController {
             rdMmIntegralRule = rdMmIntegralRuleList.get(0);
         }
         int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
-        if (integration != 0) {
+        //if (integration != 0) {
+        if (i != 0) {
             if (rdMmAccountInfo.getPaymentPwd() == null) {
                 return ApiUtils.error("你还未设置支付密码");
             }
@@ -490,7 +504,8 @@ public class OrderAPIController extends BaseController {
             }
             ShopOrderPay pay = orderPayService.findBySn(paysn);
             //处理积分支付
-            orderService.ProcessingIntegrals(paysn, integration, shopMember, pay, shoppingPointSr);
+            orderService.ProcessingIntegrals(paysn, i, shopMember, pay, shoppingPointSr);
+            //orderService.ProcessingIntegrals(paysn, integration, shopMember, pay, shoppingPointSr);
         }
 
         List<ShopOrder> orderList = orderService.findList("paySn", paysn);

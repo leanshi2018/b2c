@@ -1,16 +1,22 @@
 package com.framework.loippi.controller.coupon;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.coupon.CouponTransLog;
+import com.framework.loippi.entity.coupon.CouponUser;
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.result.common.coupon.CouponTransInfoResult;
+import com.framework.loippi.result.user.PersonCenterResult;
+import com.framework.loippi.service.coupon.CouponTransLogService;
+import com.framework.loippi.service.coupon.CouponUserService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -26,9 +32,6 @@ import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrderPay;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.service.alipay.AlipayMobileService;
@@ -63,9 +66,15 @@ public class CouponController extends BaseController {
 	@Resource
 	private CouponService couponService;
 	@Resource
+	private CouponTransLogService couponTransLogService;
+	@Resource
+	private CouponUserService couponUserService;
+	@Resource
 	private RdMmBasicInfoService rdMmBasicInfoService;
 	@Resource
 	private RdMmRelationService rdMmRelationService;
+	@Resource
+	private RdRanksService rdRanksService;
 	@Resource
 	private RdMmIntegralRuleService rdMmIntegralRuleService;
 	@Resource
@@ -271,4 +280,112 @@ public class CouponController extends BaseController {
 		return ApiUtils.success(model);
 	}
 
+	/**
+	 * 获取当前登录用户指定优惠券信息
+	 * @param request
+	 * @param couponId
+	 * @return
+	 */
+	@RequestMapping(value = "/detail/couponid", method = RequestMethod.POST)
+	public String getCouponById(HttpServletRequest request, Long couponId,Pageable pageable) {
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+		if(member==null){
+			return ApiUtils.error("请登录后进行此操作");
+		}
+		if(couponId==null){
+			return ApiUtils.error("请选择需要赠送的优惠券");
+		}
+		Coupon coupon = couponService.find(couponId);
+		if(coupon==null){
+			return ApiUtils.error("当前优惠券不存在");
+		}
+		if(coupon.getStatus()!=2){
+			return ApiUtils.error("当前优惠券状态不正确");
+		}
+		if(coupon.getWhetherPresent()!=1){
+			return ApiUtils.error("当前优惠券不可以赠送他人");
+		}
+		if(new Date().getTime()>coupon.getUseEndTime().getTime()){
+			return ApiUtils.error("当前优惠券已过期，不可赠送他人");
+		}
+		List<CouponUser> list = couponUserService.findList(Paramap.create().put("mCode", member.getMmCode()).put("couponId", couponId));
+		if(list==null||list.size()==0){
+			return ApiUtils.error("当前登录用户无该优惠券记录");
+		}
+		CouponUser couponUser = list.get(0);
+		pageable.setOrderDirection(Order.Direction.DESC);
+		pageable.setOrderProperty("trans_time");
+		pageable.setParameter(Paramap.create().put("turnId", member.getMmCode()));
+		Page<CouponTransLog> logs =couponTransLogService.findByPage(pageable);
+		List<CouponTransLog> transLogs = logs.getContent();
+		List<String> mmCodes = new ArrayList();
+		if(transLogs!=null&&transLogs.size()>0){
+			for (CouponTransLog log : transLogs) {
+				mmCodes.add(log.getAcceptId());
+			}
+		}
+		List<RdMmBasicInfo> rdMmBasicInfoList = new ArrayList<>();
+		List<RdMmRelation> rdMmRelationList = new ArrayList<>();
+		if (mmCodes != null && mmCodes.size() > 0) {
+			rdMmBasicInfoList = rdMmBasicInfoService.findList("mmCodes", mmCodes);
+			rdMmRelationList = rdMmRelationService.findList("mmCodes", mmCodes);
+		}
+		List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
+		CouponTransInfoResult result = CouponTransInfoResult.build(coupon, couponUser,rdMmBasicInfoList,rdMmRelationList,shopMemberGradeList);
+		return ApiUtils.success(result);
+	}
+
+	/**
+	 * 优惠券转让
+	 * @param request
+	 * @param couponId 优惠券id
+	 * @param transNum 转让数量
+	 * @param recipientCode 接收人会员编号
+	 * @return
+	 */
+	@RequestMapping(value = "/trans/coupon", method = RequestMethod.POST)
+	public String transactionCoupon(HttpServletRequest request, Long couponId,Integer transNum,String recipientCode) {
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+		if(member==null){
+			return ApiUtils.error("请登录后进行此操作");
+		}
+		if(couponId==null){
+			return ApiUtils.error("请选择需要赠送的优惠券");
+		}
+		Coupon coupon = couponService.find(couponId);
+		if(coupon==null){
+			return ApiUtils.error("当前优惠券不存在");
+		}
+		if(coupon.getStatus()!=2){
+			return ApiUtils.error("当前优惠券状态不正确");
+		}
+		if(coupon.getWhetherPresent()!=1){
+			return ApiUtils.error("当前优惠券不可以赠送他人");
+		}
+		if(new Date().getTime()>coupon.getUseEndTime().getTime()){
+			return ApiUtils.error("当前优惠券已过期，不可赠送他人");
+		}
+		List<CouponUser> list = couponUserService.findList(Paramap.create().put("mCode", member.getMmCode()).put("couponId", couponId));
+		if(list==null||list.size()==0){
+			return ApiUtils.error("当前登录用户无该优惠券记录");
+		}
+		CouponUser couponUser = list.get(0);
+		Integer ownNum = couponUser.getOwnNum();
+		if(transNum>ownNum){
+			return ApiUtils.error("当前转让优惠券数量大于会员拥有数量");
+		}
+		try {
+			HashMap<String,Object> result=couponService.transactionCoupon(member.getMmCode(),member.getNickname(),recipientCode,coupon,couponUser,transNum);
+			Boolean flag = (Boolean) result.get("flag");
+			String msg = (String) result.get("msg");
+			if (flag){
+				return ApiUtils.success(msg);
+			}else {
+				return ApiUtils.error(msg);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ApiUtils.error("网络异常，请稍后重试");
+		}
+	}
 }
