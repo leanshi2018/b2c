@@ -13,9 +13,14 @@
         <result property="paymentName" column="payment_name"/>
         <result property="paymentState" column="payment_state"/>
         <result property="paymentTime" column="payment_time"/>
+        <result property="payId" column="pay_id"/>
+        <result property="paySn" column="pay_sn"/>
         <result property="couponAmount" column="coupon_amount"/>
         <result property="couponNumber" column="coupon_number"/>
+        <result property="useCouponNumber" column="use_coupon_number"/>
+        <result property="usePointNum" column="use_point_num"/>
         <result property="pointAmount" column="point_amount"/>
+        <result property="orderAmount" column="order_amount"/>
         <result property="refundState" column="refund_state"/>
         <result property="refundCouponNum" column="refund_coupon_num"/>
         <result property="refundAmount" column="refund_amount"/>
@@ -27,12 +32,12 @@
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
         id ,coupon_order_sn ,receive_id ,receive_nick_name ,coupon_id ,coupon_name ,create_time ,payment_id ,payment_name ,payment_state ,
-        payment_time ,coupon_amount ,coupon_number ,point_amount ,refund_state ,refund_coupon_num ,refund_amount ,refund_time ,cancel_time ,update_time
+        payment_time ,pay_id ,pay_sn ,coupon_amount ,coupon_number ,use_coupon_number ,use_point_num ,point_amount ,order_amount ,refund_state ,refund_coupon_num ,refund_amount ,refund_time ,cancel_time ,update_time
     </sql>
 
     <sql id="base_value_column">
         #{id},#{couponOrderSn},#{receiveId},#{receiveNickName},#{couponId},#{couponName},#{createTime},#{paymentId},#{paymentName},#{paymentState},
-        #{paymentTime},#{couponAmount},#{couponNumber},#{pointAmount},#{refundState},#{refundCouponNum},#{refundAmount},#{refundTime},#{cancelTime},#{updateTime}
+        #{paymentTime},#{payId},#{paySn},#{couponAmount},#{couponNumber},#{useCouponNumber},#{usePointNum},#{pointAmount},#{orderAmount},#{refundState},#{refundCouponNum},#{refundAmount},#{refundTime},#{cancelTime},#{updateTime}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -41,7 +46,7 @@
             AND id = #{id,jdbcType=BIGINT}
         </if>
         <if test="couponOrderSn != null and couponOrderSn != ''">
-            AND coupon_order_sn = #{couponOrderSn,,jdbcType=VARCHAR}
+            AND coupon_order_sn = #{couponOrderSn,jdbcType=VARCHAR}
         </if>
         <if test="receiveId != null and receiveId != ''">
             AND receive_id = #{receiveId,jdbcType=VARCHAR}
@@ -56,7 +61,7 @@
             AND coupon_name = #{couponName,jdbcType=VARCHAR}
         </if>
         <if test="createTime != null">
-            AND create_time = #{createTime,jdbcType=DATETIME}
+            AND create_time = #{createTime}
         </if>
         <if test="paymentId != null">
             AND payment_id = #{paymentId,jdbcType=BIGINT}
@@ -69,7 +74,13 @@
         </if>
 
         <if test="paymentTime != null">
-            AND payment_time = #{paymentTime,jdbcType=DATETIME}
+            AND payment_time = #{paymentTime}
+        </if>
+        <if test="payId != null">
+            AND pay_id = #{payId,jdbcType=BIGINT}
+        </if>
+        <if test="paySn != null and paySn != ''">
+            AND pay_sn = #{paySn,jdbcType=VARCHAR}
         </if>
         <if test="couponAmount != null and couponAmount != ''">
             AND coupon_amount = #{couponAmount,jdbcType=DECIMAL}
@@ -77,8 +88,17 @@
         <if test="couponNumber != null">
             AND coupon_number = #{couponNumber,jdbcType=INTEGER}
         </if>
+        <if test="useCouponNumber != null">
+            AND use_coupon_number = #{useCouponNumber,jdbcType=INTEGER}
+        </if>
+        <if test="usePointNum != null and usePointNum != ''">
+            AND use_point_num = #{usePointNum,jdbcType=DECIMAL}
+        </if>
         <if test="pointAmount != null and pointAmount != ''">
             AND point_amount = #{pointAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="orderAmount != null and orderAmount != ''">
+            AND order_amount = #{orderAmount,jdbcType=DECIMAL}
         </if>
         <if test="refundState != null">
             AND refund_state = #{refundState,jdbcType=INTEGER}
@@ -90,13 +110,13 @@
             AND refund_amount = #{refundAmount,jdbcType=DECIMAL}
         </if>
         <if test="refundTime != null">
-            AND refund_time = #{refundTime,jdbcType=DATETIME}
+            AND refund_time = #{refundTime}
         </if>
         <if test="cancelTime != null">
-            AND cancel_time = #{cancelTime,jdbcType=DATETIME}
+            AND cancel_time = #{cancelTime}
         </if>
         <if test="updateTime != null">
-            AND update_time = #{updateTime,jdbcType=DATETIME}
+            AND update_time = #{updateTime}
         </if>
 
     </sql>
@@ -106,7 +126,7 @@
             id = #{id,jdbcType=BIGINT},
         </if>
         <if test="couponOrderSn != null and couponOrderSn != ''">
-            coupon_order_sn = #{couponOrderSn,,jdbcType=VARCHAR},
+            coupon_order_sn = #{couponOrderSn,jdbcType=VARCHAR},
         </if>
         <if test="receiveId != null and receiveId != ''">
             receive_id = #{receiveId,jdbcType=VARCHAR},
@@ -117,11 +137,11 @@
         <if test="couponId != null">
             coupon_id = #{couponId,jdbcType=BIGINT},
         </if>
-        <if test="couponName != null and coupon_name != ''">
+        <if test="couponName != null and couponName != ''">
             coupon_name = #{couponName,jdbcType=VARCHAR},
         </if>
         <if test="createTime != null">
-            create_time = #{createTime,jdbcType=DATETIME},
+            create_time = #{createTime},
         </if>
         <if test="paymentId != null">
             payment_id = #{paymentId,jdbcType=BIGINT},
@@ -132,9 +152,14 @@
         <if test="paymentState != null">
             payment_state = #{paymentState,jdbcType=INTEGER},
         </if>
-
         <if test="paymentTime != null">
-            payment_time = #{paymentTime,jdbcType=DATETIME},
+            payment_time = #{paymentTime},
+        </if>
+        <if test="payId != null">
+            pay_id = #{payId,jdbcType=BIGINT},
+        </if>
+        <if test="paySn != null and paySn != ''">
+            pay_sn = #{paySn,jdbcType=VARCHAR},
         </if>
         <if test="couponAmount != null and couponAmount != ''">
             coupon_amount = #{couponAmount,jdbcType=DECIMAL},
@@ -142,8 +167,17 @@
         <if test="couponNumber != null">
             coupon_number = #{couponNumber,jdbcType=INTEGER},
         </if>
+        <if test="useCouponNumber != null">
+            use_coupon_number = #{useCouponNumber,jdbcType=INTEGER},
+        </if>
+        <if test="usePointNum != null and usePointNum != ''">
+            use_point_num = #{usePointNum,jdbcType=DECIMAL},
+        </if>
         <if test="pointAmount != null and pointAmount != ''">
             point_amount = #{pointAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="orderAmount != null and orderAmount != ''">
+            order_amount = #{orderAmount,jdbcType=DECIMAL},
         </if>
         <if test="refundState != null">
             refund_state = #{refundState,jdbcType=INTEGER},
@@ -155,13 +189,13 @@
             refund_amount = #{refundAmount,jdbcType=DECIMAL},
         </if>
         <if test="refundTime != null">
-            refund_time = #{refundTime,jdbcType=DATETIME},
+            refund_time = #{refundTime},
         </if>
         <if test="cancelTime != null">
-            cancel_time = #{cancelTime,jdbcType=DATETIME},
+            cancel_time = #{cancelTime},
         </if>
         <if test="updateTime != null">
-            update_time = #{updateTime,jdbcType=DATETIME},
+            update_time = #{updateTime},
         </if>
     </sql>
 
@@ -246,10 +280,23 @@
     </select>
 
     <insert id="insertCouponPay" parameterType="com.framework.loippi.entity.coupon.CouponPayDetail">
-        insert into rd_order (id,coupon_order_sn,receive_id,receive_nick_name,coupon_id,coupon_name,create_time,
-                                payment_id,payment_name,payment_state,coupon_amount,coupon_number,update_time)
+        insert into rd_coupon_pay_detail (id,coupon_order_sn,receive_id,receive_nick_name,coupon_id,coupon_name,create_time,
+                                payment_id,payment_name,payment_state,pay_id,pay_sn,coupon_amount,coupon_number,order_amount,update_time)
         values(#{id},#{couponOrderSn},#{receiveId},#{receiveNickName},#{couponId},#{couponName},#{createTime},
-                #{paymentId},#{paymentName},#{paymentState},#{couponAmount},#{couponNumber},#{updateTime})
+                #{paymentId},#{paymentName},#{paymentState},#{payId},#{paySn},#{couponAmount},#{couponNumber},#{orderAmount},#{updateTime})
     </insert>
+
+    <select id="findByPaySn" parameterType="string" resultMap="couponPayDetailResultMap">
+        SELECT * FROM rd_coupon_pay_detail WHERE pay_sn = #{paySn}
+    </select>
+
+    <update id="updateByIdAndOrderStateAndLockState" parameterType="com.framework.loippi.entity.coupon.CouponPayDetail">
+        UPDATE rd_coupon_pay_detail
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE id = #{id,jdbcType=BIGINT}
+        AND payment_state=#{prevOrderState, jdbcType=INTEGER}
+    </update>
 
 </mapper>

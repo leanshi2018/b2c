@@ -1,5 +1,8 @@
 package com.framework.loippi.service.trade;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.walet.ShopWalletRecharge;
@@ -7,9 +10,6 @@ import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * SERVICE - ShopMemberPaymentTally(支付流水表)
@@ -64,4 +64,13 @@ public interface ShopMemberPaymentTallyService extends GenericService<ShopMember
      * 统计收入金额  日   周  月
      */
     List<ActivityStatisticsVo> statisticsIncomesBystate(ActivityStatisticsVo param);
+    /**
+     * 保存优惠券支付流水记录
+     *
+     * @param paytype 支付方式
+     * @param payname 支付名称
+     * @param pay     支付体
+     * @param paytrem 支付终端
+     */
+	void savePaymentTallyCoupon(String paytype, String payname, ShopOrderPay pay, Integer paytrem,Integer type);
 }

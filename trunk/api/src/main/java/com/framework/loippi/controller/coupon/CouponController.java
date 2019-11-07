@@ -29,8 +29,8 @@ import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.PayCommon;
 import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
@@ -214,12 +214,12 @@ public class CouponController extends BaseController {
 			if (rdMmAccountInfo.getWalletStatus() != 0) {
 				return ApiUtils.error("购物积分账户状态未激活或者已被冻结");
 			}
-			ShopOrderPay pay = orderPayService.findBySn(paysn);
+			ShopOrderPay pay = orderPayService.findCouponBySn(paysn);
 			//处理积分支付
-			orderService.ProcessingIntegralsCoupon(paysn, integration, shopMember, pay, shoppingPointSr);
+			couponPayDetailService.ProcessingIntegralsCoupon(paysn, integration, shopMember, pay, shoppingPointSr);
 		}
 
-		List<ShopOrder> orderList = orderService.findList("paySn", paysn);
+		List<CouponPayDetail> orderList = couponPayDetailService.findList("paySn", paysn);
 		if (CollectionUtils.isEmpty(orderList)) {
 			return ApiUtils.error("订单不存在");
 		}
@@ -228,16 +228,11 @@ public class CouponController extends BaseController {
 		System.out
 				.println("###  订单支付编号：" + paysn + "  |  支付方式名称：" + paymentCode + " |  支付方式索引id：" + paymentId + "#########");
 		System.out.println("##########################################");
-		ShopOrderPay pay = orderPayService.findBySn(paysn);
+		ShopOrderPay pay = orderPayService.findCouponBySn(paysn);
 
 		PayCommon payCommon = new PayCommon();
 		payCommon.setOutTradeNo(pay.getPaySn());
-		if ("balancePaymentPlugin".equals(paymentCode)) {
-			payCommon.setPayAmount(pay.getPayAmount());
-		} else {
-			//payCommon.setPayAmount(new BigDecimal(0.01));
-			payCommon.setPayAmount(pay.getPayAmount());
-		}
+		payCommon.setPayAmount(pay.getPayAmount());
 		payCommon.setTitle("订单支付");
 		payCommon.setBody(pay.getPaySn() + "订单支付");
 		payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
@@ -245,33 +240,30 @@ public class CouponController extends BaseController {
 		String sHtmlText = "";
 		Map<String, Object> model = new HashMap<String, Object>();
 		if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("alipayMobilePaymentPlugin")) {
-			orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+			couponPayDetailService.updateByPaySn(paysn, Long.valueOf(paymentId));
 			//保存支付流水记录
 			System.out.println("dd:" + PaymentTallyState.PAYMENTTALLY_TREM_PC);
-			paymentTallyService.savePaymentTally(paymentCode, "支付宝", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+			paymentTallyService.savePaymentTallyCoupon(paymentCode, "支付宝", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
 			//修改订单付款信息
 			sHtmlText = alipayMobileService.toPay(payCommon);//TODO
 			model.put("tocodeurl", sHtmlText);
 			model.put("orderSn", pay.getOrderSn());
 		} else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("YL")) {
 			//修改订单付款信息
-			orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+			couponPayDetailService.updateByPaySn(paysn, Long.valueOf(paymentId));
 			//保存支付流水记录
-			paymentTallyService.savePaymentTally(paymentCode, "银联", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+			paymentTallyService.savePaymentTallyCoupon(paymentCode, "银联", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
 			sHtmlText = unionpayService.prePay(payCommon, request);//构造提交银联的表单
 			model.put("tocodeurl", sHtmlText);
 			model.put("orderSn", pay.getOrderSn());
 		} else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("weixinMobilePaymentPlugin")) {
 			//修改订单付款信息
-			orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+			couponPayDetailService.updateByPaySn(paysn, Long.valueOf(paymentId));
 			//保存支付流水记录
-			paymentTallyService.savePaymentTally(paymentCode, "微信支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+			paymentTallyService.savePaymentTallyCoupon(paymentCode, "微信支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
 			String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
 			model.put("tocodeurl", tocodeurl);
 			model.put("orderSn", pay.getOrderSn());
-		} else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("balancePaymentPlugin")) {//余额支付
-//            Map<String, Object> data = orderService.payWallet(payCommon, member.getMmCode());
-//            model.putAll(data);
 		} else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("pointsPaymentPlugin")) {//积分全额支付
 			// TODO: 2018/12/18
 			//积分全额支付判断
@@ -280,15 +272,8 @@ public class CouponController extends BaseController {
 					return ApiUtils.error("该订单不符合购物积分全抵现,请选择支付方式");
 				}
 			}
-			paymentTallyService.savePaymentTally(paymentCode, "积分全抵扣", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
-			Map<String, Object> data = orderService
-					.updateOrderpay(payCommon, member.getMmCode(), "在线支付-购物积分", paymentCode, paymentId);
-			model.putAll(data);
-		} else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("cashOnDeliveryPlugin")) {//货到付款
-			// TODO: 2018/12/18
-			paymentTallyService.savePaymentTally(paymentCode, "货到付款", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
-			Map<String, Object> data = orderService
-					.updateOrderpay(payCommon, member.getMmCode(), "货到付款", paymentCode, paymentId);
+			paymentTallyService.savePaymentTallyCoupon(paymentCode, "积分全抵扣", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
+			Map<String, Object> data = couponPayDetailService.updateOrderpay(payCommon, member.getMmCode(), "在线支付-购物积分", paymentCode, paymentId);
 			model.putAll(data);
 		}
 
