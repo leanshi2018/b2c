@@ -12,4 +12,6 @@ import com.framework.loippi.service.GenericService;
 public interface ShopOrderPayService extends GenericService<ShopOrderPay, Long> {
 
     ShopOrderPay findBySn(String paySn);
+
+	ShopOrderPay findCouponBySn(String paySn);
 }

@@ -25,7 +25,7 @@
             AND id = #{id,jdbcType=BIGINT}
         </if>
         <if test="mCode != null and mCode != ''">
-            AND mm_code = #{mCode,,jdbcType=VARCHAR}
+            AND mm_code = #{mCode,jdbcType=VARCHAR}
         </if>
         <if test="couponId != null">
             AND coupon_id = #{couponId,jdbcType=BIGINT}
@@ -46,7 +46,7 @@
             id = #{id,jdbcType=BIGINT},
         </if>
         <if test="mCode != null and mCode != ''">
-            mm_code = #{mCode,,jdbcType=VARCHAR},
+            mm_code = #{mCode,jdbcType=VARCHAR},
         </if>
         <if test="couponId != null">
             coupon_id = #{couponId,jdbcType=BIGINT},
@@ -141,5 +141,9 @@
         </where>
         order by own_num desc
     </select>
-    
+
+    <select id="findByMMCodeAndCouponId" parameterType="java.util.Map" resultMap="couponUserResultMap">
+        SELECT * FROM rd_coupon_user WHERE mm_code = #{mCode} and coupon_id = #{couponId}
+    </select>
+
 </mapper>

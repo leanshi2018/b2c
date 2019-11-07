@@ -1,7 +1,11 @@
 package com.framework.loippi.service.coupon;
 
+import java.util.Map;
+
+import com.framework.loippi.entity.PayCommon;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.order.ShopOrderPay;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.service.GenericService;
 
 /**
@@ -11,4 +15,10 @@ import com.framework.loippi.service.GenericService;
  */
 public interface CouponPayDetailService extends GenericService<CouponPayDetail, Long> {
 	ShopOrderPay addOrderReturnPaySn(String mmCode, Long couponId, Integer couponNumber);
+
+	void ProcessingIntegralsCoupon(String paysn, Integer integration, RdMmBasicInfo shopMember, ShopOrderPay pay, Integer shoppingPointSr);
+
+	void updateByPaySn(String paysn, Long paymentId);
+
+	Map<String, Object> updateOrderpay(PayCommon payCommon, String memberId, String payName, String paymentCode,String paymentId);
 }

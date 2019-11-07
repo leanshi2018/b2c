@@ -68,6 +68,14 @@ public class CouponPayDetail implements GenericEntity {
 	 * */
 	private Date paymentTime;
 	/**
+	 * 支付表id
+	 * */
+	private Long payId;
+	/**
+	 * 支付表编号
+	 * */
+	private String paySn;
+	/**
 	 * 优惠券总价格
 	 * */
 	private BigDecimal couponAmount;
@@ -76,9 +84,21 @@ public class CouponPayDetail implements GenericEntity {
 	 * */
 	private Integer couponNumber;
 	/**
+	 * 已使用优惠券个数
+	 * */
+	private Integer useCouponNumber;
+	/**
+	 * 订单所用积分数量
+	 * */
+	private BigDecimal usePointNum;
+	/**
 	 * 购物积分抵扣金额
 	 * */
 	private BigDecimal pointAmount;
+	/**
+	 * 订单应付金额（最终现金支付金额）
+	 * */
+	private BigDecimal orderAmount;
 	/**
 	 * 退款状态:0是无退款,1是部分退款,2是全部退款
 	 * */
@@ -103,6 +123,10 @@ public class CouponPayDetail implements GenericEntity {
 	 *操作时间（更新时间）
 	 */
 	private Date updateTime;
+	/**
+	 * 上一订单状态
+	 */
+	private Integer prevOrderState;
 
 
 
