@@ -6,6 +6,7 @@ import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.User;
 import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.coupon.CouponService;
@@ -13,9 +14,12 @@ import com.framework.loippi.support.Message;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -24,9 +28,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller("shopCouponController")
 @RequestMapping("/admin/plarformShopCoupon")
@@ -215,5 +217,26 @@ public class ShopCouponController extends GenericController {
             model.addAttribute("msg", "网络异常，请稍后重试");
             return Constants.MSG_URL;
         }
+    }
+
+    /**
+     * 优惠券基本信息列表
+     *
+     */
+    @RequestMapping("/coupon/list")
+    public String list(ModelMap model,
+                       @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                       @RequestParam(required = false, value = "pageSize", defaultValue = "15") int pageSize,
+                       @ModelAttribute Coupon coupon) {
+        //参数整理
+        Pageable pager = new Pageable();
+        pager.setPageNumber(pageNo);
+        pager.setPageSize(pageSize);
+        pager.setOrderProperty("useEndTime");
+        pager.setOrderDirection(Order.Direction.DESC);
+        pager.setParameter(coupon);
+        Page<Coupon> page = couponService.findByPage(pager);
+        model.addAttribute("couponList", page);
+        return "/activity/shop_activity/coupon_list";
     }
 }
