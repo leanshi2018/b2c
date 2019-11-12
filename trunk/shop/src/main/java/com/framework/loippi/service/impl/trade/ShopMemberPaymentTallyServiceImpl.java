@@ -110,6 +110,54 @@ public class ShopMemberPaymentTallyServiceImpl extends GenericServiceImpl<ShopMe
     }
 
     @Override
+    public void savePaymentTallyCoupon(String paytype, String payname, ShopOrderPay pay, Integer paytrem, Integer type) {
+        //根据支付单号获取订单信息
+        List<CouponPayDetail> couponPayList = couponPayDetailDao.findByParams(Paramap.create().put("paySn", pay.getPaySn()));
+        if (CollectionUtils.isEmpty(couponPayList)) {
+            return;
+        }
+
+        CouponPayDetail couponPay = couponPayList.get(0);
+        if (couponPay != null) {
+            ShopMemberPaymentTally paymentTally = new ShopMemberPaymentTally();
+            paymentTally.setPaymentCode(paytype);//保存支付类型
+            paymentTally.setPaymentName(payname);//支付名称
+            paymentTally.setPaymentSn(pay.getPaySn());//商城内部交易号
+            paymentTally.setPaymentAmount(pay.getPayAmount());// 订单交易金额
+            if (pay.getPaySn().contains("R")) {//充值
+                paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_RECHARGE_PAY);
+            } else {//订单支付
+                paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_ORDER_PAY);
+            }
+            //支付状态
+            if (type==2){
+                paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_SUCCESS);
+            }else{
+                paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_NOSUCCESS);
+            }
+            //支付终端类型 1:PC;2:APP;3:h5
+            if (paytrem == 1) {
+                paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_PC);
+            } else if (paytrem == 2) {
+                paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_MB);
+            } else {
+                paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_H5);
+            }
+            //用户id
+            paymentTally.setBuyerId(new Long(couponPay.getReceiveId()));
+            //用户名
+            paymentTally.setBuyerName(couponPay.getReceiveNickName());
+            //保存生成时间
+            paymentTally.setCreateTime(new Date());
+            paymentTally.setId(twiterIdService.getTwiterId());
+            //保存流水表记录
+            paymentTallyDao.insert(paymentTally);
+            //释放资源
+            paymentTally = null;
+        }
+    }
+
+    @Override
     public void savePaymentTally(String paytype, String payname, ShopWalletRecharge pay, Integer paytrem) {
         //根据支付单号获取订单信息
         ShopMemberPaymentTally paymentTally = new ShopMemberPaymentTally();
@@ -210,54 +258,6 @@ public class ShopMemberPaymentTallyServiceImpl extends GenericServiceImpl<ShopMe
     @Override
     public List<ActivityStatisticsVo> statisticsIncomesBystate(ActivityStatisticsVo param) {
         return paymentTallyDao.statisticsIncomesBystate(param);
-    }
-
-    @Override
-    public void savePaymentTallyCoupon(String paytype, String payname, ShopOrderPay pay, Integer paytrem, Integer type) {
-        //根据支付单号获取订单信息
-        List<CouponPayDetail> couponPayList = couponPayDetailDao.findByParams(Paramap.create().put("paySn", pay.getPaySn()));
-        if (CollectionUtils.isEmpty(couponPayList)) {
-            return;
-        }
-
-        CouponPayDetail couponPay = couponPayList.get(0);
-        if (couponPay != null) {
-            ShopMemberPaymentTally paymentTally = new ShopMemberPaymentTally();
-            paymentTally.setPaymentCode(paytype);//保存支付类型
-            paymentTally.setPaymentName(payname);//支付名称
-            paymentTally.setPaymentSn(pay.getPaySn());//商城内部交易号
-            paymentTally.setPaymentAmount(pay.getPayAmount());// 订单交易金额
-            if (pay.getPaySn().contains("R")) {//充值
-                paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_RECHARGE_PAY);
-            } else {//订单支付
-                paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_ORDER_PAY);
-            }
-            //支付状态
-            if (type==2){
-                paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_SUCCESS);
-            }else{
-                paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_NOSUCCESS);
-            }
-            //支付终端类型 1:PC;2:APP;3:h5
-            if (paytrem == 1) {
-                paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_PC);
-            } else if (paytrem == 2) {
-                paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_MB);
-            } else {
-                paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_H5);
-            }
-            //用户id
-            paymentTally.setBuyerId(new Long(couponPay.getReceiveId()));
-            //用户名
-            paymentTally.setBuyerName(couponPay.getReceiveNickName());
-            //保存生成时间
-            paymentTally.setCreateTime(new Date());
-            paymentTally.setId(twiterIdService.getTwiterId());
-            //保存流水表记录
-            paymentTallyDao.insert(paymentTally);
-            //释放资源
-            paymentTally = null;
-        }
     }
 
 }

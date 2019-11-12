@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.StateResult;
+import com.framework.loippi.dao.ShopCommonMessageDao;
+import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.dao.coupon.CouponDetailDao;
 import com.framework.loippi.dao.coupon.CouponPayDetailDao;
 import com.framework.loippi.dao.coupon.CouponPayLogDao;
@@ -25,6 +27,8 @@ import com.framework.loippi.dao.coupon.CouponUserDao;
 import com.framework.loippi.dao.order.ShopOrderPayDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.PayCommon;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.TSystemPluginConfig;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
@@ -43,7 +47,9 @@ import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAccountLogService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.SnowFlake;
 import com.google.common.collect.Maps;
 
@@ -59,18 +65,20 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 	@Autowired
 	private RdMmBasicInfoService rdMmBasicInfoService;
 	@Autowired
-	private TwiterIdService twiterIdService;
+	private RdMmRelationService rdMmRelationService;
 	@Autowired
+	private TwiterIdService twiterIdService;
+	@Resource
 	private ShopOrderPayDao orderPayDao;
 	@Autowired
 	private CouponService couponService;
-	@Autowired
+	@Resource
 	private CouponPayDetailDao couponPayDetailDao;
-	@Autowired
+	@Resource
 	private CouponDetailDao couponDetailDao;
-	@Autowired
+	@Resource
 	private CouponUserDao couponUserDao;
-	@Autowired
+	@Resource
 	private CouponPayLogDao couponPayLogDao;
 	@Resource
 	private RdMmAccountInfoService rdMmAccountInfoService;
@@ -80,6 +88,10 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 	private RdSysPeriodDao rdSysPeriodDao;
 	@Autowired
 	private TSystemPluginConfigService tSystemPluginConfigService;
+	@Resource
+	private ShopCommonMessageDao shopCommonMessageDao;
+	@Resource
+	private ShopMemberMessageDao shopMemberMessageDao;
 
 	@Override
 	public ShopOrderPay addOrderReturnPaySn(String memberId, Long couponId, Integer couponNumber) {
@@ -138,9 +150,9 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		CouponPayLog payLog = new CouponPayLog();
 		payLog.setId(twiterIdService.getTwiterId());
 		payLog.setOperator(member.getMmCode().toString());
-		payLog.setChangeState(1 + "");//下一步 已付款或者取消
+		payLog.setChangeState(40 + "");//下一步 40:交易完成或者取消
 		payLog.setCouponPayId(couponPayDetail.getId());
-		payLog.setOrderState(0 + "");
+		payLog.setOrderState(OrderState.ORDER_STATE_NO_PATMENT + "");
 		payLog.setStateInfo("提交订单");
 		payLog.setCreateTime(new Date());
 		couponPayLogDao.insert(payLog);
@@ -192,7 +204,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		Long payDetailId = 0L;
 		if (payDetailList != null && payDetailList.size() > 0) {
 			for (CouponPayDetail couponPayDetail : payDetailList) {
-				if (couponPayDetail.getPaymentState() == 1) {
+				if (couponPayDetail.getCouponOrderState() != 10) {
 					throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单已支付");
 				}
 				payDetailId = couponPayDetail.getId();
@@ -244,7 +256,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		//payDetail.setPaymentCode(payment.getPluginId()); //支付方式名称代码
 		payDetail.setPaymentId(payment.getId()); //支付方式id
 		payDetail.setPaymentName(payDetail.getPaymentName() + payment.getPluginName()); //支付方式名称
-		payDetail.setPrevOrderState(0);//锁定支付前的支付状态
+		payDetail.setPrevOrderState(OrderState.ORDER_STATE_NO_PATMENT);//锁定支付前的支付状态
 		updateByIdOrderStateLockState(payDetail, OrderState.ORDER_OPERATE_PAY);
 	}
 
@@ -268,7 +280,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			switch (operateType) {
 				case OrderState.ORDER_OPERATE_PAY:
 					// 【前端订单发起支付中】 -- 【后台取消订单中】 => 后台取消订单先完成
-					if (!findpayDetail.getPaymentState().equals(payDetail.getPrevOrderState())) {
+					if (!findpayDetail.getCouponOrderState().equals(payDetail.getPrevOrderState())) {
 						exceptionMsg = "订单已经支付";
 					}
 					// 【后台订单编辑中】 -- 【前端订单发起支付中】 => 后台先完成
@@ -282,7 +294,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 						exceptionMsg = "订单已经锁定";
 					}*/
 					// 【订单支付第三方调用完成支付接口】-- 【后台在取消订单中】 =》第三方调用先完成
-					if (!findpayDetail.getPaymentState().equals(payDetail.getPrevOrderState())) {
+					if (!findpayDetail.getCouponOrderState().equals(payDetail.getPrevOrderState())) {
 						exceptionMsg = "订单已经支付成功";
 					}
 					break;
@@ -304,7 +316,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		String couponOrderSn = "";
 		if (CollectionUtils.isNotEmpty(couponPayList)) {
 			for (CouponPayDetail couponPayDetail : couponPayList) {
-				if (couponPayDetail.getPaymentState() == 1) {
+				if (couponPayDetail.getCouponOrderState() != 10) {
 					throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单已支付");
 				}
 				if (couponPayDetail.getPaymentState() == 0) {
@@ -312,8 +324,8 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 					//新建一个订单日志
 					CouponPayLog couponPayLog = new CouponPayLog();
 					couponPayLog.setId(twiterIdService.getTwiterId());
-					couponPayLog.setOrderState(1 + "");
-					couponPayLog.setChangeState(1 + "");
+					couponPayLog.setOrderState(OrderState.ORDER_STATE_FINISH+ "");
+					couponPayLog.setChangeState(OrderState.ORDER_STATE_FINISH + "");
 					couponPayLog.setStateInfo("订单付款完成");
 					couponPayLog.setCouponPayId(couponPayDetail.getId());
 					couponPayLog.setOperator(shopMember.getMmCode());
@@ -322,6 +334,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 					couponPayLogDao.insert(couponPayLog);
 					//修改订单状态
 					CouponPayDetail newcouponPay = new CouponPayDetail();
+					newcouponPay.setCouponOrderState(OrderState.ORDER_STATE_FINISH);
 					newcouponPay.setPaymentState(OrderState.PAYMENT_STATE_YES);
 					newcouponPay.setPaymentTime(new Date());
 					couponPayDetailDao.update(newcouponPay);
@@ -330,63 +343,9 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 					newcouponPay.setPaymentId(Long.valueOf(paymentId));
 					// 条件
 					newcouponPay.setId(couponPayDetail.getId());
-					newcouponPay.setPrevOrderState(0);
+					newcouponPay.setPrevOrderState(OrderState.ORDER_STATE_NO_PATMENT);
 					updateByIdOrderStateLockState(newcouponPay, OrderState.ORDER_OPERATE_PAY);
 				}
-				//换购订单 扣除换购积分 并生成记录
-				/*if ("10".equals(paymentId)) {
-					//设置换购积分消息通知
-					ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
-					shopCommonMessage.setSendUid(memberId);
-					shopCommonMessage.setType(1);
-					shopCommonMessage.setOnLine(1);
-					shopCommonMessage.setCreateTime(new Date());
-					shopCommonMessage.setBizType(2);
-					shopCommonMessage.setIsTop(1);
-					shopCommonMessage.setCreateTime(new Date());
-					shopCommonMessage.setTitle("积分扣减通知");
-					shopCommonMessage.setContent("您因支付换购订单："+order.getOrderSn()+"订单扣减"+order.getOrderAmount()+"点积分，请在换购积分账户查看明细");
-					Long msgId1 = twiterIdService.getTwiterId();
-					shopCommonMessage.setId(msgId1);
-					shopCommonMessageDao.insert(shopCommonMessage);
-					ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
-					shopMemberMessage1.setBizType(2);
-					shopMemberMessage1.setCreateTime(new Date());
-					shopMemberMessage1.setId(twiterIdService.getTwiterId());
-					shopMemberMessage1.setIsRead(0);
-					shopMemberMessage1.setMsgId(msgId1);
-					shopMemberMessage1.setUid(Long.parseLong(memberId));
-					shopMemberMessageDao.insert(shopMemberMessage1);
-					RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", shopMember.getMmCode());
-					RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
-					rdMmAccountLog.setTransTypeCode("EG");
-					rdMmAccountLog.setAccType("");
-					rdMmAccountLog.setTrSourceType("CMP");
-					rdMmAccountLog.setMmCode(shopMember.getMmCode());
-					rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
-					rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
-					rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getRedemptionBlance());
-					rdMmAccountLog.setAmount(order.getOrderAmount());
-					rdMmAccountLog.setTrOrderOid(order.getId());
-					rdMmAccountLog.setTransDate(new Date());
-					String period = rdSysPeriodDao.getSysPeriodService(new Date());
-					rdMmAccountLog.setTransPeriod(period);
-					//提现需审核初始为申请状态
-					rdMmAccountLog.setStatus(3);
-					rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
-					rdMmAccountLog.setCreationTime(new Date());
-					rdMmAccountInfo
-							.setRedemptionBlance(rdMmAccountInfo.getRedemptionBlance().subtract(order.getOrderAmount()));
-					rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getRedemptionBlance());
-					List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
-					rdMmAccountLogList.add(rdMmAccountLog);
-					Integer transNumber = rdMmAccountInfoService
-							.saveAccountInfo(rdMmAccountInfo, order.getOrderAmount().intValue(), IntegrationNameConsts.PUI,
-									rdMmAccountLogList, null);
-				}*/
-
-//                // 用户增加消费积分
-//                addMemberConsumePoints(payCommon.getPayAmount().doubleValue(), shopMember.getId());
 			}
 			Map<String, Object> result = Maps.newConcurrentMap();
 			result.put("status", 1);
@@ -407,17 +366,17 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 				couponUserNew.setUseAbleNum(1);
 				couponUserNew.setUseNum(0);
 				couponUserDao.insert(couponUserNew);
+				//生成优惠券详情表
+				insertCouponDetail(couponPayList.get(0).getCouponNumber(),couponUserNew.getId(),couponPayList.get(0).getCouponId(),shopMember,couponPayList.get(0).getId());
 			}else {
 				for (CouponUser couponUser : couponUserList) {
 					Integer ownNum = couponUser.getOwnNum();
 					couponUser.setOwnNum(ownNum+couponPayList.get(0).getCouponNumber());
 					couponUserDao.update(couponUser);
+					//生成优惠券详情表
+					insertCouponDetail(couponPayList.get(0).getCouponNumber(),couponUser.getId(),couponPayList.get(0).getCouponId(),shopMember,couponPayList.get(0).getId());
 				}
 			}
-
-			//生成优惠券详情表
-
-
 
 			return result;
 
@@ -428,7 +387,16 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		return result;
 	}
 
-	public void insertCouponDetail(Integer couponNum,Long couponUserId,Long couponId,RdMmBasicInfo shopMember){
+
+	/**
+	 * //生成优惠券详情表
+	 * @param couponNum
+	 * @param couponUserId
+	 * @param couponId
+	 * @param shopMember
+	 * @param couponPayDetailId
+	 */
+	public void insertCouponDetail(Integer couponNum,Long couponUserId,Long couponId,RdMmBasicInfo shopMember,Long couponPayDetailId){
 		Coupon coupon = couponService.find(couponId);
 
 		for (int i=0;i<couponNum;i++){
@@ -447,8 +415,74 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			couponDetail.setUseStartTime(coupon.getUseStartTime());
 			couponDetail.setUseEndTime(coupon.getUseEndTime());
 			couponDetail.setUseState(2);
-
+			couponDetail.setBuyOrderId(couponPayDetailId);
+			couponDetailDao.insert(couponDetail);
 		}
 	}
+
+	@Override
+	public void updateCouponPayStateFinish(String paysn, String tradeSn, String paymentBranch) {
+		// 用于积分计算
+		double orderTotalAmount = 0.0;
+		String memberId = "";
+		List<CouponPayDetail> couponPayDetailList = findList(Paramap.create().put("paySn", paysn).put("paymentState", 0));
+		if (CollectionUtils.isEmpty(couponPayDetailList)) {
+			return;
+		}
+
+		for (CouponPayDetail couponPayDetail : couponPayDetailList) {
+			if (couponPayDetail.getPaymentState() == 0) {//未付款
+				memberId = couponPayDetail.getReceiveId();
+				// 新建一个订单日志
+				CouponPayLog couponPayLog = new CouponPayLog();
+				couponPayLog.setId(twiterIdService.getTwiterId());
+				couponPayLog.setOrderState(1 + "");
+				couponPayLog.setChangeState(1 + "");
+				couponPayLog.setStateInfo("订单付款完成");
+				couponPayLog.setCouponPayId(couponPayDetail.getId());
+				couponPayLog.setOperator(memberId);
+				couponPayLog.setCreateTime(new Date());
+				// 保存订单日志
+				couponPayLogDao.insert(couponPayLog);
+				// 修改订单状态
+				couponPayDetail.setPaymentState(1);
+				couponPayDetail.setPaymentTime(new Date());
+				couponPayDetail.setTradeSn(tradeSn);
+				//couponPayDetail.setPaymentBranch(paymentBranch);
+				couponPayDetailDao.update(couponPayDetail);
+				if(couponPayDetail.getUsePointNum()!=null&&couponPayDetail.getUsePointNum().compareTo(new BigDecimal(0.00))==1){//如果订单支付使用了积分，则创建使用积分消息
+
+					ShopCommonMessage message=new ShopCommonMessage();
+					message.setSendUid(couponPayDetail.getReceiveId()+"");
+					message.setType(1);
+					message.setOnLine(1);
+					message.setCreateTime(new Date());
+					message.setBizType(2);
+					message.setIsTop(1);
+					message.setCreateTime(new Date());
+					message.setTitle("积分消费");
+					message.setContent("您因订单支付【优惠券订单号"+couponPayDetail.getCouponOrderSn()+"】，扣减购物积分"+couponPayDetail.getUsePointNum()+"，请在购物积分账户查看明细");
+					Long msgId = twiterIdService.getTwiterId();
+					message.setId(msgId);
+					shopCommonMessageDao.insert(message);
+					ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
+					shopMemberMessage.setBizType(2);
+					shopMemberMessage.setCreateTime(new Date());
+					shopMemberMessage.setId(twiterIdService.getTwiterId());
+					shopMemberMessage.setIsRead(0);
+					shopMemberMessage.setMsgId(msgId);
+					shopMemberMessage.setUid(new Long(couponPayDetail.getReceiveId()));
+					shopMemberMessageDao.insert(shopMemberMessage);
+				}
+				orderTotalAmount += couponPayDetail.getOrderAmount().doubleValue();
+			}
+		}
+		// 更新支付表
+		ShopOrderPay orderPay = new ShopOrderPay();
+		orderPay.setPaySn(paysn);
+		orderPay.setApiPayState("1");
+		orderPayDao.updateByPaysn(orderPay);
+	}
+
 
 }

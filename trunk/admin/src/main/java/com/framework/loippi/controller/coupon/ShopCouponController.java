@@ -216,6 +216,31 @@ public class ShopCouponController extends GenericController {
     }
 
     /**
+     *
+     * @param request
+     * @param pageable
+     * @param model
+     * @param couponOrderSn
+     * @param mmCode
+     * @param mNickName
+     * @param couponOrderState
+     * @param createTime
+     * @param targetStatus
+     * @return
+     */
+    @RequestMapping(value = "/findCouponPayDetailList",method = RequestMethod.POST)
+    public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,  ModelMap model,
+                                    @RequestParam(required = false, value = "couponOrderSn") String couponOrderSn,
+                                    @RequestParam(required = false, value = "mmCode") String mmCode,
+                                    @RequestParam(required = false, value = "mNickName") String mNickName,
+                                    @RequestParam(required = false, value = "couponOrderState") Integer couponOrderState,
+                                    @RequestParam(required = false, value = "createTime") String createTime,
+                                    @RequestParam(required = false, value = "pageNo") Integer targetStatus) {
+
+        return null;
+    }
+
+    /**
      * 优惠券基本信息列表
      *
      */
