@@ -451,6 +451,100 @@ public class CartAPIController extends BaseController {
         return ApiUtils.success(result);
     }
 
+    /**
+     * 购物车结算新(优惠券使用) TODO
+     */
+    @RequestMapping(value = "/api/cart/checkoutNew1", method = RequestMethod.POST)
+    @ResponseBody
+    public String checkoutNew1(@RequestParam String cartIds, Long groupBuyActivityId, Long shopOrderTypeId,
+                              @RequestParam(defaultValue = "1") Integer logisticType,
+                              @RequestParam(required = false,value = "couponId") Long couponId,
+                              HttpServletRequest request, Long addressId) {
+        if (StringUtils.isBlank(cartIds)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+
+        //订单类型相关
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        //查看该会员类型下 所有可选择的订单类型
+        Integer type = 1; //默认显示零售价
+        List<ShopOrderDiscountType> orderDiscountTypeList = new ArrayList<>();
+        if (rdRanks != null && rdRanks.getRankClass() != null && rdRanks.getRankClass() > 0) {
+            type = 2;
+            orderDiscountTypeList = shopOrderDiscountTypeService.findAll();
+        }
+
+        // 获取收货地址
+        RdMmAddInfo addr = null;
+        if (addressId != null) {
+            addr = rdMmAddInfoService.find("aid", addressId);
+        } else {
+            List<RdMmAddInfo> addrList = rdMmAddInfoService.findList("mmCode", member.getMmCode());
+            if (CollectionUtils.isNotEmpty(addrList)) {
+                addr = addrList.stream()
+                        .filter(item -> item.getDefaultadd() != null && item.getDefaultadd() == 1)
+                        .findFirst()
+                        .orElse(addrList.get(0));
+            }
+        }
+        if (logisticType == 2) {
+            addr = null;
+        }
+        ShopOrderDiscountType shopOrderDiscountType = null;
+        if (shopOrderTypeId != null) {
+            shopOrderDiscountType = shopOrderDiscountTypeService.find(shopOrderTypeId);
+            if (shopOrderDiscountType != null) {
+                type = shopOrderDiscountType.getPreferentialType();
+                if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_MEMBER
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PREFERENTIAL
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL) {
+                    type = ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL;
+                    shopOrderDiscountType.setPreferentialType(type);
+                }
+            }
+        }
+        if (shopOrderDiscountType == null) {
+            shopOrderDiscountType = new ShopOrderDiscountType();
+            shopOrderDiscountType.setId(-1L);
+            shopOrderDiscountType.setPreferentialType(type);
+        }
+        Map<String, Object> map = cartService
+                .queryTotalPrice1(cartIds, member.getMmCode(), couponId, groupBuyActivityId, shopOrderDiscountType, addr);
+        // 购物车数据
+        if (map.get("error").equals("true")) {
+            return ApiUtils.error("商品属性发生改变,请重新结算");
+        }
+        List<ShopCart> cartList = Lists.newArrayList();
+        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
+            String[] cartId = cartIds.split(",");
+            if (cartId != null && cartId.length > 0) {
+                cartList = cartService.findList("ids", cartId);
+            }
+        }
+        if (CollectionUtils.isEmpty(cartList)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        CartCheckOutResult result = CartCheckOutResult
+                .build(map, cartList, addr, shopOrderTypeId, shopOrderDiscountType);
+        if (log.isDebugEnabled()) {
+            log.debug(JacksonUtil.toJson(result));
+        }
+
+        // TODO: 2018/12/14 自提地址 自提地址 id为-1 表示平台地址
+        RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", -1);
+        List<ShopOrderDiscountType> shopOrderDiscountTypeList = new ArrayList<>();
+        if (rdRanks != null && rdRanks.getRankClass() != null && rdRanks.getRankClass() > 0) {
+            shopOrderDiscountTypeList = shopOrderDiscountTypeService.findList("totalPpv", result.getTotalPpv());
+        }
+        result = result.build2(result, shopOrderDiscountTypeList, rdRanks, rdMmBasicInfo, shopMemberAddress,
+                orderDiscountTypeList);
+        return ApiUtils.success(result);
+    }
+
     public static boolean belongCalendar(Date nowTime, Date beginTime, Date endTime) {
         //设置当前时间
         Calendar date = Calendar.getInstance();

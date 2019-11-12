@@ -3,6 +3,7 @@ package com.framework.loippi.pojo.cart;
 import com.framework.loippi.consts.ActivityConsts;
 import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.activity.ShopActivityPromotionRule;
+import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.enus.ActivityRuleTypeEnus;
 import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.pojo.activity.Promotion;
@@ -14,6 +15,7 @@ import com.google.common.collect.Maps;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,10 @@ public class CartInfo implements Serializable {
      * key-活动id, value购物车
      */
     private Map<Long, List<CartVo>> actCartVoMap = Maps.newHashMap();
+    /**
+     * key-优惠券id, value优惠券实体类
+     */
+    private HashMap<Long, Coupon> couponMap=Maps.newHashMap();
 
     /**
      * 商品总数量
