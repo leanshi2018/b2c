@@ -92,6 +92,11 @@ public class Coupon implements GenericEntity {
     @Column(name = "use_scope")
     private Integer useScope;
     /**
+     * 商品id，适用于使用范围为单品的优惠券
+     */
+    @Column(name = "goods_id")
+    private Long goodsId;
+    /**
      * 使用限制描述
      */
     @Column(name = "scope_remark")

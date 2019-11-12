@@ -215,6 +215,19 @@ public class ShopCouponController extends GenericController {
         }
     }
 
+    /**
+     *
+     * @param request
+     * @param pageable
+     * @param model
+     * @param couponOrderSn
+     * @param mmCode
+     * @param mNickName
+     * @param couponOrderState
+     * @param createTime
+     * @param targetStatus
+     * @return
+     */
     @RequestMapping(value = "/findCouponPayDetailList",method = RequestMethod.POST)
     public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,  ModelMap model,
                                     @RequestParam(required = false, value = "couponOrderSn") String couponOrderSn,
@@ -225,5 +238,26 @@ public class ShopCouponController extends GenericController {
                                     @RequestParam(required = false, value = "pageNo") Integer targetStatus) {
 
         return null;
+    }
+
+    /**
+     * 优惠券基本信息列表
+     *
+     */
+    @RequestMapping("/coupon/list")
+    public String list(ModelMap model,
+                       @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                       @RequestParam(required = false, value = "pageSize", defaultValue = "15") int pageSize,
+                       @ModelAttribute Coupon coupon) {
+        //参数整理
+        Pageable pager = new Pageable();
+        pager.setPageNumber(pageNo);
+        pager.setPageSize(pageSize);
+        pager.setOrderProperty("useEndTime");
+        pager.setOrderDirection(Order.Direction.DESC);
+        pager.setParameter(coupon);
+        Page<Coupon> page = couponService.findByPage(pager);
+        model.addAttribute("couponList", page);
+        return "/activity/shop_activity/coupon_list";
     }
 }
