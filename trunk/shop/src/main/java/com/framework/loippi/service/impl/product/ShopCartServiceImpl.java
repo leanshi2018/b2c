@@ -899,11 +899,11 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                 &&(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1)){//mi和金额限制都存在
                             if(cartInfo.getPpvNum().compareTo(BigDecimal.ZERO)==1){//有mi值，用mi值判断是否可以使用
                                 if(cartInfo.getPpvNum().compareTo(coupon.getMinMi())!=-1){//可以使用
+                                    arrayList.add(coupon);
                                     if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                         if(coupon.getCouponValue().compareTo(best)==1){
                                             best=coupon.getCouponValue();
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }
                                     if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -914,17 +914,16 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                         if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
                                             best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }
                                 }
                             }else {//没有mi值按金额计算
                                 if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getMinAmount())!=-1){//可以使用
+                                    arrayList.add(coupon);
                                     if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                         if(coupon.getCouponValue().compareTo(best)==1){
                                             best=coupon.getCouponValue();
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }
                                     if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -935,18 +934,17 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                         if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
                                             best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }
                                 }
                             }
                         }else if (coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1){//mi限制存在
                             if(cartInfo.getPpvNum().compareTo(BigDecimal.ZERO)==1&&cartInfo.getPpvNum().compareTo(coupon.getMinMi())!=-1){//订单内有mi值且大于优惠券使用最小mi值限制
+                                arrayList.add(coupon);
                                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                     if(coupon.getCouponValue().compareTo(best)==1){
                                         best=coupon.getCouponValue();
                                         couponId=coupon.getId();
-                                        arrayList.add(coupon);
                                     }
                                 }
                                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -957,17 +955,16 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                     if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
                                         best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                         couponId=coupon.getId();
-                                        arrayList.add(coupon);
                                     }
                                 }
                             }
                         }else if(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1){//金额限制存在
                             if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getMinAmount())!=-1){//可以使用
+                                arrayList.add(coupon);
                                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                     if(coupon.getCouponValue().compareTo(best)==1){
                                         best=coupon.getCouponValue();
                                         couponId=coupon.getId();
-                                        arrayList.add(coupon);
                                     }
                                 }
                                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -978,23 +975,21 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                     if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
                                         best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                         couponId=coupon.getId();
-                                        arrayList.add(coupon);
                                     }
                                 }
                             }
                         }else {//没有限制
+                            arrayList.add(coupon);
                             if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_KNOCK){//立减
                                 if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getCouponValue())==-1){
                                     if(cartInfo.getActualGoodsTotalPrice().compareTo(best)==1){
                                         best=cartInfo.getActualGoodsTotalPrice();
                                         couponId=coupon.getId();
-                                        arrayList.add(coupon);
                                     }
                                 }else {
                                     if(coupon.getCouponValue().compareTo(best)==1){
                                         best=coupon.getCouponValue();
                                         couponId=coupon.getId();
-                                        arrayList.add(coupon);
                                     }
                                 }
                             }else if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_NOMONEY_RATE){//立折
@@ -1002,7 +997,6 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                 if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
                                     best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                     couponId=coupon.getId();
-                                    arrayList.add(coupon);
                                 }
                             }
                         }
@@ -1028,11 +1022,11 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                     &&(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1)) {//mi和金额限制都存在
                                 if(totalPv.compareTo(BigDecimal.ZERO)==1){
                                     if(totalPv.compareTo(coupon.getMinMi())!=-1){//可以使用优惠券
+                                        arrayList.add(coupon);
                                         if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                             if(coupon.getCouponValue().compareTo(best)==1){
                                                 best=coupon.getCouponValue();
                                                 couponId=coupon.getId();
-                                                arrayList.add(coupon);
                                             }
                                         }
                                         if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -1043,17 +1037,16 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                             if(totalMoney.multiply(subtract).compareTo(best)==1){
                                                 best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                                 couponId=coupon.getId();
-                                                arrayList.add(coupon);
                                             }
                                         }
                                     }
                                 }else {
                                     if(totalMoney.compareTo(coupon.getMinAmount())!=-1){
+                                        arrayList.add(coupon);
                                         if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                             if(coupon.getCouponValue().compareTo(best)==1){
                                                 best=coupon.getCouponValue();
                                                 couponId=coupon.getId();
-                                                arrayList.add(coupon);
                                             }
                                         }
                                         if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -1064,18 +1057,17 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                             if(totalMoney.multiply(subtract).compareTo(best)==1){
                                                 best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                                 couponId=coupon.getId();
-                                                arrayList.add(coupon);
                                             }
                                         }
                                     }
                                 }
                             }else if (coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1) {//mi限制存在
                                 if(totalPv.compareTo(BigDecimal.ZERO)==1&&totalPv.compareTo(coupon.getMinMi())!=-1){//有mi值且满足要求
+                                    arrayList.add(coupon);
                                     if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                         if(coupon.getCouponValue().compareTo(best)==1){
                                             best=coupon.getCouponValue();
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }
                                     if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -1086,17 +1078,16 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                         if(totalMoney.multiply(subtract).compareTo(best)==1){
                                             best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }
                                 }
                             }else if(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1){//金额限制
                                 if(totalMoney.compareTo(BigDecimal.ZERO)==1&&totalMoney.compareTo(coupon.getMinAmount())!=-1){//有金额且满足要求
+                                    arrayList.add(coupon);
                                     if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                         if(coupon.getCouponValue().compareTo(best)==1){
                                             best=coupon.getCouponValue();
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }
                                     if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -1107,23 +1098,21 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                         if(totalMoney.multiply(subtract).compareTo(best)==1){
                                             best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }
                                 }
                             }else {//不限制
+                                arrayList.add(coupon);
                                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_KNOCK){//立减
                                     if(totalMoney.compareTo(coupon.getCouponValue())==-1){
                                         if(totalMoney.compareTo(best)==1){
                                             best=totalMoney;
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }else {
                                         if(coupon.getCouponValue().compareTo(best)==1){
                                             best=coupon.getCouponValue();
                                             couponId=coupon.getId();
-                                            arrayList.add(coupon);
                                         }
                                     }
                                 }else if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_NOMONEY_RATE){//立折
@@ -1131,7 +1120,6 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                     if(totalMoney.multiply(subtract).compareTo(best)==1){
                                         best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                         couponId=coupon.getId();
-                                        arrayList.add(coupon);
                                     }
                                 }
                             }
