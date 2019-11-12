@@ -321,4 +321,8 @@
 		where ID_CARD_CODE = #{idCardCode} and ACC_NAME = #{accName}
 	</select>
 
+	<update id="updateBankSigningByOId" parameterType="map">
+		UPDATE	RD_MM_BANK SET BANK_SIGNING = #{bankSigning} WHERE OID = #{oId}
+	</update>
+
 </mapper> 

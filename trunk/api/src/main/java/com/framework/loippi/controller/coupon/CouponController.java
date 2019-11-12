@@ -118,9 +118,7 @@ public class CouponController extends BaseController {
 			return jsonFail("优惠券不存在");
 		}
 
-		Map<String, Object> resultMap = new HashMap<>();
-		resultMap.put("couponDetailInfo", coupon);
-		return ApiUtils.success(resultMap);
+		return ApiUtils.success(coupon);
 	}
 
 	/**

@@ -90,4 +90,12 @@ public class RdMmBankServiceImpl extends GenericServiceImpl<RdMmBank, Long> impl
 		map.put("accName",accName);
 		return rdMmBankDao.findBankByIdCardAndName(map);
 	}
+
+	@Override
+	public void updateBankSigningByOId(Integer bankSigning, Integer oid) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("oId",oid);
+		map.put("bankSigning",bankSigning);
+		rdMmBankDao.updateBankSigningByOId(map);
+	}
 }
