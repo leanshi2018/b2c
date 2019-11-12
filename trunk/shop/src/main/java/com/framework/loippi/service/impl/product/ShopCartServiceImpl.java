@@ -460,7 +460,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         //存储优惠券id
         map.put("couponId",Optional.ofNullable(cartInfo.getCouponId()).orElse(null) );
         //存储优惠券map
-        map.put("couponMap",Optional.ofNullable(cartInfo.getCouponMap()).orElse(new HashMap<Long, Coupon>()));
+        map.put("couponList",Optional.ofNullable(cartInfo.getCouponList()).orElse(new ArrayList<Coupon>()));
         return map;
     }
 
@@ -793,11 +793,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                 Map<String, Object> map = getCouponList(memberId, cartList, cartInfo);
                 ArrayList<Coupon> coupons = (ArrayList<Coupon>) map.get("coupons");
                 if(coupons!=null&&coupons.size()>0){
-                    HashMap<Long, Coupon> hashMap = new HashMap<>();
-                    for (Coupon coupon1 : coupons) {
-                        hashMap.put(coupon1.getId(),coupon1);
-                    }
-                    cartInfo.setCouponMap(hashMap);
+                    cartInfo.setCouponList(coupons);
                 }
                 BigDecimal couponMoney=BigDecimal.ZERO;
                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){//满减
@@ -828,11 +824,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     cartInfo.setCouponAmount(cartInfo.getCouponAmount().add(couponMoney));
                     cartInfo.setCouponPrice(couponMoney);
                     cartInfo.setCouponId(couponId);
-                    HashMap<Long, Coupon> hashMap = new HashMap<>();
-                    for (Coupon coupon : coupons) {
-                        hashMap.put(coupon.getId(),coupon);
-                    }
-                    cartInfo.setCouponMap(hashMap);
+                    cartInfo.setCouponList(coupons);
                 }
             }
         }
