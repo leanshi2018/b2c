@@ -15,10 +15,7 @@ import com.google.common.collect.Maps;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import lombok.Data;
 import lombok.ToString;
@@ -71,9 +68,9 @@ public class CartInfo implements Serializable {
      */
     private Map<Long, List<CartVo>> actCartVoMap = Maps.newHashMap();
     /**
-     * key-优惠券id, value优惠券实体类
+     * 可使用优惠券列表
      */
-    private HashMap<Long, Coupon> couponMap=Maps.newHashMap();
+    private ArrayList<Coupon> couponList=Lists.newArrayList();
 
     /**
      * 商品总数量

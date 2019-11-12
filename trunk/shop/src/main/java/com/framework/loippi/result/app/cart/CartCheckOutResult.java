@@ -139,9 +139,9 @@ public class CartCheckOutResult {
     public List<selectShopOrderType> selectShopOrderTypeList;
     //**************************************************************************
     /**
-     * key-优惠券id, value优惠券实体类
+     * 可使用优惠券列表
      */
-    private HashMap<Long, Coupon> couponMap=Maps.newHashMap();
+    private ArrayList<Coupon> couponList=Lists.newArrayList();
     /**
      * 优惠券id
      */
@@ -365,8 +365,8 @@ public class CartCheckOutResult {
                 // 商品数据
                 .setStoreGoodsContainers(StoreGoodsContainer.buildList(cartList, shopOrderDiscountType));
         cartCheckOutResult.setCouponId(Optional.ofNullable((Long) moneyMap.get("couponId")).orElse(null));
-        HashMap<Long,Coupon> couponMap = (HashMap<Long, Coupon>) moneyMap.get("couponMap");
-        cartCheckOutResult.setCouponMap(couponMap);
+        ArrayList<Coupon> couponList = (ArrayList<Coupon>) moneyMap.get("couponList");
+        cartCheckOutResult.setCouponList(couponList);
         return cartCheckOutResult;
     }
 
