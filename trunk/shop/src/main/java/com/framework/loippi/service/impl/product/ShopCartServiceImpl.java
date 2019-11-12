@@ -884,24 +884,70 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     coupons.add(couponList.get(0));
                 }
             }
+            ArrayList<Coupon> arrayList=new ArrayList<Coupon>();
             //获得了当前用户拥有的合法可以使用的优惠券种类的集合
             //遍历集合，判断合法优惠券集合中可以用于当前订单的部分
-            for (Coupon coupon : coupons) {
-                //解析优惠券的使用说明，判断优惠券是否适用于当前订单场景
-                //1.判断店家id TODO 当前自营商店不进行判断，默认优惠券匹配店家id
-                //2.判断品牌id TODO 当前自营商店不进行判断，默认优惠券匹配品牌id
-                //3.判断使用范围 useScope
-                //3.1如果优惠券没有使用范围限制
-                if(coupon.getUseScope()== CouponConstant.USE_SCOPE_NO_LIMIT){
-                    //3.1.1判断是否有mi值要求
-                    if((coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1)
-                            &&(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1)){//mi和金额限制都存在
-                        if(cartInfo.getPpvNum().compareTo(BigDecimal.ZERO)==1){//有mi值，用mi值判断是否可以使用
-                            if(cartInfo.getPpvNum().compareTo(coupon.getMinMi())!=-1){//可以使用
+            if(coupons!=null&&coupons.size()>0){
+                for (Coupon coupon : coupons) {
+                    //解析优惠券的使用说明，判断优惠券是否适用于当前订单场景
+                    //1.判断店家id TODO 当前自营商店不进行判断，默认优惠券匹配店家id
+                    //2.判断品牌id TODO 当前自营商店不进行判断，默认优惠券匹配品牌id
+                    //3.判断使用范围 useScope
+                    //3.1如果优惠券没有使用范围限制
+                    if(coupon.getUseScope()== CouponConstant.USE_SCOPE_NO_LIMIT){
+                        //3.1.1判断是否有mi值要求
+                        if((coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1)
+                                &&(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1)){//mi和金额限制都存在
+                            if(cartInfo.getPpvNum().compareTo(BigDecimal.ZERO)==1){//有mi值，用mi值判断是否可以使用
+                                if(cartInfo.getPpvNum().compareTo(coupon.getMinMi())!=-1){//可以使用
+                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
+                                        if(coupon.getCouponValue().compareTo(best)==1){
+                                            best=coupon.getCouponValue();
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }
+                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
+                                        if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
+                                            throw new RuntimeException("优惠券信息异常");
+                                        }
+                                        BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
+                                        if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
+                                            best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }
+                                }
+                            }else {//没有mi值按金额计算
+                                if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getMinAmount())!=-1){//可以使用
+                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
+                                        if(coupon.getCouponValue().compareTo(best)==1){
+                                            best=coupon.getCouponValue();
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }
+                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
+                                        if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
+                                            throw new RuntimeException("优惠券信息异常");
+                                        }
+                                        BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
+                                        if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
+                                            best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }
+                                }
+                            }
+                        }else if (coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1){//mi限制存在
+                            if(cartInfo.getPpvNum().compareTo(BigDecimal.ZERO)==1&&cartInfo.getPpvNum().compareTo(coupon.getMinMi())!=-1){//订单内有mi值且大于优惠券使用最小mi值限制
                                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                     if(coupon.getCouponValue().compareTo(best)==1){
                                         best=coupon.getCouponValue();
                                         couponId=coupon.getId();
+                                        arrayList.add(coupon);
                                     }
                                 }
                                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -912,17 +958,17 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                     if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
                                         best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                         couponId=coupon.getId();
+                                        arrayList.add(coupon);
                                     }
                                 }
-                            }else {
-                                coupons.remove(coupon);
                             }
-                        }else {//没有mi值按金额计算
+                        }else if(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1){//金额限制存在
                             if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getMinAmount())!=-1){//可以使用
                                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
                                     if(coupon.getCouponValue().compareTo(best)==1){
                                         best=coupon.getCouponValue();
                                         couponId=coupon.getId();
+                                        arrayList.add(coupon);
                                     }
                                 }
                                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
@@ -933,211 +979,170 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                     if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
                                         best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                         couponId=coupon.getId();
+                                        arrayList.add(coupon);
                                     }
                                 }
-                            }else {
-                                coupons.remove(coupon);
                             }
-                        }
-                    }else if (coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1){//mi限制存在
-                        if(cartInfo.getPpvNum().compareTo(BigDecimal.ZERO)==1&&cartInfo.getPpvNum().compareTo(coupon.getMinMi())!=-1){//订单内有mi值且大于优惠券使用最小mi值限制
-                            if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
-                                if(coupon.getCouponValue().compareTo(best)==1){
-                                    best=coupon.getCouponValue();
-                                    couponId=coupon.getId();
-                                }
-                            }
-                            if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
-                                if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
-                                    throw new RuntimeException("优惠券信息异常");
-                                }
-                                BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
-                                if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
-                                    best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
-                                    couponId=coupon.getId();
-                                }
-                            }
-                        }else {
-                            coupons.remove(coupon);
-                        }
-                    }else if(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1){//金额限制存在
-                        if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getMinAmount())!=-1){//可以使用
-                            if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
-                                if(coupon.getCouponValue().compareTo(best)==1){
-                                    best=coupon.getCouponValue();
-                                    couponId=coupon.getId();
-                                }
-                            }
-                            if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
-                                if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
-                                    throw new RuntimeException("优惠券信息异常");
-                                }
-                                BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
-                                if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
-                                    best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
-                                    couponId=coupon.getId();
-                                }
-                            }
-                        }else {
-                            coupons.remove(coupon);
-                        }
-                    }else {//没有限制
-                        if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_KNOCK){//立减
-                            if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getCouponValue())==-1){
-                                if(cartInfo.getActualGoodsTotalPrice().compareTo(best)==1){
-                                    best=cartInfo.getActualGoodsTotalPrice();
-                                    couponId=coupon.getId();
-                                }
-                            }else {
-                                if(coupon.getCouponValue().compareTo(best)==1){
-                                    best=coupon.getCouponValue();
-                                    couponId=coupon.getId();
-                                }
-                            }
-                        }else if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_NOMONEY_RATE){//立折
-                            BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
-                            if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
-                                best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
-                                couponId=coupon.getId();
-                            }
-                        }else {
-                            coupons.remove(coupon);
-                        }
-                    }
-                }
-                if(coupon.getUseScope()== CouponConstant.USE_SCOPE_SINGLE_LIMIT){//适用于单品
-                    Long goodsId = coupon.getGoodsId();
-                    List<CartVo> cartVoList = cartInfo.getList();
-                    BigDecimal totalMoney=BigDecimal.ZERO;
-                    BigDecimal totalPv=BigDecimal.ZERO;
-                    Boolean flag=false;
-                    if(cartVoList!=null&&cartVoList.size()>0){
-                        for (CartVo cartVo : cartVoList) {
-                            if(cartVo.getGoodsId().equals(goodsId)){
-                                flag=true;
-                                totalMoney=totalMoney.add(cartVo.getItemTotalPrice());
-                                totalPv=totalPv.add(cartVo.getPpv().multiply(new BigDecimal(cartVo.getGoodsNum())));
-                            }
-                        }
-                    }
-                    if(flag){//订单中有指定单品存在，进一步判断优惠券是否可以使用
-                        //判断是否符合优惠券使用条件，mi值金额等
-                        if((coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1)
-                                &&(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1)) {//mi和金额限制都存在
-                            if(totalPv.compareTo(BigDecimal.ZERO)==1){
-                                if(totalPv.compareTo(coupon.getMinMi())!=-1){//可以使用优惠券
-                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
-                                        if(coupon.getCouponValue().compareTo(best)==1){
-                                            best=coupon.getCouponValue();
-                                            couponId=coupon.getId();
-                                        }
-                                    }
-                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
-                                        if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
-                                            throw new RuntimeException("优惠券信息异常");
-                                        }
-                                        BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
-                                        if(totalMoney.multiply(subtract).compareTo(best)==1){
-                                            best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
-                                            couponId=coupon.getId();
-                                        }
-                                    }
-                                }else {
-                                    coupons.remove(coupon);
-                                }
-                            }else {
-                                if(totalMoney.compareTo(coupon.getMinAmount())!=-1){
-                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
-                                        if(coupon.getCouponValue().compareTo(best)==1){
-                                            best=coupon.getCouponValue();
-                                            couponId=coupon.getId();
-                                        }
-                                    }
-                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
-                                        if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
-                                            throw new RuntimeException("优惠券信息异常");
-                                        }
-                                        BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
-                                        if(totalMoney.multiply(subtract).compareTo(best)==1){
-                                            best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
-                                            couponId=coupon.getId();
-                                        }
-                                    }
-                                }else {
-                                    coupons.remove(coupon);
-                                }
-                            }
-                        }else if (coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1) {//mi限制存在
-                            if(totalPv.compareTo(BigDecimal.ZERO)==1&&totalPv.compareTo(coupon.getMinMi())!=-1){//有mi值且满足要求
-                                if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
-                                    if(coupon.getCouponValue().compareTo(best)==1){
-                                        best=coupon.getCouponValue();
-                                        couponId=coupon.getId();
-                                    }
-                                }
-                                if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
-                                    if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
-                                        throw new RuntimeException("优惠券信息异常");
-                                    }
-                                    BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
-                                    if(totalMoney.multiply(subtract).compareTo(best)==1){
-                                        best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
-                                        couponId=coupon.getId();
-                                    }
-                                }
-                            }else {
-                                coupons.remove(coupon);
-                            }
-                        }else if(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1){//金额限制
-                            if(totalMoney.compareTo(BigDecimal.ZERO)==1&&totalMoney.compareTo(coupon.getMinAmount())!=-1){//有金额且满足要求
-                                if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
-                                    if(coupon.getCouponValue().compareTo(best)==1){
-                                        best=coupon.getCouponValue();
-                                        couponId=coupon.getId();
-                                    }
-                                }
-                                if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
-                                    if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
-                                        throw new RuntimeException("优惠券信息异常");
-                                    }
-                                    BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
-                                    if(totalMoney.multiply(subtract).compareTo(best)==1){
-                                        best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
-                                        couponId=coupon.getId();
-                                    }
-                                }
-                            }else {
-                                coupons.remove(coupon);
-                            }
-                        }else {//不限制
+                        }else {//没有限制
                             if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_KNOCK){//立减
-                                if(totalMoney.compareTo(coupon.getCouponValue())==-1){
-                                    if(totalMoney.compareTo(best)==1){
-                                        best=totalMoney;
+                                if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getCouponValue())==-1){
+                                    if(cartInfo.getActualGoodsTotalPrice().compareTo(best)==1){
+                                        best=cartInfo.getActualGoodsTotalPrice();
                                         couponId=coupon.getId();
+                                        arrayList.add(coupon);
                                     }
                                 }else {
                                     if(coupon.getCouponValue().compareTo(best)==1){
                                         best=coupon.getCouponValue();
                                         couponId=coupon.getId();
+                                        arrayList.add(coupon);
                                     }
                                 }
                             }else if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_NOMONEY_RATE){//立折
                                 BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
-                                if(totalMoney.multiply(subtract).compareTo(best)==1){
-                                    best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                if(cartInfo.getActualGoodsTotalPrice().multiply(subtract).compareTo(best)==1){
+                                    best=cartInfo.getActualGoodsTotalPrice().multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
                                     couponId=coupon.getId();
+                                    arrayList.add(coupon);
                                 }
-                            }else {
-                                coupons.remove(coupon);
                             }
                         }
-                    }else {
-                        coupons.remove(coupon);
+                    }
+                    if(coupon.getUseScope()== CouponConstant.USE_SCOPE_SINGLE_LIMIT){//适用于单品
+                        Long goodsId = coupon.getGoodsId();
+                        List<CartVo> cartVoList = cartInfo.getList();
+                        BigDecimal totalMoney=BigDecimal.ZERO;
+                        BigDecimal totalPv=BigDecimal.ZERO;
+                        Boolean flag=false;
+                        if(cartVoList!=null&&cartVoList.size()>0){
+                            for (CartVo cartVo : cartVoList) {
+                                if(cartVo.getGoodsId().equals(goodsId)){
+                                    flag=true;
+                                    totalMoney=totalMoney.add(cartVo.getItemTotalPrice());
+                                    totalPv=totalPv.add(cartVo.getPpv().multiply(new BigDecimal(cartVo.getGoodsNum())));
+                                }
+                            }
+                        }
+                        if(flag){//订单中有指定单品存在，进一步判断优惠券是否可以使用
+                            //判断是否符合优惠券使用条件，mi值金额等
+                            if((coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1)
+                                    &&(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1)) {//mi和金额限制都存在
+                                if(totalPv.compareTo(BigDecimal.ZERO)==1){
+                                    if(totalPv.compareTo(coupon.getMinMi())!=-1){//可以使用优惠券
+                                        if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
+                                            if(coupon.getCouponValue().compareTo(best)==1){
+                                                best=coupon.getCouponValue();
+                                                couponId=coupon.getId();
+                                                arrayList.add(coupon);
+                                            }
+                                        }
+                                        if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
+                                            if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
+                                                throw new RuntimeException("优惠券信息异常");
+                                            }
+                                            BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
+                                            if(totalMoney.multiply(subtract).compareTo(best)==1){
+                                                best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                                couponId=coupon.getId();
+                                                arrayList.add(coupon);
+                                            }
+                                        }
+                                    }
+                                }else {
+                                    if(totalMoney.compareTo(coupon.getMinAmount())!=-1){
+                                        if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
+                                            if(coupon.getCouponValue().compareTo(best)==1){
+                                                best=coupon.getCouponValue();
+                                                couponId=coupon.getId();
+                                                arrayList.add(coupon);
+                                            }
+                                        }
+                                        if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
+                                            if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
+                                                throw new RuntimeException("优惠券信息异常");
+                                            }
+                                            BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
+                                            if(totalMoney.multiply(subtract).compareTo(best)==1){
+                                                best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                                couponId=coupon.getId();
+                                                arrayList.add(coupon);
+                                            }
+                                        }
+                                    }
+                                }
+                            }else if (coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1) {//mi限制存在
+                                if(totalPv.compareTo(BigDecimal.ZERO)==1&&totalPv.compareTo(coupon.getMinMi())!=-1){//有mi值且满足要求
+                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
+                                        if(coupon.getCouponValue().compareTo(best)==1){
+                                            best=coupon.getCouponValue();
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }
+                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
+                                        if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
+                                            throw new RuntimeException("优惠券信息异常");
+                                        }
+                                        BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
+                                        if(totalMoney.multiply(subtract).compareTo(best)==1){
+                                            best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }
+                                }
+                            }else if(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1){//金额限制
+                                if(totalMoney.compareTo(BigDecimal.ZERO)==1&&totalMoney.compareTo(coupon.getMinAmount())!=-1){//有金额且满足要求
+                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){
+                                        if(coupon.getCouponValue().compareTo(best)==1){
+                                            best=coupon.getCouponValue();
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }
+                                    if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_RATE){
+                                        if(coupon.getCouponValue().compareTo(new BigDecimal("1.00"))==1){
+                                            throw new RuntimeException("优惠券信息异常");
+                                        }
+                                        BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
+                                        if(totalMoney.multiply(subtract).compareTo(best)==1){
+                                            best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }
+                                }
+                            }else {//不限制
+                                if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_KNOCK){//立减
+                                    if(totalMoney.compareTo(coupon.getCouponValue())==-1){
+                                        if(totalMoney.compareTo(best)==1){
+                                            best=totalMoney;
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }else {
+                                        if(coupon.getCouponValue().compareTo(best)==1){
+                                            best=coupon.getCouponValue();
+                                            couponId=coupon.getId();
+                                            arrayList.add(coupon);
+                                        }
+                                    }
+                                }else if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_NOMONEY_RATE){//立折
+                                    BigDecimal subtract = new BigDecimal("1.00").subtract(coupon.getCouponValue());
+                                    if(totalMoney.multiply(subtract).compareTo(best)==1){
+                                        best=totalMoney.multiply(subtract).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                        couponId=coupon.getId();
+                                        arrayList.add(coupon);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+
             }
-            map.put("coupons",coupons);
+
+            map.put("coupons",arrayList);
             map.put("couponMoney",best);
             map.put("bestCouponId",couponId);
             return map;
