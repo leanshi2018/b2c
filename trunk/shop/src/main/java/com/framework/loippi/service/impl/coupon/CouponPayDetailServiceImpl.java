@@ -80,8 +80,6 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 	private RdSysPeriodDao rdSysPeriodDao;
 	@Autowired
 	private TSystemPluginConfigService tSystemPluginConfigService;
-	@Autowired
-	private CouponUserDao couponUserDao;
 
 	@Override
 	public ShopOrderPay addOrderReturnPaySn(String memberId, Long couponId, Integer couponNumber) {

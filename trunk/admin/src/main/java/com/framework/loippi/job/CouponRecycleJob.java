@@ -1,22 +1,14 @@
 package com.framework.loippi.job;
 
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.service.coupon.CouponService;
-import com.framework.loippi.utils.Paramap;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
 
 @Service
 @EnableScheduling
 @Lazy(false)
 public class CouponRecycleJob {
-    @Resource
+/*    @Resource
     private CouponService couponService;
 
     @Scheduled(cron = "0 0 0 10 11 ? 2019")//2019年十一月十日凌晨执行
@@ -27,5 +19,5 @@ public class CouponRecycleJob {
 
             }
         }
-    }
+    }*/
 }

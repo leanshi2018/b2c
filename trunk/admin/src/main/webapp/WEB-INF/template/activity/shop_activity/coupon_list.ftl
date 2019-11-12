@@ -2,7 +2,10 @@
     <script type="text/javascript" src="${base}/res/js/jquery-ui/jquery.ui.js"></script>
     <script type="text/javascript" src="${base}/res/js/jquery-ui/i18n/zh-CN.js" charset="utf-8"></script>
     <link rel="stylesheet" type="text/css" href="${base}/res/js/jquery-ui/themes/ui-lightness/jquery.ui.css"/>
-
+    <link rel="stylesheet" href="${base}/resources/css/plugins/timepicker/jquery-ui-timepicker-addon.css"/>
+    <script type="text/javascript" src="${base}/res/js/jquery.edit.js"></script>
+    <script type="text/javascript" src="${base}/res/js/layer/layer.js"></script>
+    <script type="text/javascript" src="${base}/res/js/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
 </@layout.head>
 <script>
     <#--function delBrand() {-->
@@ -39,6 +42,32 @@
             </div>
         </div>
         <div class="fixed-empty"></div>
+        <input type="hidden" name="pageNo" value="${1}">
+        <table class="table tb-type2">
+            <thead>
+            <tr class="thead">
+                <th class="align-center"></th>
+                <th class="align-center">券ID</th>
+                <th class="align-center">优惠券名称</th>
+                <th class="align-center">类型</th>
+                <th class="align-center">可用范围</th>
+                <th class="align-center">总张数</th>
+                <th class="align-center">已领取</th>
+                <th class="align-center">领取开始时间</th>
+                <th class="align-center">领取结束时间</th>
+                <th class="align-center">使用开始时间</th>
+                <th class="align-center">使用结束时间</th>
+                <th class="align-center">创建人</th>
+                <th class="align-center">创建时间</th>
+                <th class="align-center">审核人</th>
+                <th class="align-center">审核时间</th>
+                <th class="align-center">修改人</th>
+                <th class="align-center">修改时间</th>
+                <th class="align-center">状态</th>
+                <th class="align-center">操作</th>
+            </tr>
+            </thead>
+            <tbody>
         <#--        <form method="post" name="formSearch" action="${base}/admin/shop_common_message/list.jhtml">-->
         <#--            <input type="hidden" name="pageNo" value="${1}">-->
         <#--            <table class="tb-type1 noborder search">-->
