@@ -2,6 +2,7 @@ package com.framework.loippi.service.impl.user;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,5 +81,13 @@ public class RdMmBankServiceImpl extends GenericServiceImpl<RdMmBank, Long> impl
 	@Override
 	public void updateInValid(Integer oid) {
 		rdMmBankDao.updateInValid(oid);
+	}
+
+	@Override
+	public List<RdMmBank> findBankByIdCardAndName(String idCardCode, String accName) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("idCardCode",idCardCode);
+		map.put("accName",accName);
+		return rdMmBankDao.findBankByIdCardAndName(map);
 	}
 }

@@ -76,6 +76,10 @@ public class CouponPayDetail implements GenericEntity {
 	 * */
 	private String paySn;
 	/**
+	 * 交易流水号
+	 * */
+	private String tradeSn;
+	/**
 	 * 优惠券总价格
 	 * */
 	private BigDecimal couponAmount;
@@ -99,6 +103,10 @@ public class CouponPayDetail implements GenericEntity {
 	 * 订单应付金额（最终现金支付金额）
 	 * */
 	private BigDecimal orderAmount;
+	/**
+	 * 订单状态：0:已取消;5待审核;10:待付款;40:交易完成;
+	 * */
+	private Integer couponOrderState;
 	/**
 	 * 退款状态:0是无退款,1是部分退款,2是全部退款
 	 * */

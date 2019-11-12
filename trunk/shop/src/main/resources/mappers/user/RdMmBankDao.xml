@@ -315,4 +315,10 @@
 		UPDATE	RD_MM_BANK SET INVALID = 1 WHERE OID = #{oId}
 	</update>
 
+	<select id="findBankByIdCardAndName" parameterType="map" resultMap="RdMmBankResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_MM_BANK
+		where ID_CARD_CODE = #{idCardCode} and ACC_NAME = #{accName}
+	</select>
+
 </mapper> 

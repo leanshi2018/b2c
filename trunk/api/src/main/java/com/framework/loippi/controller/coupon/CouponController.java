@@ -1,22 +1,17 @@
 package com.framework.loippi.controller.coupon;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.framework.loippi.entity.coupon.CouponTransLog;
-import com.framework.loippi.entity.coupon.CouponUser;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.result.common.coupon.CouponTransInfoResult;
-import com.framework.loippi.result.user.PersonCenterResult;
-import com.framework.loippi.service.coupon.CouponTransLogService;
-import com.framework.loippi.service.coupon.CouponUserService;
-import com.framework.loippi.service.user.RdRanksService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -30,13 +25,23 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.PayCommon;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
+import com.framework.loippi.entity.coupon.CouponTransLog;
+import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrderPay;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.common.coupon.CouponTransInfoResult;
 import com.framework.loippi.service.alipay.AlipayMobileService;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponService;
+import com.framework.loippi.service.coupon.CouponTransLogService;
+import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderPayService;
 import com.framework.loippi.service.order.ShopOrderService;
@@ -45,7 +50,10 @@ import com.framework.loippi.service.union.UnionpayService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.wechat.WechatMobileService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
 import com.framework.loippi.utils.Digests;
@@ -140,6 +148,26 @@ public class CouponController extends BaseController {
 		Coupon coupon = couponService.find(couponId);
 		Date startTime = coupon.getSendStartTime();//优惠券发放开始时间
 		Date endTime = coupon.getSendEndTime();//优惠券发放结束时间
+		Integer personLimitNum = 0;
+		if (coupon.getPersonLimitNum()!=null){
+			personLimitNum = coupon.getPersonLimitNum();//每个会员限制领取的张数，0为不限
+		}
+		Long totalLimitNum = -1l;
+		if (coupon.getTotalLimitNum()!=null){
+			totalLimitNum = coupon.getTotalLimitNum();//优惠券总发行数量 -1代表不限制
+		}
+		Long receivedNum = 0l;
+		if (coupon.getTotalLimitNum()!=null){
+			receivedNum = coupon.getReceivedNum();//已发放优惠券数量
+		}
+		String rankLimit = coupon.getRankLimit();//领取级别限制 多种级别已逗号分隔
+		String[] rankList = rankLimit.split(",");
+		int r = 10000;
+		for (String rank : rankList) {
+			if (rank.equals(rdMmRelation.getRank()+"")){
+				r = 10001;
+			}
+		}
 
 		Calendar date = Calendar.getInstance();
 		date.setTime(new Date());
@@ -152,15 +180,43 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			//提交订单,返回订单支付实体
-			ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
-			List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
-					.findList(Paramap.create().put("order", "RID desc"));
-			RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
-			if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
-				rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+			if (personLimitNum==0||personLimitNum<=couponNumber){
+				if (totalLimitNum==-1l){
+					if (r==10001){
+						//提交订单,返回订单支付实体
+						ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
+						List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+								.findList(Paramap.create().put("order", "RID desc"));
+						RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+						if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+							rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+						}
+						return ApiUtils.success(CouponPaySubmitResult.build(rdMmIntegralRule,orderPay,rdMmAccountInfoService.find("mmCode", member.getMmCode())));
+					}else {
+						return ApiUtils.error("购买级别不符");
+					}
+				}else {
+					if ((totalLimitNum-receivedNum)>0 && (totalLimitNum-receivedNum)>=couponNumber){
+						if (r==10001){
+							//提交订单,返回订单支付实体
+							ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
+							List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+									.findList(Paramap.create().put("order", "RID desc"));
+							RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+							if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+								rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+							}
+							return ApiUtils.success(CouponPaySubmitResult.build(rdMmIntegralRule,orderPay,rdMmAccountInfoService.find("mmCode", member.getMmCode())));
+						}else {
+							return ApiUtils.error("购买级别不符");
+						}
+					}else{
+						return ApiUtils.error("剩余购买数量为"+(totalLimitNum-receivedNum)+"张");
+					}
+				}
+			}else {
+				return ApiUtils.error("购买数量最大为"+couponNumber+"张");
 			}
-			return ApiUtils.success(CouponPaySubmitResult.build(rdMmIntegralRule,orderPay,rdMmAccountInfoService.find("mmCode", member.getMmCode())));
 		} else {
 			System.out.println("不在区间");
 			if (date.before(begin)){
@@ -222,6 +278,9 @@ public class CouponController extends BaseController {
 		List<CouponPayDetail> orderList = couponPayDetailService.findList("paySn", paysn);
 		if (CollectionUtils.isEmpty(orderList)) {
 			return ApiUtils.error("订单不存在");
+		}
+		if (orderList.get(0).getCouponOrderState()==0){
+			return ApiUtils.error("订单已取消");
 		}
 
 		System.out.println("##########################################");

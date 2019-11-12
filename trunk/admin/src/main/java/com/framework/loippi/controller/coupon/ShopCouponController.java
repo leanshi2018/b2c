@@ -1,34 +1,30 @@
 package com.framework.loippi.controller.coupon;
 
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.controller.GenericController;
-import com.framework.loippi.entity.Principal;
-import com.framework.loippi.entity.User;
-import com.framework.loippi.entity.activity.ShopActivity;
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.enus.ActivityTypeEnus;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.service.TwiterIdService;
-import com.framework.loippi.service.coupon.CouponService;
-import com.framework.loippi.support.Message;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.StringUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.Subject;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.entity.Principal;
+import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.coupon.CouponService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.StringUtil;
 
 @Controller("shopCouponController")
 @RequestMapping("/admin/plarformShopCoupon")
@@ -217,6 +213,31 @@ public class ShopCouponController extends GenericController {
             model.addAttribute("msg", "网络异常，请稍后重试");
             return Constants.MSG_URL;
         }
+    }
+
+    /**
+     *
+     * @param request
+     * @param pageable
+     * @param model
+     * @param couponOrderSn
+     * @param mmCode
+     * @param mNickName
+     * @param couponOrderState
+     * @param createTime
+     * @param targetStatus
+     * @return
+     */
+    @RequestMapping(value = "/findCouponPayDetailList",method = RequestMethod.POST)
+    public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,  ModelMap model,
+                                    @RequestParam(required = false, value = "couponOrderSn") String couponOrderSn,
+                                    @RequestParam(required = false, value = "mmCode") String mmCode,
+                                    @RequestParam(required = false, value = "mNickName") String mNickName,
+                                    @RequestParam(required = false, value = "couponOrderState") Integer couponOrderState,
+                                    @RequestParam(required = false, value = "createTime") String createTime,
+                                    @RequestParam(required = false, value = "pageNo") Integer targetStatus) {
+
+        return null;
     }
 
     /**
