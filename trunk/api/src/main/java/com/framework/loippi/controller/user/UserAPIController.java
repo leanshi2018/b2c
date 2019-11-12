@@ -798,19 +798,37 @@ public class UserAPIController extends BaseController {
             rdMmBank.setDefaultbank(0);
         }
 
-        Integer bankSigning = 0;
-        List<RdMmBank> banks = rdMmBankService.findBankByIdCardAndName(rdMmBank.getIdCardCode(),rdMmBank.getAccName());//相同身份证号和姓名的数据
-        if (banks.size()!=0){
-
-        }
         if (rdMmBankList.size()>0){
             for (RdMmBank mmBank : rdMmBankList) {
                 if (mmBank.getInValid()==1){
-                    //rdMmBankService.updateBankSigningByIdCardAndName();
+                    if (mmBank.getBankSigning()!=1){
+                        List<RdMmBank> bankList = rdMmBankService.findBankByIdCardAndName(mmBank.getIdCardCode(),mmBank.getAccName());//相同身份证号和姓名的数据
+                        if (bankList.size()!=0){
+                            for (RdMmBank bank : bankList) {
+                                if (bank.getBankSigning()==1){
+                                    mmBank.setBankSigning(bank.getBankSigning());
+                                }
+                            }
+                        }
+                        if (mmBank.getBankSigning()==1){
+                            rdMmBankService.updateBankSigningByOId(mmBank.getBankSigning(),mmBank.getOid());
+                        }
+                    }
                     return ApiUtils.error("已有绑定银行卡");
                 }
             }
         }
+
+        Integer bankSigning = 0;
+        List<RdMmBank> banks = rdMmBankService.findBankByIdCardAndName(rdMmBank.getIdCardCode(),rdMmBank.getAccName());//相同身份证号和姓名的数据
+        if (banks.size()!=0){
+            for (RdMmBank bank : banks) {
+                if (bank.getBankSigning()==1){
+                    bankSigning = bank.getBankSigning();
+                }
+            }
+        }
+
 
         RdMmBank bank = rdMmBankService.findByCodeAndAccCode(member.getMmCode(),param.getAccCode());
         if (bank!=null){
@@ -821,6 +839,9 @@ public class UserAPIController extends BaseController {
                 rdMmBankService.updateInValid(bank.getOid());
             }
         }else {
+            if (bankSigning==1){
+                rdMmBank.setBankSigning(bankSigning);
+            }
             rdMmBankService.save(rdMmBank);
         }
         return ApiUtils.success();

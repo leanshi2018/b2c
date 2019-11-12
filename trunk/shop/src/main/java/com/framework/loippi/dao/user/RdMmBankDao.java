@@ -27,4 +27,6 @@ public interface RdMmBankDao  extends GenericDao<RdMmBank, Long> {
 	void updateInValid(Integer oid);
 
 	List<RdMmBank> findBankByIdCardAndName(Map<String, Object> map);
+
+	void updateBankSigningByOId(Map<String, Object> map);
 }

@@ -25,4 +25,6 @@ public interface RdMmBankService  extends GenericService<RdMmBank, Long> {
 	void updateInValid(Integer oid);
 
 	List<RdMmBank> findBankByIdCardAndName(String idCardCode, String accName);
+
+	void updateBankSigningByOId(Integer bankSigning, Integer oid);
 }
