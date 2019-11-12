@@ -526,7 +526,7 @@ public class CartAPIController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         CartCheckOutResult result = CartCheckOutResult
-                .build(map, cartList, addr, shopOrderTypeId, shopOrderDiscountType);
+                .buildNew(map, cartList, addr, shopOrderTypeId, shopOrderDiscountType);
         if (log.isDebugEnabled()) {
             log.debug(JacksonUtil.toJson(result));
         }

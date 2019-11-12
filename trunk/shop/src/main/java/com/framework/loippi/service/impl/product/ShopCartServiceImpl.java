@@ -454,6 +454,13 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         map.put("preferentialFreightAmount", BigDecimal.valueOf(preferentialFreightAmount));
         //存储订单优惠金额
         map.put("couponAmount", BigDecimal.valueOf(couponAmount));
+        //TODO add 2019-11-12
+        //自营商店不进行分单
+        CartInfo cartInfo = cartInfoList.get(0);
+        //存储优惠券id
+        map.put("couponId",Optional.ofNullable(cartInfo.getCouponId()).orElse(null) );
+        //存储优惠券map
+        map.put("couponMap",Optional.ofNullable(cartInfo.getCouponMap()).orElse(new HashMap<Long, Coupon>()));
         return map;
     }
 

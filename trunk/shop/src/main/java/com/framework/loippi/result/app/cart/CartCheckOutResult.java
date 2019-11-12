@@ -2,6 +2,7 @@ package com.framework.loippi.result.app.cart;
 
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.entity.cart.ShopCart;
+import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
@@ -136,6 +137,15 @@ public class CartCheckOutResult {
      * 订单可选择类型的集合
      */
     public List<selectShopOrderType> selectShopOrderTypeList;
+    //**************************************************************************
+    /**
+     * key-优惠券id, value优惠券实体类
+     */
+    private HashMap<Long, Coupon> couponMap=Maps.newHashMap();
+    /**
+     * 优惠券id
+     */
+    private Long couponId;
 
     @Data
     public static class selectShopOrderType {
@@ -287,6 +297,76 @@ public class CartCheckOutResult {
                 .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponAmount")).orElse(new BigDecimal("0")))
                 // 商品数据
                 .setStoreGoodsContainers(StoreGoodsContainer.buildList(cartList, shopOrderDiscountType));
+        return cartCheckOutResult;
+    }
+
+    public static CartCheckOutResult buildNew(Map<String, Object> moneyMap,
+                                           List<ShopCart> cartList, RdMmAddInfo address, Long shopOrderTypeId, ShopOrderDiscountType shopOrderDiscountType) {
+        CartCheckOutResult cartCheckOutResult = new CartCheckOutResult().setHadReceiveAddr(address == null ? 0 : 1);
+        Optional<RdMmAddInfo> optAddress = Optional.ofNullable(address);
+        // 个人收货信息信息
+        cartCheckOutResult
+                .setAddressId(optAddress.map(RdMmAddInfo::getAid).orElse(-1))
+                .setReceiveName(optAddress.map(RdMmAddInfo::getConsigneeName).orElse(""))
+                .setReceivePhone(optAddress.map(RdMmAddInfo::getMobile).orElse(""))
+                .setReceiveAddrInfo(optAddress.map(RdMmAddInfo::getAddProvinceCode).orElse("") +
+                        optAddress.map(RdMmAddInfo::getAddCityCode).orElse("")+
+                        optAddress.map(RdMmAddInfo::getAddCountryCode).orElse("")+
+                        optAddress.map(RdMmAddInfo::getAddDetial).orElse(""))
+                .setShopOrderTypeId(Optional.ofNullable(shopOrderTypeId).orElse(-1L));
+
+        // 购物车总数量
+        int totalNum = 0;
+        BigDecimal totalPpv = BigDecimal.ZERO;
+        BigDecimal actualTotalPpv = BigDecimal.ZERO;
+        Double totalWeight = 0d;
+        // 商品图片
+//        StringBuilder imgs = new StringBuilder();
+        for (ShopCart cart : cartList) {
+            totalNum += cart.getGoodsNum();
+//            imgs.append(cart.getGoodsImages()).append(",");
+            if (cartCheckOutResult.getCartIds() == null) {
+                cartCheckOutResult.setCartIds(new ArrayList<Long>());
+            }
+            totalPpv=totalPpv.add(Optional.ofNullable(cart.getPpv()).orElse(BigDecimal.ZERO).multiply(BigDecimal.valueOf(cart.getGoodsNum())));
+//            totalPpv += Optional.ofNullable(cart.getPpv()).orElse(0) * cart.getGoodsNum();
+            totalWeight += Optional.ofNullable(cart.getWeight()).orElse(0d) * cart.getGoodsNum();
+            if (shopOrderDiscountType.getPreferentialType() == 3) {
+                actualTotalPpv=actualTotalPpv.add(Optional.ofNullable(cart.getBigPpv()).orElse(BigDecimal.ZERO).multiply(BigDecimal.valueOf(cart.getGoodsNum())));
+//                actualTotalPpv += Optional.ofNullable(cart.getBigPpv()).orElse(0) * cart.getGoodsNum();
+            } else {
+                actualTotalPpv=actualTotalPpv.add(Optional.ofNullable(cart.getPpv()).orElse(BigDecimal.ZERO).multiply(BigDecimal.valueOf(cart.getGoodsNum())));
+//                actualTotalPpv += Optional.ofNullable(cart.getPpv()).orElse(0) * cart.getGoodsNum();
+            }
+            cartCheckOutResult.getCartIds().add(cart.getId());
+        }
+
+        cartCheckOutResult
+                .setTotalQuantity(totalNum)
+                .setTotalPpv(totalPpv)
+                .setActualTotalPpv(actualTotalPpv)
+//            .setGoodsImgs(imgs.toString())
+                // 可用积分
+//            .setRewardPoint(Optional.ofNullable((int) moneyMap.get("rewardPoint")).orElse(0))
+                // 可用积分抵扣金额
+//            .setRewardPointAmount(Optional.ofNullable((BigDecimal) moneyMap.get("rewardPointPrice")).orElse(new BigDecimal("0")))
+                // 商品金额
+                .setGoodsTotalAmount(Optional.ofNullable((BigDecimal) moneyMap.get("totalGoodsPrice")).orElse(new BigDecimal("0")))
+                // 优惠券金额
+                .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponPrice")).orElse(new BigDecimal("0")))
+                // 实付款
+                .setNeedToPay(Optional.ofNullable((BigDecimal) moneyMap.get("totalPrice")).orElse(new BigDecimal("0")))
+                //运费
+                .setFreightAmount(Optional.ofNullable((BigDecimal) moneyMap.get("freightAmount")).orElse(new BigDecimal("0")))
+                //运费优惠
+                .setPreferentialFreightAmount(Optional.ofNullable((BigDecimal) moneyMap.get("preferentialFreightAmount")).orElse(new BigDecimal("0")))
+                //优惠金额
+                .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponAmount")).orElse(new BigDecimal("0")))
+                // 商品数据
+                .setStoreGoodsContainers(StoreGoodsContainer.buildList(cartList, shopOrderDiscountType));
+        cartCheckOutResult.setCouponId(Optional.ofNullable((Long) moneyMap.get("couponId")).orElse(null));
+        HashMap<Long,Coupon> couponMap = (HashMap<Long, Coupon>) moneyMap.get("couponMap");
+        cartCheckOutResult.setCouponMap(couponMap);
         return cartCheckOutResult;
     }
 
