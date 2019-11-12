@@ -1,5 +1,6 @@
 package com.framework.loippi.dao.user;
 
+import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.entity.user.RdMmBank;
@@ -24,4 +25,6 @@ public interface RdMmBankDao  extends GenericDao<RdMmBank, Long> {
 	void deleteById(long oId);
 
 	void updateInValid(Integer oid);
+
+	List<RdMmBank> findBankByIdCardAndName(Map<String, Object> map);
 }

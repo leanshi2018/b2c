@@ -15,12 +15,14 @@
         <result property="paymentTime" column="payment_time"/>
         <result property="payId" column="pay_id"/>
         <result property="paySn" column="pay_sn"/>
+        <result property="tradeSn" column="trade_sn"/>
         <result property="couponAmount" column="coupon_amount"/>
         <result property="couponNumber" column="coupon_number"/>
         <result property="useCouponNumber" column="use_coupon_number"/>
         <result property="usePointNum" column="use_point_num"/>
         <result property="pointAmount" column="point_amount"/>
         <result property="orderAmount" column="order_amount"/>
+        <result property="couponOrderState" column="coupon_order_state"/>
         <result property="refundState" column="refund_state"/>
         <result property="refundCouponNum" column="refund_coupon_num"/>
         <result property="refundAmount" column="refund_amount"/>
@@ -32,12 +34,14 @@
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
         id ,coupon_order_sn ,receive_id ,receive_nick_name ,coupon_id ,coupon_name ,create_time ,payment_id ,payment_name ,payment_state ,
-        payment_time ,pay_id ,pay_sn ,coupon_amount ,coupon_number ,use_coupon_number ,use_point_num ,point_amount ,order_amount ,refund_state ,refund_coupon_num ,refund_amount ,refund_time ,cancel_time ,update_time
+        payment_time ,pay_id ,pay_sn ,trade_sn ,coupon_amount ,coupon_number ,use_coupon_number ,use_point_num ,point_amount ,order_amount ,
+        coupon_order_state ,refund_state ,refund_coupon_num ,refund_amount ,refund_time ,cancel_time ,update_time
     </sql>
 
     <sql id="base_value_column">
         #{id},#{couponOrderSn},#{receiveId},#{receiveNickName},#{couponId},#{couponName},#{createTime},#{paymentId},#{paymentName},#{paymentState},
-        #{paymentTime},#{payId},#{paySn},#{couponAmount},#{couponNumber},#{useCouponNumber},#{usePointNum},#{pointAmount},#{orderAmount},#{refundState},#{refundCouponNum},#{refundAmount},#{refundTime},#{cancelTime},#{updateTime}
+        #{paymentTime},#{payId},#{paySn},#{tradeSn},#{couponAmount},#{couponNumber},#{useCouponNumber},#{usePointNum},#{pointAmount},#{orderAmount},
+        #{couponOrderState},#{refundState},#{refundCouponNum},#{refundAmount},#{refundTime},#{cancelTime},#{updateTime}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -72,7 +76,6 @@
         <if test="paymentState != null">
             AND payment_state = #{paymentState,jdbcType=INTEGER}
         </if>
-
         <if test="paymentTime != null">
             AND payment_time = #{paymentTime}
         </if>
@@ -81,6 +84,9 @@
         </if>
         <if test="paySn != null and paySn != ''">
             AND pay_sn = #{paySn,jdbcType=VARCHAR}
+        </if>
+        <if test="tradeSn != null and tradeSn != ''">
+            AND trade_sn = #{tradeSn,jdbcType=VARCHAR}
         </if>
         <if test="couponAmount != null and couponAmount != ''">
             AND coupon_amount = #{couponAmount,jdbcType=DECIMAL}
@@ -99,6 +105,9 @@
         </if>
         <if test="orderAmount != null and orderAmount != ''">
             AND order_amount = #{orderAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="couponOrderState != null">
+            AND coupon_order_state = #{couponOrderState,jdbcType=INTEGER}
         </if>
         <if test="refundState != null">
             AND refund_state = #{refundState,jdbcType=INTEGER}
@@ -161,6 +170,9 @@
         <if test="paySn != null and paySn != ''">
             pay_sn = #{paySn,jdbcType=VARCHAR},
         </if>
+        <if test="tradeSn != null and tradeSn != ''">
+            trade_sn = #{tradeSn,jdbcType=VARCHAR},
+        </if>
         <if test="couponAmount != null and couponAmount != ''">
             coupon_amount = #{couponAmount,jdbcType=DECIMAL},
         </if>
@@ -178,6 +190,9 @@
         </if>
         <if test="orderAmount != null and orderAmount != ''">
             order_amount = #{orderAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="couponOrderState != null">
+            coupon_order_state = #{couponOrderState,jdbcType=INTEGER},
         </if>
         <if test="refundState != null">
             refund_state = #{refundState,jdbcType=INTEGER},
