@@ -16,4 +16,6 @@ public interface CouponPayDetailDao extends GenericDao<CouponPayDetail, Long> {
 	List<CouponPayDetail> findByPaySn(String paysn);
 
 	Long updateByIdAndOrderStateAndLockState(CouponPayDetail payDetail);
+
+	void updateOrderAmout(CouponPayDetail couponPayDetail);
 }

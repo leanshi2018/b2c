@@ -314,4 +314,13 @@
         AND coupon_order_state=#{prevOrderState, jdbcType=INTEGER}
     </update>
 
+    <update id="updateOrderAmout" parameterType="com.framework.loippi.entity.coupon.CouponPayDetail">
+        UPDATE rd_coupon_pay_detail
+        set
+        order_amount = #{orderAmount},
+        use_point_num = #{usePointNum},
+        point_amount = #{pointAmount}
+        WHERE id = #{id}
+    </update>
+
 </mapper>
