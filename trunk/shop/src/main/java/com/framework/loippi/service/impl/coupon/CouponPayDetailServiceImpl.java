@@ -217,7 +217,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 						.add(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
 				couponPayDetail.setOrderAmount(couponPayDetail.getOrderAmount()
 						.subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
-				couponPayDetailDao.update(couponPayDetail);
+				couponPayDetailDao.updateOrderAmout(couponPayDetail);
 			}
 		} else {
 			throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单不存在");
