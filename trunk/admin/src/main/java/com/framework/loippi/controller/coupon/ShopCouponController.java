@@ -19,8 +19,10 @@ import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
@@ -32,6 +34,8 @@ public class ShopCouponController extends GenericController {
 
     @Resource
     private CouponService couponService;
+    @Resource
+    private CouponPayDetailService couponPayDetailService;
     @Resource
     private TwiterIdService twiterIdService;
 
@@ -216,28 +220,20 @@ public class ShopCouponController extends GenericController {
     }
 
     /**
-     *
+     * 优惠券订单列表
      * @param request
      * @param pageable
      * @param model
-     * @param couponOrderSn
-     * @param mmCode
-     * @param mNickName
-     * @param couponOrderState
-     * @param createTime
-     * @param targetStatus
+     * @param
      * @return
      */
     @RequestMapping(value = "/findCouponPayDetailList",method = RequestMethod.POST)
-    public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,  ModelMap model,
-                                    @RequestParam(required = false, value = "couponOrderSn") String couponOrderSn,
-                                    @RequestParam(required = false, value = "mmCode") String mmCode,
-                                    @RequestParam(required = false, value = "mNickName") String mNickName,
-                                    @RequestParam(required = false, value = "couponOrderState") Integer couponOrderState,
-                                    @RequestParam(required = false, value = "createTime") String createTime,
-                                    @RequestParam(required = false, value = "pageNo") Integer targetStatus) {
-
-        return null;
+    public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponPayDetail couponPayDetail) {
+        pageable.setParameter(couponPayDetail);
+        pageable.setOrderProperty("createTime");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", couponPayDetailService.findByPage(pageable));
+        return "/activity/shop_activity/couponbuy_list";
     }
 
     /**

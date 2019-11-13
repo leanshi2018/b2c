@@ -311,7 +311,7 @@
             <include refid="set_column"/>
         </set>
         WHERE id = #{id,jdbcType=BIGINT}
-        AND payment_state=#{prevOrderState, jdbcType=INTEGER}
+        AND coupon_order_state=#{prevOrderState, jdbcType=INTEGER}
     </update>
 
 </mapper>
