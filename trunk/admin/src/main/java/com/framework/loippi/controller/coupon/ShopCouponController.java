@@ -21,7 +21,9 @@ import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.result.common.coupon.CouponUserLogResult;
 import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.coupon.CouponDetailService;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.support.Page;
@@ -36,6 +38,8 @@ public class ShopCouponController extends GenericController {
     private CouponService couponService;
     @Resource
     private CouponPayDetailService couponPayDetailService;
+    @Resource
+    private CouponDetailService couponDetailService;
     @Resource
     private TwiterIdService twiterIdService;
 
@@ -227,13 +231,22 @@ public class ShopCouponController extends GenericController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/findCouponPayDetailList",method = RequestMethod.POST)
-    public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponPayDetail couponPayDetail) {
-        pageable.setParameter(couponPayDetail);
+    @RequestMapping(value = "/Coupon/findCouponPayDetailList",method = RequestMethod.POST)
+    public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponPayDetail param) {
+        pageable.setParameter(param);
         pageable.setOrderProperty("createTime");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", couponPayDetailService.findByPage(pageable));
         return "/activity/shop_activity/couponbuy_list";
+    }
+
+    @RequestMapping(value = "/Coupon/findCouponUserLogList",method = RequestMethod.POST)
+    public String findCouponUseLogList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponUserLogResult param) {
+        pageable.setParameter(param);
+        pageable.setOrderProperty("receiveTime");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", couponDetailService.findLogResultByPage(pageable));
+        return "/activity/shop_activity/couponuse_list";
     }
 
     /**

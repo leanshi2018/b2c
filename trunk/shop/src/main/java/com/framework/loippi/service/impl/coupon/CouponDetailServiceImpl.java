@@ -1,16 +1,20 @@
 package com.framework.loippi.service.impl.coupon;
 
-import com.framework.loippi.dao.coupon.CouponDetailDao;
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.entity.coupon.CouponDetail;
-import com.framework.loippi.service.coupon.CouponDetailService;
-import com.framework.loippi.service.coupon.CouponService;
-import com.framework.loippi.service.impl.GenericServiceImpl;
+import java.util.ArrayList;
+
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
+import com.framework.loippi.dao.coupon.CouponDetailDao;
+import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.mybatis.paginator.domain.PageList;
+import com.framework.loippi.result.common.coupon.CouponUserLogResult;
+import com.framework.loippi.service.coupon.CouponDetailService;
+import com.framework.loippi.service.impl.GenericServiceImpl;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
 
 /**
  * 优惠券详情service层
@@ -24,5 +28,12 @@ public class CouponDetailServiceImpl extends GenericServiceImpl<CouponDetail, Lo
     @Override
     public void updateList(ArrayList<CouponDetail> details) {
         couponDetailDao.updateList(details);
+    }
+
+    @Override
+    public Object findLogResultByPage(Pageable pageable) {
+
+        PageList<CouponUserLogResult> result = couponDetailDao.findLogResultByPage(pageable.getParameter(), pageable.getPageBounds());
+        return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
     }
 }
