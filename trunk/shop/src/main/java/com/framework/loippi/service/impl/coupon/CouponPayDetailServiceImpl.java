@@ -349,7 +349,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			}
 			Map<String, Object> result = Maps.newConcurrentMap();
 			result.put("status", 1);
-			result.put("couponOrderSn", couponOrderSn);
+			result.put("orderSn", couponOrderSn);
 			result.put("message", "支付成功");
 
 			//生成优惠券用户表数据
