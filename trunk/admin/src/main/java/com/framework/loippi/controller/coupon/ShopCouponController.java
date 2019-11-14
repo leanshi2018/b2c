@@ -234,16 +234,24 @@ public class ShopCouponController extends GenericController {
     @RequestMapping(value = "/Coupon/findCouponPayDetailList",method = RequestMethod.POST)
     public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponPayDetail param) {
         pageable.setParameter(param);
-        pageable.setOrderProperty("createTime");
+        pageable.setOrderProperty("create_time");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", couponPayDetailService.findByPage(pageable));
         return "/activity/shop_activity/couponbuy_list";
     }
 
+    /**
+     * 优惠券领取使用明细
+     * @param request
+     * @param pageable
+     * @param model
+     * @param param
+     * @return
+     */
     @RequestMapping(value = "/Coupon/findCouponUserLogList",method = RequestMethod.POST)
     public String findCouponUseLogList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponUserLogResult param) {
         pageable.setParameter(param);
-        pageable.setOrderProperty("receiveTime");
+        pageable.setOrderProperty("receive_time");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", couponDetailService.findLogResultByPage(pageable));
         return "/activity/shop_activity/couponuse_list";

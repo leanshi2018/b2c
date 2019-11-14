@@ -34,6 +34,7 @@ import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.param.coupon.ConponPayDetailResult;
 import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.coupon.CouponTransInfoResult;
@@ -444,5 +445,32 @@ public class CouponController extends BaseController {
 			e.printStackTrace();
 			return ApiUtils.error("网络异常，请稍后重试");
 		}
+	}
+
+	@RequestMapping(value = "/lists/couponPayDetail", method = RequestMethod.POST)
+	public String memberConponPayDetailList(HttpServletRequest request,
+											@RequestParam(defaultValue = "1") Integer pageNumber,
+											@RequestParam(defaultValue = "10") Integer pageSize,
+											Integer couponOrderState) {
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+		if (couponOrderState==-1){
+			couponOrderState=null;
+		}
+		Pageable pager = new Pageable(pageNumber, pageSize);
+		Map<String, Object> params = new HashMap<>();
+		params.put("mmCode", member.getMmCode());
+		params.put("couponOrderState", couponOrderState);
+
+		List<CouponPayDetail> lists = couponPayDetailService.findList(Paramap.create().put("receiveId", member.getMmCode()).put("couponOrderState", couponOrderState));
+		//System.out.println("memberId="+member.getMmCode());
+		System.out.println("lists="+lists);
+		if(lists==null||lists.size()==0){
+			return ApiUtils.error("无购买优惠券记录");
+		}
+		pager.setOrderDirection(Order.Direction.DESC);
+		pager.setOrderProperty("create_time");
+		pager.setParameter(params);
+		Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
+		return ApiUtils.success(ConponPayDetailResult.build(byPage.getContent(),couponService.findAll()));
 	}
 }
