@@ -1,6 +1,9 @@
 package com.framework.loippi.result.app.order;
 
+import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.vo.gifts.Gifts;
+import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -185,6 +188,10 @@ public class OrderDetailResult {
      * 是否可以进行提醒发货 0不可以 1可以
      */
     private Integer isRemind;
+    /**
+     * 当前订单使用优惠券集合  olomi商城默认订单只能使用一张优惠券
+     */
+    private ArrayList<Coupon> coupons= Lists.newArrayList();
     //物流信息
     Map<String,String> LogisticsInformation;
     @Data
@@ -211,7 +218,7 @@ public class OrderDetailResult {
     }
 
 
-    public static OrderDetailResult build(ShopOrderVo order,RdMmAddInfo shopMemberAddress) throws Exception {
+    public static OrderDetailResult build(ShopOrderVo order,RdMmAddInfo shopMemberAddress, OrderDetailResult orderDetailResult1) throws Exception {
         Optional<ShopOrderVo> optOrder = Optional.ofNullable(order);
         Optional<ShopOrderAddress> optAddr = optOrder.map(ShopOrderVo::getAddress);
 
@@ -304,6 +311,13 @@ public class OrderDetailResult {
             }
         }
         orderDetailResult.setGiftOrderGoodsList(giftsGoods);
+
+
+        orderDetailResult.setCoupons(orderDetailResult1.getCoupons());
+        return orderDetailResult;
+    }
+    public static OrderDetailResult build2(ArrayList<Coupon> coupons, OrderDetailResult orderDetailResult) throws Exception {
+        orderDetailResult.setCoupons(coupons);
         return orderDetailResult;
     }
 }

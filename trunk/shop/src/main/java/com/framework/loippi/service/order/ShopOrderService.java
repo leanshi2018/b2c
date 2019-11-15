@@ -317,6 +317,8 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
 	void updateOrderStatus(String orderSn, Integer orderState, Integer submitStatus, String failInfo, String trackingNo);
 
+    ShopOrderPay addOrderReturnPaySnNew1(String cartIds, String mmCode, Map<String, Object> orderMsgMap, Long addressId, Long couponId, Integer isPp, Integer platformApp, Long groupBuyActivityId, Long groupOrderId, ShopOrderDiscountType shopOrderDiscountType, Integer logisticType, Integer paymentType, Long giftId, Integer giftNum);
+
 
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

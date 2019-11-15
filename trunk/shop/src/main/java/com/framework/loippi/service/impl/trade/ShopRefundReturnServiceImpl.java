@@ -18,6 +18,8 @@ import com.framework.loippi.dao.user.ShopMemberPaymentTallyDao;
 import com.framework.loippi.dao.walet.ShopWalletLogDao;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
@@ -32,6 +34,8 @@ import com.framework.loippi.entity.walet.LgTypeEnum;
 import com.framework.loippi.entity.walet.ShopWalletLog;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.coupon.CouponDetailService;
+import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
@@ -91,6 +95,10 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
 
     @Resource
     private RdMmRelationDao rdMmRelationDao;
+    @Resource
+    private CouponUserService couponUserService;
+    @Resource
+    private CouponDetailService couponDetailService;
 
     @Autowired
     public void setGenericDao() {
@@ -308,7 +316,8 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
         // 平台优惠券金额 打赏积分抵扣 由平台自己承担
         double totalReturnPrice = 0.00;
         //新建一个订单当前全部退款金额(包括本次退款的金额)
-        double refundedAmount = 0.00;
+        BigDecimal refundedAmount = order.getRefundPoint().add(order.getRefundAmount());
+        double refundAmount = refundedAmount.doubleValue();
         for (ShopOrderGoods orderGoods1 : shopOrderGoodses) {
             totalReturnPrice += orderGoods1.getGoodsPayPrice().doubleValue();
             totalReturnPrice += Optional.ofNullable(orderGoods1.getRewardPointPrice()).orElse(BigDecimal.ZERO)
@@ -330,10 +339,30 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
 //        newOrder.setRefundAmount(BigDecimal.valueOf(refundedAmount));
 
         //判断订单是否全部退款
-        if (totalReturnPrice > refundedAmount) {
+        if (totalReturnPrice > refundAmount) {
             newOrder.setRefundState(OrderState.REFUND_STATE_SOM);
         } else {
             newOrder.setRefundState(OrderState.REFUND_STATE_ALL);
+            //如果为全部退款，则查看是否存在优惠券使用情况，如果有优惠券使用，则退还优惠券
+            List<CouponDetail> couponDetails = couponDetailService.findList("useOrderId", order.getId());
+            if(couponDetails!=null&&couponDetails.size()>0){//查找出使用在当前取消订单中的优惠券，退还
+                for (CouponDetail couponDetail : couponDetails) {
+                    couponDetail.setUseState(2);//修改为未使用
+                    couponDetail.setUseTime(null);
+                    couponDetail.setUseOrderId(null);
+                    couponDetail.setUseOrderPayStatus(null);
+                    couponDetailService.update(couponDetail);
+                    //修改couponUser
+                    List<CouponUser> couponUsers = couponUserService.findList(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",order.getBuyerId()+""));
+                    if(couponUsers==null||couponUsers.size()==0){
+                        throw new RuntimeException("优惠券拥有记录异常");
+                    }
+                    CouponUser couponUser = couponUsers.get(0);
+                    couponUser.setUseNum(couponUser.getUseNum()-1);
+                    couponUser.setOwnNum(couponUser.getOwnNum()+1);
+                    couponUserService.update(couponUser);
+                }
+            }
         }
         //判断售前售后退款
 //        if ("0".equals(refundReturn.getOrderGoodsId())) {

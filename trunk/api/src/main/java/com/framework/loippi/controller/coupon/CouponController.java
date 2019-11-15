@@ -12,6 +12,9 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.coupon.*;
+import com.framework.loippi.result.app.coupon.CouponDetailListResult;
+import com.framework.loippi.service.coupon.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -23,10 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.PayCommon;
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.entity.coupon.CouponPayDetail;
-import com.framework.loippi.entity.coupon.CouponTransLog;
-import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -38,10 +37,6 @@ import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.coupon.CouponTransInfoResult;
 import com.framework.loippi.service.alipay.AlipayMobileService;
-import com.framework.loippi.service.coupon.CouponPayDetailService;
-import com.framework.loippi.service.coupon.CouponService;
-import com.framework.loippi.service.coupon.CouponTransLogService;
-import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderPayService;
 import com.framework.loippi.service.order.ShopOrderService;
@@ -68,7 +63,8 @@ import com.framework.loippi.utils.Paramap;
 @ResponseBody
 @RequestMapping("/api/coupon")
 public class CouponController extends BaseController {
-
+	@Resource
+	private CouponDetailService couponDetailService;
 	@Resource
 	private CouponPayDetailService couponPayDetailService;
 	@Resource
@@ -443,6 +439,44 @@ public class CouponController extends BaseController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ApiUtils.error("网络异常，请稍后重试");
+		}
+	}
+
+	/**
+	 * 个人优惠券列表
+	 * @param request
+	 * @param stateType 优惠券状态 1.已使用 2.未使用 3.已过期
+	 * @return
+	 */
+	@RequestMapping(value = "/couponList", method = RequestMethod.POST)
+	public String couponList(HttpServletRequest request, @RequestParam(required = true,value = "stateType") Integer stateType,
+							 @RequestParam(required = false,value = "pageSize",defaultValue = "20")Integer pageSize,
+							 @RequestParam(required = false,value = "pageNum",defaultValue = "1")Integer pageNum
+			) {
+		if(stateType==null){
+			return ApiUtils.error("请传入需要查询的优惠券状态类型");
+		}
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+		if(member==null){
+			return ApiUtils.error("请登录后进行优惠券查询操作");
+		}
+		Pageable pageable = new Pageable();
+		pageable.setPageSize(pageSize);
+		pageable.setPageNumber(pageNum);
+		pageable.setOrderDirection(Order.Direction.ASC);
+		pageable.setOrderProperty("use_end_time");
+		pageable.setParameter(Paramap.create().put("holdId",member.getMmCode()).put("useState",stateType));
+		Page<CouponDetail> page = couponDetailService.findByPage(pageable);
+		List<CouponDetail> couponDetails = page.getContent();
+		if(couponDetails!=null&&couponDetails.size()>0){
+			HashMap<Long, Coupon> map = new HashMap<>();
+			for (CouponDetail couponDetail : couponDetails) {
+				Coupon coupon = couponService.find(couponDetail.getCouponId());
+				map.put(couponDetail.getCouponId(),coupon);
+			}
+			return ApiUtils.success(CouponDetailListResult.build(couponDetails,map));
+		}else {
+			return ApiUtils.error("没有符合条件的数据");
 		}
 	}
 }
