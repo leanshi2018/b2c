@@ -217,7 +217,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 						.add(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
 				couponPayDetail.setOrderAmount(couponPayDetail.getOrderAmount()
 						.subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
-				couponPayDetailDao.update(couponPayDetail);
+				couponPayDetailDao.updateOrderAmout(couponPayDetail);
 			}
 		} else {
 			throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单不存在");
@@ -349,7 +349,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			}
 			Map<String, Object> result = Maps.newConcurrentMap();
 			result.put("status", 1);
-			result.put("couponOrderSn", couponOrderSn);
+			result.put("orderSn", couponOrderSn);
 			result.put("message", "支付成功");
 
 			//生成优惠券用户表数据

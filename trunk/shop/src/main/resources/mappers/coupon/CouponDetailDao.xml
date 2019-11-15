@@ -261,4 +261,55 @@
             WHERE id = #{item.id}
         </foreach>
     </update>
+    <select id="findLogResultByPage" parameterType="com.framework.loippi.result.common.coupon.CouponUserLogResult"
+            resultType="com.framework.loippi.result.common.coupon.CouponUserLogResult">
+        SELECT
+        a.id cuoponDetailId,
+        b.id cuoponId,
+        b.coupon_name couponName,
+        b.reduce_type reduceType,
+        b.use_scope useScope,
+        a.receive_id receiveId,
+        a.receive_nick_name receiveNickName,
+        a.hold_id holdId,
+        a.hold_nick_name holdNickName,
+        a.receive_time receiveTime,
+        a.use_start_time useStartTime,
+        a.use_end_time useEndTime,
+        a.use_state useState,
+        a.buy_order_id useOrderId
+        FROM rd_coupon_detail a
+        left join rd_coupon b on a.coupon_id=b.id
+        where 1=1
+        <if test="cuoponId !=null">
+            AND b.id = #{cuoponId}
+        </if>
+        <if test="couponName !=null and couponName != ''">
+            AND b.coupon_name = #{couponName}
+        </if>
+        <if test="useState !=null">
+            AND a.use_state = #{useState}
+        </if>
+        <if test="receiveTime !=null and receiveTime !=null">
+            AND a.receive_time = #{receiveTime}
+        </if>
+        <if test="receiveId !=null and receiveId != ''">
+            AND a.receive_id = #{receiveId}
+        </if>
+        <if test="receiveNickName !=null and receiveNickName != ''">
+            AND a.receive_nick_name = #{receiveNickName}
+        </if>
+        <if test="holdId !=null and holdId != ''">
+            AND a.hold_id = #{holdId}
+        </if>
+        <if test="holdNickName !=null and holdNickName != ''">
+            AND a.hold_nick_name = #{holdNickName}
+        </if>
+        <if test="useOrderId !=null">
+            AND a.buy_order_id = #{useOrderId}
+        </if>
+        order by a.receive_time desc
+    </select>
+
+
 </mapper>

@@ -291,7 +291,7 @@
         <where>1=1
             <include refid="where_column"/>
         </where>
-        order by use_start_time desc ,send_start_time desc
+        order by create_time desc
     </select>
 
     <insert id="insertCouponPay" parameterType="com.framework.loippi.entity.coupon.CouponPayDetail">
@@ -311,7 +311,16 @@
             <include refid="set_column"/>
         </set>
         WHERE id = #{id,jdbcType=BIGINT}
-        AND payment_state=#{prevOrderState, jdbcType=INTEGER}
+        AND coupon_order_state=#{prevOrderState, jdbcType=INTEGER}
+    </update>
+
+    <update id="updateOrderAmout" parameterType="com.framework.loippi.entity.coupon.CouponPayDetail">
+        UPDATE rd_coupon_pay_detail
+        set
+        order_amount = #{orderAmount},
+        use_point_num = #{usePointNum},
+        point_amount = #{pointAmount}
+        WHERE id = #{id}
     </update>
 
 </mapper>
