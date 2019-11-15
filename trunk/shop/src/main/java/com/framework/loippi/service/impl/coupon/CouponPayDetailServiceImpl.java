@@ -482,6 +482,34 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		orderPay.setPaySn(paysn);
 		orderPay.setApiPayState("1");
 		orderPayDao.updateByPaysn(orderPay);
+
+		RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", memberId);
+
+		//生成优惠券用户表数据
+		Map<String, Object> couponUserMap = new HashMap<>();
+		couponUserMap.put("mCode",memberId);
+		couponUserMap.put("couponId",couponPayDetailList.get(0).getCouponId());
+		List<CouponUser> couponUserList = couponUserDao.findByMMCodeAndCouponId(couponUserMap);
+		if (couponUserList.size()==0){
+			CouponUser couponUserNew = new CouponUser();
+			couponUserNew.setId(twiterIdService.getTwiterId());
+			couponUserNew.setMCode(memberId);
+			couponUserNew.setCouponId(couponPayDetailList.get(0).getCouponId());
+			couponUserNew.setOwnNum(couponPayDetailList.get(0).getCouponNumber());
+			couponUserNew.setUseAbleNum(1);
+			couponUserNew.setUseNum(0);
+			couponUserDao.insert(couponUserNew);
+			//生成优惠券详情表
+			insertCouponDetail(couponPayDetailList.get(0).getCouponNumber(),couponUserNew.getId(),couponPayDetailList.get(0).getCouponId(),shopMember,couponPayDetailList.get(0).getId());
+		}else {
+			for (CouponUser couponUser : couponUserList) {
+				Integer ownNum = couponUser.getOwnNum();
+				couponUser.setOwnNum(ownNum+couponPayDetailList.get(0).getCouponNumber());
+				couponUserDao.update(couponUser);
+				//生成优惠券详情表
+				insertCouponDetail(couponPayDetailList.get(0).getCouponNumber(),couponUser.getId(),couponPayDetailList.get(0).getCouponId(),shopMember,couponPayDetailList.get(0).getId());
+			}
+		}
 	}
 
 

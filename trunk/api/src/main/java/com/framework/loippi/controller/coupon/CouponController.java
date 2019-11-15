@@ -26,6 +26,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.PayCommon;
+import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.entity.coupon.CouponPayDetail;
+import com.framework.loippi.entity.coupon.CouponTransLog;
+import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -33,11 +38,17 @@ import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.param.coupon.ConponPayDetailListResult;
 import com.framework.loippi.param.coupon.ConponPayDetailResult;
 import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.coupon.CouponTransInfoResult;
 import com.framework.loippi.service.alipay.AlipayMobileService;
+import com.framework.loippi.service.coupon.CouponDetailService;
+import com.framework.loippi.service.coupon.CouponPayDetailService;
+import com.framework.loippi.service.coupon.CouponService;
+import com.framework.loippi.service.coupon.CouponTransLogService;
+import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderPayService;
 import com.framework.loippi.service.order.ShopOrderService;
@@ -480,15 +491,24 @@ public class CouponController extends BaseController {
 			return ApiUtils.error("没有符合条件的数据");
 		}
 	}
+
+	/**
+	 * 优惠券订单列表
+	 * @param request
+	 * @param pageNumber
+	 * @param pageSize
+	 * @param couponOrderState
+	 * @return
+	 */
 	@RequestMapping(value = "/lists/couponPayDetail", method = RequestMethod.POST)
 	public String memberConponPayDetailList(HttpServletRequest request,
 											@RequestParam(defaultValue = "1") Integer pageNumber,
 											@RequestParam(defaultValue = "10") Integer pageSize,
 											Integer couponOrderState) {
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
-		if (couponOrderState==-1){
+		/*if (couponOrderState==null || couponOrderState==-1){
 			couponOrderState=null;
-		}
+		}*/
 		Pageable pager = new Pageable(pageNumber, pageSize);
 		Map<String, Object> params = new HashMap<>();
 		params.put("mmCode", member.getMmCode());
@@ -504,6 +524,28 @@ public class CouponController extends BaseController {
 		pager.setOrderProperty("create_time");
 		pager.setParameter(params);
 		Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
-		return ApiUtils.success(ConponPayDetailResult.build(byPage.getContent(),couponService.findAll()));
+		return ApiUtils.success(ConponPayDetailListResult.build(byPage.getContent(),couponService.findAll()));
 	}
+
+	@RequestMapping(value = "/detail/couponPayDetail", method = RequestMethod.POST)
+	public String memberConponPayDetailInfo(HttpServletRequest request,Long couponOrderId) {
+
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+		if (couponOrderId==null){
+			return ApiUtils.error("该订单Id为空,请传正确的订单Id");
+		}
+		CouponPayDetail couponPayDetail = couponPayDetailService.find(couponOrderId);
+		if (couponPayDetail==null){
+			return ApiUtils.error("该订单不存在");
+		}
+		Long couponId = couponPayDetail.getCouponId();
+		Coupon coupon = couponService.find(couponId);
+		if (coupon==null){
+			return ApiUtils.error("该订单优惠券已不存在");
+		}
+		List<CouponDetail> couponDetailList = couponDetailService.findList("buyOrderId", couponPayDetail.getId());
+
+		return ApiUtils.success(ConponPayDetailResult.build(couponPayDetail,coupon,couponDetailList));
+	}
+
 }
