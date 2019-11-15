@@ -270,7 +270,7 @@ public class ShopCouponController extends GenericController {
         Pageable pager = new Pageable();
         pager.setPageNumber(pageNo);
         pager.setPageSize(pageSize);
-        pager.setOrderProperty("useEndTime");
+        pager.setOrderProperty("use_end_time");
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setParameter(coupon);
         Page<Coupon> page = couponService.findByPage(pager);

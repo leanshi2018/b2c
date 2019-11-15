@@ -10,9 +10,13 @@ import javax.annotation.Resource;
 
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
+import com.framework.loippi.dao.order.ShopOrderGoodsDao;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.order.ShopOrderGoodsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -214,7 +218,6 @@ public class ShopOrderJob {
             }
         }
     }
-
     //@Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
  /*   @Scheduled(cron = "0 35 15 * * ? " )  //每天上午十点执行一次
 =======

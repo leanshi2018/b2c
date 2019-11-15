@@ -231,4 +231,8 @@ public class Coupon implements GenericEntity {
      * 查询使用优惠券时间
      */
     private String searchUseTime;
+    /**
+     * 当前用户当前订单使用张数
+     */
+    private Integer customerUseNum;
 }

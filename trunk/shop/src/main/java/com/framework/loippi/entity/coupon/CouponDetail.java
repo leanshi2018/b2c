@@ -106,6 +106,11 @@ public class CouponDetail implements GenericEntity {
     @Column(name = "use_order_id")
     private Long useOrderId;
     /**
+     * 使用优惠券关联订单支付状态 0:未支付 1：已支付
+     */
+    @Column(name = "use_order_pay_status")
+    private Integer useOrderPayStatus;
+    /**
      * 购买优惠券关联订单id
      */
     @Column(name = "buy_order_id")

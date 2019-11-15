@@ -558,6 +558,27 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         return getCartInfoList(cartList, shopOrderDiscountType, addr, memberId,activityIds);
     }
 
+    @Override
+    public List<CartInfo> queryCartInfoList1(String cartIds, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr, String memberId, Long couponId) {
+        //通过多个购物车id查询购物车数据
+        List<ShopCart> cartList = Lists.newArrayList();
+        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
+            String[] cartId = cartIds.split(",");
+            if (cartId != null && cartId.length > 0) {
+                cartList = cartDao.findByParams(Paramap.create().put("ids", cartId));
+            }
+        }
+        List<Long> activityIds = new ArrayList<>();
+        for (ShopCart shopCart : cartList) {
+            activityIds.add(shopCart.getActivityId());//购物车集合中存在活动id的集合
+        }
+        if (cartList.isEmpty()){
+            throw new StateResult(AppConstants.FAIL, "购物车不存在");
+        }
+        // 获取基本数据
+        return getCartInfoList1(cartList, shopOrderDiscountType, addr, memberId,activityIds,couponId);
+    }
+
     /**
      * 获取cartInfoList
      */
