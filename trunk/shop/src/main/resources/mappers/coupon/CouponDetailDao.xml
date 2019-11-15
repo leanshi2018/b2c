@@ -246,7 +246,6 @@
         <where>1=1
             <include refid="where_column"/>
         </where>
-        order by own_num desc
     </select>
 
     <!--批量修改-->
