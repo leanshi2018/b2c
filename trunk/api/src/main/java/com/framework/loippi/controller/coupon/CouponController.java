@@ -12,6 +12,7 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.result.common.coupon.CouponTransferResult;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -350,7 +351,8 @@ public class CouponController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/detail/couponid", method = RequestMethod.POST)
-	public String getCouponById(HttpServletRequest request, Long couponId,Pageable pageable) {
+	public String getCouponById(HttpServletRequest request, Long couponId,@RequestParam(required = false,value = "pageSize",defaultValue = "10")Integer pageSize,
+								@RequestParam(required = false,value = "pageNum",defaultValue = "1")Integer pageNum) {
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
 		if(member==null){
 			return ApiUtils.error("请登录后进行此操作");
@@ -376,6 +378,9 @@ public class CouponController extends BaseController {
 			return ApiUtils.error("当前登录用户无该优惠券记录");
 		}
 		CouponUser couponUser = list.get(0);
+		Pageable pageable = new Pageable();
+		pageable.setPageSize(pageSize);
+		pageable.setPageNumber(pageNum);
 		pageable.setOrderDirection(Order.Direction.DESC);
 		pageable.setOrderProperty("trans_time");
 		pageable.setParameter(Paramap.create().put("turnId", member.getMmCode()));
@@ -442,7 +447,8 @@ public class CouponController extends BaseController {
 			Boolean flag = (Boolean) result.get("flag");
 			String msg = (String) result.get("msg");
 			if (flag){
-				return ApiUtils.success(msg);
+				CouponTransferResult data = (CouponTransferResult) result.get("object");
+				return ApiUtils.success(data);
 			}else {
 				return ApiUtils.error(msg);
 			}
@@ -486,7 +492,7 @@ public class CouponController extends BaseController {
 			}
 			return ApiUtils.success(CouponDetailListResult.build(couponDetails,map));
 		}else {
-			return ApiUtils.error("没有符合条件的数据");
+			return ApiUtils.success(new ArrayList<CouponDetailListResult>());
 		}
 	}
 

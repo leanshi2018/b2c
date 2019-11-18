@@ -13,15 +13,16 @@
         <result property="couponId" column="coupon_id"/>
         <result property="couponName" column="coupon_name"/>
         <result property="couponSn" column="coupon_sn"/>
+        <result property="serialNum" column="serial_num"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,turn_id ,turn_nick_name ,accept_id ,accept_nick_name ,remark ,trans_time ,trans_period ,coupon_id ,coupon_name ,coupon_sn
+        id ,turn_id ,turn_nick_name ,accept_id ,accept_nick_name ,remark ,trans_time ,trans_period ,coupon_id ,coupon_name ,coupon_sn,serial_num
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{turnId},#{turnNickName},#{acceptId},#{acceptNickName},#{remark},#{transTime},#{transPeriod},#{couponId},#{couponName},#{couponSn}
+        #{id},#{turnId},#{turnNickName},#{acceptId},#{acceptNickName},#{remark},#{transTime},#{transPeriod},#{couponId},#{couponName},#{couponSn},#{serialNum}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -59,6 +60,9 @@
         <if test="couponSn != null and couponSn != ''">
             AND coupon_sn = #{couponSn,jdbcType=VARCHAR}
         </if>
+        <if test="serialNum != null and serialNum != ''">
+            AND serial_num = #{serialNum,jdbcType=VARCHAR}
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
@@ -94,6 +98,9 @@
         </if>
         <if test="couponSn != null and couponSn != ''">
             coupon_sn = #{couponSn,jdbcType=VARCHAR},
+        </if>
+        <if test="serialNum != null and serialNum != ''">
+            serial_num = #{serialNum,jdbcType=VARCHAR},
         </if>
     </sql>
 
@@ -160,7 +167,7 @@
     <select id="findByParams" resultMap="couponTransLogResultMap">
         SELECT
         <include refid="base_column"/>
-        FROM rd_coupon
+        FROM rd_coupon_trans_log
         <where>1=1
             <include refid="where_column"/>
         </where>
@@ -170,7 +177,7 @@
     <select id="findByPage" resultMap="couponTransLogResultMap">
         SELECT
         <include refid="base_column"/>
-        FROM rd_coupon
+        FROM rd_coupon_trans_log
         <where>1=1
             <include refid="where_column"/>
         </where>
@@ -184,7 +191,7 @@
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.id},#{item.turnId},#{item.turnNickName},#{item.acceptId},#{item.acceptNickName},#{item.remark},#{item.transTime},
-            #{item.transPeriod},#{item.couponId},#{item.couponName},#{item.couponSn})
+            #{item.transPeriod},#{item.couponId},#{item.couponName},#{item.couponSn},#{serialNum})
         </foreach>
     </insert>
 </mapper>

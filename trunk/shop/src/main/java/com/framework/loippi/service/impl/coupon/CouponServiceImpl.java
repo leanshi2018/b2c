@@ -8,6 +8,7 @@ import com.framework.loippi.entity.coupon.CouponTransLog;
 import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdSysPeriod;
+import com.framework.loippi.result.common.coupon.CouponTransferResult;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.coupon.CouponDetailService;
 import com.framework.loippi.service.coupon.CouponService;
@@ -100,6 +101,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         if(recipienter==null){
             map.put("flag",false);
             map.put("msg","赠送对象不存在");
+            return map;
         }
         List<CouponUser> list = couponUserService.findList(Paramap.create().put("mCode", recipientCode).put("couponId", coupon.getId()));
         CouponUser recipientCouponUser=null;
@@ -118,10 +120,11 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
             recipientCouponUser = list.get(0);
         }
         List<CouponDetail> couponDetails = couponDetailService.findList(Paramap.create().put("couponId",coupon.getId()).put("holdId",mmCode)
-        .put("useState",2).put("refundState",1));//属于当前用户，当前种类优惠券，状态处于未使用，且并未退款的优惠券详情集合
-        if(couponDetails==null||couponDetails.size()<transNum){
+        .put("useState",2));//属于当前用户，当前种类优惠券，状态处于未使用，且并未退款的优惠券详情集合
+        if(couponDetails==null||couponDetails.size()<transNum||couponDetails.size()==0){
             map.put("flag",false);
             map.put("msg","您当前拥有的可转让优惠券不足");
+            return map;
         }
         RdSysPeriod sysPeriod = rdSysPeriodService.getPeriodService(new Date());
         String periodCode = "";
@@ -131,6 +134,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         ArrayList<CouponDetail> details = new ArrayList<>();
         ArrayList<CouponTransLog> logs = new ArrayList<>();
         int count=0;
+        String serialNum="CT"+twiterIdService.getTwiterId();
         for (CouponDetail couponDetail : couponDetails) {
             if(count<transNum){
                 count++;
@@ -151,6 +155,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
                 log.setCouponName(coupon.getCouponName());
                 log.setCouponSn(couponDetail.getCouponSn());
                 log.setTransPeriod(periodCode);
+                log.setSerialNum(serialNum);
                 logs.add(log);
             }
         }
@@ -167,6 +172,16 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         couponDetailService.updateList(details);
         //5.批量插入优惠券交易日志
         couponTransLogService.insertList(logs);
+        CouponTransferResult result = new CouponTransferResult();
+        result.setSerialNum(serialNum);
+        result.setCouponName(coupon.getCouponName());
+        result.setTransNum(transNum);
+        result.setResidueNum(couponUser.getOwnNum());
+        result.setReceiveCode(recipienter.getMmCode());
+        result.setReceiveName(recipienter.getMmName());
+        result.setReceiveNickName(recipienter.getMmNickName());
+        result.setCouponId(coupon.getId());
+        map.put("object",result);
         return map;
     }
 
