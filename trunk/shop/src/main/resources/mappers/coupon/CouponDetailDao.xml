@@ -294,7 +294,7 @@
         a.use_start_time,
         a.use_end_time,
         a.use_state,
-        a.buy_order_id
+        a.use_order_id
         FROM rd_coupon_detail a
         left join rd_coupon b on a.coupon_id=b.id
         where 1=1
@@ -323,7 +323,7 @@
             AND a.hold_nick_name = #{holdNickName}
         </if>
         <if test="useOrderId !=null">
-            AND a.buy_order_id = #{useOrderId}
+            AND a.use_order_id = #{useOrderId}
         </if>
         order by a.receive_time desc
     </select>
