@@ -74,4 +74,9 @@ public class CouponTransLog implements GenericEntity {
      */
     @Column(name = "coupon_sn")
     private String couponSn;
+    /**
+     * 流水号
+     */
+    @Column(name = "serial_num")
+    private String serialNum;
 }

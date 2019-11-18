@@ -12,6 +12,7 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.result.common.coupon.CouponTransferResult;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -446,7 +447,8 @@ public class CouponController extends BaseController {
 			Boolean flag = (Boolean) result.get("flag");
 			String msg = (String) result.get("msg");
 			if (flag){
-				return ApiUtils.success(msg);
+				CouponTransferResult data = (CouponTransferResult) result.get("object");
+				return ApiUtils.success(data);
 			}else {
 				return ApiUtils.error(msg);
 			}
