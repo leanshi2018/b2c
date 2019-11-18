@@ -12,9 +12,6 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.framework.loippi.entity.coupon.*;
-import com.framework.loippi.result.app.coupon.CouponDetailListResult;
-import com.framework.loippi.service.coupon.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -40,6 +37,7 @@ import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.param.coupon.ConponPayDetailListResult;
 import com.framework.loippi.param.coupon.ConponPayDetailResult;
+import com.framework.loippi.result.app.coupon.CouponDetailListResult;
 import com.framework.loippi.result.app.coupon.CouponPaySubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.coupon.CouponTransInfoResult;
@@ -527,6 +525,12 @@ public class CouponController extends BaseController {
 		return ApiUtils.success(ConponPayDetailListResult.build(byPage.getContent(),couponService.findAll()));
 	}
 
+	/**
+	 * 优惠券订单详情
+	 * @param request
+	 * @param couponOrderId
+	 * @return
+	 */
 	@RequestMapping(value = "/detail/couponPayDetail", method = RequestMethod.POST)
 	public String memberConponPayDetailInfo(HttpServletRequest request,Long couponOrderId) {
 

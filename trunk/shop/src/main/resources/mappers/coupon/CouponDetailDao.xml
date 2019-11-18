@@ -25,6 +25,24 @@
         <result property="refundSum" column="refund_sum"/>
     </resultMap>
 
+    <resultMap id="CouponUserLogResultMap" type="com.framework.loippi.result.common.coupon.CouponUserLogResult">
+        <id property="couponDetailId" column="id"/>
+        <result property="couponId" column="coupon_id"/>
+        <result property="couponName" column="coupon_name"/>
+        <result property="reduceType" column="reduce_type"/>
+        <result property="useScope" column="use_scope"/>
+        <result property="receiveId" column="receive_id"/>
+        <result property="receiveNickName" column="receive_nick_name"/>
+        <result property="receiveTime" column="receive_time"/>
+        <result property="holdId" column="hold_id"/>
+        <result property="holdNickName" column="hold_nick_name"/>
+        <result property="receiveTime" column="receive_time"/>
+        <result property="useStartTime" column="use_start_time"/>
+        <result property="useEndTime" column="use_end_time"/>
+        <result property="useState" column="use_state"/>
+        <result property="useOrderId" column="use_order_id"/>
+    </resultMap>
+
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
         id ,rd_coupon_user_id ,coupon_id ,coupon_sn ,coupon_pwd ,coupon_name,receive_id,receive_nick_name,receive_time,
@@ -261,30 +279,30 @@
         </foreach>
     </update>
     <select id="findLogResultByPage" parameterType="com.framework.loippi.result.common.coupon.CouponUserLogResult"
-            resultType="com.framework.loippi.result.common.coupon.CouponUserLogResult">
+            resultMap="CouponUserLogResultMap">
         SELECT
-        a.id cuoponDetailId,
-        b.id cuoponId,
-        b.coupon_name couponName,
-        b.reduce_type reduceType,
-        b.use_scope useScope,
-        a.receive_id receiveId,
-        a.receive_nick_name receiveNickName,
-        a.hold_id holdId,
-        a.hold_nick_name holdNickName,
-        a.receive_time receiveTime,
-        a.use_start_time useStartTime,
-        a.use_end_time useEndTime,
-        a.use_state useState,
-        a.buy_order_id useOrderId
+        a.id,
+        a.coupon_id,
+        a.coupon_name,
+        b.reduce_type,
+        b.use_scope,
+        a.receive_id,
+        a.receive_nick_name,
+        a.hold_id,
+        a.hold_nick_name,
+        a.receive_time,
+        a.use_start_time,
+        a.use_end_time,
+        a.use_state,
+        a.buy_order_id
         FROM rd_coupon_detail a
         left join rd_coupon b on a.coupon_id=b.id
         where 1=1
-        <if test="cuoponId !=null">
-            AND b.id = #{cuoponId}
+        <if test="couponId !=null">
+            AND a.coupon_id = #{couponId}
         </if>
         <if test="couponName !=null and couponName != ''">
-            AND b.coupon_name = #{couponName}
+            AND a.coupon_name = #{couponName}
         </if>
         <if test="useState !=null">
             AND a.use_state = #{useState}
