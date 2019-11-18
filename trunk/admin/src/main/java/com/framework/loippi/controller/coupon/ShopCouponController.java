@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -276,5 +277,17 @@ public class ShopCouponController extends GenericController {
         Page<Coupon> page = couponService.findByPage(pager);
         model.addAttribute("couponList", page);
         return "/activity/shop_activity/coupon_list";
+    }
+
+    /**
+     * 前往新增优惠券页面
+     * @param model
+     * @param request
+     * @return
+     */
+    @RequestMapping("/forward/edit")
+    public String edit(Model model, HttpServletRequest request) {
+
+        return "activity/shop_activity/coupon_edit";
     }
 }
