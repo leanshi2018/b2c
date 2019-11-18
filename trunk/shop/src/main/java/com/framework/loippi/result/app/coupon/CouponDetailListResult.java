@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,6 +37,10 @@ public class CouponDetailListResult extends CouponDetail implements Serializable
      * 折扣类型  1：满减卷 2：立减卷 3：满金额折扣  4：无金额限制折扣
      */
     private Integer reduceType;
+    /**
+     * 优惠券是否达到开始使用时间 true 开始  flase 未开始
+     */
+    private Boolean startFlag;
 
     public static ArrayList<CouponDetailListResult> build(List<CouponDetail> couponDetails, HashMap<Long, Coupon> map) {
         ArrayList<CouponDetailListResult> results = new ArrayList<>();
@@ -46,6 +51,12 @@ public class CouponDetailListResult extends CouponDetail implements Serializable
             result.setScopeRemark(map.get(couponDetail.getCouponId()).getScopeRemark());
             result.setCouponValue(map.get(couponDetail.getCouponId()).getCouponValue());
             result.setReduceType(map.get(couponDetail.getCouponId()).getReduceType());
+            Date useStartTime = couponDetail.getUseStartTime();
+            if(new Date().getTime()>=useStartTime.getTime()){
+                result.setStartFlag(true);
+            }else {
+                result.setStartFlag(false);
+            }
             results.add(result);
         }
         return results;
