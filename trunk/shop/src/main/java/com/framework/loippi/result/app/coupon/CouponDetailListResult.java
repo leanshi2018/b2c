@@ -30,6 +30,14 @@ public class CouponDetailListResult extends CouponDetail implements Serializable
      */
     private String scopeRemark;
     /**
+     * 使用限制
+     */
+    private String remark;
+    /**
+     * 优惠券图片
+     */
+    private String image;
+    /**
      * 优惠券面值
      */
     private BigDecimal couponValue;
@@ -51,6 +59,8 @@ public class CouponDetailListResult extends CouponDetail implements Serializable
             result.setScopeRemark(map.get(couponDetail.getCouponId()).getScopeRemark());
             result.setCouponValue(map.get(couponDetail.getCouponId()).getCouponValue());
             result.setReduceType(map.get(couponDetail.getCouponId()).getReduceType());
+            result.setRemark(map.get(couponDetail.getCouponId()).getRemark());
+            result.setImage(map.get(couponDetail.getCouponId()).getImage());
             Date useStartTime = couponDetail.getUseStartTime();
             if(new Date().getTime()>=useStartTime.getTime()){
                 result.setStartFlag(true);
