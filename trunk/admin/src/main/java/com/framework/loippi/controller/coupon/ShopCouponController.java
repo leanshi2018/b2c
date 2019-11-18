@@ -232,7 +232,7 @@ public class ShopCouponController extends GenericController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/Coupon/findCouponPayDetailList",method = RequestMethod.POST)
+    @RequestMapping(value = "/Coupon/findCouponPayDetailList")
     public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponPayDetail param) {
         pageable.setParameter(param);
         pageable.setOrderProperty("create_time");
@@ -249,7 +249,7 @@ public class ShopCouponController extends GenericController {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/Coupon/findCouponUserLogList",method = RequestMethod.POST)
+    @RequestMapping(value = "/Coupon/findCouponUserLogList")
     public String findCouponUseLogList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponUserLogResult param) {
         pageable.setParameter(param);
         pageable.setOrderProperty("receive_time");

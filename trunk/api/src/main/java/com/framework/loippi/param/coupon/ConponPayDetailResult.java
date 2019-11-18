@@ -5,19 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-
 import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 
 /**
  * @author :ldq
- * @date:2019/11/14
+ * @date:2019/11/15
  * @description:dubbo com.framework.loippi.param.coupon
  */
 @Data
@@ -46,9 +44,29 @@ public class ConponPayDetailResult {
 	 */
 	private String couponName;
 	/**
+	 * 优惠券面值  针对于折扣卷为折扣大小
+	 */
+	private BigDecimal couponValue;
+	/**
 	 * 优惠券图片
 	 */
 	private String couponImage;
+	/**
+	 * 是否可以赠送  0：不可以 1：可以
+	 */
+	private String whetherPresentS;
+	/**
+	 * 使用限制描述
+	 */
+	private String scopeRemark;
+	/**
+	 * 优惠券售价
+	 */
+	private BigDecimal couponPrice;
+	/**
+	 * 优惠券使用限期时间
+	 */
+	private String useDeadlineTime;
 	/**
 	 * 订单生成时间(下单时间)
 	 * */
@@ -74,44 +92,75 @@ public class ConponPayDetailResult {
 	 * */
 	private Integer couponNumber;
 	/**
+	 * 订单所用积分数量
+	 * */
+	private BigDecimal usePointNum;
+	/**
+	 * 购物积分抵扣金额
+	 * */
+	private BigDecimal pointAmount;
+	/**
+	 * 订单应付金额（最终现金支付金额）
+	 * */
+	private BigDecimal orderAmount;
+	/**
 	 * 订单状态：0:已取消;5待审核;10:待付款;40:交易完成;
 	 * */
 	private String OrderStateS;
 
+	private List<CouponDetail> couponDetailList;
 
-	public static List<ConponPayDetailResult> build(List<CouponPayDetail> couponPayDetailList,List<Coupon> coupons) {
-		if (CollectionUtils.isEmpty(couponPayDetailList)) {
-			return Collections.emptyList();
-		}
-		List<ConponPayDetailResult> results = new ArrayList<ConponPayDetailResult>();
-		for (CouponPayDetail cpd : couponPayDetailList) {
-			ConponPayDetailResult result = new ConponPayDetailResult();
-			result.setId(cpd.getId());
-			result.setCouponOrderSn(cpd.getCouponOrderSn());
-			//result.setReceiveId(cpd.getReceiveId());
-			//result.setReceiveNickName(cpd.getReceiveNickName());
-			result.setCouponName(cpd.getCouponName());
 
-			for (Coupon coupon : coupons) {
-				if (coupon.getId().equals(cpd.getCouponId())){
-					result.setCouponImage(coupon.getImage());
-				}
-			}
-			result.setCreateTime(cpd.getCreateTime());
-			result.setPaymentTime(cpd.getPaymentTime());
-			result.setPaySn(cpd.getPaySn());
-			result.setCouponAmount(cpd.getCouponAmount());
-			result.setCouponNumber(cpd.getCouponNumber());
-			if (cpd.getCouponOrderState()==40){
-				result.setOrderStateS("已付款");
-			}else if (cpd.getCouponOrderState()==10){
-				result.setOrderStateS("待付款");
-			}else if (cpd.getCouponOrderState()==10){
-				result.setOrderStateS("已取消");
-			}
-			results.add(result);
+	public static ConponPayDetailResult build(CouponPayDetail couponPayDetail, Coupon coupon, List<CouponDetail> couponDetailList ) {
+
+		ConponPayDetailResult result = new ConponPayDetailResult();
+
+		result.setId(couponPayDetail.getId());
+		result.setCouponOrderSn(couponPayDetail.getCouponOrderSn());
+		//result.setReceiveId(cpd.getReceiveId());
+		//result.setReceiveNickName(cpd.getReceiveNickName());
+		result.setCouponName(coupon.getCouponName());
+		result.setCouponValue(coupon.getCouponValue());
+		result.setCouponImage(coupon.getImage());
+		if (coupon.getWhetherPresent()==1){
+			result.setWhetherPresentS("可赠送");
+		}else if (coupon.getWhetherPresent()==0){
+			result.setWhetherPresentS("不可赠送");
+		}else {
+			result.setWhetherPresentS("");
 		}
-		return results;
+		result.setScopeRemark(coupon.getScopeRemark());
+		result.setCouponPrice(coupon.getCouponPrice());
+		SimpleDateFormat form = new SimpleDateFormat("yyyy.MM.dd");
+		String startTime = "";
+		String endTime = "";
+		if (coupon.getUseStartTime()!=null){
+			startTime = form.format(coupon.getUseStartTime());
+		}
+		if (coupon.getUseEndTime()!=null){
+			endTime = form.format(coupon.getUseEndTime());
+		}else {
+			endTime = "不限时";
+		}
+		result.setUseDeadlineTime(startTime+endTime);
+		result.setCreateTime(couponPayDetail.getCreateTime());
+		result.setPaymentTime(couponPayDetail.getPaymentTime());
+		result.setPaySn(couponPayDetail.getPaySn());
+		result.setCouponAmount(couponPayDetail.getCouponAmount());
+		result.setCouponNumber(couponPayDetail.getCouponNumber());
+		result.setUsePointNum(couponPayDetail.getUsePointNum());
+		result.setPointAmount(couponPayDetail.getPointAmount());
+		result.setOrderAmount(couponPayDetail.getOrderAmount());
+		if (couponPayDetail.getCouponOrderState()==40){
+			result.setOrderStateS("交易完成");
+		}else if (couponPayDetail.getCouponOrderState()==10){
+			result.setOrderStateS("待付款");
+		}else if (couponPayDetail.getCouponOrderState()==10){
+			result.setOrderStateS("已取消");
+		}
+
+		result.setCouponDetailList(couponDetailList);
+		return result;
 	}
 
 }

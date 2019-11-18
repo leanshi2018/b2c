@@ -16,8 +16,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class CouponUserLogResult {
 
-	private Long cuoponDetailId;//优惠券详情序号
-	private Long cuoponId;//优惠券序号
+	private Long couponDetailId;//优惠券详情序号
+	private Long couponId;//优惠券序号
 	private String couponName;//优惠券名称
 	private Integer reduceType;//折扣类型  1：满减卷 2：立减卷 3：满金额折扣  4：无金额限制折扣
 	private Integer useScope;//使用范围 0：不限  1：适用于品类 2：适用于组合商品 3：使用于单品 4：适用于多种商品 9：组合条件使用
