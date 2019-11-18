@@ -160,7 +160,7 @@
     <select id="findByParams" resultMap="couponTransLogResultMap">
         SELECT
         <include refid="base_column"/>
-        FROM rd_coupon
+        FROM rd_coupon_trans_log
         <where>1=1
             <include refid="where_column"/>
         </where>
@@ -170,7 +170,7 @@
     <select id="findByPage" resultMap="couponTransLogResultMap">
         SELECT
         <include refid="base_column"/>
-        FROM rd_coupon
+        FROM rd_coupon_trans_log
         <where>1=1
             <include refid="where_column"/>
         </where>
