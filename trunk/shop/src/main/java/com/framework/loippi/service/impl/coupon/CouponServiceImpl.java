@@ -119,7 +119,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         }
         List<CouponDetail> couponDetails = couponDetailService.findList(Paramap.create().put("couponId",coupon.getId()).put("holdId",mmCode)
         .put("useState",2).put("refundState",1));//属于当前用户，当前种类优惠券，状态处于未使用，且并未退款的优惠券详情集合
-        if(couponDetails==null||couponDetails.size()<transNum){
+        if(couponDetails==null||couponDetails.size()<transNum||couponDetails.size()==0){
             map.put("flag",false);
             map.put("msg","您当前拥有的可转让优惠券不足");
         }
