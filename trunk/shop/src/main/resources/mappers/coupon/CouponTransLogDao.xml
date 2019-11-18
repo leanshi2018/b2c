@@ -191,7 +191,7 @@
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.id},#{item.turnId},#{item.turnNickName},#{item.acceptId},#{item.acceptNickName},#{item.remark},#{item.transTime},
-            #{item.transPeriod},#{item.couponId},#{item.couponName},#{item.couponSn})
+            #{item.transPeriod},#{item.couponId},#{item.couponName},#{item.couponSn},#{serialNum})
         </foreach>
     </insert>
 </mapper>
