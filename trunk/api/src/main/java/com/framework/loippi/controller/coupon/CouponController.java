@@ -511,9 +511,9 @@ public class CouponController extends BaseController {
 											@RequestParam(defaultValue = "10") Integer pageSize,
 											Integer couponOrderState) {
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
-		/*if (couponOrderState==null || couponOrderState==-1){
+		if (couponOrderState==null || couponOrderState==-1){
 			couponOrderState=null;
-		}*/
+		}
 		Pageable pager = new Pageable(pageNumber, pageSize);
 		Map<String, Object> params = new HashMap<>();
 		params.put("mmCode", member.getMmCode());
