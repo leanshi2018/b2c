@@ -115,6 +115,14 @@ public class ConponPayDetailResult {
 	 * 订单状态：0:已取消;1:已退款;10:待付款;40:交易完成;
 	 * */
 	private Integer OrderState;
+	/**
+	 * 退款优惠券数量数量
+	 * */
+	private Integer refundCouponNum;
+	/**
+	 * 退款金额
+	 * */
+	private BigDecimal refundAmount;
 
 	private List<CouponDetail> couponDetailList;
 
@@ -175,7 +183,12 @@ public class ConponPayDetailResult {
 			result.setOrderStateS("已取消");
 			result.setOrderState(couponPayDetail.getCouponOrderState());
 		}
-
+		if (couponPayDetail.getRefundCouponNum()!=null){
+			result.setRefundCouponNum(couponPayDetail.getRefundCouponNum());
+		}
+		if (couponPayDetail.getRefundAmount()!=null){
+			result.setRefundAmount(couponPayDetail.getRefundAmount());
+		}
 		result.setCouponDetailList(couponDetailList);
 		return result;
 	}
