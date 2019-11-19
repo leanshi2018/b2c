@@ -512,5 +512,13 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		}
 	}
 
+	@Override
+	public void updateStateCouponPat(Long id, int state) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("id",id);
+		map.put("couponOrderState",state);
+		couponPayDetailDao.updateStateCouponPat(map);
+	}
+
 
 }

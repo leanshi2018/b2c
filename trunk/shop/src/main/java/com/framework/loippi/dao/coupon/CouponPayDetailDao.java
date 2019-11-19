@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.coupon;
 
 import java.util.List;
+import java.util.Map;
 
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.mybatis.dao.GenericDao;
@@ -18,4 +19,6 @@ public interface CouponPayDetailDao extends GenericDao<CouponPayDetail, Long> {
 	Long updateByIdAndOrderStateAndLockState(CouponPayDetail payDetail);
 
 	void updateOrderAmout(CouponPayDetail couponPayDetail);
+
+	void updateStateCouponPat(Map<String, Object> map);
 }

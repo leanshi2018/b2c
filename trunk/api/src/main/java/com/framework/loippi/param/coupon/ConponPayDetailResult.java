@@ -48,6 +48,10 @@ public class ConponPayDetailResult {
 	 */
 	private BigDecimal couponValue;
 	/**
+	 * 折扣类型  1：满减卷 2：立减卷 3：满金额折扣  4：无金额限制折扣
+	 */
+	private Integer reduceType;
+	/**
 	 * 优惠券图片
 	 */
 	private String couponImage;
@@ -104,9 +108,13 @@ public class ConponPayDetailResult {
 	 * */
 	private BigDecimal orderAmount;
 	/**
-	 * 订单状态：0:已取消;5待审核;10:待付款;40:交易完成;
+	 * 订单状态：已取消;已退款;待付款;交易完成;
 	 * */
 	private String OrderStateS;
+	/**
+	 * 订单状态：0:已取消;1:已退款;10:待付款;40:交易完成;
+	 * */
+	private Integer OrderState;
 
 	private List<CouponDetail> couponDetailList;
 
@@ -121,6 +129,7 @@ public class ConponPayDetailResult {
 		//result.setReceiveNickName(cpd.getReceiveNickName());
 		result.setCouponName(coupon.getCouponName());
 		result.setCouponValue(coupon.getCouponValue());
+		result.setReduceType(coupon.getReduceType());
 		result.setCouponImage(coupon.getImage());
 		if (coupon.getWhetherPresent()==1){
 			result.setWhetherPresentS("可赠送");
@@ -142,7 +151,7 @@ public class ConponPayDetailResult {
 		}else {
 			endTime = "不限时";
 		}
-		result.setUseDeadlineTime(startTime+endTime);
+		result.setUseDeadlineTime(startTime+"-"+endTime);
 		result.setCreateTime(couponPayDetail.getCreateTime());
 		result.setPaymentTime(couponPayDetail.getPaymentTime());
 		result.setPaySn(couponPayDetail.getPaySn());
@@ -152,11 +161,19 @@ public class ConponPayDetailResult {
 		result.setPointAmount(couponPayDetail.getPointAmount());
 		result.setOrderAmount(couponPayDetail.getOrderAmount());
 		if (couponPayDetail.getCouponOrderState()==40){
-			result.setOrderStateS("交易完成");
+			if (couponPayDetail.getRefundState()==1){
+				result.setOrderStateS("已退款");
+				result.setOrderState(couponPayDetail.getRefundState());
+			}else{
+				result.setOrderStateS("交易完成");
+				result.setOrderState(couponPayDetail.getCouponOrderState());
+			}
 		}else if (couponPayDetail.getCouponOrderState()==10){
 			result.setOrderStateS("待付款");
-		}else if (couponPayDetail.getCouponOrderState()==10){
+			result.setOrderState(couponPayDetail.getCouponOrderState());
+		}else if (couponPayDetail.getCouponOrderState()==0){
 			result.setOrderStateS("已取消");
+			result.setOrderState(couponPayDetail.getCouponOrderState());
 		}
 
 		result.setCouponDetailList(couponDetailList);

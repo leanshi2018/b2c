@@ -261,8 +261,8 @@ public class CouponController extends BaseController {
 		if (CollectionUtils.isEmpty(orderList)) {
 			return ApiUtils.error("订单不存在");
 		}
-		if (orderList.get(0).getCouponOrderState()==0){
-			return ApiUtils.error("订单已取消");
+		if (orderList.get(0).getCouponOrderState()==0 || orderList.get(0).getCouponOrderState()==40){
+			return ApiUtils.error("订单已取消或已完成");
 		}
 
 		//处理购物积分
@@ -511,9 +511,12 @@ public class CouponController extends BaseController {
 											@RequestParam(defaultValue = "10") Integer pageSize,
 											Integer couponOrderState) {
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
-		/*if (couponOrderState==null || couponOrderState==-1){
+		if(member==null){
+			return ApiUtils.error("请登录后操作");
+		}
+		if (couponOrderState==null || couponOrderState==-1){
 			couponOrderState=null;
-		}*/
+		}
 		Pageable pager = new Pageable(pageNumber, pageSize);
 		Map<String, Object> params = new HashMap<>();
 		params.put("mmCode", member.getMmCode());
@@ -557,6 +560,9 @@ public class CouponController extends BaseController {
 	public String memberConponPayDetailInfo(HttpServletRequest request,Long couponOrderId) {
 
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+		if(member==null){
+			return ApiUtils.error("请登录后操作");
+		}
 		if (couponOrderId==null){
 			return ApiUtils.error("该订单Id为空,请传正确的订单Id");
 		}
@@ -572,6 +578,37 @@ public class CouponController extends BaseController {
 		List<CouponDetail> couponDetailList = couponDetailService.findList("buyOrderId", couponPayDetail.getId());
 
 		return ApiUtils.success(ConponPayDetailResult.build(couponPayDetail,coupon,couponDetailList));
+	}
+
+
+	/**
+	 * 取消优惠券订单
+	 * @param request
+	 * @param couponOrderId
+	 * @return
+	 */
+	@RequestMapping(value = "/cancel/couponPayDetail", method = RequestMethod.POST)
+	public String conponPayDetailCancel(HttpServletRequest request,Long couponOrderId) {
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+		if(member==null){
+			return ApiUtils.error("请登录后操作");
+		}
+		if (couponOrderId==null){
+			return ApiUtils.error("该订单Id为空,请传正确的订单Id");
+		}
+		CouponPayDetail couponPayDetail = couponPayDetailService.find(couponOrderId);
+		if (couponPayDetail==null){
+			return ApiUtils.error("该订单不存在");
+		}
+		if (couponPayDetail.getCouponOrderState()==0 || couponPayDetail.getCouponOrderState()==40){
+			return ApiUtils.error("该订单已取消或已完成");
+		}
+
+		if (couponPayDetail.getCouponOrderState()==10){//待付款
+			couponPayDetailService.updateStateCouponPat(couponPayDetail.getId(),0);
+		}
+
+		return ApiUtils.success();
 	}
 
 }
