@@ -323,4 +323,10 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateStateCouponPat" parameterType="map">
+        UPDATE rd_coupon_pay_detail
+        set
+        coupon_order_state = #{couponOrderState}
+        WHERE id = #{id}
+    </update>
 </mapper>
