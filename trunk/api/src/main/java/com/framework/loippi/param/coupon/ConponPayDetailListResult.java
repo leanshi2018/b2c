@@ -108,10 +108,14 @@ public class ConponPayDetailListResult {
 			result.setCouponNumber(cpd.getCouponNumber());
 			result.setOrderAmount(cpd.getOrderAmount());
 			if (cpd.getCouponOrderState()==40){
-				result.setOrderStateS("交易完成");
+				if (cpd.getRefundState()==1){
+					result.setOrderStateS("已退款");
+				}else{
+					result.setOrderStateS("交易完成");
+				}
 			}else if (cpd.getCouponOrderState()==10){
 				result.setOrderStateS("待付款");
-			}else if (cpd.getCouponOrderState()==10){
+			}else if (cpd.getCouponOrderState()==0){
 				result.setOrderStateS("已取消");
 			}
 			results.add(result);
