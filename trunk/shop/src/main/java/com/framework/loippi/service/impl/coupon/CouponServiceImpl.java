@@ -156,6 +156,8 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
                 log.setCouponSn(couponDetail.getCouponSn());
                 log.setTransPeriod(periodCode);
                 log.setSerialNum(serialNum);
+                log.setReceiveId(couponDetail.getReceiveId());
+                log.setReceiveNickName(couponDetail.getReceiveNickName());
                 logs.add(log);
             }
         }
