@@ -104,11 +104,11 @@ public class CouponPayDetail implements GenericEntity {
 	 * */
 	private BigDecimal orderAmount;
 	/**
-	 * 订单状态：0:已取消;5待审核;10:待付款;40:交易完成;
+	 * 订单状态：0:已取消;10:待付款;40:交易完成;
 	 * */
 	private Integer couponOrderState;
 	/**
-	 * 退款状态:0是无退款,1是部分退款,2是全部退款
+	 * 退款状态:0是无退款,1是全部退款
 	 * */
 	private Integer refundState;
 	/**

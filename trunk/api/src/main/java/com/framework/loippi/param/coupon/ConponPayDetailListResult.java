@@ -46,6 +46,10 @@ public class ConponPayDetailListResult {
 	 */
 	private String couponName;
 	/**
+	 * 优惠券售价
+	 */
+	private BigDecimal couponPrice;
+	/**
 	 * 优惠券图片
 	 */
 	private String couponImage;
@@ -99,6 +103,7 @@ public class ConponPayDetailListResult {
 			for (Coupon coupon : coupons) {
 				if (coupon.getId().equals(cpd.getCouponId())){
 					result.setCouponImage(coupon.getImage());
+					result.setCouponPrice(coupon.getCouponPrice());
 				}
 			}
 			result.setCreateTime(cpd.getCreateTime());
@@ -108,10 +113,14 @@ public class ConponPayDetailListResult {
 			result.setCouponNumber(cpd.getCouponNumber());
 			result.setOrderAmount(cpd.getOrderAmount());
 			if (cpd.getCouponOrderState()==40){
-				result.setOrderStateS("交易完成");
+				if (cpd.getRefundState()==1){
+					result.setOrderStateS("已退款");
+				}else{
+					result.setOrderStateS("交易完成");
+				}
 			}else if (cpd.getCouponOrderState()==10){
 				result.setOrderStateS("待付款");
-			}else if (cpd.getCouponOrderState()==10){
+			}else if (cpd.getCouponOrderState()==0){
 				result.setOrderStateS("已取消");
 			}
 			results.add(result);
