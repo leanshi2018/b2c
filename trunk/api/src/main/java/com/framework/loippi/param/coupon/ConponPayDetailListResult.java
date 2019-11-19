@@ -46,6 +46,10 @@ public class ConponPayDetailListResult {
 	 */
 	private String couponName;
 	/**
+	 * 优惠券售价
+	 */
+	private BigDecimal couponPrice;
+	/**
 	 * 优惠券图片
 	 */
 	private String couponImage;
@@ -99,6 +103,7 @@ public class ConponPayDetailListResult {
 			for (Coupon coupon : coupons) {
 				if (coupon.getId().equals(cpd.getCouponId())){
 					result.setCouponImage(coupon.getImage());
+					result.setCouponPrice(coupon.getCouponPrice());
 				}
 			}
 			result.setCreateTime(cpd.getCreateTime());
