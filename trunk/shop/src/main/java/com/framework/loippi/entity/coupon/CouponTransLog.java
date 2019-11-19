@@ -79,4 +79,14 @@ public class CouponTransLog implements GenericEntity {
      */
     @Column(name = "serial_num")
     private String serialNum;
+    /**
+     * 领取人id
+     */
+    @Column(name = "receive_id")
+    private String receiveId;
+    /**
+     * 领取人会员昵称
+     */
+    @Column(name = "receive_nick_name")
+    private String receiveNickName;
 }

@@ -663,20 +663,38 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         List<CouponDetail> couponDetails = couponDetailService.findList("useOrderId", orderId);
         if(couponDetails!=null&&couponDetails.size()>0){//查找出使用在当前取消订单中的优惠券，退还
             for (CouponDetail couponDetail : couponDetails) {
-                couponDetail.setUseState(2);//修改为未使用
-                couponDetail.setUseTime(null);
-                couponDetail.setUseOrderId(null);
-                couponDetail.setUseOrderPayStatus(null);
-                couponDetailService.update(couponDetail);
-                //修改couponUser
-                List<CouponUser> couponUsers = couponUserService.findList(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",memberId));
-                if(couponUsers==null||couponUsers.size()==0){
-                    throw new RuntimeException("优惠券拥有记录异常");
+                //可能在订单取消时，当前订单选取的优惠券已过期，判断是退换优惠券还是过期优惠券
+                Coupon coupon = couponService.find(couponDetail.getCouponId());
+                if(coupon!=null&&coupon.getStatus()==4){
+                    //回收优惠券
+                    if(coupon.getUseMoneyFlag()==1){//退款回收 TODO
+
+                    }else {//回收
+                        couponDetail.setUseState(3);
+                        couponDetail.setUseTime(null);
+                        couponDetail.setUseOrderId(null);
+                        couponDetail.setUseOrderPayStatus(null);
+                        couponDetail.setRefundState(0);
+                        couponDetail.setRefundSum(BigDecimal.ZERO);
+                        couponDetailService.update(couponDetail);
+                    }
+                }else if(coupon!=null&&coupon.getStatus()==2){
+                    //退还优惠券
+                    couponDetail.setUseState(2);//修改为未使用
+                    couponDetail.setUseTime(null);
+                    couponDetail.setUseOrderId(null);
+                    couponDetail.setUseOrderPayStatus(null);
+                    couponDetailService.update(couponDetail);
+                    //修改couponUser
+                    List<CouponUser> couponUsers = couponUserService.findList(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",memberId));
+                    if(couponUsers==null||couponUsers.size()==0){
+                        throw new RuntimeException("优惠券拥有记录异常");
+                    }
+                    CouponUser couponUser = couponUsers.get(0);
+                    couponUser.setUseNum(couponUser.getUseNum()-1);
+                    couponUser.setOwnNum(couponUser.getOwnNum()+1);
+                    couponUserService.update(couponUser);
                 }
-                CouponUser couponUser = couponUsers.get(0);
-                couponUser.setUseNum(couponUser.getUseNum()-1);
-                couponUser.setOwnNum(couponUser.getOwnNum()+1);
-                couponUserService.update(couponUser);
             }
         }
     }
