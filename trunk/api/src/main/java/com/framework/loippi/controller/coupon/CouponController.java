@@ -619,16 +619,16 @@ public class CouponController extends BaseController {
 		if (couponOrderSn==null||"".equals(couponOrderSn)){
 			return ApiUtils.error("该订单编号为空,请传正确的订单编号");
 		}
-		CouponPayDetail couponPayDetail = couponPayDetailService.findBySn(couponOrderSn);
-		if (couponPayDetail==null){
+		List<CouponPayDetail> couponPayDetails = couponPayDetailService.findByPaySn(couponOrderSn);
+		if (couponPayDetails.size()==0){
 			return ApiUtils.error("该订单不存在");
 		}
-		if (couponPayDetail.getCouponOrderState()==0 || couponPayDetail.getCouponOrderState()==40){
+		if (couponPayDetails.get(0).getCouponOrderState()==0 || couponPayDetails.get(0).getCouponOrderState()==40){
 			return ApiUtils.error("该订单已取消或已完成");
 		}
 
-		if (couponPayDetail.getCouponOrderState()==10){//待付款
-			couponPayDetailService.updateStateCouponPat(couponPayDetail.getId(),0);
+		if (couponPayDetails.get(0).getCouponOrderState()==10){//待付款
+			couponPayDetailService.updateStateCouponPat(couponPayDetails.get(0).getId(),0);
 		}
 
 		return ApiUtils.success();
