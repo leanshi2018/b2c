@@ -71,6 +71,15 @@
         <if test="receiveNickName != null and receiveNickName != ''">
             AND receive_nick_name = #{receiveNickName,jdbcType=VARCHAR}
         </if>
+        <if test="transTimeLeft !=null and transTimeLeft != ''">
+            <![CDATA[and trans_time >= #{transTimeLeft}]]>
+        </if>
+        <if test="transTimeRight !=null and transTimeRight != ''">
+            <![CDATA[and trans_time <= #{transTimeRight}]]>
+        </if>
+        <if test="couponLikeName !=null and couponLikeName != ''">
+            and coupon_name like CONCAT('%',#{couponLikeName},'%')
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">

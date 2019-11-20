@@ -192,6 +192,9 @@
         <if test="searchUseTime !=null and searchUseTime != ''">
             <![CDATA[and use_end_time >= #{searchUseTime}]]>
         </if>
+        <if test="couponLikeName !=null and couponLikeName != ''">
+            and coupon_name like CONCAT('%',#{couponLikeName},'%')
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
@@ -394,7 +397,7 @@
         <where>1=1
             <include refid="where_column"/>
         </where>
-        order by use_end_time desc
+        order by create_time desc
     </select>
 
     <!--查询指定时间超过优惠券使用时间，即优惠券过期-->

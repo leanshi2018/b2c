@@ -175,7 +175,7 @@ public class ShopCouponController extends GenericController {
             return Constants.MSG_URL;
         }
         model.addAttribute("coupon",coupon);
-        return "";//TODO 跳转到展示优惠券详情页面
+        return "activity/shop_activity/coupon_edit";//TODO 跳转到展示优惠券详情页面
     }
 
     /**
@@ -222,7 +222,7 @@ public class ShopCouponController extends GenericController {
             if(targetStatus==3){
                 model.addAttribute("msg", "审核失败");
             }
-            return null;//TODO 审核通过后跳转页面
+            return "redirect:coupon/list.jhtml";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("msg", "网络异常，请稍后重试");
@@ -277,7 +277,7 @@ public class ShopCouponController extends GenericController {
         Pageable pager = new Pageable();
         pager.setPageNumber(pageNo);
         pager.setPageSize(pageSize);
-        pager.setOrderProperty("use_end_time");
+        pager.setOrderProperty("create_time");
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setParameter(coupon);
         Page<Coupon> page = couponService.findByPage(pager);
@@ -302,8 +302,8 @@ public class ShopCouponController extends GenericController {
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setParameter(couponTransLog);
         Page<CouponTransLog> page = couponTransLogService.findByPage(pager);
-        model.addAttribute("couponList", page);
-        return "";//TODO
+        model.addAttribute("couponTransLogList", page);
+        return "activity/shop_activity/transfer _list";//TODO
     }
 
     /**

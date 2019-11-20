@@ -89,4 +89,18 @@ public class CouponTransLog implements GenericEntity {
      */
     @Column(name = "receive_nick_name")
     private String receiveNickName;
+
+    //**************************查询字段***********************************
+    /**
+     * 查询使用优惠券名称  模糊查询
+     */
+    private String couponLikeName;
+    /**
+     * 转增时间范围左
+     */
+    private String transTimeLeft;
+    /**
+     * 转增时间范围右
+     */
+    private String transTimeRight;
 }
