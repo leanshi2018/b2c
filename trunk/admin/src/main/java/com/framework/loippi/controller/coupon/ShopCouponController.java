@@ -5,6 +5,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.coupon.CouponTransLog;
+import com.framework.loippi.service.coupon.CouponTransLogService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
@@ -42,6 +44,8 @@ public class ShopCouponController extends GenericController {
     @Resource
     private CouponDetailService couponDetailService;
     @Resource
+    private CouponTransLogService couponTransLogService;
+    @Resource
     private TwiterIdService twiterIdService;
 
     /**
@@ -64,7 +68,7 @@ public class ShopCouponController extends GenericController {
         Pageable pager = new Pageable();
         pager.setPageSize(pageSize);
         pager.setPageNumber(pageNo);
-        pager.setOrderProperty("createTime");
+        pager.setOrderProperty("create_time");
         pager.setOrderDirection(Order.Direction.DESC);
         if (!StringUtil.isEmpty(sendTimeStr)) {
             coupon.setSearchSendTime(sendTimeStr);
@@ -141,6 +145,8 @@ public class ShopCouponController extends GenericController {
                     model.addAttribute("msg", errorMsg);
                     return Constants.MSG_URL;
                 }
+                //model.addAttribute("msg", "成功");
+                return "redirect:coupon/list.jhtml";
             }
         }
         model.addAttribute("msg", "请登录后再进行优惠券相关操作");
@@ -265,7 +271,7 @@ public class ShopCouponController extends GenericController {
     @RequestMapping("/coupon/list")
     public String list(ModelMap model,
                        @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
-                       @RequestParam(required = false, value = "pageSize", defaultValue = "15") int pageSize,
+                       @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
                        @ModelAttribute Coupon coupon) {
         //参数整理
         Pageable pager = new Pageable();
@@ -277,6 +283,27 @@ public class ShopCouponController extends GenericController {
         Page<Coupon> page = couponService.findByPage(pager);
         model.addAttribute("couponList", page);
         return "/activity/shop_activity/coupon_list";
+    }
+
+    /**
+     * 优惠券转账日志查询
+     *
+     */
+    @RequestMapping("/coupon/translog")
+    public String translogSearch(ModelMap model,
+                       @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                       @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
+                       @ModelAttribute CouponTransLog couponTransLog) {
+        //参数整理
+        Pageable pager = new Pageable();
+        pager.setPageNumber(pageNo);
+        pager.setPageSize(pageSize);
+        pager.setOrderProperty("trans_time");
+        pager.setOrderDirection(Order.Direction.DESC);
+        pager.setParameter(couponTransLog);
+        Page<CouponTransLog> page = couponTransLogService.findByPage(pager);
+        model.addAttribute("couponList", page);
+        return "";//TODO
     }
 
     /**

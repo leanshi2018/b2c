@@ -14,15 +14,17 @@
         <result property="couponName" column="coupon_name"/>
         <result property="couponSn" column="coupon_sn"/>
         <result property="serialNum" column="serial_num"/>
+        <result property="receiveId" column="receive_id"/>
+        <result property="receiveNickName" column="receive_nick_name"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,turn_id ,turn_nick_name ,accept_id ,accept_nick_name ,remark ,trans_time ,trans_period ,coupon_id ,coupon_name ,coupon_sn,serial_num
+        id ,turn_id ,turn_nick_name ,accept_id ,accept_nick_name ,remark ,trans_time ,trans_period ,coupon_id ,coupon_name ,coupon_sn,serial_num,receive_id,receive_nick_name
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{turnId},#{turnNickName},#{acceptId},#{acceptNickName},#{remark},#{transTime},#{transPeriod},#{couponId},#{couponName},#{couponSn},#{serialNum}
+        #{id},#{turnId},#{turnNickName},#{acceptId},#{acceptNickName},#{remark},#{transTime},#{transPeriod},#{couponId},#{couponName},#{couponSn},#{serialNum},#{receiveId},#{receiveNickName}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -63,6 +65,12 @@
         <if test="serialNum != null and serialNum != ''">
             AND serial_num = #{serialNum,jdbcType=VARCHAR}
         </if>
+        <if test="receiveId != null and receiveId != ''">
+            AND receive_id = #{receiveId,jdbcType=VARCHAR}
+        </if>
+        <if test="receiveNickName != null and receiveNickName != ''">
+            AND receive_nick_name = #{receiveNickName,jdbcType=VARCHAR}
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
@@ -101,6 +109,12 @@
         </if>
         <if test="serialNum != null and serialNum != ''">
             serial_num = #{serialNum,jdbcType=VARCHAR},
+        </if>
+        <if test="receiveId != null and receiveId != ''">
+            receive_id = #{receiveId,jdbcType=VARCHAR},
+        </if>
+        <if test="receiveNickName != null and receiveNickName != ''">
+            receive_nick_name = #{receiveNickName,jdbcType=VARCHAR},
         </if>
     </sql>
 
@@ -191,7 +205,7 @@
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.id},#{item.turnId},#{item.turnNickName},#{item.acceptId},#{item.acceptNickName},#{item.remark},#{item.transTime},
-            #{item.transPeriod},#{item.couponId},#{item.couponName},#{item.couponSn},#{serialNum})
+            #{item.transPeriod},#{item.couponId},#{item.couponName},#{item.couponSn},#{item.serialNum},#{item.receiveId},#{item.receiveNickName})
         </foreach>
     </insert>
 </mapper>

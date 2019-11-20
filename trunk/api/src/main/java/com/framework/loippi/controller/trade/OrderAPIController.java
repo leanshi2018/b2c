@@ -606,7 +606,6 @@ public class OrderAPIController extends BaseController {
             orderService.ProcessingIntegrals(paysn, i, shopMember, pay, shoppingPointSr);
             //orderService.ProcessingIntegrals(paysn, integration, shopMember, pay, shoppingPointSr);
         }
-
         List<ShopOrder> orderList = orderService.findList("paySn", paysn);
         if (CollectionUtils.isEmpty(orderList)) {
             return ApiUtils.error("订单不存在");
