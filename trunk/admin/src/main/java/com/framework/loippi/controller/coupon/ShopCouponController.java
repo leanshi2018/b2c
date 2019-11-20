@@ -145,8 +145,8 @@ public class ShopCouponController extends GenericController {
                     model.addAttribute("msg", errorMsg);
                     return Constants.MSG_URL;
                 }
-                model.addAttribute("msg", "成功");
-                return Constants.MSG_URL;
+                //model.addAttribute("msg", "成功");
+                return "redirect:coupon/list.jhtml";
             }
         }
         model.addAttribute("msg", "请登录后再进行优惠券相关操作");
