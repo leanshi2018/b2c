@@ -81,7 +81,7 @@
             AND receive_nick_name = #{receiveNickName,jdbcType=VARCHAR}
         </if>
         <if test="receiveTime != null">
-            AND receive_time = #{receiveTime,jdbcType=DATETIME}
+            AND receive_time = #{receiveTime}
         </if>
         <if test="holdId != null and holdId != ''">
             AND hold_id = #{holdId,jdbcType=VARCHAR}
@@ -90,19 +90,19 @@
             AND hold_nick_name = #{holdNickName,jdbcType=VARCHAR}
         </if>
         <if test="holdTime != null">
-            AND hold_time = #{holdTime,jdbcType=DATETIME}
+            AND hold_time = #{holdTime}
         </if>
         <if test="useStartTime != null">
-            AND use_start_time = #{useStartTime,jdbcType=DATETIME}
+            AND use_start_time = #{useStartTime}
         </if>
         <if test="useEndTime != null">
-            AND use_end_time = #{useEndTime,jdbcType=DATETIME}
+            AND use_end_time = #{useEndTime}
         </if>
         <if test="useState != null">
             AND use_state = #{useState,jdbcType=INTEGER}
         </if>
         <if test="useTime != null">
-            AND use_time = #{useTime,jdbcType=DATETIME}
+            AND use_time = #{useTime}
         </if>
         <if test="useOrderId != null">
             AND use_order_id = #{useOrderId,jdbcType=BIGINT}
@@ -147,7 +147,7 @@
             receive_nick_name = #{receiveNickName,jdbcType=VARCHAR},
         </if>
         <if test="receiveTime != null">
-            receive_time = #{receiveTime,jdbcType=DATETIME},
+            receive_time = #{receiveTime},
         </if>
         <if test="holdId != null and holdId != ''">
             hold_id = #{holdId,jdbcType=VARCHAR},
@@ -156,19 +156,19 @@
             hold_nick_name = #{holdNickName,jdbcType=VARCHAR},
         </if>
         <if test="holdTime != null">
-            hold_time = #{holdTime,jdbcType=DATETIME},
+            hold_time = #{holdTime},
         </if>
         <if test="useStartTime != null">
-            use_start_time = #{useStartTime,jdbcType=DATETIME},
+            use_start_time = #{useStartTime},
         </if>
         <if test="useEndTime != null">
-            use_end_time = #{useEndTime,jdbcType=DATETIME},
+            use_end_time = #{useEndTime},
         </if>
         <if test="useState != null">
             use_state = #{useState,jdbcType=INTEGER},
         </if>
         <if test="useTime != null">
-            use_time = #{useTime,jdbcType=DATETIME},
+            use_time = #{useTime},
         </if>
         <if test="useOrderId != null">
             use_order_id = #{useOrderId,jdbcType=BIGINT},

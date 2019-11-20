@@ -89,108 +89,85 @@
         <#--            </table>-->
         <#--        </form>-->
 
-        <form method="post"  action="">
+        <form method="post"  action="${base}/admin/plarformShopCoupon/coupon/translog.jhtml">
             <table class="table tb-type2">
                 <thead>
                 <tr class="thead">
                     <th class="w24"><input type="checkbox" id="idsAll" class="checkitem"></th>
                     <th class="align-center">优惠券序号</th>
                     <th class="align-center">优惠券名称</th>
-                    <th class="align-center">购买人昵称</th>
-                    <th class="align-center">数量</th>
-                    <th class="align-center">商品总金额</th>
-                    <th class="align-center">购物积分支付</th>
-                    <th class="align-center">实付金额</th>
-                    <th class="align-center">订单状态</th>
-                    <th class="align-center">支付方式</th>
-                    <th class="align-center">支付号</th>
-                    <th class="align-center">退款状态</th>
-                    <th class="align-center">退款数量</th>
-                    <th class="align-center">退款金额</th>
-                    <th class="align-center">下单时间</th>
-                    <th class="align-center">支付时间</th>
-                    <th class="align-center">更新时间</th>
-                    <th class="align-center">退款时间</th>
+                    <th class="align-center">领取人ID</th>
+                    <th class="align-center">领取人昵称</th>
+                    <th class="align-center">转赠人ID</th>
+                    <th class="align-center">转赠人昵称</th>
+                    <th class="align-center">持有人ID</th>
+                    <th class="align-center">持有人昵称</th>
+                    <th class="align-center">领取时间</th>
+                    <th class="align-center">转赠时间</th>
+                    <th class="align-center">使用时间</th>
+                    <th class="align-center">状态</th>
                     <th class=" align-center"><@spring.message "operation"/></th>
                 </tr>
                 </thead>
                 <tbody>
-                <#list page.content as coupons>
-                    <tr>
-                        <td><input type="checkbox" name="ids" value="${coupons.id}" class="checkitem"></td>
-                        <td style="text-align: left">
-                            ${coupons.couponOrderSn}
-                        </td>
-                        <td style="text-align: left">
-                            ${coupons.receiveId}
-                        </td>
-                        <td style="text-align: left">
-                            ${coupons.receiveNickName}
-                        </td>
-                        <td style="text-align: left">
-                            ${coupons.couponNumber}
-                        </td>
-                        <td style="text-align: left">
-                            ${coupons.couponAmount}
-                        </td>
-                        <td>${coupons.pointAmount}</td>
-                        <td>${coupons.orderAmount}</td>
-                        <td>
-                            <#if coupons.couponOrderState == 0>已取消</#if>
-                            <#if coupons.couponOrderState == 10>待付款</#if>
-                            <#if coupons.couponOrderState == 40>交易完成</#if>
-                        </td>
-                        <td>
-                            ${coupons.paymentName}
-                        </td>
-                        <td>
-                            ${coupons.paymentId}
-                        </td>
-                        <td>
-                            <#if coupons.refundState == 0>无退款</#if>
-                            <#if coupons.refundState == 1>部分退款</#if>
-                            <#if coupons.refundState == 2>全部退款</#if>
-                        </td>
-                        <td>
-                            ${coupons.refundCouponNum}
-                        </td>
-                        <td>
-                            ${coupons.refundAmount}
-                        </td>
-                        <td>
-                            <#if coupons.createTime??>
-                                ${coupons.createTime?string("yyyy-MM-dd HH:mm:ss")}
-                            </#if>
-                        </td>
-                        <td>
-                            <#if coupons.paymentTime??>
-                                ${coupons.paymentTime?string("yyyy-MM-dd HH:mm:ss")}
-                            </#if>
-                        </td>
-                        <td>
-                            <#if coupons.updateTime??>
-                                ${coupons.updateTime?string("yyyy-MM-dd HH:mm:ss")}
-                            </#if>
-                        </td>
-                        <td>
-                            <#if coupons.refundTime??>
-                                ${coupons.refundTime?string("yyyy-MM-dd HH:mm:ss")}
-                            </#if>
-                        </td>
-                        <td>
-                            <a href="">查看</a>||
-                            <a href="javascript:void(0)" onclick="deleteActivity('${coupons.id}')">取消订单</a>
-                        </td>
-                    </tr>
-                </#list>
-                </tbody>
-                <tfoot class="tfoot">
-                <tr>
-                    <td colspan="20">
-                        <@layout.pager page/>
-                    </td>
-                </tr>
-                </tfoot>
+<#--                <#list page.content as coupons>-->
+<#--                    <tr>-->
+<#--                        <td><input type="checkbox" name="ids" value="${coupons.id}" class="checkitem"></td>-->
+<#--                        <td style="text-align: left">-->
+<#--                            ${coupons.couponOrderSn}-->
+<#--                        </td>-->
+<#--                        <td style="text-align: left">-->
+<#--                            ${coupons.receiveId}-->
+<#--                        </td>-->
+<#--                        <td style="text-align: left">-->
+<#--                            ${coupons.receiveNickName}-->
+<#--                        </td>-->
+<#--                        <td style="text-align: left">-->
+<#--                            ${coupons.couponNumber}-->
+<#--                        </td>-->
+<#--                        <td style="text-align: left">-->
+<#--                            ${coupons.couponAmount}-->
+<#--                        </td>-->
+<#--                        <td>${coupons.pointAmount}</td>-->
+<#--                        <td>${coupons.orderAmount}</td>-->
+<#--                        <td>-->
+<#--                            <#if coupons.couponOrderState == 0>已取消</#if>-->
+<#--                            <#if coupons.couponOrderState == 10>待付款</#if>-->
+<#--                            <#if coupons.couponOrderState == 40>交易完成</#if>-->
+<#--                        </td>-->
+<#--                        <td>-->
+<#--                            <#if coupons.refundState == 0>无退款</#if>-->
+<#--                            <#if coupons.refundState == 1>部分退款</#if>-->
+<#--                            <#if coupons.refundState == 2>全部退款</#if>-->
+<#--                        </td>-->
+<#--                        <td>-->
+<#--                            <#if coupons.createTime??>-->
+<#--                                ${coupons.createTime?string("yyyy-MM-dd HH:mm:ss")}-->
+<#--                            </#if>-->
+<#--                        </td>-->
+<#--                        <td>-->
+<#--                            <#if coupons.paymentTime??>-->
+<#--                                ${coupons.paymentTime?string("yyyy-MM-dd HH:mm:ss")}-->
+<#--                            </#if>-->
+<#--                        </td>-->
+<#--                        <td>-->
+<#--                            <#if coupons.updateTime??>-->
+<#--                                ${coupons.updateTime?string("yyyy-MM-dd HH:mm:ss")}-->
+<#--                            </#if>-->
+<#--                        </td>-->
+<#--                        <td>-->
+<#--                            ${coupons.paymentId}-->
+<#--                        </td>-->
+<#--                    </tr>-->
+<#--                </#list>-->
+<#--                </tbody>-->
+<#--                <tfoot class="tfoot">-->
+<#--                <tr>-->
+<#--                    <td colspan="20">-->
+<#--                        <@layout.pager page/>-->
+<#--                    </td>-->
+<#--                </tr>-->
+<#--                </tfoot>-->
             </table>
         </form>
     </div>
