@@ -1,14 +1,15 @@
 package com.framework.loippi.entity.activity;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * 促销活动基本信息Entity
@@ -118,12 +119,19 @@ public class ShopActivity implements GenericEntity, Cloneable {
     private Integer goodsType;
 
     /**
+     * //促销活动  1    //团购 50  //限时抢 60  //优惠券 90
      * 直接对应促销规则中的活动类型
      * /满减/满免邮/满送/满折/团购/限时抢购
      * 满减10/满免邮20/满送30/满折40/团购50/限时抢购60/满免税70/满免邮免税80/满任选90/满送卷100/折扣110/一口价120
      */
     @Column(name = "ACTIVITY_TYPE")
     private Integer activityType;
+
+    /**
+     * 优惠券id
+     */
+    @Column(name = "coupon_id")
+    private Long couponId;
 
     /**
      * 活动规则id
@@ -145,7 +153,7 @@ public class ShopActivity implements GenericEntity, Cloneable {
     private Integer auditStatus;
 
     /**
-     * 优惠类型分类id,如优惠券分类id
+     * 分类id-秒杀则为场次
      */
     @Column(name = "activity_class_id")
     private Long activityClassId;

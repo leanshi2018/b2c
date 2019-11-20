@@ -14,6 +14,7 @@
         <result property="promotionType" column="PROMOTION_TYPE"/>
         <result property="activityDescription" column="ACTIVITY_DESCRIPTION"/>
         <result property="activityType" column="ACTIVITY_TYPE"/>
+        <result property="couponId" column="coupon_id"/>
         <result property="auditStatus" column="AUDIT_STATUS"/>
         <result property="activityStatus" column="ACTIVITY_STATUS"/>
         <result property="activityPicture" column="ACTIVITY_PICTURE"/>
@@ -34,11 +35,11 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,name ,activity_name ,sub_activity_name ,PROMOTION_RULE_ID ,start_time ,end_time ,GOODS_TYPE ,PROMOTION_TYPE ,RESTRICTION_NUM ,ACTIVITY_DESCRIPTION ,ACTIVITY_TYPE ,AUDIT_STATUS ,ACTIVITY_STATUS ,ACTIVITY_PICTURE ,create_time ,update_time ,is_recommend ,is_free_shipping ,sort ,activity_picture_pc ,activity_class_id ,activity_class ,member_type
+        id ,name ,activity_name ,sub_activity_name ,PROMOTION_RULE_ID ,start_time ,end_time ,GOODS_TYPE ,PROMOTION_TYPE ,RESTRICTION_NUM ,ACTIVITY_DESCRIPTION ,ACTIVITY_TYPE ,coupon_id ,AUDIT_STATUS ,ACTIVITY_STATUS ,ACTIVITY_PICTURE ,create_time ,update_time ,is_recommend ,is_free_shipping ,sort ,activity_picture_pc ,activity_class_id ,activity_class ,member_type
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{name},#{activityName},#{subActivityName},#{promotionRuleId},#{startTime},#{endTime},#{goodsType},#{promotionType},#{restrictionNum},#{activityDescription},#{activityType},#{auditStatus},#{activityStatus},#{activityPicture},#{createTime},#{updateTime},#{isRecommend},#{isFreeShipping},#{sort},#{activityPicturePc},#{activityClassId},#{activityClass},#{memberType}
+        #{id},#{name},#{activityName},#{subActivityName},#{promotionRuleId},#{startTime},#{endTime},#{goodsType},#{promotionType},#{restrictionNum},#{activityDescription},#{activityType},#{couponId},#{auditStatus},#{activityStatus},#{activityPicture},#{createTime},#{updateTime},#{isRecommend},#{isFreeShipping},#{sort},#{activityPicturePc},#{activityClassId},#{activityClass},#{memberType}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -75,6 +76,9 @@
         </if>
         <if test="activityType != null and activityType != ''">
             AND ACTIVITY_TYPE = #{activityType,jdbcType=INTEGER}
+        </if>
+        <if test="couponId != null ">
+            AND coupon_id = #{couponId}
         </if>
         <if test="auditStatus != null and auditStatus != ''">
             AND AUDIT_STATUS = #{auditStatus,jdbcType=INTEGER}
