@@ -25,4 +25,6 @@ public interface CouponPayDetailService extends GenericService<CouponPayDetail, 
 	void updateCouponPayStateFinish(String paysn, String tradeSn, String paymentBranch);
 
 	void updateStateCouponPat(Long id, int state);
+
+	CouponPayDetail findBySn(Long couponOrderSn);
 }

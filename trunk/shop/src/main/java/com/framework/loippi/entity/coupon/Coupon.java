@@ -1,6 +1,5 @@
 package com.framework.loippi.entity.coupon;
 
-import com.framework.loippi.mybatis.ext.annotation.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
@@ -235,4 +235,10 @@ public class Coupon implements GenericEntity {
      * 当前用户当前订单使用张数
      */
     private Integer customerUseNum;
+    /**
+     * 是否可购买 0可买 1不可
+     */
+    private Integer canBuy;
+
+
 }

@@ -124,6 +124,26 @@ public class CouponController extends BaseController {
 		if (coupon == null) {
 			return jsonFail("优惠券不存在");
 		}
+		Date startTime = coupon.getSendStartTime();//优惠券发放开始时间
+		Date endTime = coupon.getSendEndTime();//优惠券发放结束时间
+
+		Calendar date = Calendar.getInstance();
+		date.setTime(new Date());
+
+		Calendar begin = Calendar.getInstance();
+		begin.setTime(startTime);
+
+		Calendar end = Calendar.getInstance();
+		end.setTime(endTime);
+
+		if (date.after(begin) && date.before(end)) {
+			System.out.println("在区间");
+			coupon.setCanBuy(0);
+		}else {
+			System.out.println("不在区间");
+			coupon.setCanBuy(1);
+		}
+
 
 		return ApiUtils.success(coupon);
 	}
@@ -587,19 +607,19 @@ public class CouponController extends BaseController {
 	/**
 	 * 取消优惠券订单
 	 * @param request
-	 * @param couponOrderId
+	 * @param couponOrderSn
 	 * @return
 	 */
 	@RequestMapping(value = "/cancel/couponPayDetail", method = RequestMethod.POST)
-	public String conponPayDetailCancel(HttpServletRequest request,Long couponOrderId) {
+	public String conponPayDetailCancel(HttpServletRequest request,Long couponOrderSn) {
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
 		if(member==null){
 			return ApiUtils.error("请登录后操作");
 		}
-		if (couponOrderId==null){
+		if (couponOrderSn==null){
 			return ApiUtils.error("该订单Id为空,请传正确的订单Id");
 		}
-		CouponPayDetail couponPayDetail = couponPayDetailService.find(couponOrderId);
+		CouponPayDetail couponPayDetail = couponPayDetailService.findBySn(couponOrderSn);
 		if (couponPayDetail==null){
 			return ApiUtils.error("该订单不存在");
 		}

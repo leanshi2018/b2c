@@ -520,5 +520,10 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		couponPayDetailDao.updateStateCouponPat(map);
 	}
 
+	@Override
+	public CouponPayDetail findBySn(Long couponOrderSn) {
+		return couponPayDetailDao.findBySn(couponOrderSn);
+	}
+
 
 }
