@@ -303,7 +303,7 @@ public class ShopCouponController extends GenericController {
         pager.setParameter(couponTransLog);
         Page<CouponTransLog> page = couponTransLogService.findByPage(pager);
         model.addAttribute("couponTransLogList", page);
-        return "";//TODO
+        return "activity/shop_activity/transfer _list";//TODO
     }
 
     /**
