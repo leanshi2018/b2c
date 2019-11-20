@@ -521,7 +521,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 	}
 
 	@Override
-	public CouponPayDetail findBySn(Long couponOrderSn) {
+	public CouponPayDetail findBySn(String couponOrderSn) {
 		return couponPayDetailDao.findBySn(couponOrderSn);
 	}
 
