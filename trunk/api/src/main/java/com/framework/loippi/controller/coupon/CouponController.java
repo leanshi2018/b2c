@@ -519,7 +519,7 @@ public class CouponController extends BaseController {
 		}
 		Pageable pager = new Pageable(pageNumber, pageSize);
 		Map<String, Object> params = new HashMap<>();
-		params.put("mmCode", member.getMmCode());
+		params.put("receiveId", member.getMmCode());
 		List<CouponPayDetail> lists = null;
 		if (couponOrderState==null){
 			params.put("couponOrderState", couponOrderState);
