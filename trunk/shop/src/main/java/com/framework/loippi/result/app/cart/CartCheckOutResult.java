@@ -146,6 +146,10 @@ public class CartCheckOutResult {
      * 优惠券id
      */
     private Long couponId;
+    /**
+     * 优惠券使用说明
+     */
+    private String couponScopeRemark;
 
     @Data
     public static class selectShopOrderType {
@@ -366,6 +370,21 @@ public class CartCheckOutResult {
                 .setStoreGoodsContainers(StoreGoodsContainer.buildList(cartList, shopOrderDiscountType));
         cartCheckOutResult.setCouponId(Optional.ofNullable((Long) moneyMap.get("couponId")).orElse(null));
         ArrayList<Coupon> couponList = (ArrayList<Coupon>) moneyMap.get("couponList");
+        if(couponList!=null&&couponList.size()>0){
+            Boolean flag=false;
+            for (Coupon coupon : couponList) {
+                if(coupon.getId().equals(cartCheckOutResult.getCouponId())){
+                    cartCheckOutResult.setCouponScopeRemark(coupon.getScopeRemark());
+                    flag=true;
+                    break;
+                }
+            }
+            if(!flag){
+                cartCheckOutResult.setCouponScopeRemark("");
+            }
+        }else {
+            cartCheckOutResult.setCouponScopeRemark("");
+        }
         cartCheckOutResult.setCouponList(couponList);
         return cartCheckOutResult;
     }

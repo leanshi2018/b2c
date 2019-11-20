@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.annotation.Resource;
 
+import com.framework.loippi.utils.Paramap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,5 +36,14 @@ public class CouponDetailServiceImpl extends GenericServiceImpl<CouponDetail, Lo
 
         PageList<CouponUserLogResult> result = couponDetailDao.findLogResultByPage(pageable.getParameter(), pageable.getPageBounds());
         return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
+    }
+
+    /**
+     * 非金额支付优惠券过期下架回收
+     * @param paramap
+     */
+    @Override
+    public void recycleNoMoney(Paramap paramap) {
+        couponDetailDao.recycleNoMoney(paramap);
     }
 }

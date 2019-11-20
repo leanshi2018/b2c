@@ -115,16 +115,16 @@
             AND receive_type = #{receiveType,jdbcType=INTEGER}
         </if>
         <if test="sendStartTime != null">
-            AND send_start_time = #{sendStartTime,jdbcType=DATETIME}
+            AND send_start_time = #{sendStartTime}
         </if>
         <if test="sendEndTime != null">
-            AND send_end_time = #{sendEndTime,jdbcType=DATETIME}
+            AND send_end_time = #{sendEndTime}
         </if>
         <if test="useStartTime != null">
-            AND use_start_time = #{useStartTime,jdbcType=DATETIME}
+            AND use_start_time = #{useStartTime}
         </if>
         <if test="useEndTime != null">
-            AND use_end_time = #{useEndTime,jdbcType=DATETIME}
+            AND use_end_time = #{useEndTime}
         </if>
         <if test="personLimitNum != null">
             AND person_limit_num = #{personLimitNum,jdbcType=INTEGER}
@@ -160,7 +160,7 @@
             AND create_name = #{createName,jdbcType=VARCHAR}
         </if>
         <if test="createTime != null">
-            and create_time = #{createTime,jdbcType=DATETIME}
+            and create_time = #{createTime}
         </if>
         <if test="auditId != null">
             AND audit_id = #{auditId,jdbcType=BIGINT}
@@ -169,7 +169,7 @@
             AND audit_name = #{auditName,jdbcType=VARCHAR}
         </if>
         <if test="auditTime != null">
-            and audit_time = #{auditTime,jdbcType=DATETIME}
+            and audit_time = #{auditTime}
         </if>
         <if test="updateId != null">
             AND update_id = #{updateId,jdbcType=BIGINT}
@@ -178,7 +178,7 @@
             AND update_name = #{updateName,jdbcType=VARCHAR}
         </if>
         <if test="updateTime != null">
-            and update_time = #{updateTime,jdbcType=DATETIME}
+            and update_time = #{updateTime}
         </if>
         <if test="searchSendTime !=null and searchSendTime != ''">
             <![CDATA[and send_start_time <= #{searchSendTime}]]>
@@ -191,6 +191,9 @@
         </if>
         <if test="searchUseTime !=null and searchUseTime != ''">
             <![CDATA[and use_end_time >= #{searchUseTime}]]>
+        </if>
+        <if test="couponLikeName !=null and couponLikeName != ''">
+            and coupon_name like CONCAT('%',#{couponLikeName},'%')
         </if>
     </sql>
     <!-- 设置语句 -->
@@ -250,16 +253,16 @@
             receive_type = #{receiveType,jdbcType=INTEGER},
         </if>
         <if test="sendStartTime != null">
-            send_start_time = #{sendStartTime,jdbcType=DATETIME},
+            send_start_time = #{sendStartTime},
         </if>
         <if test="sendEndTime != null">
-            send_end_time = #{sendEndTime,jdbcType=DATETIME},
+            send_end_time = #{sendEndTime},
         </if>
         <if test="useStartTime != null">
-            use_start_time = #{useStartTime,jdbcType=DATETIME},
+            use_start_time = #{useStartTime},
         </if>
         <if test="useEndTime != null">
-            use_end_time = #{useEndTime,jdbcType=DATETIME},
+            use_end_time = #{useEndTime},
         </if>
         <if test="personLimitNum != null">
             person_limit_num = #{personLimitNum,jdbcType=INTEGER},
@@ -295,7 +298,7 @@
             create_name = #{createName,jdbcType=VARCHAR},
         </if>
         <if test="createTime != null">
-            create_time = #{createTime,jdbcType=DATETIME},
+            create_time = #{createTime},
         </if>
         <if test="auditId != null">
             audit_id = #{auditId,jdbcType=BIGINT},
@@ -304,7 +307,7 @@
             audit_name = #{auditName,jdbcType=VARCHAR},
         </if>
         <if test="auditTime != null">
-            audit_time = #{auditTime,jdbcType=DATETIME},
+            audit_time = #{auditTime},
         </if>
         <if test="updateId != null">
             update_id = #{updateId,jdbcType=BIGINT},
@@ -313,7 +316,7 @@
             update_name = #{updateName,jdbcType=VARCHAR},
         </if>
         <if test="updateTime != null">
-            update_time = #{updateTime,jdbcType=DATETIME},
+            update_time = #{updateTime},
         </if>
     </sql>
 
@@ -394,7 +397,7 @@
         <where>1=1
             <include refid="where_column"/>
         </where>
-        order by use_end_time desc
+        order by create_time desc
     </select>
 
     <!--查询指定时间超过优惠券使用时间，即优惠券过期-->

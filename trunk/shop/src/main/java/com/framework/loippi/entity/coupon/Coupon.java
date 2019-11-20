@@ -239,6 +239,8 @@ public class Coupon implements GenericEntity {
      * 是否可购买 0可买 1不可
      */
     private Integer canBuy;
-
-
+    /**
+     * 优惠券模糊查询名称
+     */
+    private String couponLikeName;
 }
