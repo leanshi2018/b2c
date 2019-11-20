@@ -58,7 +58,7 @@ public class ConponPayDetailResult {
 	/**
 	 * 是否可以赠送  0：不可以 1：可以
 	 */
-	private String whetherPresentS;
+	private Integer whetherPresent;
 	/**
 	 * 使用限制描述
 	 */
@@ -139,12 +139,10 @@ public class ConponPayDetailResult {
 		result.setCouponValue(coupon.getCouponValue());
 		result.setReduceType(coupon.getReduceType());
 		result.setCouponImage(coupon.getImage());
-		if (coupon.getWhetherPresent()==1){
-			result.setWhetherPresentS("可赠送");
-		}else if (coupon.getWhetherPresent()==0){
-			result.setWhetherPresentS("不可赠送");
+		if (coupon.getWhetherPresent()!=null){
+			result.setWhetherPresent(coupon.getWhetherPresent());
 		}else {
-			result.setWhetherPresentS("");
+			result.setWhetherPresent(0);
 		}
 		result.setScopeRemark(coupon.getScopeRemark());
 		result.setCouponPrice(coupon.getCouponPrice());
