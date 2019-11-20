@@ -146,4 +146,8 @@
         SELECT * FROM rd_coupon_user WHERE mm_code = #{mCode} and coupon_id = #{couponId}
     </select>
 
+    <update id="overdueCouponUserByCouponId" parameterType="java.lang.Long">
+        update rd_coupon_user set own_num = 0 where coupon_id = #{couponId}
+    </update>
+
 </mapper>

@@ -328,5 +328,8 @@
         order by a.receive_time desc
     </select>
 
-
+    <update id="recycleNoMoney" parameterType="java.util.HashMap">
+        update rd_coupon_detail set use_state = 3,refund_state = #{refundState},refund_sum = #{refundSum}
+        where coupon_id = #{couponId} and use_state = 2
+    </update>
 </mapper>

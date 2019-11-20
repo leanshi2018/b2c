@@ -7,9 +7,12 @@ import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.mybatis.paginator.domain.PageBounds;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.result.common.coupon.CouponUserLogResult;
+import com.framework.loippi.utils.Paramap;
 
 public interface CouponDetailDao extends GenericDao<CouponDetail, Long> {
     void updateList(ArrayList<CouponDetail> details);
 
 	PageList<CouponUserLogResult> findLogResultByPage(Object parameter, PageBounds pageBounds);
+
+    void recycleNoMoney(Paramap paramap);
 }
