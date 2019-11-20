@@ -611,13 +611,13 @@ public class CouponController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/cancel/couponPayDetail", method = RequestMethod.POST)
-	public String conponPayDetailCancel(HttpServletRequest request,Long couponOrderSn) {
+	public String conponPayDetailCancel(HttpServletRequest request,String couponOrderSn) {
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
 		if(member==null){
 			return ApiUtils.error("请登录后操作");
 		}
-		if (couponOrderSn==null){
-			return ApiUtils.error("该订单Id为空,请传正确的订单Id");
+		if (couponOrderSn==null||"".equals(couponOrderSn)){
+			return ApiUtils.error("该订单编号为空,请传正确的订单编号");
 		}
 		CouponPayDetail couponPayDetail = couponPayDetailService.findBySn(couponOrderSn);
 		if (couponPayDetail==null){

@@ -44,6 +44,17 @@ public class ActivityGroupResult {
         groupResult.setSort(optItem.map(ShopActivity::getSort).orElse(0));
         groupResult.setActivityName(optItem.map(ShopActivity::getName).orElse(""));
         groupResult.setActivityShareUrl(shareUrl);
+        if (shopActivity.getActivityType()!=null){
+            groupResult.setActivityType(shopActivity.getActivityType());
+        }else {
+            groupResult.setActivityType(1);
+        }
+
+        if (shopActivity.getActivityType()!=null){
+            if (shopActivity.getActivityType()==90){
+                groupResult.setCouponId(shopActivity.getCouponId());
+            }
+        }
         return groupResult;
     }
 
