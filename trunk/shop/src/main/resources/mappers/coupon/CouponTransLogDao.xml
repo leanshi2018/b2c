@@ -48,7 +48,7 @@
             AND remark = #{remark,jdbcType=VARCHAR}
         </if>
         <if test="transTime != null">
-            AND trans_time = #{transTime,jdbcType=DATETIME}
+            AND trans_time = #{transTime}
         </if>
         <if test="transPeriod != null and transPeriod != ''">
             AND trans_period = #{transPeriod,jdbcType=VARCHAR}
@@ -102,7 +102,7 @@
             remark = #{remark,jdbcType=VARCHAR},
         </if>
         <if test="transTime != null">
-            trans_time = #{transTime,jdbcType=DATETIME},
+            trans_time = #{transTime},
         </if>
         <if test="transPeriod != null and transPeriod != ''">
             trans_period = #{transPeriod,jdbcType=VARCHAR},

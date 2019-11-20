@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.coupon;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -58,7 +60,7 @@ public class ShopCouponController extends GenericController {
      * @param useTimeStr
      * @return
      */
-    @RequestMapping(value = "/queryCouponConditions",method = RequestMethod.POST)
+/*    @RequestMapping(value = "/queryCouponConditions",method = RequestMethod.POST)
     public String queryCouponConditions(ModelMap model,
                        @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
                        @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
@@ -79,8 +81,8 @@ public class ShopCouponController extends GenericController {
         pager.setParameter(coupon);
         Page<Coupon> couponList = couponService.findByPage(pager);
         model.addAttribute("page", couponList);
-        return "";//TODO 优惠券展示freemaker页面
-    }
+        return "";
+    }*/
 
     /**
      * 优惠券创建
@@ -303,7 +305,7 @@ public class ShopCouponController extends GenericController {
         pager.setParameter(couponTransLog);
         Page<CouponTransLog> page = couponTransLogService.findByPage(pager);
         model.addAttribute("couponTransLogList", page);
-        return "activity/shop_activity/transfer _list";//TODO
+        return "activity/shop_activity/transfer _list";
     }
 
     /**
@@ -316,5 +318,49 @@ public class ShopCouponController extends GenericController {
     public String edit(Model model, HttpServletRequest request) {
 
         return "activity/shop_activity/coupon_edit";
+    }
+
+    /**
+     * 优惠券下架
+     * @param request
+     * @param model
+     * @param attr
+     * @param couponId
+     * @return
+     */
+    @RequestMapping("/shelves")
+    public String shelves(HttpServletRequest request,  ModelMap model, RedirectAttributes attr,
+                          @RequestParam(required = true, value = "couponId") Long couponId){
+        if(couponId==null){
+            model.addAttribute("msg", "请传入优惠券id");
+            return Constants.MSG_URL;
+        }
+        Coupon coupon = couponService.find(couponId);
+        if(coupon==null){
+            model.addAttribute("msg", "当前优惠券不存在");
+            return Constants.MSG_URL;
+        }
+        Principal user = (Principal) SecurityUtils.getSubject().getPrincipal();
+        if(user==null){
+            model.addAttribute("msg", "请登录后进行审核操作");
+            return Constants.MSG_URL;
+        }
+        coupon.setUpdateId(user.getId());
+        coupon.setUpdateTime(new Date());
+        coupon.setUpdateName(user.getUsername());
+        try {
+            HashMap<String,Object> map=couponService.shelvesOrOverdueCoupon(coupon);
+            Boolean flag = (Boolean) map.get("flag");
+            if(flag){
+                return "redirect:coupon/list.jhtml"; 
+            }
+            String msg = (String) map.get("msg");
+            model.addAttribute("msg", msg);
+            return Constants.MSG_URL;
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("msg", "网络异常，请稍后重试");
+            return Constants.MSG_URL;
+        }
     }
 }

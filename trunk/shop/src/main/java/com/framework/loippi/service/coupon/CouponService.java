@@ -20,4 +20,6 @@ public interface CouponService extends GenericService<Coupon, Long> {
     void updateCouponState(Coupon coupon, Integer targetStatus, Long id,String username) throws Exception;
 
     List<Coupon> findOverdueCoupon(Paramap put);
+
+    HashMap<String, Object> shelvesOrOverdueCoupon(Coupon coupon);
 }

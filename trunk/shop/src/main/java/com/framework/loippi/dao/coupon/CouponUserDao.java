@@ -8,4 +8,6 @@ import com.framework.loippi.mybatis.dao.GenericDao;
 
 public interface CouponUserDao extends GenericDao<CouponUser, Long> {
 	List<CouponUser> findByMMCodeAndCouponId(Map<String, Object> map);
+
+    void overdueCouponUserByCouponId(Long couponId);
 }

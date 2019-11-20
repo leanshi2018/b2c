@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -204,8 +205,41 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         couponDao.update(coupon);
     }
 
+    /**
+     * 查询过期为进行回收的优惠券
+     * @param put
+     * @return
+     */
     @Override
     public List<Coupon> findOverdueCoupon(Paramap put) {
         return couponDao.findOverdueCoupon(put);
+    }
+
+    /**
+     * 对指定优惠券进行过期处理
+     * @param coupon
+     * @return
+     */
+    @Override
+    public HashMap<String, Object> shelvesOrOverdueCoupon(Coupon coupon) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("flag",true);
+        //1.过期Coupon
+        coupon.setStatus(4);
+        couponDao.update(coupon);
+        //2.处理CouponUser
+        couponUserService.overdueCouponUserByCouponId(coupon.getId());
+        //3.回收CouponDetail
+        //3.1 非付费优惠券回收
+        if(coupon.getUseMoneyFlag()==0){
+            //3.1.1将未使用状态 对应优惠券id 的记录 修改为 已过期 退款状态 0 退款金额 0
+            Paramap paramap = Paramap.create().put("couponId", coupon.getId()).put("refundState", 0).put("refundSum", BigDecimal.ZERO);
+            couponDetailService.recycleNoMoney(paramap);
+        }
+        //3.2 付费优惠券回收
+        if(coupon.getUseMoneyFlag()==1){
+
+        }
+        return map;
     }
 }
