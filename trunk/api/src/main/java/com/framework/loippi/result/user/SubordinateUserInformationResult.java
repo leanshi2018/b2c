@@ -77,6 +77,10 @@ public class SubordinateUserInformationResult {
      */
     private BigDecimal periodTeamPv;
     /**
+     * 整组新vip人数
+     */
+    private Integer netNewVipNum;
+    /**
      * 会员编号
      */
     private String mCode;
@@ -178,6 +182,7 @@ public class SubordinateUserInformationResult {
         result.setPeriodCode(Optional.ofNullable(memberQualification.getPeriodCode()).orElse(""));//设置统计周期
         result.setPeriodGroupPv(Optional.ofNullable(memberQualification.getG7pv()).orElse(BigDecimal.ZERO));//设置小组MI
         result.setPeriodTeamPv(Optional.ofNullable(memberQualification.getNpv()).orElse(BigDecimal.ZERO));//设置整组MI
+        result.setNetNewVipNum(Optional.ofNullable(memberQualification.getNetNewVipNumber()).orElse(0));//设置整组新晋vip人数
         return result;
     }
 
@@ -205,6 +210,7 @@ public class SubordinateUserInformationResult {
         result.setPeriodCode(periodStr);//设置统计周期
         result.setPeriodGroupPv(BigDecimal.ZERO);//设置小组MI
         result.setPeriodTeamPv(BigDecimal.ZERO);//设置整组MI
+        result.setNetNewVipNum(0);//设置整组新晋vip人数
         return result;
     }
 }

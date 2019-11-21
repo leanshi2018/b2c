@@ -99,4 +99,12 @@ public class MemberQualification implements GenericEntity {
     private int carQualified;//当月车奖是否合格\r\n0：不合格\r\n1：合格
     @Column(name = "DIVIDEND_QUALIFIED" )
     private int dividendQualified;//当月分红奖是否合格\r\n0：不合格\r\n1：合格
+    @Column(name = "net_id" )
+    private int netId;//网络节点位置
+    @Column(name = "net_end" )
+    private int netEnd;//团队最后节点位置
+    @Column(name = "net_new_vip_number" )
+    private int netNewVipNumber;//网络新vip人数
+    @Column(name = "net_ac_number" )
+    private int netAcNumber;//团队重复消费合格人数
 }
