@@ -110,64 +110,54 @@
                 </tr>
                 </thead>
                 <tbody>
-<#--                <#list page.content as coupons>-->
-<#--                    <tr>-->
-<#--                        <td><input type="checkbox" name="ids" value="${coupons.id}" class="checkitem"></td>-->
-<#--                        <td style="text-align: left">-->
-<#--                            ${coupons.couponOrderSn}-->
-<#--                        </td>-->
-<#--                        <td style="text-align: left">-->
-<#--                            ${coupons.receiveId}-->
-<#--                        </td>-->
-<#--                        <td style="text-align: left">-->
-<#--                            ${coupons.receiveNickName}-->
-<#--                        </td>-->
-<#--                        <td style="text-align: left">-->
-<#--                            ${coupons.couponNumber}-->
-<#--                        </td>-->
-<#--                        <td style="text-align: left">-->
-<#--                            ${coupons.couponAmount}-->
-<#--                        </td>-->
-<#--                        <td>${coupons.pointAmount}</td>-->
-<#--                        <td>${coupons.orderAmount}</td>-->
-<#--                        <td>-->
-<#--                            <#if coupons.couponOrderState == 0>已取消</#if>-->
-<#--                            <#if coupons.couponOrderState == 10>待付款</#if>-->
-<#--                            <#if coupons.couponOrderState == 40>交易完成</#if>-->
-<#--                        </td>-->
-<#--                        <td>-->
-<#--                            <#if coupons.refundState == 0>无退款</#if>-->
-<#--                            <#if coupons.refundState == 1>部分退款</#if>-->
-<#--                            <#if coupons.refundState == 2>全部退款</#if>-->
-<#--                        </td>-->
-<#--                        <td>-->
+                <#list page.content as coupons>
+                    <tr>
+                        <td><input type="checkbox" name="ids" value="${coupons.id}" class="checkitem"></td>
+                        <td style="text-align: left">
+                            ${coupons.couponSn}
+                        </td>
+                        <td style="text-align: left">
+                            ${coupons.couponLikeName}
+                        </td>
+                        <td style="text-align: left">
+                            ${coupons.receiveId}
+                        </td>
+                        <td style="text-align: left">
+                            ${coupons.receiveNickName}
+                        </td>
+                        <td style="text-align: left">
+                            ${coupons.turnId}
+                        </td>
+                        <td>${coupons.turnNickName}</td>
+                        <td>${coupons.acceptId}</td>
+                        <td>${coupons.acceptNickName}</td>
+                        <td>
 <#--                            <#if coupons.createTime??>-->
 <#--                                ${coupons.createTime?string("yyyy-MM-dd HH:mm:ss")}-->
 <#--                            </#if>-->
-<#--                        </td>-->
-<#--                        <td>-->
-<#--                            <#if coupons.paymentTime??>-->
-<#--                                ${coupons.paymentTime?string("yyyy-MM-dd HH:mm:ss")}-->
-<#--                            </#if>-->
-<#--                        </td>-->
-<#--                        <td>-->
-<#--                            <#if coupons.updateTime??>-->
-<#--                                ${coupons.updateTime?string("yyyy-MM-dd HH:mm:ss")}-->
-<#--                            </#if>-->
-<#--                        </td>-->
-<#--                        <td>-->
-<#--                            ${coupons.paymentId}-->
-<#--                        </td>-->
-<#--                    </tr>-->
-<#--                </#list>-->
-<#--                </tbody>-->
-<#--                <tfoot class="tfoot">-->
-<#--                <tr>-->
-<#--                    <td colspan="20">-->
-<#--                        <@layout.pager page/>-->
-<#--                    </td>-->
-<#--                </tr>-->
-<#--                </tfoot>-->
+                        </td>
+                        <td>
+
+                        </td>
+                        <td>
+
+                        </td>
+                        <td>
+<#--                            <#if coupons.refundState == 0>无退款</#if>-->
+<#--                            <#if coupons.refundState == 1>部分退款</#if>-->
+<#--                            <#if coupons.refundState == 2>全部退款</#if>-->
+                        </td>
+                        <td></td>
+                    </tr>
+                </#list>
+                </tbody>
+                <tfoot class="tfoot">
+                <tr>
+                    <td colspan="20">
+                        <@layout.pager page/>
+                    </td>
+                </tr>
+                </tfoot>
             </table>
         </form>
     </div>
