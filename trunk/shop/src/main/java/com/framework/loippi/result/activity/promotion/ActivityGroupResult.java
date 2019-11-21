@@ -1,12 +1,15 @@
 package com.framework.loippi.result.activity.promotion;
 
-import com.framework.loippi.entity.activity.ShopActivity;
-import com.framework.loippi.vo.activity.ActivityGoodsItemVO;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.collections.CollectionUtils;
 
-
-import java.util.*;
+import com.framework.loippi.entity.activity.ShopActivity;
 
 /**
  * 促销活动组
@@ -27,6 +30,10 @@ public class ActivityGroupResult {
     private String activityName;
     //活动分享url
     private String activityShareUrl;
+    //活动类型 //促销活动  1    //团购 50  //限时抢 60  //优惠券 90
+    private Integer activityType;
+    //优惠券id
+    private Long couponId;
 
 
     public static ActivityGroupResult build(ShopActivity shopActivity, java.lang.String shareUrl) {
@@ -37,6 +44,17 @@ public class ActivityGroupResult {
         groupResult.setSort(optItem.map(ShopActivity::getSort).orElse(0));
         groupResult.setActivityName(optItem.map(ShopActivity::getName).orElse(""));
         groupResult.setActivityShareUrl(shareUrl);
+        if (shopActivity.getActivityType()!=null){
+            groupResult.setActivityType(shopActivity.getActivityType());
+        }else {
+            groupResult.setActivityType(1);
+        }
+
+        if (shopActivity.getActivityType()!=null){
+            if (shopActivity.getActivityType()==90){
+                groupResult.setCouponId(shopActivity.getCouponId());
+            }
+        }
         return groupResult;
     }
 

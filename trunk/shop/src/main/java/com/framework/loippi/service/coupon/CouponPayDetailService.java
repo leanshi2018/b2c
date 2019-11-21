@@ -1,5 +1,6 @@
 package com.framework.loippi.service.coupon;
 
+import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.entity.PayCommon;
@@ -25,4 +26,8 @@ public interface CouponPayDetailService extends GenericService<CouponPayDetail, 
 	void updateCouponPayStateFinish(String paysn, String tradeSn, String paymentBranch);
 
 	void updateStateCouponPat(Long id, int state);
+
+	CouponPayDetail findBySn(String couponOrderSn);
+
+	List<CouponPayDetail> findByPaySn(String PaySn);
 }

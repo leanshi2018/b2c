@@ -21,4 +21,6 @@ public interface CouponPayDetailDao extends GenericDao<CouponPayDetail, Long> {
 	void updateOrderAmout(CouponPayDetail couponPayDetail);
 
 	void updateStateCouponPat(Map<String, Object> map);
+
+	CouponPayDetail findBySn(String couponOrderSn);
 }

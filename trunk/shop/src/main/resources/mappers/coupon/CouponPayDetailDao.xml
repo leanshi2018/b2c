@@ -329,4 +329,8 @@
         coupon_order_state = #{couponOrderState}
         WHERE id = #{id}
     </update>
+
+    <select id="findBySn" parameterType="string" resultMap="couponPayDetailResultMap">
+        SELECT * FROM rd_coupon_pay_detail WHERE coupon_order_sn = #{couponOrderSn}
+    </select>
 </mapper>

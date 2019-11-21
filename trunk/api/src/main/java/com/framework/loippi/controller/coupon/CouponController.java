@@ -124,6 +124,26 @@ public class CouponController extends BaseController {
 		if (coupon == null) {
 			return jsonFail("优惠券不存在");
 		}
+		Date startTime = coupon.getSendStartTime();//优惠券发放开始时间
+		Date endTime = coupon.getSendEndTime();//优惠券发放结束时间
+
+		Calendar date = Calendar.getInstance();
+		date.setTime(new Date());
+
+		Calendar begin = Calendar.getInstance();
+		begin.setTime(startTime);
+
+		Calendar end = Calendar.getInstance();
+		end.setTime(endTime);
+
+		if (date.after(begin) && date.before(end)) {
+			System.out.println("在区间");
+			coupon.setCanBuy(0);
+		}else {
+			System.out.println("不在区间");
+			coupon.setCanBuy(1);
+		}
+
 
 		return ApiUtils.success(coupon);
 	}
@@ -587,28 +607,28 @@ public class CouponController extends BaseController {
 	/**
 	 * 取消优惠券订单
 	 * @param request
-	 * @param couponOrderId
+	 * @param couponOrderSn
 	 * @return
 	 */
 	@RequestMapping(value = "/cancel/couponPayDetail", method = RequestMethod.POST)
-	public String conponPayDetailCancel(HttpServletRequest request,Long couponOrderId) {
+	public String conponPayDetailCancel(HttpServletRequest request,String couponOrderSn) {
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
 		if(member==null){
 			return ApiUtils.error("请登录后操作");
 		}
-		if (couponOrderId==null){
-			return ApiUtils.error("该订单Id为空,请传正确的订单Id");
+		if (couponOrderSn==null||"".equals(couponOrderSn)){
+			return ApiUtils.error("该订单编号为空,请传正确的订单编号");
 		}
-		CouponPayDetail couponPayDetail = couponPayDetailService.find(couponOrderId);
-		if (couponPayDetail==null){
+		List<CouponPayDetail> couponPayDetails = couponPayDetailService.findByPaySn(couponOrderSn);
+		if (couponPayDetails.size()==0){
 			return ApiUtils.error("该订单不存在");
 		}
-		if (couponPayDetail.getCouponOrderState()==0 || couponPayDetail.getCouponOrderState()==40){
+		if (couponPayDetails.get(0).getCouponOrderState()==0 || couponPayDetails.get(0).getCouponOrderState()==40){
 			return ApiUtils.error("该订单已取消或已完成");
 		}
 
-		if (couponPayDetail.getCouponOrderState()==10){//待付款
-			couponPayDetailService.updateStateCouponPat(couponPayDetail.getId(),0);
+		if (couponPayDetails.get(0).getCouponOrderState()==10){//待付款
+			couponPayDetailService.updateStateCouponPat(couponPayDetails.get(0).getId(),0);
 		}
 
 		return ApiUtils.success();
