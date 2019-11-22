@@ -821,6 +821,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         //优惠金额
         cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()));
         //TODO create by zc 2019-11-08 计算优惠券折扣
+        BigDecimal useCouponAmount=BigDecimal.ZERO;
         if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
             if(couponId!=null){//由于第一次进入couponId为null，给前端展示的优惠券均可以使用，此处不再次验证
                 Coupon coupon = couponService.find(couponId);
@@ -851,7 +852,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                 cartInfo.setCouponAmount(cartInfo.getCouponAmount().add(couponMoney));
                 cartInfo.setCouponPrice(couponMoney);
                 cartInfo.setCouponId(couponId);
-                cartInfo.setUseCouponAmount(couponMoney);
+                useCouponAmount=couponMoney;
             }else {
                 Map<String, Object> map = getCouponList(memberId, cartList, cartInfo);
                 ArrayList<Coupon> coupons = (ArrayList<Coupon>) map.get("coupons");
@@ -863,10 +864,11 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     cartInfo.setCouponPrice(couponMoney);
                     cartInfo.setCouponId(couponId);
                     cartInfo.setCouponList(coupons);
-                    cartInfo.setUseCouponAmount(couponMoney);
+                    useCouponAmount=couponMoney;
                 }
             }
         }
+        cartInfo.setUseCouponAmount(useCouponAmount);
         //运费计算
         if (addr != null) {
             //运费
