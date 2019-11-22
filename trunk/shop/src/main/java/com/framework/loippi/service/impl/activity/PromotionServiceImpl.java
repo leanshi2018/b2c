@@ -142,7 +142,7 @@ public class PromotionServiceImpl implements PromotionService {
     public void zekou(ShopActivityPromotionRule shopActivityPromotionRule, CartInfo cartInfo) {
         //购买即有折扣
         BigDecimal discount = NumberUtils.getBigDecimal(shopActivityPromotionRule.getCouponSource());
-        BigDecimal itemTotalPrice=(cartInfo.getActualGoodsTotalPrice().add(cartInfo.getPreferentialFreightAmount()).subtract(cartInfo.getFreightAmount()))
+        BigDecimal itemTotalPrice=(cartInfo.getActualGoodsTotalPrice().add(cartInfo.getPreferentialFreightAmount()).add(cartInfo.getUseCouponAmount()).subtract(cartInfo.getFreightAmount()))
                 .multiply(discount)
                 .divide(new BigDecimal(100))
                 .setScale(2, BigDecimal.ROUND_HALF_EVEN);
