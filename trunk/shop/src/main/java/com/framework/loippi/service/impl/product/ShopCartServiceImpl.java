@@ -440,6 +440,12 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         // 优惠金额
         double couponAmount = cartInfoList.stream().mapToDouble(item -> item.getCouponAmount().doubleValue())
                 .sum();
+        // 等级优惠金额
+        double rankDiscount = cartInfoList.stream().mapToDouble(item -> item.getRankAmount().doubleValue())
+                .sum();
+        // 优惠券优惠金额
+        double useCouponAmount = cartInfoList.stream().mapToDouble(item -> item.getUseCouponAmount().doubleValue())
+                .sum();
         BigDecimal needPay = BigDecimal.valueOf(actotalGoodsPrice);
 
         // 商品总价
@@ -461,6 +467,10 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         map.put("couponId",Optional.ofNullable(cartInfo.getCouponId()).orElse(null) );
         //存储优惠券map
         map.put("couponList",Optional.ofNullable(cartInfo.getCouponList()).orElse(new ArrayList<Coupon>()));
+        //存储等级优惠金额
+        map.put("rankDiscount",BigDecimal.valueOf(rankDiscount));
+        //存储优惠券优惠金额
+        map.put("useCouponAmount",BigDecimal.valueOf(useCouponAmount));
         return map;
     }
 
