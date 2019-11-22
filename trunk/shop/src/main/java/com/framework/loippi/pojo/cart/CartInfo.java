@@ -96,6 +96,18 @@ public class CartInfo implements Serializable {
      */
     private BigDecimal couponAmount;
     /**
+     * 优惠券优惠金额
+     */
+    public BigDecimal useCouponAmount;
+    /**
+     * 活动优惠金额
+     */
+    public BigDecimal activityAmount;
+    /**
+     * 会员等级优惠金额
+     */
+    public BigDecimal rankAmount;
+    /**
      * 运费
      */
     public BigDecimal freightAmount;

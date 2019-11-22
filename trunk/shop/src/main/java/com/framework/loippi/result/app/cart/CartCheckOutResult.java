@@ -94,9 +94,21 @@ public class CartCheckOutResult {
     private BigDecimal goodsTotalAmount;
 
     /**
-     * 优惠卷 金额
+     * 优惠总额
      */
     public BigDecimal couponAmount;
+    /**
+     * 优惠券优惠金额
+     */
+    public BigDecimal useCouponAmount;
+    /**
+     * 活动优惠金额
+     */
+    public BigDecimal activityAmount;
+    /**
+     * 会员等级优惠金额
+     */
+    public BigDecimal rankAmount;
 
     /**
      * 实付金额
