@@ -179,6 +179,9 @@
         <if test="activityType != null">
             ACTIVITY_TYPE = #{activityType,jdbcType=INTEGER},
         </if>
+        <if test="couponId != null">
+            coupon_id = #{couponId},
+        </if>
         <if test="auditStatus != null">
             AUDIT_STATUS = #{auditStatus,jdbcType=INTEGER},
         </if>
