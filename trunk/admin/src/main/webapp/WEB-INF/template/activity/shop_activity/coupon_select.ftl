@@ -24,7 +24,7 @@
                     <tbody>
                     <tr>
                         <td>
-                            <input name="keyWord" type="text" value="${couponName}" placeholder="请输入优惠券名称"/>
+                            <input name="couponName" type="text" value="${couponName}" placeholder="请输入优惠券名称"/>
                             <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
                                </a>
                         </td>
