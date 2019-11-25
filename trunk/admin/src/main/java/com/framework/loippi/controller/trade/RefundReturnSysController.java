@@ -562,7 +562,7 @@ public class RefundReturnSysController extends GenericController {
                 } else {
                     model.addAttribute("msg", "退款失败:" + sHtmlText);
                 }
-                model.addAttribute("referer_url", "/activity/shop_activity/couponbuy_list.jhtml");
+                model.addAttribute("referer_url", "/activity/shop_activity/couponuse_list.jhtml");
                 return Constants.MSG_URL;
 
             } else if (paymentCode.equals("weixinMobilePaymentPlugin")) {//微信开放平台支付
@@ -595,7 +595,7 @@ public class RefundReturnSysController extends GenericController {
                                     .get("err_code_des") + "</span>");
                     model.addAttribute("noAuto", true);
                 }
-                model.addAttribute("referer_url", "/activity/shop_activity/couponbuy_list.jhtml");
+                model.addAttribute("referer_url", "/activity/shop_activity/couponuse_list.jhtml");
                 return Constants.MSG_URL;
 
 
@@ -627,7 +627,7 @@ public class RefundReturnSysController extends GenericController {
                                     .get("err_code_des") + "</span>");
                     model.addAttribute("noAuto", true);
                 }
-                model.addAttribute("referer_url", "/activity/shop_activity/couponbuy_list.jhtml");
+                model.addAttribute("referer_url", "/activity/shop_activity/couponuse_list.jhtml");
                 return Constants.MSG_URL;
 
             }else if (paymentCode.equals("pointsPaymentPlugin")) {
@@ -696,7 +696,7 @@ public class RefundReturnSysController extends GenericController {
             }
         }
 
-        model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
+        model.addAttribute("referer", "/activity/shop_activity/couponuse_list.jhtml");
         return backurl;///common/common/show_msg
     }
 
