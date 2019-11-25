@@ -440,6 +440,12 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         // 优惠金额
         double couponAmount = cartInfoList.stream().mapToDouble(item -> item.getCouponAmount().doubleValue())
                 .sum();
+        // 等级优惠金额
+        double rankDiscount = cartInfoList.stream().mapToDouble(item -> item.getRankAmount().doubleValue())
+                .sum();
+        // 优惠券优惠金额
+        double useCouponAmount = cartInfoList.stream().mapToDouble(item -> item.getUseCouponAmount().doubleValue())
+                .sum();
         BigDecimal needPay = BigDecimal.valueOf(actotalGoodsPrice);
 
         // 商品总价
@@ -461,6 +467,10 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         map.put("couponId",Optional.ofNullable(cartInfo.getCouponId()).orElse(null) );
         //存储优惠券map
         map.put("couponList",Optional.ofNullable(cartInfo.getCouponList()).orElse(new ArrayList<Coupon>()));
+        //存储等级优惠金额
+        map.put("rankDiscount",BigDecimal.valueOf(rankDiscount));
+        //存储优惠券优惠金额
+        map.put("useCouponAmount",BigDecimal.valueOf(useCouponAmount));
         return map;
     }
 
@@ -735,6 +745,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         double goodsTotalPrice = 0;
         //购物车实际支付商品总价
         double actualGoodsTotalPrice = 0;
+        //订单等级优惠金额
+        BigDecimal rankDiscount=BigDecimal.ZERO;
         //商品种类数量
         BigDecimal pv = BigDecimal.ZERO;
         //订单商品总重量
@@ -758,6 +770,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                 actualGoodsTotalPrice += (NumberUtils.getBigDecimal(String.valueOf(cart.getGoodsNum()))
                         .multiply(cart.getGoodsMemberPrice())).doubleValue();
                 cartVo.setActualPrice(cart.getGoodsMemberPrice());
+                rankDiscount=rankDiscount.add((cart.getGoodsRetailPrice().subtract(cart.getGoodsMemberPrice())).multiply(new BigDecimal(cart.getGoodsNum())));
             }
             if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PREFERENTIAL) {
                 BigDecimal money = cart.getGoodsRetailPrice().subtract(shopOrderDiscountType.getPreferential());
@@ -772,6 +785,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                 actualGoodsTotalPrice += (NumberUtils.getBigDecimal(String.valueOf(cart.getGoodsNum()))
                         .multiply(cart.getGoodsBigPrice())).doubleValue();
                 cartVo.setActualPrice(cart.getGoodsBigPrice());
+                rankDiscount=rankDiscount.add((cart.getGoodsRetailPrice().subtract(cart.getGoodsBigPrice())).multiply(new BigDecimal(cart.getGoodsNum())));
             }
             if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
                 pv=pv.add(cart.getBigPpv().multiply(BigDecimal.valueOf(cart.getGoodsNum())));
@@ -802,9 +816,12 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         } else {
             cartInfo.setActualGoodsTotalPrice(BigDecimal.valueOf(actualGoodsTotalPrice));
         }
+        //会员等级优惠金额
+        cartInfo.setRankAmount(rankDiscount);
         //优惠金额
         cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()));
         //TODO create by zc 2019-11-08 计算优惠券折扣
+        BigDecimal useCouponAmount=BigDecimal.ZERO;
         if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
             if(couponId!=null){//由于第一次进入couponId为null，给前端展示的优惠券均可以使用，此处不再次验证
                 Coupon coupon = couponService.find(couponId);
@@ -835,6 +852,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                 cartInfo.setCouponAmount(cartInfo.getCouponAmount().add(couponMoney));
                 cartInfo.setCouponPrice(couponMoney);
                 cartInfo.setCouponId(couponId);
+                useCouponAmount=couponMoney;
             }else {
                 Map<String, Object> map = getCouponList(memberId, cartList, cartInfo);
                 ArrayList<Coupon> coupons = (ArrayList<Coupon>) map.get("coupons");
@@ -846,9 +864,11 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     cartInfo.setCouponPrice(couponMoney);
                     cartInfo.setCouponId(couponId);
                     cartInfo.setCouponList(coupons);
+                    useCouponAmount=couponMoney;
                 }
             }
         }
+        cartInfo.setUseCouponAmount(useCouponAmount);
         //运费计算
         if (addr != null) {
             //运费

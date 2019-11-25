@@ -94,9 +94,21 @@ public class CartCheckOutResult {
     private BigDecimal goodsTotalAmount;
 
     /**
-     * 优惠卷 金额
+     * 优惠总额
      */
     public BigDecimal couponAmount;
+    /**
+     * 优惠券优惠金额
+     */
+    public BigDecimal useCouponAmount;
+    /**
+     * 活动优惠金额
+     */
+    public BigDecimal activityAmount;
+    /**
+     * 会员等级优惠金额
+     */
+    public BigDecimal rankAmount;
 
     /**
      * 实付金额
@@ -366,6 +378,10 @@ public class CartCheckOutResult {
                 .setPreferentialFreightAmount(Optional.ofNullable((BigDecimal) moneyMap.get("preferentialFreightAmount")).orElse(new BigDecimal("0")))
                 //优惠金额
                 .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponAmount")).orElse(new BigDecimal("0")))
+                //等级优惠
+                .setRankAmount(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0")))
+                //优惠券优惠
+                .setUseCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("useCouponAmount")).orElse(new BigDecimal("0")))
                 // 商品数据
                 .setStoreGoodsContainers(StoreGoodsContainer.buildList(cartList, shopOrderDiscountType));
         cartCheckOutResult.setCouponId(Optional.ofNullable((Long) moneyMap.get("couponId")).orElse(null));

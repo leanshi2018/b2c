@@ -53,6 +53,10 @@ public class CartItemResult extends BaseGoodsResult {
      * 商品类型
      */
     private Integer goodsType;
+    /**
+     * 会员价
+     */
+    private BigDecimal vipPrice;
 
     public static CartItemResult build(ShopCartVo cart) {
         Optional<ShopCartVo> optCart = Optional.ofNullable(cart);
@@ -74,6 +78,7 @@ public class CartItemResult extends BaseGoodsResult {
                 .setDefaultImage(optCart.map(ShopCartVo::getGoodsImages).orElse(""));
         // TODO: 2018/12/11 待补充
         itemResult.setPpv(optGoodsSpec.map(ShopGoodsSpec::getPpv).orElse(BigDecimal.ZERO));
+        itemResult.setVipPrice(optGoodsSpec.map(ShopGoodsSpec::getSpecMemberPrice).orElse(BigDecimal.ZERO));
         return itemResult;
     }
 }
