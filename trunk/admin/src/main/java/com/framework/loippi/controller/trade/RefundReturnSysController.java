@@ -35,6 +35,7 @@ import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
+import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
@@ -49,6 +50,7 @@ import com.framework.loippi.service.alipay.AlipayRefundService;
 import com.framework.loippi.service.coupon.CouponDetailService;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponService;
+import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.trade.ShopReturnOrderGoodsService;
@@ -103,6 +105,8 @@ public class RefundReturnSysController extends GenericController {
     private CouponPayDetailService couponPayDetailService;
     @Resource
     private CouponService couponService;
+    @Resource
+    private CouponUserService couponUserService;
     @Autowired
     private TSystemPluginConfigService tSystemPluginConfigService;
     @Autowired
@@ -557,7 +561,7 @@ public class RefundReturnSysController extends GenericController {
                 String sHtmlText = alipayRefundService.toRefund(aliPayRefund);//构造提交支付宝的表单
                 if ("true".equals(sHtmlText)) {
                     //保存批次号和修改订单数据
-                    updateCoupon(couponDetailId,bathno,coupon,couponPayDetail);
+                    updateCoupon(couponDetail,bathno,coupon,couponPayDetail);
                     model.addAttribute("msg", "退款成功");
                 } else {
                     model.addAttribute("msg", "退款失败:" + sHtmlText);
@@ -584,7 +588,7 @@ public class RefundReturnSysController extends GenericController {
                 String msg = "";
                 if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
                     //保存批次号和修改订单数据
-                    updateCoupon(couponDetailId,bathno,coupon,couponPayDetail);
+                    updateCoupon(couponDetail,bathno,coupon,couponPayDetail);
                     msg = requestContext.getMessage("checksuccess");
                     model.addAttribute("msg", msg);
                 } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
@@ -616,7 +620,7 @@ public class RefundReturnSysController extends GenericController {
                 String msg = "";
                 if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
                     //保存批次号和修改订单数据
-                    updateCoupon(couponDetailId,bathno,coupon,couponPayDetail);
+                    updateCoupon(couponDetail,bathno,coupon,couponPayDetail);
                     msg = requestContext.getMessage("checksuccess");
                     model.addAttribute("msg", msg);
                 } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
@@ -685,6 +689,12 @@ public class RefundReturnSysController extends GenericController {
                     couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(pricePoint));
                     couponPayDetailService.update(couponPayDetail);
 
+                    //改rd_coupon_user
+                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
+                    CouponUser couponUser = couponUsers.get(0);
+                    couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                    couponUserService.update(couponUser);
+
 
                     model.addAttribute("msg", "退款成功");
                     backurl = Constants.MSG_URL;
@@ -700,9 +710,7 @@ public class RefundReturnSysController extends GenericController {
         return backurl;///common/common/show_msg
     }
 
-    public void updateCoupon(Long couponDetailId, String bathno, Coupon coupon, CouponPayDetail couponPayDetail) {
-        CouponDetail couponDetail = new CouponDetail();
-        couponDetail.setId(couponDetailId); //记录ID
+    public void updateCoupon(CouponDetail couponDetail, String bathno, Coupon coupon, CouponPayDetail couponPayDetail) {
         couponDetail.setRefundState(2);//0：无需退款（非交易性优惠券）1：未退款 2：已退款
         couponDetail.setRefundSum(coupon.getCouponPrice());
         couponDetail.setBatchNo(bathno); //退款批次号
@@ -719,6 +727,12 @@ public class RefundReturnSysController extends GenericController {
         couponPayDetail.setRefundTime(new Date());
         couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(coupon.getCouponPrice()));
         couponPayDetailService.update(couponPayDetail);
+
+        //改rd_coupon_user
+        List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
+        CouponUser couponUser = couponUsers.get(0);
+        couponUser.setOwnNum(couponUser.getOwnNum()-1);
+        couponUserService.update(couponUser);
     }
 
 
@@ -929,6 +943,12 @@ public class RefundReturnSysController extends GenericController {
                             couponDetail.setBatchNo(bathno); //退款批次号
                             couponDetail.setRefundTime(new Date());
                             couponDetailService.update(couponDetail);//将批次号存入优惠券表
+
+                            //改rd_coupon_user
+                            List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
+                            CouponUser couponUser = couponUsers.get(0);
+                            couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                            couponUserService.update(couponUser);
                         }
                     }
 
@@ -979,6 +999,12 @@ public class RefundReturnSysController extends GenericController {
                 couponDetail.setBatchNo(bathno); //退款批次号
                 couponDetail.setRefundTime(new Date());
                 couponDetailService.update(couponDetail);//将批次号存入优惠券表
+
+                //改rd_coupon_user
+                List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
+                CouponUser couponUser = couponUsers.get(0);
+                couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                couponUserService.update(couponUser);
             }
         }
     }
