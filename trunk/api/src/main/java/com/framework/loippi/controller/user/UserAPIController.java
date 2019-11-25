@@ -1407,7 +1407,7 @@ public class UserAPIController extends BaseController {
             if (period!=null){
                 periodCode = period.getPeriodCode();
             }else {
-                return ApiUtils.error("周期该没有");
+                return ApiUtils.error("没有该周期");
             }
         }
         //会员基础信息
