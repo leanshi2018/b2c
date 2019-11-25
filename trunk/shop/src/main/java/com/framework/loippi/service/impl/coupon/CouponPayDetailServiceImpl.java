@@ -363,7 +363,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 				couponUserNew.setMCode(memberId);
 				couponUserNew.setCouponId(couponPayList.get(0).getCouponId());
 				couponUserNew.setOwnNum(couponPayList.get(0).getCouponNumber());
-				couponUserNew.setUseAbleNum(1);
+				couponUserNew.setUseAbleNum(couponPayList.get(0).getCouponNumber());
 				couponUserNew.setUseNum(0);
 				couponUserDao.insert(couponUserNew);
 				//生成优惠券详情表
@@ -496,7 +496,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			couponUserNew.setMCode(memberId);
 			couponUserNew.setCouponId(couponPayDetailList.get(0).getCouponId());
 			couponUserNew.setOwnNum(couponPayDetailList.get(0).getCouponNumber());
-			couponUserNew.setUseAbleNum(1);
+			couponUserNew.setUseAbleNum(couponPayDetailList.get(0).getCouponNumber());
 			couponUserNew.setUseNum(0);
 			couponUserDao.insert(couponUserNew);
 			//生成优惠券详情表

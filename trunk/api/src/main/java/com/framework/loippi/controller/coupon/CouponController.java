@@ -119,6 +119,8 @@ public class CouponController extends BaseController {
 		if (couponId == null) {
 			return jsonFail();
 		}
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+		RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
 		//商品基本详情对象
 		Coupon coupon = couponService.find(couponId);
 		if (coupon == null) {
@@ -126,6 +128,23 @@ public class CouponController extends BaseController {
 		}
 		Date startTime = coupon.getSendStartTime();//优惠券发放开始时间
 		Date endTime = coupon.getSendEndTime();//优惠券发放结束时间
+
+		Long totalLimitNum = -1l;
+		if (coupon.getTotalLimitNum()!=null){
+			totalLimitNum = coupon.getTotalLimitNum();//优惠券总发行数量 -1代表不限制
+		}
+		Long receivedNum = 0l;
+		if (coupon.getTotalLimitNum()!=null){
+			receivedNum = coupon.getReceivedNum();//已发放优惠券数量
+		}
+		String rankLimit = coupon.getRankLimit();//领取级别限制 多种级别已逗号分隔
+		String[] rankList = rankLimit.split(",");
+		int r = 10000;
+		for (String rank : rankList) {
+			if (rank.equals(rdMmRelation.getRank()+"")){
+				r = 10001;
+			}
+		}
 
 		Calendar date = Calendar.getInstance();
 		date.setTime(new Date());
@@ -138,7 +157,19 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			coupon.setCanBuy(0);
+			if (r==10001){
+				if (totalLimitNum!=-1){
+					if (totalLimitNum-receivedNum>0){
+						coupon.setCanBuy(0);
+					}else {
+						coupon.setCanBuy(1);
+					}
+				}else {
+					coupon.setCanBuy(0);
+				}
+			}else {
+				coupon.setCanBuy(1);
+			}
 		}else {
 			System.out.println("不在区间");
 			coupon.setCanBuy(1);
@@ -160,6 +191,9 @@ public class CouponController extends BaseController {
 	public String orderSubmit(@RequestParam Long couponId, Integer couponNumber,HttpServletRequest request) {
 		if (couponId == null) {
 			return jsonFail();
+		}
+		if (couponNumber == 0) {
+			return ApiUtils.error("购买优惠券数量不能为0");
 		}
 
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
@@ -205,7 +239,7 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			if (personLimitNum==0||personLimitNum<=couponNumber){
+			if (personLimitNum==0||personLimitNum>=couponNumber){
 				if (totalLimitNum==-1l){
 					if (r==10001){
 						//提交订单,返回订单支付实体
@@ -240,7 +274,7 @@ public class CouponController extends BaseController {
 					}
 				}
 			}else {
-				return ApiUtils.error("购买数量最大为"+couponNumber+"张");
+				return ApiUtils.error("购买数量最大为"+personLimitNum+"张");
 			}
 		} else {
 			System.out.println("不在区间");
@@ -364,6 +398,101 @@ public class CouponController extends BaseController {
 
 		return ApiUtils.success(model);
 	}
+
+	/**
+	 * 领取优惠券优惠券
+	 *
+	 * @param couponId
+	 */
+	@RequestMapping("/order/receiveCoupon")
+	@ResponseBody
+	public String receiveCoupon(@RequestParam Long couponId,HttpServletRequest request) {
+
+		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+		RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+
+		List<CouponUser> couponUserList = couponUserService.findByMMCodeAndCouponId(member.getMmCode(), couponId);
+		Integer haveCouponNum = 0;
+		if (couponUserList.size()!=0){
+			haveCouponNum = couponUserList.get(0).getOwnNum();
+		}
+
+		//优惠券信息
+		Coupon coupon = couponService.find(couponId);
+		Date startTime = coupon.getSendStartTime();//优惠券发放开始时间
+		Date endTime = coupon.getSendEndTime();//优惠券发放结束时间
+		Integer personLimitNum = 0;
+		if (coupon.getPersonLimitNum()!=null){
+			personLimitNum = coupon.getPersonLimitNum();//每个会员限制领取的张数，0为不限
+		}
+		Long totalLimitNum = -1l;
+		if (coupon.getTotalLimitNum()!=null){
+			totalLimitNum = coupon.getTotalLimitNum();//优惠券总发行数量 -1代表不限制
+		}
+		Long receivedNum = 0l;
+		if (coupon.getTotalLimitNum()!=null){
+			receivedNum = coupon.getReceivedNum();//已发放优惠券数量
+		}
+		String rankLimit = coupon.getRankLimit();//领取级别限制 多种级别已逗号分隔
+		String[] rankList = rankLimit.split(",");
+		int r = 10000;
+		for (String rank : rankList) {
+			if (rank.equals(rdMmRelation.getRank()+"")){
+				r = 10001;
+			}
+		}
+
+		Calendar date = Calendar.getInstance();
+		date.setTime(new Date());
+
+		Calendar begin = Calendar.getInstance();
+		begin.setTime(startTime);
+
+		Calendar end = Calendar.getInstance();
+		end.setTime(endTime);
+
+		if (date.after(begin) && date.before(end)) {
+			System.out.println("在区间");
+			if (personLimitNum==0 || personLimitNum>=haveCouponNum){
+				if (totalLimitNum==-1l){
+					if (r==10001){
+
+						return ApiUtils.success();
+					}else {
+						return ApiUtils.error("购买级别不符");
+					}
+				}else {
+					if ((totalLimitNum-receivedNum)>0){
+						if (r==10001){
+
+							return ApiUtils.success();
+						}else {
+							return ApiUtils.error("购买级别不符");
+						}
+					}else{
+						return ApiUtils.error("剩余优惠券数量为"+(totalLimitNum-receivedNum)+"张");
+					}
+				}
+			}else {
+				return ApiUtils.error();
+			}
+
+		}else {
+			System.out.println("不在区间");
+			if (date.before(begin)){
+				return ApiUtils.error("该优惠券还未到发放时间");
+			}
+			if (date.after(end)){
+				return ApiUtils.error("该优惠券发放已结束");
+			}
+			return ApiUtils.error("该优惠券发放出现错误");
+		}
+
+
+
+		//return ApiUtils.success();
+	}
+
 
 	/**
 	 * 获取当前登录用户指定优惠券信息

@@ -213,6 +213,7 @@ public class ShopActivityController extends GenericController {
         ModelMap model, RedirectAttributes attr,
         @ModelAttribute ShopActivity shopActivity,
         @RequestParam(required = false, value = "activityId") Long activityId,
+        @RequestParam(required = false, value = "couponId") Long couponId,
         @PathVariable(value = "type") String activityType,
         @RequestParam(required = false, value = "ruleType") Integer ruleType,
         @RequestParam(required = false, value = "endTimeStr") String endTimeStr,
@@ -233,6 +234,9 @@ public class ShopActivityController extends GenericController {
             return Constants.MSG_URL;
         }
         shopActivity.setId(activityId);
+        if (couponId!=null){
+            shopActivity.setCouponId(couponId);
+        }
         shopActivity.setActivityType(ActivityTypeEnus.activitTypeMap.get(activityType));
         //填充优惠规则
         shopActivity.setPromotionType(ruleType);
