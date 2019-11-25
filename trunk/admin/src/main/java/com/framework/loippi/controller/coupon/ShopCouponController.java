@@ -363,4 +363,26 @@ public class ShopCouponController extends GenericController {
             return Constants.MSG_URL;
         }
     }
+
+    /**
+     * 查询优惠券信息
+     * @param request
+     * @param pageNo
+     * @param pageSize
+     * @param model
+     * @param coupon
+     * @return
+     */
+    @RequestMapping(value = "/coupon/select")
+    public String select(HttpServletRequest request,@RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                         @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,ModelMap model,@ModelAttribute Coupon coupon) {
+        Pageable pageable = new Pageable();
+        pageable.setPageNumber(pageNo);
+        pageable.setPageSize(pageSize);
+        pageable.setParameter(coupon);
+        pageable.setOrderProperty("create_time");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", couponService.findByPage(pageable));
+        return "/activity/shop_activity/coupon_select";
+    }
 }
