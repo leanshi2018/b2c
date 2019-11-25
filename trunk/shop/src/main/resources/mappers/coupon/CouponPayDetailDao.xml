@@ -26,6 +26,7 @@
         <result property="refundState" column="refund_state"/>
         <result property="refundCouponNum" column="refund_coupon_num"/>
         <result property="refundAmount" column="refund_amount"/>
+        <result property="batchNo" column="batch_no"/>
         <result property="refundTime" column="refund_time"/>
         <result property="cancelTime" column="cancel_time"/>
         <result property="updateTime" column="update_time"/>
@@ -35,13 +36,13 @@
     <sql id="base_column">
         id ,coupon_order_sn ,receive_id ,receive_nick_name ,coupon_id ,coupon_name ,create_time ,payment_id ,payment_name ,payment_state ,
         payment_time ,pay_id ,pay_sn ,trade_sn ,coupon_amount ,coupon_number ,use_coupon_number ,use_point_num ,point_amount ,order_amount ,
-        coupon_order_state ,refund_state ,refund_coupon_num ,refund_amount ,refund_time ,cancel_time ,update_time
+        coupon_order_state ,refund_state ,refund_coupon_num ,refund_amount ,batch_no ,refund_time ,cancel_time ,update_time
     </sql>
 
     <sql id="base_value_column">
         #{id},#{couponOrderSn},#{receiveId},#{receiveNickName},#{couponId},#{couponName},#{createTime},#{paymentId},#{paymentName},#{paymentState},
         #{paymentTime},#{payId},#{paySn},#{tradeSn},#{couponAmount},#{couponNumber},#{useCouponNumber},#{usePointNum},#{pointAmount},#{orderAmount},
-        #{couponOrderState},#{refundState},#{refundCouponNum},#{refundAmount},#{refundTime},#{cancelTime},#{updateTime}
+        #{couponOrderState},#{refundState},#{refundCouponNum},#{refundAmount},#{batchNo},#{refundTime},#{cancelTime},#{updateTime}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -117,6 +118,9 @@
         </if>
         <if test="refundAmount != null and pointAmount != ''">
             AND refund_amount = #{refundAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="batchNo != null and batchNo != ''">
+            AND batch_no = #{batchNo,jdbcType=VARCHAR}
         </if>
         <if test="refundTime != null">
             AND refund_time = #{refundTime}
@@ -202,6 +206,9 @@
         </if>
         <if test="refundAmount != null and pointAmount != ''">
             refund_amount = #{refundAmount,jdbcType=DECIMAL},
+        </if>
+        <if test="batchNo != null and batchNo != ''">
+            batch_no = #{batchNo,jdbcType=VARCHAR},
         </if>
         <if test="refundTime != null">
             refund_time = #{refundTime},

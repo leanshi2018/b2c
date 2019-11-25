@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.user;
 
 
+import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -15,4 +16,6 @@ import com.framework.loippi.mybatis.dao.GenericDao;
 public interface RdMmAccountInfoDao  extends GenericDao<RdMmAccountInfo, Long> {
 
 	void updateAddBonusBlance(Map<String, Object> map);
+
+	List<RdMmAccountInfo> findByMCode(String mmCode);
 }

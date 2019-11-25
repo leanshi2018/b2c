@@ -12,7 +12,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -26,21 +29,35 @@ import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.RefundReturnState;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.AliPayRefund;
+import com.framework.loippi.entity.Principal;
+import com.framework.loippi.entity.TSystemPluginConfig;
 import com.framework.loippi.entity.WeiRefund;
+import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.service.TSystemPluginConfigService;
 import com.framework.loippi.service.alipay.AlipayRefundService;
+import com.framework.loippi.service.coupon.CouponDetailService;
+import com.framework.loippi.service.coupon.CouponPayDetailService;
+import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.trade.ShopReturnOrderGoodsService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.service.wechat.WechatRefundService;
 import com.framework.loippi.support.Pageable;
@@ -80,6 +97,20 @@ public class RefundReturnSysController extends GenericController {
 
     @Resource
     private WechatRefundService wechatRefundService;
+    @Resource
+    private CouponDetailService couponDetailService;
+    @Resource
+    private CouponPayDetailService couponPayDetailService;
+    @Resource
+    private CouponService couponService;
+    @Autowired
+    private TSystemPluginConfigService tSystemPluginConfigService;
+    @Autowired
+    private RdMmAccountLogService rdMmAccountLogService;
+    @Autowired
+    private RdMmAccountInfoService rdMmAccountInfoService;
+    @Autowired
+    private RdSysPeriodService rdSysPeriodService;
 
 
 
@@ -450,131 +481,508 @@ public class RefundReturnSysController extends GenericController {
     }
 
     /**
-     * 优惠券退款
+     * 单张优惠券退款
+     * @param model
+     * @param couponDetailId 优惠券详情id
+     * @param request
+     * @param response
+     * @return
      */
-    /*@RequiresPermissions("admin:refundreturn:main")
+    @RequiresPermissions("admin:refundreturn:main")
     @RequestMapping("/admin/coupon/refundreturn/refund")
-    public String couponRefund(Model model, @RequestParam Long id,
-                         @RequestParam(required = false, value = "adminMessage", defaultValue = "") String adminMessage,
+    public String couponRefund(Model model, @RequestParam Long couponDetailId,
                          HttpServletRequest request, HttpServletResponse response) {
+        //后台管理员
+        String adminName="";
+        Subject subject = SecurityUtils.getSubject();
+        if (subject != null) {
+            Principal principal = (Principal) subject.getPrincipal();
+            if (principal != null && principal.getId() != null) {
+                adminName=principal.getUsername();
+            }
+        }
 
-        ShopRefundReturn refundReturn = refundReturnService.find(id);
+        CouponDetail couponDetail = couponDetailService.find(couponDetailId);
 
         String backurl = Constants.MSG_URL;
-        BigDecimal money=new BigDecimal(0);
-        try {
-            money=new BigDecimal(refundAmount);
-        }catch (Exception e){
-            e.printStackTrace();
-            model.addAttribute("msg", "退款金额应输入数字");
-            return backurl;
-        }
-        refundReturn.setRefundAmount(money);
-        //refundReturn.setPpv(BigDecimal.valueOf(refundPpv));
-        refundReturn.setPpv(new BigDecimal(refundPpv));
-        refundReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
-        //处理积分,pv值
-        if (refundReturn.getBatchNo()==null){
-            orderService.addRefundPoint(refundReturn);
-        }
-        //returntype 值为0时表示人工确认后打钱给用户  1表示自动返款给用户
-        //orderpaytype 等于2时为货到付款将执行人工退款
-        if (returntype.equals("1") && !"2".equals(orderpaytype)) {
-            //判断退款单的退款金额是否大于余额支付金额
-            ShopOrder order = orderService.find(refundReturn.getOrderId());
-            if (order != null && order.getStoreId().equals(0L)) {
-                if (order.getPaymentCode().equals("alipayMobilePaymentPlugin")) {//支付宝退款
-                    String bathno =
-                            DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
-                    ShopRefundReturn updateReturn = new ShopRefundReturn();
-                    updateReturn.setId(id); //记录ID
-                    updateReturn.setBatchNo(bathno); //退款批次号
-                    updateReturn.setRefundAmount(money);
-                    updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
-                    refundReturnService.update(updateReturn);//将批次号存入退款表
-                    AliPayRefund aliPayRefund = new AliPayRefund();
-                    //支付宝交易号 ，退款金额，退款理由
-                    aliPayRefund.setRefundAmountNum(1);//退款数量，目前是单笔退款
-                    aliPayRefund.setBatchNo(bathno);
-                    aliPayRefund.setTradeNo(order.getPaySn());
-                     aliPayRefund.setRefundAmount(refundReturn.getRefundAmount());
-                    //aliPayRefund.setRefundAmount(new BigDecimal(0.01));
-                    aliPayRefund.setRRefundReason(refundReturn.getReasonInfo());
-                    aliPayRefund.setDetaildata(order.getTradeSn(),
-                            refundReturn.getRefundAmount(),
-                            refundReturn.getReasonInfo());
-                    backurl = toalirefund(aliPayRefund, model, id, adminMessage);
-                } else if (order.getPaymentCode().equals("weixinMobilePaymentPlugin")) {//微信开放平台支付
-                    WeiRefund weiRefund = new WeiRefund();
-                    String bathno =
-                            DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
-                    ShopRefundReturn updateReturn = new ShopRefundReturn();
-                    updateReturn.setId(id); //记录ID
-                    updateReturn.setBatchNo(bathno); //退款批次号
-                    updateReturn.setRefundAmount(money);
-                    updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
-                    refundReturnService.update(updateReturn);//将批次号存入退款表
-                    weiRefund.setOutrefundno(bathno);//微信交易号
-                    weiRefund.setOuttradeno(order.getPaySn());//订单号
-                     weiRefund.setTotalfee((int) ((order.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
-                     weiRefund.setRefundfee((int) ((refundReturn.getRefundAmount().doubleValue()) * 100));
-                    //weiRefund.setRefundfee(1);
-                    //weiRefund.setTotalfee(1);
-                    backurl = toweichatrefund(weiRefund, id, adminMessage, "open_weichatpay", model, request);
-                    //toweichatrefund();
-                } else if (order.getPaymentCode().equals("weixinH5PaymentPlugin")) {//微信公共平台支付
-                    WeiRefund weiRefund = new WeiRefund();
-                    String bathno =
-                            DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
-                    ShopRefundReturn updateReturn = new ShopRefundReturn();
-                    updateReturn.setId(id); //记录ID
-                    updateReturn.setBatchNo(bathno); //退款批次号
-                    updateReturn.setRefundAmount(money);
-                    updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
-                    refundReturnService.update(updateReturn);//将批次号存入退款表
-                    weiRefund.setOutrefundno(bathno);//微信交易号
-                    weiRefund.setOuttradeno(order.getPaySn());//订单号
-                    weiRefund.setTotalfee((int) ((order.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
-                weiRefund.setRefundfee((int) ((refundReturn.getRefundAmount().doubleValue()) * 100));
-//                        weiRefund.setRefundfee((int) (0.01 * 100));
-                    backurl = toweichatrefund(weiRefund, id, adminMessage, "mp_weichatpay", model, request);
-                } else if (order.getPaymentCode().equals("balancePaymentPlugin")) {
-                    refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype);
-                    model.addAttribute("msg", "退款成功");
-                }else if (order.getPaymentCode().equals("pointsPaymentPlugin")) {
-                    if (refundReturn.getBatchNo()==null){
-                        String bathno =
-                                DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
-                        ShopRefundReturn updateReturn = new ShopRefundReturn();
-                        updateReturn.setId(id); //记录ID
-                        updateReturn.setBatchNo(bathno); //退款批次号
-                        updateReturn.setRefundAmount(money);
-                        updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
-                        refundReturnService.update(updateReturn);//将批次号存入退款表
-                    }
-                    refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype);
-                    model.addAttribute("msg", "退款成功");
-                    backurl = Constants.MSG_URL;
+        if (couponDetail!=null){
+
+            //是否已使用
+            if (couponDetail.getUseState()==1 || couponDetail.getUseState()==4){
+                model.addAttribute("msg", "该优惠券已使用或已禁用");
+                return backurl;
+            }
+
+            //是否已退款
+            if (couponDetail.getRefundState()!=1){
+                model.addAttribute("msg", "该优惠券无需退款或已退款");
+                return backurl;
+            }
+
+            //优惠券
+            Coupon coupon = couponService.find(couponDetail.getCouponId());
+            //购买该优惠券订单详情
+            CouponPayDetail couponPayDetail = couponPayDetailService.find(couponDetail.getBuyOrderId());
+
+            //判断是否积分支付
+            String paymentCode = "";
+            if (couponPayDetail.getPaymentId()==6){
+                paymentCode = "pointsPaymentPlugin";
+            }else{
+                //不是积分支付
+                TSystemPluginConfig pluginConfig = tSystemPluginConfigService.find(couponPayDetail.getPaymentId());
+                if (pluginConfig!=null){
+                    paymentCode = pluginConfig.getPluginId();
                 }
             }
-        } else {
-            String bathno =
-                    DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
-            ShopRefundReturn updateReturn = new ShopRefundReturn();
-            updateReturn.setId(id); //记录ID
-            updateReturn.setBatchNo(bathno); //退款批次号
-            updateReturn.setRefundAmount(money);
-            updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
-            refundReturnService.update(updateReturn);//将批次号存入退款表
-            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype);
-            model.addAttribute("msg", "退款成功");
-            backurl = Constants.MSG_URL;
+            if ("".equals(paymentCode)){
+                model.addAttribute("msg", "该订单支付方式不存在");
+                return backurl;
+            }
+
+            if (paymentCode.equals("alipayMobilePaymentPlugin")) {//支付宝退款
+                String bathno =DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+
+                AliPayRefund aliPayRefund = new AliPayRefund();
+                //支付宝交易号 ，退款金额，退款理由
+                aliPayRefund.setRefundAmountNum(1);//退款数量，目前是单笔退款
+                aliPayRefund.setBatchNo(bathno);
+                aliPayRefund.setTradeNo(couponPayDetail.getPaySn());
+                aliPayRefund.setRefundAmount(coupon.getCouponPrice());
+                //aliPayRefund.setRefundAmount(new BigDecimal(0.01));
+                aliPayRefund.setRRefundReason("单张优惠券退款");
+                aliPayRefund.setDetaildata(couponPayDetail.getTradeSn(),coupon.getCouponPrice(),"单张优惠券退款");
+
+                //跳到支付宝退款接口
+                String sHtmlText = alipayRefundService.toRefund(aliPayRefund);//构造提交支付宝的表单
+                if ("true".equals(sHtmlText)) {
+                    //保存批次号和修改订单数据
+                    updateCoupon(couponDetailId,bathno,coupon,couponPayDetail);
+                    model.addAttribute("msg", "退款成功");
+                } else {
+                    model.addAttribute("msg", "退款失败:" + sHtmlText);
+                }
+                model.addAttribute("referer_url", "/activity/shop_activity/couponbuy_list.jhtml");
+                return Constants.MSG_URL;
+
+            } else if (paymentCode.equals("weixinMobilePaymentPlugin")) {//微信开放平台支付
+
+                String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+
+                WeiRefund weiRefund = new WeiRefund();
+                weiRefund.setOutrefundno(bathno);//微信交易号
+                weiRefund.setOuttradeno(couponPayDetail.getPaySn());//订单号
+                weiRefund.setTotalfee((int) ((couponPayDetail.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+                weiRefund.setRefundfee((int) ((coupon.getCouponPrice().doubleValue()) * 100));
+                //weiRefund.setRefundfee(1);
+                //weiRefund.setTotalfee(1);
+                //跳到微信退款接口
+                //toweichatrefund();
+
+                RequestContext requestContext = new RequestContext(request);
+                Map<String, Object> map = wechatMobileRefundService.toRefund(weiRefund);
+                String msg = "";
+                if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
+                    //保存批次号和修改订单数据
+                    updateCoupon(couponDetailId,bathno,coupon,couponPayDetail);
+                    msg = requestContext.getMessage("checksuccess");
+                    model.addAttribute("msg", msg);
+                } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
+                    model.addAttribute("msg",
+                            requestContext.getMessage("tsn.order_no") + "：" + weiRefund.getOuttradeno() + "<br/>" + requestContext
+                                    .getMessage("Micro-channel_number") + "：" + weiRefund.getOutrefundno()
+                                    + "<br/><span style='color:red;'>" + requestContext.getMessage("Micro-channel_error") + "：" + map
+                                    .get("err_code_des") + "</span>");
+                    model.addAttribute("noAuto", true);
+                }
+                model.addAttribute("referer_url", "/activity/shop_activity/couponbuy_list.jhtml");
+                return Constants.MSG_URL;
+
+
+            } else if (paymentCode.equals("weixinH5PaymentPlugin")) {//微信公共平台支付
+                String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+
+                WeiRefund weiRefund = new WeiRefund();
+                weiRefund.setOutrefundno(bathno);//微信交易号
+                weiRefund.setOuttradeno(couponPayDetail.getPaySn());//订单号
+                weiRefund.setTotalfee((int) ((couponPayDetail.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+                weiRefund.setRefundfee((int) ((coupon.getCouponPrice().doubleValue()) * 100));
+//              weiRefund.setRefundfee((int) (0.01 * 100));
+                //跳到微信退款接口
+                //backurl = toweichatrefund(weiRefund, id, adminMessage, "mp_weichatpay", model, request);
+
+                RequestContext requestContext = new RequestContext(request);
+                Map<String, Object> map = wechatRefundService.toRefund(weiRefund);
+                String msg = "";
+                if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
+                    //保存批次号和修改订单数据
+                    updateCoupon(couponDetailId,bathno,coupon,couponPayDetail);
+                    msg = requestContext.getMessage("checksuccess");
+                    model.addAttribute("msg", msg);
+                } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
+                    model.addAttribute("msg",
+                            requestContext.getMessage("tsn.order_no") + "：" + weiRefund.getOuttradeno() + "<br/>" + requestContext
+                                    .getMessage("Micro-channel_number") + "：" + weiRefund.getOutrefundno()
+                                    + "<br/><span style='color:red;'>" + requestContext.getMessage("Micro-channel_error") + "：" + map
+                                    .get("err_code_des") + "</span>");
+                    model.addAttribute("noAuto", true);
+                }
+                model.addAttribute("referer_url", "/activity/shop_activity/couponbuy_list.jhtml");
+                return Constants.MSG_URL;
+
+            }else if (paymentCode.equals("pointsPaymentPlugin")) {
+
+                String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+                //把积分退还给用户
+                String mCode = couponDetail.getReceiveId();
+                RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", couponDetail.getReceiveId());
+                if (rdMmAccountInfo!=null){
+                    //更新用户购物积分
+                    RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                    rdMmAccountLog.setTransTypeCode("OT");
+                    rdMmAccountLog.setAccType("");
+                    rdMmAccountLog.setTrSourceType("SWB");
+                    rdMmAccountLog.setMmCode(couponDetail.getReceiveId());
+                    rdMmAccountLog.setMmNickName(couponDetail.getReceiveNickName());
+                    rdMmAccountLog.setTrMmCode(couponDetail.getReceiveId());
+                    rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
+                    //单张所需积分
+                    BigDecimal pricePoint = couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP);
+                    rdMmAccountLog.setAmount(pricePoint);
+                    rdMmAccountLog.setTransDate(new Date());
+                    String period = rdSysPeriodService.getSysPeriodService(new Date());
+                    rdMmAccountLog.setTransPeriod(period);
+                    rdMmAccountLog.setTrOrderOid(couponDetail.getBuyOrderId());
+                    //无需审核直接成功
+                    rdMmAccountLog.setStatus(3);
+                    rdMmAccountLog.setCreationBy(adminName);
+                    rdMmAccountLog.setCreationTime(new Date());
+                    rdMmAccountLog.setAutohrizeBy(adminName);
+                    rdMmAccountLog.setAutohrizeTime(new Date());
+                    rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(pricePoint));
+                    rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
+                    rdMmAccountInfoService.update(rdMmAccountInfo);
+                    rdMmAccountLogService.save(rdMmAccountLog);
+
+                    //保存批次号和修改订单数据
+                    //updateCoupon(couponDetailId,bathno,coupon,couponPayDetail);
+                    CouponDetail couponDetail1 = new CouponDetail();
+                    couponDetail1.setId(couponDetailId); //记录ID
+                    couponDetail1.setRefundState(2);//0：无需退款（非交易性优惠券）1：未退款 2：已退款
+                    couponDetail1.setRefundSum(pricePoint);
+                    couponDetail1.setBatchNo(bathno); //退款批次号
+                    couponDetail1.setRefundTime(new Date());
+                    couponDetailService.update(couponDetail1);//将批次号存入优惠券表
+
+                    if (couponPayDetail.getRefundCouponNum()+1==couponPayDetail.getCouponNumber()){
+                        couponPayDetail.setRefundState(2);
+                    }else{
+                        couponPayDetail.setRefundState(1);
+                    }
+                    couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+1);
+                    couponPayDetail.setBatchNo(bathno);
+                    couponPayDetail.setRefundTime(new Date());
+                    couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(pricePoint));
+                    couponPayDetailService.update(couponPayDetail);
+
+
+                    model.addAttribute("msg", "退款成功");
+                    backurl = Constants.MSG_URL;
+                }else{
+                    model.addAttribute("msg", "退款失败");
+                    backurl = Constants.MSG_URL;
+                }
+
+            }
         }
-        model.addAttribute("referer", "list.jhtml");
-        return backurl;*//*///common/common/show_msg
+
+        model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
+        return backurl;///common/common/show_msg
+    }
+
+    public void updateCoupon(Long couponDetailId, String bathno, Coupon coupon, CouponPayDetail couponPayDetail) {
+        CouponDetail couponDetail = new CouponDetail();
+        couponDetail.setId(couponDetailId); //记录ID
+        couponDetail.setRefundState(2);//0：无需退款（非交易性优惠券）1：未退款 2：已退款
+        couponDetail.setRefundSum(coupon.getCouponPrice());
+        couponDetail.setBatchNo(bathno); //退款批次号
+        couponDetail.setRefundTime(new Date());
+        couponDetailService.update(couponDetail);//将批次号存入优惠券表
+
+        if (couponPayDetail.getRefundCouponNum()+1==couponPayDetail.getCouponNumber()){
+            couponPayDetail.setRefundState(2);
+        }else{
+            couponPayDetail.setRefundState(1);
+        }
+        couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+1);
+        couponPayDetail.setBatchNo(bathno);
+        couponPayDetail.setRefundTime(new Date());
+        couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(coupon.getCouponPrice()));
+        couponPayDetailService.update(couponPayDetail);
+    }
 
 
-    }*/
+    /**
+     * 优惠券订单退款
+     * @param model
+     * @param couponPayDetailId 优惠券订单id
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequiresPermissions("admin:refundreturn:main")
+    @RequestMapping("/admin/couponPayDetail/refundreturn/refund")
+    public String couponPayDetailRefund(Model model, @RequestParam Long couponPayDetailId,
+                         HttpServletRequest request, HttpServletResponse response) {
+        //后台管理员
+        String adminName="";
+        Subject subject = SecurityUtils.getSubject();
+        if (subject != null) {
+            Principal principal = (Principal) subject.getPrincipal();
+            if (principal != null && principal.getId() != null) {
+                adminName=principal.getUsername();
+            }
+        }
+
+        CouponPayDetail couponPayDetail = couponPayDetailService.find(couponPayDetailId);
+
+        String backurl = Constants.MSG_URL;
+        if (couponPayDetailId!=null){
+
+            //订单是否已完成
+            if (couponPayDetail.getCouponOrderState()!=40){
+                model.addAttribute("msg", "该订单尚未完成");
+                return backurl;
+            }
+
+            //是否已全部退款
+            if (couponPayDetail.getRefundState()==2){
+                model.addAttribute("msg", "该优惠券已全部退款");
+                return backurl;
+            }
+
+            //优惠券
+            Coupon coupon = couponService.find(couponPayDetail.getCouponId());
+            //购买所有优惠券详情
+            List<CouponDetail> couponDetailList = couponDetailService.findList("buyOrderId", couponPayDetailId);
+            //还未退款优惠券数量
+            Integer refundNum = 0;
+            for (CouponDetail couponDetail : couponDetailList) {
+                if (couponDetail.getUseState()==2 && couponDetail.getRefundState()==1){
+                    //未使用且未退款
+                    refundNum++;
+                }
+            }
+
+            if (refundNum==0){
+                model.addAttribute("msg", "该订单已全部退款");
+                return backurl;
+            }
+
+            //判断是否积分支付
+            String paymentCode = "";
+            if (couponPayDetail.getPaymentId()==6){
+                paymentCode = "pointsPaymentPlugin";
+            }else{
+                //不是积分支付
+                TSystemPluginConfig pluginConfig = tSystemPluginConfigService.find(couponPayDetail.getPaymentId());
+                if (pluginConfig!=null){
+                    paymentCode = pluginConfig.getPluginId();
+                }
+            }
+            if ("".equals(paymentCode)){
+                model.addAttribute("msg", "该订单支付方式不存在");
+                return backurl;
+            }
+
+            if (paymentCode.equals("alipayMobilePaymentPlugin")) {//支付宝退款
+                String bathno =DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+
+                AliPayRefund aliPayRefund = new AliPayRefund();
+                //支付宝交易号 ，退款金额，退款理由
+                aliPayRefund.setRefundAmountNum(1);//退款数量，目前是单笔退款
+                aliPayRefund.setBatchNo(bathno);
+                aliPayRefund.setTradeNo(couponPayDetail.getPaySn());
+                aliPayRefund.setRefundAmount(coupon.getCouponPrice().multiply(new BigDecimal(refundNum)));
+                //aliPayRefund.setRefundAmount(new BigDecimal(0.01));
+                aliPayRefund.setRRefundReason("单张优惠券退款");
+                aliPayRefund.setDetaildata(couponPayDetail.getTradeSn(),coupon.getCouponPrice(),"单张优惠券退款");
+
+                //跳到支付宝退款接口
+                String sHtmlText = alipayRefundService.toRefund(aliPayRefund);//构造提交支付宝的表单
+                if ("true".equals(sHtmlText)) {
+                    //保存批次号和修改订单数据
+                    updateCouponDetailList(couponPayDetail,bathno,coupon,couponDetailList,refundNum);
+                    model.addAttribute("msg", "退款成功");
+                } else {
+                    model.addAttribute("msg", "退款失败:" + sHtmlText);
+                }
+                model.addAttribute("referer_url", "/activity/shop_activity/couponbuy_list.jhtml");
+                return Constants.MSG_URL;
+
+            } else if (paymentCode.equals("weixinMobilePaymentPlugin")) {//微信开放平台支付
+
+                String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+
+                WeiRefund weiRefund = new WeiRefund();
+                weiRefund.setOutrefundno(bathno);//微信交易号
+                weiRefund.setOuttradeno(couponPayDetail.getPaySn());//订单号
+                weiRefund.setTotalfee((int) ((couponPayDetail.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+                weiRefund.setRefundfee((int) ((coupon.getCouponPrice().doubleValue())* refundNum * 100));
+                //weiRefund.setRefundfee(1);
+                //weiRefund.setTotalfee(1);
+                //跳到微信退款接口
+                //toweichatrefund();
+
+                RequestContext requestContext = new RequestContext(request);
+                Map<String, Object> map = wechatMobileRefundService.toRefund(weiRefund);
+                String msg = "";
+                if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
+                    //保存批次号和修改订单数据
+                    updateCouponDetailList(couponPayDetail,bathno,coupon,couponDetailList,refundNum);
+                    msg = requestContext.getMessage("checksuccess");
+                    model.addAttribute("msg", msg);
+                } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
+                    model.addAttribute("msg",
+                            requestContext.getMessage("tsn.order_no") + "：" + weiRefund.getOuttradeno() + "<br/>" + requestContext
+                                    .getMessage("Micro-channel_number") + "：" + weiRefund.getOutrefundno()
+                                    + "<br/><span style='color:red;'>" + requestContext.getMessage("Micro-channel_error") + "：" + map
+                                    .get("err_code_des") + "</span>");
+                    model.addAttribute("noAuto", true);
+                }
+                model.addAttribute("referer_url", "/activity/shop_activity/couponbuy_list.jhtml");
+                return Constants.MSG_URL;
+
+
+            } else if (paymentCode.equals("weixinH5PaymentPlugin")) {//微信公共平台支付
+                String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+
+                WeiRefund weiRefund = new WeiRefund();
+                weiRefund.setOutrefundno(bathno);//微信交易号
+                weiRefund.setOuttradeno(couponPayDetail.getPaySn());//订单号
+                weiRefund.setTotalfee((int) ((couponPayDetail.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+                weiRefund.setRefundfee((int) ((coupon.getCouponPrice().doubleValue())* refundNum * 100));
+//              weiRefund.setRefundfee((int) (0.01 * 100));
+                //跳到微信退款接口
+                //backurl = toweichatrefund(weiRefund, id, adminMessage, "mp_weichatpay", model, request);
+
+                RequestContext requestContext = new RequestContext(request);
+                Map<String, Object> map = wechatRefundService.toRefund(weiRefund);
+                String msg = "";
+                if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
+                    //保存批次号和修改订单数据
+                    updateCouponDetailList(couponPayDetail,bathno,coupon,couponDetailList,refundNum);
+                    msg = requestContext.getMessage("checksuccess");
+                    model.addAttribute("msg", msg);
+                } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
+                    model.addAttribute("msg",
+                            requestContext.getMessage("tsn.order_no") + "：" + weiRefund.getOuttradeno() + "<br/>" + requestContext
+                                    .getMessage("Micro-channel_number") + "：" + weiRefund.getOutrefundno()
+                                    + "<br/><span style='color:red;'>" + requestContext.getMessage("Micro-channel_error") + "：" + map
+                                    .get("err_code_des") + "</span>");
+                    model.addAttribute("noAuto", true);
+                }
+                model.addAttribute("referer_url", "/activity/shop_activity/couponbuy_list.jhtml");
+                return Constants.MSG_URL;
+
+            }else if (paymentCode.equals("pointsPaymentPlugin")) {
+
+                String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+                //把积分退还给用户
+                String mCode = couponPayDetail.getReceiveId();
+                RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", couponPayDetail.getReceiveId());
+                if (rdMmAccountInfo!=null){
+                    //更新用户购物积分
+                    RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                    rdMmAccountLog.setTransTypeCode("OT");
+                    rdMmAccountLog.setAccType("");
+                    rdMmAccountLog.setTrSourceType("SWB");
+                    rdMmAccountLog.setMmCode(couponPayDetail.getReceiveId());
+                    rdMmAccountLog.setMmNickName(couponPayDetail.getReceiveNickName());
+                    rdMmAccountLog.setTrMmCode(couponPayDetail.getReceiveId());
+                    rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
+                    //所需积分
+                    BigDecimal pricePoint = (couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal(refundNum));
+                    rdMmAccountLog.setAmount(pricePoint);
+                    rdMmAccountLog.setTransDate(new Date());
+                    String period = rdSysPeriodService.getSysPeriodService(new Date());
+                    rdMmAccountLog.setTransPeriod(period);
+                    rdMmAccountLog.setTrOrderOid(couponPayDetail.getId());
+                    //无需审核直接成功
+                    rdMmAccountLog.setStatus(3);
+                    rdMmAccountLog.setCreationBy(adminName);
+                    rdMmAccountLog.setCreationTime(new Date());
+                    rdMmAccountLog.setAutohrizeBy(adminName);
+                    rdMmAccountLog.setAutohrizeTime(new Date());
+                    rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(pricePoint));
+                    rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
+                    rdMmAccountInfoService.update(rdMmAccountInfo);
+                    rdMmAccountLogService.save(rdMmAccountLog);
+
+                    //保存批次号和修改订单数据
+                    //updateCouponDetailList(couponDetailId,bathno,coupon,couponPayDetail);
+                    for (CouponDetail couponDetail : couponDetailList) {
+                        if (couponDetail.getUseState()==2 && couponDetail.getRefundState()==1){
+                            //未使用且未退款
+                            couponDetail.setRefundState(2);
+                            couponDetail.setRefundSum(couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP));
+                            couponDetail.setBatchNo(bathno); //退款批次号
+                            couponDetail.setRefundTime(new Date());
+                            couponDetailService.update(couponDetail);//将批次号存入优惠券表
+                        }
+                    }
+
+                    if ((couponPayDetail.getRefundCouponNum()+refundNum)==couponPayDetail.getCouponNumber()){
+                        couponPayDetail.setRefundState(2);
+                    }else{
+                        couponPayDetail.setRefundState(1);
+                    }
+                    couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+refundNum);
+                    couponPayDetail.setBatchNo(bathno);
+                    couponPayDetail.setRefundTime(new Date());
+                    couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(pricePoint));
+                    couponPayDetailService.update(couponPayDetail);
+
+
+                    model.addAttribute("msg", "退款成功");
+                    backurl = Constants.MSG_URL;
+                }else{
+                    model.addAttribute("msg", "退款失败");
+                    backurl = Constants.MSG_URL;
+                }
+
+            }
+        }
+
+        model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
+        return backurl;///common/common/show_msg
+    }
+
+    public void updateCouponDetailList(CouponPayDetail couponPayDetail, String bathno, Coupon coupon, List<CouponDetail> couponDetailList,Integer refundNum) {
+
+        if ((couponPayDetail.getRefundCouponNum()+refundNum)==couponPayDetail.getCouponNumber()){
+            couponPayDetail.setRefundState(2);
+        }else{
+            couponPayDetail.setRefundState(1);
+        }
+        couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+refundNum);
+        couponPayDetail.setBatchNo(bathno);
+        couponPayDetail.setRefundTime(new Date());
+        couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(coupon.getCouponPrice().multiply(new BigDecimal(refundNum))));
+        couponPayDetailService.update(couponPayDetail);
+
+        for (CouponDetail couponDetail : couponDetailList) {
+            if (couponDetail.getUseState()==2 && couponDetail.getRefundState()==1){
+                //未使用且未退款
+                couponDetail.setRefundState(2);
+                couponDetail.setRefundSum(coupon.getCouponPrice());
+                couponDetail.setBatchNo(bathno); //退款批次号
+                couponDetail.setRefundTime(new Date());
+                couponDetailService.update(couponDetail);//将批次号存入优惠券表
+            }
+        }
+    }
+
 
     /**
      * 跳到微信退款接口

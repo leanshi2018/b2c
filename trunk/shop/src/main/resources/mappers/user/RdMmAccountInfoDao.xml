@@ -199,4 +199,7 @@
         update RD_MM_ACCOUNT_INFO set BONUS_BLANCE = #{bonusBlance} where MM_CODE = #{mmCode}
     </update>
 
+	<select id="findByMCode" parameterType="string" resultMap="RdMmAccountInfoResultMap">
+		SELECT * FROM RD_MM_ACCOUNT_INFO WHERE MM_CODE = #{mmCode}
+	</select>
 </mapper> 

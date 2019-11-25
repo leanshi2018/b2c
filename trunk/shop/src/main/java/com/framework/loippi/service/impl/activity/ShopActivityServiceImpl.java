@@ -1,5 +1,16 @@
 package com.framework.loippi.service.impl.activity;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.activity.ShopActivityDao;
 import com.framework.loippi.dao.activity.ShopActivityGoodsDao;
 import com.framework.loippi.dao.activity.ShopActivityGoodsSpecDao;
@@ -10,20 +21,9 @@ import com.framework.loippi.enus.ActivityRuleTypeEnus;
 import com.framework.loippi.enus.ActivityStatusTypeEnus;
 import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.service.TwiterIdService;
-import com.framework.loippi.service.activity.ShopActivityGoodsSpecService;
 import com.framework.loippi.service.activity.ShopActivityService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.vo.activity.ActivityStatisticsVo;
-import com.framework.loippi.vo.activity.CartCouponVo;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 促销活动基本信息ServiceImpl
@@ -249,6 +249,77 @@ public class ShopActivityServiceImpl extends GenericServiceImpl<ShopActivity, Lo
 //
 //        }
 //
+
+        resultMap.put("code", "1");
+        return resultMap;
+
+    }
+
+    /**
+     * 处理优惠券活动信息的保存
+     *
+     * @param shopActivity
+     * @param storeId
+     * @param storeName
+     * @param isSeller     识别商家与平台    true  平台    false商家
+     */
+    public Map<String, String> handleSaveCouponActivity(ShopActivity shopActivity, Long storeId, String storeName, boolean isSeller) {
+
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("code", "0");
+        String errorMsg = "";
+        resultMap.put("msg", errorMsg);
+
+
+        //活动状态
+        Date today = new Date();
+        if (today.before(shopActivity.getStartTime())) {
+            shopActivity.setActivityStatus(ActivityStatusTypeEnus.EnumType.unstarted.getValue());
+        } else if (today.before(shopActivity.getEndTime())) {
+            shopActivity.setActivityStatus(ActivityStatusTypeEnus.EnumType.inactivity.getValue());
+        } else {
+            shopActivity.setActivityStatus(ActivityStatusTypeEnus.EnumType.ended.getValue());
+        }
+
+        //save or update
+        if (shopActivity.getId() != null) {
+            shopActivity.setUpdateTime(new Date());
+            shopActivityDao.update(shopActivity);
+
+            //TODO 更新促销规则
+            /*ShopActivityPromotionRule shopActivityPromotionRule = new ShopActivityPromotionRule();
+            shopActivityPromotionRule.setId(shopActivity.getPromotionRuleId());
+            shopActivityPromotionRule.setCouponSource(shopActivity.getCouponSource());
+            shopActivityPromotionRule.setLimitWhere(shopActivity.getLimitWhere());
+            Integer ruleType = shopActivity.getRuleType();
+            if (ruleType != null && ruleType == ActivityRuleTypeEnus.EnumType.manjian.getValue()) {//满减
+                shopActivityPromotionRule.setLimitType(10);//限制类型--购买金额10,购买数量20,无限制30
+            } else if (shopActivityPromotionRule != null && ruleType.intValue() == ActivityRuleTypeEnus.EnumType.zhekou.getValue()) {
+                shopActivityPromotionRule.setLimitType(30);
+            }
+            shopActivityPromotionRule.setRuleType(ruleType);
+            shopActivityPromotionRuleDao.updateShopActivityPromotionRule(shopActivityPromotionRule);*/
+        } else {
+            shopActivity.setId(twiterIdService.getTwiterId());
+            shopActivity.setCreateTime(new Date());
+            shopActivity.setUpdateTime(new Date());
+//            shopActivity.setPromotionRuleId(twiterIdService.getTwiterId());
+            shopActivityDao.insert(shopActivity);
+
+            //添加促销规则
+            /*ShopActivityPromotionRule shopActivityPromotionRule = new ShopActivityPromotionRule();
+            shopActivityPromotionRule.setId(shopActivity.getPromotionRuleId());
+            shopActivityPromotionRule.setCouponSource(shopActivity.getCouponSource());
+            shopActivityPromotionRule.setLimitWhere(shopActivity.getLimitWhere());
+            Integer ruleType = shopActivity.getRuleType();
+            if (ruleType != null && ruleType == ActivityRuleTypeEnus.EnumType.manjian.getValue()) {//满减
+                shopActivityPromotionRule.setLimitType(10);//限制类型--购买金额10,购买数量20,无限制30
+            } else if (shopActivityPromotionRule != null && ruleType.intValue() == ActivityRuleTypeEnus.EnumType.zhekou.getValue()) {
+                shopActivityPromotionRule.setLimitType(30);
+            }
+            shopActivityPromotionRule.setRuleType(ruleType);
+            shopActivityPromotionRuleDao.saveShopActivityPromotionRule(shopActivityPromotionRule);*/
+        }
 
         resultMap.put("code", "1");
         return resultMap;

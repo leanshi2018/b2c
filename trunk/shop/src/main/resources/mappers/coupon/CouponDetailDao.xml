@@ -23,6 +23,8 @@
         <result property="buyOrderId" column="buy_order_id"/>
         <result property="refundState" column="refund_state"/>
         <result property="refundSum" column="refund_sum"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="refundTime" column="refund_time"/>
     </resultMap>
 
     <resultMap id="CouponUserLogResultMap" type="com.framework.loippi.result.common.coupon.CouponUserLogResult">
@@ -46,13 +48,14 @@
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
         id ,rd_coupon_user_id ,coupon_id ,coupon_sn ,coupon_pwd ,coupon_name,receive_id,receive_nick_name,receive_time,
-        hold_id,hold_nick_name,hold_time,use_start_time,use_end_time,use_state,use_time,use_order_id,use_order_pay_status,buy_order_id,refund_state,refund_sum
+        hold_id,hold_nick_name,hold_time,use_start_time,use_end_time,use_state,use_time,use_order_id,use_order_pay_status,
+        buy_order_id,refund_state,refund_sum,batch_no,refund_time
     </sql>
 
     <sql id="base_value_column">
         #{id},#{rdCouponUserId},#{couponId},#{couponSn},#{couponPwd},#{couponName},#{receiveId},#{receiveNickName},
         #{receiveTime},#{holdId},#{holdNickName},#{holdTime},#{useStartTime},#{useEndTime},#{useState},#{useTime},#{useOrderId},
-        #{useOrderPayStatus},#{buyOrderId},#{refundState},#{refundSum}
+        #{useOrderPayStatus},#{buyOrderId},#{refundState},#{refundSum},#{batchNo},#{refundTime}
     </sql>
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
     <sql id="where_column">
@@ -84,7 +87,7 @@
             AND receive_time = #{receiveTime}
         </if>
         <if test="holdId != null and holdId != ''">
-            AND hold_id = #{holdId,jdbcType=VARCHAR}
+            AND hold_id = #{holdId}
         </if>
         <if test="holdNickName != null and holdNickName != ''">
             AND hold_nick_name = #{holdNickName,jdbcType=VARCHAR}
@@ -119,6 +122,12 @@
         <if test="refundSum != null and refundSum != ''">
             AND refund_sum = #{refundSum,jdbcType=DECIMAL}
         </if>
+        <if test="batchNo != null and batchNo != ''">
+            AND batch_no = #{batchNo,jdbcType=VARCHAR}
+        </if>
+        <if test="refundTime != null">
+            AND refund_time = #{refundTime}
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
@@ -150,7 +159,7 @@
             receive_time = #{receiveTime},
         </if>
         <if test="holdId != null and holdId != ''">
-            hold_id = #{holdId,jdbcType=VARCHAR},
+            hold_id = #{holdId},
         </if>
         <if test="holdNickName != null and holdNickName != ''">
             hold_nick_name = #{holdNickName,jdbcType=VARCHAR},
@@ -184,6 +193,12 @@
         </if>
         <if test="refundSum != null and refundSum != ''">
             refund_sum = #{refundSum,jdbcType=DECIMAL},
+        </if>
+        <if test="batchNo != null and batchNo != ''">
+            batch_no = #{batchNo,jdbcType=VARCHAR},
+        </if>
+        <if test="refundTime != null">
+            refund_time = #{refundTime},
         </if>
     </sql>
 

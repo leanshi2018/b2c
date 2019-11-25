@@ -91,6 +91,14 @@ public class SelfPerformanceResult {
 	 */
 	private int lookType;
 
+	private Integer netNewVipNumber;//网络新vip人数
+
+	private Integer netAcNumber;//团队重复消费合格人数
+
+	private Integer ddRank2Number;//直接推荐代理的人数，代理级别为2
+
+	private Integer ddAcNumber;//直接推荐复消合格人数
+
 	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, BigDecimal profits2, RdBonusMaster bonusMaster,List<String> periodCodeList, BigDecimal bugMi) {
 		Optional<RdMmBasicInfo> optionalBasicInfo = Optional.ofNullable(profile);
 		Optional<RdBonusMaster> optionalBonusMaster = Optional.ofNullable(bonusMaster);
@@ -180,6 +188,26 @@ public class SelfPerformanceResult {
 		result.setBonusDevpShare(bonusDevpShare);
 		result.setBonusLdSum(bonusLdSum);
 		result.setBonusSum(bonusSum);
+		if (qualification.getNetNewVipNumber()==null){
+			result.setNetNewVipNumber(0);
+		}else {
+			result.setNetNewVipNumber(qualification.getNetNewVipNumber());
+		}
+		if (qualification.getNetAcNumber()==null){
+			result.setNetAcNumber(0);
+		}else {
+			result.setNetAcNumber(qualification.getNetAcNumber());
+		}
+		if (qualification.getDdRank2Number()==null){
+			result.setNetAcNumber(0);
+		}else {
+			result.setDdRank2Number(qualification.getDdRank2Number());
+		}
+		if (qualification.getDdAcNumber()==null){
+			result.setNetAcNumber(0);
+		}else {
+			result.setDdAcNumber(qualification.getDdAcNumber());
+		}
 		result.setPeriodCodeList(periodCodeList);
 		return result;
 	}
@@ -234,6 +262,16 @@ public class SelfPerformanceResult {
 		result.setAddVIPNumber(addVIPNumber);
 		result.setRankStr(rankStr);
 		result.setPeriodCodeList(periodCodeList);
+		if (qualification.getNetNewVipNumber()==null){
+			result.setNetNewVipNumber(0);
+		}else {
+			result.setNetNewVipNumber(qualification.getNetNewVipNumber());
+		}
+		if (qualification.getNetAcNumber()==null){
+			result.setNetAcNumber(0);
+		}else {
+			result.setNetAcNumber(qualification.getNetAcNumber());
+		}
 		return result;
 	}
 

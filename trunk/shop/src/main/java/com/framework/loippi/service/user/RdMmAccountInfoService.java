@@ -30,4 +30,6 @@ public interface RdMmAccountInfoService  extends GenericService<RdMmAccountInfo,
     void saveAccountInfo2(RdMmAccountInfo rdMmAccountInfo, int pui, List<RdMmAccountLog> rdMmAccountLogList, RdMmAccountInfo accentMmAccountInfo, ShopCommonMessage shopCommonMessage, ShopMemberMessage shopMemberMessage);
 
 	void updateAddBonusBlance(String mmCode, BigDecimal bonusBlance);
+
+	List<RdMmAccountInfo> findByMCode(String mCode);
 }

@@ -33,6 +33,9 @@ public class ActivityTypeEnus {
     static {
         activitTypeMap.put("zhuanchang", 1);
     }
+    static {
+        activitTypeMap.put("youhuiquan", 90);
+    }
 
     public static final Map<Integer, String> activitTypeEnumMap = new HashMap<Integer, String>();
 
