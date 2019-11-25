@@ -1,14 +1,11 @@
 package com.framework.loippi.service.activity;
 
 
-import com.framework.loippi.entity.activity.ShopActivity;
-import com.framework.loippi.entity.activity.ShopActivityPromotionRule;
-import com.framework.loippi.service.GenericService;
-import com.framework.loippi.vo.activity.ActivityStatisticsVo;
-import com.framework.loippi.vo.activity.CartCouponVo;
-
 import java.util.List;
 import java.util.Map;
+
+import com.framework.loippi.entity.activity.ShopActivity;
+import com.framework.loippi.service.GenericService;
 
 
 /**
@@ -75,4 +72,5 @@ public interface ShopActivityService extends GenericService<ShopActivity, Long> 
 
     Map<Long, ShopActivity> findMapActivity(List<Long> idList);
 
+	Map<String, String> handleSaveCouponActivity(ShopActivity shopActivity, Long platformStoreId, String 平台自营, boolean b);
 }

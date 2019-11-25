@@ -264,28 +264,26 @@ public class ShopActivityController extends GenericController {
     }
 
     /**
-     * 促销活动基本信息保存
+     * 促销优惠券活动基本信息保存
      *
      * @param shopActivity 活动对象
      * @param activityId 活动对象主键
-     * @param activityType 活动类型
      * @param endTimeStr 活动结束时间
      * @param startTimeStr 活动开始时间
      * @return String  跳转路径
      */
-    /*@RequestMapping("/saveCouponActivityBaseInfo/{type}/save")
+    /*@RequestMapping("/saveCouponActivityBaseInfo/save")
     @RequiresPermissions("sys:activity:edit")
     public String saveCouponActivityBaseInfo(
         ModelMap model, RedirectAttributes attr,
         @ModelAttribute ShopActivity shopActivity,
         @RequestParam(required = false, value = "activityId") Long activityId,
-        @PathVariable(value = "type") String activityType,
-        @RequestParam(required = false, value = "ruleType") Integer ruleType,
+        //@RequestParam(required = false, value = "ruleType") Integer ruleType,
         @RequestParam(required = false, value = "endTimeStr") String endTimeStr,
         @RequestParam(required = false, value = "startTimeStr") String startTimeStr,
         HttpServletRequest request) {
         model.addAttribute("referer",
-            request.getContextPath() + "/admin/plarformShopActivity/activity/" + activityType + "/list.jhtml");
+            request.getContextPath() + "/admin/plarformShopActivity/activity/" + "zhuanchang" + "/list.jhtml");
         //验证时间
         if (!StringUtil.isEmpty(startTimeStr) && !StringUtil.isEmpty(endTimeStr)) {
             shopActivity.setStartTime(DateUtils.toDate(startTimeStr, "yyyy-MM-dd HH:mm:ss"));
@@ -299,12 +297,11 @@ public class ShopActivityController extends GenericController {
             return Constants.MSG_URL;
         }
         shopActivity.setId(activityId);
-        shopActivity.setActivityType(ActivityTypeEnus.activitTypeMap.get(activityType));
+        shopActivity.setActivityType(ActivityTypeEnus.activitTypeMap.get("coupon"));
         //填充优惠规则
-        shopActivity.setPromotionType(ruleType);
+        //shopActivity.setPromotionType(ruleType);
         //保存活动
-        Map<String, String> map = shopActivityService.handleSaveActivity(shopActivity, activityType,
-            Constants.PLATFORM_STORE_ID, "平台自营", true);
+        Map<String, String> map = shopActivityService.handleSaveCouponActivity(shopActivity, Constants.PLATFORM_STORE_ID, "平台自营", true);
 
         if (map == null || StringUtil.isEmpty(map.get("code"))) {
             model.addAttribute("msg", "保存活动信息失败！");

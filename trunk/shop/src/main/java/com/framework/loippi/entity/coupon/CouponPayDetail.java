@@ -108,17 +108,21 @@ public class CouponPayDetail implements GenericEntity {
 	 * */
 	private Integer couponOrderState;
 	/**
-	 * 退款状态:0是无退款,1是全部退款
+	 * 退款状态:0是无退款,1是部分退款,2是全部退款
 	 * */
 	private Integer refundState;
 	/**
-	 * 退款优惠券数量数量
+	 * 退款优惠券数量
 	 * */
 	private Integer refundCouponNum;
 	/**
 	 * 退款金额
 	 * */
 	private BigDecimal refundAmount;
+	/**
+	 * 退款批次号
+	 * */
+	private String batchNo;
 	/**
 	 * 退款时间
 	 */

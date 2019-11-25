@@ -2,9 +2,6 @@ package com.framework.loippi.service.impl.user;
 
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -127,5 +124,10 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 		map.put("mmCode",mmCode);
 		map.put("bonusBlance",bonusBlance);
 		rdMmAccountInfoDao.updateAddBonusBlance(map);
+	}
+
+	@Override
+	public List<RdMmAccountInfo> findByMCode(String mCode) {
+		return rdMmAccountInfoDao.findByMCode(mCode);
 	}
 }
