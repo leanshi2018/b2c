@@ -70,6 +70,9 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         resultMap.put("code", "0");
         String errorMsg = "";
         resultMap.put("msg", errorMsg);
+        if(coupon.getReduceType()==3||coupon.getReduceType()==4){//折扣券存储的时候存储小数
+            coupon.setCouponValue(coupon.getCouponValue().divide(BigDecimal.TEN,2,BigDecimal.ROUND_HALF_UP));
+        }
         if(coupon.getId()!=null){//编辑
             coupon.setUpdateId(id);
             coupon.setUpdateName(username);
