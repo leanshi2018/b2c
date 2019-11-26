@@ -121,6 +121,13 @@ public class CouponController extends BaseController {
 		}
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
 		RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+
+		List<CouponUser> couponUserList = couponUserService.findByMMCodeAndCouponId(member.getMmCode(), couponId);
+		Integer haveCouponNum = 0;
+		if (couponUserList.size()!=0){
+			haveCouponNum = couponUserList.get(0).getOwnNum();
+		}
+
 		//商品基本详情对象
 		Coupon coupon = couponService.find(couponId);
 		if (coupon == null) {
@@ -128,7 +135,10 @@ public class CouponController extends BaseController {
 		}
 		Date startTime = coupon.getSendStartTime();//优惠券发放开始时间
 		Date endTime = coupon.getSendEndTime();//优惠券发放结束时间
-
+		Integer personLimitNum = 0;
+		if (coupon.getPersonLimitNum()!=null){
+			personLimitNum = coupon.getPersonLimitNum();//每个会员限制领取的张数，0为不限
+		}
 		Long totalLimitNum = -1l;
 		if (coupon.getTotalLimitNum()!=null){
 			totalLimitNum = coupon.getTotalLimitNum();//优惠券总发行数量 -1代表不限制
@@ -157,18 +167,38 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			if (r==10001){
-				if (totalLimitNum!=-1){
-					if (totalLimitNum-receivedNum>0){
+			if (personLimitNum == 0){
+				if (r==10001){
+					if (totalLimitNum!=-1){
+						if (totalLimitNum-receivedNum>0){
+							coupon.setCanBuy(0);
+						}else {
+							coupon.setCanBuy(1);
+						}
+					}else {
 						coupon.setCanBuy(0);
+					}
+				}else {
+					coupon.setCanBuy(1);
+				}
+			}else {
+				if (personLimitNum>haveCouponNum){
+					if (r==10001){
+						if (totalLimitNum!=-1){
+							if (totalLimitNum-receivedNum>0){
+								coupon.setCanBuy(0);
+							}else {
+								coupon.setCanBuy(1);
+							}
+						}else {
+							coupon.setCanBuy(0);
+						}
 					}else {
 						coupon.setCanBuy(1);
 					}
 				}else {
-					coupon.setCanBuy(0);
+					coupon.setCanBuy(1);
 				}
-			}else {
-				coupon.setCanBuy(1);
 			}
 		}else {
 			System.out.println("不在区间");
