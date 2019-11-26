@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.*;
+import com.framework.loippi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -28,10 +30,6 @@ import org.springframework.web.servlet.support.RequestContext;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.RefundReturnState;
 import com.framework.loippi.controller.GenericController;
-import com.framework.loippi.entity.AliPayRefund;
-import com.framework.loippi.entity.Principal;
-import com.framework.loippi.entity.TSystemPluginConfig;
-import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
@@ -79,7 +77,8 @@ import com.framework.loippi.vo.refund.ShopRefundReturnVo;
 @Controller("adminShopRefundReturnController")
 @Slf4j
 public class RefundReturnSysController extends GenericController {
-
+    @Resource
+    private UserService userService;
     @Resource
     private ShopRefundReturnService refundReturnService;
     @Resource
@@ -339,7 +338,8 @@ public class RefundReturnSysController extends GenericController {
                          @RequestParam(required = false, value = "refundPpv", defaultValue = "0") String refundPpv,//退款pv
                          @RequestParam(required = false, value = "refundPoint", defaultValue = "0") Integer refundPoint,//退款积分
                          HttpServletRequest request, HttpServletResponse response) {
-
+        Principal principal = userService.getPrincipal();
+        User user = userService.find(principal.getId());
         ShopRefundReturn refundReturn = refundReturnService.find(id);
         //**************************update by zc 2019-10-30**********************************************
         Long orderId = refundReturn.getOrderId();
@@ -361,7 +361,7 @@ public class RefundReturnSysController extends GenericController {
             // TODO: 2019/1/5 换单
             List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsService.findList("returnOrderId",id);
              orderService.addExchangeOrderReturnOrderId(shopReturnOrderGoodsList,refundReturn.getOrderId());
-            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1");
+            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", user.getUsername());
             model.addAttribute("msg", "换货成功");
             model.addAttribute("referer", "list.jhtml");
             return Constants.MSG_URL;
@@ -446,7 +446,7 @@ public class RefundReturnSysController extends GenericController {
 //                        weiRefund.setRefundfee((int) (0.01 * 100));
                         backurl = toweichatrefund(weiRefund, id, adminMessage, "mp_weichatpay", model, request);
                     } else if (order.getPaymentCode().equals("balancePaymentPlugin")) {
-                        refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype);
+                        refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype,user.getUsername());
                         model.addAttribute("msg", "退款成功");
                     }else if (order.getPaymentCode().equals("pointsPaymentPlugin")) {
                         if (refundReturn.getBatchNo()==null){
@@ -459,7 +459,7 @@ public class RefundReturnSysController extends GenericController {
                             updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
                             refundReturnService.update(updateReturn);//将批次号存入退款表
                         }
-                        refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype);
+                        refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype, user.getUsername());
                         model.addAttribute("msg", "退款成功");
                         backurl = Constants.MSG_URL;
                     }
@@ -473,7 +473,7 @@ public class RefundReturnSysController extends GenericController {
                 updateReturn.setRefundAmount(money);
                 updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
                 refundReturnService.update(updateReturn);//将批次号存入退款表
-                refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype);
+                refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype, user.getUsername());
                 model.addAttribute("msg", "退款成功");
                 backurl = Constants.MSG_URL;
             }
@@ -1024,7 +1024,7 @@ public class RefundReturnSysController extends GenericController {
         }
         String msg = "";
         if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
-            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1");
+            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
             msg = requestContext.getMessage("checksuccess");
             model.addAttribute("msg", msg);
         } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
@@ -1045,7 +1045,7 @@ public class RefundReturnSysController extends GenericController {
     public String toalirefund(AliPayRefund aliPayRefund, Model modelMap, Long id, String adminMessage) {
         String sHtmlText = alipayRefundService.toRefund(aliPayRefund);//构造提交支付宝的表单
         if ("true".equals(sHtmlText)) {
-            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1");
+            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
             modelMap.addAttribute("msg", "退款成功");
         } else {
             modelMap.addAttribute("msg", "退款失败:" + sHtmlText);

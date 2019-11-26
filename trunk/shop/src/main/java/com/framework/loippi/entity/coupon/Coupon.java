@@ -243,4 +243,10 @@ public class Coupon implements GenericEntity {
      * 优惠券模糊查询名称
      */
     private String couponLikeName;
+    /**
+     * 不可使用原因（针对于提交购物车判断用户优惠券使用情况）
+     * 0.未达到使用时间 1.已超过使用时间 2.不满足最小mi值要求 3.不满足最小金额要求 4.不满足店铺使用要求
+     * 5.不满足品牌使用要求 6.不满足任何使用范围要求 7.使用数量达到当前优惠券使用上限 8.订单内不存在指定优惠商品(针对于单品优惠券)
+     */
+    private Integer noUseFalg;
 }

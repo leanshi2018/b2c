@@ -155,6 +155,10 @@ public class CartCheckOutResult {
      */
     private ArrayList<Coupon> couponList=Lists.newArrayList();
     /**
+     * 不可使用优惠券列表
+     */
+    private ArrayList<Coupon> noUseCouponList=Lists.newArrayList();
+    /**
      * 优惠券id
      */
     private Long couponId;
@@ -402,6 +406,8 @@ public class CartCheckOutResult {
             cartCheckOutResult.setCouponScopeRemark("");
         }
         cartCheckOutResult.setCouponList(couponList);
+        ArrayList<Coupon> noUseCouponList = (ArrayList<Coupon>) moneyMap.get("noUseCouponList");
+        cartCheckOutResult.setNoUseCouponList(noUseCouponList);
         return cartCheckOutResult;
     }
 
