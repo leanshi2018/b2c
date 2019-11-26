@@ -46,11 +46,11 @@ public interface ShopRefundReturnService extends GenericService<ShopRefundReturn
 
     /**
      * 退款退货管理员审核退款
-     *
-     * @param refundId 记录ID
+     *  @param refundId 记录ID
      * @param adminMessage 管理员备注
+     * @param username
      */
-    void updateRefundReturnAudiReturn(Long refundId, String adminMessage,String type);
+    void updateRefundReturnAudiReturn(Long refundId, String adminMessage, String type, String username);
 
     /********************* 扩展查询 *********************/
     /**
