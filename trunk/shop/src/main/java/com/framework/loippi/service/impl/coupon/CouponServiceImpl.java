@@ -1,7 +1,20 @@
 package com.framework.loippi.service.impl.coupon;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.framework.loippi.dao.coupon.CouponDao;
 import com.framework.loippi.dao.coupon.CouponDetailDao;
+import com.framework.loippi.dao.coupon.CouponUserDao;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponTransLog;
@@ -18,12 +31,6 @@ import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.utils.Paramap;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * 优惠券业务层
@@ -34,6 +41,10 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
 
     @Resource
     private CouponDao couponDao;
+    @Resource
+    private CouponDetailDao couponDetailDao;
+    @Resource
+    private CouponUserDao couponUserDao;
     @Resource
     private CouponUserService couponUserService;
     @Resource
@@ -241,5 +252,69 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
 
         }
         return map;
+    }
+
+    @Override
+    public void addCoupon(Coupon coupon, String mmCode) {
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode",mmCode);
+
+        Map<String, Object> couponUserMap = new HashMap<>();
+        couponUserMap.put("mCode",mmCode);
+        couponUserMap.put("couponId",coupon.getId());
+        List<CouponUser> couponUserList = couponUserDao.findByMMCodeAndCouponId(couponUserMap);
+        if (couponUserList.size()==0){
+            CouponUser couponUser = new CouponUser();
+            couponUser.setId(twiterIdService.getTwiterId());
+            couponUser.setMCode(mmCode);
+            couponUser.setCouponId(coupon.getId());
+            couponUser.setOwnNum(1);
+            couponUser.setUseAbleNum(0);
+            couponUser.setUseNum(0);
+            couponUserDao.insert(couponUser);
+            //生成优惠券详情表
+            CouponDetail couponDetail = new CouponDetail();
+            couponDetail.setId(twiterIdService.getTwiterId());
+            couponDetail.setRdCouponUserId(couponUser.getId());
+            couponDetail.setCouponId(coupon.getId());
+            couponDetail.setCouponSn("YH"+twiterIdService.getTwiterId());
+            couponDetail.setCouponName(coupon.getCouponName());
+            couponDetail.setReceiveId(mmCode);
+            couponDetail.setReceiveNickName(member.getMmNickName());
+            couponDetail.setReceiveTime(new Date());
+            couponDetail.setHoldId(mmCode);
+            couponDetail.setHoldNickName(member.getMmNickName());
+            couponDetail.setHoldTime(new Date());
+            couponDetail.setUseStartTime(coupon.getUseStartTime());
+            couponDetail.setUseEndTime(coupon.getUseEndTime());
+            couponDetail.setUseState(2);
+            couponDetail.setRefundState(0);
+            couponDetailDao.insert(couponDetail);
+
+        }else {
+            for (CouponUser couponUser : couponUserList) {
+                couponUser.setOwnNum(couponUser.getOwnNum()+1);
+                couponUserDao.update(couponUser);
+                //生成优惠券详情表
+                CouponDetail couponDetail = new CouponDetail();
+                couponDetail.setId(twiterIdService.getTwiterId());
+                couponDetail.setRdCouponUserId(couponUser.getId());
+                couponDetail.setCouponId(coupon.getId());
+                couponDetail.setCouponSn("YH"+twiterIdService.getTwiterId());
+                couponDetail.setCouponName(coupon.getCouponName());
+                couponDetail.setReceiveId(mmCode);
+                couponDetail.setReceiveNickName(member.getMmNickName());
+                couponDetail.setReceiveTime(new Date());
+                couponDetail.setHoldId(mmCode);
+                couponDetail.setHoldNickName(member.getMmNickName());
+                couponDetail.setHoldTime(new Date());
+                couponDetail.setUseStartTime(coupon.getUseStartTime());
+                couponDetail.setUseEndTime(coupon.getUseEndTime());
+                couponDetail.setUseState(2);
+                couponDetail.setRefundState(0);
+                couponDetailDao.insert(couponDetail);
+            }
+        }
+
+
     }
 }
