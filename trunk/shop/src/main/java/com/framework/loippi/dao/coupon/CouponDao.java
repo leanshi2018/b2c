@@ -8,4 +8,8 @@ import java.util.List;
 
 public interface CouponDao extends GenericDao<Coupon, Long> {
     List<Coupon> findOverdueCoupon(Paramap put);
+
+    Coupon judgeNoStart(Paramap put);
+
+    Coupon judgeUseEnd(Paramap put);
 }
