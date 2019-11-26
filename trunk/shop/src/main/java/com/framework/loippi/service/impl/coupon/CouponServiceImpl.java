@@ -317,4 +317,14 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
 
 
     }
+
+    @Override
+    public Coupon judgeNoStart(Paramap put) {
+        return couponDao.judgeNoStart(put);
+    }
+
+    @Override
+    public Coupon judgeUseEnd(Paramap put) {
+        return couponDao.judgeUseEnd(put);
+    }
 }

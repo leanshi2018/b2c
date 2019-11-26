@@ -467,6 +467,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         map.put("couponId",Optional.ofNullable(cartInfo.getCouponId()).orElse(null) );
         //存储优惠券map
         map.put("couponList",Optional.ofNullable(cartInfo.getCouponList()).orElse(new ArrayList<Coupon>()));
+        //存储不可用优惠券map
+        map.put("noUseCouponList",Optional.ofNullable(cartInfo.getNoUseCouponList()).orElse(new ArrayList<Coupon>()));
         //存储等级优惠金额
         map.put("rankDiscount",BigDecimal.valueOf(rankDiscount));
         //存储优惠券优惠金额
@@ -833,6 +835,10 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                 if(coupons!=null&&coupons.size()>0){
                     cartInfo.setCouponList(coupons);
                 }
+                ArrayList<Coupon> noUseCoupons = (ArrayList<Coupon>) map.get("noUseCoupons");
+                if(noUseCoupons!=null&&noUseCoupons.size()>0){
+                    cartInfo.setNoUseCouponList(noUseCoupons);
+                }
                 BigDecimal couponMoney=BigDecimal.ZERO;
                 if(coupon.getReduceType()==CouponConstant.DISCOUNT_TYPE_FULL_REDUCTION){//满减
                     couponMoney=coupon.getCouponValue();
@@ -865,6 +871,10 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     cartInfo.setCouponId(couponId);
                     cartInfo.setCouponList(coupons);
                     useCouponAmount=couponMoney;
+                }
+                ArrayList<Coupon> noUseCoupons = (ArrayList<Coupon>) map.get("noUseCoupons");
+                if(noUseCoupons!=null&&noUseCoupons.size()>0){
+                    cartInfo.setNoUseCouponList(noUseCoupons);
                 }
             }
         }
@@ -908,15 +918,25 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
     public Map<String,Object> getCouponList(String memberId,List<ShopCart> cartList,CartInfo cartInfo)  {
         HashMap<String, Object> map = new HashMap<>();
         List<CouponUser> list = couponUserService.findList("mCode",memberId);
+        ArrayList<Coupon> noUseList=new ArrayList<Coupon>();
         if(list!=null&&list.size()>0){
             //设计一个变量统计优惠券使用优惠的最大额度
             BigDecimal best=BigDecimal.ZERO;
             Long couponId=0L;
             ArrayList<Coupon> coupons = new ArrayList<>();
             for (CouponUser couponUser : list) {
-                if(couponUser.getOwnNum()<=0||(couponUser.getUseAbleNum()!=0&&couponUser.getUseAbleNum()<=couponUser.getUseNum())){
+                if(couponUser.getOwnNum()<=0){
                     //如果当前优惠券拥有量为0或者当前优惠券已经使用张数大于可使用张数，从couponUser集合中删除
                     //list.remove(couponUser);
+                    continue;
+                }
+                if(couponUser.getUseAbleNum()!=0&&couponUser.getUseAbleNum()<=couponUser.getUseNum()){
+                    List<Coupon> couponList = couponService.findList(Paramap.create().put("id", couponUser.getCouponId()).put("status", 2));
+                    if(couponList!=null&&couponList.size()>0){
+                        Coupon coupon = couponList.get(0);
+                        coupon.setNoUseFalg(7);
+                        noUseList.add(coupon);//使用数量达到上限
+                    }
                     continue;
                 }
                 List<Coupon> couponList = couponService.findList(Paramap.create().put("id", couponUser.getCouponId()).put("status", 2));
@@ -930,6 +950,19 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             if(coupons!=null&&coupons.size()>0){
                 for (Coupon coupon : coupons) {
                     //解析优惠券的使用说明，判断优惠券是否适用于当前订单场景
+                    //0.判断优惠券使用时间是否满足要求
+                    Coupon coupon1=couponService.judgeNoStart(Paramap.create().put("id",coupon.getId()).put("searchUseTime",new Date()));
+                    if(coupon1!=null){//如果优惠券开始时间大于查询时间，说明优惠券使用未开始
+                        coupon.setNoUseFalg(0);
+                        noUseList.add(coupon);
+                        continue;
+                    }
+                    Coupon coupon2=couponService.judgeUseEnd(Paramap.create().put("id",coupon.getId()).put("searchUseTime",new Date()));
+                    if(coupon2!=null){//如果优惠券结束时间小于查询时间，说明优惠券已经结束使用
+                        coupon.setNoUseFalg(1);
+                        noUseList.add(coupon);
+                        continue;
+                    }
                     //1.判断店家id TODO 当前自营商店不进行判断，默认优惠券匹配店家id
                     //2.判断品牌id TODO 当前自营商店不进行判断，默认优惠券匹配品牌id
                     //3.判断使用范围 useScope
@@ -957,6 +990,10 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                             couponId=coupon.getId();
                                         }
                                     }
+                                }else {//不可以使用
+                                    coupon.setNoUseFalg(2);
+                                    noUseList.add(coupon);
+                                    continue;
                                 }
                             }else {//没有mi值按金额计算
                                 if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getMinAmount())!=-1){//可以使用
@@ -977,6 +1014,10 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                             couponId=coupon.getId();
                                         }
                                     }
+                                }else {//不可使用
+                                    coupon.setNoUseFalg(3);
+                                    noUseList.add(coupon);
+                                    continue;
                                 }
                             }
                         }else if (coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1){//mi限制存在
@@ -998,6 +1039,10 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                         couponId=coupon.getId();
                                     }
                                 }
+                            }else {//不可以使用
+                                coupon.setNoUseFalg(2);
+                                noUseList.add(coupon);
+                                continue;
                             }
                         }else if(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1){//金额限制存在
                             if(cartInfo.getActualGoodsTotalPrice().compareTo(coupon.getMinAmount())!=-1){//可以使用
@@ -1018,6 +1063,10 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                         couponId=coupon.getId();
                                     }
                                 }
+                            }else {
+                                coupon.setNoUseFalg(3);
+                                noUseList.add(coupon);
+                                continue;
                             }
                         }else {//没有限制
                             arrayList.add(coupon);
@@ -1042,7 +1091,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                             }
                         }
                     }
-                    if(coupon.getUseScope()== CouponConstant.USE_SCOPE_SINGLE_LIMIT){//适用于单品
+                    else if(coupon.getUseScope()== CouponConstant.USE_SCOPE_SINGLE_LIMIT){//适用于单品
                         Long goodsId = coupon.getGoodsId();
                         List<CartVo> cartVoList = cartInfo.getList();
                         BigDecimal totalMoney=BigDecimal.ZERO;
@@ -1081,6 +1130,11 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                             }
                                         }
                                     }
+                                    else {//不可以使用优惠券
+                                        coupon.setNoUseFalg(2);
+                                        noUseList.add(coupon);
+                                        continue;
+                                    }
                                 }else {
                                     if(totalMoney.compareTo(coupon.getMinAmount())!=-1){
                                         arrayList.add(coupon);
@@ -1100,6 +1154,11 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                                 couponId=coupon.getId();
                                             }
                                         }
+                                    }
+                                    else {
+                                        coupon.setNoUseFalg(3);
+                                        noUseList.add(coupon);
+                                        continue;
                                     }
                                 }
                             }else if (coupon.getMinMi()!=null&&coupon.getMinMi().compareTo(BigDecimal.ZERO)==1) {//mi限制存在
@@ -1122,6 +1181,11 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                         }
                                     }
                                 }
+                                else {
+                                    coupon.setNoUseFalg(2);
+                                    noUseList.add(coupon);
+                                    continue;
+                                }
                             }else if(coupon.getMinAmount()!=null&&coupon.getMinAmount().compareTo(BigDecimal.ZERO)==1){//金额限制
                                 if(totalMoney.compareTo(BigDecimal.ZERO)==1&&totalMoney.compareTo(coupon.getMinAmount())!=-1){//有金额且满足要求
                                     arrayList.add(coupon);
@@ -1141,6 +1205,11 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                             couponId=coupon.getId();
                                         }
                                     }
+                                }
+                                else {
+                                    coupon.setNoUseFalg(3);
+                                    noUseList.add(coupon);
+                                    continue;
                                 }
                             }else {//不限制
                                 arrayList.add(coupon);
@@ -1165,16 +1234,21 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                 }
                             }
                         }
+                        else {
+                            coupon.setNoUseFalg(8);
+                            noUseList.add(coupon);
+                            continue;
+                        }
                     }
                 }
-
             }
-
+            map.put("noUseCoupons",noUseList);
             map.put("coupons",arrayList);
             map.put("couponMoney",best);
             map.put("bestCouponId",couponId);
             return map;
         }else {
+            map.put("noUseCoupons",null);
             map.put("coupons",null);
             map.put("couponMoney",null);
             map.put("bestCouponId",null);

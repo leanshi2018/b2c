@@ -71,6 +71,10 @@ public class CartInfo implements Serializable {
      * 可使用优惠券列表
      */
     private ArrayList<Coupon> couponList=Lists.newArrayList();
+    /**
+     * 不可使用优惠券列表
+     */
+    private ArrayList<Coupon> noUseCouponList=Lists.newArrayList();
 
     /**
      * 商品总数量

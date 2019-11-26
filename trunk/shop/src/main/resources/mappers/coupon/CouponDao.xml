@@ -408,4 +408,18 @@
         where status = #{status} and use_end_time &lt; #{searchUseTime}
     </select>
 
+    <!--查询指定时间指定优惠券是否开始使用-->
+    <select id="judgeNoStart" parameterType="com.framework.loippi.utils.Paramap" resultMap="couponResultMap">
+        select
+        <include refid="base_column"/>
+        FROM rd_coupon
+        where id = #{id} and use_start_time > #{searchUseTime}
+    </select>
+    <!--查询指定时间指定优惠券是否结束使用-->
+    <select id="judgeUseEnd" parameterType="com.framework.loippi.utils.Paramap" resultMap="couponResultMap">
+        select
+        <include refid="base_column"/>
+        FROM rd_coupon
+        where id = #{id} and use_end_time &lt; #{searchUseTime}
+    </select>
 </mapper>
