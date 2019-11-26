@@ -4,10 +4,16 @@ package com.framework.loippi.service.impl.order;
 
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.service.coupon.CouponDetailService;
+import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.coupon.CouponUserService;
+import com.framework.loippi.service.user.*;
+import com.framework.loippi.service.wechat.WechatRefundService;
+import com.framework.loippi.utils.*;
+import com.framework.loippi.utils.validator.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -118,24 +124,10 @@ import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAccountLogService;
-import com.framework.loippi.service.user.RdMmAddInfoService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdRanksService;
-import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.wallet.ShopWalletLogService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.Dateutil;
-import com.framework.loippi.utils.GoodsUtils;
-import com.framework.loippi.utils.JacksonUtil;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.RandomUtils;
-import com.framework.loippi.utils.SnowFlake;
-import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
 import com.framework.loippi.vo.goods.GoodsStatisticsVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
@@ -148,6 +140,7 @@ import com.framework.loippi.vo.stats.StatsCountVo;
 import com.framework.loippi.vo.store.StoreStatisticsVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.springframework.web.servlet.support.RequestContext;
 
 /**
  * SERVICE - ShopOrder(订单表)
@@ -158,7 +151,10 @@ import com.google.common.collect.Maps;
 @Service
 @Slf4j
 public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> implements ShopOrderService {
-
+    @Autowired
+    private RdSysPeriodService rdSysPeriodService;
+    @Resource
+    private CouponPayDetailService couponPayDetailService;
     @Autowired
     private ShopOrderDao orderDao;
     @Autowired
@@ -261,7 +257,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private CouponUserService couponUserService;
     @Resource
     private CouponDetailService couponDetailService;
-
+    @Resource
+    private WechatRefundService wechatRefundService;
     @Autowired
     public void setGenericDao() {
         super.setGenericDao(orderDao);
@@ -668,7 +665,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if(coupon!=null&&coupon.getStatus()==4){
                     //回收优惠券
                     if(coupon.getUseMoneyFlag()==1){//退款回收 TODO
-
+                        couponDetail.setUseState(3);
+                        couponDetail.setUseTime(null);
+                        couponDetail.setUseOrderId(null);
+                        couponDetail.setUseOrderPayStatus(null);
+                        couponDetail.setRefundState(2);
+                        couponDetail.setRefundSum(coupon.getCouponPrice());
+                        couponDetailService.update(couponDetail);
+                        //退款
+                        returnCoupon(coupon,couponDetail,opName);
                     }else {//回收
                         couponDetail.setUseState(3);
                         couponDetail.setUseTime(null);
@@ -685,16 +690,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     couponDetail.setUseOrderId(null);
                     couponDetail.setUseOrderPayStatus(null);
                     couponDetailService.update(couponDetail);
-                    //修改couponUser
-                    List<CouponUser> couponUsers = couponUserService.findList(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",memberId));
-                    if(couponUsers==null||couponUsers.size()==0){
-                        throw new RuntimeException("优惠券拥有记录异常");
-                    }
-                    CouponUser couponUser = couponUsers.get(0);
-                    couponUser.setUseNum(couponUser.getUseNum()-1);
-                    couponUser.setOwnNum(couponUser.getOwnNum()+1);
-                    couponUserService.update(couponUser);
                 }
+                //修改couponUser
+                List<CouponUser> couponUsers = couponUserService.findList(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",memberId));
+                if(couponUsers==null||couponUsers.size()==0){
+                    throw new RuntimeException("优惠券拥有记录异常");
+                }
+                CouponUser couponUser = couponUsers.get(0);
+                couponUser.setUseNum(couponUser.getUseNum()-1);
+                couponUser.setOwnNum(couponUser.getOwnNum()+1);
+                couponUserService.update(couponUser);
             }
         }
     }
@@ -4361,4 +4366,163 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             }
         }
     }
+    public void returnCoupon(Coupon coupon,CouponDetail couponDetail,String opName){
+        CouponPayDetail couponPayDetail = couponPayDetailService.find(couponDetail.getBuyOrderId());
+        //判断是否积分支付
+        String paymentCode = "";
+        if (couponPayDetail.getPaymentId()==6){
+            paymentCode = "pointsPaymentPlugin";
+        }else{
+            //不是积分支付
+            TSystemPluginConfig pluginConfig = tSystemPluginConfigService.find(couponPayDetail.getPaymentId());
+            if (pluginConfig!=null){
+                paymentCode = pluginConfig.getPluginId();
+            }
+        }
+        if ("".equals(paymentCode)){
+            return;
+        }
+        if (paymentCode.equals("alipayMobilePaymentPlugin")) {//支付宝退款
+            String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+
+            AliPayRefund aliPayRefund = new AliPayRefund();
+            //支付宝交易号 ，退款金额，退款理由
+            aliPayRefund.setRefundAmountNum(1);//退款数量，目前是单笔退款
+            aliPayRefund.setBatchNo(bathno);
+            aliPayRefund.setTradeNo(couponPayDetail.getPaySn());
+            aliPayRefund.setRefundAmount(coupon.getCouponPrice());
+            //aliPayRefund.setRefundAmount(new BigDecimal(0.01));
+            aliPayRefund.setRRefundReason("单张优惠券退款");
+            aliPayRefund.setDetaildata(couponPayDetail.getTradeSn(),coupon.getCouponPrice(),"单张优惠券退款");
+
+            //跳到支付宝退款接口
+            String sHtmlText = alipayRefundService.toRefund(aliPayRefund);//构造提交支付宝的表单
+            if ("true".equals(sHtmlText)) {
+                //保存批次号和修改订单数据
+                updateCoupon(couponDetail,bathno,coupon,couponPayDetail);
+            }
+        } else if (paymentCode.equals("weixinMobilePaymentPlugin")) {//微信开放平台支付
+
+            String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+
+            WeiRefund weiRefund = new WeiRefund();
+            weiRefund.setOutrefundno(bathno);//微信交易号
+            weiRefund.setOuttradeno(couponPayDetail.getPaySn());//订单号
+            weiRefund.setTotalfee((int) ((couponPayDetail.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+            weiRefund.setRefundfee((int) ((coupon.getCouponPrice().doubleValue()) * 100));
+            //weiRefund.setRefundfee(1);
+            //weiRefund.setTotalfee(1);
+            //跳到微信退款接口
+            //toweichatrefund();
+            Map<String, Object> map = wechatMobileRefundService.toRefund(weiRefund);
+            String msg = "";
+            if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
+                //保存批次号和修改订单数据
+                updateCoupon(couponDetail,bathno,coupon,couponPayDetail);
+            }
+        } else if (paymentCode.equals("weixinH5PaymentPlugin")) {//微信公共平台支付
+            String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+
+            WeiRefund weiRefund = new WeiRefund();
+            weiRefund.setOutrefundno(bathno);//微信交易号
+            weiRefund.setOuttradeno(couponPayDetail.getPaySn());//订单号
+            weiRefund.setTotalfee((int) ((couponPayDetail.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+            weiRefund.setRefundfee((int) ((coupon.getCouponPrice().doubleValue()) * 100));
+//              weiRefund.setRefundfee((int) (0.01 * 100));
+            //跳到微信退款接口
+            //backurl = toweichatrefund(weiRefund, id, adminMessage, "mp_weichatpay", model, request);
+            Map<String, Object> map = wechatRefundService.toRefund(weiRefund);
+            String msg = "";
+            if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
+                //保存批次号和修改订单数据
+                updateCoupon(couponDetail,bathno,coupon,couponPayDetail);
+            }
+        }else if (paymentCode.equals("pointsPaymentPlugin")) {
+
+            String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+            //把积分退还给用户
+            String mCode = couponDetail.getReceiveId();
+            RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", couponDetail.getReceiveId());
+            if (rdMmAccountInfo!=null){
+                //更新用户购物积分
+                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                rdMmAccountLog.setTransTypeCode("OT");
+                rdMmAccountLog.setAccType("");
+                rdMmAccountLog.setTrSourceType("SWB");
+                rdMmAccountLog.setMmCode(couponDetail.getReceiveId());
+                rdMmAccountLog.setMmNickName(couponDetail.getReceiveNickName());
+                rdMmAccountLog.setTrMmCode(couponDetail.getReceiveId());
+                rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
+                //单张所需积分
+                BigDecimal pricePoint = couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP);
+                rdMmAccountLog.setAmount(pricePoint);
+                rdMmAccountLog.setTransDate(new Date());
+                String period = rdSysPeriodService.getSysPeriodService(new Date());
+                rdMmAccountLog.setTransPeriod(period);
+                rdMmAccountLog.setTrOrderOid(couponDetail.getBuyOrderId());
+                //无需审核直接成功
+                rdMmAccountLog.setStatus(3);
+                rdMmAccountLog.setCreationBy(opName);
+                rdMmAccountLog.setCreationTime(new Date());
+                rdMmAccountLog.setAutohrizeBy(opName);
+                rdMmAccountLog.setAutohrizeTime(new Date());
+                rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(pricePoint));
+                rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
+                rdMmAccountInfoService.update(rdMmAccountInfo);
+                rdMmAccountLogService.save(rdMmAccountLog);
+
+                //保存批次号和修改订单数据
+                //updateCoupon(couponDetailId,bathno,coupon,couponPayDetail);
+                CouponDetail couponDetail1 = new CouponDetail();
+                couponDetail1.setId(couponDetail.getId()); //记录ID
+                couponDetail1.setRefundState(2);//0：无需退款（非交易性优惠券）1：未退款 2：已退款
+                couponDetail1.setRefundSum(pricePoint);
+                couponDetail1.setBatchNo(bathno); //退款批次号
+                couponDetail1.setRefundTime(new Date());
+                couponDetailService.update(couponDetail1);//将批次号存入优惠券表
+
+                if (couponPayDetail.getRefundCouponNum()+1==couponPayDetail.getCouponNumber()){
+                    couponPayDetail.setRefundState(2);
+                }else{
+                    couponPayDetail.setRefundState(1);
+                }
+                couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+1);
+                couponPayDetail.setBatchNo(bathno);
+                couponPayDetail.setRefundTime(new Date());
+                couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(pricePoint));
+                couponPayDetailService.update(couponPayDetail);
+
+                //改rd_coupon_user
+                List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
+                CouponUser couponUser = couponUsers.get(0);
+                couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                couponUserService.update(couponUser);
+            }
+         }
+    }
+
+    public void updateCoupon(CouponDetail couponDetail, String bathno, Coupon coupon, CouponPayDetail couponPayDetail) {
+            couponDetail.setRefundState(2);//0：无需退款（非交易性优惠券）1：未退款 2：已退款
+            couponDetail.setRefundSum(coupon.getCouponPrice());
+            couponDetail.setBatchNo(bathno); //退款批次号
+            couponDetail.setRefundTime(new Date());
+            couponDetailService.update(couponDetail);//将批次号存入优惠券表
+
+            if (couponPayDetail.getRefundCouponNum()+1==couponPayDetail.getCouponNumber()){
+                couponPayDetail.setRefundState(2);
+            }else{
+                couponPayDetail.setRefundState(1);
+            }
+            couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+1);
+            couponPayDetail.setBatchNo(bathno);
+            couponPayDetail.setRefundTime(new Date());
+            couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(coupon.getCouponPrice()));
+            couponPayDetailService.update(couponPayDetail);
+
+            //改rd_coupon_user
+            List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
+            CouponUser couponUser = couponUsers.get(0);
+            couponUser.setOwnNum(couponUser.getOwnNum()-1);
+            couponUserService.update(couponUser);
+        }
 }
