@@ -26,6 +26,7 @@ public class UserCollectResult {
     private String title;
     private BigDecimal totalFee;
     private BigDecimal rental;
+    private BigDecimal vipPrice;
     private String picPath;
     private Long goodsId;
     private Long id;
@@ -109,6 +110,7 @@ public class UserCollectResult {
         //TODO
         result.setRental(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
         result.setTotalFee(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
+        result.setVipPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
         result.setActivityId(Optional.ofNullable(favorite.getActivityId()).orElse(-1L));
         result.setActivityType(Optional.ofNullable(favorite.getActivitType()).orElse(-1));
         result.setSpecId(Optional.ofNullable(favorite.getSpecId()).orElse(-1L));
