@@ -203,6 +203,12 @@ public class CouponController extends BaseController {
 		RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
 		RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
 
+		List<CouponUser> couponUserList = couponUserService.findByMMCodeAndCouponId(member.getMmCode(), couponId);
+		Integer haveCouponNum = 0;
+		if (couponUserList.size()!=0){
+			haveCouponNum = couponUserList.get(0).getOwnNum();
+		}
+
 		//优惠券信息
 		Coupon coupon = couponService.find(couponId);
 		Date startTime = coupon.getSendStartTime();//优惠券发放开始时间
@@ -239,7 +245,7 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			if (personLimitNum==0||personLimitNum>=couponNumber){
+			if (personLimitNum==0||personLimitNum>=couponNumber+haveCouponNum){
 				if (totalLimitNum==-1l){
 					if (r==10001){
 						//提交订单,返回订单支付实体
@@ -274,7 +280,7 @@ public class CouponController extends BaseController {
 					}
 				}
 			}else {
-				return ApiUtils.error("购买数量最大为"+personLimitNum+"张");
+				return ApiUtils.error("购买数量最大为"+(personLimitNum-haveCouponNum)+"张");
 			}
 		} else {
 			System.out.println("不在区间");
@@ -404,7 +410,7 @@ public class CouponController extends BaseController {
 	 *
 	 * @param couponId
 	 */
-	@RequestMapping("/order/receiveCoupon")
+	@RequestMapping("/coupon/receive")
 	@ResponseBody
 	public String receiveCoupon(@RequestParam Long couponId,HttpServletRequest request) {
 
@@ -453,28 +459,32 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			if (personLimitNum==0 || personLimitNum>=haveCouponNum){
-				if (totalLimitNum==-1l){
-					if (r==10001){
-
-						return ApiUtils.success();
-					}else {
-						return ApiUtils.error("购买级别不符");
-					}
-				}else {
-					if ((totalLimitNum-receivedNum)>0){
+			if (coupon.getUseMoneyFlag()==0){//免费
+				if (personLimitNum==0 || personLimitNum>=haveCouponNum+1){
+					if (totalLimitNum==-1l){
 						if (r==10001){
-
+							couponService.addCoupon(coupon,member.getMmCode());
 							return ApiUtils.success();
 						}else {
 							return ApiUtils.error("购买级别不符");
 						}
-					}else{
-						return ApiUtils.error("剩余优惠券数量为"+(totalLimitNum-receivedNum)+"张");
+					}else {
+						if ((totalLimitNum-receivedNum)>0){
+							if (r==10001){
+								couponService.addCoupon(coupon,member.getMmCode());
+								return ApiUtils.success();
+							}else {
+								return ApiUtils.error("购买级别不符");
+							}
+						}else{
+							return ApiUtils.error("剩余优惠券数量为"+(totalLimitNum-receivedNum)+"张");
+						}
 					}
+				}else {
+					return ApiUtils.error("领取数量已达最大值");
 				}
 			}else {
-				return ApiUtils.error();
+				return ApiUtils.error("该优惠券需要支付购买");
 			}
 
 		}else {
@@ -487,10 +497,6 @@ public class CouponController extends BaseController {
 			}
 			return ApiUtils.error("该优惠券发放出现错误");
 		}
-
-
-
-		//return ApiUtils.success();
 	}
 
 
