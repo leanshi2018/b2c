@@ -13,11 +13,11 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,mm_code ,coupon_id ,own_num ,use_able_num ,use_num
+        id ,mm_code ,coupon_id ,have_coupon_num ,own_num ,use_able_num ,use_num
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{mCode},#{couponId},#{ownNum},#{useAbleNum},#{useNum}
+        #{id},#{mCode},#{couponId},#{haveCouponNum},#{ownNum},#{useAbleNum},#{useNum}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->

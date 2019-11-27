@@ -313,6 +313,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", memberId);
 
 		List<CouponPayDetail> couponPayList = findList("paySn", payCommon.getOutTradeNo());
+		Coupon coupon = couponService.find(couponPayList.get(0).getCouponId());
 		String couponOrderSn = "";
 		if (CollectionUtils.isNotEmpty(couponPayList)) {
 			for (CouponPayDetail couponPayDetail : couponPayList) {
@@ -364,19 +365,28 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 				couponUserNew.setCouponId(couponPayList.get(0).getCouponId());
 				couponUserNew.setHaveCouponNum(couponPayList.get(0).getCouponNumber());
 				couponUserNew.setOwnNum(couponPayList.get(0).getCouponNumber());
-				couponUserNew.setUseAbleNum(couponPayList.get(0).getCouponNumber());
+				couponUserNew.setUseAbleNum(coupon.getUseNumLimit());
 				couponUserNew.setUseNum(0);
 				couponUserDao.insert(couponUserNew);
+
+				List<CouponUser> couponUsers = couponUserDao.findByMMCodeAndCouponId(couponUserMap);
+
 				//生成优惠券详情表
-				insertCouponDetail(couponPayList.get(0).getCouponNumber(),couponUserNew.getId(),couponPayList.get(0).getCouponId(),shopMember,couponPayList.get(0).getId());
+				insertCouponDetail(couponPayList.get(0).getCouponNumber(),couponUsers.get(0).getId(),couponPayList.get(0).getCouponId(),shopMember,couponPayList.get(0).getId());
 			}else {
 				for (CouponUser couponUser : couponUserList) {
-					Integer havaCouponNum = couponUser.getHaveCouponNum();
-					couponUser.setHaveCouponNum(havaCouponNum+couponPayList.get(0).getCouponNumber());
+					couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()+couponPayList.get(0).getCouponNumber());
+					couponUser.setOwnNum(couponUser.getOwnNum()+couponPayList.get(0).getCouponNumber());
 					couponUserDao.update(couponUser);
 					//生成优惠券详情表
 					insertCouponDetail(couponPayList.get(0).getCouponNumber(),couponUser.getId(),couponPayList.get(0).getCouponId(),shopMember,couponPayList.get(0).getId());
 				}
+			}
+
+			//修改优惠券剩余数量
+			if (coupon.getTotalLimitNum()!=-1){//优惠券总发行数量 -1代表不限制
+				coupon.setReceivedNum(coupon.getReceivedNum()+couponPayList.get(0).getCouponNumber());
+				couponService.update(coupon);
 			}
 
 			return result;
@@ -430,6 +440,8 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		if (CollectionUtils.isEmpty(couponPayDetailList)) {
 			return;
 		}
+
+		Coupon coupon = couponService.find(couponPayDetailList.get(0).getCouponId());
 
 		for (CouponPayDetail couponPayDetail : couponPayDetailList) {
 			if (couponPayDetail.getPaymentState() == 0) {//未付款
@@ -498,19 +510,28 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			couponUserNew.setCouponId(couponPayDetailList.get(0).getCouponId());
 			couponUserNew.setHaveCouponNum(couponPayDetailList.get(0).getCouponNumber());
 			couponUserNew.setOwnNum(couponPayDetailList.get(0).getCouponNumber());
-			couponUserNew.setUseAbleNum(couponPayDetailList.get(0).getCouponNumber());
+			couponUserNew.setUseAbleNum(coupon.getUseNumLimit());
 			couponUserNew.setUseNum(0);
 			couponUserDao.insert(couponUserNew);
+
+			List<CouponUser> couponUsers = couponUserDao.findByMMCodeAndCouponId(couponUserMap);
+
 			//生成优惠券详情表
-			insertCouponDetail(couponPayDetailList.get(0).getCouponNumber(),couponUserNew.getId(),couponPayDetailList.get(0).getCouponId(),shopMember,couponPayDetailList.get(0).getId());
+			insertCouponDetail(couponPayDetailList.get(0).getCouponNumber(),couponUsers.get(0).getId(),couponPayDetailList.get(0).getCouponId(),shopMember,couponPayDetailList.get(0).getId());
 		}else {
 			for (CouponUser couponUser : couponUserList) {
-				Integer havaCouponNum = couponUser.getHaveCouponNum();
-				couponUser.setHaveCouponNum(havaCouponNum+couponPayDetailList.get(0).getCouponNumber());
+				couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()+couponPayDetailList.get(0).getCouponNumber());
+				couponUser.setOwnNum(couponUser.getOwnNum()+couponPayDetailList.get(0).getCouponNumber());
 				couponUserDao.update(couponUser);
 				//生成优惠券详情表
 				insertCouponDetail(couponPayDetailList.get(0).getCouponNumber(),couponUser.getId(),couponPayDetailList.get(0).getCouponId(),shopMember,couponPayDetailList.get(0).getId());
 			}
+		}
+
+		//修改优惠券剩余数量
+		if (coupon.getTotalLimitNum()!=-1){//优惠券总发行数量 -1代表不限制
+			coupon.setReceivedNum(coupon.getReceivedNum()+couponPayDetailList.get(0).getCouponNumber());
+			couponService.update(coupon);
 		}
 	}
 
