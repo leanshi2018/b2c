@@ -5,6 +5,7 @@
         <id property="id" column="id"/>
         <result property="mCode" column="mm_code"/>
         <result property="couponId" column="coupon_id"/>
+        <result property="haveCouponNum" column="have_coupon_num"/>
         <result property="ownNum" column="own_num"/>
         <result property="useAbleNum" column="use_able_num"/>
         <result property="useNum" column="use_num"/>
@@ -30,6 +31,9 @@
         <if test="couponId != null">
             AND coupon_id = #{couponId,jdbcType=BIGINT}
         </if>
+        <if test="haveCouponNum != null">
+            AND have_coupon_num = #{haveCouponNum,jdbcType=INTEGER}
+        </if>
         <if test="ownNum != null">
             AND own_num = #{ownNum,jdbcType=INTEGER}
         </if>
@@ -50,6 +54,9 @@
         </if>
         <if test="couponId != null">
             coupon_id = #{couponId,jdbcType=BIGINT},
+        </if>
+        <if test="haveCouponNum != null">
+            have_coupon_num = #{haveCouponNum,jdbcType=INTEGER},
         </if>
         <if test="ownNum != null">
             own_num = #{ownNum,jdbcType=INTEGER},

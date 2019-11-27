@@ -362,6 +362,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 				couponUserNew.setId(twiterIdService.getTwiterId());
 				couponUserNew.setMCode(memberId);
 				couponUserNew.setCouponId(couponPayList.get(0).getCouponId());
+				couponUserNew.setHaveCouponNum(couponPayList.get(0).getCouponNumber());
 				couponUserNew.setOwnNum(couponPayList.get(0).getCouponNumber());
 				couponUserNew.setUseAbleNum(couponPayList.get(0).getCouponNumber());
 				couponUserNew.setUseNum(0);
@@ -370,8 +371,8 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 				insertCouponDetail(couponPayList.get(0).getCouponNumber(),couponUserNew.getId(),couponPayList.get(0).getCouponId(),shopMember,couponPayList.get(0).getId());
 			}else {
 				for (CouponUser couponUser : couponUserList) {
-					Integer ownNum = couponUser.getOwnNum();
-					couponUser.setOwnNum(ownNum+couponPayList.get(0).getCouponNumber());
+					Integer havaCouponNum = couponUser.getHaveCouponNum();
+					couponUser.setHaveCouponNum(havaCouponNum+couponPayList.get(0).getCouponNumber());
 					couponUserDao.update(couponUser);
 					//生成优惠券详情表
 					insertCouponDetail(couponPayList.get(0).getCouponNumber(),couponUser.getId(),couponPayList.get(0).getCouponId(),shopMember,couponPayList.get(0).getId());
@@ -495,6 +496,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			couponUserNew.setId(twiterIdService.getTwiterId());
 			couponUserNew.setMCode(memberId);
 			couponUserNew.setCouponId(couponPayDetailList.get(0).getCouponId());
+			couponUserNew.setHaveCouponNum(couponPayDetailList.get(0).getCouponNumber());
 			couponUserNew.setOwnNum(couponPayDetailList.get(0).getCouponNumber());
 			couponUserNew.setUseAbleNum(couponPayDetailList.get(0).getCouponNumber());
 			couponUserNew.setUseNum(0);
@@ -503,8 +505,8 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			insertCouponDetail(couponPayDetailList.get(0).getCouponNumber(),couponUserNew.getId(),couponPayDetailList.get(0).getCouponId(),shopMember,couponPayDetailList.get(0).getId());
 		}else {
 			for (CouponUser couponUser : couponUserList) {
-				Integer ownNum = couponUser.getOwnNum();
-				couponUser.setOwnNum(ownNum+couponPayDetailList.get(0).getCouponNumber());
+				Integer havaCouponNum = couponUser.getHaveCouponNum();
+				couponUser.setHaveCouponNum(havaCouponNum+couponPayDetailList.get(0).getCouponNumber());
 				couponUserDao.update(couponUser);
 				//生成优惠券详情表
 				insertCouponDetail(couponPayDetailList.get(0).getCouponNumber(),couponUser.getId(),couponPayDetailList.get(0).getCouponId(),shopMember,couponPayDetailList.get(0).getId());

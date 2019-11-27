@@ -1,7 +1,5 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.entity.*;
-import com.framework.loippi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -30,6 +28,11 @@ import org.springframework.web.servlet.support.RequestContext;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.RefundReturnState;
 import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.entity.AliPayRefund;
+import com.framework.loippi.entity.Principal;
+import com.framework.loippi.entity.TSystemPluginConfig;
+import com.framework.loippi.entity.User;
+import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
@@ -44,6 +47,7 @@ import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TSystemPluginConfigService;
+import com.framework.loippi.service.UserService;
 import com.framework.loippi.service.alipay.AlipayRefundService;
 import com.framework.loippi.service.coupon.CouponDetailService;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
@@ -692,7 +696,7 @@ public class RefundReturnSysController extends GenericController {
                     //改rd_coupon_user
                     List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                     CouponUser couponUser = couponUsers.get(0);
-                    couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                    couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                     couponUserService.update(couponUser);
 
 
@@ -731,7 +735,7 @@ public class RefundReturnSysController extends GenericController {
         //改rd_coupon_user
         List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
         CouponUser couponUser = couponUsers.get(0);
-        couponUser.setOwnNum(couponUser.getOwnNum()-1);
+        couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
         couponUserService.update(couponUser);
     }
 
@@ -947,7 +951,7 @@ public class RefundReturnSysController extends GenericController {
                             //改rd_coupon_user
                             List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                             CouponUser couponUser = couponUsers.get(0);
-                            couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                            couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                             couponUserService.update(couponUser);
                         }
                     }
@@ -1003,7 +1007,7 @@ public class RefundReturnSysController extends GenericController {
                 //改rd_coupon_user
                 List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                 CouponUser couponUser = couponUsers.get(0);
-                couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                 couponUserService.update(couponUser);
             }
         }
