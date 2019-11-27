@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.coupon;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -126,6 +127,10 @@ public class ShopCouponController extends GenericController {
         }
         if(coupon.getTotalLimitNum()==null){
             model.addAttribute("msg", "优惠券总发行数量不可以为空");
+            return Constants.MSG_URL;
+        }
+        if((coupon.getReduceType()==3||coupon.getReduceType()==4)&&coupon.getCouponValue().compareTo(BigDecimal.TEN)!=-1){
+            model.addAttribute("msg", "优惠券折扣不可大于十折");
             return Constants.MSG_URL;
         }
         coupon.setId(couponId);

@@ -249,4 +249,8 @@ public class Coupon implements GenericEntity {
      * 5.不满足品牌使用要求 6.不满足任何使用范围要求 7.使用数量达到当前优惠券使用上限 8.订单内不存在指定优惠商品(针对于单品优惠券)
      */
     private Integer noUseFalg;
+    /**
+     * 当前查询用户未使用优惠券数量
+     */
+    private Integer searchUseNum;
 }
