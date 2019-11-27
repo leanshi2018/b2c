@@ -272,7 +272,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
             couponUser.setCouponId(coupon.getId());
             couponUser.setHaveCouponNum(1);
             couponUser.setOwnNum(1);
-            couponUser.setUseAbleNum(1);
+            couponUser.setUseAbleNum(coupon.getUseNumLimit());
             couponUser.setUseNum(0);
             couponUserDao.insert(couponUser);
             //生成优惠券详情表
@@ -319,7 +319,11 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
                 couponDetailDao.insert(couponDetail);
             }
         }
-
+        //修改优惠券剩余数量
+        if (coupon.getTotalLimitNum()!=-1){//优惠券总发行数量 -1代表不限制
+            coupon.setReceivedNum(coupon.getReceivedNum()+1);
+            couponDao.update(coupon);
+        }
 
     }
 
