@@ -1,10 +1,11 @@
 package com.framework.loippi.entity.coupon;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * 用户优惠券拥有记录
@@ -28,6 +29,10 @@ public class CouponUser implements GenericEntity {
      * 优惠券id
      */
     private Long couponId;
+    /**
+     * 当前拥有优惠券数量（退款才减）
+     */
+    private Integer haveCouponNum;
     /**
      * 当前会员拥有当前优惠券数量
      */
