@@ -1,6 +1,7 @@
 package com.framework.loippi.controller.coupon;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +134,33 @@ public class ShopCouponController extends GenericController {
             model.addAttribute("msg", "优惠券折扣不可大于十折");
             return Constants.MSG_URL;
         }
+        if(coupon.getSendStartTime()==null){
+            model.addAttribute("msg", "优惠券开始发放时间为空");
+            return Constants.MSG_URL;
+        }
+        if(coupon.getSendEndTime()==null){
+            model.addAttribute("msg", "优惠券结束发放时间为空");
+            return Constants.MSG_URL;
+        }
+        if(coupon.getUseStartTime()==null){
+            model.addAttribute("msg", "优惠券开始使用时间为空");
+            return Constants.MSG_URL;
+        }
+        if(coupon.getUseEndTime()==null){
+            model.addAttribute("msg", "优惠券结束使用时间为空");
+            return Constants.MSG_URL;
+        }
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+        String sendStartTime = format1.format(coupon.getSendStartTime());
+        String useStartTime = format1.format(coupon.getUseStartTime());
+        String sendEndTime = format2.format(coupon.getSendEndTime());
+        String useEndTime = format2.format(coupon.getUseEndTime());
+        coupon.setSendStartTime(new Date(sendStartTime));
+        coupon.setUseStartTime(new Date(useStartTime));
+        coupon.setSendEndTime(new Date(sendEndTime));
+        coupon.setUseEndTime(new Date(useEndTime));
+        System.out.println(coupon);
         coupon.setId(couponId);
         Subject subject = SecurityUtils.getSubject();
         if(subject!=null){
