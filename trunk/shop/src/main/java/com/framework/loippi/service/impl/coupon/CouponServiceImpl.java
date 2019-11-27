@@ -275,10 +275,12 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
             couponUser.setUseAbleNum(coupon.getUseNumLimit());
             couponUser.setUseNum(0);
             couponUserDao.insert(couponUser);
+            List<CouponUser> couponUsers = couponUserDao.findByMMCodeAndCouponId(couponUserMap);
+
             //生成优惠券详情表
             CouponDetail couponDetail = new CouponDetail();
             couponDetail.setId(twiterIdService.getTwiterId());
-            couponDetail.setRdCouponUserId(couponUser.getId());
+            couponDetail.setRdCouponUserId(couponUsers.get(0).getId());
             couponDetail.setCouponId(coupon.getId());
             couponDetail.setCouponSn("YH"+twiterIdService.getTwiterId());
             couponDetail.setCouponName(coupon.getCouponName());
