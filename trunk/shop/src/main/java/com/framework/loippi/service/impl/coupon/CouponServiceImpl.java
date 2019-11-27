@@ -270,8 +270,9 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
             couponUser.setId(twiterIdService.getTwiterId());
             couponUser.setMCode(mmCode);
             couponUser.setCouponId(coupon.getId());
+            couponUser.setHaveCouponNum(1);
             couponUser.setOwnNum(1);
-            couponUser.setUseAbleNum(0);
+            couponUser.setUseAbleNum(1);
             couponUser.setUseNum(0);
             couponUserDao.insert(couponUser);
             //生成优惠券详情表
@@ -295,6 +296,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
 
         }else {
             for (CouponUser couponUser : couponUserList) {
+                couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()+1);
                 couponUser.setOwnNum(couponUser.getOwnNum()+1);
                 couponUserDao.update(couponUser);
                 //生成优惠券详情表
