@@ -935,13 +935,16 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     if(couponList!=null&&couponList.size()>0){
                         Coupon coupon = couponList.get(0);
                         coupon.setNoUseFalg(7);
+                        coupon.setSearchUseNum(couponUser.getOwnNum());//设置当前用户指定优惠券未使用数量
                         noUseList.add(coupon);//使用数量达到上限
                     }
                     continue;
                 }
                 List<Coupon> couponList = couponService.findList(Paramap.create().put("id", couponUser.getCouponId()).put("status", 2));
                 if(couponList!=null&&couponList.size()>0){
-                    coupons.add(couponList.get(0));
+                    Coupon coupon = couponList.get(0);
+                    coupon.setSearchUseNum(couponUser.getOwnNum());
+                    coupons.add(coupon);
                 }
             }
             ArrayList<Coupon> arrayList=new ArrayList<Coupon>();
