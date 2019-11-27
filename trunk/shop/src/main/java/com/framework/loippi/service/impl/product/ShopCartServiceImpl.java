@@ -825,7 +825,38 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         //TODO create by zc 2019-11-08 计算优惠券折扣
         BigDecimal useCouponAmount=BigDecimal.ZERO;
         if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
-            if(couponId!=null){//由于第一次进入couponId为null，给前端展示的优惠券均可以使用，此处不再次验证
+            if(couponId==null){
+                Map<String, Object> map = getCouponList(memberId, cartList, cartInfo);
+                ArrayList<Coupon> coupons = (ArrayList<Coupon>) map.get("coupons");
+                BigDecimal couponMoney = (BigDecimal) map.get("couponMoney");
+                couponId = (Long) map.get("bestCouponId");
+                if(coupons!=null&&coupons.size()>0){
+                    cartInfo.setActualGoodsTotalPrice(cartInfo.getActualGoodsTotalPrice().subtract(couponMoney));
+                    cartInfo.setCouponAmount(cartInfo.getCouponAmount().add(couponMoney));
+                    cartInfo.setCouponPrice(couponMoney);
+                    cartInfo.setCouponId(couponId);
+                    cartInfo.setCouponList(coupons);
+                    useCouponAmount=couponMoney;
+                }
+                ArrayList<Coupon> noUseCoupons = (ArrayList<Coupon>) map.get("noUseCoupons");
+                if(noUseCoupons!=null&&noUseCoupons.size()>0){
+                    cartInfo.setNoUseCouponList(noUseCoupons);
+                }
+            }else if(couponId==-1){
+                Map<String, Object> map = getCouponList(memberId, cartList, cartInfo);
+                ArrayList<Coupon> coupons = (ArrayList<Coupon>) map.get("coupons");
+                BigDecimal couponMoney = (BigDecimal) map.get("couponMoney");
+                couponId = (Long) map.get("bestCouponId");
+                cartInfo.setCouponId(-1L);//选择不使用优惠券
+                cartInfo.setCouponList(coupons);
+                if(coupons!=null&&coupons.size()>0){
+                    cartInfo.setCouponList(coupons);
+                }
+                ArrayList<Coupon> noUseCoupons = (ArrayList<Coupon>) map.get("noUseCoupons");
+                if(noUseCoupons!=null&&noUseCoupons.size()>0){
+                    cartInfo.setNoUseCouponList(noUseCoupons);
+                }
+            }else {
                 Coupon coupon = couponService.find(couponId);
                 if(coupon==null||coupon.getStatus()!=2){
                     throw new RuntimeException("当前选取优惠券异常");
@@ -859,23 +890,6 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                 cartInfo.setCouponPrice(couponMoney);
                 cartInfo.setCouponId(couponId);
                 useCouponAmount=couponMoney;
-            }else {
-                Map<String, Object> map = getCouponList(memberId, cartList, cartInfo);
-                ArrayList<Coupon> coupons = (ArrayList<Coupon>) map.get("coupons");
-                BigDecimal couponMoney = (BigDecimal) map.get("couponMoney");
-                couponId = (Long) map.get("bestCouponId");
-                if(coupons!=null&&coupons.size()>0){
-                    cartInfo.setActualGoodsTotalPrice(cartInfo.getActualGoodsTotalPrice().subtract(couponMoney));
-                    cartInfo.setCouponAmount(cartInfo.getCouponAmount().add(couponMoney));
-                    cartInfo.setCouponPrice(couponMoney);
-                    cartInfo.setCouponId(couponId);
-                    cartInfo.setCouponList(coupons);
-                    useCouponAmount=couponMoney;
-                }
-                ArrayList<Coupon> noUseCoupons = (ArrayList<Coupon>) map.get("noUseCoupons");
-                if(noUseCoupons!=null&&noUseCoupons.size()>0){
-                    cartInfo.setNoUseCouponList(noUseCoupons);
-                }
             }
         }
         cartInfo.setUseCouponAmount(useCouponAmount);
