@@ -333,16 +333,17 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
 
         /******************** 修改订单退款金额和退款状态 **********************/
         // 平台优惠券金额 打赏积分抵扣 由平台自己承担
-        double totalReturnPrice = 0.00;
+        //double totalReturnPrice = 0.00;
         //新建一个订单当前全部退款金额(包括本次退款的金额)
         BigDecimal refundedAmount = order.getRefundPoint().add(order.getRefundAmount());
         double refundAmount = refundedAmount.doubleValue();
-        for (ShopOrderGoods orderGoods1 : shopOrderGoodses) {
+        /*for (ShopOrderGoods orderGoods1 : shopOrderGoodses) {
             totalReturnPrice += orderGoods1.getGoodsPayPrice().doubleValue();
             totalReturnPrice += Optional.ofNullable(orderGoods1.getRewardPointPrice()).orElse(BigDecimal.ZERO)
                 .doubleValue();
-        }
-
+        }*/
+        BigDecimal totalMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).
+                add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO));
         ShopOrder newOrder = new ShopOrder();
         newOrder.setId(refundReturn.getOrderId());
 //        if (order.getRefundAmount() != null) {
@@ -358,7 +359,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
 //        newOrder.setRefundAmount(BigDecimal.valueOf(refundedAmount));
 
         //判断订单是否全部退款
-        if (totalReturnPrice > refundAmount) {
+        if (totalMoney.doubleValue() > refundAmount) {
             newOrder.setRefundState(OrderState.REFUND_STATE_SOM);
         } else {
             newOrder.setRefundState(OrderState.REFUND_STATE_ALL);

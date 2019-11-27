@@ -132,6 +132,10 @@ public class ShopOrder implements GenericEntity {
     @Column(name = "discount" )
     private java.math.BigDecimal discount;
 
+    /** 优惠券优惠金额 */
+    @Column(name = "coupon_discount" )
+    private java.math.BigDecimal couponDiscount;
+
     /** 订单应付金额(现金支付) */
     @Column(name = "order_amount" )
     private java.math.BigDecimal orderAmount;

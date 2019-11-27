@@ -513,7 +513,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
                 BigDecimal aTotal = Optional.ofNullable(rdMmRelation.getATotal()).orElse(BigDecimal.ZERO);//获得累计购买额
                 BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
-                        .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)));
+                        .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
+                                .add(Optional.ofNullable(order.getCouponDiscount()).orElse(BigDecimal.ZERO))
+                                .subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)));
                 BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
                 BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                 BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
@@ -1652,6 +1654,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setPpv(orderVo.getPpv());
             //订单运费优惠价格
             order.setShippingPreferentialFee(orderVo.getPreferentialFreightAmount());
+            //订单使用优惠券金额
+            order.setCouponDiscount(orderVo.getUseCouponAmount());
             order.setOrderPlatform(2);
             /**********支付统计************/
             // 现金支付
@@ -2745,7 +2749,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
                     BigDecimal aTotal = Optional.ofNullable(rdMmRelation.getATotal()).orElse(BigDecimal.ZERO);//获得累计购买额
                     BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
-                            .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO));
+                            .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO))
+                            .add(Optional.ofNullable(order.getCouponDiscount()).orElse(BigDecimal.ZERO))
+                            .subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO));//优惠券优惠金额记入订单金额
                     BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
                     BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                     BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
@@ -2940,6 +2946,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 //                    .subtract(cartInfo.getVoucherPrice());
             BigDecimal orderAmount = cartInfo.getActualGoodsTotalPrice();
             orderVo.setOrderAmount(orderAmount);
+            orderVo.setUseCouponAmount(cartInfo.getUseCouponAmount());
             //完善订单项信息--
             orderVo.setCartOrderVoList(setCartOrderVoColumn(cartInfo));
             // 所有订单金额
@@ -3786,7 +3793,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         BigDecimal money = Optional.ofNullable(rdMmRelation.getARetail()).orElse(BigDecimal.ZERO);//获得累计零售购买额
                         BigDecimal aTotal = Optional.ofNullable(rdMmRelation.getATotal()).orElse(BigDecimal.ZERO);//获得累计购买额
                         BigDecimal orderMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO)
-                                .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)));
+                                .add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
+                                        .add(Optional.ofNullable(order.getCouponDiscount()).orElse(BigDecimal.ZERO))
+                                        .subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)));//优惠券优惠金额记入订单金额
                         BigDecimal vipMoney = BigDecimal.valueOf(NewVipConstant.NEW_VIP_CONDITIONS_TOTAL);
                         BigDecimal ppv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                         BigDecimal orderPpv = Optional.ofNullable(order.getPpv()).orElse(BigDecimal.ZERO);
@@ -4018,6 +4027,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             rdMmAccountLogService.save(rdMmAccountLog);
             rdMmAccountInfoService.update(rdMmAccountInfo);
             orderDao.update(newShopOrder);
+            BigDecimal totalMoney = Optional.ofNullable(newShopOrder.getOrderAmount()).orElse(BigDecimal.ZERO).
+                    add(Optional.ofNullable(newShopOrder.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO));
+            Boolean flag=false;
+            if((Optional.ofNullable(newShopOrder.getRefundAmount()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(newShopOrder.getRefundPoint()).orElse(BigDecimal.ZERO))).compareTo(totalMoney)!=-1){
+                flag=true;
+            }
             //判断是否符合降级条件进行降级
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", order.getBuyerId());
             if (rdMmRelation != null) {
@@ -4032,8 +4047,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     rdMmIntegralRule = rdMmIntegralRuleList.get(0);
                 }
                 int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
-                BigDecimal orderMoney = aRetail.subtract(refundReturn.getRefundAmount().add(new BigDecimal(refundReturn.getRewardPointAmount().doubleValue() * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
-                BigDecimal orderMoneyTotal =aTotal.subtract(refundReturn.getRefundAmount().add(new BigDecimal(refundReturn.getRewardPointAmount().doubleValue() * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+                BigDecimal orderMoney=BigDecimal.ZERO;
+                BigDecimal orderMoneyTotal=BigDecimal.ZERO;
+                if(flag){
+                    orderMoney =orderMoney.add(aRetail).subtract(refundReturn.getRefundAmount().add(new BigDecimal(refundReturn.getRewardPointAmount().doubleValue() * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)).add(Optional.ofNullable(order.getCouponDiscount()).orElse(BigDecimal.ZERO)));
+                    orderMoneyTotal =orderMoneyTotal.add(aTotal).subtract(refundReturn.getRefundAmount().add(new BigDecimal(refundReturn.getRewardPointAmount().doubleValue() * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)).add(Optional.ofNullable(order.getCouponDiscount()).orElse(BigDecimal.ZERO)));
+                }else {
+                    orderMoney =orderMoney.add(aRetail).subtract(refundReturn.getRefundAmount().add(new BigDecimal(refundReturn.getRewardPointAmount().doubleValue() * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+                    orderMoneyTotal =orderMoneyTotal.add(aTotal).subtract(refundReturn.getRefundAmount().add(new BigDecimal(refundReturn.getRewardPointAmount().doubleValue() * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+                }
                 BigDecimal aPpv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
                 BigDecimal agencyPpv = BigDecimal.valueOf(NewVipConstant.NEW_AGENCY_CONDITIONS_TOTAL);
                 BigDecimal orderPpv = BigDecimal.ZERO;
