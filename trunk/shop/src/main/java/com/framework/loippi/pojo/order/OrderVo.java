@@ -61,6 +61,10 @@ public class OrderVo {
      *优惠运费
      */
     public BigDecimal preferentialFreightAmount;
+    /**
+     *订单使用优惠券金额
+     */
+    public BigDecimal useCouponAmount;
 //    /**
 //     * 代金券金额
 //     */
