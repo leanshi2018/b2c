@@ -125,7 +125,7 @@ public class CouponController extends BaseController {
 		List<CouponUser> couponUserList = couponUserService.findByMMCodeAndCouponId(member.getMmCode(), couponId);
 		Integer haveCouponNum = 0;
 		if (couponUserList.size()!=0){
-			haveCouponNum = couponUserList.get(0).getOwnNum();
+			haveCouponNum = couponUserList.get(0).getHaveCouponNum();
 		}
 
 		//商品基本详情对象
@@ -236,7 +236,7 @@ public class CouponController extends BaseController {
 		List<CouponUser> couponUserList = couponUserService.findByMMCodeAndCouponId(member.getMmCode(), couponId);
 		Integer haveCouponNum = 0;
 		if (couponUserList.size()!=0){
-			haveCouponNum = couponUserList.get(0).getOwnNum();
+			haveCouponNum = couponUserList.get(0).getHaveCouponNum();
 		}
 
 		//优惠券信息
@@ -310,7 +310,7 @@ public class CouponController extends BaseController {
 					}
 				}
 			}else {
-				return ApiUtils.error("购买数量最大为"+(personLimitNum-haveCouponNum)+"张");
+				return ApiUtils.error("每个用户最多可购买为"+personLimitNum+"张");
 			}
 		} else {
 			System.out.println("不在区间");
@@ -450,7 +450,7 @@ public class CouponController extends BaseController {
 		List<CouponUser> couponUserList = couponUserService.findByMMCodeAndCouponId(member.getMmCode(), couponId);
 		Integer haveCouponNum = 0;
 		if (couponUserList.size()!=0){
-			haveCouponNum = couponUserList.get(0).getOwnNum();
+			haveCouponNum = couponUserList.get(0).getHaveCouponNum();
 		}
 
 		//优惠券信息
