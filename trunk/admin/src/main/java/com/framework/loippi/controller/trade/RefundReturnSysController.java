@@ -697,6 +697,7 @@ public class RefundReturnSysController extends GenericController {
                     List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                     CouponUser couponUser = couponUsers.get(0);
                     couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+                    couponUser.setOwnNum(couponUser.getOwnNum()-1);
                     couponUserService.update(couponUser);
 
 
@@ -736,6 +737,7 @@ public class RefundReturnSysController extends GenericController {
         List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
         CouponUser couponUser = couponUsers.get(0);
         couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+        couponUser.setOwnNum(couponUser.getOwnNum()-1);
         couponUserService.update(couponUser);
     }
 
@@ -952,6 +954,7 @@ public class RefundReturnSysController extends GenericController {
                             List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                             CouponUser couponUser = couponUsers.get(0);
                             couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+                            couponUser.setOwnNum(couponUser.getOwnNum()-1);
                             couponUserService.update(couponUser);
                         }
                     }
@@ -1008,6 +1011,7 @@ public class RefundReturnSysController extends GenericController {
                 List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                 CouponUser couponUser = couponUsers.get(0);
                 couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+                couponUser.setOwnNum(couponUser.getOwnNum()-1);
                 couponUserService.update(couponUser);
             }
         }
