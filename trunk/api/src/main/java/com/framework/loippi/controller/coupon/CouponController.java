@@ -306,11 +306,11 @@ public class CouponController extends BaseController {
 							return ApiUtils.error("购买级别不符");
 						}
 					}else{
-						return ApiUtils.error("剩余购买数量为"+(totalLimitNum-receivedNum)+"张");
+						return ApiUtils.error("剩余可购买数量为"+(totalLimitNum-receivedNum)+"张");
 					}
 				}
 			}else {
-				return ApiUtils.error("每个用户最多可购买为"+personLimitNum+"张");
+				return ApiUtils.error("亲，您最多还可购买"+(personLimitNum-haveCouponNum)+"张哦");
 			}
 		} else {
 			System.out.println("不在区间");
