@@ -19,6 +19,7 @@
         <result property="useState" column="use_state"/>
         <result property="useTime" column="use_time"/>
         <result property="useOrderId" column="use_order_id"/>
+        <result property="useOrderSn" column="use_order_sn"/>
         <result property="useOrderPayStatus" column="use_order_pay_status"/>
         <result property="buyOrderId" column="buy_order_id"/>
         <result property="refundState" column="refund_state"/>
@@ -48,14 +49,14 @@
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
         id ,rd_coupon_user_id ,coupon_id ,coupon_sn ,coupon_pwd ,coupon_name,receive_id,receive_nick_name,receive_time,
-        hold_id,hold_nick_name,hold_time,use_start_time,use_end_time,use_state,use_time,use_order_id,use_order_pay_status,
-        buy_order_id,refund_state,refund_sum,batch_no,refund_time
+        hold_id,hold_nick_name,hold_time,use_start_time,use_end_time,use_state,use_time,use_order_id,use_order_sn
+        use_order_pay_status,buy_order_id,refund_state,refund_sum,batch_no,refund_time
     </sql>
 
     <sql id="base_value_column">
         #{id},#{rdCouponUserId},#{couponId},#{couponSn},#{couponPwd},#{couponName},#{receiveId},#{receiveNickName},
         #{receiveTime},#{holdId},#{holdNickName},#{holdTime},#{useStartTime},#{useEndTime},#{useState},#{useTime},#{useOrderId},
-        #{useOrderPayStatus},#{buyOrderId},#{refundState},#{refundSum},#{batchNo},#{refundTime}
+        #{useOrderSn},#{useOrderPayStatus},#{buyOrderId},#{refundState},#{refundSum},#{batchNo},#{refundTime}
     </sql>
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
     <sql id="where_column">
@@ -109,6 +110,9 @@
         </if>
         <if test="useOrderId != null">
             AND use_order_id = #{useOrderId,jdbcType=BIGINT}
+        </if>
+        <if test="useOrderSn != null and useOrderSn != ''">
+            AND use_order_sn = #{useOrderSn,jdbcType=VARCHAR}
         </if>
         <if test="useOrderPayStatus != null">
             AND use_order_pay_status = #{useOrderPayStatus,jdbcType=INTEGER}
@@ -181,6 +185,9 @@
         </if>
         <if test="useOrderId != null">
             use_order_id = #{useOrderId,jdbcType=BIGINT},
+        </if>
+        <if test="useOrderSn != null and useOrderSn != ''">
+            use_order_sn = #{useOrderSn,jdbcType=VARCHAR},
         </if>
         <if test="useOrderPayStatus != null">
             use_order_pay_status = #{useOrderPayStatus,jdbcType=INTEGER},
