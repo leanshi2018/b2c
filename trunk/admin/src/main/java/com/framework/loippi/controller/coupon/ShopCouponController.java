@@ -10,6 +10,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.consts.CouponConstant;
+import com.framework.loippi.entity.coupon.CouponTransLog;
+import com.framework.loippi.service.coupon.CouponTransLogService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
@@ -154,6 +157,12 @@ public class ShopCouponController extends GenericController {
         if(coupon.getUseEndTime()==null){
             model.addAttribute("msg", "优惠券结束使用时间为空");
             return Constants.MSG_URL;
+        }
+        if(coupon.getReduceType()== CouponConstant.DISCOUNT_TYPE_KNOCK){
+            if((coupon.getMinAmount()!=null&&coupon.getMinAmount().doubleValue()>0)||(coupon.getMinMi()!=null&&coupon.getMinMi().doubleValue()>0)){
+                model.addAttribute("msg", "立减券不可有mi值或者金额限制");
+                return Constants.MSG_URL;
+            }
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(coupon.getSendEndTime());
