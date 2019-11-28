@@ -126,6 +126,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
             recipientCouponUser.setMCode(recipientCode);
             recipientCouponUser.setCouponId(coupon.getId());
             recipientCouponUser.setOwnNum(0);
+            recipientCouponUser.setHaveCouponNum(0);
             recipientCouponUser.setUseAbleNum(coupon.getUseNumLimit());
             recipientCouponUser.setUseNum(0);
             Long id = twiterIdService.getTwiterId();
