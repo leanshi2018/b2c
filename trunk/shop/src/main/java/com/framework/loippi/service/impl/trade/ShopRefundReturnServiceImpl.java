@@ -343,7 +343,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                 .doubleValue();
         }*/
         BigDecimal totalMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).
-                add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO));
+                add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)).add(Optional.ofNullable(order.getShippingPreferentialFee()).orElse(BigDecimal.ZERO));
         ShopOrder newOrder = new ShopOrder();
         newOrder.setId(refundReturn.getOrderId());
 //        if (order.getRefundAmount() != null) {
