@@ -30,6 +30,7 @@
     <resultMap id="CouponUserLogResultMap" type="com.framework.loippi.result.common.coupon.CouponUserLogResult">
         <id property="couponDetailId" column="id"/>
         <result property="couponId" column="coupon_id"/>
+        <result property="couponSn" column="coupon_sn"/>
         <result property="couponName" column="coupon_name"/>
         <result property="reduceType" column="reduce_type"/>
         <result property="useScope" column="use_scope"/>
@@ -298,6 +299,7 @@
             resultMap="CouponUserLogResultMap">
         SELECT
         a.id,
+        a.coupon_sn,
         a.coupon_id,
         a.coupon_name,
         b.reduce_type,
@@ -316,6 +318,9 @@
         where 1=1
         <if test="couponId !=null">
             AND a.coupon_id = #{couponId}
+        </if>
+        <if test="couponSn !=null">
+            AND a.coupon_sn = #{couponSn}
         </if>
         <if test="couponName !=null and couponName != ''">
             AND a.coupon_name = #{couponName}
