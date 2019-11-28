@@ -17,6 +17,7 @@ import java.util.Date;
 public class CouponUserLogResult {
 
 	private Long couponDetailId;//优惠券详情序号
+	private String couponSn;//单张优惠券序列号
 	private Long couponId;//优惠券序号
 	private String couponName;//优惠券名称
 	private Integer reduceType;//折扣类型  1：满减卷 2：立减卷 3：满金额折扣  4：无金额限制折扣
