@@ -375,6 +375,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                             couponDetail.setUseState(3);
                             couponDetail.setUseTime(null);
                             couponDetail.setUseOrderId(null);
+                            couponDetail.setUseOrderSn(null);
                             couponDetail.setUseOrderPayStatus(null);
                             couponDetail.setRefundState(2);
                             couponDetail.setRefundSum(coupon.getCouponPrice());
@@ -385,6 +386,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                             couponDetail.setUseState(3);
                             couponDetail.setUseTime(null);
                             couponDetail.setUseOrderId(null);
+                            couponDetail.setUseOrderSn(null);
                             couponDetail.setUseOrderPayStatus(null);
                             couponDetail.setRefundState(0);
                             couponDetail.setRefundSum(BigDecimal.ZERO);
@@ -395,6 +397,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                         couponDetail.setUseState(2);//修改为未使用
                         couponDetail.setUseTime(null);
                         couponDetail.setUseOrderId(null);
+                        couponDetail.setUseOrderSn(null);
                         couponDetail.setUseOrderPayStatus(null);
                         couponDetailService.update(couponDetail);
                     }

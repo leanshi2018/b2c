@@ -1,8 +1,11 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.service.coupon.CouponDetailService;
 import net.sf.json.JSONObject;
 
 import java.io.BufferedOutputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -148,6 +151,8 @@ public class OrderSysController extends GenericController {
     private RdGoodsAdjustmentService rdGoodsAdjustmentService;
     @Resource
     private ShopExpressSpecialGoodsService shopExpressSpecialGoodsService;
+    @Resource
+    private CouponDetailService couponDetailService;
     // 订单编辑中
     private static final int ORDER_EDITING = 0;
     // 订单编辑完成
@@ -745,6 +750,18 @@ public class OrderSysController extends GenericController {
             List<ShopOrderDiscountType> shopOrderDiscountTypeList=shopOrderDiscountTypeService.findList("totalPpv",orderVo.getFixedPpv());
             model.addAttribute("shopOrderDiscountTypeList", shopOrderDiscountTypeList);
             model.addAttribute("shopOrderTypeId", orderVo.getShopOrderTypeId());
+        }
+        CouponDetail couponDetail = couponDetailService.find("buyOrderId",orderVo.getId());
+        if(couponDetail!=null){
+            model.addAttribute("useCouponFlag",true);
+            model.addAttribute("couponName",couponDetail.getCouponName());
+            model.addAttribute("couponSn",couponDetail.getCouponSn());
+            model.addAttribute("couponDiscount", orderVo.getCouponDiscount());
+        }else {
+            model.addAttribute("useCouponFlag",false);
+            model.addAttribute("couponName",null);
+            model.addAttribute("couponSn",null);
+            model.addAttribute("couponDiscount", BigDecimal.ZERO);
         }
         model.addAttribute("order", orderVo);
         model.addAttribute("areas", areas);
