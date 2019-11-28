@@ -4030,8 +4030,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             rdMmAccountLogService.save(rdMmAccountLog);
             rdMmAccountInfoService.update(rdMmAccountInfo);
             orderDao.update(newShopOrder);
-            BigDecimal totalMoney = Optional.ofNullable(newShopOrder.getOrderAmount()).orElse(BigDecimal.ZERO).
-                    add(Optional.ofNullable(newShopOrder.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)).add(Optional.ofNullable(order.getShippingPreferentialFee()).orElse(BigDecimal.ZERO));
+            BigDecimal totalMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).
+                    add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)).add(Optional.ofNullable(order.getShippingPreferentialFee()).orElse(BigDecimal.ZERO));
             Boolean flag=false;
             if((Optional.ofNullable(newShopOrder.getRefundAmount()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(newShopOrder.getRefundPoint()).orElse(BigDecimal.ZERO))).compareTo(totalMoney)!=-1){
                 flag=true;
@@ -4133,10 +4133,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             newShopOrder.setRefundAmount(money.add(refundReturn.getRefundAmount()));
             newShopOrder.setRefundPpv(ppv.add(refundReturn.getPpv()));
             orderDao.update(newShopOrder);
-            BigDecimal totalMoney = Optional.ofNullable(newShopOrder.getOrderAmount()).orElse(BigDecimal.ZERO).
-                    add(Optional.ofNullable(newShopOrder.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)).add(Optional.ofNullable(order.getShippingPreferentialFee()).orElse(BigDecimal.ZERO));
+            BigDecimal totalMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).
+                    add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)).add(Optional.ofNullable(order.getShippingPreferentialFee()).orElse(BigDecimal.ZERO));
             Boolean flag=false;
-            if((Optional.ofNullable(newShopOrder.getRefundAmount()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(newShopOrder.getRefundPoint()).orElse(BigDecimal.ZERO))).compareTo(totalMoney)!=-1){
+            if((Optional.ofNullable(newShopOrder.getRefundAmount()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(order.getRefundPoint()).orElse(BigDecimal.ZERO))).compareTo(totalMoney)!=-1){
                 flag=true;
             }
             //判断是否符合降级条件进行降级
