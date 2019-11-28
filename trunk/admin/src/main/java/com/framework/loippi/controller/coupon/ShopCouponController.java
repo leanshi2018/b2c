@@ -107,6 +107,10 @@ public class ShopCouponController extends GenericController {
             model.addAttribute("msg", "优惠券面值不可以为空");
             return Constants.MSG_URL;
         }
+        if(coupon.getCouponPrice()==null){
+            model.addAttribute("msg", "优惠券价格不可以为空");
+            return Constants.MSG_URL;
+        }
         if(coupon.getWhetherPresent()==null){
             model.addAttribute("msg", "优惠券需注明是否可以赠送");
             return Constants.MSG_URL;
