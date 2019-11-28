@@ -51,11 +51,11 @@
 		<if test="updateTime != null and updateTime != ''">
 			AND update_time = #{updateTime}
 		</if>
-		<if test="goodsTotalAmount != null and goodsTotalAmount != ''">
+		<if test="goodsTotalAmount != null">
 			AND maximum_order_amount <![CDATA[>=]]>  #{goodsTotalAmount}
 			AND minimum_order_amount <![CDATA[<]]>  #{goodsTotalAmount}
 		</if>
-		<if test="maxIsNull != null and maxIsNull != ''">
+		<if test="maxIsNull != null">
 			AND maximum_order_amount is null
 			AND minimum_order_amount <![CDATA[<]]>  #{maxIsNull}
 		</if>
