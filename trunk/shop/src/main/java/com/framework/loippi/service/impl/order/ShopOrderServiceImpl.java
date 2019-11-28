@@ -694,7 +694,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     couponDetailService.update(couponDetail);
                 }
                 //修改couponUser
-                List<CouponUser> couponUsers = couponUserService.findList(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",memberId));
+                List<CouponUser> couponUsers = couponUserService.findList(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",couponDetail.getHoldId()));
                 if(couponUsers==null||couponUsers.size()==0){
                     throw new RuntimeException("优惠券拥有记录异常");
                 }
