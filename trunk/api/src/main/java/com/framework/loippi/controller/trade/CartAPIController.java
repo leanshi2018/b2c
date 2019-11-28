@@ -661,7 +661,7 @@ public class CartAPIController extends BaseController {
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
             RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
             List<Long> list = cartService.saveCartList(cartList, member.getMmCode(),rdRanks);
-            return checkoutNew(Joiner.on(",").join(list), null, -1L, 1, request, null);
+            return checkoutNew1(Joiner.on(",").join(list), null, -1L, 1,null,request, null);
         } catch (Exception e) {
             log.error("再次购买错误", e);
             return ApiUtils.error(e.getMessage());
