@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -76,12 +77,20 @@ public class CouponJob {
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 
     @Scheduled(cron = "0 5 0 * * ? ")  //每天0点五分运行
+    //@Scheduled(cron = "0/30 * * * * ? " )  //每隔30秒执行一次
     public void recycleCoupon() {
         log.info("#################################################################");
         log.info("#########开始执行，查询过期且并未回收优惠券，进行回收处理 ##########");
         log.info("#################################################################");
         //查询出当前时间下，已经过期但是并未进行回收处理的优惠券
-        List<Coupon> coupons = couponDao.findOverdueCoupon(Paramap.create().put("status",2).put("searchUseTime",new Date()));
+        Date date = new Date();
+        System.out.println(date);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = format.format(date);
+        System.out.println(time);
+        List<Coupon> coupons = couponDao.findOverdueCoupon(Paramap.create().put("status",2).put("searchUseTime",date));
+        System.out.println(coupons);
+        System.out.println(coupons.size());
         if(coupons!=null&&coupons.size()>0){
             for (Coupon coupon : coupons) {//获得过期优惠券集合，进行遍历回收处理
                 //1.判断优惠券是否使用积分或者金钱购买，如果为购买的优惠券，则需要进行退款操作
