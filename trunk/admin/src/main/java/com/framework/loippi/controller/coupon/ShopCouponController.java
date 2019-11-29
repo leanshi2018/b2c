@@ -297,7 +297,7 @@ public class ShopCouponController extends GenericController {
     }
 
     /**
-     * 优惠券订单列表
+     * 优惠券订单详情
      * @param request
      * @param model
      * @param id
@@ -306,6 +306,10 @@ public class ShopCouponController extends GenericController {
      */
     @RequestMapping(value = "/Coupon/detail/findCouponPayDetail")
     public String findCouponPayDetail(HttpServletRequest request,ModelMap model,Long id) {
+        if(id==null){
+            model.addAttribute("msg", "请传入优惠券订单id");
+            return Constants.MSG_URL;
+        }
         model.addAttribute("couponPayDetail", couponPayDetailService.find(id));
         return "/activity/shop_activity/couponbuy_edit";
     }
