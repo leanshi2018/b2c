@@ -700,6 +700,9 @@ public class RefundReturnSysController extends GenericController {
                     couponUser.setOwnNum(couponUser.getOwnNum()-1);
                     couponUserService.update(couponUser);
 
+                    //记录退款数
+                    coupon.setRefundNum(coupon.getRefundNum()+1);
+                    couponService.update(coupon);
 
                     model.addAttribute("msg", "退款成功");
                     backurl = Constants.MSG_URL;
@@ -739,6 +742,10 @@ public class RefundReturnSysController extends GenericController {
         couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
         couponUser.setOwnNum(couponUser.getOwnNum()-1);
         couponUserService.update(couponUser);
+
+        //记录退款数
+        coupon.setRefundNum(coupon.getRefundNum()+1);
+        couponService.update(coupon);
     }
 
 
@@ -956,6 +963,9 @@ public class RefundReturnSysController extends GenericController {
                             couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                             couponUser.setOwnNum(couponUser.getOwnNum()-1);
                             couponUserService.update(couponUser);
+
+                            coupon.setRefundNum(coupon.getRefundNum()+1);
+                            couponService.update(coupon);
                         }
                     }
 
@@ -1013,6 +1023,9 @@ public class RefundReturnSysController extends GenericController {
                 couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                 couponUser.setOwnNum(couponUser.getOwnNum()-1);
                 couponUserService.update(couponUser);
+
+                coupon.setRefundNum(coupon.getRefundNum()+1);
+                couponService.update(coupon);
             }
         }
     }

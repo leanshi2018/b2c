@@ -323,10 +323,8 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
             }
         }
         //修改优惠券剩余数量
-        if (coupon.getTotalLimitNum()!=-1){//优惠券总发行数量 -1代表不限制
-            coupon.setReceivedNum(coupon.getReceivedNum()+1);
-            couponDao.update(coupon);
-        }
+        coupon.setReceivedNum(coupon.getReceivedNum()+1);
+        couponDao.update(coupon);
 
     }
 

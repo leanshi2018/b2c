@@ -384,10 +384,8 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			}
 
 			//修改优惠券剩余数量
-			if (coupon.getTotalLimitNum()!=-1){//优惠券总发行数量 -1代表不限制
-				coupon.setReceivedNum(coupon.getReceivedNum()+couponPayList.get(0).getCouponNumber());
-				couponService.update(coupon);
-			}
+			coupon.setReceivedNum(coupon.getReceivedNum()+couponPayList.get(0).getCouponNumber());
+			couponService.update(coupon);
 
 			return result;
 
@@ -529,10 +527,8 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		}
 
 		//修改优惠券剩余数量
-		if (coupon.getTotalLimitNum()!=-1){//优惠券总发行数量 -1代表不限制
-			coupon.setReceivedNum(coupon.getReceivedNum()+couponPayDetailList.get(0).getCouponNumber());
-			couponService.update(coupon);
-		}
+		coupon.setReceivedNum(coupon.getReceivedNum()+couponPayDetailList.get(0).getCouponNumber());
+		couponService.update(coupon);
 	}
 
 	@Override

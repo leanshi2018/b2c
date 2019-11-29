@@ -177,6 +177,11 @@ public class Coupon implements GenericEntity {
     @Column(name = "remark")
     private String remark;
     /**
+     * 优惠券回收张数
+     */
+    @Column(name = "refund_num")
+    private Integer refundNum;
+    /**
      * 创建人id
      */
     @Column(name = "create_id")
