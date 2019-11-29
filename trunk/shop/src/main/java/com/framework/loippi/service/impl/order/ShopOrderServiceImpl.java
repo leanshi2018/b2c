@@ -2,18 +2,6 @@ package com.framework.loippi.service.impl.order;
 
 
 
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.entity.coupon.CouponDetail;
-import com.framework.loippi.entity.coupon.CouponPayDetail;
-import com.framework.loippi.entity.coupon.CouponUser;
-import com.framework.loippi.service.coupon.CouponDetailService;
-import com.framework.loippi.service.coupon.CouponPayDetailService;
-import com.framework.loippi.service.coupon.CouponService;
-import com.framework.loippi.service.coupon.CouponUserService;
-import com.framework.loippi.service.user.*;
-import com.framework.loippi.service.wechat.WechatRefundService;
-import com.framework.loippi.utils.*;
-import com.framework.loippi.utils.validator.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -72,6 +60,10 @@ import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
+import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.entity.coupon.CouponPayDetail;
+import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderAddress;
@@ -115,6 +107,10 @@ import com.framework.loippi.service.activity.ShopActivityService;
 import com.framework.loippi.service.alipay.AlipayRefundService;
 import com.framework.loippi.service.common.ProductService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.coupon.CouponDetailService;
+import com.framework.loippi.service.coupon.CouponPayDetailService;
+import com.framework.loippi.service.coupon.CouponService;
+import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
@@ -124,10 +120,28 @@ import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RdSysPeriodService;
+import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.wallet.ShopWalletLogService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
+import com.framework.loippi.service.wechat.WechatRefundService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.GoodsUtils;
+import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.NumberUtils;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.RandomUtils;
+import com.framework.loippi.utils.SnowFlake;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.validator.DateUtils;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
 import com.framework.loippi.vo.goods.GoodsStatisticsVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
@@ -140,7 +154,6 @@ import com.framework.loippi.vo.stats.StatsCountVo;
 import com.framework.loippi.vo.store.StoreStatisticsVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.springframework.web.servlet.support.RequestContext;
 
 /**
  * SERVICE - ShopOrder(订单表)

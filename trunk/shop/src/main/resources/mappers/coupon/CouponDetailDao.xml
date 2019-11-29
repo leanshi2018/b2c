@@ -50,7 +50,7 @@
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
         id ,rd_coupon_user_id ,coupon_id ,coupon_sn ,coupon_pwd ,coupon_name,receive_id,receive_nick_name,receive_time,
-        hold_id,hold_nick_name,hold_time,use_start_time,use_end_time,use_state,use_time,use_order_id,use_order_sn
+        hold_id,hold_nick_name,hold_time,use_start_time,use_end_time,use_state,use_time,use_order_id,use_order_sn,
         use_order_pay_status,buy_order_id,refund_state,refund_sum,batch_no,refund_time
     </sql>
 
@@ -287,7 +287,6 @@
         <where>1=1
             <include refid="where_column"/>
         </where>
-        order by own_num desc
     </select>
 
     <!--批量修改-->
