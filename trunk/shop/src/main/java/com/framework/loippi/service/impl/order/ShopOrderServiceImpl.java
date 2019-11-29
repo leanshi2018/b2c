@@ -671,6 +671,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         couponDetail.setUseState(3);
                         couponDetail.setUseTime(null);
                         couponDetail.setUseOrderId(null);
+                        couponDetail.setUseOrderSn(null);
                         couponDetail.setUseOrderPayStatus(null);
                         couponDetail.setRefundState(2);
                         couponDetail.setRefundSum(coupon.getCouponPrice());
@@ -681,6 +682,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         couponDetail.setUseState(3);
                         couponDetail.setUseTime(null);
                         couponDetail.setUseOrderId(null);
+                        couponDetail.setUseOrderSn(null);
                         couponDetail.setUseOrderPayStatus(null);
                         couponDetail.setRefundState(0);
                         couponDetail.setRefundSum(BigDecimal.ZERO);
@@ -691,6 +693,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     couponDetail.setUseState(2);//修改为未使用
                     couponDetail.setUseTime(null);
                     couponDetail.setUseOrderId(null);
+                    couponDetail.setUseOrderSn(null);
                     couponDetail.setUseOrderPayStatus(null);
                     couponDetailService.update(couponDetail);
                 }
@@ -1681,6 +1684,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 couponDetail.setUseState(1);//已使用
                 couponDetail.setUseTime(new Date());//使用时间
                 couponDetail.setUseOrderId(orderId);
+                couponDetail.setUseOrderSn(order.getOrderSn());
                 couponDetail.setUseOrderPayStatus(0);//未支付
                 couponDetailService.update(couponDetail);
                 flag=false;
