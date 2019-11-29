@@ -305,7 +305,7 @@ public class ShopCouponController extends GenericController {
      * @return
      */
     @RequestMapping(value = "/Coupon/detail/findCouponPayDetail")
-    public String findCouponPayDetail(HttpServletRequest request,ModelMap model,Long id) {
+    public String findCouponPayDetail(HttpServletRequest request,ModelMap model,@RequestParam(required = true, value = "id")Long id) {
         if(id==null){
             model.addAttribute("msg", "请传入优惠券订单id");
             return Constants.MSG_URL;
