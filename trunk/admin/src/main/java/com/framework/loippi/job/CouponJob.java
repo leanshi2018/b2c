@@ -18,6 +18,7 @@ import com.framework.loippi.service.TSystemPluginConfigService;
 import com.framework.loippi.service.alipay.AlipayRefundService;
 import com.framework.loippi.service.coupon.CouponDetailService;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
+import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAccountLogService;
 import com.framework.loippi.service.user.RdSysPeriodService;
@@ -54,6 +55,8 @@ public class CouponJob {
     @Resource
     private CouponDao couponDao;
     @Resource
+    private CouponService couponService;
+    @Resource
     private CouponUserDao couponUserDao;
     @Resource
     private CouponDetailDao couponDetailDao;
@@ -77,7 +80,8 @@ public class CouponJob {
     private RdMmAccountLogService rdMmAccountLogService;
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 
-    @Scheduled(cron = "0 5 0 * * ? ")  //每天0点五分运行
+    //@Scheduled(cron = "0 5 0 * * ? ")  //每天0点五分运行
+    @Scheduled(cron = "0 23 15 * * ? ")  //每天0点五分运行
     //@Scheduled(cron = "0/30 * * * * ? " )  //每隔30秒执行一次
     public void recycleCoupon() {
         log.info("#################################################################");
@@ -93,7 +97,10 @@ public class CouponJob {
         System.out.println(coupons);
         System.out.println(coupons.size());
         if(coupons!=null&&coupons.size()>0){
-            for (Coupon coupon : coupons) {//获得过期优惠券集合，进行遍历回收处理
+            couponService.overCoupon(coupons);
+            
+
+/*            for (Coupon coupon : coupons) {//获得过期优惠券集合，进行遍历回收处理
                 //1.判断优惠券是否使用积分或者金钱购买，如果为购买的优惠券，则需要进行退款操作
                 if(coupon.getUseMoneyFlag()==0){//免费
                     //1.1免费领取优惠券只需对所有优惠券进行回收，无需退款
@@ -269,7 +276,7 @@ public class CouponJob {
                 }else {
                     continue;
                 }
-            }
+            }*/
         }
         log.info("###############################################过期结束###############################################");
     }
