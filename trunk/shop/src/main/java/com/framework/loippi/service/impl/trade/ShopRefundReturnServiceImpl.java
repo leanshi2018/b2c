@@ -5,6 +5,7 @@ import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.consts.RefundReturnState;
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
+import com.framework.loippi.dao.coupon.CouponDetailDao;
 import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.order.ShopOrderGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsSpecDao;
@@ -372,6 +373,8 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                     if(coupon!=null&&coupon.getStatus()==4){
                         //回收优惠券
                         if(coupon.getUseMoneyFlag()==1){//退款回收 TODO
+                            coupon.setRefundNum(Optional.ofNullable(coupon.getRefundNum()).orElse(0)+1);
+                            couponService.update(coupon);
                             couponDetail.setUseState(3);
                             couponDetail.setUseTime(null);
                             couponDetail.setUseOrderId(null);

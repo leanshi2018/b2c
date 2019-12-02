@@ -28,4 +28,6 @@ public interface CouponService extends GenericService<Coupon, Long> {
     Coupon judgeNoStart(Paramap put);
 
     Coupon judgeUseEnd(Paramap put);
+
+    void overCoupon();
 }

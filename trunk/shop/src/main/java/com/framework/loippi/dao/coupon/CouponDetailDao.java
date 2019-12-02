@@ -15,4 +15,6 @@ public interface CouponDetailDao extends GenericDao<CouponDetail, Long> {
 	PageList<CouponUserLogResult> findLogResultByPage(Object parameter, PageBounds pageBounds);
 
     void recycleNoMoney(Paramap paramap);
+
+    Long getNoUseNum(CouponDetail couponDetail1);
 }
