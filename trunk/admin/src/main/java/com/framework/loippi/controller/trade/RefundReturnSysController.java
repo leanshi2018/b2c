@@ -36,6 +36,7 @@ import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
+import com.framework.loippi.entity.coupon.CouponRefund;
 import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
@@ -51,6 +52,7 @@ import com.framework.loippi.service.UserService;
 import com.framework.loippi.service.alipay.AlipayRefundService;
 import com.framework.loippi.service.coupon.CouponDetailService;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
+import com.framework.loippi.service.coupon.CouponRefundService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.order.ShopOrderService;
@@ -65,6 +67,7 @@ import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.service.wechat.WechatRefundService;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.Dateutil;
 import com.framework.loippi.utils.NumberUtils;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
@@ -118,6 +121,8 @@ public class RefundReturnSysController extends GenericController {
     private RdMmAccountInfoService rdMmAccountInfoService;
     @Autowired
     private RdSysPeriodService rdSysPeriodService;
+    @Autowired
+    private CouponRefundService couponRefundService;
 
 
 
@@ -645,6 +650,8 @@ public class RefundReturnSysController extends GenericController {
                 String mCode = couponDetail.getReceiveId();
                 RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", couponDetail.getReceiveId());
                 if (rdMmAccountInfo!=null){
+                    Date date = new Date();
+
                     //更新用户购物积分
                     RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
                     rdMmAccountLog.setTransTypeCode("OT");
@@ -658,16 +665,16 @@ public class RefundReturnSysController extends GenericController {
                     //单张所需积分
                     BigDecimal pricePoint = couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP);
                     rdMmAccountLog.setAmount(pricePoint);
-                    rdMmAccountLog.setTransDate(new Date());
-                    String period = rdSysPeriodService.getSysPeriodService(new Date());
+                    rdMmAccountLog.setTransDate(date);
+                    String period = rdSysPeriodService.getSysPeriodService(date);
                     rdMmAccountLog.setTransPeriod(period);
                     rdMmAccountLog.setTrOrderOid(couponDetail.getBuyOrderId());
                     //无需审核直接成功
                     rdMmAccountLog.setStatus(3);
                     rdMmAccountLog.setCreationBy(adminName);
-                    rdMmAccountLog.setCreationTime(new Date());
+                    rdMmAccountLog.setCreationTime(date);
                     rdMmAccountLog.setAutohrizeBy(adminName);
-                    rdMmAccountLog.setAutohrizeTime(new Date());
+                    rdMmAccountLog.setAutohrizeTime(date);
                     rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(pricePoint));
                     rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
                     rdMmAccountInfoService.update(rdMmAccountInfo);
@@ -680,7 +687,7 @@ public class RefundReturnSysController extends GenericController {
                     couponDetail1.setRefundState(2);//0：无需退款（非交易性优惠券）1：未退款 2：已退款
                     couponDetail1.setRefundSum(pricePoint);
                     couponDetail1.setBatchNo(bathno); //退款批次号
-                    couponDetail1.setRefundTime(new Date());
+                    couponDetail1.setRefundTime(date);
                     couponDetailService.update(couponDetail1);//将批次号存入优惠券表
 
                     if (couponPayDetail.getRefundCouponNum()+1==couponPayDetail.getCouponNumber()){
@@ -690,7 +697,7 @@ public class RefundReturnSysController extends GenericController {
                     }
                     couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+1);
                     couponPayDetail.setBatchNo(bathno);
-                    couponPayDetail.setRefundTime(new Date());
+                    couponPayDetail.setRefundTime(date);
                     couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(pricePoint));
                     couponPayDetailService.update(couponPayDetail);
 
@@ -704,6 +711,22 @@ public class RefundReturnSysController extends GenericController {
                     //记录退款数
                     coupon.setRefundNum(coupon.getRefundNum()+1);
                     couponService.update(coupon);
+
+                    //添加退款记录表
+                    CouponRefund couponRefund = new CouponRefund();
+                    couponRefund.setId(twiterIdService.getTwiterId());
+                    couponRefund.setRefundSn("9" + Dateutil.getDateString());
+                    couponRefund.setPayDetailId(couponPayDetail.getId());
+                    couponRefund.setRefundNum(1);
+                    couponRefund.setCouponId(coupon.getId());
+                    couponRefund.setRefundAmount(new BigDecimal("0.00"));
+                    couponRefund.setRefundPoint(pricePoint);
+                    couponRefund.setRefundTime(date);
+                    couponRefund.setBuyerId(couponPayDetail.getReceiveId());
+                    couponRefund.setBuyerName(couponPayDetail.getReceiveNickName());
+                    couponRefund.setOrderPaySn(couponPayDetail.getPaySn());
+                    couponRefund.setOrderSn(couponPayDetail.getCouponOrderSn());
+                    couponRefundService.save(couponRefund);
 
                     model.addAttribute("msg", "退款成功");
                     backurl = Constants.MSG_URL;
@@ -720,10 +743,12 @@ public class RefundReturnSysController extends GenericController {
     }
 
     public void updateCoupon(CouponDetail couponDetail, String bathno, Coupon coupon, CouponPayDetail couponPayDetail) {
+        Date date = new Date();
+
         couponDetail.setRefundState(2);//0：无需退款（非交易性优惠券）1：未退款 2：已退款
         couponDetail.setRefundSum(coupon.getCouponPrice());
         couponDetail.setBatchNo(bathno); //退款批次号
-        couponDetail.setRefundTime(new Date());
+        couponDetail.setRefundTime(date);
         couponDetailService.update(couponDetail);//将批次号存入优惠券表
 
         if (couponPayDetail.getRefundCouponNum()+1==couponPayDetail.getCouponNumber()){
@@ -733,7 +758,7 @@ public class RefundReturnSysController extends GenericController {
         }
         couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+1);
         couponPayDetail.setBatchNo(bathno);
-        couponPayDetail.setRefundTime(new Date());
+        couponPayDetail.setRefundTime(date);
         couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(coupon.getCouponPrice()));
         couponPayDetailService.update(couponPayDetail);
 
@@ -747,6 +772,22 @@ public class RefundReturnSysController extends GenericController {
         //记录退款数
         coupon.setRefundNum(coupon.getRefundNum()+1);
         couponService.update(coupon);
+
+        //添加退款记录表
+        CouponRefund couponRefund = new CouponRefund();
+        couponRefund.setId(twiterIdService.getTwiterId());
+        couponRefund.setRefundSn("9" + Dateutil.getDateString());
+        couponRefund.setPayDetailId(couponPayDetail.getId());
+        couponRefund.setRefundNum(1);
+        couponRefund.setCouponId(coupon.getId());
+        couponRefund.setRefundAmount(coupon.getCouponPrice());
+        couponRefund.setRefundPoint(new BigDecimal("0.00"));
+        couponRefund.setRefundTime(date);
+        couponRefund.setBuyerId(couponPayDetail.getReceiveId());
+        couponRefund.setBuyerName(couponPayDetail.getReceiveNickName());
+        couponRefund.setOrderPaySn(couponPayDetail.getPaySn());
+        couponRefund.setOrderSn(couponPayDetail.getCouponOrderSn());
+        couponRefundService.save(couponRefund);
     }
 
 
@@ -920,6 +961,7 @@ public class RefundReturnSysController extends GenericController {
                 String mCode = couponPayDetail.getReceiveId();
                 RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", couponPayDetail.getReceiveId());
                 if (rdMmAccountInfo!=null){
+                    Date date = new Date();
                     //更新用户购物积分
                     RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
                     rdMmAccountLog.setTransTypeCode("OT");
@@ -933,16 +975,16 @@ public class RefundReturnSysController extends GenericController {
                     //所需积分
                     BigDecimal pricePoint = (couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal(refundNum));
                     rdMmAccountLog.setAmount(pricePoint);
-                    rdMmAccountLog.setTransDate(new Date());
-                    String period = rdSysPeriodService.getSysPeriodService(new Date());
+                    rdMmAccountLog.setTransDate(date);
+                    String period = rdSysPeriodService.getSysPeriodService(date);
                     rdMmAccountLog.setTransPeriod(period);
                     rdMmAccountLog.setTrOrderOid(couponPayDetail.getId());
                     //无需审核直接成功
                     rdMmAccountLog.setStatus(3);
                     rdMmAccountLog.setCreationBy(adminName);
-                    rdMmAccountLog.setCreationTime(new Date());
+                    rdMmAccountLog.setCreationTime(date);
                     rdMmAccountLog.setAutohrizeBy(adminName);
-                    rdMmAccountLog.setAutohrizeTime(new Date());
+                    rdMmAccountLog.setAutohrizeTime(date);
                     rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(pricePoint));
                     rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
                     rdMmAccountInfoService.update(rdMmAccountInfo);
@@ -956,7 +998,7 @@ public class RefundReturnSysController extends GenericController {
                             couponDetail.setRefundState(2);
                             couponDetail.setRefundSum(couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP));
                             couponDetail.setBatchNo(bathno); //退款批次号
-                            couponDetail.setRefundTime(new Date());
+                            couponDetail.setRefundTime(date);
                             couponDetailService.update(couponDetail);//将批次号存入优惠券表
 
                             //改rd_coupon_user
@@ -978,10 +1020,25 @@ public class RefundReturnSysController extends GenericController {
                     }
                     couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+refundNum);
                     couponPayDetail.setBatchNo(bathno);
-                    couponPayDetail.setRefundTime(new Date());
+                    couponPayDetail.setRefundTime(date);
                     couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(pricePoint));
                     couponPayDetailService.update(couponPayDetail);
 
+                    //添加退款记录表
+                    CouponRefund couponRefund = new CouponRefund();
+                    couponRefund.setId(twiterIdService.getTwiterId());
+                    couponRefund.setRefundSn("9" + Dateutil.getDateString());
+                    couponRefund.setPayDetailId(couponPayDetail.getId());
+                    couponRefund.setRefundNum(refundNum);
+                    couponRefund.setCouponId(coupon.getId());
+                    couponRefund.setRefundAmount(new BigDecimal("0.00"));
+                    couponRefund.setRefundPoint(pricePoint);
+                    couponRefund.setRefundTime(date);
+                    couponRefund.setBuyerId(couponPayDetail.getReceiveId());
+                    couponRefund.setBuyerName(couponPayDetail.getReceiveNickName());
+                    couponRefund.setOrderPaySn(couponPayDetail.getPaySn());
+                    couponRefund.setOrderSn(couponPayDetail.getCouponOrderSn());
+                    couponRefundService.save(couponRefund);
 
                     model.addAttribute("msg", "退款成功");
                     backurl = Constants.MSG_URL;
@@ -998,7 +1055,7 @@ public class RefundReturnSysController extends GenericController {
     }
 
     public void updateCouponDetailList(CouponPayDetail couponPayDetail, String bathno, Coupon coupon, List<CouponDetail> couponDetailList,Integer refundNum) {
-
+        Date date = new Date();
         if ((couponPayDetail.getRefundCouponNum()+refundNum)==couponPayDetail.getCouponNumber()){
             couponPayDetail.setRefundState(2);
         }else{
@@ -1006,7 +1063,7 @@ public class RefundReturnSysController extends GenericController {
         }
         couponPayDetail.setRefundCouponNum(couponPayDetail.getRefundCouponNum()+refundNum);
         couponPayDetail.setBatchNo(bathno);
-        couponPayDetail.setRefundTime(new Date());
+        couponPayDetail.setRefundTime(date);
         couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(coupon.getCouponPrice().multiply(new BigDecimal(refundNum))));
         couponPayDetailService.update(couponPayDetail);
 
@@ -1016,7 +1073,7 @@ public class RefundReturnSysController extends GenericController {
                 couponDetail.setRefundState(2);
                 couponDetail.setRefundSum(coupon.getCouponPrice());
                 couponDetail.setBatchNo(bathno); //退款批次号
-                couponDetail.setRefundTime(new Date());
+                couponDetail.setRefundTime(date);
                 couponDetailService.update(couponDetail);//将批次号存入优惠券表
 
                 //改rd_coupon_user
@@ -1030,6 +1087,23 @@ public class RefundReturnSysController extends GenericController {
                 couponService.update(coupon);
             }
         }
+
+        //添加退款记录表
+        CouponRefund couponRefund = new CouponRefund();
+        couponRefund.setId(twiterIdService.getTwiterId());
+        couponRefund.setRefundSn("9" + Dateutil.getDateString());
+        couponRefund.setPayDetailId(couponPayDetail.getId());
+        couponRefund.setRefundNum(refundNum);
+        couponRefund.setCouponId(coupon.getId());
+        couponRefund.setRefundAmount(coupon.getCouponPrice().multiply(new BigDecimal(refundNum)));
+        couponRefund.setRefundPoint(new BigDecimal("0.00"));
+        couponRefund.setRefundTime(date);
+        couponRefund.setBuyerId(couponPayDetail.getReceiveId());
+        couponRefund.setBuyerName(couponPayDetail.getReceiveNickName());
+        couponRefund.setOrderPaySn(couponPayDetail.getPaySn());
+        couponRefund.setOrderSn(couponPayDetail.getCouponOrderSn());
+        couponRefundService.save(couponRefund);
+
     }
 
 
