@@ -681,6 +681,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if(coupon!=null&&coupon.getStatus()==4){
                     //回收优惠券
                     if(coupon.getUseMoneyFlag()==1){//退款回收 TODO
+                        coupon.setRefundNum(Optional.ofNullable(coupon.getRefundNum()).orElse(0)+1);
+                        couponService.update(coupon);
                         couponDetail.setUseState(3);
                         couponDetail.setUseTime(null);
                         couponDetail.setUseOrderId(null);

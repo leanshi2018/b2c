@@ -233,6 +233,14 @@
         </where>
     </select>
 
+    <!-- 统计记录数 -->
+    <select id="getNoUseNum" resultType="long" parameterType="com.framework.loippi.entity.coupon.CouponDetail">
+        SELECT COUNT(*) FROM rd_coupon_detail
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
     <!-- 插入 -->
     <insert id="insert" parameterType="com.framework.loippi.entity.coupon.CouponDetail">
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">

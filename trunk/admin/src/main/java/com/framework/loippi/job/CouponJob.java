@@ -40,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 优惠券定时任务
@@ -106,6 +107,11 @@ public class CouponJob {
                     //1.1.3回收couponDetail
                     couponDetailDao.recycleNoMoney(Paramap.create().put("refundState",0).put("refundSum", BigDecimal.ZERO).put("couponId",coupon.getId()));
                 }else if(coupon.getUseMoneyFlag()==1){//付费
+                    CouponDetail couponDetail1 = new CouponDetail();
+                    couponDetail1.setCouponId(coupon.getId());
+                    couponDetail1.setUseState(2);
+                    Long num=couponDetailDao.getNoUseNum(couponDetail1);
+                    coupon.setRefundNum((int) (Optional.ofNullable(coupon.getRefundNum()).orElse(0)+num));
                     //1.2对未使用的优惠券进行退款 退款路径原路返回
                     //1.2.1修改coupon
                     coupon.setStatus(4);
