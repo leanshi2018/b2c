@@ -425,6 +425,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			couponDetail.setUseEndTime(coupon.getUseEndTime());
 			couponDetail.setUseState(2);
 			couponDetail.setBuyOrderId(couponPayDetailId);
+			couponDetail.setRefundState(1);
 			couponDetailDao.insert(couponDetail);
 		}
 	}

@@ -1,7 +1,6 @@
 package com.framework.loippi.controller.coupon;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,9 +9,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.framework.loippi.consts.CouponConstant;
-import com.framework.loippi.entity.coupon.CouponTransLog;
-import com.framework.loippi.service.coupon.CouponTransLogService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
@@ -25,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.CouponConstant;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.coupon.Coupon;
@@ -297,6 +294,24 @@ public class ShopCouponController extends GenericController {
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", couponPayDetailService.findByPage(pageable));
         return "/activity/shop_activity/couponbuy_list";
+    }
+
+    /**
+     * 优惠券订单详情
+     * @param request
+     * @param model
+     * @param id
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/Coupon/detail/findCouponPayDetail")
+    public String findCouponPayDetail(HttpServletRequest request,ModelMap model,@RequestParam(required = true, value = "id")Long id) {
+        if(id==null){
+            model.addAttribute("msg", "请传入优惠券订单id");
+            return Constants.MSG_URL;
+        }
+        model.addAttribute("couponPayDetail", couponPayDetailService.find(id));
+        return "/activity/shop_activity/couponbuy_edit";
     }
 
     /**
