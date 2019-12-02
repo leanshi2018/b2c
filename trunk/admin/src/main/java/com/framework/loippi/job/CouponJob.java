@@ -1,47 +1,16 @@
 package com.framework.loippi.job;
 
 
-import com.framework.loippi.dao.coupon.CouponDao;
-import com.framework.loippi.dao.coupon.CouponDetailDao;
-import com.framework.loippi.dao.coupon.CouponPayDetailDao;
-import com.framework.loippi.dao.coupon.CouponUserDao;
-import com.framework.loippi.entity.AliPayRefund;
-import com.framework.loippi.entity.TSystemPluginConfig;
-import com.framework.loippi.entity.WeiRefund;
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.entity.coupon.CouponDetail;
-import com.framework.loippi.entity.coupon.CouponPayDetail;
-import com.framework.loippi.entity.coupon.CouponUser;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.service.TSystemPluginConfigService;
-import com.framework.loippi.service.alipay.AlipayRefundService;
-import com.framework.loippi.service.coupon.CouponDetailService;
-import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAccountLogService;
-import com.framework.loippi.service.user.RdSysPeriodService;
-import com.framework.loippi.service.wechat.WechatMobileRefundService;
-import com.framework.loippi.service.wechat.WechatRefundService;
-import com.framework.loippi.utils.NumberUtils;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.validator.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * 优惠券定时任务
@@ -51,37 +20,11 @@ import java.util.Optional;
 @Lazy(false)
 public class CouponJob {
     @Resource
-    private TSystemPluginConfigService tSystemPluginConfigService;
-    @Resource
-    private CouponDao couponDao;
-    @Resource
     private CouponService couponService;
-    @Resource
-    private CouponUserDao couponUserDao;
-    @Resource
-    private CouponDetailDao couponDetailDao;
-    @Resource
-    private CouponPayDetailDao couponPayDetailDao;
-    @Resource
-    private AlipayRefundService alipayRefundService;
-    @Resource
-    private CouponDetailService couponDetailService;
-    @Resource
-    private CouponPayDetailService couponPayDetailService;
-    @Resource
-    private WechatMobileRefundService wechatMobileRefundService;
-    @Resource
-    private WechatRefundService wechatRefundService;
-    @Resource
-    private RdMmAccountInfoService rdMmAccountInfoService;
-    @Resource
-    private RdSysPeriodService rdSysPeriodService;
-    @Resource
-    private RdMmAccountLogService rdMmAccountLogService;
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 
-    //@Scheduled(cron = "0 5 0 * * ? ")  //每天0点五分运行
-    @Scheduled(cron = "0 23 15 * * ? ")  //每天0点五分运行
+    @Scheduled(cron = "0 5 0 * * ? ")  //每天0点五分运行
+    //@Scheduled(cron = "0 59 15 * * ? ")  //每天0点五分运行
     //@Scheduled(cron = "0/30 * * * * ? " )  //每隔30秒执行一次
     public void recycleCoupon() {
         log.info("#################################################################");
@@ -93,12 +36,8 @@ public class CouponJob {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = format.format(date);
         System.out.println(time);
-        List<Coupon> coupons = couponDao.findOverdueCoupon(Paramap.create().put("status",2).put("searchUseTime",date));
-        System.out.println(coupons);
-        System.out.println(coupons.size());
-        if(coupons!=null&&coupons.size()>0){
-            couponService.overCoupon(coupons);
-            
+        couponService.overCoupon();
+
 
 /*            for (Coupon coupon : coupons) {//获得过期优惠券集合，进行遍历回收处理
                 //1.判断优惠券是否使用积分或者金钱购买，如果为购买的优惠券，则需要进行退款操作
@@ -277,10 +216,8 @@ public class CouponJob {
                     continue;
                 }
             }*/
-        }
-        log.info("###############################################过期结束###############################################");
     }
-    public void updateCouponDetailList(CouponPayDetail couponPayDetail, String bathno, Coupon coupon, List<CouponDetail> couponDetailList,Integer refundNum) {
+/*    public void updateCouponDetailList(CouponPayDetail couponPayDetail, String bathno, Coupon coupon, List<CouponDetail> couponDetailList,Integer refundNum) {
 
         if ((couponPayDetail.getRefundCouponNum()+refundNum)==couponPayDetail.getCouponNumber()){
             couponPayDetail.setRefundState(2);
@@ -310,5 +247,5 @@ public class CouponJob {
                 }
             }
         }
-    }
+    }*/
 }
