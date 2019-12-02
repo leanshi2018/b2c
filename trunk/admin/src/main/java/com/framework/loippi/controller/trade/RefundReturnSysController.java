@@ -654,6 +654,7 @@ public class RefundReturnSysController extends GenericController {
                     rdMmAccountLog.setMmNickName(couponDetail.getReceiveNickName());
                     rdMmAccountLog.setTrMmCode(couponDetail.getReceiveId());
                     rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
+                    rdMmAccountLog.setTransDesc("优惠券退款");
                     //单张所需积分
                     BigDecimal pricePoint = couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP);
                     rdMmAccountLog.setAmount(pricePoint);
@@ -928,6 +929,7 @@ public class RefundReturnSysController extends GenericController {
                     rdMmAccountLog.setMmNickName(couponPayDetail.getReceiveNickName());
                     rdMmAccountLog.setTrMmCode(couponPayDetail.getReceiveId());
                     rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
+                    rdMmAccountLog.setTransDesc("优惠券退款");
                     //所需积分
                     BigDecimal pricePoint = (couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal(refundNum));
                     rdMmAccountLog.setAmount(pricePoint);
