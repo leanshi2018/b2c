@@ -373,6 +373,10 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                     if(couponUsers==null||couponUsers.size()==0){
                         throw new RuntimeException("优惠券拥有记录异常");
                     }
+                    List<CouponUser> couponUsers1 = couponUserService.findList(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",couponDetail.getReceiveId()));
+                    if(couponUsers1==null||couponUsers1.size()==0){
+                        throw new RuntimeException("优惠券拥有记录异常");
+                    }
                     //可能在订单取消时，当前订单选取的优惠券已过期，判断是退换优惠券还是过期优惠券
                     Coupon coupon = couponService.find(couponDetail.getCouponId());
                     if(coupon!=null&&coupon.getStatus()==4){
@@ -390,11 +394,11 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                             couponDetailService.update(couponDetail);
                             //退款
                             returnCoupon(coupon,couponDetail,username);
-                            CouponUser couponUser = couponUsers.get(0);
+                            /*CouponUser couponUser = couponUsers.get(0);
                             couponUser.setUseNum(couponUser.getUseNum()-1);
                             couponUser.setOwnNum(couponUser.getOwnNum()+1);
                             couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
-                            couponUserService.update(couponUser);
+                            couponUserService.update(couponUser);*/
                         }else {//回收
                             couponDetail.setUseState(3);
                             couponDetail.setUseTime(null);
@@ -630,6 +634,11 @@ public void returnCoupon(Coupon coupon,CouponDetail couponDetail,String opName){
             CouponUser couponUser = couponUsers.get(0);
             couponUser.setOwnNum(couponUser.getOwnNum()-1);
             couponUserService.update(couponUser);
+            //改rd_coupon_user
+            List<CouponUser> couponUsers1 = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
+            CouponUser couponUser1 = couponUsers1.get(0);
+            couponUser1.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+            couponUserService.update(couponUser1);
         }
     }
 }
@@ -657,6 +666,11 @@ public void returnCoupon(Coupon coupon,CouponDetail couponDetail,String opName){
         CouponUser couponUser = couponUsers.get(0);
         couponUser.setOwnNum(couponUser.getOwnNum()-1);
         couponUserService.update(couponUser);
+        //改rd_coupon_user
+        List<CouponUser> couponUsers1 = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
+        CouponUser couponUser1 = couponUsers1.get(0);
+        couponUser1.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+        couponUserService.update(couponUser1);
     }
 
 }
