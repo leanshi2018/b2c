@@ -93,7 +93,7 @@ public class ConponPayDetailListResult {
 		}
 		List<ConponPayDetailListResult> results = new ArrayList<ConponPayDetailListResult>();
 		for (CouponPayDetail cpd : couponPayDetailList) {
-			if (cpd.getCouponOrderState()!=10){
+			if (cpd.getCouponOrderState()!=0 && cpd.getCouponOrderState()!=10){
 				ConponPayDetailListResult result = new ConponPayDetailListResult();
 				result.setId(cpd.getId());
 				result.setCouponOrderSn(cpd.getCouponOrderSn());
@@ -114,8 +114,10 @@ public class ConponPayDetailListResult {
 				result.setCouponNumber(cpd.getCouponNumber());
 				result.setOrderAmount(cpd.getOrderAmount());
 				if (cpd.getCouponOrderState()==40){
-					if (cpd.getRefundState()==1){
-						result.setOrderStateS("已退款");
+					if (cpd.getRefundState()==1) {
+						result.setOrderStateS("部分退款");
+					}else if (cpd.getRefundState()==2){
+						result.setOrderStateS("全部退款");
 					}else{
 						result.setOrderStateS("交易完成");
 					}
@@ -130,4 +132,48 @@ public class ConponPayDetailListResult {
 		return results;
 	}
 
+	public static List<ConponPayDetailListResult> build1(List<CouponPayDetail> couponPayDetailList, List<Coupon> coupons) {
+		if (CollectionUtils.isEmpty(couponPayDetailList)) {
+			return Collections.emptyList();
+		}
+		List<ConponPayDetailListResult> results = new ArrayList<ConponPayDetailListResult>();
+		for (CouponPayDetail cpd : couponPayDetailList) {
+			if (cpd.getRefundState()!=0){
+				ConponPayDetailListResult result = new ConponPayDetailListResult();
+				result.setId(cpd.getId());
+				result.setCouponOrderSn(cpd.getCouponOrderSn());
+				//result.setReceiveId(cpd.getReceiveId());
+				//result.setReceiveNickName(cpd.getReceiveNickName());
+				result.setCouponName(cpd.getCouponName());
+
+				for (Coupon coupon : coupons) {
+					if (coupon.getId().equals(cpd.getCouponId())){
+						result.setCouponImage(coupon.getImage());
+						result.setCouponPrice(coupon.getCouponPrice());
+					}
+				}
+				result.setCreateTime(cpd.getCreateTime());
+				result.setPaymentTime(cpd.getPaymentTime());
+				result.setPaySn(cpd.getPaySn());
+				result.setCouponAmount(cpd.getCouponAmount());
+				result.setCouponNumber(cpd.getCouponNumber());
+				result.setOrderAmount(cpd.getOrderAmount());
+				if (cpd.getCouponOrderState()==40){
+					if (cpd.getRefundState()==1) {
+						result.setOrderStateS("部分退款");
+					}else if (cpd.getRefundState()==2){
+						result.setOrderStateS("全部退款");
+					}else{
+						result.setOrderStateS("交易完成");
+					}
+				/*}else if (cpd.getCouponOrderState()==10){
+					result.setOrderStateS("待付款");*/
+				}else if (cpd.getCouponOrderState()==0){
+					result.setOrderStateS("已取消");
+				}
+				results.add(result);
+			}
+		}
+		return results;
+	}
 }

@@ -710,7 +710,11 @@ public class RefundReturnSysController extends GenericController {
                     couponUserService.update(couponUser);
 
                     //记录退款数
-                    coupon.setRefundNum(coupon.getRefundNum()+1);
+                    if (coupon.getRefundNum()==null){
+                        coupon.setRefundNum(1);
+                    }else {
+                        coupon.setRefundNum(coupon.getRefundNum()+1);
+                    }
                     couponService.update(coupon);
 
                     //添加退款记录表
@@ -772,7 +776,11 @@ public class RefundReturnSysController extends GenericController {
         couponUserService.update(couponUser);
 
         //记录退款数
-        coupon.setRefundNum(coupon.getRefundNum()+1);
+        if (coupon.getRefundNum()==null){
+            coupon.setRefundNum(1);
+        }else {
+            coupon.setRefundNum(coupon.getRefundNum()+1);
+        }
         couponService.update(coupon);
 
         //添加退款记录表
@@ -1011,7 +1019,11 @@ public class RefundReturnSysController extends GenericController {
                             couponUser.setOwnNum(couponUser.getOwnNum()-1);
                             couponUserService.update(couponUser);
 
-                            coupon.setRefundNum(coupon.getRefundNum()+1);
+                            if (coupon.getRefundNum()==null){
+                                coupon.setRefundNum(1);
+                            }else {
+                                coupon.setRefundNum(coupon.getRefundNum()+1);
+                            }
                             couponService.update(coupon);
                         }
                     }
@@ -1051,6 +1063,9 @@ public class RefundReturnSysController extends GenericController {
                 }
 
             }
+        }else {
+            model.addAttribute("msg", "订单id未空");
+            return backurl;
         }
 
         model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
@@ -1087,7 +1102,11 @@ public class RefundReturnSysController extends GenericController {
                 couponUser.setOwnNum(couponUser.getOwnNum()-1);
                 couponUserService.update(couponUser);
 
-                coupon.setRefundNum(coupon.getRefundNum()+1);
+                if (coupon.getRefundNum()==null){
+                    coupon.setRefundNum(1);
+                }else {
+                    coupon.setRefundNum(coupon.getRefundNum()+1);
+                }
                 couponService.update(coupon);
             }
         }

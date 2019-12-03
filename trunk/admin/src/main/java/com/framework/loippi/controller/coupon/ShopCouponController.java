@@ -25,6 +25,7 @@ import com.framework.loippi.consts.CouponConstant;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.coupon.CouponTransLog;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -428,6 +429,41 @@ public class ShopCouponController extends GenericController {
             model.addAttribute("msg", "网络异常，请稍后重试");
             return Constants.MSG_URL;
         }
+    }
+
+    /**
+     * 优惠券禁用
+     * @param request
+     * @param model
+     * @param couponDetailId
+     * @return
+     */
+    @RequestMapping("/coupon/disable")
+    public String couponDisable(HttpServletRequest request,  ModelMap model,@RequestParam(required = true, value = "couponDetailId") Long couponDetailId){
+        if(couponDetailId==null){
+            model.addAttribute("msg", "请传入优惠券详情id");
+            return Constants.MSG_URL;
+        }
+        CouponDetail couponDetail = couponDetailService.find(couponDetailId);
+        if(couponDetail==null){
+            model.addAttribute("msg", "当前优惠券详情不存在");
+            return Constants.MSG_URL;
+        }
+        Principal user = (Principal) SecurityUtils.getSubject().getPrincipal();
+        if(user==null){
+            model.addAttribute("msg", "请登录后进行审核操作");
+            return Constants.MSG_URL;
+        }
+        if (couponDetail.getUseState()==4){
+            model.addAttribute("msg", "当前优惠券详情已禁用，请不要重复操作");
+            return Constants.MSG_URL;
+        }
+
+        couponDetail.setUseState(4);
+        couponDetailService.update(couponDetail);
+        model.addAttribute("msg", "禁用成功");
+        return Constants.MSG_URL;
+
     }
 
     /**

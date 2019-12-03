@@ -167,22 +167,8 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			if (personLimitNum == 0){
-				if (r==10001){
-					if (totalLimitNum!=-1){
-						if (totalLimitNum-receivedNum>0){
-							coupon.setCanBuy(0);
-						}else {
-							coupon.setCanBuy(1);
-						}
-					}else {
-						coupon.setCanBuy(0);
-					}
-				}else {
-					coupon.setCanBuy(1);
-				}
-			}else {
-				if (personLimitNum>haveCouponNum){
+			if (coupon.getStatus()==2){//上架
+				if (personLimitNum == 0){
 					if (r==10001){
 						if (totalLimitNum!=-1){
 							if (totalLimitNum-receivedNum>0){
@@ -197,8 +183,26 @@ public class CouponController extends BaseController {
 						coupon.setCanBuy(1);
 					}
 				}else {
-					coupon.setCanBuy(1);
+					if (personLimitNum>haveCouponNum){
+						if (r==10001){
+							if (totalLimitNum!=-1){
+								if (totalLimitNum-receivedNum>0){
+									coupon.setCanBuy(0);
+								}else {
+									coupon.setCanBuy(1);
+								}
+							}else {
+								coupon.setCanBuy(0);
+							}
+						}else {
+							coupon.setCanBuy(1);
+						}
+					}else {
+						coupon.setCanBuy(1);
+					}
 				}
+			}else {
+				coupon.setCanBuy(1);
 			}
 		}else {
 			System.out.println("不在区间");
@@ -275,23 +279,9 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			if (personLimitNum==0||personLimitNum>=couponNumber+haveCouponNum){
-				if (totalLimitNum==-1l){
-					if (r==10001){
-						//提交订单,返回订单支付实体
-						ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
-						List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
-								.findList(Paramap.create().put("order", "RID desc"));
-						RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
-						if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
-							rdMmIntegralRule = rdMmIntegralRuleList.get(0);
-						}
-						return ApiUtils.success(CouponPaySubmitResult.build(rdMmIntegralRule,orderPay,rdMmAccountInfoService.find("mmCode", member.getMmCode())));
-					}else {
-						return ApiUtils.error("购买级别不符");
-					}
-				}else {
-					if ((totalLimitNum-receivedNum)>0 && (totalLimitNum-receivedNum)>=couponNumber){
+			if (coupon.getStatus()==2){//上架
+				if (personLimitNum==0||personLimitNum>=couponNumber+haveCouponNum){
+					if (totalLimitNum==-1l){
 						if (r==10001){
 							//提交订单,返回订单支付实体
 							ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
@@ -305,12 +295,30 @@ public class CouponController extends BaseController {
 						}else {
 							return ApiUtils.error("购买级别不符");
 						}
-					}else{
-						return ApiUtils.error("剩余可购买数量为"+(totalLimitNum-receivedNum)+"张");
+					}else {
+						if ((totalLimitNum-receivedNum)>0 && (totalLimitNum-receivedNum)>=couponNumber){
+							if (r==10001){
+								//提交订单,返回订单支付实体
+								ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
+								List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+										.findList(Paramap.create().put("order", "RID desc"));
+								RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+								if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+									rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+								}
+								return ApiUtils.success(CouponPaySubmitResult.build(rdMmIntegralRule,orderPay,rdMmAccountInfoService.find("mmCode", member.getMmCode())));
+							}else {
+								return ApiUtils.error("购买级别不符");
+							}
+						}else{
+							return ApiUtils.error("剩余可购买数量为"+(totalLimitNum-receivedNum)+"张");
+						}
 					}
+				}else {
+					return ApiUtils.error("亲，您最多还可购买"+(personLimitNum-haveCouponNum)+"张哦");
 				}
 			}else {
-				return ApiUtils.error("亲，您最多还可购买"+(personLimitNum-haveCouponNum)+"张哦");
+				return ApiUtils.error("该优惠券未上架");
 			}
 		} else {
 			System.out.println("不在区间");
@@ -711,24 +719,30 @@ public class CouponController extends BaseController {
 		Pageable pager = new Pageable(pageNumber, pageSize);
 		Map<String, Object> params = new HashMap<>();
 		params.put("receiveId", member.getMmCode());
+		pager.setOrderDirection(Order.Direction.DESC);
+		pager.setOrderProperty("create_time");
 		List<CouponPayDetail> lists = null;
 		if (couponOrderState==null){
-			params.put("couponOrderState", 10);
-			params.put("couponOrderState", 40);
+			params.put("couponOrderState", couponOrderState);
 			lists = couponPayDetailService.findListByMCodeAndNotOrderStatus(member.getMmCode(),0);
 			if(lists==null||lists.size()==0){
 				//return ApiUtils.error("无购买优惠券订单记录");
 				return ApiUtils.success(lists);
 			}
+			pager.setParameter(params);
+			Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
+			return ApiUtils.success(ConponPayDetailListResult.build(byPage.getContent(),couponService.findAll()));
 		}else {
 			if (couponOrderState==1){
-				params.put("refundState", couponOrderState);
-				params.put("refundState", 2);
 				lists = couponPayDetailService.findListByMCodeAndNotRefundStatus(member.getMmCode(),0);
 				if(lists==null||lists.size()==0){
 					//return ApiUtils.error("无退款优惠券订单记录");
 					return ApiUtils.success(lists);
 				}
+
+				pager.setParameter(params);
+				Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
+				return ApiUtils.success(ConponPayDetailListResult.build1(byPage.getContent(),couponService.findAll()));
 			}else {
 				params.put("couponOrderState", couponOrderState);
 				lists = couponPayDetailService.findList(Paramap.create().put("receiveId", member.getMmCode()).put("couponOrderState", couponOrderState));
@@ -736,14 +750,12 @@ public class CouponController extends BaseController {
 					//return ApiUtils.error("无购买优惠券订单记录");
 					return ApiUtils.success(lists);
 				}
+				pager.setParameter(params);
+				Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
+				return ApiUtils.success(ConponPayDetailListResult.build(byPage.getContent(),couponService.findAll()));
 			}
 		}
 
-		pager.setOrderDirection(Order.Direction.DESC);
-		pager.setOrderProperty("create_time");
-		pager.setParameter(params);
-		Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
-		return ApiUtils.success(ConponPayDetailListResult.build(byPage.getContent(),couponService.findAll()));
 	}
 
 	/**
