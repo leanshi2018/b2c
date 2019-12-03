@@ -460,6 +460,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 				couponPayDetail.setPaymentState(1);
 				couponPayDetail.setPaymentTime(new Date());
 				couponPayDetail.setTradeSn(tradeSn);
+				couponPayDetail.setCouponOrderState(40);
 				//couponPayDetail.setPaymentBranch(paymentBranch);
 				couponPayDetailDao.update(couponPayDetail);
 				if(couponPayDetail.getUsePointNum()!=null&&couponPayDetail.getUsePointNum().compareTo(new BigDecimal(0.00))==1){//如果订单支付使用了积分，则创建使用积分消息
