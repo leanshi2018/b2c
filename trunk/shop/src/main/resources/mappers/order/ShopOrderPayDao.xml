@@ -139,4 +139,9 @@
       <include refid="where_column"/>
     </where>
   </select>
+
+  <select id="findByPaySn" parameterType="string" resultMap="ShopOrderPayResultMap">
+    SELECT * FROM SHOP_ORDER_PAY where pay_sn = #{paySn}
+  </select>
+
 </mapper> 

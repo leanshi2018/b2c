@@ -1,5 +1,7 @@
 package com.framework.loippi.dao.order;
 
+import java.util.List;
+
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.mybatis.dao.GenericDao;
 
@@ -13,4 +15,5 @@ public interface ShopOrderPayDao  extends GenericDao<ShopOrderPay, Long> {
 
     void updateByPaysn(ShopOrderPay orderPay);
 
+    List<ShopOrderPay> findByPaySn(String paySn);
 }
