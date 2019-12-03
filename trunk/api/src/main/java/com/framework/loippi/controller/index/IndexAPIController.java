@@ -142,6 +142,20 @@ public class IndexAPIController extends BaseController {
 
     /**
      * 商品列表
+     * @param categoryId 商品分类id
+     * @param goodsType 商品类型 1-普通2-积分3-组合
+     * @param pageSize
+     * @param sortField 排序字段
+     * @param pageNumber
+     * @param orderBy 升序或者降序
+     * @param keyword 关键字
+     * @param categoryIds 商品分类集合
+     * @param brandIds 品牌集合
+     * @param minPrice 最低价格
+     * @param maxPrice 最大价格
+     * @param activityId 活动id
+     * @param request
+     * @return
      */
     @RequestMapping(value = "/api/index/search.json", method = RequestMethod.POST)
     @ResponseBody

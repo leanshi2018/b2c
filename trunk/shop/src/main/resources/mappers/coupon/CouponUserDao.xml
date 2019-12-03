@@ -154,7 +154,7 @@
     </select>
 
     <update id="overdueCouponUserByCouponId" parameterType="java.lang.Long">
-        update rd_coupon_user set own_num = 0 where coupon_id = #{couponId}
+        update rd_coupon_user set own_num = 0,have_coupon_num = 0 where coupon_id = #{couponId}
     </update>
 
 </mapper>

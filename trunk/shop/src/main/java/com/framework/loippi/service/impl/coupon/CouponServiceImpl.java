@@ -406,6 +406,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
                                         if(couponUsers!=null&&couponUsers.size()>0){
                                             CouponUser couponUser = couponUsers.get(0);
                                             couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                                            couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                                             couponUserDao.update(couponUser);
                                         }
                                     }
@@ -671,6 +672,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
                                                 if(couponUsers!=null&&couponUsers.size()>0){
                                                     CouponUser couponUser = couponUsers.get(0);
                                                     couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                                                    couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                                                     couponUserDao.update(couponUser);
                                                 }
                                             }
@@ -723,6 +725,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
                 if(couponUsers!=null&&couponUsers.size()>0){
                     CouponUser couponUser = couponUsers.get(0);
                     couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                    couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                     couponUserDao.update(couponUser);
                 }
             }

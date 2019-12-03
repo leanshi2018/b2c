@@ -558,14 +558,13 @@
     </where>
     GROUP BY s.goods_name
     <if test="goodsEvaluaterate != null and goodsEvaluaterate != ''">
-      ORDER BY evaluaterate desc
+      ORDER BY sort asc,evaluaterate desc
     </if>
     <if test="goodsSalenum != null and goodsSalenum != ''">
-      ORDER BY salenum desc
+      ORDER BY sort asc,salenum desc
     </if>
     <if test="orderAll != null and orderAll != ''">
-      ORDER BY
-      salenum DESC,evaluaterate DESC
+      ORDER BY sort asc ,salenum DESC,evaluaterate DESC
     </if>
 
   </select>
