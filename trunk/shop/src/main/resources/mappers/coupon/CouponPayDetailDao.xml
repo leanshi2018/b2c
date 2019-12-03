@@ -340,4 +340,14 @@
     <select id="findBySn" parameterType="string" resultMap="couponPayDetailResultMap">
         SELECT * FROM rd_coupon_pay_detail WHERE coupon_order_sn = #{couponOrderSn}
     </select>
+
+    <select id="findListByMCodeAndNotRefundStatus" parameterType="map" resultMap="couponPayDetailResultMap">
+        SELECT * FROM rd_coupon_pay_detail WHERE receive_id = #{receiveId} AND refund_state != #{refundState}
+    </select>
+
+
+    <select id="findListByMCodeAndNotOrderStatus" parameterType="map" resultMap="couponPayDetailResultMap">
+        SELECT * FROM rd_coupon_pay_detail WHERE receive_id = #{receiveId} AND coupon_order_state != #{couponOrderState}
+    </select>
+
 </mapper>
