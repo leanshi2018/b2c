@@ -30,4 +30,8 @@ public interface CouponPayDetailService extends GenericService<CouponPayDetail, 
 	CouponPayDetail findBySn(String couponOrderSn);
 
 	List<CouponPayDetail> findByPaySn(String PaySn);
+
+	List<CouponPayDetail> findListByMCodeAndNotRefundStatus(String mmCode, int i);
+
+	List<CouponPayDetail> findListByMCodeAndNotOrderStatus(String mmCode, int i);
 }

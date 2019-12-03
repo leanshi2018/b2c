@@ -550,5 +550,21 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		return couponPayDetailDao.findByPaySn(PaySn);
 	}
 
+	@Override
+	public List<CouponPayDetail> findListByMCodeAndNotRefundStatus(String mmCode, int i) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("receiveId",mmCode);
+		map.put("refundState",i);
+		return couponPayDetailDao.findListByMCodeAndNotRefundStatus(map);
+	}
+
+	@Override
+	public List<CouponPayDetail> findListByMCodeAndNotOrderStatus(String mmCode, int i) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("receiveId",mmCode);
+		map.put("couponOrderState",i);
+		return couponPayDetailDao.findListByMCodeAndNotOrderStatus(map);
+	}
+
 
 }
