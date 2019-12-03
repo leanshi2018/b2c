@@ -3535,7 +3535,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         //更新用户购物积分
         RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
         rdMmAccountLog.setTransTypeCode("OP");
-        rdMmAccountLog.setAccType("");
+        rdMmAccountLog.setAccType("SWB");
         rdMmAccountLog.setTrSourceType("SWB");
         rdMmAccountLog.setMmCode(shopMember.getMmCode());
         rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
@@ -3616,7 +3616,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         //更新用户购物积分
         RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
         rdMmAccountLog.setTransTypeCode("OP");
-        rdMmAccountLog.setAccType("");
+        rdMmAccountLog.setAccType("SWB");
         rdMmAccountLog.setTrSourceType("SWB");
         rdMmAccountLog.setMmCode(shopMember.getMmCode());
         rdMmAccountLog.setMmNickName(shopMember.getMmNickName());

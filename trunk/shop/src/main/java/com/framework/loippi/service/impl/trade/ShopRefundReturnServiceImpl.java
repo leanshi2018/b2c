@@ -575,7 +575,7 @@ public void returnCoupon(Coupon coupon,CouponDetail couponDetail,String opName){
             //更新用户购物积分
             RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
             rdMmAccountLog.setTransTypeCode("OT");
-            rdMmAccountLog.setAccType("");
+            rdMmAccountLog.setAccType("SWB");
             rdMmAccountLog.setTrSourceType("SWB");
             rdMmAccountLog.setMmCode(couponDetail.getReceiveId());
             rdMmAccountLog.setMmNickName(couponDetail.getReceiveNickName());

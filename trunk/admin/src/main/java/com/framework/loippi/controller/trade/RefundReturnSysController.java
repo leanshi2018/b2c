@@ -655,7 +655,7 @@ public class RefundReturnSysController extends GenericController {
                     //更新用户购物积分
                     RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
                     rdMmAccountLog.setTransTypeCode("OT");
-                    rdMmAccountLog.setAccType("");
+                    rdMmAccountLog.setAccType("SWB");
                     rdMmAccountLog.setTrSourceType("SWB");
                     rdMmAccountLog.setMmCode(couponDetail.getReceiveId());
                     rdMmAccountLog.setMmNickName(couponDetail.getReceiveNickName());
@@ -965,7 +965,7 @@ public class RefundReturnSysController extends GenericController {
                     //更新用户购物积分
                     RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
                     rdMmAccountLog.setTransTypeCode("OT");
-                    rdMmAccountLog.setAccType("");
+                    rdMmAccountLog.setAccType("SWB");
                     rdMmAccountLog.setTrSourceType("SWB");
                     rdMmAccountLog.setMmCode(couponPayDetail.getReceiveId());
                     rdMmAccountLog.setMmNickName(couponPayDetail.getReceiveNickName());
