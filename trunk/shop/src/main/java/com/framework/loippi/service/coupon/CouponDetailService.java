@@ -1,6 +1,7 @@
 package com.framework.loippi.service.coupon;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.service.GenericService;
@@ -16,4 +17,6 @@ public interface CouponDetailService extends GenericService<CouponDetail, Long> 
 	Object findLogResultByPage(Pageable pageable);
 
     void recycleNoMoney(Paramap paramap);
+
+	List<CouponDetail> findListByBuyOrderId(Long id);
 }

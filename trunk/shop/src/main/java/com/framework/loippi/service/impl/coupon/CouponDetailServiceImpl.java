@@ -1,10 +1,10 @@
 package com.framework.loippi.service.impl.coupon;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.framework.loippi.utils.Paramap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +16,7 @@ import com.framework.loippi.service.coupon.CouponDetailService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.Paramap;
 
 /**
  * 优惠券详情service层
@@ -45,5 +46,10 @@ public class CouponDetailServiceImpl extends GenericServiceImpl<CouponDetail, Lo
     @Override
     public void recycleNoMoney(Paramap paramap) {
         couponDetailDao.recycleNoMoney(paramap);
+    }
+
+    @Override
+    public List<CouponDetail> findListByBuyOrderId(Long buyOrderId) {
+        return couponDetailDao.findListByBuyOrderId(buyOrderId);
     }
 }
