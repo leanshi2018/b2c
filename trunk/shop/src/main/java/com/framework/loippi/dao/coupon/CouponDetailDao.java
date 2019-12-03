@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.coupon;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.mybatis.dao.GenericDao;
@@ -17,4 +18,6 @@ public interface CouponDetailDao extends GenericDao<CouponDetail, Long> {
     void recycleNoMoney(Paramap paramap);
 
     Long getNoUseNum(CouponDetail couponDetail1);
+
+	List<CouponDetail> findListByBuyOrderId(Long buyOrderId);
 }

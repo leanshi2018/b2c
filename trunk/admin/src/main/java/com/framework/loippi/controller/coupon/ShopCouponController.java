@@ -1,9 +1,11 @@
 package com.framework.loippi.controller.coupon;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -29,6 +31,7 @@ import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.coupon.CouponTransLog;
 import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.result.common.coupon.CouponPayDetailResult;
 import com.framework.loippi.result.common.coupon.CouponUserLogResult;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.coupon.CouponDetailService;
@@ -311,8 +314,12 @@ public class ShopCouponController extends GenericController {
             model.addAttribute("msg", "请传入优惠券订单id");
             return Constants.MSG_URL;
         }
-        //model.addAttribute("couponPayDetail", couponPayDetailService.find(id));
-        model.addAttribute("page", couponPayDetailService.find(id));
+        CouponPayDetail couponPayDetail = couponPayDetailService.find(id);
+        List<CouponDetail> couponDetailList = new ArrayList<>();
+        if(couponPayDetail!=null){
+            couponDetailList = couponDetailService.findListByBuyOrderId(couponPayDetail.getId());
+        }
+        model.addAttribute("page", CouponPayDetailResult.build(couponPayDetail,couponDetailList));
         return "/activity/shop_activity/couponbuy_edit";
     }
 

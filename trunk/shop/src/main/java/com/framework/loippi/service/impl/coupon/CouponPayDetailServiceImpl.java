@@ -108,6 +108,9 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		//保存订单支付表
 		orderPayDao.insert(orderPay);
 
+		List<ShopOrderPay> orderPays = orderPayDao.findByPaySn(paySn);
+		ShopOrderPay shopOrderPay = orderPays.get(0);
+
 		//优惠券信息
 		Coupon coupon = couponService.find("id", couponId);
 
@@ -131,7 +134,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		//没有支付id 暂时为0L
 		couponPayDetail.setPaymentId(0l);
 		couponPayDetail.setPaymentName("");
-		couponPayDetail.setPayId(orderPay.getId());
+		couponPayDetail.setPayId(shopOrderPay.getId());
 		couponPayDetail.setPaySn(paySn);
 		if (orderTotal.compareTo(new BigDecimal("0"))==0){//订单总价格为0，视为已经支付订单
 			couponPayDetail.setPaymentState(1);
@@ -460,6 +463,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 				couponPayDetail.setPaymentState(1);
 				couponPayDetail.setPaymentTime(new Date());
 				couponPayDetail.setTradeSn(tradeSn);
+				couponPayDetail.setCouponOrderState(40);
 				//couponPayDetail.setPaymentBranch(paymentBranch);
 				couponPayDetailDao.update(couponPayDetail);
 				if(couponPayDetail.getUsePointNum()!=null&&couponPayDetail.getUsePointNum().compareTo(new BigDecimal(0.00))==1){//如果订单支付使用了积分，则创建使用积分消息
