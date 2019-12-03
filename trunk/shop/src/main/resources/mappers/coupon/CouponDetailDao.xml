@@ -45,6 +45,7 @@
         <result property="useEndTime" column="use_end_time"/>
         <result property="useState" column="use_state"/>
         <result property="useOrderId" column="use_order_id"/>
+        <result property="refundState" column="refund_state"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
@@ -326,7 +327,8 @@
         a.use_start_time,
         a.use_end_time,
         a.use_state,
-        a.use_order_id
+        a.use_order_id,
+        a.refund_state
         FROM rd_coupon_detail a
         left join rd_coupon b on a.coupon_id=b.id
         where 1=1
