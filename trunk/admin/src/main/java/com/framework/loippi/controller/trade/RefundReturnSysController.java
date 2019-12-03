@@ -523,13 +523,15 @@ public class RefundReturnSysController extends GenericController {
             //是否已使用
             if (couponDetail.getUseState()==1 || couponDetail.getUseState()==4){
                 model.addAttribute("msg", "该优惠券已使用或已禁用");
-                return backurl;
+                //return backurl;
+                return "redirect:/activity/shop_activity/couponuse_list.jhtml";
             }
 
             //是否已退款
             if (couponDetail.getRefundState()!=1){
                 model.addAttribute("msg", "该优惠券无需退款或已退款");
-                return backurl;
+                //return backurl;
+                return "redirect:/activity/shop_activity/couponuse_list.jhtml";
             }
 
             //优惠券
@@ -550,7 +552,7 @@ public class RefundReturnSysController extends GenericController {
             }
             if ("".equals(paymentCode)){
                 model.addAttribute("msg", "该订单支付方式不存在");
-                return backurl;
+                return "redirect:/activity/shop_activity/couponuse_list.jhtml";
             }
 
             if (paymentCode.equals("alipayMobilePaymentPlugin")) {//支付宝退款
