@@ -705,24 +705,30 @@ public class CouponController extends BaseController {
 		Pageable pager = new Pageable(pageNumber, pageSize);
 		Map<String, Object> params = new HashMap<>();
 		params.put("receiveId", member.getMmCode());
+		pager.setOrderDirection(Order.Direction.DESC);
+		pager.setOrderProperty("create_time");
 		List<CouponPayDetail> lists = null;
 		if (couponOrderState==null){
-			params.put("couponOrderState", 10);
-			params.put("couponOrderState", 40);
+			params.put("couponOrderState", couponOrderState);
 			lists = couponPayDetailService.findListByMCodeAndNotOrderStatus(member.getMmCode(),0);
 			if(lists==null||lists.size()==0){
 				//return ApiUtils.error("无购买优惠券订单记录");
 				return ApiUtils.success(lists);
 			}
+			pager.setParameter(params);
+			Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
+			return ApiUtils.success(ConponPayDetailListResult.build(byPage.getContent(),couponService.findAll()));
 		}else {
 			if (couponOrderState==1){
-				params.put("refundState", couponOrderState);
-				params.put("refundState", 2);
 				lists = couponPayDetailService.findListByMCodeAndNotRefundStatus(member.getMmCode(),0);
 				if(lists==null||lists.size()==0){
 					//return ApiUtils.error("无退款优惠券订单记录");
 					return ApiUtils.success(lists);
 				}
+
+				pager.setParameter(params);
+				Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
+				return ApiUtils.success(ConponPayDetailListResult.build1(byPage.getContent(),couponService.findAll()));
 			}else {
 				params.put("couponOrderState", couponOrderState);
 				lists = couponPayDetailService.findList(Paramap.create().put("receiveId", member.getMmCode()).put("couponOrderState", couponOrderState));
@@ -730,14 +736,12 @@ public class CouponController extends BaseController {
 					//return ApiUtils.error("无购买优惠券订单记录");
 					return ApiUtils.success(lists);
 				}
+				pager.setParameter(params);
+				Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
+				return ApiUtils.success(ConponPayDetailListResult.build(byPage.getContent(),couponService.findAll()));
 			}
 		}
 
-		pager.setOrderDirection(Order.Direction.DESC);
-		pager.setOrderProperty("create_time");
-		pager.setParameter(params);
-		Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pager);
-		return ApiUtils.success(ConponPayDetailListResult.build(byPage.getContent(),couponService.findAll()));
 	}
 
 	/**
