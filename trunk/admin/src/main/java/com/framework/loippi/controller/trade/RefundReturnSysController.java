@@ -684,6 +684,7 @@ public class RefundReturnSysController extends GenericController {
                     //updateCoupon(couponDetailId,bathno,coupon,couponPayDetail);
                     CouponDetail couponDetail1 = new CouponDetail();
                     couponDetail1.setId(couponDetailId); //记录ID
+                    couponDetail1.setUseState(3);
                     couponDetail1.setRefundState(2);//0：无需退款（非交易性优惠券）1：未退款 2：已退款
                     couponDetail1.setRefundSum(pricePoint);
                     couponDetail1.setBatchNo(bathno); //退款批次号
@@ -745,6 +746,7 @@ public class RefundReturnSysController extends GenericController {
     public void updateCoupon(CouponDetail couponDetail, String bathno, Coupon coupon, CouponPayDetail couponPayDetail) {
         Date date = new Date();
 
+        couponDetail.setUseState(3);
         couponDetail.setRefundState(2);//0：无需退款（非交易性优惠券）1：未退款 2：已退款
         couponDetail.setRefundSum(coupon.getCouponPrice());
         couponDetail.setBatchNo(bathno); //退款批次号
@@ -995,6 +997,7 @@ public class RefundReturnSysController extends GenericController {
                     for (CouponDetail couponDetail : couponDetailList) {
                         if (couponDetail.getUseState()==2 && couponDetail.getRefundState()==1){
                             //未使用且未退款
+                            couponDetail.setUseState(3);
                             couponDetail.setRefundState(2);
                             couponDetail.setRefundSum(couponPayDetail.getUsePointNum().divide(new BigDecimal(couponPayDetail.getCouponNumber()),0,BigDecimal.ROUND_HALF_UP));
                             couponDetail.setBatchNo(bathno); //退款批次号
@@ -1070,6 +1073,7 @@ public class RefundReturnSysController extends GenericController {
         for (CouponDetail couponDetail : couponDetailList) {
             if (couponDetail.getUseState()==2 && couponDetail.getRefundState()==1){
                 //未使用且未退款
+                couponDetail.setUseState(3);
                 couponDetail.setRefundState(2);
                 couponDetail.setRefundSum(coupon.getCouponPrice());
                 couponDetail.setBatchNo(bathno); //退款批次号
