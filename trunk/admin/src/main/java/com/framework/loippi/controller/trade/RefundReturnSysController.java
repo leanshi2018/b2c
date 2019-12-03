@@ -523,6 +523,7 @@ public class RefundReturnSysController extends GenericController {
             //是否已使用
             if (couponDetail.getUseState()==1 || couponDetail.getUseState()==4){
                 model.addAttribute("msg", "该优惠券已使用或已禁用");
+                model.addAttribute("referer", "/activity/shop_activity/couponuse_list.jhtml");
                 return backurl;
                 //return "redirect:admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml";
             }
@@ -530,6 +531,7 @@ public class RefundReturnSysController extends GenericController {
             //是否已退款
             if (couponDetail.getRefundState()!=1){
                 model.addAttribute("msg", "该优惠券无需退款或已退款");
+                model.addAttribute("referer", "/activity/shop_activity/couponuse_list.jhtml");
                 return backurl;
                 //return "redirect:admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml";
             }
@@ -551,6 +553,7 @@ public class RefundReturnSysController extends GenericController {
                 }
             }
             if ("".equals(paymentCode)){
+                model.addAttribute("referer", "/activity/shop_activity/couponuse_list.jhtml");
                 model.addAttribute("msg", "该订单支付方式不存在");
                 return backurl;
                 //return "redirect:admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml";
@@ -840,12 +843,14 @@ public class RefundReturnSysController extends GenericController {
 
             //订单是否已完成
             if (couponPayDetail.getCouponOrderState()!=40){
+                model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
                 model.addAttribute("msg", "该订单尚未完成");
                 return backurl;
             }
 
             //是否已全部退款
             if (couponPayDetail.getRefundState()==2){
+                model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
                 model.addAttribute("msg", "该优惠券已全部退款");
                 return backurl;
             }
@@ -864,6 +869,7 @@ public class RefundReturnSysController extends GenericController {
             }
 
             if (refundNum==0){
+                model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
                 model.addAttribute("msg", "该订单已全部退款");
                 return backurl;
             }
@@ -880,6 +886,7 @@ public class RefundReturnSysController extends GenericController {
                 }
             }
             if ("".equals(paymentCode)){
+                model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
                 model.addAttribute("msg", "该订单支付方式不存在");
                 return backurl;
             }
@@ -1078,6 +1085,7 @@ public class RefundReturnSysController extends GenericController {
 
             }
         }else {
+            model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
             model.addAttribute("msg", "订单id未空");
             return backurl;
         }
