@@ -711,6 +711,10 @@ public class RefundReturnSysController extends GenericController {
                     couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                     couponUser.setOwnNum(couponUser.getOwnNum()-1);
                     couponUserService.update(couponUser);
+                    List<CouponUser> couponUserss = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
+                    CouponUser couponUser1 = couponUserss.get(0);
+                    couponUser1.setHaveCouponNum(couponUser1.getHaveCouponNum()-1);
+                    couponUserService.update(couponUser1);
 
                     //记录退款数
                     if (coupon.getRefundNum()==null){
@@ -774,9 +778,12 @@ public class RefundReturnSysController extends GenericController {
         //改rd_coupon_user
         List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
         CouponUser couponUser = couponUsers.get(0);
-        couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
         couponUser.setOwnNum(couponUser.getOwnNum()-1);
         couponUserService.update(couponUser);
+        List<CouponUser> couponUserss = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
+        CouponUser couponUser1 = couponUserss.get(0);
+        couponUser1.setHaveCouponNum(couponUser1.getHaveCouponNum()-1);
+        couponUserService.update(couponUser1);
 
         //记录退款数
         if (coupon.getRefundNum()==null){
@@ -1018,9 +1025,13 @@ public class RefundReturnSysController extends GenericController {
                             //改rd_coupon_user
                             List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                             CouponUser couponUser = couponUsers.get(0);
-                            couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                             couponUser.setOwnNum(couponUser.getOwnNum()-1);
                             couponUserService.update(couponUser);
+                            List<CouponUser> couponUserss = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
+                            CouponUser couponUser1 = couponUserss.get(0);
+                            couponUser1.setHaveCouponNum(couponUser1.getHaveCouponNum()-1);
+                            couponUserService.update(couponUser1);
+
 
                             if (coupon.getRefundNum()==null){
                                 coupon.setRefundNum(1);
@@ -1101,9 +1112,12 @@ public class RefundReturnSysController extends GenericController {
                 //改rd_coupon_user
                 List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                 CouponUser couponUser = couponUsers.get(0);
-                couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                 couponUser.setOwnNum(couponUser.getOwnNum()-1);
                 couponUserService.update(couponUser);
+                List<CouponUser> couponUserss = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
+                CouponUser couponUser1 = couponUserss.get(0);
+                couponUser1.setHaveCouponNum(couponUser1.getHaveCouponNum()-1);
+                couponUserService.update(couponUser1);
 
                 if (coupon.getRefundNum()==null){
                     coupon.setRefundNum(1);
