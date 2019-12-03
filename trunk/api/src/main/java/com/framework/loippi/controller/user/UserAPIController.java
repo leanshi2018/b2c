@@ -1345,9 +1345,6 @@ public class UserAPIController extends BaseController {
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memeberId);
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", memeberId);
         RdRanks shopMemberGrade = null;
-        if (Optional.ofNullable(rdMmRelation.getRank()).orElse(-1) != -1) {
-            shopMemberGrade = rdRanksService.find("rankId", rdMmRelation.getRank());
-        }
         OrderSumPpv periodSumPpv = new OrderSumPpv();
         if(periodStr==null){
             RdSysPeriod sysPeriod=periodService.findLastPeriod();
@@ -1377,12 +1374,18 @@ public class UserAPIController extends BaseController {
         boolean flag = member.getMmCode().equals(rdMmRelation.getSponsorCode());
         paramap.put("showFlag",flag);
         if(memberQualification==null){
+            if (Optional.ofNullable(rdMmRelation.getRank()).orElse(-1) != -1) {
+                shopMemberGrade = rdRanksService.find("rankId", rdMmRelation.getRank());
+            }
             SubordinateUserInformationResult subordinateUserInformationResult = SubordinateUserInformationResult
                     .build4(rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay,periodStr);
             paramap.put("data",subordinateUserInformationResult);
             return ApiUtils.success(paramap);
             //return ApiUtils.error("当前筛选条件下尚未统计出会员信息");
         }else {
+            if (Optional.ofNullable(memberQualification.getRankAc()).orElse(-1) != -1) {
+                shopMemberGrade = rdRanksService.find("rankId", rdMmRelation.getRank());
+            }
             SubordinateUserInformationResult subordinateUserInformationResult = SubordinateUserInformationResult
                     .build3(memberQualification,rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay);
             paramap.put("data",subordinateUserInformationResult);
