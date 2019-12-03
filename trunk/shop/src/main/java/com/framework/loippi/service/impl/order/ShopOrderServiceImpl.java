@@ -683,6 +683,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if(couponUsers==null||couponUsers.size()==0){
                     throw new RuntimeException("优惠券拥有记录异常");
                 }
+                List<CouponUser> couponUsers1 = couponUserService.findList(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",couponDetail.getReceiveId()));
+                if(couponUsers1==null||couponUsers1.size()==0){
+                    throw new RuntimeException("优惠券拥有记录异常");
+                }
                 if(coupon!=null&&coupon.getStatus()==4){
                     //回收优惠券
                     if(coupon.getUseMoneyFlag()==1){//退款回收 TODO
@@ -698,11 +702,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         couponDetailService.update(couponDetail);
                         //退款
                         returnCoupon(coupon,couponDetail,opName);
-                        CouponUser couponUser = couponUsers.get(0);
+                        /*CouponUser couponUser = couponUsers.get(0);
                         couponUser.setUseNum(couponUser.getUseNum()-1);
                         couponUser.setOwnNum(couponUser.getOwnNum()+1);
-                        couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                         couponUserService.update(couponUser);
+                        CouponUser couponUser1 = couponUsers1.get(0);
+                        couponUser1.setHaveCouponNum(couponUser1.getHaveCouponNum()-1);
+                        couponUserService.update(couponUser1);*/
                     }else {//回收
                         couponDetail.setUseState(3);
                         couponDetail.setUseTime(null);
@@ -4559,6 +4565,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 CouponUser couponUser = couponUsers.get(0);
                 couponUser.setOwnNum(couponUser.getOwnNum()-1);
                 couponUserService.update(couponUser);
+                List<CouponUser> couponUsers1 = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
+                CouponUser couponUser1 = couponUsers1.get(0);
+                couponUser1.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+                couponUserService.update(couponUser1);
             }
          }
     }
@@ -4586,5 +4596,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             CouponUser couponUser = couponUsers.get(0);
             couponUser.setOwnNum(couponUser.getOwnNum()-1);
             couponUserService.update(couponUser);
+            List<CouponUser> couponUsers1 = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
+            CouponUser couponUser1 = couponUsers1.get(0);
+            couponUser1.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+            couponUserService.update(couponUser1);
         }
 }

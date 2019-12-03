@@ -672,6 +672,11 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
                                                 if(couponUsers!=null&&couponUsers.size()>0){
                                                     CouponUser couponUser = couponUsers.get(0);
                                                     couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                                                    couponUserDao.update(couponUser);
+                                                }
+                                                List<CouponUser> couponUsers1 = couponUserDao.findByMMCodeAndCouponId(Paramap.create().put("mCode", couponDetail.getReceiveId()).put("couponId", couponDetail.getCouponId()));
+                                                if(couponUsers1!=null&&couponUsers1.size()>0){
+                                                    CouponUser couponUser = couponUsers1.get(0);
                                                     couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                                                     couponUserDao.update(couponUser);
                                                 }
@@ -725,6 +730,11 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
                 if(couponUsers!=null&&couponUsers.size()>0){
                     CouponUser couponUser = couponUsers.get(0);
                     couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                    couponUserDao.update(couponUser);
+                }
+                List<CouponUser> couponUsers1 = couponUserDao.findByMMCodeAndCouponId(Paramap.create().put("mCode", couponDetail.getReceiveId()).put("couponId", couponDetail.getCouponId()));
+                if(couponUsers1!=null&&couponUsers1.size()>0){
+                    CouponUser couponUser = couponUsers1.get(0);
                     couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                     couponUserDao.update(couponUser);
                 }

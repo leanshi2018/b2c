@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CouponTransferResult {
+public class CouponTransferResult implements Serializable {
     private String serialNum;//流水号
     private String couponName;//优惠券名称
     private int transNum;//转出数量
