@@ -707,7 +707,8 @@ public class CouponController extends BaseController {
 		params.put("receiveId", member.getMmCode());
 		List<CouponPayDetail> lists = null;
 		if (couponOrderState==null){
-			params.put("couponOrderState", couponOrderState);
+			params.put("couponOrderState", 10);
+			params.put("couponOrderState", 40);
 			lists = couponPayDetailService.findListByMCodeAndNotOrderStatus(member.getMmCode(),0);
 			if(lists==null||lists.size()==0){
 				//return ApiUtils.error("无购买优惠券订单记录");
@@ -716,7 +717,7 @@ public class CouponController extends BaseController {
 		}else {
 			if (couponOrderState==1){
 				params.put("refundState", couponOrderState);
-				//params.put("refundState", 2);
+				params.put("refundState", 2);
 				lists = couponPayDetailService.findListByMCodeAndNotRefundStatus(member.getMmCode(),0);
 				if(lists==null||lists.size()==0){
 					//return ApiUtils.error("无退款优惠券订单记录");
