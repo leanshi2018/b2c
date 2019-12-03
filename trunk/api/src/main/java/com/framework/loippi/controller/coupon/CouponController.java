@@ -167,22 +167,8 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			if (personLimitNum == 0){
-				if (r==10001){
-					if (totalLimitNum!=-1){
-						if (totalLimitNum-receivedNum>0){
-							coupon.setCanBuy(0);
-						}else {
-							coupon.setCanBuy(1);
-						}
-					}else {
-						coupon.setCanBuy(0);
-					}
-				}else {
-					coupon.setCanBuy(1);
-				}
-			}else {
-				if (personLimitNum>haveCouponNum){
+			if (coupon.getStatus()==2){//上架
+				if (personLimitNum == 0){
 					if (r==10001){
 						if (totalLimitNum!=-1){
 							if (totalLimitNum-receivedNum>0){
@@ -197,8 +183,26 @@ public class CouponController extends BaseController {
 						coupon.setCanBuy(1);
 					}
 				}else {
-					coupon.setCanBuy(1);
+					if (personLimitNum>haveCouponNum){
+						if (r==10001){
+							if (totalLimitNum!=-1){
+								if (totalLimitNum-receivedNum>0){
+									coupon.setCanBuy(0);
+								}else {
+									coupon.setCanBuy(1);
+								}
+							}else {
+								coupon.setCanBuy(0);
+							}
+						}else {
+							coupon.setCanBuy(1);
+						}
+					}else {
+						coupon.setCanBuy(1);
+					}
 				}
+			}else {
+				coupon.setCanBuy(1);
 			}
 		}else {
 			System.out.println("不在区间");
@@ -275,23 +279,9 @@ public class CouponController extends BaseController {
 
 		if (date.after(begin) && date.before(end)) {
 			System.out.println("在区间");
-			if (personLimitNum==0||personLimitNum>=couponNumber+haveCouponNum){
-				if (totalLimitNum==-1l){
-					if (r==10001){
-						//提交订单,返回订单支付实体
-						ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
-						List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
-								.findList(Paramap.create().put("order", "RID desc"));
-						RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
-						if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
-							rdMmIntegralRule = rdMmIntegralRuleList.get(0);
-						}
-						return ApiUtils.success(CouponPaySubmitResult.build(rdMmIntegralRule,orderPay,rdMmAccountInfoService.find("mmCode", member.getMmCode())));
-					}else {
-						return ApiUtils.error("购买级别不符");
-					}
-				}else {
-					if ((totalLimitNum-receivedNum)>0 && (totalLimitNum-receivedNum)>=couponNumber){
+			if (coupon.getStatus()==2){//上架
+				if (personLimitNum==0||personLimitNum>=couponNumber+haveCouponNum){
+					if (totalLimitNum==-1l){
 						if (r==10001){
 							//提交订单,返回订单支付实体
 							ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
@@ -305,12 +295,30 @@ public class CouponController extends BaseController {
 						}else {
 							return ApiUtils.error("购买级别不符");
 						}
-					}else{
-						return ApiUtils.error("剩余可购买数量为"+(totalLimitNum-receivedNum)+"张");
+					}else {
+						if ((totalLimitNum-receivedNum)>0 && (totalLimitNum-receivedNum)>=couponNumber){
+							if (r==10001){
+								//提交订单,返回订单支付实体
+								ShopOrderPay orderPay = couponPayDetailService.addOrderReturnPaySn(member.getMmCode(),couponId,couponNumber);
+								List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+										.findList(Paramap.create().put("order", "RID desc"));
+								RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+								if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+									rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+								}
+								return ApiUtils.success(CouponPaySubmitResult.build(rdMmIntegralRule,orderPay,rdMmAccountInfoService.find("mmCode", member.getMmCode())));
+							}else {
+								return ApiUtils.error("购买级别不符");
+							}
+						}else{
+							return ApiUtils.error("剩余可购买数量为"+(totalLimitNum-receivedNum)+"张");
+						}
 					}
+				}else {
+					return ApiUtils.error("亲，您最多还可购买"+(personLimitNum-haveCouponNum)+"张哦");
 				}
 			}else {
-				return ApiUtils.error("亲，您最多还可购买"+(personLimitNum-haveCouponNum)+"张哦");
+				return ApiUtils.error("该优惠券未上架");
 			}
 		} else {
 			System.out.println("不在区间");
