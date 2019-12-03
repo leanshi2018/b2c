@@ -21,7 +21,7 @@ public interface CouponService extends GenericService<Coupon, Long> {
 
     List<Coupon> findOverdueCoupon(Paramap put);
 
-    HashMap<String, Object> shelvesOrOverdueCoupon(Coupon coupon);
+    HashMap<String, Object> shelvesOrOverdueCoupon(Coupon coupon) throws Exception;
 
 	void addCoupon(Coupon coupon, String mmCode);
 

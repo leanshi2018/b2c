@@ -606,6 +606,12 @@ public class CouponController extends BaseController {
 		if(couponId==null){
 			return ApiUtils.error("请选择需要赠送的优惠券");
 		}
+		if(recipientCode==null){
+			return ApiUtils.error("请选择赠送对象");
+		}
+		if(recipientCode.equals(member.getMmCode())){
+			return ApiUtils.error("受赠人不可以是自己");
+		}
 		Coupon coupon = couponService.find(couponId);
 		if(coupon==null){
 			return ApiUtils.error("当前优惠券不存在");
