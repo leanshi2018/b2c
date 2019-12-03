@@ -630,14 +630,14 @@ public void returnCoupon(Coupon coupon,CouponDetail couponDetail,String opName){
             couponPayDetailService.update(couponPayDetail);
 
             //改rd_coupon_user
-            List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
+            /*List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
             CouponUser couponUser = couponUsers.get(0);
             couponUser.setOwnNum(couponUser.getOwnNum()-1);
-            couponUserService.update(couponUser);
+            couponUserService.update(couponUser);*/
             //改rd_coupon_user
             List<CouponUser> couponUsers1 = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
             CouponUser couponUser1 = couponUsers1.get(0);
-            couponUser1.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+            couponUser1.setHaveCouponNum(couponUser1.getHaveCouponNum()-1);
             couponUserService.update(couponUser1);
         }
     }
@@ -662,14 +662,14 @@ public void returnCoupon(Coupon coupon,CouponDetail couponDetail,String opName){
         couponPayDetailService.update(couponPayDetail);
 
         //改rd_coupon_user
-        List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
+        /*List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
         CouponUser couponUser = couponUsers.get(0);
         couponUser.setOwnNum(couponUser.getOwnNum()-1);
-        couponUserService.update(couponUser);
+        couponUserService.update(couponUser);*/
         //改rd_coupon_user
         List<CouponUser> couponUsers1 = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
         CouponUser couponUser1 = couponUsers1.get(0);
-        couponUser1.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
+        couponUser1.setHaveCouponNum(couponUser1.getHaveCouponNum()-1);
         couponUserService.update(couponUser1);
     }
 
