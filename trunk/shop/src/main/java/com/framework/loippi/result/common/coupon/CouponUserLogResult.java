@@ -31,6 +31,7 @@ public class CouponUserLogResult {
 	private Date useEndTime;//优惠券使用结束时间
 	private Integer useState;//优惠券状态 1：已使用 2：未使用 3：已过期 4：已禁用
 	private Long useOrderId;//使用优惠券关联订单id
+	private Integer refundState;//退款状态 0：无需退款（非交易性优惠券）1：未退款 2：已退款
 
 
 }

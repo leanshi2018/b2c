@@ -310,7 +310,8 @@ public class ShopCouponController extends GenericController {
             model.addAttribute("msg", "请传入优惠券订单id");
             return Constants.MSG_URL;
         }
-        model.addAttribute("couponPayDetail", couponPayDetailService.find(id));
+        //model.addAttribute("couponPayDetail", couponPayDetailService.find(id));
+        model.addAttribute("page", couponPayDetailService.find(id));
         return "/activity/shop_activity/couponbuy_edit";
     }
 
