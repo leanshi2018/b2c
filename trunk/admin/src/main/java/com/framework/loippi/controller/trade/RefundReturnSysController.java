@@ -1063,6 +1063,9 @@ public class RefundReturnSysController extends GenericController {
                 }
 
             }
+        }else {
+            model.addAttribute("msg", "订单id未空");
+            return backurl;
         }
 
         model.addAttribute("referer", "/activity/shop_activity/couponbuy_list.jhtml");
