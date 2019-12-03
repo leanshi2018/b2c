@@ -327,7 +327,7 @@
         a.use_start_time,
         a.use_end_time,
         a.use_state,
-        a.use_order_id
+        a.use_order_id,
         a.refund_state
         FROM rd_coupon_detail a
         left join rd_coupon b on a.coupon_id=b.id
