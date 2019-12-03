@@ -114,8 +114,10 @@ public class ConponPayDetailListResult {
 				result.setCouponNumber(cpd.getCouponNumber());
 				result.setOrderAmount(cpd.getOrderAmount());
 				if (cpd.getCouponOrderState()==40){
-					if (cpd.getRefundState()==1){
-						result.setOrderStateS("已退款");
+					if (cpd.getRefundState()==1) {
+						result.setOrderStateS("部分退款");
+					}else if (cpd.getRefundState()==2){
+						result.setOrderStateS("全部退款");
 					}else{
 						result.setOrderStateS("交易完成");
 					}
@@ -158,9 +160,9 @@ public class ConponPayDetailListResult {
 				result.setOrderAmount(cpd.getOrderAmount());
 				if (cpd.getCouponOrderState()==40){
 					if (cpd.getRefundState()==1) {
-						result.setOrderStateS("已部分退款");
+						result.setOrderStateS("部分退款");
 					}else if (cpd.getRefundState()==2){
-						result.setOrderStateS("已全部退款");
+						result.setOrderStateS("全部退款");
 					}else{
 						result.setOrderStateS("交易完成");
 					}
