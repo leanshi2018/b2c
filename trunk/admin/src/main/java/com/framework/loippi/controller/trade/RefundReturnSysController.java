@@ -523,7 +523,12 @@ public class RefundReturnSysController extends GenericController {
             //是否已使用
             if (couponDetail.getUseState()==1 || couponDetail.getUseState()==4){
                 model.addAttribute("msg", "该优惠券已使用或已禁用");
-                model.addAttribute("referer", "admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml");
+                //model.addAttribute("referer", "admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml");
+                String referer = request.getHeader("Referer");
+                System.out.println("*******************************");
+                System.out.println("referer===="+referer);
+                System.out.println("*******************************");
+                model.addAttribute("referer", request.getHeader("Referer"));
                 return backurl;
                 //return "redirect:admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml";
             }
