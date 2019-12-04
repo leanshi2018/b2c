@@ -751,7 +751,7 @@ public class OrderSysController extends GenericController {
             model.addAttribute("shopOrderDiscountTypeList", shopOrderDiscountTypeList);
             model.addAttribute("shopOrderTypeId", orderVo.getShopOrderTypeId());
         }
-        CouponDetail couponDetail = couponDetailService.find("buyOrderId",orderVo.getId());
+        CouponDetail couponDetail = couponDetailService.find("useOrderId",orderVo.getId());
         if(couponDetail!=null){
             model.addAttribute("useCouponFlag",true);
             model.addAttribute("couponName",couponDetail.getCouponName());
