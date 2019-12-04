@@ -523,7 +523,7 @@ public class RefundReturnSysController extends GenericController {
             //是否已使用
             if (couponDetail.getUseState()==1 || couponDetail.getUseState()==4){
                 model.addAttribute("msg", "该优惠券已使用或已禁用");
-                model.addAttribute("referer", "/activity/shop_activity/couponuse_list.jhtml");
+                model.addAttribute("referer", "admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml");
                 return backurl;
                 //return "redirect:admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml";
             }
@@ -531,7 +531,7 @@ public class RefundReturnSysController extends GenericController {
             //是否已退款
             if (couponDetail.getRefundState()!=1){
                 model.addAttribute("msg", "该优惠券无需退款或已退款");
-                model.addAttribute("referer", "/activity/shop_activity/couponuse_list.jhtml");
+                model.addAttribute("referer", "admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml");
                 return backurl;
                 //return "redirect:admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml";
             }
@@ -553,7 +553,7 @@ public class RefundReturnSysController extends GenericController {
                 }
             }
             if ("".equals(paymentCode)){
-                model.addAttribute("referer", "/activity/shop_activity/couponuse_list.jhtml");
+                model.addAttribute("referer", "admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml");
                 model.addAttribute("msg", "该订单支付方式不存在");
                 return backurl;
                 //return "redirect:admin/plarformShopCoupon/Coupon/findCouponUserLogList.jhtml";
@@ -711,7 +711,6 @@ public class RefundReturnSysController extends GenericController {
                     //改rd_coupon_user
                     List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                     CouponUser couponUser = couponUsers.get(0);
-                    couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()-1);
                     couponUser.setOwnNum(couponUser.getOwnNum()-1);
                     couponUserService.update(couponUser);
                     List<CouponUser> couponUserss = couponUserService.findByMMCodeAndCouponId(couponDetail.getReceiveId(), couponDetail.getCouponId());
