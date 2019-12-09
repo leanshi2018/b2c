@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.jpush.JpushDao">
+    <resultMap id="jpushResultMap" type="com.framework.loippi.entity.jpush.Jpush">
+        <id property="id" column="id"/>
+        <result property="platform" column="platform"/>
+        <result property="audience" column="audience"/>
+        <result property="notification" column="notification"/>
+        <result property="message" column="message"/>
+        <result property="pushTime" column="push_time"/>
+        <result property="jumpPath" column="jump_path"/>
+        <result property="jumpJson" column="jump_json"/>
+        <result property="jumpName" column="jump_name"/>
+        <result property="jumpLink" column="jump_link"/>
+        <result property="status" column="status"/>
+        <result property="pushMethod" column="push_method"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,platform ,audience ,notification ,message ,push_time ,jump_path ,jump_json,jump_name ,jump_link ,status,push_method
+    </sql>
+
+    <sql id="base_value_column">
+        #{id},#{platform},#{audience},#{notification},#{message},#{pushTime},#{jumpPath},#{jumpJson},#{jumpName},#{jumpLink},#{status},#{pushMethod}
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="platform != null">
+            AND platform = #{platform,jdbcType=INTEGER}
+        </if>
+        <if test="audience != null and audience != ''">
+            AND audience = #{audience,jdbcType=VARCHAR}
+        </if>
+        <if test="notification != null and notification != ''">
+            AND notification = #{notification,jdbcType=VARCHAR}
+        </if>
+        <if test="message != null and message != ''">
+            AND message = #{message,jdbcType=VARCHAR}
+        </if>
+        <if test="pushTime != null">
+            AND push_time = #{pushTime}
+        </if>
+        <if test="jumpPath != null and jumpPath != ''">
+            AND jump_path = #{jumpPath,jdbcType=VARCHAR}
+        </if>
+        <if test="jumpJson != null and jumpJson != ''">
+            AND jump_json = #{jumpJson,jdbcType=VARCHAR}
+        </if>
+        <if test="jumpName != null and jumpName != ''">
+            AND jump_name = #{jumpName,jdbcType=VARCHAR}
+        </if>
+        <if test="jumpLink != null and jumpLink != ''">
+            AND jump_link = #{jumpLink,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="pushMethod != null">
+            AND push_method = #{pushMethod,jdbcType=INTEGER}
+        </if>
+    </sql>
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="platform != null">
+            platform = #{platform,jdbcType=INTEGER},
+        </if>
+        <if test="audience != null and audience != ''">
+            audience = #{audience,jdbcType=VARCHAR},
+        </if>
+        <if test="notification != null and notification != ''">
+            notification = #{notification,jdbcType=VARCHAR},
+        </if>
+        <if test="message != null and message != ''">
+            message = #{message,jdbcType=VARCHAR},
+        </if>
+        <if test="pushTime != null">
+            push_time = #{pushTime},
+        </if>
+        <if test="jumpPath != null and jumpPath != ''">
+            jump_path = #{jumpPath,jdbcType=VARCHAR},
+        </if>
+        <if test="jumpJson != null and jumpJson != ''">
+            jump_json = #{jumpJson,jdbcType=VARCHAR},
+        </if>
+        <if test="jumpName != null and jumpName != ''">
+            jump_name = #{jumpName,jdbcType=VARCHAR},
+        </if>
+        <if test="jumpLink != null and jumpLink != ''">
+            jump_link = #{jumpLink,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null">
+            status = #{status,jdbcType=INTEGER},
+        </if>
+        <if test="pushMethod != null">
+            push_method = #{pushMethod,jdbcType=INTEGER},
+        </if>
+        <if test="searchLeftTime !=null and searchLeftTime != ''">
+            <![CDATA[and push_time >= #{searchLeftTime}]]>
+        </if>
+        <if test="searchRightTime !=null and searchRightTime != ''">
+            <![CDATA[and push_time <= #{searchRightTime}]]>
+        </if>
+        <if test="likeMessage !=null and likeMessage != ''">
+            and message like CONCAT('%',#{likeMessage},'%')
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="jpushResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_jpush
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="jpushResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_jpush
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_jpush
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.jpush.Jpush">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT rd_jpush
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.jpush.Jpush">
+        UPDATE rd_jpush
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE FROM rd_jpush
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="jpushResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_jpush
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="jpushResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_jpush
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        order by push_time desc
+    </select>
+</mapper>
