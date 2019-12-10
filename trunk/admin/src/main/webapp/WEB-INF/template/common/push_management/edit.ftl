@@ -106,9 +106,10 @@
                             <div class="col-lg-1" STYLE="width: 90%;display: none;">
                                 <input type="radio" name="" value="1"  id="" <#if reduceType ==1> checked </#if> >
                                 <span >跳转路径</span>
-                                <input name="" type="text" id="" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"  style="width:95px;"  <#if reduceType ==1> value="${couponValue}"</#if> />
+                                <input name="" type="text" id=""   style="width:95px;"
+                                        <#if reduceType ==1> value="${couponValue}"</#if> />
+                                <i class="fa fa-search"></i>
                             </div>
-
                         </div>
                     </td>
                 </tr>
@@ -196,7 +197,7 @@
 
         });
 
-        /*点击单品时候弹窗*/
+        /*选择商品*/
         $("#single").click(function () {
             var goodsId = $("[name='goodsId']").val();
             layer.open({
@@ -207,13 +208,30 @@
                 content: ['${base}/admin/shop_goods_recommend/select.jhtml?type=1&goodsId=' + goodsId, 'yes'],
                 area: ['800px', '600px']
             });
-        })
+        });
         function appendGoods(goodsId, goodsName, className, brandName,goodsType) {
             $("#goodsId").val(goodsId);
             $("#goodsName").val(goodsName);
             $("#className").val(className);
 
         }
+        /*选择优惠券*/
+        $("#check").click(function () {
+            var couponName = $("[name='couponName']").val();
+            layer.open({
+                type: 2,
+                move: false,
+                shade: [0.3, '#393D49'],//开启遮罩层
+                title: '选择优惠券',
+                content: ['${base}/admin/plarformShopCoupon/coupon/select.jhtml?status=2&couponName=' + couponName, 'yes'],
+                area: ['800px', '600px']
+            });
+        });
+        function appendGoods(id,couponName) {
+            $("#couponId").val(id);
+            $("#couponName").val(couponName);
+        }
+
 
         //摘要提取
         UE.getEditor('ueditor').addListener('blur', function (editor) {
