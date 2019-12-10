@@ -12,4 +12,6 @@ import com.framework.loippi.service.GenericService;
  */
 public interface ShopExpressSpecialGoodsService extends GenericService<ShopExpressSpecialGoods, Long> {
 	List<ShopExpressSpecialGoods> findByState(Integer state);
+
+	List<ShopExpressSpecialGoods> findByExpressId(Long id);
 }
