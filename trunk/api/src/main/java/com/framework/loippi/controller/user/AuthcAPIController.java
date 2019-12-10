@@ -165,7 +165,7 @@ public class AuthcAPIController extends BaseController {
         /**
          * 加法验证码
          */
-        @RequestMapping("number")
+        @RequestMapping("/number")
         public void number(HttpServletRequest request ,HttpServletResponse response ,String mobile) throws IOException {
             response.setHeader("Cache-Control", "no-store, no-cache");
             response.setContentType("image/jpeg");
