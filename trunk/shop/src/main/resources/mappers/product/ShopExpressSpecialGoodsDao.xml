@@ -174,4 +174,8 @@
          SELECT * FROM shop_express_special_goods where e_state=#{eState}
     </select>
 
+    <select id="findByExpressId" parameterType="java.lang.Long" resultMap="ShopExpressSpecialGoodsResultMap">
+         SELECT * FROM shop_express_special_goods where e_state=0 and express_id=#{expressId}
+    </select>
+
 </mapper>

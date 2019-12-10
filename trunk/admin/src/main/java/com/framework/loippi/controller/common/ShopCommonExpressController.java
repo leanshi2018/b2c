@@ -1,14 +1,11 @@
 package com.framework.loippi.controller.common;
 
-import com.framework.loippi.service.KuaidiService;
-import com.google.common.collect.Maps;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
-import com.framework.loippi.controller.GenericController;
-import com.framework.loippi.entity.common.ShopCommonExpress;
-import com.framework.loippi.service.TwiterIdService;
-import com.framework.loippi.service.common.ShopCommonExpressService;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.Paramap;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,12 +15,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.entity.common.ShopCommonExpress;
+import com.framework.loippi.entity.product.ShopExpressSpecialGoods;
+import com.framework.loippi.service.KuaidiService;
+import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.common.ShopCommonExpressService;
+import com.framework.loippi.service.product.ShopExpressSpecialGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.Paramap;
+import com.google.common.collect.Maps;
 
 /**
  * Controller - 快递公司
@@ -41,6 +43,10 @@ public class ShopCommonExpressController extends GenericController {
     private KuaidiService kuaidiService;
     @Resource
     private TwiterIdService twiterIdService;
+    @Resource
+    private ShopGoodsSpecService shopGoodsSpecService;
+    @Resource
+    private ShopExpressSpecialGoodsService shopExpressSpecialGoodsService;
 
     /**
      * 列表 letter首字母
@@ -96,6 +102,29 @@ public class ShopCommonExpressController extends GenericController {
             model.addAttribute("msg", "修改成功！");
         }
         return "redirect:list.jhtml";
+    }
+
+    /**
+     * 渠道商品
+     */
+    @RequestMapping(value = {"/findExpressSpecialGoods"}, method = RequestMethod.POST)
+    public String findExpressSpecialGoods(Model model ,Long id) {
+        if (id==null){
+            model.addAttribute("msg", "物流公司id为空！");
+            return "redirect:list.jhtml";
+        }
+        ShopCommonExpress express = shopCommonExpressService.find(id);
+        if (express==null){
+            model.addAttribute("msg", "没有该物流公司信息！");
+            return "redirect:list.jhtml";
+        }
+        model.addAttribute("express", express);
+
+        List<ShopExpressSpecialGoods> goods = shopExpressSpecialGoodsService.findByExpressId(id);
+
+        model.addAttribute("goods", goods);
+
+        return "/common/shop_common_express/list";
     }
 
     /**

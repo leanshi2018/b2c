@@ -12,4 +12,6 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  */
 public interface ShopExpressSpecialGoodsDao extends GenericDao<ShopExpressSpecialGoods, Long> {
 	List<ShopExpressSpecialGoods> findByState(Integer eState);
+
+	List<ShopExpressSpecialGoods> findByExpressId(Long expressId);
 }
