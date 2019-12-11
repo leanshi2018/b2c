@@ -21,8 +21,6 @@
     <script type="text/javascript" src="${base}/res/js/layer/layer.js"></script>
     <script type="text/javascript" src="${base}/res/js/jquery.validation.min.js"></script>
     <script type="text/javascript" src="${base}/res/js/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
-    <script type="text/javascript" src="${base}/res/js/ajaxfileupload/ajaxfileupload.js"></script>
-    <script type="text/javascript" src="${base}/res/js/ajaxfileupload/ajaxfileupload.js"></script>
     <link rel="stylesheet" type="text/css" href="${base}/res/js/jquery-ui/themes/ui-lightness/jquery.ui.css">
     <link rel="stylesheet" type="text/css" href="${base}/resources/css/plugins/colpick/css/colpick.css"/>
     <link rel="stylesheet" href="${base}/resources/css/plugins/timepicker/jquery-ui-timepicker-addon.css"/>
@@ -40,7 +38,7 @@
         </div>
         <div class="fixed-empty">
         </div>
-        <form id="add_form" action="" method="post">
+        <form id="add_form" action="${base}/admin/jpush/sendJpush.jhtml" method="post">
             <table class="table tb-type2">
                 <tbody>
                 <tr>
@@ -51,7 +49,10 @@
                         <em class="pngFix"></em>推送方式
                     </td>
                     <td>
-                            <input name="couponName" id="couponName" type="text" value="${couponName}"/>
+                        <input name="pushMethod" type="radio" value="1" readonly <#if pushMethod==1||pushMethod==null>checked</#if>>
+                        通知栏推送
+                        <input name="pushMethod" type="radio" value="2" readonly <#if pushMethod==2>checked</#if>>
+                        其他
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -60,7 +61,7 @@
                         <em class="pngFix"></em>通知内容
                     </td>
                     <td>
-                            <input name="scopeRemark" id="scopeRemark" type="text" value="${scopeRemark}" class="w300"/>
+                            <input name="message" id="message" type="text" value="${message}" class="w300"/>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -70,7 +71,7 @@
                     </td>
                     <td>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="sendStartTime" name="sendStartTime" value=""/>
+                                   id="pushTime" name="pushTime" value=""/>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -79,9 +80,12 @@
                         <em class="pngFix"></em>目标平台
                     </td>
                     <td>
-                        <label><input name="rankLimit" class="" type="checkbox" value="" />安卓</label>
-                        <label><input name="rankLimit" class="" type="checkbox" value="" />IOS正式</label>
-                        <label><input name="rankLimit" class="" type="checkbox" value="" />IOS测试</label>
+                        <label><input name="platform"  type="checkbox" value="0" checked/>所有</label>
+                        <label><input name="platform"  type="checkbox" value="1" />安卓</label>
+                        <label><input name="platform"  type="checkbox" value="2" />IOS正式</label>
+                        <label><input name="platform"  type="checkbox" value="3" />IOS测试</label>
+                        <label><input name="platform"  type="checkbox" value="4" />安卓和IOS测试</label>
+                        <label><input name="platform"  type="checkbox" value="5" />安卓和IOS正式</label>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -90,9 +94,9 @@
                         <em class="pngFix"></em>推送对象
                     </td>
                     <td>
-                        <input name="" type="radio" value="1" readonly <#if coupon.whetherPresent==1>checked</#if>>
+                        <input name="audience" type="radio" value="all"  <#if audience==all||audience==null>checked</#if>>
                         全部用户
-                        <input name="" type="radio" value="0" readonly <#if coupon.whetherPresent==0 >checked</#if>>
+                        <input name="" type="radio" value="" checked id="checkid">
                         指定用户
                         <span class="error-message"></span>
                     </td>
@@ -104,11 +108,27 @@
                     <td colspan="2" class="vatop ">
                         <div class="col-sm-9">
                             <div class="col-lg-1" STYLE="width: 90%;display: none;">
-                                <input type="radio" name="" value="1"  id="" <#if reduceType ==1> checked </#if> >
+                                <input type="radio" name="jump" value=""  checked>
                                 <span >跳转路径</span>
-                                <input name="" type="text" id=""   style="width:95px;"
-                                        <#if reduceType ==1> value="${couponValue}"</#if> />
-                                <i class="fa fa-search"></i>
+                                <select name="jumpPath" id="jumpPath">
+                                    <option value="homepage"    <#if jumpPath == homepage>selected="selected" </#if>>辑</option>
+                                    <option value="messagepage" <#if jumpPath == messagepage>selected="selected" </#if>>消息中心</option>
+                                    <option value="goodsdetailspage" <#if jumpPath == goodsdetailspage>selected="selected" </#if>>商品详情</option>
+                                    <option value="mypage" <#if jumpPath == mypage>selected="selected" </#if>>我</option>
+                                    <option value="myresultspage" <#if jumpPath == myresultspage>selected="selected" </#if>>个人业绩</option>
+                                    <option value="orderpage"    <#if jumpPath == orderpage>selected="selected" </#if>>我的订单</option>
+                                    <option value="myintegralpage" <#if jumpPath == myintegralpage>selected="selected" </#if>>我的积分</option>
+                                    <option value="rewardintegralpage" <#if jumpPath == rewardintegralpage>selected="selected" </#if>>奖励积分</option>
+                                    <option value="shoppingintegralpage" <#if jumpPath == mypage>selected="selected" </#if>>购物积分</option>
+                                    <option value="buyintegralpage" <#if jumpPath == myresultspage>selected="selected" </#if>>换购积分</option>
+                                    <option value="bankcardpage" <#if jumpPath == bankcardpage>selected="selected" </#if>>我的银行卡</option>
+                                    <option value="learnpage" <#if jumpPath == learnpage>selected="selected" </#if>>学堂</option>
+                                    <option value="learnarticlepage" <#if jumpPath == learnarticlepage>selected="selected" </#if>>学堂文章详情</option>
+                                    <option value="invitationpage" <#if jumpPath == myresultspage>selected="selected" </#if>>我的邀请</option>
+                                    <option value="activityGoodsListpage" <#if jumpPath == mypage>selected="selected" </#if>>活动页面</option>
+                                    <option value="buyCouponspage" <#if jumpPath == myresultspage>selected="selected" </#if>>优惠券购买详情</option>
+                                </select>
+                                <input name="jumpJson" class="fa fa-search" value="${jumpJson}"/>
                             </div>
                         </div>
                     </td>
@@ -121,9 +141,9 @@
                         <div class="col-sm-9">
                             <#--满折扣-->
                             <div class="col-lg-1" STYLE="width: 90%;display: none;" >
-                                <input type="radio" name="" value="3" id=""  <#if reduceType ==3> checked </#if> >
+                                <input type="radio" name="jump" value="" id="">
                                 <span >跳转链接</span>
-                                <input name=""  type="text" id="" style="width:95px;"   <#if reduceType ==3> value="${couponValue}"</#if> />
+                                <input name="jumpLink"  type="text" id="" style="width:95px;"   value="${jumpLink}" />
                             </div>
                         </div>
                     </td>
@@ -149,41 +169,17 @@
     </div>
     <script type="text/javascript" src="${base}/resources/js/plugins/colpick/colpick.js"></script>
     <script>
-        //上传图片
-        function ajaxFileUploads(myBlogImage, imgId, img) {
-            $.ajaxFileUpload({
-                //处理文件上传操作的服务器端地址(可以传参数,已亲测可用)
-                url: '${base}/admin/fileupload/uploadImage.jhtml',
-                secureuri: false,                       //是否启用安全提交,默认为false
-                fileElementId: myBlogImage,           //文件选择框的id属性
-                dataType: 'json',                       //服务器返回的格式,可以是json或xml等
-                fileSize: 5120000,
-                allowType: 'jpg,jpeg,png,JPG,JPEG,PNG',
-                success: function (data, status) {        //服务器响应成功时的处理函数
-
-                    if (true == data.success) {     //0表示上传成功(后跟上传后的文件路径),1表示失败(后跟失败描述)
-                        $("img[id='" + imgId + "']").attr("src", "" + data.result);
-                        $("#" + img).val(data.result);
-                    }
-                },
-                error: function (data, status, e) { //服务器响应失败时的处理函数
-                    <#--layer.msg('<@spring.message "goods_msg_requrid10"/>！！', 1, 8);-->
-                    $('#result').html('图片上传失败，请重试！！');
-                }
-            });
-        }
-
         $(function () {
             //表单提交
             $("#subForm").click(function () {
-                var Title = $("#couponName").val();
+                var Title = $("#message").val();
                 if (Title == "") {
-                    alert('!');
+                    alert('通知内容不能为空!');
                     return false;
                 }
-                var image=$("#image").val();
-                if (image == "") {
-                    alert('!');
+                var pushTime=$("#pushTime").val();
+                if (pushTime == "") {
+                    alert('推送时间不能为空!');
                     return false;
                 }
                 var scopeRemark=$("#scopeRemark").val();

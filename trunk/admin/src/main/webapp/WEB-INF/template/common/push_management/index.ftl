@@ -32,7 +32,7 @@
                 <ul class="tab-base">
                     <li><a href="JavaScript:void(0);" class="current"><span><@spring.message "manage"/></span></a></li>
                     <li>
-                        <a href=""><span><@spring.message "add"/></span></a>
+                        <a href="${base}"><span><@spring.message "add"/></span></a>
                     </li>
                 </ul>
             </div>
