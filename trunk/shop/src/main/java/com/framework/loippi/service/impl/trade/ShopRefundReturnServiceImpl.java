@@ -342,7 +342,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
         // 平台优惠券金额 打赏积分抵扣 由平台自己承担
         //double totalReturnPrice = 0.00;
         //新建一个订单当前全部退款金额(包括本次退款的金额)
-        BigDecimal refundedAmount = order.getRefundAmount().add(order.getRefundPoint());
+        BigDecimal refundedAmount = (Optional.ofNullable(order.getRefundPoint()).orElse(BigDecimal.ZERO)).add((Optional.ofNullable(order.getRefundAmount()).orElse(BigDecimal.ZERO)));
         double refundAmount = refundedAmount.doubleValue();
         /*for (ShopOrderGoods orderGoods1 : shopOrderGoodses) {
             totalReturnPrice += orderGoods1.getGoodsPayPrice().doubleValue();
