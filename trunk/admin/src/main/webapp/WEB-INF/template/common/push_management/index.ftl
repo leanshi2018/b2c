@@ -38,15 +38,23 @@
             </div>
         </div>
         <div class="fixed-empty"></div>
-        <form method="post" name="formSearch" id="formSearch" action="">
+        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/list.jhtml">
             <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
-                    <th class="th_w">标题</th>
-                    <td class="ths"><input type="text" class="text" name="" value=""></td>
+                    <th class="th_w">内容</th>
+                    <td class="ths"><input type="text" class="text" name="likeMessage" value="${jpushList.likeMessage}" ></td>
                     <th class="th_w">推送时间</th>
-                    <td class="ths"><input type="text" class="text" name="" value=""></td>
+                    <td style="width: 36%;">
+                        <input class="txt Wdate" type="text" id="query_start_time" name="transTimeLeft"
+                               value="${jpushList.searchLeftTime}" readonly
+                               onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'query_end_time\')}'});"/>
+                        <label for="query_start_time">~</label>
+                        <input class="txt Wdate" type="text" id="query_end_time" name="transTimeRight"
+                               value="${jpushList.searchRightTime}" readonly
+                               onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'query_start_time\')}'});"/>
+                    </td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="shopPMansongSubmit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
@@ -73,20 +81,21 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list couponList.content as coupons>
+                <#list jpushList.content as list>
                     <tr>
-                        <td><input type="checkbox" name="ids" value="${coupons.id}" class="checkitem"></td>
+                        <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
-
+                            ${list.id}
                         </td>
                         <td style="text-align: left">
-
+                            ${list.message}
                         </td>
                         <td style="text-align: left">
-
+                            <#if list.audience== all>全部</#if>
                         </td>
                         <td style="text-align: left">
-
+                            <#if list.pushMethod== 1>通知栏推送</#if>
+                            <#if list.pushMethod== 2>其他</#if>
                         </td>
                         <td style="text-align: left">
 
@@ -103,8 +112,8 @@
                             <#--                            <#if coupons.status == 4>下架</#if>-->
                         </td>
                         <td>
-                            <#--                            <a class="look" href="${base}/admin/plarformShopCoupon/viewCouponContent.jhtml?couponId=${coupons.id}">查&nbsp;看</a>||-->
-                            <#--                            <a href="JavaScript:void(0);" onclick="lowershelf('${coupons.id}');">删除</a>-->
+                            <a class="look" href="${base}/admin/jpush/show.jhtml?id=${list.id}">查&nbsp;看</a>||
+                            <a href="JavaScript:void(0);" onclick="">删除</a>
                         </td>
                     </tr>
                 </#list>
@@ -125,7 +134,7 @@
             return false;
         });
 
-        <#--function prohibit(id) {-->
+        <#--function deletejpush(id) {-->
         <#--    $("#editdetaildiv" ).dialog({-->
         <#--        title: '请对该优惠券进行审核',-->
         <#--        height: 170,-->

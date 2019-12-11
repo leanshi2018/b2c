@@ -44,7 +44,7 @@
                 <tr>
                     <td colspan="3" class="required" style="background: #eee">基本信息</td>
                 </tr>
-                <#if jpush=="">
+                <#if jpush==null>
                 <tr class="noborder">
                     <td class="required">
                         <em class="pngFix"></em>推送方式
@@ -64,7 +64,7 @@
                         <em class="pngFix"></em>通知内容
                     </td>
                     <td>
-                            <input name="message" id="message" type="text" value="${jpush.message}" class="w300"/>
+                            <input name="message" id="message" type="text" value="${jpush.message}" class="w200"/>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -73,7 +73,7 @@
                         <em class="pngFix"></em>推送时间
                     </td>
                     <td>
-                            <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                            <input class="w200 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
                                    id="pushTime" name="pushTime" value=""/>
                         <span class="error-message"></span>
                     </td>
@@ -99,7 +99,7 @@
                     <td>
                         <input name="audience" type="radio" value="all"  <#if jpush.audience==all>checked</#if>>
                         全部用户
-                        <input name="" type="radio" value="" checked id="checkid">
+                        <input name="" type="radio" value=""  id="checkid">
                         指定用户
                         <span class="error-message"></span>
                     </td>
@@ -110,28 +110,30 @@
                     </td>
                     <td>
                         <div class="col-sm-9">
-                            <div class="col-lg-1" STYLE="width: 90%;display: none;">
+                            <div class="col-lg-1" STYLE="width: 90%;">
                                 <input type="radio" name="jump" value=""  checked>
                                 <span >跳转路径</span>
-                                <select name="jumpPath" id="jumpPath">
-                                    <option value="homepage"    <#if jpush.jumpPath == homepage>selected="selected" </#if>>辑</option>
-                                    <option value="messagepage" <#if jpush.jumpPath == messagepage>selected="selected" </#if>>消息中心</option>
-                                    <option value="goodsdetailspage" <#if jpush.jumpPath == goodsdetailspage>selected="selected" </#if>>商品详情</option>
-                                    <option value="mypage" <#if jpush.jumpPath == mypage>selected="selected" </#if>>我</option>
-                                    <option value="myresultspage" <#if jpush.jumpPath == myresultspage>selected="selected" </#if>>个人业绩</option>
-                                    <option value="orderpage"    <#if jpush.jumpPath == orderpage>selected="selected" </#if>>我的订单</option>
-                                    <option value="myintegralpage" <#if jpush.jumpPath == myintegralpage>selected="selected" </#if>>我的积分</option>
-                                    <option value="rewardintegralpage" <#if jpush.jumpPath == rewardintegralpage>selected="selected" </#if>>奖励积分</option>
-                                    <option value="shoppingintegralpage" <#if jpush.jumpPath == mypage>selected="selected" </#if>>购物积分</option>
-                                    <option value="buyintegralpage" <#if jpush.jumpPath == myresultspage>selected="selected" </#if>>换购积分</option>
-                                    <option value="bankcardpage" <#if jpush.jumpPath == bankcardpage>selected="selected" </#if>>我的银行卡</option>
-                                    <option value="learnpage" <#if jpush.jumpPath == learnpage>selected="selected" </#if>>学堂</option>
-                                    <option value="learnarticlepage" <#if jpush.jumpPath == learnarticlepage>selected="selected" </#if>>学堂文章详情</option>
-                                    <option value="invitationpage" <#if jpush.jumpPath == myresultspage>selected="selected" </#if>>我的邀请</option>
-                                    <option value="activityGoodsListpage" <#if jpush.jumpPath == mypage>selected="selected" </#if>>活动页面</option>
-                                    <option value="buyCouponspage" <#if jpush.jumpPath == myresultspage>selected="selected" </#if>>优惠券购买详情</option>
+                                <select name="jumpPath" class="w150">
+                                    <option value="" <#if jpush.jumpPath == "">selected="selected"</#if>></option>
+                                    <option value="homepage"  <#if jpush.jumpPath == homepage>selected="selected"</#if>><span name="jumpName">辑</span></option>
+                                    <option value="messagepage" name="jumpName"<#if jpush.jumpPath == messagepage>selected="selected" </#if>>消息中心</option>
+                                    <option value="goodsdetailspage" name="jumpName"<#if jpush.jumpPath == goodsdetailspage>selected="selected" </#if>>商品详情</option>
+                                    <option value="mypage" name="jumpName"<#if jpush.jumpPath == mypage>selected="selected" </#if>>我</option>
+                                    <option value="myresultspage" name="jumpName"<#if jpush.jumpPath == myresultspage>selected="selected" </#if>>个人业绩</option>
+                                    <option value="orderpage"    name="jumpName"<#if jpush.jumpPath == orderpage>selected="selected" </#if>>我的订单</option>
+                                    <option value="myintegralpage" name="jumpName"<#if jpush.jumpPath == myintegralpage>selected="selected" </#if>>我的积分</option>
+                                    <option value="rewardintegralpage" name="jumpName"<#if jpush.jumpPath == rewardintegralpage>selected="selected" </#if>>奖励积分</option>
+                                    <option value="shoppingintegralpage" name="jumpName"<#if jpush.jumpPath == shoppingintegralpage>selected="selected" </#if>>购物积分</option>
+                                    <option value="buyintegralpage" name="jumpName"<#if jpush.jumpPath == buyintegralpage>selected="selected" </#if>>换购积分</option>
+                                    <option value="bankcardpage" name="jumpName"<#if jpush.jumpPath == bankcardpage>selected="selected" </#if>>我的银行卡</option>
+                                    <option value="learnpage" name="jumpName"<#if jpush.jumpPath == learnpage>selected="selected" </#if>>学堂</option>
+                                    <option value="learnarticlepage" name="jumpName"<#if jpush.jumpPath == learnarticlepage>selected="selected" </#if>>学堂文章详情</option>
+                                    <option value="invitationpage" name="jumpName"<#if jpush.jumpPath == invitationpage>selected="selected" </#if>>我的邀请</option>
+                                    <option value="activityGoodsListpage" name="jumpName"<#if jpush.jumpPath == activityGoodsListpage>selected="selected" </#if>>活动页面</option>
+                                    <option value="buyCouponspage" name="jumpName"<#if jpush.jumpPath == buyCouponspage>selected="selected" </#if>>优惠券购买详情</option>
                                 </select>
-                                <input name="jumpJson" class="fa fa-search" value="${jumpJson}"/>
+                                <input name="jumpJson" class="w150" value="${jumpJson}"style="height:23px;"/>
+                                <a class="btn-search" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;"></a>
                             </div>
                         </div>
                     </td>
@@ -143,24 +145,139 @@
                     <td>
                         <div class="col-sm-9">
                             <#--满折扣-->
-                            <div class="col-lg-1" STYLE="width: 90%;display: none;" >
+                            <div class="col-lg-1" STYLE="width: 90%;" >
                                 <input type="radio" name="jump" value="" id="">
                                 <span >跳转链接</span>
-                                <input name="jumpLink"  type="text" id="" style="width:95px;"   value="${jpush.jumpLink}" />
+                                <input name="jumpLink"  type="text" id="" class="w200"  value="${jpush.jumpLink}" />
                             </div>
                         </div>
                     </td>
                 </tr>
+                </#if>
+                <#if jpush!=null>
+                    <tr class="noborder">
+                        <td class="required">
+                            <em class="pngFix"></em>推送方式
+                        </td>
+                        <td>
+
+                            <input name="pushMethod" type="radio" value="1"  <#if jpush.pushMethod==1||jpush.pushMethod==null>checked</#if>>
+                            通知栏推送
+                            <input name="pushMethod" type="radio" value="2"  <#if jpush.pushMethod==2>checked</#if>>
+                            其他
+
+                            <span class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr class="noborder">
+                        <td class="required">
+                            <em class="pngFix"></em>通知内容
+                        </td>
+                        <td>
+                            <input name="message" id="message" type="text" value="${jpush.message}" class="w200"/>
+                            <span class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr class="noborder">
+                        <td class="required">
+                            <em class="pngFix"></em>推送时间
+                        </td>
+                        <td>
+                            <input class="w200 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                                   id="pushTime" name="pushTime" value="${jpush.pushTime}"/>
+                            <span class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr class="noborder">
+                        <td class="required">
+                            <em class="pngFix"></em>目标平台
+                        </td>
+                        <td>
+                            <label><input name="platform"  type="checkbox" value="0" />所有</label>
+                            <label><input name="platform"  type="checkbox" value="1" />安卓</label>
+                            <label><input name="platform"  type="checkbox" value="2" />IOS正式</label>
+                            <label><input name="platform"  type="checkbox" value="3" />IOS测试</label>
+                            <label><input name="platform"  type="checkbox" value="4" />安卓和IOS测试</label>
+                            <label><input name="platform"  type="checkbox" value="5" />安卓和IOS正式</label>
+                            <span class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr class="noborder">
+                        <td class="required">
+                            <em class="pngFix"></em>推送对象
+                        </td>
+                        <td>
+                            <input name="audience" type="radio" value="all"  <#if jpush.audience==all>checked</#if>>
+                            全部用户
+                            <input name="" type="radio" value=""  id="checkid">
+                            指定用户
+                            <span class="error-message"></span>
+                        </td>
+                    </tr>
+                    <tr class="noborder">
+                        <td class="required" width="150px">
+                            <em class="pngFix"></em>
+                        </td>
+                        <td>
+                            <div class="col-sm-9">
+                                <div class="col-lg-1" STYLE="width: 90%;">
+                                    <input type="radio" name="jump" value="" checked>
+                                    <span >跳转路径</span>
+                                    <select name="jumpPath" class="w150">
+                                        <option value="homepage"  <#if jpush.jumpPath == homepage>selected="selected"</#if>><span name="jumpName">辑</span></option>
+                                        <option value="messagepage" name="jumpName"<#if jpush.jumpPath == messagepage>selected="selected" </#if>>消息中心</option>
+                                        <option value="goodsdetailspage" name="jumpName"<#if jpush.jumpPath == goodsdetailspage>selected="selected" </#if>>商品详情</option>
+                                        <option value="mypage" name="jumpName"<#if jpush.jumpPath == mypage>selected="selected" </#if>>我</option>
+                                        <option value="myresultspage" name="jumpName"<#if jpush.jumpPath == myresultspage>selected="selected" </#if>>个人业绩</option>
+                                        <option value="orderpage"    name="jumpName"<#if jpush.jumpPath == orderpage>selected="selected" </#if>>我的订单</option>
+                                        <option value="myintegralpage" name="jumpName"<#if jpush.jumpPath == myintegralpage>selected="selected" </#if>>我的积分</option>
+                                        <option value="rewardintegralpage" name="jumpName"<#if jpush.jumpPath == rewardintegralpage>selected="selected" </#if>>奖励积分</option>
+                                        <option value="shoppingintegralpage" name="jumpName"<#if jpush.jumpPath == shoppingintegralpage>selected="selected" </#if>>购物积分</option>
+                                        <option value="buyintegralpage" name="jumpName"<#if jpush.jumpPath == buyintegralpage>selected="selected" </#if>>换购积分</option>
+                                        <option value="bankcardpage" name="jumpName"<#if jpush.jumpPath == bankcardpage>selected="selected" </#if>>我的银行卡</option>
+                                        <option value="learnpage" name="jumpName"<#if jpush.jumpPath == learnpage>selected="selected" </#if>>学堂</option>
+                                        <option value="learnarticlepage" name="jumpName"<#if jpush.jumpPath == learnarticlepage>selected="selected" </#if>>学堂文章详情</option>
+                                        <option value="invitationpage" name="jumpName"<#if jpush.jumpPath == invitationpage>selected="selected" </#if>>我的邀请</option>
+                                        <option value="activityGoodsListpage" name="jumpName"<#if jpush.jumpPath == activityGoodsListpage>selected="selected" </#if>>活动页面</option>
+                                        <option value="buyCouponspage" name="jumpName"<#if jpush.jumpPath == buyCouponspage>selected="selected" </#if>>优惠券购买详情</option>
+                                        <option value="" <#if jpush.jumpPath == "">selected="selected"</#if>>请选择</option>
+                                    </select>
+                                    <input name="jumpJson" class="w150" value="${jumpJson}"style="height:23px;"/>
+                                    <a class="btn-search" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;"></a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="noborder">
+                        <td class="required" width="150px">
+                            <em class="pngFix"></em>
+                        </td>
+                        <td>
+                            <div class="col-sm-9">
+                                <#--满折扣-->
+                                <div class="col-lg-1" STYLE="width: 90%;" >
+                                    <input type="radio" name="jump" value="" id="">
+                                    <span >跳转链接</span>
+                                    <input name="jumpLink"  type="text" id="link" class="w200"  value="${jpush.jumpLink}" />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                 </#if>
                 </tbody>
                 <tfoot>
                 <tr>
                     <td></td>
                     <td>
+                        <#if jpush==null>
                             <a class="btn" href="javascript:history.go(-1);"
                                style="float:left"><span><@spring.message "button.back"/></span></a>
                             <a class="btn btn-success" id="subForm" type="submit">提交</a>
-
+                        </#if>
+                        <#if jpush!=null>
+                        <a class="btn" href="javascript:history.go(-1);"
+                           style="float:left"><span><@spring.message "button.back"/></span></a>
+                        </#if>
                     </td>
                 </tr>
                 </tfoot>
@@ -180,11 +297,6 @@
                 var pushTime=$("#pushTime").val();
                 if (pushTime == "") {
                     alert('推送时间不能为空!');
-                    return false;
-                }
-                var scopeRemark=$("#scopeRemark").val();
-                if (scopeRemark == "") {
-                    alert('!');
                     return false;
                 }
 
