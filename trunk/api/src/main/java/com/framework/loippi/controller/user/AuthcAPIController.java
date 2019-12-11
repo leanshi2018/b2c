@@ -13,37 +13,58 @@ import com.framework.loippi.service.user.*;
 import com.framework.loippi.vo.order.OrderSumPpv;
 import org.springframework.web.bind.annotation.RequestParam;
 import redis.clients.jedis.exceptions.JedisException;
-
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.alibaba.fastjson.JSON;
 import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.activity.ActivityGuide;
+import com.framework.loippi.entity.user.OldSysRelationship;
+import com.framework.loippi.entity.user.RaMember;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.param.auths.AuthsRegisterParam;
 import com.framework.loippi.param.auths.AuthsResetPasswordParam;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.service.RedisService;
+import com.framework.loippi.service.activity.ActivityGuideService;
+import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
+import com.framework.loippi.service.user.MemberQualificationService;
+import com.framework.loippi.service.user.OldSysRelationshipService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RdSysPeriodService;
+import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Constants;
 import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.PostUtil;
 import com.framework.loippi.utils.SmsUtil;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
+import com.google.code.kaptcha.Producer;
 
 /**
  * Created by Administrator on 2017/6/18.
@@ -80,7 +101,11 @@ public class AuthcAPIController extends BaseController {
     @Resource
     private RdSysPeriodService periodService;
 
-//    @Resource
+    @Resource
+    private Producer producer;
+
+
+    //    @Resource
 //    private HxService hxService;
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
@@ -143,6 +168,41 @@ public class AuthcAPIController extends BaseController {
     //    Map<String, String> map = oldSysRelationshipService.findOldSysSpcode(spcode);
     //    return ApiUtils.success(map);
     //}
+
+
+
+
+        /**
+         * 加法验证码
+         */
+        @RequestMapping("/number")
+        public void number(HttpServletRequest request ,HttpServletResponse response ,String mobile) throws IOException {
+            response.setHeader("Cache-Control", "no-store, no-cache");
+            response.setContentType("image/jpeg");
+
+            //生成文字验证码
+            String text = producer.createText();
+
+            //个位数字相加
+            String s1 = text.substring(0, 1);
+            String s2 = text.substring(1, 2);
+            int count = Integer.valueOf(s1).intValue() + Integer.valueOf(s2).intValue();
+
+            System.out.println("******************************************");
+            System.out.println("验证码计算后="+count);
+            System.out.println("******************************************");
+
+            //生成图片验证码
+            BufferedImage image = producer.createImage(s1 + "+" + s2 + "=?");
+
+            //保存 redis key 自己设置
+            redisService.save("A"+mobile, count);
+
+            //redisService.delete("A"+Mobile);
+
+            ServletOutputStream out = response.getOutputStream();
+            ImageIO.write(image, "jpg", out);
+        }
 
 
 

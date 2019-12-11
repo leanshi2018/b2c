@@ -1,33 +1,15 @@
 package com.framework.loippi.controller.common;
 
 
-import com.framework.loippi.controller.BaseController;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
-import com.framework.loippi.entity.common.ShopCommonArea;
-import com.framework.loippi.entity.common.ShopCommonArticle;
-import com.framework.loippi.entity.common.ShopCommonDocument;
-
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.enus.VerifyCodeType;
-import com.framework.loippi.result.adv.ArticleInfo;
-import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.service.QiniuService;
-import com.framework.loippi.service.RedisService;
-import com.framework.loippi.service.common.ShopCommonAreaService;
-import com.framework.loippi.service.common.ShopCommonArticleService;
-import com.framework.loippi.service.common.ShopCommonDocumentService;
-
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.sms.AldayuUtil;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.JacksonUtil;
-import com.framework.loippi.utils.StringUtil;
-import com.framework.loippi.utils.Xerror;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +21,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.common.ShopCommonArea;
+import com.framework.loippi.entity.common.ShopCommonArticle;
+import com.framework.loippi.entity.common.ShopCommonDocument;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.enus.VerifyCodeType;
+import com.framework.loippi.result.adv.ArticleInfo;
+import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.service.QiniuService;
+import com.framework.loippi.service.RedisService;
+import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.common.ShopCommonArticleService;
+import com.framework.loippi.service.common.ShopCommonDocumentService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.utils.sms.AldayuUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 
 /**
@@ -90,6 +88,79 @@ public class CommonController extends BaseController {
         if (msgType == null) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
+
+        // 添加手机号相关业务逻辑判断
+        Map<String, Object> params = new HashMap<>();
+        params.put("mobile", mobile);
+        List<RdMmBasicInfo> account = rdMmBasicInfoService.findList(params);
+        if (msgType == VerifyCodeType.REGISTER.code) {
+            if (account.size() > 0) {
+                return ApiUtils.error("该手机已被注册");
+            }
+        } else if (msgType == VerifyCodeType.RESETPWD.code) {
+            if (account.size() == 0) {
+                return ApiUtils.error("不存在该账号");
+            }
+        } else if (msgType == VerifyCodeType.VERIFY_MOBILE.code) {
+            if (account.size() > 0) {
+                String sessionId = request.getHeader(com.framework.loippi.consts.Constants.USER_SESSION_ID);
+                AuthsLoginResult session = redisService.get(sessionId, AuthsLoginResult.class);
+                if (session == null) {
+                    return ApiUtils.error("会话失效，请重新登录");
+                }
+                if (!session.getMobile().equals(mobile)) {
+                    return ApiUtils.error("手机号不正确");
+                }
+            }
+        } else if (msgType == VerifyCodeType.RESET_MOBILE.code) {
+            if (account.size() > 0) {
+                return ApiUtils.error("该手机号已被使用");
+            }
+        } else if (msgType == VerifyCodeType.BankCards_MOBILE.code) {
+            //银行卡预留手机发送验证码
+        } else {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+
+        String code = RandomStringUtils.random(6, "0123456789");
+        try {
+            String codeJson = "{\"code\":\"" + code + "\"}";
+            AldayuUtil.sendSms(mobile, codeJson, "SMS_165115421", "蜗米商城");
+            redisService.save(mobile,code);
+            return ApiUtils.success();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ApiUtils.error("发送验证码出错");
+        }
+        //return ApiUtils.success();
+    }
+
+    /**
+     * 注册发送短信验证码： 向第三方发送短信验证码  Integer msgType:0-注册1-忘记密码2-验证手机号3-修改手机号4-pc端登录
+     */
+    @RequestMapping(value = "/api/common/zcmsg.json", method = {RequestMethod.POST})
+    public
+    @ResponseBody
+    String zcmsg(@RequestParam(value = "mobile") String mobile, @RequestParam(value = "msgType") Integer msgType ,
+                 @RequestParam(value = "countNum") String countNum ,HttpServletRequest request) {
+        if (StringUtils.isEmpty(mobile)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        if (!StringUtil.isMobilePhone(mobile)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        if (msgType == null) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        if (StringUtils.isEmpty(countNum)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        String redisNum = redisService.get("A" + mobile);
+        if (!redisNum.equals(countNum)){
+            return ApiUtils.error(Xerror.LOGIN_VALIDCODE_ERROR);
+        }
+        redisService.delete("A" + mobile);
+
 
         // 添加手机号相关业务逻辑判断
         Map<String, Object> params = new HashMap<>();

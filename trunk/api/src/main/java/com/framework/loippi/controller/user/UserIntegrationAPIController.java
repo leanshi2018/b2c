@@ -255,6 +255,11 @@ public class UserIntegrationAPIController extends BaseController {
             return ApiUtils.error("支付密码错误");
         }
 
+        if (rdMmAccountInfo.getBonusBlance().compareTo(new BigDecimal(integration))==-1) {
+            return ApiUtils.error("积分不足，不可提现");
+        }
+
+
         //银行卡信息
         RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(bankCardId+""));
         if (rdMmBank == null) {

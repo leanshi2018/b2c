@@ -30,4 +30,9 @@ public class ShopExpressSpecialGoodsServiceImpl extends GenericServiceImpl<ShopE
 	public List<ShopExpressSpecialGoods> findByState(Integer eState) {
 		return shopExpressSpecialGoodsDao.findByState(eState);
 	}
+
+	@Override
+	public List<ShopExpressSpecialGoods> findByExpressId(Long expressId) {
+		return shopExpressSpecialGoodsDao.findByExpressId(expressId);
+	}
 }
