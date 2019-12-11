@@ -94,6 +94,16 @@ public class ShopCommonMessage implements GenericEntity {
      */
     @Column(name = "is_reply")
     private Integer isReply;
+    /**
+     * 跳转路径 内容信息使用josn格式进行存储
+     */
+    @Column(name = "jump_path")
+    private String jumpPath;
+    /**
+     * 跳转链接
+     */
+    @Column(name = "jump_url")
+    private String jumpUrl;
 
     private String groupName;
 
@@ -106,6 +116,6 @@ public class ShopCommonMessage implements GenericEntity {
     private String searchStartTime;
 
     private String searchEndTime;
-
-
+    //标题模糊查询
+    private String titleLike;
 }

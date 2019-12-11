@@ -20,15 +20,17 @@
         <result property="isTop" column="is_top"/>
         <result property="image" column="image"/>
         <result property="isReply" column="is_reply"/>
+        <result property="jumpPath" column="jump_path"/>
+        <result property="jumpUrl" column="jump_url"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,title ,biz_id ,biz_type ,content ,create_time ,send_uid ,type ,u_type ,on_line ,is_top,subject,image,is_reply
+		 id ,title ,biz_id ,biz_type ,content ,create_time ,send_uid ,type ,u_type ,on_line ,is_top,subject,image,is_reply,jump_path,jump_url
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{title},#{bizId},#{bizType},#{content},#{createTime},#{sendUid},#{type},#{uType},#{onLine},#{isTop},#{subject},#{image},#{isReply}
+		 #{id},#{title},#{bizId},#{bizType},#{content},#{createTime},#{sendUid},#{type},#{uType},#{onLine},#{isTop},#{subject},#{image},#{isReply},#{jumpPath},#{jumpUrl}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -76,11 +78,20 @@
         <if test="isReply != null and isReply != ''">
             AND is_reply = #{isReply}
         </if>
+        <if test="jumpPath != null and jumpPath != ''">
+            AND jump_path = #{jumpPath,jdbcType=VARCHAR}
+        </if>
+        <if test="jumpUrl != null and jumpUrl != ''">
+            AND jump_url = #{jumpUrl,jdbcType=VARCHAR}
+        </if>
         <if test="searchStartTime !=null and searchStartTime != ''">
             <![CDATA[and create_time >= #{searchStartTime}]]>
         </if>
         <if test="searchEndTime !=null and searchEndTime != ''">
             <![CDATA[and create_time <= #{searchEndTime}]]>
+        </if>
+        <if test="titleLike != null and titleLike != ''">
+            AND title like CONCAT('%',#{titleLike},'%')
         </if>
     </sql>
 
@@ -128,6 +139,12 @@
         </if>
         <if test="isReply != null">
              is_reply = #{isReply},
+        </if>
+        <if test="jumpPath != null and jumpPath != ''">
+            jump_path = #{jumpPath,jdbcType=VARCHAR},
+        </if>
+        <if test="jumpUrl != null and jumpUrl != ''">
+            jump_url = #{jumpUrl,jdbcType=VARCHAR},
         </if>
     </sql>
 

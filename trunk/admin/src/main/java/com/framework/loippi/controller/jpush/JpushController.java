@@ -294,7 +294,7 @@ public class JpushController extends GenericController {
             rdMmBasicInfos.add(rdMmBasicInfo1);
         }
         model.addAttribute("rdMmBasicInfoList", rdMmBasicInfos);
-        return "";//TODO
+        return "/common/select/selectMember";//TODO
     }
 
     /**
@@ -348,11 +348,11 @@ public class JpushController extends GenericController {
         pageable.setParameter(shopActivity);
         Page<ShopActivity> page = shopActivityService.findByPage(pageable);
         model.addAttribute("activitys",page);
-        return "";//TODO
+        return "/common/select/selectActivitys";//TODO
     }
 
     /**
-     * 查找活动
+     * 查找文章
      */
     @RequestMapping(value = "/findArticles", method = RequestMethod.POST)
     public String findArticles(String info, ModelMap model,
@@ -375,7 +375,7 @@ public class JpushController extends GenericController {
         pageable.setParameter(article);
         Page<ShopCommonArticle> page = shopCommonArticleService.findByPage(pageable);
         model.addAttribute("articles",page);
-        return "";//TODO
+        return "/common/select/selectArticles";//TODO
     }
     /**
      * 查找优惠券
