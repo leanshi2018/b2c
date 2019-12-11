@@ -16,6 +16,7 @@ import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.jpush.JpushUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,8 +30,8 @@ import java.util.*;
 /**
  * 后台消息创建
  */
-@Controller("adminShopCommonMessageNewController")
-@RequestMapping({"/admin/shop_common_message_new"})
+@Controller("ShopCommonMessageNewController")
+@RequestMapping("/admin/shop_common_message_new")
 public class ShopCommonMessageNewController extends GenericController {
     @Resource
     private ShopCommonMessageService shopCommonMessageService;
@@ -40,17 +41,18 @@ public class ShopCommonMessageNewController extends GenericController {
     /**
      * 查询消息列表
      * @param model
-     * @param request
      * @param shopCommonMessage 查询条件
      * @param pageSize
      * @param pageNo
      * @return
      */
     @RequestMapping(value ="/list",method = RequestMethod.POST)
-    public String list(Model model, HttpServletRequest request,@ModelAttribute ShopCommonMessage shopCommonMessage,
+    public String list(ModelMap model, @ModelAttribute ShopCommonMessage shopCommonMessage,
                        @RequestParam(required = false, value = "pageSize", defaultValue = "10") Integer pageSize,
                        @RequestParam(required = false, value = "pageNo", defaultValue = "1") Integer pageNo) {
         Pageable pager = new Pageable(pageNo, pageSize);
+        shopCommonMessage.setBizType(1);
+        shopCommonMessage.setType(1);
         pager.setParameter(shopCommonMessage);
         pager.setOrderProperty("create_time");
         pager.setOrderDirection(Order.Direction.DESC);
