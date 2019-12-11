@@ -44,7 +44,7 @@
                 <tr>
                     <td colspan="3" class="required" style="background: #eee">基本信息</td>
                 </tr>
-                <#if jpush==null>
+                <#if jpush=="">
                 <tr class="noborder">
                     <td class="required">
                         <em class="pngFix"></em>推送方式
@@ -269,7 +269,7 @@
                 <tr>
                     <td></td>
                     <td>
-                        <#if jpush==null>
+                        <#if jpush=="">
                             <a class="btn" href="javascript:history.go(-1);"
                                style="float:left"><span><@spring.message "button.back"/></span></a>
                             <a class="btn btn-success" id="subForm" type="submit">提交</a>
