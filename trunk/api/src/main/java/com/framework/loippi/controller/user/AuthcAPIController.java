@@ -7,6 +7,7 @@ import com.framework.loippi.result.user.IntegrationMemberListResult;
 import com.framework.loippi.result.user.SubordinateUserInformationResult;
 import com.framework.loippi.service.activity.ActivityGuideService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.*;
 import com.framework.loippi.vo.order.OrderSumPpv;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.annotation.Resource;
@@ -53,7 +55,8 @@ public class AuthcAPIController extends BaseController {
 
     private static final String MEMBER_LOCK_MESSAGE = "该用户被禁用";
     private static final int MEMBER_LOCK_STATE = 0;
-
+    @Resource
+    private CouponService couponService;
     @Resource
     private RedisService redisService;
     @Resource
@@ -186,9 +189,24 @@ public class AuthcAPIController extends BaseController {
         RdMmAccountInfo rdMmAccountInfo = new RdMmAccountInfo();
         RdMmRelation rdMmRelation = new RdMmRelation();
         initRdMmBasicInfo(rdMmBasicInfo, param, rdMmAccountInfo, rdMmRelation);//TODO
-        rdMmBasicInfoService.addUser(rdMmBasicInfo, rdMmAccountInfo, rdMmRelation, param.getRegisterType());
-        redisService.delete(param.getMobile());
-        return ApiUtils.success(handlerLogin(rdMmBasicInfo, request, rdMmRelation));
+        try {
+            rdMmBasicInfoService.addUser(rdMmBasicInfo, rdMmAccountInfo, rdMmRelation, param.getRegisterType());
+            redisService.delete(param.getMobile());
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date startTime = format.parse("2019-12-01 00:00:00");//TODO 活动时间预留
+            Date endTime = format.parse("2019-12-31 23:59:59");
+            Integer flag=0;
+            if (new Date().getTime()>=startTime.getTime()&&new Date().getTime()<=endTime.getTime()){
+                flag=1;
+                //给当前注册用户以及当前注册用户推荐人发放优惠券
+                couponService.givingCoupon(param.getMobile());
+            }
+            return ApiUtils.success(handlerLoginNew(rdMmBasicInfo, request, rdMmRelation,flag));
+        } catch (Exception e) {
+            e.printStackTrace();
+            redisService.delete(param.getMobile());
+            return ApiUtils.error("网络异常，请稍后重试");
+        }
     }
 
     /**
@@ -255,6 +273,34 @@ public class AuthcAPIController extends BaseController {
             }
         }
         authsLoginResult=AuthsLoginResult.of(member, authsLoginResult, prefix);
+        try {
+            redisService.save(sessionId, authsLoginResult);
+            redisService.save("user_name" + member.getMmCode(), sessionId);
+        } catch (JedisException e) {
+            throw new JedisException(e.getMessage());
+        }
+
+        return authsLoginResult;
+    }
+    /**
+     * 处理登录
+     */
+    private AuthsLoginResult handlerLoginNew(RdMmBasicInfo member, HttpServletRequest request, RdMmRelation rdMmRelation,Integer flag) {
+        String sessionId = twiterIdService.getSessionId();
+        AuthsLoginResult authsLoginResult = new AuthsLoginResult();
+        authsLoginResult.setSessionid(sessionId);
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        authsLoginResult.setRankId(rdRanks.getRankId());
+        authsLoginResult.setLookPpv(0);
+        authsLoginResult.setLookVip(0);
+        if (rdRanks != null) {
+            if (Optional.ofNullable(rdRanks.getRankClass()).orElse(0) > 0) {
+                authsLoginResult.setLookPpv(1);
+                authsLoginResult.setLookVip(1);
+            }
+        }
+        authsLoginResult=AuthsLoginResult.of(member, authsLoginResult, prefix);
+        authsLoginResult.setGetCouponFlag(flag);
         try {
             redisService.save(sessionId, authsLoginResult);
             redisService.save("user_name" + member.getMmCode(), sessionId);

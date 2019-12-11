@@ -58,6 +58,8 @@ public class AuthsLoginResult {
     private Integer lookVip;
     //会员等级id
     private Integer rankId;
+    //是否赠送优惠券 0 否  1 是
+    private Integer getCouponFlag;
 
     public static AuthsLoginResult of(RdMmBasicInfo account, AuthsLoginResult session, String preUrl) {
         if (account == null) {

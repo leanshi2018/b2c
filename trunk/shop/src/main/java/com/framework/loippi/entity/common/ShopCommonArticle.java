@@ -116,4 +116,6 @@ public class ShopCommonArticle implements GenericEntity {
 
     private Long[] ids;
 
+    private String key;
+
 }

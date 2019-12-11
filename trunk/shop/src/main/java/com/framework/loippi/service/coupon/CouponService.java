@@ -30,4 +30,6 @@ public interface CouponService extends GenericService<Coupon, Long> {
     Coupon judgeUseEnd(Paramap put);
 
     void overCoupon();
+
+    void givingCoupon(String mobile) throws Exception;
 }
