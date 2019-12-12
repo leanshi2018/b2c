@@ -46,7 +46,7 @@ public class ShopCommonMessageNewController extends GenericController {
      * @param pageNo
      * @return
      */
-    @RequestMapping(value ="/list",method = RequestMethod.POST)
+    @RequestMapping(value ="/list")
     public String list(ModelMap model, @ModelAttribute ShopCommonMessage shopCommonMessage,
                        @RequestParam(required = false, value = "pageSize", defaultValue = "10") Integer pageSize,
                        @RequestParam(required = false, value = "pageNo", defaultValue = "1") Integer pageNo) {
@@ -80,7 +80,7 @@ public class ShopCommonMessageNewController extends GenericController {
             }else {
                 model.addAttribute("message", null);
             }
-            return "";//跳往新增或编辑页面
+            return "/common/notification_message/edit";//跳往新增或编辑页面
         } else {
             model.addAttribute("message", null);
             return "/common/notification_message/edit";
