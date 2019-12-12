@@ -115,7 +115,7 @@
                                 <span >跳转路径</span>
                                 <select name="jumpPath" class="w150">
                                     <option value="" <#if jpush.jumpPath == "">selected="selected"</#if>></option>
-                                    <option value="homepage"  <#if jpush.jumpPath == homepage>selected="selected"</#if>><span name="jumpName">辑</span></option>
+                                    <option value="${jpush.homepage}"  <#if jpush.jumpPath == jpush.homepage>selected="selected"</#if>><span name="jumpName">辑</span></option>
                                     <option value="messagepage" name="jumpName"<#if jpush.jumpPath == messagepage>selected="selected" </#if>>消息中心</option>
                                     <option value="goodsdetailspage" name="jumpName"<#if jpush.jumpPath == goodsdetailspage>selected="selected" </#if>>商品详情</option>
                                     <option value="mypage" name="jumpName"<#if jpush.jumpPath == mypage>selected="selected" </#if>>我</option>
@@ -223,10 +223,10 @@
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <input type="radio" name="jump" value="" checked>
                                     <span >跳转路径</span>
-                                    <select name="jumpPath" class="w150">
-                                        <option value="homepage"  <#if jpush.jumpPath == homepage>selected="selected"</#if>><span name="jumpName">辑</span></option>
+                                    <select name="jumpPath" class="w150" id="jumpPath">
+                                        <option value="${jpush.homepage}"  <#if jpush.jumpPath == jpush.homepage>selected="selected"</#if>>辑</option>
                                         <option value="messagepage" name="jumpName"<#if jpush.jumpPath == messagepage>selected="selected" </#if>>消息中心</option>
-                                        <option value="goodsdetailspage" name="jumpName"<#if jpush.jumpPath == goodsdetailspage>selected="selected" </#if>>商品详情</option>
+                                        <option value="goodsdetailspage" id="goodsdetailspage" name="jumpName"<#if jpush.jumpPath == goodsdetailspage>selected="selected" </#if>>商品详情</option>
                                         <option value="mypage" name="jumpName"<#if jpush.jumpPath == mypage>selected="selected" </#if>>我</option>
                                         <option value="myresultspage" name="jumpName"<#if jpush.jumpPath == myresultspage>selected="selected" </#if>>个人业绩</option>
                                         <option value="orderpage"    name="jumpName"<#if jpush.jumpPath == orderpage>selected="selected" </#if>>我的订单</option>
@@ -239,11 +239,11 @@
                                         <option value="learnarticlepage" name="jumpName"<#if jpush.jumpPath == learnarticlepage>selected="selected" </#if>>学堂文章详情</option>
                                         <option value="invitationpage" name="jumpName"<#if jpush.jumpPath == invitationpage>selected="selected" </#if>>我的邀请</option>
                                         <option value="activityGoodsListpage" name="jumpName"<#if jpush.jumpPath == activityGoodsListpage>selected="selected" </#if>>活动页面</option>
-                                        <option value="buyCouponspage" name="jumpName"<#if jpush.jumpPath == buyCouponspage>selected="selected" </#if>>优惠券购买详情</option>
+                                        <option value="buyCouponspage" id="buyCouponspage" name="jumpName"<#if jpush.jumpPath == buyCouponspage>selected="selected" </#if>>优惠券购买详情</option>
                                         <option value="" <#if jpush.jumpPath == "">selected="selected"</#if>>请选择</option>
                                     </select>
                                     <input name="jumpJson" class="w200" value="${jumpJson}"style="height:23px;border:1px solid #ccc;"/>
-                                    <a class="btn-search" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;"></a>
+                                    <a class="btn-search" id="searchs" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;"></a>
                                 </div>
                             </div>
                         </td>
@@ -254,11 +254,10 @@
                         </td>
                         <td>
                             <div class="col-sm-9">
-                                <#--满折扣-->
                                 <div class="col-lg-1" STYLE="width: 90%;" >
                                     <input type="radio" name="jump" id="jumps">
                                     <span >跳转链接</span>
-                                    <input name="jumpLink"  type="text" id="link" class="w300"  value="${jpush.jumpLink}" />
+                                    <input name="jumpLink"  type="text" id="link" class="w400"  value="${jpush.jumpLink}" />
                                 </div>
                             </div>
                         </td>
@@ -287,9 +286,17 @@
     <script type="text/javascript" src="${base}/resources/js/plugins/colpick/colpick.js"></script>
     <script>
         $(function () {
+            /*判断跳转链接选中状态*/
             var link=$("#link").val();
             if(link!=""){
                 $("#jumps").attr("checked","checked");
+            }
+            /*判断是否选择优惠券购买详情*/
+            if($("#buyCouponspage").val()=="buyCouponspage"){
+                $("#searchs").attr("onclick","buyCouponspage()")
+            }
+            if($("#goodsdetailspage").val()=="goodsdetailspage"){
+                $("#searchs").attr("onclick","goodsdetailspage()")
             }
             $("#subForm").click(function () {
                 var Title = $("#message").val();
@@ -309,7 +316,7 @@
         });
 
         /*选择商品*/
-        $("#single").click(function () {
+       function goodsdetailspage() {
             var goodsId = $("[name='goodsId']").val();
             layer.open({
                 type: 2,
@@ -318,8 +325,8 @@
                 title: '选择商品',
                 content: ['${base}/admin/shop_goods_recommend/select.jhtml?type=1&goodsId=' + goodsId, 'yes'],
                 area: ['800px', '600px']
-            });
-        });
+            })
+        }
         function appendGoods(goodsId, goodsName, className, brandName,goodsType) {
             $("#goodsId").val(goodsId);
             $("#goodsName").val(goodsName);
@@ -327,7 +334,7 @@
 
         }
         /*选择优惠券*/
-        $("#check").click(function () {
+        function buyCouponspage() {
             var couponName = $("[name='couponName']").val();
             layer.open({
                 type: 2,
@@ -336,8 +343,8 @@
                 title: '选择优惠券',
                 content: ['${base}/admin/plarformShopCoupon/coupon/select.jhtml?status=2&couponName=' + couponName, 'yes'],
                 area: ['800px', '600px']
-            });
-        });
+            })
+        }
         function appendGoods(id,couponName) {
             $("#couponId").val(id);
             $("#couponName").val(couponName);

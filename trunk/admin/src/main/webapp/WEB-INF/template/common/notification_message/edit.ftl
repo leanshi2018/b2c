@@ -51,11 +51,7 @@
                         <em class="pngFix"></em>展示方式
                     </td>
                     <td>
-                        <#if coupon??>
-                            <input name="couponName" id="couponName" type="text" readonly value="${coupon.couponName}"/>
-                        <#else>
-                            <input name="couponName" id="couponName" type="text" value="${couponName}"/>
-                        </#if>
+                            <input name="couponName" id="couponName" type="text" value=""/>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -64,14 +60,7 @@
                         <em class="pngFix"></em>消息标题
                     </td>
                     <td>
-                        <#if coupon??>
-                            <input name="scopeRemark" id="scopeRemark" type="text" readonly value="${coupon.scopeRemark}"
-                                   class="w300"/>
-                        <#else>
-                            <input name="scopeRemark" id="scopeRemark" type="text" value="${scopeRemark}"
-                                   class="w300"/>
-                        </#if>
-
+                            <input name="title" id="title" maxlength="20" type="text" value="${message.title}" class=""/>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -80,16 +69,13 @@
                         <em class="pngFix"></em>图文详情
                     </td>
                     <td>
-
                         <span class="error-message"></span>
                     </td>
                 </tr>
-                <#if coupon??>
                     <tr class="noborder">
                         <td colspan="4" class="vatop rowform">
                             <div class="span10">
-                                <script id="ueditor" name="remark" id="remark" type="text/plain"
-                                        readonly  style="height:250px;width:100%;max-width:540px;">${coupon.remark}
+                                <script id="ueditor" name="content"  type="text/plain" style="height:250px;width:100%;max-width:540px;">${message.content}
                         </script>
                                 <script type="text/javascript">
                                     //实例化编辑器
@@ -100,66 +86,62 @@
                         </td>
                         <td class="vatop tips"></td>
                     </tr>
-                <#else>
-                    <tr class="noborder">
-                        <td colspan="4" class="vatop rowform">
-                            <div class="span10">
-                                <script id="ueditor" name="remark"  type="text/plain"
-                                        style="height:250px;width:100%;max-width:540px;">${remark}
-                        </script>
-                                <script type="text/javascript">
-                                    //实例化编辑器
-                                    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
-                                    var ueditor = UE.getEditor('ueditor');
-                                </script>
+                <tr class="noborder">
+                    <td class="required" width="150px">
+                        <em class="pngFix"></em>
+                    </td>
+                    <td>
+                        <div class="col-sm-9">
+                            <div class="col-lg-1" STYLE="width: 90%;">
+                                <input type="radio" name="jump" value="" checked>
+                                <span >跳转路径</span>
+                                <select name="jumpPath" class="w150">
+                                    <option value="homepage"  <#if jpush.jumpPath == homepage>selected="selected"</#if>><span name="jumpName">辑</span></option>
+                                    <option value="messagepage" name="jumpName"<#if jpush.jumpPath == messagepage>selected="selected" </#if>>消息中心</option>
+                                    <option value="goodsdetailspage" name="jumpName"<#if jpush.jumpPath == goodsdetailspage>selected="selected" </#if>>商品详情</option>
+                                    <option value="mypage" name="jumpName"<#if jpush.jumpPath == mypage>selected="selected" </#if>>我</option>
+                                    <option value="myresultspage" name="jumpName"<#if jpush.jumpPath == myresultspage>selected="selected" </#if>>个人业绩</option>
+                                    <option value="orderpage"    name="jumpName"<#if jpush.jumpPath == orderpage>selected="selected" </#if>>我的订单</option>
+                                    <option value="myintegralpage" name="jumpName"<#if jpush.jumpPath == myintegralpage>selected="selected" </#if>>我的积分</option>
+                                    <option value="rewardintegralpage" name="jumpName"<#if jpush.jumpPath == rewardintegralpage>selected="selected" </#if>>奖励积分</option>
+                                    <option value="shoppingintegralpage" name="jumpName"<#if jpush.jumpPath == shoppingintegralpage>selected="selected" </#if>>购物积分</option>
+                                    <option value="buyintegralpage" name="jumpName"<#if jpush.jumpPath == buyintegralpage>selected="selected" </#if>>换购积分</option>
+                                    <option value="bankcardpage" name="jumpName"<#if jpush.jumpPath == bankcardpage>selected="selected" </#if>>我的银行卡</option>
+                                    <option value="learnpage" name="jumpName"<#if jpush.jumpPath == learnpage>selected="selected" </#if>>学堂</option>
+                                    <option value="learnarticlepage" name="jumpName"<#if jpush.jumpPath == learnarticlepage>selected="selected" </#if>>学堂文章详情</option>
+                                    <option value="invitationpage" name="jumpName"<#if jpush.jumpPath == invitationpage>selected="selected" </#if>>我的邀请</option>
+                                    <option value="activityGoodsListpage" name="jumpName"<#if jpush.jumpPath == activityGoodsListpage>selected="selected" </#if>>活动页面</option>
+                                    <option value="buyCouponspage" name="jumpName"<#if jpush.jumpPath == buyCouponspage>selected="selected" </#if>>优惠券购买详情</option>
+                                    <option value="" <#if jpush.jumpPath == "">selected="selected"</#if>>请选择</option>
+                                </select>
+                                <input name="jumpJson" class="w200" value="${jumpJson}"style="height:23px;border:1px solid #ccc;"/>
+                                <a class="btn-search" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;"></a>
                             </div>
-                        </td>
-                        <td class="vatop tips"></td>
-                    </tr>
-                </#if>
-                    <tr class="noborder">
-                        <td class="required" width="150px">
-                            <em class="pngFix"></em>
-                        </td>
-                        <td colspan="2" class="vatop ">
-                            <div class="col-sm-9">
-                                <div class="col-lg-1" STYLE="width: 90%;display: none;">
-                                    <input type="radio" name="" value="1"  id="" <#if reduceType ==1> checked </#if> >
-                                    <span >跳转路径</span>
-                                    <input name="" type="text" id="" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"  style="width:95px;"  <#if reduceType ==1> value="${couponValue}"</#if> />
-                                </div>
-
+                        </div>
+                    </td>
+                </tr>
+                <tr class="noborder">
+                    <td class="required" width="150px">
+                        <em class="pngFix"></em>
+                    </td>
+                    <td>
+                        <div class="col-sm-9">
+                            <div class="col-lg-1" STYLE="width: 90%;" >
+                                <input type="radio" name="jump" id="jumps">
+                                <span >跳转链接</span>
+                                <input name="jumpUrl"  type="text" id="link" class="w300"  value="${message.jumpUrl}" />
                             </div>
-                        </td>
-                    </tr>
-                    <tr class="noborder">
-                        <td class="required" width="150px">
-                            <em class="pngFix"></em>
-                        </td>
-                        <td colspan="2" class="vatop ">
-                            <div class="col-sm-9">
-                                <#--满折扣-->
-                                <div class="col-lg-1" STYLE="width: 90%;display: none;" >
-                                    <input type="radio" name="" value="3" id=""  <#if reduceType ==3> checked </#if> >
-                                    <span >跳转链接</span>
-                                    <input name=""  type="text" id="" style="width:95px;"   <#if reduceType ==3> value="${couponValue}"</#if> />
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </td>
+                </tr>
                 </tbody>
                 <tfoot>
                 <tr>
                     <td></td>
                     <td>
-                        <#if coupon??>
-                            <a class="btn" href="javascript:history.go(-1);"
-                               style="float:left"><span><@spring.message "button.back"/></span></a>
-                        <#else>
                             <a class="btn" href="javascript:history.go(-1);"
                                style="float:left"><span><@spring.message "button.back"/></span></a>
                             <a class="btn btn-success" id="subForm" type="submit">提交</a>
-                        </#if>
                     </td>
                 </tr>
                 </tfoot>
