@@ -220,7 +220,9 @@ public class AuthcAPIController extends BaseController {
         }
 
         //昵称过滤敏感字
-        evaluateSensitivityService.filterWords(param.getName());
+        if(param.getName()!=null){
+            evaluateSensitivityService.filterWords(param.getName());
+        }
         RdMmBasicInfo rdMmBasicInfo = new RdMmBasicInfo();
         rdMmBasicInfo.setMobile(param.getMobile());
         if(param.getName()!=null){
@@ -231,10 +233,12 @@ public class AuthcAPIController extends BaseController {
         if(verificationMobile!=null&&verificationMobile.size()>0){
             return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "手机号码已经注册");
         }
-        List<RdMmBasicInfo> rdMmBasicInfoList = rdMmBasicInfoService
-            .findList(Paramap.create().put("mmNickName", param.getName()));
-        if (rdMmBasicInfoList != null && rdMmBasicInfoList.size() > 0) {
-            return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "昵称已被占用");
+        if(param.getName()!=null){
+            List<RdMmBasicInfo> rdMmBasicInfoList = rdMmBasicInfoService
+                    .findList(Paramap.create().put("mmNickName", param.getName()));
+            if (rdMmBasicInfoList != null && rdMmBasicInfoList.size() > 0) {
+                return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "昵称已被占用");
+            }
         }
         /**
          * 证件类型 1.身份证2.护照3.军官证4.回乡证
