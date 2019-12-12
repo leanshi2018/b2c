@@ -78,7 +78,7 @@ public class ShopCommonMessageNewController extends GenericController {
             }else {
                 model.addAttribute("message", null);
             }
-            return "";//跳往新增或编辑页面
+            return "/common/notification_message/edit";//跳往新增或编辑页面
         } else {
             model.addAttribute("message", null);
             return "/common/notification_message/edit";
