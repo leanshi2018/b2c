@@ -18,7 +18,7 @@ import com.framework.loippi.utils.Paramap;
 public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Long> {
 
 
-    void addUser(RdMmBasicInfo rdMmBasicInfo, RdMmAccountInfo rdMmAccountInfo, RdMmRelation rdMmRelation,Integer registerType);
+    void addUser(RdMmBasicInfo rdMmBasicInfo, RdMmAccountInfo rdMmAccountInfo, RdMmRelation rdMmRelation,Integer registerType) throws Exception;
     // 登录时验证用户是否存在
     RdMmBasicInfo findMemberExist(RdMmBasicInfo member);
     /**

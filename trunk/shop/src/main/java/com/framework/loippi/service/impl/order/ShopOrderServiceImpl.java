@@ -154,6 +154,7 @@ import com.framework.loippi.vo.stats.StatsCountVo;
 import com.framework.loippi.vo.store.StoreStatisticsVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * SERVICE - ShopOrder(订单表)
@@ -163,6 +164,7 @@ import com.google.common.collect.Maps;
  */
 @Service
 @Slf4j
+@Transactional
 public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> implements ShopOrderService {
     @Autowired
     private RdSysPeriodService rdSysPeriodService;
@@ -4170,10 +4172,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             ShopOrder order = orderDao.find(refundReturn.getOrderId());
             BigDecimal money = Optional.ofNullable(order.getRefundAmount()).orElse(BigDecimal.valueOf(0));
             BigDecimal ppv = Optional.ofNullable(order.getRefundPpv()).orElse(BigDecimal.ZERO);
+            BigDecimal point = BigDecimal.ZERO;
             ShopOrder newShopOrder = new ShopOrder();
             newShopOrder.setId(order.getId());
             newShopOrder.setRefundAmount(money.add(refundReturn.getRefundAmount()));
             newShopOrder.setRefundPpv(ppv.add(refundReturn.getPpv()));
+            newShopOrder.setRefundPoint(point);
             orderDao.update(newShopOrder);
             BigDecimal totalMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).
                     add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)).add(Optional.ofNullable(order.getShippingPreferentialFee()).orElse(BigDecimal.ZERO));

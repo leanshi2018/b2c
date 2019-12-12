@@ -278,7 +278,33 @@ public class UserAPIController extends BaseController {
         if ("".equals(str.trim())) {
             return ApiUtils.error("验证老用户发生错误");
         } else if ("0".equals(str.trim())) {
-            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+            //1.根据新系统会员找到其推荐人 如果推荐人是新系统会员，不允许绑定
+            RdMmRelation mmRelationSpo = rdMmRelationService.find("mmCode", mmRelation.getSponsorCode());
+            if(mmRelationSpo==null){
+                return ApiUtils.error("推荐人信息异常");
+            }
+            if(mmRelationSpo.getNOFlag()==1){
+                return ApiUtils.error("当前会员推荐人为新系统会员，不可进行老系统会员绑定");
+            }
+            //2.根据当前提供的老系统会员，找到第一个在新系统注册的推荐人（同线），到达公司节点位置，如果找不到，则无法绑定 ，找得到，需要与当前推荐人对应老系统会员匹配
+            OldSysRelationship relationship = oldSysRelationshipService.find("nMcode", mmRelationSpo.getMmCode());
+            if(relationship==null){
+                return ApiUtils.error("推荐人老系统信息异常");
+            }
+            String spoOldCode = relationship.getOMcode();
+            //递归查询出指定会员在中间表中的已经注册的推荐人
+            String oCode = getOldMemberIsRegistered(oldSysRelationship);
+            if(!spoOldCode.equals(oCode)){
+                return ApiUtils.error("绑定的老系统会员和新系统推荐人关系网不正确");
+            }
+            try {
+                rdMmRelationService.badingAndUpgrade(mmRelation,oldSysRelationship);
+                return ApiUtils.success("老系统会员绑定成功");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ApiUtils.success("网络异常，请稍后重试");
+            }
+/*            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
             Integer raSponsorStatus = rdMmRelation.getRaSponsorStatus();
             if(raSponsorStatus==1){//如果需要修改会员在新系统绑定状态为永久状态，
                 OldSysRelationship oldSysRelationship1 = oldSysRelationshipService.find("nMcode", rdMmRelation.getSponsorCode());
@@ -319,7 +345,7 @@ public class UserAPIController extends BaseController {
                     return ApiUtils.success("网络异常，请稍后重试");
                 }
             }
-            return ApiUtils.error("会员绑定状态错误");
+            return ApiUtils.error("会员绑定状态错误");*/
         } else if ("1".equals(str.trim())) {
             return ApiUtils.error("老系统会员编号不存在");
         } else if ("2".equals(str.trim())) {
@@ -332,6 +358,28 @@ public class UserAPIController extends BaseController {
         } else {
             return ApiUtils.error("验证老用户发生错误");
         }
+    }
+
+    private String getOldMemberIsRegistered(OldSysRelationship oldSysRelationship){
+        Boolean flag=true;
+        String oCode="";
+        String oSpoCode=oldSysRelationship.getOSpcode();
+        while (flag){
+            OldSysRelationship oldSysRelationship1 = oldSysRelationshipService.find("oMcode",oSpoCode);
+            if(oldSysRelationship1==null){
+                flag=false;
+            }
+            if(oldSysRelationship1.getNMcode().equals("101000158")){
+                flag=false;
+                oCode="101000158";
+            }
+            if(oldSysRelationship1.getNYnRegistered()==1){
+                flag=false;
+                oCode=oldSysRelationship1.getOMcode();
+            }
+            oSpoCode=oldSysRelationship1.getOSpcode();
+        }
+        return oCode;
     }
 
     /**

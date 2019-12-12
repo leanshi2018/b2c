@@ -16,15 +16,25 @@ import com.alibaba.fastjson.JSONObject;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.JpushConstant;
 import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.entity.activity.ShopActivity;
+import com.framework.loippi.entity.common.ShopCommonArticle;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.jpush.Jpush;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.activity.ShopActivityService;
+import com.framework.loippi.service.common.ShopCommonArticleService;
+import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.jpush.JpushService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -39,9 +49,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Controller("JpushController")
 @RequestMapping("/admin/jpush")
@@ -50,6 +58,16 @@ public class JpushController extends GenericController {
     private TwiterIdService twiterIdService;
     @Resource
     private JpushService jpushService;
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
+    @Resource
+    private ShopGoodsService shopGoodsService;
+    @Resource
+    private ShopActivityService shopActivityService;
+    @Resource
+    private ShopCommonArticleService shopCommonArticleService;
+    @Resource
+    private CouponService couponService;
 
     /**
      * 使用极光推送像用户推送消息并在成功后存储推送信息到数据库
@@ -217,5 +235,170 @@ public class JpushController extends GenericController {
         Page<Jpush> page = jpushService.findByPage(pager);
         model.addAttribute("jpushList", page);
         return "/common/push_management/index";
+    }
+
+    /**
+     * 跳转到添加推送页面
+     *
+     */
+    @RequestMapping("/add/forword")
+    public String forword(ModelMap model) {
+        model.addAttribute("jpush",null);
+        return "/common/push_management/edit";
+    }
+
+    /**
+     * 查看推送消息内容
+     *
+     */
+    @RequestMapping("/show")
+    public String show(ModelMap model,@RequestParam(required = true,value = "id")Long id) {
+        Jpush jpush = jpushService.find(id);
+        if(jpush==null){
+            model.addAttribute("msg","推送信息不存在");
+            return Constants.MSG_URL;
+        }
+        String audience = jpush.getAudience();
+        if(!audience.equals("all")){//如果部分推送，则将数据解析，返还一个会员基础信息集合
+            String[] codes = audience.split(",");
+            List<String> strings = Arrays.asList(codes);
+            List<RdMmBasicInfo> list = rdMmBasicInfoService.findShopMember(strings);
+            if(list!=null&&list.size()>0){
+                model.addAttribute("basicInfoList",list);
+            }else {
+                model.addAttribute("basicInfoList",null);
+            }
+        }else {
+            model.addAttribute("basicInfoList",null);
+        }
+        model.addAttribute("jpush",jpush);
+        return "/common/push_management/edit";
+    }
+
+    /**
+     * 查找会员
+     */
+    @RequestMapping(value = "/findMember", method = RequestMethod.GET)
+    public String findMember(String info, ModelMap model) {
+        if(StringUtil.isEmpty(info)){
+            model.addAttribute("rdMmBasicInfoList",new ArrayList<RdMmBasicInfo>());
+            return "";//TODO
+        }
+        ArrayList<RdMmBasicInfo> rdMmBasicInfos = new ArrayList<>();
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode",info);
+        if(rdMmBasicInfo!=null){
+            rdMmBasicInfos.add(rdMmBasicInfo);
+        }
+        RdMmBasicInfo rdMmBasicInfo1 = rdMmBasicInfoService.find("mobile",info);
+        if(rdMmBasicInfo1!=null){
+            rdMmBasicInfos.add(rdMmBasicInfo1);
+        }
+        model.addAttribute("rdMmBasicInfoList", rdMmBasicInfos);
+        return "/common/select/selectMember";//TODO
+    }
+
+    /**
+     * 查找商品
+     */
+    @RequestMapping(value = "/findGoods", method = RequestMethod.POST)
+    public String findGoods(String info, ModelMap model,
+    @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+    @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
+        if(StringUtil.isEmpty(info)){
+            model.addAttribute("goods",null);
+            return "";//TODO
+        }
+        Pageable pageable = new Pageable();
+        pageable.setPageSize(pageSize);
+        pageable.setPageNumber(pageNo);
+        pageable.setOrderDirection(Order.Direction.DESC);
+        pageable.setOrderProperty("salenum");
+        ShopGoods goods = new ShopGoods();
+        goods.setGoodsShow(1);
+        goods.setGoodsState(0);
+        goods.setIsDel(2);
+        goods.setState(1);
+        goods.setGoodsListKeywords(info);
+        pageable.setParameter(goods);
+        Page<ShopGoods> page = shopGoodsService.findByPage(pageable);
+        model.addAttribute("goods",page);
+        return "";//TODO
+    }
+
+    /**
+     * 查找活动
+     */
+    @RequestMapping(value = "/findActivitys", method = RequestMethod.POST)
+    public String findActivitys(String info, ModelMap model,
+                            @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                            @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
+        if(StringUtil.isEmpty(info)){
+            model.addAttribute("activitys",null);
+            return "";//TODO
+        }
+        Pageable pageable = new Pageable();
+        pageable.setPageSize(pageSize);
+        pageable.setPageNumber(pageNo);
+        pageable.setOrderDirection(Order.Direction.DESC);
+        pageable.setOrderProperty("create_time");
+        ShopActivity shopActivity = new ShopActivity();
+        shopActivity.setActivityStatus(20);
+        shopActivity.setAuditStatus(1);
+        shopActivity.setActivityName(info);
+        pageable.setParameter(shopActivity);
+        Page<ShopActivity> page = shopActivityService.findByPage(pageable);
+        model.addAttribute("activitys",page);
+        return "/common/select/selectActivitys";//TODO
+    }
+
+    /**
+     * 查找文章
+     */
+    @RequestMapping(value = "/findArticles", method = RequestMethod.POST)
+    public String findArticles(String info, ModelMap model,
+                                @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                                @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
+        if(StringUtil.isEmpty(info)){
+            model.addAttribute("articles",null);
+            return "";//TODO
+        }
+        Pageable pageable = new Pageable();
+        pageable.setPageSize(pageSize);
+        pageable.setPageNumber(pageNo);
+        pageable.setOrderDirection(Order.Direction.DESC);
+        pageable.setOrderProperty("create_time");
+        ShopCommonArticle article = new ShopCommonArticle();
+        article.setArticleShow(1);
+        article.setIsDel(0);
+        article.setStatus(1);
+        article.setKey(info);
+        pageable.setParameter(article);
+        Page<ShopCommonArticle> page = shopCommonArticleService.findByPage(pageable);
+        model.addAttribute("articles",page);
+        return "/common/select/selectArticles";//TODO
+    }
+    /**
+     * 查找优惠券
+     */
+    @RequestMapping(value = "/findCoupons", method = RequestMethod.POST)
+    public String findCoupons(String info, ModelMap model,
+                               @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                               @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
+        if(StringUtil.isEmpty(info)){
+            model.addAttribute("coupons",null);
+            return "";//TODO
+        }
+        Pageable pageable = new Pageable();
+        pageable.setPageSize(pageSize);
+        pageable.setPageNumber(pageNo);
+        pageable.setOrderDirection(Order.Direction.DESC);
+        pageable.setOrderProperty("create_time");
+        Coupon coupon = new Coupon();
+        coupon.setStatus(2);
+        coupon.setCouponLikeName(info);
+        pageable.setParameter(coupon);
+        Page<Coupon> page = couponService.findByPage(pageable);
+        model.addAttribute("coupons",page);
+        return "";//TODO
     }
 }

@@ -13,6 +13,7 @@ import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.LeavingMessageDetailResult;
 import com.framework.loippi.result.user.LeavingMessageListResult;
 import com.framework.loippi.result.user.MessageListResult;
+import com.framework.loippi.result.user.SysMessageListResult;
 import com.framework.loippi.service.PushService;
 import com.framework.loippi.service.ShopCommonMessageService;
 import com.framework.loippi.service.ShopMemberMessageService;
@@ -142,6 +143,28 @@ public class MessageCenterApiController extends BaseController {
         }
         pushService.updateReadUMessage(Long.parseLong(member.getMmCode()), bizType);
         return ApiUtils.success(MessageListResult.build(memberMessageList));
+    }
+
+    /**
+     * 消息列表
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping("/mySysMessage")
+    public String mySysMessage(HttpServletRequest request, @RequestParam(value = "pageNumber", defaultValue = "1") Integer pageNumber,
+                            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+        Pageable pageable = new Pageable(pageNumber, pageSize);pageable.setOrderProperty("is_top,create_time");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        pageable.setOrderProperty("is_top,create_time");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        ShopCommonMessage message = new ShopCommonMessage();
+        message.setBizType(1);
+        message.setType(1);
+        pageable.setParameter(message);
+        Page<ShopCommonMessage> page = shopCommonMessageService.findByPage(pageable);
+        List<SysMessageListResult> results = SysMessageListResult.build(page.getContent());
+        return ApiUtils.success(results);
     }
 
     /**

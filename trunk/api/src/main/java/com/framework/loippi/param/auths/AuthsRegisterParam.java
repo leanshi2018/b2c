@@ -31,7 +31,7 @@ public class AuthsRegisterParam {
     @NotEmpty
     private String password;
 
-    @NotEmpty
+    /*@NotEmpty*/
     private String name;
 
     /**

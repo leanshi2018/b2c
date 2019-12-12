@@ -10,13 +10,11 @@ import com.framework.loippi.entity.AliPayRefund;
 import com.framework.loippi.entity.TSystemPluginConfig;
 import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.coupon.*;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.*;
 import com.framework.loippi.service.TSystemPluginConfigService;
 import com.framework.loippi.service.alipay.AlipayRefundService;
 import com.framework.loippi.service.coupon.*;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.*;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.service.wechat.WechatRefundService;
 import com.framework.loippi.utils.NumberUtils;
@@ -27,13 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.framework.loippi.dao.coupon.CouponDao;
 import com.framework.loippi.dao.coupon.CouponDetailDao;
 import com.framework.loippi.dao.coupon.CouponUserDao;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.result.common.coupon.CouponTransferResult;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.utils.Paramap;
 
 /**
@@ -74,6 +68,8 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
     private TwiterIdService twiterIdService;
     @Resource
     private RdSysPeriodService rdSysPeriodService;
+    @Resource
+    private RdMmRelationService rdMmRelationService;
 
     /**
      *  添加/编辑优惠券
@@ -704,6 +700,107 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
             }
         }
     }
+
+    /**
+     * 注册完成后赠送优惠券
+     * @param mobile
+     */
+    @Override
+    public void givingCoupon(String mobile) throws Exception{
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mobile",mobile);
+        if(rdMmBasicInfo==null){
+            throw new RuntimeException("会员信息异常");
+        }
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode",rdMmBasicInfo.getMmCode());
+        if(rdMmRelation==null){
+            throw new RuntimeException("会员信息异常");
+        }
+        String sponsorCode = rdMmRelation.getSponsorCode();
+        Coupon coupon = couponDao.find(6555008628095455332L);//TODO
+        if(coupon==null||coupon.getStatus()!=2){
+            throw new RuntimeException("优惠券信息异常");
+        }
+        //分别为注册人和注册人推荐人发放优惠券
+        List<CouponUser> users = couponUserService.findList(Paramap.create().put("mCode", rdMmBasicInfo.getMmCode()).put("couponId", coupon.getId()));
+        CouponUser couponUser = null;
+        if(users==null||users.size()==0){
+            couponUser=new CouponUser();
+            couponUser.setId(twiterIdService.getTwiterId());
+            couponUser.setMCode(rdMmBasicInfo.getMmCode());
+            couponUser.setCouponId(coupon.getId());
+            couponUser.setHaveCouponNum(1);
+            couponUser.setOwnNum(1);
+            couponUser.setUseAbleNum(coupon.getUseNumLimit());
+            couponUser.setUseNum(0);
+            couponUserService.save(couponUser);
+
+        }else {
+            couponUser = users.get(0);
+            couponUser.setHaveCouponNum(couponUser.getHaveCouponNum()+1);
+            couponUser.setOwnNum(couponUser.getOwnNum()+1);
+            couponUserService.update(couponUser);
+        }
+        //给注册人发券
+        CouponDetail couponDetail = new CouponDetail();
+        couponDetail.setId(twiterIdService.getTwiterId());
+        couponDetail.setRdCouponUserId(couponUser.getId());
+        couponDetail.setCouponId(coupon.getId());
+        couponDetail.setCouponSn("YH"+twiterIdService.getTwiterId());
+        couponDetail.setCouponName(coupon.getCouponName());
+        couponDetail.setReceiveId(rdMmBasicInfo.getMmCode());
+        couponDetail.setReceiveNickName(rdMmBasicInfo.getMmNickName());
+        couponDetail.setReceiveTime(new Date());
+        couponDetail.setHoldId(rdMmBasicInfo.getMmCode());
+        couponDetail.setHoldNickName(rdMmBasicInfo.getMmNickName());
+        couponDetail.setHoldTime(new Date());
+        couponDetail.setUseStartTime(coupon.getUseStartTime());
+        couponDetail.setUseEndTime(coupon.getUseEndTime());
+        couponDetail.setUseState(2);
+        couponDetailDao.insert(couponDetail);
+        RdMmBasicInfo rdMmBasicInfo1 = rdMmBasicInfoService.find("mmCode",sponsorCode);
+        if(rdMmBasicInfo1==null){
+            throw new RuntimeException("会员推荐人信息异常");
+        }
+        List<CouponUser> users1 = couponUserService.findList(Paramap.create().put("mCode", rdMmBasicInfo1.getMmCode()).put("couponId", coupon.getId()));
+        CouponUser couponUser1 = null;
+        if(users1==null||users1.size()==0){
+            couponUser1=new CouponUser();
+            couponUser1.setId(twiterIdService.getTwiterId());
+            couponUser1.setMCode(rdMmBasicInfo1.getMmCode());
+            couponUser1.setCouponId(coupon.getId());
+            couponUser1.setHaveCouponNum(1);
+            couponUser1.setOwnNum(1);
+            couponUser1.setUseAbleNum(coupon.getUseNumLimit());
+            couponUser1.setUseNum(0);
+            couponUserService.save(couponUser1);
+        }else {
+            couponUser1 = users1.get(0);
+            couponUser1.setHaveCouponNum(couponUser1.getHaveCouponNum()+1);
+            couponUser1.setOwnNum(couponUser1.getOwnNum()+1);
+            couponUserService.update(couponUser1);
+        }
+        //给注册人推荐人发券
+        CouponDetail couponDetail1 = new CouponDetail();
+        couponDetail1.setId(twiterIdService.getTwiterId());
+        couponDetail1.setRdCouponUserId(couponUser1.getId());
+        couponDetail1.setCouponId(coupon.getId());
+        couponDetail1.setCouponSn("YH"+twiterIdService.getTwiterId());
+        couponDetail1.setCouponName(coupon.getCouponName());
+        couponDetail1.setReceiveId(rdMmBasicInfo1.getMmCode());
+        couponDetail1.setReceiveNickName(rdMmBasicInfo1.getMmNickName());
+        couponDetail1.setReceiveTime(new Date());
+        couponDetail1.setHoldId(rdMmBasicInfo1.getMmCode());
+        couponDetail1.setHoldNickName(rdMmBasicInfo1.getMmNickName());
+        couponDetail1.setHoldTime(new Date());
+        couponDetail1.setUseStartTime(coupon.getUseStartTime());
+        couponDetail1.setUseEndTime(coupon.getUseEndTime());
+        couponDetail1.setUseState(2);
+        couponDetailDao.insert(couponDetail1);
+        //修改优惠券发放数量
+        coupon.setReceivedNum(coupon.getReceivedNum()+2);
+        couponDao.update(coupon);
+    }
+
     public void updateCouponDetailList(CouponPayDetail couponPayDetail, String bathno, Coupon coupon, List<CouponDetail> couponDetailList,Integer refundNum) {
 
         if ((couponPayDetail.getRefundCouponNum()+refundNum)==couponPayDetail.getCouponNumber()){

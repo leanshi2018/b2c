@@ -72,7 +72,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
 
     @Override
     public void addUser(RdMmBasicInfo rdMmBasicInfo, RdMmAccountInfo rdMmAccountInfo, RdMmRelation rdMmRelation,
-        Integer registerType) {
+        Integer registerType) throws Exception {
         String newMmCode = "";
         if (registerType == 1) {
             String oldMmCode = rdMmBasicInfoDao.getMaxMmCode();
@@ -80,6 +80,8 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             if (newMmCode.endsWith("4")) {
                 newMmCode = (Long.parseLong(newMmCode) + 1) + "";
             }
+            rdMmBasicInfo.setMmNickName(newMmCode);
+            rdMmBasicInfo.setMmName(newMmCode);
         }
         RaMember raMember = null;
 
