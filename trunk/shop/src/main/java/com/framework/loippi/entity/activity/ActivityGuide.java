@@ -36,4 +36,8 @@ public class ActivityGuide implements GenericEntity, Cloneable {
      * 跳转路径标题
      */
     private String title;
+    /**
+     * 跳转path
+     */
+    private String path;
 }

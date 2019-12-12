@@ -8,15 +8,16 @@
         <result property="url" column="url"/>
         <result property="isUse" column="is_use"/>
         <result property="title" column="title"/>
+        <result property="path" column="path"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,image ,url ,is_use,title
+        id ,image ,url ,is_use,title,path
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{image},#{url},#{isUse},#{title}
+        #{id},#{image},#{url},#{isUse},#{title},#{path}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -36,6 +37,9 @@
         <if test="title != null and title != ''">
             AND title = #{title,jdbcType=VARCHAR}
         </if>
+        <if test="path != null and path != ''">
+            AND path = #{path,jdbcType=VARCHAR}
+        </if>
     </sql>
 
     <!-- 设置语句 -->
@@ -54,6 +58,9 @@
         </if>
         <if test="title != null and title != ''">
             title = #{title,jdbcType=VARCHAR},
+        </if>
+        <if test="path != null and path != ''">
+            path = #{path,jdbcType=VARCHAR},
         </if>
     </sql>
 
