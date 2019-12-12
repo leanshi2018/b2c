@@ -67,6 +67,7 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 		rdMmRelation.setNOFlag(2);
 		rdMmRelation.setRaShopYn(1);
 		rdMmRelation.setRaStatus(1);
+		rdMmRelation.setRaSponsorStatus(0);
 		oldSysRelationship.setNYnRegistered(1);
 		oldSysRelationship.setNMcode(rdMmRelation.getMmCode());
         oldSysRelationship.setUpdateTime(new Date());

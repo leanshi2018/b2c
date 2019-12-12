@@ -80,6 +80,8 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             if (newMmCode.endsWith("4")) {
                 newMmCode = (Long.parseLong(newMmCode) + 1) + "";
             }
+            rdMmBasicInfo.setMmNickName(newMmCode);
+            rdMmBasicInfo.setMmName(newMmCode);
         }
         RaMember raMember = null;
 
