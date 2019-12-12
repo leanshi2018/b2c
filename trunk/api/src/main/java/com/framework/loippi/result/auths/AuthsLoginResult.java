@@ -60,6 +60,14 @@ public class AuthsLoginResult {
     private Integer rankId;
     //是否赠送优惠券 0 否  1 是
     private Integer getCouponFlag;
+    //赠送优惠券图片
+    private String image;
+    //跳转路径
+    private String path;
+    //跳转连接
+    private String url;
+    //标题
+    private String title;
 
     public static AuthsLoginResult of(RdMmBasicInfo account, AuthsLoginResult session, String preUrl) {
         if (account == null) {
