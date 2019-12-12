@@ -72,6 +72,7 @@ public class CommonController extends BaseController {
     private QiniuService qiniuService;
 
     /**
+	 * 注册过的手机才经过这个接口
      * 发送短信验证码： 向第三方发送短信验证码  Integer msgType:0-注册1-忘记密码2-验证手机号3-修改手机号4-pc端登录
      */
     @RequestMapping(value = "/api/common/msg.json", method = {RequestMethod.POST})
@@ -93,6 +94,10 @@ public class CommonController extends BaseController {
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", mobile);
         List<RdMmBasicInfo> account = rdMmBasicInfoService.findList(params);
+        if (account.size()==0){
+			return ApiUtils.error("不存在该账号");
+		}
+
         if (msgType == VerifyCodeType.REGISTER.code) {
             if (account.size() > 0) {
                 return ApiUtils.error("该手机已被注册");
@@ -136,6 +141,7 @@ public class CommonController extends BaseController {
     }
 
     /**
+	 * 未注册过的手机才经过这个接口
      * 注册发送短信验证码： 向第三方发送短信验证码  Integer msgType:0-注册1-忘记密码2-验证手机号3-修改手机号4-pc端登录
      */
     @RequestMapping(value = "/api/common/zcmsg.json", method = {RequestMethod.POST})
@@ -166,6 +172,7 @@ public class CommonController extends BaseController {
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", mobile);
         List<RdMmBasicInfo> account = rdMmBasicInfoService.findList(params);
+
         if (msgType == VerifyCodeType.REGISTER.code) {
             if (account.size() > 0) {
                 return ApiUtils.error("该手机已被注册");

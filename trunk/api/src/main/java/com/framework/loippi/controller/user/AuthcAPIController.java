@@ -15,7 +15,6 @@ import com.framework.loippi.vo.order.OrderSumPpv;
 import org.springframework.web.bind.annotation.RequestParam;
 import redis.clients.jedis.exceptions.JedisException;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -167,32 +166,37 @@ public class AuthcAPIController extends BaseController {
          * 加法验证码
          */
         @RequestMapping("/number")
-        public void number(HttpServletRequest request ,HttpServletResponse response ,String mobile) throws IOException {
+        public void number(HttpServletRequest request ,HttpServletResponse response ,String mobile) throws Exception {
             response.setHeader("Cache-Control", "no-store, no-cache");
             response.setContentType("image/jpeg");
 
-            //生成文字验证码
-            String text = producer.createText();
+            try {
+                //生成文字验证码
+                String text = producer.createText();
 
-            //个位数字相加
-            String s1 = text.substring(0, 1);
-            String s2 = text.substring(1, 2);
-            int count = Integer.valueOf(s1).intValue() + Integer.valueOf(s2).intValue();
+                //个位数字相加
+                String s1 = text.substring(0, 1);
+                String s2 = text.substring(1, 2);
+                int count = Integer.valueOf(s1).intValue() + Integer.valueOf(s2).intValue();
 
-            System.out.println("******************************************");
-            System.out.println("验证码计算后="+count);
-            System.out.println("******************************************");
+                System.out.println("******************************************");
+                System.out.println("验证码计算后="+count);
+                System.out.println("******************************************");
 
-            //生成图片验证码
-            BufferedImage image = producer.createImage(s1 + "+" + s2 + "=?");
+                //生成图片验证码
+                BufferedImage image = producer.createImage(s1 + "+" + s2 + "=?");
 
-            //保存 redis key 自己设置
-            redisService.save("A"+mobile, count);
+                //保存 redis key 自己设置
+                redisService.save("A"+mobile, count);
 
-            //redisService.delete("A"+Mobile);
+                //redisService.delete("A"+Mobile);
 
-            ServletOutputStream out = response.getOutputStream();
-            ImageIO.write(image, "jpg", out);
+                ServletOutputStream out = response.getOutputStream();
+                ImageIO.write(image, "jpg", out);
+            } catch (Exception e) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
         }
 
 
