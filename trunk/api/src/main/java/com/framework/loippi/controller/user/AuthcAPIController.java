@@ -228,7 +228,9 @@ public class AuthcAPIController extends BaseController {
         evaluateSensitivityService.filterWords(param.getName());
         RdMmBasicInfo rdMmBasicInfo = new RdMmBasicInfo();
         rdMmBasicInfo.setMobile(param.getMobile());
-        rdMmBasicInfo.setMmNickName(param.getName());
+        if(param.getName()!=null){
+            rdMmBasicInfo.setMmNickName(param.getName());
+        }
         rdMmBasicInfo.setCreationIp(request.getRemoteAddr());
         List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("mobile", param.getMobile()));
         if(verificationMobile!=null&&verificationMobile.size()>0){
@@ -382,7 +384,7 @@ public class AuthcAPIController extends BaseController {
         rdMmBasicInfo.setIdCode(param.getMemberTrueId());
         rdMmBasicInfo.setIdType(param.getType());
         //rdMmBasicInfo.setMmName(param.getMemberTrueName());
-        rdMmBasicInfo.setMmName(param.getName());
+        rdMmBasicInfo.setMmName(Optional.ofNullable(param.getName()).orElse(""));
         rdMmBasicInfo.setPushStatus(1);
         rdMmRelation.setARetail(BigDecimal.ZERO);
         rdMmRelation.setLoginPwd(Digests.entryptPassword(param.getPassword()));
