@@ -40,7 +40,7 @@
         </div>
         <div class="fixed-empty">
         </div>
-        <form id="add_form" action="" method="post">
+        <form id="add_form" action="${base}/admin/shop_common_message_new/saveOrUpdate.jhtml" method="post">
             <table class="table tb-type2">
                <tbody>
                 <tr>

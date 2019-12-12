@@ -184,7 +184,7 @@
                         </td>
                         <td>
                             <input class="w200 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="pushTime" name="pushTime" value="${jpush.pushTime}"/>
+                                   id="pushTime" name="pushTime" value=""/>
                             <span class="error-message"></span>
                         </td>
                     </tr>
@@ -193,12 +193,12 @@
                             <em class="pngFix"></em>目标平台
                         </td>
                         <td>
-                            <label><input name="platform"  type="checkbox" value="0" />所有</label>
-                            <label><input name="platform"  type="checkbox" value="1" />安卓</label>
-                            <label><input name="platform"  type="checkbox" value="2" />IOS正式</label>
-                            <label><input name="platform"  type="checkbox" value="3" />IOS测试</label>
-                            <label><input name="platform"  type="checkbox" value="4" />安卓和IOS测试</label>
-                            <label><input name="platform"  type="checkbox" value="5" />安卓和IOS正式</label>
+                            <label><input name="platform"  type="checkbox" value="0" <#if jpush.platform==0>checked</#if>/>所有</label>
+                            <label><input name="platform"  type="checkbox" value="1" <#if jpush.platform==1>checked</#if> />安卓</label>
+                            <label><input name="platform"  type="checkbox" value="2" <#if jpush.platform==2>checked</#if>/>IOS正式</label>
+                            <label><input name="platform"  type="checkbox" value="3" <#if jpush.platform==3>checked</#if>/>IOS测试</label>
+                            <label><input name="platform"  type="checkbox" value="4" <#if jpush.platform==4>checked</#if>/>安卓和IOS测试</label>
+                            <label><input name="platform"  type="checkbox" value="5" <#if jpush.platform==5>checked</#if>/>安卓和IOS正式</label>
                             <span class="error-message"></span>
                         </td>
                     </tr>
@@ -242,7 +242,7 @@
                                         <option value="buyCouponspage" name="jumpName"<#if jpush.jumpPath == buyCouponspage>selected="selected" </#if>>优惠券购买详情</option>
                                         <option value="" <#if jpush.jumpPath == "">selected="selected"</#if>>请选择</option>
                                     </select>
-                                    <input name="jumpJson" class="w150" value="${jumpJson}"style="height:23px;"/>
+                                    <input name="jumpJson" class="w200" value="${jumpJson}"style="height:23px;border:1px solid #ccc;"/>
                                     <a class="btn-search" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;"></a>
                                 </div>
                             </div>
@@ -256,9 +256,9 @@
                             <div class="col-sm-9">
                                 <#--满折扣-->
                                 <div class="col-lg-1" STYLE="width: 90%;" >
-                                    <input type="radio" name="jump" value="" id="">
+                                    <input type="radio" name="jump" id="jumps">
                                     <span >跳转链接</span>
-                                    <input name="jumpLink"  type="text" id="link" class="w200"  value="${jpush.jumpLink}" />
+                                    <input name="jumpLink"  type="text" id="link" class="w300"  value="${jpush.jumpLink}" />
                                 </div>
                             </div>
                         </td>
@@ -287,7 +287,10 @@
     <script type="text/javascript" src="${base}/resources/js/plugins/colpick/colpick.js"></script>
     <script>
         $(function () {
-            //表单提交
+            var link=$("#link").val();
+            if(link!=""){
+                $("#jumps").attr("checked","checked");
+            }
             $("#subForm").click(function () {
                 var Title = $("#message").val();
                 if (Title == "") {

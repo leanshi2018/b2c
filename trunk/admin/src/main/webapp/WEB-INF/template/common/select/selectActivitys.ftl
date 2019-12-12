@@ -17,7 +17,7 @@
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
             <form method="post" name="formSearch" id="formSearch"
-                  action="${base}/admin/plarformShopCoupon/coupon/select.jhtml?status=2">
+                  action="${base}/admin/jpush/findActivitys.jhtml">
                 <input type="hidden" name="pageNo" value="${1}">
                 <input type="hidden" name="id" value="${id}"/>
                 <table class="tb-type1 noborder search">
@@ -50,7 +50,7 @@
                             ${activity.id}
                         </td>
                         <td style="text-align: left">
-
+                            ${activity.name}
                         </td>
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
@@ -70,10 +70,10 @@
         </div>
     </div>
     <script>
-        function selSpeccoupons(id, couponName) {
+        function selSpeccoupons(id, name) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendGoods(id, couponName);
+            parent.appendGoods(id, name);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);
