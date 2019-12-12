@@ -22,4 +22,6 @@ public interface ShopCommonAreaService  extends GenericService<ShopCommonArea, L
     MemberAddresVo findByAreaId(Map<String, Object> params);
 
     List<ShopCommonArea> findByAreaName(String areaName);
+
+	void disableAndRestoreArea(Long areaId,int expressState);
 }

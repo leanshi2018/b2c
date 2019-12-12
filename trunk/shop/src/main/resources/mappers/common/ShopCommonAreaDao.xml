@@ -13,17 +13,18 @@
 		<result property="areaDeep" column="area_deep" />
 		<result property="isDel" column="is_del" />
 		<result property="seqNum" column="seq_num" />
+		<result property="expressState" column="express_state" />
 		<result property="createTime" column="create_time" />
 		<result property="updateTime" column="update_time" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 id ,area_name ,area_parent_id ,area_sort ,area_deep ,is_del ,seq_num ,create_time ,update_time 
+		 id ,area_name ,area_parent_id ,area_sort ,area_deep ,is_del ,seq_num ,express_state ,create_time ,update_time
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{id},#{areaName},#{areaParentId},#{areaSort},#{areaDeep},#{isDel},#{seqNum},#{createTime},#{updateTime}
+		 #{id},#{areaName},#{areaParentId},#{areaSort},#{areaDeep},#{isDel},#{seqNum},#{expressState},#{createTime},#{updateTime}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -48,6 +49,9 @@
 		</if>
 		<if test="seqNum != null and seqNum != ''">
 			AND seq_num = #{seqNum,jdbcType=VARCHAR}
+		</if>
+		<if test="expressState != null">
+			AND express_state = #{expressState,jdbcType=INTEGER}
 		</if>
 		<if test="createTime != null and createTime != ''">
 			AND create_time = #{createTime}
@@ -79,6 +83,9 @@
 		</if>
 		<if test="seqNum != null and seqNum != ''">
 			seq_num = #{seqNum,jdbcType=VARCHAR},
+		</if>
+		<if test="expressState != null">
+			express_state = #{expressState,jdbcType=INTEGER},
 		</if>
 		<if test="createTime != null">
 			create_time = #{createTime,jdbcType=},
@@ -173,11 +180,17 @@
 		WHERE sca.id = #{areaId}
 	</select>
 
-	<!--findByAreaName-->
 	<select id="findByAreaName" parameterType="string" resultMap="ShopCommonAreaResultMap">
 		SELECT	<include refid="base_column" />
 		FROM	SHOP_COMMON_AREA
 		WHERE	area_name=#{areaName}
 	</select>
+
+	<update id="disableAndRestoreArea" parameterType="map">
+        UPDATE SHOP_COMMON_AREA
+        set
+        express_state = #{expressState}
+        WHERE id LIKE #{id}"%"
+    </update>
 
 </mapper> 

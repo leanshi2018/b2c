@@ -186,4 +186,9 @@ public class AppConstants {
      * 评价包含敏感词
      */
     public static final int EVALUATION_CONTAIN_SENSITIVE_WORD = 6000012;
+
+    /**
+     * 收货地址不配送
+     */
+    public static final int RECEIVED_ADDRESS_NOT_EXPRESS = 6000013;
 }

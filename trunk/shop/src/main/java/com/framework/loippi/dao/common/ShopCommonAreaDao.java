@@ -21,4 +21,6 @@ public interface ShopCommonAreaDao  extends GenericDao<ShopCommonArea, Long> {
     MemberAddresVo findByAreaId(Map<String, Object> var1);
 
 	List<ShopCommonArea> findByAreaName(String areaName);
+
+	void disableAndRestoreArea(Map<String, Object> map);
 }
