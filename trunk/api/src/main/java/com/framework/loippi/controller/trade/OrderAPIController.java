@@ -1,10 +1,5 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.entity.coupon.CouponDetail;
-import com.framework.loippi.service.coupon.CouponDetailService;
-import com.framework.loippi.service.coupon.CouponService;
-import com.framework.loippi.vo.coupon.CouponVo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -38,6 +33,8 @@ import com.framework.loippi.controller.StateResult;
 import com.framework.loippi.entity.PayCommon;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
+import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderAddress;
@@ -70,6 +67,8 @@ import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.alipay.AlipayMobileService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressService;
+import com.framework.loippi.service.coupon.CouponDetailService;
+import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderAddressService;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;

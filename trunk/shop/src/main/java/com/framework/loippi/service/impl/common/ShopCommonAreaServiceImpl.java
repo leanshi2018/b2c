@@ -1,5 +1,6 @@
 package com.framework.loippi.service.impl.common;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,5 +39,13 @@ public class ShopCommonAreaServiceImpl extends GenericServiceImpl<ShopCommonArea
 	@Override
 	public List<ShopCommonArea> findByAreaName(String areaName) {
 		return shopCommonAreaDao.findByAreaName(areaName);
+	}
+
+	@Override
+	public void disableAndRestoreArea(Long id, int expressState) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("id",id);
+		map.put("expressState",expressState);
+		shopCommonAreaDao.disableAndRestoreArea(map);
 	}
 }

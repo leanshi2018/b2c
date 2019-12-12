@@ -1,17 +1,16 @@
 package com.framework.loippi.entity.common;
 
-import com.google.common.collect.Lists;
-
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
+import com.google.common.collect.Lists;
 
 /**
  * Entity - 地区表
@@ -54,7 +53,11 @@ public class ShopCommonArea implements GenericEntity {
 	/** 序号 */
 	@Column(name = "seq_num" )
 	private String seqNum;
-	
+
+	/** 物流不到地区状态 0：可送 1：不可送 */
+	@Column(name = "express_state" )
+	private Integer expressState;
+
 	/**  */
 	@Column(name = "create_time" )
 	private Date createTime;

@@ -1149,6 +1149,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if (shopCommonArea==null) {
                     throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
                 }
+                if (shopCommonArea.getExpressState()==1){//不配送
+                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                }
                 orderAddress.setAreaId(shopCommonArea.getId());
                 orderAddress.setCityId(shopCommonArea.getId());
                 orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
@@ -1502,6 +1505,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if (shopCommonArea==null) {
                     throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
                 }
+                if (shopCommonArea.getExpressState()==1){//不配送
+                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                }
                 orderAddress.setAreaId(shopCommonArea.getId());
                 orderAddress.setCityId(shopCommonArea.getId());
                 orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
@@ -1521,11 +1527,17 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     for (ShopCommonArea shopCommonArea : shopCommonAreas) {
                         if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
                             orderAddress.setAreaId(shopCommonArea.getId());
+                            if (shopCommonArea.getExpressState()==1){//不配送
+                                throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                            }
                         }
                     }
                     orderAddressDao.insert(orderAddress);
                 }else{
                     ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
+                    if (shopCommonArea.getExpressState()==1){//不配送
+                        throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                    }
                     orderAddress.setAreaId(shopCommonArea.getId());
                     //if ()
                     orderAddress.setCityId(shopCommonArea.getAreaParentId());
