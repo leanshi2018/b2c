@@ -191,7 +191,7 @@ public class ShopOrderJob {
                                 retailProfitDao.update(retailProfit);
                                 //设置零售利润积分发放通知
                                 ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
-                                shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
+                                shopCommonMessage.setSendUid(rdMmRelation1.getMmCode());
                                 shopCommonMessage.setType(1);
                                 shopCommonMessage.setOnLine(1);
                                 shopCommonMessage.setCreateTime(new Date());
@@ -209,7 +209,7 @@ public class ShopOrderJob {
                                 shopMemberMessage.setId(twiterIdService.getTwiterId());
                                 shopMemberMessage.setIsRead(0);
                                 shopMemberMessage.setMsgId(msgId);
-                                shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+                                shopMemberMessage.setUid(Long.parseLong(rdMmRelation1.getMmCode()));
                                 shopMemberMessageDao.insert(shopMemberMessage);
                             }
                         }
