@@ -366,7 +366,7 @@ public class AuthcAPIController extends BaseController {
         authsLoginResult.setUrl("https://www.smzdm.com/");
         authsLoginResult.setTitle("注册就送优惠券");
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("page","buyCouponspage");
+        hashMap.put("page","couponsListpage");
         hashMap.put("couponId","6555008628095455332");
         String json = JacksonUtil.toJson(hashMap);
         authsLoginResult.setPath(json);
