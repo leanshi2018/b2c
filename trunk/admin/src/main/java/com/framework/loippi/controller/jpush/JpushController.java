@@ -169,6 +169,10 @@ public class JpushController extends GenericController {
         PushPayload pushPayload = payLoad.build();
         Boolean flag=false;
         if(param.getPushTime()!=null){
+            if(param.getPushTime().getTime()<=new Date().getTime()){
+                model.addAttribute("msg", "推送时间不可小于当前系统时间");
+                return Constants.MSG_URL;
+            }
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String timeStr = format.format(param.getPushTime());
             try {

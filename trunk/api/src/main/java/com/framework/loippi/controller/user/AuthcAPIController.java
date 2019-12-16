@@ -10,16 +10,14 @@ import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.*;
+import com.framework.loippi.utils.*;
 import com.framework.loippi.vo.order.OrderSumPpv;
 import org.springframework.web.bind.annotation.RequestParam;
 import redis.clients.jedis.exceptions.JedisException;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -56,13 +54,6 @@ import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Digests;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.PostUtil;
-import com.framework.loippi.utils.SmsUtil;
-import com.framework.loippi.utils.StringUtil;
-import com.framework.loippi.utils.Xerror;
 import com.google.code.kaptcha.Producer;
 
 /**
@@ -229,7 +220,9 @@ public class AuthcAPIController extends BaseController {
         }
 
         //昵称过滤敏感字
-        evaluateSensitivityService.filterWords(param.getName());
+        if(param.getName()!=null){
+            evaluateSensitivityService.filterWords(param.getName());
+        }
         RdMmBasicInfo rdMmBasicInfo = new RdMmBasicInfo();
         rdMmBasicInfo.setMobile(param.getMobile());
         if(param.getName()!=null){
@@ -240,10 +233,12 @@ public class AuthcAPIController extends BaseController {
         if(verificationMobile!=null&&verificationMobile.size()>0){
             return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "手机号码已经注册");
         }
-        List<RdMmBasicInfo> rdMmBasicInfoList = rdMmBasicInfoService
-            .findList(Paramap.create().put("mmNickName", param.getName()));
-        if (rdMmBasicInfoList != null && rdMmBasicInfoList.size() > 0) {
-            return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "昵称已被占用");
+        if(param.getName()!=null){
+            List<RdMmBasicInfo> rdMmBasicInfoList = rdMmBasicInfoService
+                    .findList(Paramap.create().put("mmNickName", param.getName()));
+            if (rdMmBasicInfoList != null && rdMmBasicInfoList.size() > 0) {
+                return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "昵称已被占用");
+            }
         }
         /**
          * 证件类型 1.身份证2.护照3.军官证4.回乡证
@@ -367,6 +362,14 @@ public class AuthcAPIController extends BaseController {
         }
         authsLoginResult=AuthsLoginResult.of(member, authsLoginResult, prefix);
         authsLoginResult.setGetCouponFlag(flag);
+        authsLoginResult.setImage("http://rdnmall.com/FslvpSUoQX8rR9hQF7rqmkMclRoV");
+        authsLoginResult.setUrl("https://www.smzdm.com/");
+        authsLoginResult.setTitle("注册就送优惠券");
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("page","couponsListpage");
+        hashMap.put("couponId","6555008628095455332");
+        String json = JacksonUtil.toJson(hashMap);
+        authsLoginResult.setPath(json);
         try {
             redisService.save(sessionId, authsLoginResult);
             redisService.save("user_name" + member.getMmCode(), sessionId);
