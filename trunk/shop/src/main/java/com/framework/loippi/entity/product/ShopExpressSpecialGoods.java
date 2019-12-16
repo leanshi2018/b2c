@@ -71,17 +71,5 @@ public class ShopExpressSpecialGoods implements GenericEntity {
 	 * */
 	private Date updateTime;
 
-	/*
-	  `id` bigint(20) NOT NULL COMMENT '索引ID',
-	  `goods_spec_id` bigint(20) NOT NULL COMMENT '商品规格索引id',
-	  `goods_id` bigint(20) NOT NULL COMMENT '商品id',
-	  `spec_goods_serial` varchar(50) NOT NULL COMMENT '规格商品编号',
-	  `express_id` bigint(20) NOT NULL COMMENT '快递公司id',
-	  `e_state` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态 0有效  1无效',
-	  `creation_by` varchar(30) DEFAULT NULL COMMENT '创建人',
-	  `creation_time` datetime DEFAULT NULL COMMENT '创建时间',
-	  `update_by` varchar(20) DEFAULT NULL COMMENT '更新人',
-	  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-	* */
 
 }
