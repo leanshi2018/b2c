@@ -76,4 +76,10 @@ public class ShopCommonExpress implements GenericEntity {
     @Column(name = "is_del")
     private Integer isDel;
 
+    /**
+     * 序号
+     */
+    @Column(name = "e_sort")
+    private Integer eSort;
+
 }

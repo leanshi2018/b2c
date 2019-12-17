@@ -178,4 +178,42 @@
          SELECT * FROM shop_express_special_goods where e_state=0 and express_id=#{expressId}
     </select>
 
+    <select id="findListResultByPage" parameterType="com.framework.loippi.result.common.goods.ExpressSpecialGoodsResult"
+            resultType="com.framework.loippi.result.common.goods.ExpressSpecialGoodsResult">
+        SELECT
+        d.id id,
+        p.goods_name goodsName,
+        p.spec_goods_serial specGoodsSerial,
+        d.eid expressId,
+        d.ename expressName,
+        d.eExpressCode eExpressCode,
+        d.creationBy creationBy,
+        d.creationTime creationTime,
+        d.updateBy updateBy,
+        d.updateTime updateTime
+        FROM
+        (SELECT a.id id,a.goods_spec_id goods_spec_id,a.creation_by creationBy,a.creation_time creationTime,a.update_by updateBy,a.update_time updateTime,b.id eid,b.e_name ename,b.e_express_code eExpressCode
+        FROM shop_express_special_goods a
+        LEFT JOIN SHOP_COMMON_EXPRESS b ON a.express_id = b.id) d
+        LEFT JOIN
+        (SELECT s.id id,g.goods_name goods_name,s.spec_goods_serial spec_goods_serial
+        FROM shop_goods_spec s
+        LEFT JOIN shop_goods g ON s.goods_id = g.id) p
+        ON p.id=d.goods_spec_id
+        where 1=1
+        <if test="goodsName !=null and goodsName != ''">
+            AND p.goods_name = #{goodsName}
+        </if>
+        <if test="specGoodsSerial !=null and specGoodsSerial != ''">
+            AND p.spec_goods_serial = #{specGoodsSerial}
+        </if>
+        <if test="expressName !=null and expressName != ''">
+            AND d.ename = #{expressName}
+        </if>
+        <if test="eExpressCode !=null and eExpressCode != ''">
+            AND d.eExpressCode = #{eExpressCode}
+        </if>
+        order by d.creationTime desc
+    </select>
+
 </mapper>

@@ -7,19 +7,27 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.product.ShopExpressSpecialGoods;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.result.common.goods.ExpressSpecialGoodsResult;
 import com.framework.loippi.service.KuaidiService;
 import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.common.ShopCommonExpressNotAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressService;
 import com.framework.loippi.service.product.ShopExpressSpecialGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
@@ -47,6 +55,10 @@ public class ShopCommonExpressController extends GenericController {
     private ShopGoodsSpecService shopGoodsSpecService;
     @Resource
     private ShopExpressSpecialGoodsService shopExpressSpecialGoodsService;
+    @Resource
+    private ShopCommonExpressNotAreaService shopCommonExpressNotAreaService;
+    @Resource
+    private ShopCommonAreaService commonAreaService;
 
     /**
      * 列表 letter首字母
@@ -105,9 +117,62 @@ public class ShopCommonExpressController extends GenericController {
     }
 
     /**
-     * 渠道商品
+     * 不地区管理列表
      */
-    @RequestMapping(value = {"/findExpressSpecialGoods"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/notArealist"})
+    public String notArealist(@RequestParam(required = false, value = "pageNo", defaultValue = "1") Integer pageNo,
+                              Long expressId, ModelMap model) {
+        Pageable pageable = new Pageable(pageNo, 20);
+        pageable.setParameter(expressId);
+        model.addAttribute("page", shopCommonExpressNotAreaService.findByPage(pageable));
+        return "/common/";
+    }
+
+    /**
+     * 删除不地区
+     */
+    @RequestMapping(value = {"/delNotArea"})
+    public String delNotArea(Long id, ModelMap model) {
+        if (id==null){
+            model.addAttribute("msg", "不地区id为空！");
+            return "redirect:notArealist.jhtml";
+        }
+
+        shopCommonExpressNotAreaService.delete(id);
+        model.addAttribute("msg", "删除成功！");
+        return "redirect:notArealist.jhtml";
+    }
+
+    /**
+     * 添加不地区
+     */
+    @RequestMapping(value = {"/addNotArea"})
+    public String addNotArea(Long expressId,Long[] areaIds , ModelMap model) {
+        if (expressId==null){
+            model.addAttribute("msg", "快递id为空！");
+            return "redirect:notArealist.jhtml";
+        }
+        if (areaIds==null || areaIds.length==0){
+            model.addAttribute("msg", "地区id为空！");
+            return "redirect:notArealist.jhtml";
+        }
+
+        ShopCommonExpress express = shopCommonExpressService.find(expressId);
+        if (express==null){
+            model.addAttribute("msg", "快递为空！");
+            return "redirect:notArealist.jhtml";
+        }
+
+        shopCommonExpressNotAreaService.addNotArea(express,areaIds);
+        model.addAttribute("msg", "添加成功！");
+        return "redirect:notArealist.jhtml";
+    }
+
+
+    /**
+     * 管理渠道商品
+     */
+    @RequestMapping(value = {"/findExpressSpecialGoods"})
     public String findExpressSpecialGoods(Model model ,Long id) {
         if (id==null){
             model.addAttribute("msg", "物流公司id为空！");
@@ -122,9 +187,71 @@ public class ShopCommonExpressController extends GenericController {
 
         List<ShopExpressSpecialGoods> goods = shopExpressSpecialGoodsService.findByExpressId(id);
 
-        model.addAttribute("goods", goods);
+        model.addAttribute("specialGoods", goods);
 
-        return "/common/shop_common_express/list";
+        return "/common/";
+    }
+
+    /**
+     * 添加渠道商品
+     */
+    @RequestMapping(value = {"/addExpressSpecialGoods"})
+    public String addExpressSpecialGoods(Long expressId,Long[] specIds , ModelMap model) {
+        //后台管理员
+        String adminName="";
+        Subject subject = SecurityUtils.getSubject();
+        if (subject != null) {
+            Principal principal = (Principal) subject.getPrincipal();
+            if (principal != null && principal.getId() != null) {
+                adminName=principal.getUsername();
+            }
+        }
+
+        if (expressId==null){
+            model.addAttribute("msg", "快递id为空！");
+            return "redirect:notArealist.jhtml";
+        }
+        if (specIds==null || specIds.length==0){
+            model.addAttribute("msg", "地区id为空！");
+            return "redirect:notArealist.jhtml";
+        }
+
+        ShopCommonExpress express = shopCommonExpressService.find(expressId);
+        if (express==null){
+            model.addAttribute("msg", "快递为空！");
+            return "redirect:notArealist.jhtml";
+        }
+
+        shopExpressSpecialGoodsService.addExpressSpecialGoods(express,specIds,adminName);
+        model.addAttribute("msg", "添加成功！");
+        return "redirect:findExpressSpecialGoods.jhtml";
+    }
+
+    /**
+     * 渠道商品列表
+     */
+    @RequestMapping(value = {"/expressSpecialGoodsList"})
+    public String expressSpecialGoodsList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute ExpressSpecialGoodsResult param) {
+        pageable.setParameter(param);
+        pageable.setOrderProperty("creationTime");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", shopExpressSpecialGoodsService.findListResultByPage(pageable));
+        return "/common/";
+    }
+
+    /**
+     * 删除渠道商品
+     */
+    @RequestMapping(value = {"/delExpressSpecialGoods"})
+    public String delExpressSpecialGoods(Long id, ModelMap model) {
+        if (id==null){
+            model.addAttribute("msg", "渠道商品id为空！");
+            return "redirect:expressSpecialGoodsList.jhtml";
+        }
+
+        shopExpressSpecialGoodsService.delete(id);
+        model.addAttribute("msg", "删除成功！");
+        return "redirect:expressSpecialGoodsList.jhtml";
     }
 
     /**

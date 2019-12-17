@@ -15,15 +15,16 @@
         <result property="eOrder" column="e_order"/>
         <result property="eUrl" column="e_url"/>
         <result property="isDel" column="is_del"/>
+        <result property="eSort" column="e_sort"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,e_name ,e_state ,e_code ,e_express_code ,e_letter ,e_order ,e_url ,is_del
+		 id ,e_name ,e_state ,e_code ,e_express_code ,e_letter ,e_order ,e_url ,is_del ,e_sort
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{eName},#{eState},#{eCode},#{eExpressCode},#{eLetter},#{eOrder},#{eUrl},#{isDel}
+		 #{id},#{eName},#{eState},#{eCode},#{eExpressCode},#{eLetter},#{eOrder},#{eUrl},#{isDel},#{eSort}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -52,11 +53,16 @@
         <if test="eUrl != null and eUrl != ''">
             AND e_url = #{eUrl,jdbcType=VARCHAR}
         </if>
-        <if test="isDel != null and isDel != ''">
+        <if test="isDel != null">
             AND is_del = #{isDel,jdbcType=INTEGER}
         </if>
+        /*
         <if test="nid != null">
             AND id != #{id, jdbcType=BIGINT}
+        </if>
+        */
+        <if test="eSort != null">
+            AND e_sort != #{eSort,jdbcType=INTEGER}
         </if>
     </sql>
 
@@ -88,6 +94,9 @@
         </if>
         <if test="isDel != null">
             is_del = #{isDel,jdbcType=INTEGER},
+        </if>
+        <if test="eSort != null">
+            e_sort = #{eSort,jdbcType=INTEGER},
         </if>
     </sql>
 

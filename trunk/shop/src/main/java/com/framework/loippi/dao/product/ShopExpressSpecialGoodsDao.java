@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.framework.loippi.entity.product.ShopExpressSpecialGoods;
 import com.framework.loippi.mybatis.dao.GenericDao;
+import com.framework.loippi.mybatis.paginator.domain.PageBounds;
+import com.framework.loippi.mybatis.paginator.domain.PageList;
+import com.framework.loippi.result.common.goods.ExpressSpecialGoodsResult;
 
 /**
  * @author :ldq
@@ -14,4 +17,6 @@ public interface ShopExpressSpecialGoodsDao extends GenericDao<ShopExpressSpecia
 	List<ShopExpressSpecialGoods> findByState(Integer eState);
 
 	List<ShopExpressSpecialGoods> findByExpressId(Long expressId);
+
+	PageList<ExpressSpecialGoodsResult> findListResultByPage(Object parameter, PageBounds pageBounds);
 }
