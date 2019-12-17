@@ -23,6 +23,7 @@ public class CouponJob {
     private CouponService couponService;
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 
+
     @Scheduled(cron = "0 5 0 * * ? ")  //每天0点五分运行
     //@Scheduled(cron = "0 59 15 * * ? ")  //每天0点五分运行
     //@Scheduled(cron = "0/30 * * * * ? " )  //每隔30秒执行一次
