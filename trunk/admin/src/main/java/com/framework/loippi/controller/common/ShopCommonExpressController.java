@@ -125,7 +125,7 @@ public class ShopCommonExpressController extends GenericController {
         Pageable pageable = new Pageable(pageNo, 20);
         pageable.setParameter(expressId);
         model.addAttribute("page", shopCommonExpressNotAreaService.findByPage(pageable));
-        return "/common/";
+        return "/common/shop_common_express/lessthanarea.jhtml";
     }
 
     /**
@@ -189,7 +189,7 @@ public class ShopCommonExpressController extends GenericController {
 
         model.addAttribute("specialGoods", goods);
 
-        return "/common/";
+        return "/common/shop_common_channel/addchannel.jhtml";
     }
 
     /**
@@ -236,7 +236,7 @@ public class ShopCommonExpressController extends GenericController {
         pageable.setOrderProperty("creationTime");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopExpressSpecialGoodsService.findListResultByPage(pageable));
-        return "/common/";
+        return " /common/shop_common_channel/list.jhtml";
     }
 
     /**

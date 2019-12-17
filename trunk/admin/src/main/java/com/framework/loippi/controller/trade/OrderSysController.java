@@ -767,7 +767,7 @@ public class OrderSysController extends GenericController {
 
             ShopGoods goods = shopGoodsService.find(orderGoods.getGoodsId());
             Integer goodsType = goods.getGoodsType();
-            if (goodsType==1){//组合商品
+            if (goodsType==3){//组合商品
                 ShopGoodsSpec spec = shopGoodsSpecService.find(specId);//订单里商品的规格
                 Map<String, String> specMap = JacksonUtil.readJsonToMap(spec.getSpecGoodsSpec());
                 Map<String, String> goodsMap = JacksonUtil.readJsonToMap(spec.getSpecName());
@@ -776,16 +776,32 @@ public class OrderSysController extends GenericController {
                 Iterator<String> itSpec = keySpec.iterator();
                 Iterator<String> itGoods = keyGoods.iterator();
                 while (itSpec.hasNext() && itGoods.hasNext()) {
-                    String dPSpecId = itSpec.next();//单品的规格id
-                    String dPGoodsId = itGoods.next();//单品的商品id
+                    Long dPSpecId = Long.valueOf(itSpec.next());//单品的规格id
+                    Long dPGoodsId = Long.valueOf(itGoods.next());//单品的商品id
 
+                    Map<String,Object> map1 = new HashMap<>();
+                    map1.put("goodId",goods.getId());
+                    map1.put("combineGoodsId",dPGoodsId);
+                    ShopGoodsGoods goodsGoods = shopGoodsGoodsService.findGoodsGoods(map1);
+                    Integer joinNum = goodsGoods.getJoinNum();
 
+                    Map<String,Object> productMap = new HashMap<String,Object>();//单个商品
+                    productMap.put("ProducingArea","");
+                    productMap.put("HSCode","");
 
+                    ShopGoodsSpec goodsSpec1 = shopGoodsSpecService.find(dPSpecId);//单品的规格数据
+                    productMap.put("SKU",goodsSpec1.getSpecGoodsSerial());//物品SKU
+                    productMap.put("Price",goodsSpec1.getSpecRetailPrice());//物品价格
+                    productMap.put("Weight",goodsSpec1.getWeight());
+
+                    ShopGoods shopGoods = shopGoodsService.find(dPGoodsId);//单品的商品信息
+                    productMap.put("EnName",shopGoods.getGoodsName());//物品名称
+                    productMap.put("CnName",shopGoods.getGoodsName());//物品名称
 
                 }
-            }else if (goodsType==2){//单品
+            }else if (goodsType==1){//单品
 
-            }else if (goodsType==3){//换购商品
+            }else if (goodsType==2){//换购商品
 
             }
 
