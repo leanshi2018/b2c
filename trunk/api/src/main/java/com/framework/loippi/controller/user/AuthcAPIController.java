@@ -1,11 +1,13 @@
 package com.framework.loippi.controller.user;
 
 import com.framework.loippi.entity.activity.ActivityGuide;
+import com.framework.loippi.entity.common.SceneActivity;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.user.*;
 import com.framework.loippi.result.user.IntegrationMemberListResult;
 import com.framework.loippi.result.user.SubordinateUserInformationResult;
 import com.framework.loippi.service.activity.ActivityGuideService;
+import com.framework.loippi.service.common.SceneActivityService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.order.ShopOrderService;
@@ -90,10 +92,90 @@ public class AuthcAPIController extends BaseController {
     private ShopOrderService shopOrderService;
     @Resource
     private RdSysPeriodService periodService;
+    @Resource
+    private SceneActivityService sceneActivityService;
 
     @Resource
     private Producer producer;
 
+    @RequestMapping(value = "/sceneActivity/forword", method = RequestMethod.POST)
+    public String sceneActivity(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,
+                                @RequestParam(value = "pwd",required = true)String pwd) {
+        if(StringUtil.isEmpty(mCode)){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+        }
+        if(StringUtil.isEmpty(pwd)){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+        }
+        RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
+        if(basicInfo==null){
+            return ApiUtils.error(Xerror.OBJECT_IS_NOT_EXIST, "用户不存在");
+        }
+        RdMmRelation  rdMmRelation = rdMmRelationService.find("mmCode", mCode);
+        if(rdMmRelation==null||rdMmRelation.getLoginPwd()==null){
+            return ApiUtils.error("当前账号信息异常");
+        }
+        if(!rdMmRelation.getLoginPwd().equals(pwd)){
+            return ApiUtils.error(Xerror.LOGIN_PASSWORD_ERROR, "密码错误");
+        }
+        //查找是否领取过礼品
+        SceneActivity sceneActivity = sceneActivityService.find("mCode",mCode);
+        if(sceneActivity==null){
+            SceneActivity activity = new SceneActivity();
+            activity.setId(twiterIdService.getTwiterId());
+            activity.setMCode(mCode);
+            activity.setPresentStatus(0);
+            sceneActivityService.save(activity);
+            return ApiUtils.success(activity);
+        }
+        return ApiUtils.success(sceneActivity);
+    }
+
+    @RequestMapping(value = "/sceneActivity/get", method = RequestMethod.POST)
+    @ResponseBody
+    public String getGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode) {
+        if(StringUtil.isEmpty(mCode)){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+        }
+        RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
+        if(basicInfo==null){
+            return ApiUtils.error(Xerror.OBJECT_IS_NOT_EXIST, "用户不存在");
+        }
+        SceneActivity sceneActivity = sceneActivityService.find("mCode",mCode);
+        if(sceneActivity==null){
+            return ApiUtils.error("数据异常");
+        }
+        if(sceneActivity.getPresentStatus()!=0){
+            return ApiUtils.error("请勿重复领取");
+        }
+        sceneActivity.setPresentStatus(1);
+        sceneActivity.setGetime(new Date());
+        sceneActivityService.update(sceneActivity);
+        return ApiUtils.success(sceneActivity);
+    }
+
+    @RequestMapping(value = "/sceneActivity/use", method = RequestMethod.POST)
+    @ResponseBody
+    public String useGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode) {
+        if(StringUtil.isEmpty(mCode)){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+        }
+        RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
+        if(basicInfo==null){
+            return ApiUtils.error(Xerror.OBJECT_IS_NOT_EXIST, "用户不存在");
+        }
+        SceneActivity sceneActivity = sceneActivityService.find("mCode",mCode);
+        if(sceneActivity==null){
+            return ApiUtils.error("数据异常");
+        }
+        if(sceneActivity.getPresentStatus()!=1){
+            return ApiUtils.error("不存在待使用领取资格");
+        }
+        sceneActivity.setPresentStatus(2);
+        sceneActivity.setUseTime(new Date());
+        sceneActivityService.update(sceneActivity);
+        return ApiUtils.success(sceneActivity);
+    }
 
     //    @Resource
 //    private HxService hxService;
@@ -132,7 +214,7 @@ public class AuthcAPIController extends BaseController {
                 return ApiUtils.error(Xerror.LOGIN_PASSWORD_ERROR, "密码错误");
             }
         }
-        return ApiUtils.success(handlerLogin(member, request, rdMmRelation));
+        return ApiUtils.success(handlerLoginNew1(member, request, rdMmRelation));
     }
 
     /**
@@ -327,6 +409,34 @@ public class AuthcAPIController extends BaseController {
         authsLoginResult.setRankId(rdRanks.getRankId());
         authsLoginResult.setLookPpv(0);
         authsLoginResult.setLookVip(0);
+        if (rdRanks != null) {
+            if (Optional.ofNullable(rdRanks.getRankClass()).orElse(0) > 0) {
+                authsLoginResult.setLookPpv(1);
+                authsLoginResult.setLookVip(1);
+            }
+        }
+        authsLoginResult=AuthsLoginResult.of(member, authsLoginResult, prefix);
+        try {
+            redisService.save(sessionId, authsLoginResult);
+            redisService.save("user_name" + member.getMmCode(), sessionId);
+        } catch (JedisException e) {
+            throw new JedisException(e.getMessage());
+        }
+
+        return authsLoginResult;
+    }
+    /**
+     * 处理登录
+     */
+    private AuthsLoginResult handlerLoginNew1(RdMmBasicInfo member, HttpServletRequest request, RdMmRelation rdMmRelation) {
+        String sessionId = twiterIdService.getSessionId();
+        AuthsLoginResult authsLoginResult = new AuthsLoginResult();
+        authsLoginResult.setSessionid(sessionId);
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        authsLoginResult.setRankId(rdRanks.getRankId());
+        authsLoginResult.setLookPpv(0);
+        authsLoginResult.setLookVip(0);
+        authsLoginResult.setPwd(rdMmRelation.getLoginPwd());
         if (rdRanks != null) {
             if (Optional.ofNullable(rdRanks.getRankClass()).orElse(0) > 0) {
                 authsLoginResult.setLookPpv(1);
