@@ -223,6 +223,7 @@ public class UserAPIController extends BaseController {
         } else {
             result.setIsPaymentPasswd(1);
         }
+        result.setPwd(rdMmRelation.getLoginPwd());//TODO
         return ApiUtils.success(result);
     }
 

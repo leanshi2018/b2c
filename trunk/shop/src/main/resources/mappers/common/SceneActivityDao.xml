@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.SceneActivityDao">
+
+	<resultMap id="SceneActivityResultMap" type="com.framework.loippi.entity.common.SceneActivity">
+		<id property="id" column="id"/>
+		<result property="mCode" column="mm_code"/>
+		<result property="presentStatus" column="present_status"/>
+		<result property="getime" column="get_time"/>
+		<result property="useTime" column="use_time"/>
+	</resultMap>
+
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		id ,mm_code ,present_status ,get_time ,use_time
+	</sql>
+
+	<sql id="base_value_column">
+		#{id,jdbcType=BIGINT} ,#{mCode} ,#{presentStatus} ,#{getime},#{useTime}
+	</sql>
+
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null">
+			AND id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="mCode != null and mCode != ''">
+			AND mm_code = #{mCode,jdbcType=VARCHAR}
+		</if>
+		<if test="presentStatus != null">
+			AND present_status = #{presentStatus,jdbcType=INTEGER}
+		</if>
+		<if test="getime != null">
+			AND get_time = #{getime}
+		</if>
+		<if test="useTime != null">
+			AND use_time = #{useTime}
+		</if>
+	</sql>
+
+	<sql id="set_column">
+		<if test="id != null">
+			id = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="mCode != null and mCode != ''">
+			mm_code = #{mCode,jdbcType=VARCHAR},
+		</if>
+		<if test="presentStatus != null">
+			present_status = #{presentStatus,jdbcType=INTEGER},
+		</if>
+		<if test="getime != null">
+			get_time = #{getime},
+		</if>
+		<if test="useTime != null">
+			use_time = #{useTime},
+		</if>
+	</sql>
+
+	<select id="find" resultMap="SceneActivityResultMap">
+		SELECT
+		<include refid="base_column"/>
+		FROM rd_scene_activity
+		WHERE ID=#{id,jdbcType=BIGINT}
+	</select>
+
+	<select id="findAll" resultMap="SceneActivityResultMap">
+		SELECT
+		<include refid="base_column"/>
+		FROM rd_scene_activity
+	</select>
+
+	<insert id="insert" parameterType="com.framework.loippi.entity.common.SceneActivity">
+		INSERT rd_scene_activity
+		(
+		<include refid="base_column"/>
+		)
+		VALUES (<include refid="base_value_column"/>)
+	</insert>
+
+	<update id="update" parameterType="com.framework.loippi.entity.common.SceneActivity">
+		UPDATE rd_scene_activity
+		<set>
+			<include refid="set_column"/>
+		</set>
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
+
+	<delete id="delete">
+		DELETE	FROM rd_scene_activity
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+
+	<select id="findByParams" resultMap="SceneActivityResultMap">
+		SELECT
+		<include refid="base_column"/>
+		FROM rd_scene_activity
+		<where>1=1
+			<include refid="where_column"/>
+		</where>
+	</select>
+
+	<select id="findByPage" resultMap="SceneActivityResultMap">
+		SELECT
+		<include refid="base_column"/>
+		FROM rd_scene_activity
+		<where>1=1
+			<include refid="where_column"/>
+		</where>
+	</select>
+
+</mapper> 
