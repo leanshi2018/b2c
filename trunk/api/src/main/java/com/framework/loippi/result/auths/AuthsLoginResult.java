@@ -68,6 +68,8 @@ public class AuthsLoginResult {
     private String url;
     //标题
     private String title;
+    //密码
+    private String pwd;
 
     public static AuthsLoginResult of(RdMmBasicInfo account, AuthsLoginResult session, String preUrl) {
         if (account == null) {

@@ -112,6 +112,8 @@ public class PersonCenterResult {
     private String endDate;
     //本期已达成MI
     private BigDecimal periodMi;
+    //加密后密码
+    private String pwd;
 
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);

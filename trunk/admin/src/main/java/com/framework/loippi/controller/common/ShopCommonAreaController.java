@@ -71,8 +71,8 @@ public class ShopCommonAreaController extends GenericController {
     @RequestMapping(value = "/findAreaList", method = RequestMethod.POST)
     public String findAreaList(@RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
                                @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
-                               @RequestParam(value = "areaId") Long areaId,
-                               @RequestParam(value = "areaName") String areaName,
+                               @RequestParam(required = false, value = "areaId") Long areaId,
+                               @RequestParam(required = false, value = "areaName") String areaName,
                                Model model) {
         ShopCommonArea shopCommonArea = new ShopCommonArea();
         shopCommonArea.setId(areaId);
