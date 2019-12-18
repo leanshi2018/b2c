@@ -176,6 +176,7 @@ public class ShopOrderJob {
                                     rdMmAccountLog.setTransPeriod(period);
                                 }
                                 rdMmAccountLog.setTransDesc("零售利润奖励发放");
+                                rdMmAccountLog.setAutohrizeDesc("零售利润奖励发放");
                                 rdMmAccountLog.setStatus(3);
                                 rdMmAccountLogDao.insert(rdMmAccountLog);
                                 //修改积分账户

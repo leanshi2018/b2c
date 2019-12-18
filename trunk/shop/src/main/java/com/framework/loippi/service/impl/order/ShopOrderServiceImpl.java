@@ -2860,6 +2860,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                         rdMmAccountLog.setTransPeriod(period);
                                     }
                                     rdMmAccountLog.setTransDesc("零售利润奖励发放");
+                                    rdMmAccountLog.setAutohrizeDesc("零售利润奖励发放");
                                     rdMmAccountLog.setStatus(3);
                                     rdMmAccountLogService.save(rdMmAccountLog);
                                     //修改积分账户
@@ -3905,6 +3906,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                             rdMmAccountLog.setTransPeriod(period);
                                         }
                                         rdMmAccountLog.setTransDesc("零售利润奖励发放");
+                                        rdMmAccountLog.setAutohrizeDesc("零售利润奖励发放");
                                         rdMmAccountLog.setStatus(3);
                                         rdMmAccountLogService.save(rdMmAccountLog);
                                         //修改积分账户
