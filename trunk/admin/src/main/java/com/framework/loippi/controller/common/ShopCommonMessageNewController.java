@@ -66,7 +66,7 @@ public class ShopCommonMessageNewController extends GenericController {
      * @return
      */
     @RequestMapping(value ="/forward",method = RequestMethod.GET)
-    public String forward(Model model, @RequestParam Long id) {
+    public String forward(Model model, @RequestParam(value = "id",required = false) Long id) {
         if (id != 0 && id != null) {
             ShopCommonMessage message = shopCommonMessageService.find(id);
             if(message!=null){
