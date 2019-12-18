@@ -46,12 +46,13 @@
                 <tr>
                     <td colspan="3" class="required" style="background: #eee">基本信息</td>
                 </tr>
+                 <#if jumpPath=="">
                 <tr class="noborder">
                     <td class="required">
                         <em class="pngFix"></em>展示方式
                     </td>
                     <td>
-                            <input name="couponName" id="couponName" type="text" value=""/>
+                            <input name="" id="" type="text" readonly value="通知中心"/>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -60,7 +61,7 @@
                         <em class="pngFix"></em>消息标题
                     </td>
                     <td>
-                            <input name="title" id="title" maxlength="20" type="text" value="${message.title}" class=""/>
+                            <input name="title" id="title" maxlength="20" type="text" value="${message.title}" />
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -93,29 +94,39 @@
                     <td>
                         <div class="col-sm-9">
                             <div class="col-lg-1" STYLE="width: 90%;">
-                                <input type="radio" name="jump" value="" checked>
+                                <input type="radio" name="jump" value=""  checked>
                                 <span >跳转路径</span>
-                                <select name="jumpPath" class="w150">
-                                    <option value="homepage"  <#if jpush.jumpPath == homepage>selected="selected"</#if>><span name="jumpName">辑</span></option>
-                                    <option value="messagepage" name="jumpName"<#if jpush.jumpPath == messagepage>selected="selected" </#if>>消息中心</option>
-                                    <option value="goodsdetailspage" name="jumpName"<#if jpush.jumpPath == goodsdetailspage>selected="selected" </#if>>商品详情</option>
-                                    <option value="mypage" name="jumpName"<#if jpush.jumpPath == mypage>selected="selected" </#if>>我</option>
-                                    <option value="myresultspage" name="jumpName"<#if jpush.jumpPath == myresultspage>selected="selected" </#if>>个人业绩</option>
-                                    <option value="orderpage"    name="jumpName"<#if jpush.jumpPath == orderpage>selected="selected" </#if>>我的订单</option>
-                                    <option value="myintegralpage" name="jumpName"<#if jpush.jumpPath == myintegralpage>selected="selected" </#if>>我的积分</option>
-                                    <option value="rewardintegralpage" name="jumpName"<#if jpush.jumpPath == rewardintegralpage>selected="selected" </#if>>奖励积分</option>
-                                    <option value="shoppingintegralpage" name="jumpName"<#if jpush.jumpPath == shoppingintegralpage>selected="selected" </#if>>购物积分</option>
-                                    <option value="buyintegralpage" name="jumpName"<#if jpush.jumpPath == buyintegralpage>selected="selected" </#if>>换购积分</option>
-                                    <option value="bankcardpage" name="jumpName"<#if jpush.jumpPath == bankcardpage>selected="selected" </#if>>我的银行卡</option>
-                                    <option value="learnpage" name="jumpName"<#if jpush.jumpPath == learnpage>selected="selected" </#if>>学堂</option>
-                                    <option value="learnarticlepage" name="jumpName"<#if jpush.jumpPath == learnarticlepage>selected="selected" </#if>>学堂文章详情</option>
-                                    <option value="invitationpage" name="jumpName"<#if jpush.jumpPath == invitationpage>selected="selected" </#if>>我的邀请</option>
-                                    <option value="activityGoodsListpage" name="jumpName"<#if jpush.jumpPath == activityGoodsListpage>selected="selected" </#if>>活动页面</option>
-                                    <option value="buyCouponspage" name="jumpName"<#if jpush.jumpPath == buyCouponspage>selected="selected" </#if>>优惠券购买详情</option>
-                                    <option value="" <#if jpush.jumpPath == "">selected="selected"</#if>>请选择</option>
+                                <select name="jumpPath" class="w150" id="jumpPath">
+                                    <option value="" selected="selected">请选择</option>
+                                    <option value="homepage" <#if message.jumpPath == 'homepage'>selected="selected"</#if>>辑</option>
+                                    <option value="messagepage"<#if message.jumpPath == "messagepage">selected="selected" </#if>>消息中心</option>
+                                    <option value="goodsdetailspage" id="goodsdetailspage" <#if message.jumpPath == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
+                                    <option value="mypage"  <#if message.jumpPath == "mypage">selected="selected" </#if>>我</option>
+                                    <option value="myresultspage" <#if message.jumpPath == "myresultspage">selected="selected" </#if>>个人业绩</option>
+                                    <option value="orderpage"    <#if message.jumpPath == "orderpage">selected="selected" </#if>>我的订单</option>
+                                    <option value="myintegralpage" <#if message.jumpPath == "myintegralpage">selected="selected" </#if>>我的积分</option>
+                                    <option value="rewardintegralpage" <#if message.jumpPath == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>
+                                    <option value="shoppingintegralpage" <#if message.jumpPath == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>
+                                    <option value="buyintegralpage" <#if message.jumpPath == "buyintegralpage">selected="selected" </#if>>换购积分</option>
+                                    <option value="bankcardpage" <#if message.jumpPath == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
+                                    <option value="learnpage" <#if message.jumpPath == "learnpage">selected="selected" </#if>>学堂</option>
+                                    <option value="learnarticlepage" <#if message.jumpPath == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
+                                    <option value="invitationpage" <#if message.jumpPath == "invitationpage">selected="selected" </#if>>我的邀请</option>
+                                    <option value="activityGoodsListpage" <#if message.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
+                                    <option value="buyCouponspage" id="buyCouponspage" <#if message.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                 </select>
-                                <input name="jumpJson" class="w200" value="${jumpJson}"style="height:23px;border:1px solid #ccc;"/>
-                                <a class="btn-search" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;"></a>
+                                <input name="jumpName" id="jumpName"class="w150" type="hidden" value=""/>
+                                <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}"style="height:23px;"/>
+
+                                <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
+                                <input class="pins" type="text" value="<#if shopGoods??>${shopGoods.goodsName}</#if>" name="goodsName"
+                                       id="goodsName">
+                                <input class="pins" type="hidden" value="<#if shopGoods??>${shopGoods.className}</#if>" name="className"
+                                       id="className">
+                                <#--选择优惠券-->
+                                <input type="hidden" id="couponId" name="couponId" value="${id}">
+                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">
+                                <a class="btn-search" id="searchs" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;"></a>
                             </div>
                         </div>
                     </td>
@@ -134,14 +145,21 @@
                         </div>
                     </td>
                 </tr>
+                 </#if>
                 </tbody>
                 <tfoot>
                 <tr>
                     <td></td>
                     <td>
+                        <#if message=="">
                             <a class="btn" href="javascript:history.go(-1);"
                                style="float:left"><span><@spring.message "button.back"/></span></a>
                             <a class="btn btn-success" id="subForm" type="submit">提交</a>
+                        </#if>
+                        <#if message!=null>
+                            <a class="btn" href="javascript:history.go(-1);"
+                               style="float:left"><span><@spring.message "button.back"/></span></a>
+                        </#if>
                     </td>
                 </tr>
                 </tfoot>

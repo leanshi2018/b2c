@@ -1,16 +1,19 @@
 package com.framework.loippi.job;
 
 
-import com.framework.loippi.service.coupon.CouponService;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import com.framework.loippi.service.coupon.CouponService;
 
 /**
  * 优惠券定时任务
