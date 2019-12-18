@@ -87,7 +87,7 @@ public class ShopCommonAreaController extends GenericController {
         pager.setParameter(shopCommonArea);
         Page<ShopCommonArea> page = commonAreaService.findByPage(pager);
         model.addAttribute("areaList", page);
-        return "";
+        return " /common/ trade/area_management/list.jhtml";
     }
 
     /**
