@@ -98,7 +98,7 @@ public class AuthcAPIController extends BaseController {
     @Resource
     private Producer producer;
 
-    @RequestMapping(value = "/sceneActivity/forword", method = RequestMethod.POST)
+    @RequestMapping(value = "/sceneActivity/forword")
     public String sceneActivity(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,
                                 @RequestParam(value = "pwd",required = true)String pwd) {
         if(StringUtil.isEmpty(mCode)){
@@ -125,13 +125,15 @@ public class AuthcAPIController extends BaseController {
             activity.setId(twiterIdService.getTwiterId());
             activity.setMCode(mCode);
             activity.setPresentStatus(0);
+            activity.setMNickName(basicInfo.getMmNickName());
+            activity.setImage(basicInfo.getMmAvatar());
             sceneActivityService.save(activity);
             return ApiUtils.success(activity);
         }
         return ApiUtils.success(sceneActivity);
     }
 
-    @RequestMapping(value = "/sceneActivity/get", method = RequestMethod.POST)
+    @RequestMapping(value = "/sceneActivity/get")
     @ResponseBody
     public String getGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode) {
         if(StringUtil.isEmpty(mCode)){
@@ -154,7 +156,7 @@ public class AuthcAPIController extends BaseController {
         return ApiUtils.success(sceneActivity);
     }
 
-    @RequestMapping(value = "/sceneActivity/use", method = RequestMethod.POST)
+    @RequestMapping(value = "/sceneActivity/use")
     @ResponseBody
     public String useGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode) {
         if(StringUtil.isEmpty(mCode)){
