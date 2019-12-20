@@ -98,7 +98,7 @@ public class AuthcAPIController extends BaseController {
     @Resource
     private Producer producer;
 
-    @RequestMapping(value = "/sceneActivity/forword")
+    @RequestMapping(value = "/sceneActivity/forword",method = RequestMethod.OPTIONS)
     public String sceneActivity(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,
                                 @RequestParam(value = "pwd",required = true)String pwd) {
         if(StringUtil.isEmpty(mCode)){
@@ -133,7 +133,7 @@ public class AuthcAPIController extends BaseController {
         return ApiUtils.success(sceneActivity);
     }
 
-    @RequestMapping(value = "/sceneActivity/get")
+    @RequestMapping(value = "/sceneActivity/get",method = RequestMethod.OPTIONS)
     @ResponseBody
     public String getGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode) {
         if(StringUtil.isEmpty(mCode)){
@@ -156,7 +156,7 @@ public class AuthcAPIController extends BaseController {
         return ApiUtils.success(sceneActivity);
     }
 
-    @RequestMapping(value = "/sceneActivity/use")
+    @RequestMapping(value = "/sceneActivity/use",method = RequestMethod.OPTIONS)
     @ResponseBody
     public String useGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode) {
         if(StringUtil.isEmpty(mCode)){
