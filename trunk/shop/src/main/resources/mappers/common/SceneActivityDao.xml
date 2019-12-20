@@ -11,15 +11,17 @@
 		<result property="presentStatus" column="present_status"/>
 		<result property="getime" column="get_time"/>
 		<result property="useTime" column="use_time"/>
+		<result property="mNickName" column="mm_nick_name"/>
+		<result property="image" column="image"/>
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		id ,mm_code ,present_status ,get_time ,use_time
+		id ,mm_code ,present_status ,get_time ,use_time,mm_nick_name,image
 	</sql>
 
 	<sql id="base_value_column">
-		#{id,jdbcType=BIGINT} ,#{mCode} ,#{presentStatus} ,#{getime},#{useTime}
+		#{id,jdbcType=BIGINT} ,#{mCode} ,#{presentStatus} ,#{getime},#{useTime},#{mNickName},#{image}
 	</sql>
 
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -39,6 +41,12 @@
 		<if test="useTime != null">
 			AND use_time = #{useTime}
 		</if>
+		<if test="mNickName != null and mNickName != ''">
+			AND mm_nick_name = #{mNickName,jdbcType=VARCHAR}
+		</if>
+		<if test="image != null and image != ''">
+			AND image = #{image,jdbcType=VARCHAR}
+		</if>
 	</sql>
 
 	<sql id="set_column">
@@ -56,6 +64,12 @@
 		</if>
 		<if test="useTime != null">
 			use_time = #{useTime},
+		</if>
+		<if test="mNickName != null and mNickName != ''">
+			mm_nick_name = #{mNickName,jdbcType=VARCHAR},
+		</if>
+		<if test="image != null and image != ''">
+			image = #{image,jdbcType=VARCHAR},
 		</if>
 	</sql>
 

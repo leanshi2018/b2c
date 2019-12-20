@@ -125,6 +125,8 @@ public class AuthcAPIController extends BaseController {
             activity.setId(twiterIdService.getTwiterId());
             activity.setMCode(mCode);
             activity.setPresentStatus(0);
+            activity.setMNickName(basicInfo.getMmNickName());
+            activity.setImage(basicInfo.getMmAvatar());
             sceneActivityService.save(activity);
             return ApiUtils.success(activity);
         }
