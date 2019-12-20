@@ -31,28 +31,28 @@
             <div class="item-title">
                 <ul class="tab-base">
                     <li>
-                        <a href=""><span>管理</span></a>
+                        <a href="${base}/admin/shop_common_message_new/forward.jhtml"><span>管理</span></a>
                     </li>
-                    <li><a href="javascript:void(0)" class="current"><span>新增</span></a>
+                    <li><a href="javascript:void(0)" ><span>新增</span></a>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="fixed-empty">
         </div>
-        <form id="add_form" action="${base}/admin/shop_common_message_new/saveOrUpdate.jhtml" method="post">
+       <form id="add_form" action="${base}/admin/shop_common_message_new/saveOrUpdate.jhtml" method="post">
             <table class="table tb-type2">
                <tbody>
                 <tr>
                     <td colspan="3" class="required" style="background: #eee">基本信息</td>
                 </tr>
-                 <#if jumpPath=="">
+               <#if message==''>
                 <tr class="noborder">
                     <td class="required">
                         <em class="pngFix"></em>展示方式
                     </td>
                     <td>
-                            <input name="" id="" type="text" readonly value="通知中心"/>
+                            <input  type="text" readonly value="通知中心"/>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -145,21 +145,21 @@
                         </div>
                     </td>
                 </tr>
-                 </#if>
+               </#if>
                 </tbody>
                 <tfoot>
                 <tr>
                     <td></td>
                     <td>
-                        <#if message=="">
-                            <a class="btn" href="javascript:history.go(-1);"
-                               style="float:left"><span><@spring.message "button.back"/></span></a>
-                            <a class="btn btn-success" id="subForm" type="submit">提交</a>
-                        </#if>
-                        <#if message!=null>
-                            <a class="btn" href="javascript:history.go(-1);"
-                               style="float:left"><span><@spring.message "button.back"/></span></a>
-                        </#if>
+
+<#--                            <a class="btn" href="javascript:history.go(-1);"-->
+<#--                               style="float:left"><span><@spring.message "button.back"/></span></a>-->
+<#--                            <a class="btn btn-success" id="subForm" type="submit">提交</a>-->
+
+
+<#--                            <a class="btn" href="javascript:history.go(-1);"-->
+<#--                               style="float:left"><span><@spring.message "button.back"/></span></a>-->
+
                     </td>
                 </tr>
                 </tfoot>
@@ -168,86 +168,44 @@
     </div>
     <script type="text/javascript" src="${base}/resources/js/plugins/colpick/colpick.js"></script>
     <script>
-        //上传图片
-        function ajaxFileUploads(myBlogImage, imgId, img) {
-            $.ajaxFileUpload({
-                //处理文件上传操作的服务器端地址(可以传参数,已亲测可用)
-                url: '${base}/admin/fileupload/uploadImage.jhtml',
-                secureuri: false,                       //是否启用安全提交,默认为false
-                fileElementId: myBlogImage,           //文件选择框的id属性
-                dataType: 'json',                       //服务器返回的格式,可以是json或xml等
-                fileSize: 5120000,
-                allowType: 'jpg,jpeg,png,JPG,JPEG,PNG',
-                success: function (data, status) {        //服务器响应成功时的处理函数
-
-                    if (true == data.success) {     //0表示上传成功(后跟上传后的文件路径),1表示失败(后跟失败描述)
-                        $("img[id='" + imgId + "']").attr("src", "" + data.result);
-                        $("#" + img).val(data.result);
-                    }
-                },
-                error: function (data, status, e) { //服务器响应失败时的处理函数
-                    <#--layer.msg('<@spring.message "goods_msg_requrid10"/>！！', 1, 8);-->
-                    $('#result').html('图片上传失败，请重试！！');
-                }
-            });
-        }
-
         $(function () {
             //表单提交
             $("#subForm").click(function () {
-                var Title = $("#couponName").val();
-                if (Title == "") {
-                    alert('!');
-                    return false;
-                }
-                var image=$("#image").val();
-                if (image == "") {
-                    alert('!');
-                    return false;
-                }
-                var scopeRemark=$("#scopeRemark").val();
-                if (scopeRemark == "") {
-                    alert('!');
-                    return false;
-                }
+                // var Title = $("#couponName").val();
+                // if (Title == "") {
+                //     alert('!');
+                //     return false;
+                // }
+                // var image=$("#image").val();
+                // if (image == "") {
+                //     alert('!');
+                //     return false;
+                // }
+                // var scopeRemark=$("#scopeRemark").val();
+                // if (scopeRemark == "") {
+                //     alert('!');
+                //     return false;
+                // }
 
                 $('#add_form').submit();
             })
 
         });
 
-        /*点击单品时候弹窗*/
-        $("#single").click(function () {
-            var goodsId = $("[name='goodsId']").val();
-            layer.open({
-                type: 2,
-                move: false,
-                shade: [0.3, '#393D49'],//开启遮罩层
-                title: '选择商品',
-                content: ['${base}/admin/shop_goods_recommend/select.jhtml?type=1&goodsId=' + goodsId, 'yes'],
-                area: ['800px', '600px']
-            });
-        })
-        function appendGoods(goodsId, goodsName, className, brandName,goodsType) {
-            $("#goodsId").val(goodsId);
-            $("#goodsName").val(goodsName);
-            $("#className").val(className);
-
-        }
 
         //摘要提取
-        UE.getEditor('ueditor').addListener('blur', function (editor) {
-            extractContent();
-        });
-        function extractContent() {
-            var content = UE.getEditor('ueditor').getContent();
-            if (content != "") {
-                var con = UE.getEditor('ueditor').getContentTxt();
-                var contentSub = con.substring(0, 200);
-                $('#digest').attr('value', '');
-                $('#digest').attr('value', contentSub);
-            }
-        }
+        // UE.getEditor('ueditor').addListener('blur', function (editor) {
+        //     extractContent();
+        // });
+        // function extractContent() {
+        //     var content = UE.getEditor('ueditor').getContent();
+        //     if (content != "") {
+        //         var con = UE.getEditor('ueditor').getContentTxt();
+        //         var contentSub = con.substring(0, 200);
+        //         $('#digest').attr('value', '');
+        //         $('#digest').attr('value', contentSub);
+        //     }
+        // }
     </script>
     <div class="clear"></div>
 </@layout.body>
