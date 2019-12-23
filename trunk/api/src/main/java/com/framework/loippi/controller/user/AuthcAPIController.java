@@ -100,10 +100,10 @@ public class AuthcAPIController extends BaseController {
                                 @RequestParam(value = "pwd",required = true)String pwd,HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "*");
         if(StringUtil.isEmpty(mCode)){
-            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         if(StringUtil.isEmpty(pwd)){
-            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
         if(basicInfo==null){
@@ -114,7 +114,7 @@ public class AuthcAPIController extends BaseController {
             return ApiUtils.error("当前账号信息异常");
         }
         if(!rdMmRelation.getLoginPwd().equals(pwd)){
-            return ApiUtils.error(Xerror.LOGIN_PASSWORD_ERROR, "密码错误");
+            return ApiUtils.error(Xerror.LOGIN_PASSWORD_ERROR, "抱歉!请用蜗米商城扫码领取!");
         }
         //查找是否领取过礼品
         SceneActivity sceneActivity = sceneActivityService.find("mCode",mCode);
@@ -136,7 +136,7 @@ public class AuthcAPIController extends BaseController {
     public String getGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "*");
         if(StringUtil.isEmpty(mCode)){
-            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
         if(basicInfo==null){
@@ -160,7 +160,7 @@ public class AuthcAPIController extends BaseController {
     public String useGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "*");
         if(StringUtil.isEmpty(mCode)){
-            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
         if(basicInfo==null){
@@ -171,7 +171,7 @@ public class AuthcAPIController extends BaseController {
             return ApiUtils.error("数据异常");
         }
         if(sceneActivity.getPresentStatus()!=1){
-            return ApiUtils.error("不存在待使用领取资格");
+            return ApiUtils.error("该券已兑换");
         }
         sceneActivity.setPresentStatus(2);
         sceneActivity.setUseTime(new Date());
