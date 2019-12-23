@@ -89,6 +89,7 @@ public class AuthsLoginResult {
         result.setLookVip(session.getLookVip());
         result.setLookPpv(session.getLookPpv());
         result.setRankId(session.getRankId());
+        result.setPwd(session.getPwd());//TODO
         result.setSex(account.getGender());
         result.setUserId(account.getMmCode());
         result.setMmCode(account.getMmCode());
