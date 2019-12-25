@@ -21,6 +21,7 @@
         width: 100px;
         text-align: center;
     }
+
 </style>
 <@layout.body>
     <script type="text/javascript" src="${base}/res/js/jquery.js"></script>
@@ -170,15 +171,15 @@
                         </div>
                     </td>
                 </tr>
-</#if>
-                  <List message as messages>
-                    <#if messages.message==null>
+                </#if>
+                  <#list message.message as messages>
+                    <#if messages==null>
                         <tr class="noborder">
                             <td class="required">
                                 <em class="pngFix"></em>消息标题
                             </td>
                             <td>
-                                <input name="title" id="title" type="text" value="${message.title}" />
+                                <input name="title" id="title" type="text" value="${messages.title}" />
 
                                 <span class="error-message"></span>
                             </td>
@@ -195,11 +196,7 @@
                             </td>
                             <td colspan="4" class="vatop rowform">
                                 <div class="span10">
-
-                                    <script id="ueditor" name="content"  type="text"style="height:250px;width:100%;max-width:540px;">${message.content}</script>
-
-
-
+                                    <script id="ueditor" name="content"  type="text"style="height:250px;width:100%;max-width:540px;">${messages.content}</script>
                                     <script type="text/javascript">
                                         //实例化编辑器
                                         //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
@@ -223,22 +220,22 @@
                                         <span >跳转路径</span>
                                         <select name="jumpPath" class="w150" id="jumpPath">
                                             <option value="" selected="selected">请选择</option>
-                                            <option value="homepage" <#if message.jumpPath == 'homepage'>selected="selected"</#if>>辑</option>
-                                            <option value="messagepage"<#if message.jumpPath == "messagepage">selected="selected" </#if>>消息中心</option>
-                                            <option value="goodsdetailspage" id="goodsdetailspage" <#if message.jumpPath == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
-                                            <option value="mypage"  <#if message.jumpPath == "mypage">selected="selected" </#if>>我</option>
-                                            <option value="myresultspage" <#if message.jumpPath == "myresultspage">selected="selected" </#if>>个人业绩</option>
-                                            <option value="orderpage"    <#if message.jumpPath == "orderpage">selected="selected" </#if>>我的订单</option>
-                                            <option value="myintegralpage" <#if message.jumpPath == "myintegralpage">selected="selected" </#if>>我的积分</option>
-                                            <option value="rewardintegralpage" <#if message.jumpPath == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>
-                                            <option value="shoppingintegralpage" <#if message.jumpPath == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>
-                                            <option value="buyintegralpage" <#if message.jumpPath == "buyintegralpage">selected="selected" </#if>>换购积分</option>
-                                            <option value="bankcardpage" <#if message.jumpPath == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
-                                            <option value="learnpage" <#if message.jumpPath == "learnpage">selected="selected" </#if>>学堂</option>
-                                            <option value="learnarticlepage" <#if message.jumpPath == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
-                                            <option value="invitationpage" <#if message.jumpPath == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                            <option value="activityGoodsListpage" <#if message.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
-                                            <option value="buyCouponspage" id="buyCouponspage" <#if message.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
+                                            <option value="homepage" <#if messages.jumpPath == 'homepage'>selected="selected"</#if>>辑</option>
+                                            <option value="messagepage"<#if messages.jumpPath == "messagepage">selected="selected" </#if>>消息中心</option>
+                                            <option value="goodsdetailspage" id="goodsdetailspage" <#if messages.jumpPath == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
+                                            <option value="mypage"  <#if messages.jumpPath == "mypage">selected="selected" </#if>>我</option>
+                                            <option value="myresultspage" <#if messages.jumpPath == "myresultspage">selected="selected" </#if>>个人业绩</option>
+                                            <option value="orderpage"    <#if messages.jumpPath == "orderpage">selected="selected" </#if>>我的订单</option>
+                                            <option value="myintegralpage" <#if messages.jumpPath == "myintegralpage">selected="selected" </#if>>我的积分</option>
+                                            <option value="rewardintegralpage" <#if messages.jumpPath == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>
+                                            <option value="shoppingintegralpage" <#if messages.jumpPath == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>
+                                            <option value="buyintegralpage" <#if messages.jumpPath == "buyintegralpage">selected="selected" </#if>>换购积分</option>
+                                            <option value="bankcardpage" <#if messages.jumpPath == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
+                                            <option value="learnpage" <#if messages.jumpPath == "learnpage">selected="selected" </#if>>学堂</option>
+                                            <option value="learnarticlepage" <#if messages.jumpPath == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
+                                            <option value="invitationpage" <#if messages.jumpPath == "invitationpage">selected="selected" </#if>>我的邀请</option>
+                                            <option value="activityGoodsListpage" <#if messages.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
+                                            <option value="buyCouponspage" id="buyCouponspage" <#if messages.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                         </select>
                                         <#--选择商品-->
                                         <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
@@ -272,15 +269,14 @@
                                         <input type="radio" name="jump" value="" id="jumps">
                                         <span >跳转链接</span>
 
-                                        <input name="jumpUrl"  type="text" id="link" class="w200"  value="${message.jumpUrl}" style="width: 346px"/>
-
+                                        <input name="jumpUrl"  type="text" id="link" class="w200"  value="${messages.jumpUrl}" style="width: 346px"/>
 
                                     </div>
                                 </div>
                             </td>
                         </tr>
                     </#if>
-                </List>
+                  </#list>
                 </tbody>
 
 
@@ -288,19 +284,14 @@
                 <tr>
                     <td></td>
                     <td>
-<#--                        <#if message==null>-->
-<#--                            <a class="btn" href="javascript:history.go(-1);"-->
-<#--                               style="float:left"><span><@spring.message "button.back"/></span></a>-->
-<#--                            <a class="btn btn-success" id="subForm" type="submit">提交</a>-->
-<#--                        </#if>-->
                         <#if message!="">
                             <a class="btn" href="javascript:history.go(-1);"
                                style="float:left"><span><@spring.message "button.back"/></span></a>
                         </#if>
-                        <#if message==null>
-                        <a class="btn" href="javascript:history.go(-1);" style="float:left"><span><@spring.message "button.back"/></span></a>
-                        <a class="btn btn-success" id="subForm" type="submit">提交</a>
-                        </#if>
+<#--                        <#if message==null>-->
+<#--                        <a class="btn" href="javascript:history.go(-1);" style="float:left"><span><@spring.message "button.back"/></span></a>-->
+<#--                        <a class="btn btn-success" id="subForm" type="submit">提交</a>-->
+<#--                        </#if>-->
                     </td>
                 </tr>
                 </tfoot>
