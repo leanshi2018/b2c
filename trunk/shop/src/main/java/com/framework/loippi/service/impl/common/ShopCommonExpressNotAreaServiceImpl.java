@@ -49,8 +49,8 @@ public class ShopCommonExpressNotAreaServiceImpl extends GenericServiceImpl<Shop
 	@Override
 	public ShopCommonExpressNotArea findByEIdAndAId(Long expressId,Long areaId) {
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("",expressId);
-		map.put("",areaId);
+		map.put("expressId",expressId);
+		map.put("areaId",areaId);
 		return shopCommonExpressNotAreaDao.findByEIdAndAId(map);
 	}
 }
