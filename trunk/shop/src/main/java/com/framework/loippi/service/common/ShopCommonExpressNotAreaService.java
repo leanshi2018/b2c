@@ -11,4 +11,6 @@ import com.framework.loippi.service.GenericService;
  */
 public interface ShopCommonExpressNotAreaService extends GenericService<ShopCommonExpressNotArea, Long> {
 	void addNotArea(ShopCommonExpress express, Long[] areaIds);
+
+	ShopCommonExpressNotArea findByEIdAndAId(Long expressId,Long areaId);
 }

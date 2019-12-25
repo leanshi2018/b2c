@@ -195,4 +195,13 @@
         FROM SHOP_COMMON_EXPRESS where id = #{id}
     </select>
 
+    <select id="macSort" resultType="java.lang.Integer">
+        SELECT MAX(e_sort) FROM SHOP_COMMON_EXPRESS
+    </select>
+
+    <select id="findBySort" parameterType="int" resultMap="ShopCommonExpressResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_EXPRESS where e_sort = #{eSort}
+    </select>
 </mapper> 
