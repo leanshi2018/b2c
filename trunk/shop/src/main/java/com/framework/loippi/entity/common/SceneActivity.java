@@ -44,4 +44,16 @@ public class SceneActivity implements GenericEntity {
     @Column(name = "use_time")
     private Date useTime;
 
+    /**
+     *  会员昵称
+     */
+    @Column(name = "mm_nick_name")
+    private String mNickName;
+
+    /**
+     *  会员头像
+     */
+    @Column(name = "image")
+    private String image;
+
 }

@@ -14,7 +14,7 @@ import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.*;
 import com.framework.loippi.utils.*;
 import com.framework.loippi.vo.order.OrderSumPpv;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import redis.clients.jedis.exceptions.JedisException;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
@@ -29,9 +29,6 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.activity.ActivityGuide;
@@ -98,14 +95,15 @@ public class AuthcAPIController extends BaseController {
     @Resource
     private Producer producer;
 
-    @RequestMapping(value = "/sceneActivity/forword", method = RequestMethod.POST)
+    @RequestMapping(value = "/sceneActivity/forword",method = RequestMethod.POST)
     public String sceneActivity(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,
-                                @RequestParam(value = "pwd",required = true)String pwd) {
+                                @RequestParam(value = "pwd",required = true)String pwd,HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
         if(StringUtil.isEmpty(mCode)){
-            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         if(StringUtil.isEmpty(pwd)){
-            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
         if(basicInfo==null){
@@ -116,7 +114,7 @@ public class AuthcAPIController extends BaseController {
             return ApiUtils.error("当前账号信息异常");
         }
         if(!rdMmRelation.getLoginPwd().equals(pwd)){
-            return ApiUtils.error(Xerror.LOGIN_PASSWORD_ERROR, "密码错误");
+            return ApiUtils.error(Xerror.LOGIN_PASSWORD_ERROR, "抱歉!请用蜗米商城扫码领取!");
         }
         //查找是否领取过礼品
         SceneActivity sceneActivity = sceneActivityService.find("mCode",mCode);
@@ -125,17 +123,20 @@ public class AuthcAPIController extends BaseController {
             activity.setId(twiterIdService.getTwiterId());
             activity.setMCode(mCode);
             activity.setPresentStatus(0);
+            activity.setMNickName(basicInfo.getMmNickName());
+            activity.setImage(basicInfo.getMmAvatar());
             sceneActivityService.save(activity);
             return ApiUtils.success(activity);
         }
         return ApiUtils.success(sceneActivity);
     }
 
-    @RequestMapping(value = "/sceneActivity/get", method = RequestMethod.POST)
+    @RequestMapping(value = "/sceneActivity/get",method = RequestMethod.POST)
     @ResponseBody
-    public String getGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode) {
+    public String getGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
         if(StringUtil.isEmpty(mCode)){
-            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
         if(basicInfo==null){
@@ -154,11 +155,12 @@ public class AuthcAPIController extends BaseController {
         return ApiUtils.success(sceneActivity);
     }
 
-    @RequestMapping(value = "/sceneActivity/use", method = RequestMethod.POST)
+    @RequestMapping(value = "/sceneActivity/use",method = RequestMethod.POST)
     @ResponseBody
-    public String useGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode) {
+    public String useGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
         if(StringUtil.isEmpty(mCode)){
-            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
         if(basicInfo==null){
@@ -169,7 +171,7 @@ public class AuthcAPIController extends BaseController {
             return ApiUtils.error("数据异常");
         }
         if(sceneActivity.getPresentStatus()!=1){
-            return ApiUtils.error("不存在待使用领取资格");
+            return ApiUtils.error("该券已兑换");
         }
         sceneActivity.setPresentStatus(2);
         sceneActivity.setUseTime(new Date());
@@ -496,7 +498,7 @@ public class AuthcAPIController extends BaseController {
         RdMmAccountInfo rdMmAccountInfo, RdMmRelation rdMmRelation) {
         rdMmBasicInfo.setGender(0);//默认性别
         rdMmBasicInfo.setCreationDate(new Date());
-        rdMmBasicInfo.setMmAvatar(StringUtil.formatImg(prefix, "/upload/img/avatar/01.jpg"));//会员头像
+        rdMmBasicInfo.setMmAvatar(StringUtil.formatImg(prefix, "http://rdnmall.com/touxiang.jpg"));//会员头像
         rdMmBasicInfo.setCreationSource("1");
         rdMmBasicInfo.setIdCode(param.getMemberTrueId());
         rdMmBasicInfo.setIdType(param.getType());
