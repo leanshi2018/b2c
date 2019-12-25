@@ -1,5 +1,8 @@
 package com.framework.loippi.service.impl.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +44,13 @@ public class ShopCommonExpressNotAreaServiceImpl extends GenericServiceImpl<Shop
 			shopCommonExpressNotArea.setAreaDeep(shopCommonArea.getAreaDeep());
 			shopCommonExpressNotAreaDao.insert(shopCommonExpressNotArea);
 		}
+	}
+
+	@Override
+	public ShopCommonExpressNotArea findByEIdAndAId(Long expressId,Long areaId) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("",expressId);
+		map.put("",areaId);
+		return shopCommonExpressNotAreaDao.findByEIdAndAId(map);
 	}
 }

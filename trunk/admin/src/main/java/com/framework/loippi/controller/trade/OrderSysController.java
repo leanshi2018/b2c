@@ -70,6 +70,7 @@ import com.framework.loippi.service.KuaidiService;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.UserService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.common.ShopCommonExpressNotAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressService;
 import com.framework.loippi.service.coupon.CouponDetailService;
 import com.framework.loippi.service.order.ShopOrderAddressService;
@@ -156,6 +157,8 @@ public class OrderSysController extends GenericController {
     private ShopExpressSpecialGoodsService shopExpressSpecialGoodsService;
     @Resource
     private CouponDetailService couponDetailService;
+    @Resource
+    private ShopCommonExpressNotAreaService shopCommonExpressNotAreaService;
     // 订单编辑中
     private static final int ORDER_EDITING = 0;
     // 订单编辑完成
@@ -629,7 +632,17 @@ public class OrderSysController extends GenericController {
         }
 
         map.put("Products",productListss);*/
-/**********************************************************************************************/
+
+/**************************************选择快递********************************************************/
+        String eExpressCode = "CNZT-B";//第三方物流单号
+        //最大级数
+        /*Integer macSort = commonExpressService.macSort();
+        for (int i=1;i<=macSort;i++){
+            //根据级数查快递
+            ShopCommonExpress express = commonExpressService.findBySort(i);
+            Long expressId = express.getId();
+        }*/
+
 
         //特殊快递渠道商品
         List<ShopExpressSpecialGoods> specialGoodsList = shopExpressSpecialGoodsService.findByState(0);
@@ -642,7 +655,7 @@ public class OrderSysController extends GenericController {
         }
 /*******************************添加清洁剂瓶盖（6972190330202-1）*************************************/
         List<Map<String,Object>> productListss = new ArrayList<Map<String,Object>>();//商品list
-        String eExpressCode = "CNZT-B";//第三方物流单号
+        int cupNum = 0;
         for (Map<String, Object> product : productLists) {
             productListss.add(product);
             if (product.get("SKU").equals("6972190330202")){//是OLOMI橘油多效清洁剂
@@ -659,6 +672,26 @@ public class OrderSysController extends GenericController {
 
                 productListss.add(productMap);
             }
+
+            /*******************************送杯子*******************************************/
+            //TODO
+            /*if (product.get("SKU").equals("6942098967916") || product.get("SKU").equals("6942098967909")){//是OLOMI 益生菌固体饮料
+                if (cupNum==0){
+                    Map<String,Object> productMap = new HashMap<String,Object>();//单个商品
+                    productMap.put("ProducingArea","");
+                    productMap.put("HSCode","");
+                    productMap.put("MaterialQuantity",1);//物品数量
+                    productMap.put("SKU","6942098967909-1");//物品SKU
+                    productMap.put("Price",0);//物品价格
+                    productMap.put("Weight",0);
+                    productMap.put("EnName","OLOMI摇摇杯");//物品名称
+                    productMap.put("CnName","OLOMI摇摇杯");//物品名称
+
+                    productListss.add(productMap);
+
+                    cupNum =1;
+                }
+            }*/
 
             //查看是否是特殊快递渠道商品
             String sku = (String)product.get("SKU");
@@ -704,6 +737,15 @@ public class OrderSysController extends GenericController {
 
         return resultMap;
     }
+
+    /*public Boolean findExpressNotArea(Long expressId,Long areaId){
+        ShopCommonExpressNotArea notArea = shopCommonExpressNotAreaService.findByEIdAndAId(expressId,areaId);
+        if (notArea!=null){
+            return true;
+        }else {
+            return false;
+        }
+    }*/
 
     /**
      * 连接第三方发货

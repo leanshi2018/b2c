@@ -36,4 +36,14 @@ public class ShopCommonExpressServiceImpl extends GenericServiceImpl<ShopCommonE
     public ShopCommonExpress findById(Long id) {
         return shopCommonExpressDao.findById(id);
     }
+
+    @Override
+    public Integer macSort() {
+        return shopCommonExpressDao.macSort();
+    }
+
+    @Override
+    public ShopCommonExpress findBySort(int eSort) {
+        return shopCommonExpressDao.findBySort(eSort);
+    }
 }
