@@ -337,7 +337,7 @@ public class AuthcAPIController extends BaseController {
         try {
             rdMmBasicInfoService.addUser(rdMmBasicInfo, rdMmAccountInfo, rdMmRelation, param.getRegisterType());
             redisService.delete(param.getMobile());
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            /*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date startTime = format.parse("2019-12-01 00:00:00");//TODO 活动时间预留
             Date endTime = format.parse("2019-12-31 23:59:59");
             Integer flag=0;
@@ -345,8 +345,8 @@ public class AuthcAPIController extends BaseController {
                 flag=1;
                 //给当前注册用户以及当前注册用户推荐人发放优惠券
                 couponService.givingCoupon(param.getMobile());
-            }
-            return ApiUtils.success(handlerLoginNew(rdMmBasicInfo, request, rdMmRelation,flag));
+            }*/
+            return ApiUtils.success(handlerLoginNew(rdMmBasicInfo, request, rdMmRelation,0));//TODO
         } catch (Exception e) {
             e.printStackTrace();
             redisService.delete(param.getMobile());
@@ -473,7 +473,7 @@ public class AuthcAPIController extends BaseController {
             }
         }
         authsLoginResult=AuthsLoginResult.of(member, authsLoginResult, prefix);
-        authsLoginResult.setGetCouponFlag(flag);
+        /*authsLoginResult.setGetCouponFlag(flag);
         authsLoginResult.setImage("http://rdnmall.com/FslvpSUoQX8rR9hQF7rqmkMclRoV");
         authsLoginResult.setUrl("https://www.smzdm.com/");
         authsLoginResult.setTitle("注册就送优惠券");
@@ -481,7 +481,7 @@ public class AuthcAPIController extends BaseController {
         hashMap.put("page","couponsListpage");
         hashMap.put("couponId","6555008628095455332");
         String json = JacksonUtil.toJson(hashMap);
-        authsLoginResult.setPath(json);
+        authsLoginResult.setPath(json);*/
         try {
             redisService.save(sessionId, authsLoginResult);
             redisService.save("user_name" + member.getMmCode(), sessionId);
