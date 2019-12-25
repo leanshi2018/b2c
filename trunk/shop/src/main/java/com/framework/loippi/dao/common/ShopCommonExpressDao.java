@@ -16,4 +16,8 @@ public interface ShopCommonExpressDao  extends GenericDao<ShopCommonExpress, Lon
     ShopCommonExpress findByOrderId(@Param("orderId") Long orderId);
 
 	ShopCommonExpress findById(Long id);
+
+	Integer macSort();
+
+	ShopCommonExpress findBySort(int eSort);
 }

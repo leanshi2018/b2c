@@ -140,4 +140,10 @@
         </where>
     </select>
 
+    <select id="findByEIdAndAId" parameterType="map" resultMap="ShopCommonExpressResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM shop_common_express_notarea where express_id = #{expressId} and  area_id = #{areaId}
+    </select>
+
 </mapper>
