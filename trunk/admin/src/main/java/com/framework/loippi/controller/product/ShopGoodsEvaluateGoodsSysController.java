@@ -1,8 +1,5 @@
 package com.framework.loippi.controller.product;
 
-import com.framework.loippi.entity.ShopCommonMessage;
-import com.framework.loippi.entity.ShopMemberMessage;
-import com.framework.loippi.entity.order.ShopOrder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -38,6 +35,9 @@ import com.framework.loippi.consts.GoodsState;
 import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.Principal;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
@@ -249,7 +249,8 @@ public class ShopGoodsEvaluateGoodsSysController extends BaseController {
             BigDecimal price = shopOrderGoods.getVipPrice();//vip价格
             Integer goodsNum = shopOrderGoods.getGoodsNum();
 
-            BigDecimal multiply = price.multiply(new BigDecimal(points)).multiply(new BigDecimal(goodsNum));
+            BigDecimal multiplys = price.multiply(new BigDecimal(points)).multiply(new BigDecimal(goodsNum));
+            BigDecimal multiply = multiplys.setScale(2,BigDecimal.ROUND_HALF_UP);
 
             evaluate.setExchangePoints(multiply);
             evaluateGoodsService.update(evaluate);

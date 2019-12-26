@@ -94,9 +94,9 @@ public class CommonController extends BaseController {
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", mobile);
         List<RdMmBasicInfo> account = rdMmBasicInfoService.findList(params);
-        if (account.size()==0){
+        /*if (account.size()==0){
 			return ApiUtils.error("不存在该账号");
-		}
+		}*/
 
         if (msgType == VerifyCodeType.REGISTER.code) {
             if (account.size() > 0) {
