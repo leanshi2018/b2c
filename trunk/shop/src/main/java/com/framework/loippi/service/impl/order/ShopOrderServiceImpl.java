@@ -2785,7 +2785,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 order.setTradeSn(tradeSn);
                 order.setPaymentBranch(paymentBranch);
                 orderDao.update(order);
-                if(order.getUsePointNum()!=null&&order.getUsePointNum()>0){//如果订单支付使用了积分，则创建使用积分消息
+                /*if(order.getUsePointNum()!=null&&order.getUsePointNum()>0){//如果订单支付使用了积分，则创建使用积分消息
                     ShopCommonMessage message=new ShopCommonMessage();
                     message.setSendUid(order.getBuyerId()+"");
                     message.setType(1);
@@ -2807,7 +2807,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     shopMemberMessage.setMsgId(msgId);
                     shopMemberMessage.setUid(order.getBuyerId());
                     shopMemberMessageDao.insert(shopMemberMessage);
-                }
+                }*/
                 orderTotalAmount += order.getOrderAmount().doubleValue();
                 //Modify by zc 2019-07-18 TODO
                 RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
