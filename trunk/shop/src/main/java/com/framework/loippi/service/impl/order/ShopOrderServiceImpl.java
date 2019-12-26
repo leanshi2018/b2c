@@ -3575,6 +3575,27 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 order.setOrderAmount(order.getOrderAmount()
                     .subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
                 orderDao.update(order);
+                ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                shopCommonMessage.setSendUid(shopMember.getMmCode());
+                shopCommonMessage.setType(1);
+                shopCommonMessage.setOnLine(1);
+                shopCommonMessage.setCreateTime(new Date());
+                shopCommonMessage.setBizType(2);
+                shopCommonMessage.setIsTop(1);
+                shopCommonMessage.setCreateTime(new Date());
+                shopCommonMessage.setTitle("积分消费");
+                shopCommonMessage.setContent("您因订单支付【订单号"+order.getOrderSn()+"】,扣减购物积分"+integration+",请在购物积分账户查看明细");
+                Long msgId1 = twiterIdService.getTwiterId();
+                shopCommonMessage.setId(msgId1);
+                shopCommonMessageDao.insert(shopCommonMessage);
+                ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                shopMemberMessage1.setBizType(2);
+                shopMemberMessage1.setCreateTime(new Date());
+                shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                shopMemberMessage1.setIsRead(0);
+                shopMemberMessage1.setMsgId(msgId1);
+                shopMemberMessage1.setUid(Long.parseLong(shopMember.getMmCode()));
+                shopMemberMessageDao.insert(shopMemberMessage1);
             }
         } else {
             throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单不存在");
