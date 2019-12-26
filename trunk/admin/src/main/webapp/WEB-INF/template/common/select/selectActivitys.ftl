@@ -24,7 +24,7 @@
                     <tbody>
                     <tr>
                         <td>
-                            <input name="couponName" type="text" value="" placeholder="请输入活动名称"/>
+                            <input name="info" type="text" value="${info}" placeholder="请输入活动名称"/>
                             <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
                             </a>
                         </td>
@@ -54,7 +54,7 @@
                         </td>
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpeccoupons('${activity.id}')">选择</a>
+                               onclick="selSpeccoupons('${activity.info}')">选择</a>
                         </td>
                     </tr>
                 </#list>
@@ -73,7 +73,7 @@
         function selSpeccoupons(id, name) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendGoods(id, name);
+            parent.appendWareInfo(id, name);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);
