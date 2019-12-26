@@ -1471,6 +1471,9 @@ public class UserAPIController extends BaseController {
 
         SelfPerformanceResult result = new SelfPerformanceResult();
         MemberQualification qualification = qualificationService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
+        if (qualification==null){
+            return ApiUtils.error("该会员还未生成业绩信息！");
+        }
         //当期零售利润
         BigDecimal profits1 = retailProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",1));
         if (profits1==null){
