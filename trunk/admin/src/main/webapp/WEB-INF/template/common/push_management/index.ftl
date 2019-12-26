@@ -30,9 +30,9 @@
             <div class="item-title">
                 <h3>通知栏推送管理</h3>
                 <ul class="tab-base">
-                    <li><a href="JavaScript:void(0);" class="current"><span><@spring.message "manage"/></span></a></li>
+                    <li><a href="JavaScript:void(0);" class="current"><@spring.message "manage"/></a></li>
                     <li>
-                        <a href="${base}/admin/jpush/add/forword.jhtml"><span><@spring.message "add"/></span></a>
+                        <a href="${base}/admin/jpush/add/forword.jhtml"><@spring.message "add"/></a>
                     </li>
                 </ul>
             </div>
@@ -44,21 +44,21 @@
                 <tbody>
                 <tr>
                     <th class="th_w">内容</th>
-                    <td class="ths"><input type="text" class="text" name="likeMessage" value="${jpushList.likeMessage}" ></td>
+                    <td class="ths"><input type="text" class="text" name="likelist" value="${likelist}" ></td>
                     <th class="th_w">推送时间</th>
                     <td style="width: 36%;">
-                        <input class="txt Wdate" type="text" id="query_start_time" name="transTimeLeft"
-                               value="${jpushList.searchLeftTime}" readonly
+                        <input class="txt Wdate" type="text" id="query_start_time" name="searchLeftTime"
+                               value="${searchLeftTime}" readonly
                                onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'query_end_time\')}'});"/>
                         <label for="query_start_time">~</label>
-                        <input class="txt Wdate" type="text" id="query_end_time" name="transTimeRight"
-                               value="${jpushList.searchRightTime}" readonly
+                        <input class="txt Wdate" type="text" id="query_end_time" name="searchRightTime"
+                               value="${searchRightTime}" readonly
                                onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'query_start_time\')}'});"/>
                     </td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="shopPMansongSubmit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
-                        <a href="" class="btns "><span><@spring.message "search.cancel"/></span></a>
+                        <a href="" class="btns "><@spring.message "search.cancel"/></a>
                     </td>
                 </tr>
                 </tbody>
@@ -91,19 +91,35 @@
                             ${list.message}
                         </td>
                         <td style="text-align: left">
-                            <#if list.audience== all>全部</#if>
+                            <#if list.audience=="all">全部</#if>
                         </td>
                         <td style="text-align: left">
                             <#if list.pushMethod== 1>通知栏推送</#if>
                             <#if list.pushMethod== 2>其他</#if>
                         </td>
                         <td style="text-align: left">
-
+                            <#if list.jumpPath == 'homepage'>辑</#if>
+                            <#if list.jumpPath == "listpage">消息中心</#if>
+                            <#if list.jumpPath == "goodsdetailspage">商品详情</#if>
+                            <#if list.jumpPath == "mypage">我</#if>
+                            <#if list.jumpPath == "myresultspage">个人业绩</#if>
+                            <#if list.jumpPath == "orderpage">我的订单</#if>
+                            <#if list.jumpPath == "myintegralpage">我的积分</#if>
+                            <#if list.jumpPath == "rewardintegralpage">奖励积分</#if>
+                            <#if list.jumpPath == "shoppingintegralpage">购物积分</#if>
+                            <#if list.jumpPath == "buyintegralpage">换购积分</#if>
+                            <#if list.jumpPath == "bankcardpage">我的银行卡</#if>
+                            <#if list.jumpPath == "learnpage">学堂</#if>
+                            <#if list.jumpPath == "learnarticlepage">学堂文章详情</#if>
+                            <#if list.jumpPath == "invitationpage">我的邀请</#if>
+                            <#if list.jumpPath == "activityGoodsListpage">活动页面</#if>
+                            <#if list.jumpPath == 'buyCouponspage'>优惠券购买详情</#if>
+                            <#if list.jumpLink??>${list.jumpLink}</#if>
                         </td>
                         <td>
-                            <#--                            <#if coupons.updateTime??>-->
-                            <#--                                ${coupons.updateTime?string("yyyy-MM-dd HH:mm:ss")}-->
-                            <#--                            </#if>-->
+                            <#if list.pushTime??>
+                                ${list.pushTime?string("yyyy-MM-dd HH:mm:ss")}
+                            </#if>
                         </td>
                         <td>
                             <#--                            <#if coupons.status == 1>待审核</#if>-->
@@ -113,7 +129,7 @@
                         </td>
                         <td>
                             <a class="look" href="${base}/admin/jpush/show.jhtml?id=${list.id}">查&nbsp;看</a>||
-                            <a href="JavaScript:void(0);" onclick="">删除</a>
+                            <a href="JavaScript:void(0);" >删除</a>
                         </td>
                     </tr>
                 </#list>
@@ -133,30 +149,6 @@
             $("#couponlist").attr("action", href).submit();
             return false;
         });
-
-        <#--function deletejpush(id) {-->
-        <#--    $("#editdetaildiv" ).dialog({-->
-        <#--        title: '请对该优惠券进行审核',-->
-        <#--        height: 170,-->
-        <#--        width: 250,-->
-        <#--        modal: true,-->
-        <#--        "buttons": {-->
-        <#--            "审核失败": function () {-->
-        <#--                $("#couponlist").attr("action", "${base}/admin/plarformShopCoupon/auditCoupon.jhtml?couponId=" + id + "&targetStatus=3" );-->
-        <#--                $('#couponlist').submit();-->
-        <#--                $(this).dialog("close");-->
-        <#--            },-->
-        <#--            "审核通过": function () {-->
-        <#--                $("#couponlist").attr("action", "${base}/admin/plarformShopCoupon/auditCoupon.jhtml?couponId=" + id + "&targetStatus=2" );-->
-        <#--                $('#couponlist').submit();-->
-        <#--                $(this).dialog("close");-->
-        <#--                alert("审核通过！");-->
-        <#--            }-->
-        <#--        }-->
-        <#--    })-->
-
-        <#--}-->
-
         $(function () {
             $("#idsAll").click(function () {
                 $('input[name="ids"]').attr("checked", this.checked);
