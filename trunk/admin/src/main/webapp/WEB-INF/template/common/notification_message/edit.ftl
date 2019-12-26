@@ -173,7 +173,7 @@
                 </tr>
                 </#if>
                   <#list message.message as messages>
-                    <#if messages==null>
+                    <#if messages=="">
                         <tr class="noborder">
                             <td class="required">
                                 <em class="pngFix"></em>消息标题
