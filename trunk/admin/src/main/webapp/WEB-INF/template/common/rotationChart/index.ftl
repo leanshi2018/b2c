@@ -38,13 +38,13 @@
             </div>
         </div>
         <div class="fixed-empty"></div>
-        <form method="post" name="formSearch" id="formSearch" action="">
+        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findHomePictureList.jhtml">
             <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
                     <th class="th_w">轮播图名称</th>
-                    <td class="ths"><input type="text" class="text" name="" value="" ></td>
+                    <td class="ths"><input type="text" class="text" name="pictureName" value="${pictureName}" ></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="shopPMansongSubmit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
@@ -68,11 +68,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list jpushList.content as list>
+                <#list page.content as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
-
+                            ${list.pictureName}
                         </td>
                         <td style="text-align: left">
                             <#if list.jumpPath == 'homepage'>辑</#if>
@@ -94,7 +94,7 @@
                             <#if list.jumpLink??>${list.jumpLink}</#if>
                         </td>
                         <td>
-
+                            ${list.pSort}
                         </td>
                         <td>
 
