@@ -13,4 +13,6 @@ import com.framework.loippi.service.GenericService;
 public interface ShopHomePictureService extends GenericService<ShopHomePicture, Long> {
 
 	List<ShopHomePicture> findByTypeAndSort(Integer pictureType, Integer pSort);
+
+	List<ShopHomePicture> findListByTypeAndStutus(int pictureType, int auditStatus);
 }

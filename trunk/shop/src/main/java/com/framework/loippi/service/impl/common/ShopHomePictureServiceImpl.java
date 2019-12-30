@@ -34,4 +34,12 @@ public class ShopHomePictureServiceImpl extends GenericServiceImpl<ShopHomePictu
 		map.put("pSort",pSort);
 		return shopHomePictureDao.findByTypeAndSort(map);
 	}
+
+	@Override
+	public List<ShopHomePicture> findListByTypeAndStutus(int pictureType, int auditStatus) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("pictureType",pictureType);
+		map.put("auditStatus",auditStatus);
+		return shopHomePictureDao.findListByTypeAndStutus(map);
+	}
 }

@@ -307,7 +307,7 @@ public class IndexAPIController extends BaseController {
 
         HomeAndADPictureResult result = new HomeAndADPictureResult();
         //轮播图
-        List<ShopHomePicture> homePictures = shopHomePictureService.findList(Paramap.create().put("pictureType", 0).put("auditStatus", 0));
+        List<ShopHomePicture> homePictures = shopHomePictureService.findListByTypeAndStutus( 0,1);
         if (homePictures==null){
             result.setHomePictures(new ArrayList<ShopHomePicture>());
         }else {
@@ -315,7 +315,7 @@ public class IndexAPIController extends BaseController {
         }
 
         //广告位图
-        List<ShopHomePicture> adPictures = shopHomePictureService.findList(Paramap.create().put("pictureType", 0).put("auditStatus", 0));
+        List<ShopHomePicture> adPictures = shopHomePictureService.findListByTypeAndStutus(1,1);
         if (adPictures==null){
             result.setAdPictures(new ArrayList<ShopHomePicture>());
         }else {
