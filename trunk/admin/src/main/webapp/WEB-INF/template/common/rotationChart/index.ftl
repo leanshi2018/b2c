@@ -97,11 +97,12 @@
                             ${list.pSort}
                         </td>
                         <td>
-
+                            <#if list.auditStatus == 0>不显示</#if>
+                            <#if list.auditStatus == 1>显示</#if>
                         </td>
                         <td>
                             <a class="look" href="">编 辑</a>||
-                            <a href="JavaScript:void(0);" >删 除</a>
+                            <a href="JavaScript:void(0);">删 除</a>
                         </td>
                     </tr>
                 </#list>
