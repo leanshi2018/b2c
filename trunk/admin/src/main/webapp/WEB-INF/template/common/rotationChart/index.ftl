@@ -28,7 +28,7 @@
     <div class="page">
         <div class="fixed-bar">
             <div class="item-title">
-                <h3>通知栏推送管理</h3>
+                <h3>轮播图管理</h3>
                 <ul class="tab-base">
                     <li><a href="JavaScript:void(0);" class="current"><@spring.message "manage"/></a></li>
                     <li>
@@ -38,23 +38,13 @@
             </div>
         </div>
         <div class="fixed-empty"></div>
-        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/list.jhtml">
+        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findHomePictureList.jhtml">
             <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
-                    <th class="th_w">内容</th>
-                    <td class="ths"><input type="text" class="text" name="likelist" value="${likelist}" ></td>
-                    <th class="th_w">推送时间</th>
-                    <td style="width: 36%;">
-                        <input class="txt Wdate" type="text" id="query_start_time" name="searchLeftTime"
-                               value="${searchLeftTime}" readonly
-                               onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'query_end_time\')}'});"/>
-                        <label for="query_start_time">~</label>
-                        <input class="txt Wdate" type="text" id="query_end_time" name="searchRightTime"
-                               value="${searchRightTime}" readonly
-                               onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'query_start_time\')}'});"/>
-                    </td>
+                    <th class="th_w">轮播图名称</th>
+                    <td class="ths"><input type="text" class="text" name="pictureName" value="${pictureName}" ></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="shopPMansongSubmit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
@@ -70,33 +60,19 @@
                 <thead>
                 <tr class="thead">
                     <th class="w24"><input type="checkbox" id="idsAll" class="checkitem"></th>
-                    <th class="align-center">消息ID</th>
-                    <th class="align-center">通知内容</th>
-                    <th class="align-center">推送对象</th>
-                    <th class="align-center">推送方式</th>
+                    <th class="align-center">轮播题名称</th>
                     <th class="align-center">跳转页面</th>
-                    <th class="align-center">推送时间</th>
-                    <th class="align-center">状态</th>
+                    <th class="align-center">排序</th>
+                    <th class="align-center">是否显示</th>
                     <th class="align-center"><@spring.message "operation"/></th>
                 </tr>
                 </thead>
                 <tbody>
-                <#list jpushList.content as list>
+                <#list page.content as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
-                            ${list.id}
-                        </td>
-                        <td style="text-align: left">
-                            ${list.message}
-                        </td>
-                        <td style="text-align: left">
-                            <#if list.audience=="all">全部</#if>
-                            <#if list.audience!="all">部分</#if>
-                        </td>
-                        <td style="text-align: left">
-                            <#if list.pushMethod== 1>通知栏推送</#if>
-                            <#if list.pushMethod== 2>其他</#if>
+                            ${list.pictureName}
                         </td>
                         <td style="text-align: left">
                             <#if list.jumpPath == 'homepage'>辑</#if>
@@ -118,19 +94,14 @@
                             <#if list.jumpLink??>${list.jumpLink}</#if>
                         </td>
                         <td>
-                            <#if list.pushTime??>
-                                ${list.pushTime?string("yyyy-MM-dd HH:mm:ss")}
-                            </#if>
+                            ${list.pSort}
                         </td>
                         <td>
-                            <#--                            <#if coupons.status == 1>待审核</#if>-->
-                            <#--                            <#if coupons.status == 2>审核通过</#if>-->
-                            <#--                            <#if coupons.status == 3>审核失败</#if>-->
-                            <#--                            <#if coupons.status == 4>下架</#if>-->
+
                         </td>
                         <td>
-                            <a class="look" href="${base}/admin/jpush/show.jhtml?id=${list.id}">查&nbsp;看</a>||
-                            <a href="JavaScript:void(0);" >删除</a>
+                            <a class="look" href="">编 辑</a>||
+                            <a href="JavaScript:void(0);" >删 除</a>
                         </td>
                     </tr>
                 </#list>
@@ -145,6 +116,7 @@
         </form>
     </div>
     <script type="text/javascript">
+        /*post提交*/
         $(".look").click(function(){
             var href = $(this).attr("href");
             $("#couponlist").attr("action", href).submit();

@@ -24,7 +24,7 @@
                     <tbody>
                     <tr>
                         <td>
-                            <input name="couponName" type="text" value="" placeholder="请输入活动名称"/>
+                            <input name="info" type="text" value="${info}" placeholder="请输入活动名称"/>
                             <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
                             </a>
                         </td>
@@ -37,33 +37,33 @@
                 <thead>
                 <tr>
                     <th>&nbsp;</th>
-                    <th><b>活动ID</b></th>
-                    <th><b>优惠券名称</b></th>
+                    <th><b>ID</b></th>
+                    <th><b>文章标题</b></th>
                     <th><b>操作</b></th>
                 </tr>
                 </thead>
                 <tbody>
-                <#list activitys.content as activity>
+                <#list articles.content as article>
                     <tr>
-                        <td><input type="checkbox" name="ids" value="${activity.id}" class="checkitem"></td>
+                        <td><input type="checkbox" name="ids" value="${article.id}" class="checkitem"></td>
                         <td style="text-align: left">
-                            ${activity.id}
+                            ${article.id}
                         </td>
                         <td style="text-align: left">
-
+                            ${article.articleTitle}
                         </td>
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpeccoupons('${activity.id}')">选择</a>
+                               onclick="selSpeccoupons('${article.info}')">选择</a>
                         </td>
                     </tr>
                 </#list>
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td colspan="20">
-                        <@layout.pager pager/>
-                    </td>
+<#--                    <td colspan="20">-->
+<#--                        <@layout.pager pager/>-->
+<#--                    </td>-->
                 </tr>
                 </tfoot>
             </table>
