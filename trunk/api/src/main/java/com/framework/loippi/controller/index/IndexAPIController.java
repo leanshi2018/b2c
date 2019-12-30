@@ -309,16 +309,18 @@ public class IndexAPIController extends BaseController {
         //轮播图
         List<ShopHomePicture> homePictures = shopHomePictureService.findList(Paramap.create().put("pictureType", 0).put("auditStatus", 0));
         if (homePictures==null){
-            return ApiUtils.error("轮播图为空");
+            result.setHomePictures(new ArrayList<ShopHomePicture>());
+        }else {
+            result.setHomePictures(homePictures);
         }
-        result.setHomePictures(homePictures);
 
         //广告位图
         List<ShopHomePicture> adPictures = shopHomePictureService.findList(Paramap.create().put("pictureType", 0).put("auditStatus", 0));
         if (adPictures==null){
-            return ApiUtils.error("广告位图为空");
+            result.setAdPictures(new ArrayList<ShopHomePicture>());
+        }else {
+            result.setAdPictures(adPictures);
         }
-        result.setAdPictures(adPictures);
 
         return ApiUtils.success(result);
     }
