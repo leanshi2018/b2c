@@ -61,9 +61,9 @@
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td colspan="20">
-                        <@layout.pager pager/>
-                    </td>
+<#--                    <td colspan="20">-->
+<#--                        <@layout.pager pager/>-->
+<#--                    </td>-->
                 </tr>
                 </tfoot>
             </table>
