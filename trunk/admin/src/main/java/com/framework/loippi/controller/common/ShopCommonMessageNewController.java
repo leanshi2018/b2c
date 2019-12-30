@@ -86,6 +86,16 @@ public class ShopCommonMessageNewController extends GenericController {
     }
 
     /**
+     * 新增
+     * @param model
+     * @return
+     */
+    @RequestMapping(value ="/add",method = RequestMethod.GET)
+    public String add(Model model) {
+        return "/common/notification_message/edit";
+    }
+
+    /**
      * 创建或者修改消息
      * @param message
      * @param request
