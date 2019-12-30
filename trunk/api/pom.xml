@@ -47,6 +47,12 @@
 
 
     <dependencies>
+        <!--通商云-->
+        <dependency>
+            <groupId>com.allinpay</groupId>
+            <artifactId>yunst-sdk</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
