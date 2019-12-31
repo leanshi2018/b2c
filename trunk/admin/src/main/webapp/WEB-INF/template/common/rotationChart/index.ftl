@@ -32,7 +32,7 @@
                 <ul class="tab-base">
                     <li><a href="JavaScript:void(0);" class="current"><@spring.message "manage"/></a></li>
                     <li>
-                        <a href="${base}/admin/jpush/add/forword.jhtml"><@spring.message "add"/></a>
+                        <a href=""><@spring.message "add"/></a>
                     </li>
                 </ul>
             </div>

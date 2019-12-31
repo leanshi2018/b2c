@@ -78,12 +78,12 @@
                         <td>
                             <p>
                                 <span class="sign">
-                                    <input class="w300 text" name="activityPicture" id="activityPicture" type="hidden" value=""/>
-<#--                                    <img src="${shopActivity.activityPicture!''} " id="mainPictureImg" nc_type="logo1" width="88" height="44"/>-->
+                                    <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden" value=""/>
+                                    <img src="${pictureUrl!''} " id="mainPictureImg" nc_type="logo1" width="88" height="44"/>
                                 </span>
                             </p>
                             <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
-                                      onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','activityPicture');"/></p>
+                                      onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
                             <span class="error-message">建议上传图片尺寸480*680</span>
                             <span class="error-message"></span>
                         </td>
@@ -99,7 +99,7 @@
                     </tr>
                     <tr class="noborder">
                         <td class="required">
-                            <em class="pngFix"></em>排序数字
+                            <em class="pngFix"></em>打开方式
                         </td>
                         <td>
                             <select name="jumpPath" class="w150" id="jumpPath">
