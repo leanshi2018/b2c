@@ -26,6 +26,7 @@ import com.framework.loippi.consts.GoodsState;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
+import com.framework.loippi.entity.common.RdKeyword;
 import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
@@ -41,6 +42,7 @@ import com.framework.loippi.result.common.index.IndexDataResult;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.activity.ShopActivityGoodsService;
 import com.framework.loippi.service.activity.ShopActivityService;
+import com.framework.loippi.service.common.RdKeywordService;
 import com.framework.loippi.service.common.ShopHomePictureService;
 import com.framework.loippi.service.product.ShopGoodsBrandService;
 import com.framework.loippi.service.product.ShopGoodsClassService;
@@ -77,6 +79,8 @@ public class IndexAPIController extends BaseController {
     private ShopGoodsBrandService shopGoodsBrandService;
     @Resource
     private ShopHomePictureService shopHomePictureService;
+    @Resource
+    private RdKeywordService rdKeywordService;
 
     /**
      * 首页数据（初始化数据）
@@ -302,6 +306,7 @@ public class IndexAPIController extends BaseController {
      * 轮播图或广告位列表
      * @return
      */
+	@ResponseBody
     @RequestMapping("/api/index/getHomePicture.json")
     public String getHomePicture() {
 
@@ -322,7 +327,13 @@ public class IndexAPIController extends BaseController {
             result.setAdPictures(adPictures);
         }
 
-        return ApiUtils.success(result);
+		List<RdKeyword> keywordList = rdKeywordService.findAll();
+		if (keywordList.size()>0){
+			result.setKeywords(keywordList);
+		}else {
+			result.setKeywords(new ArrayList<RdKeyword>());
+		}
+		return ApiUtils.success(result);
     }
 
 

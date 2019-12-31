@@ -75,6 +75,19 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
+     * 轮播图
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/findPicture")
+    public String findPicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
+        model.addAttribute("picture", shopHomePictureService.find(pictureId));
+        return "common/rotationChart/edit";
+    }
+
+
+    /**
      * 轮播图添加和修改
      * @param request
      * @param shopHomePicture
