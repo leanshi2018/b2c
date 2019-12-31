@@ -82,6 +82,10 @@ public class ActivityCommonController extends GenericController {
      */
     @RequestMapping(value = "/findPicture")
     public String findPicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
+        if (pictureId==null){
+            model.addAttribute("msg", "id为空");
+            return Constants.MSG_URL;
+        }
         model.addAttribute("picture", shopHomePictureService.find(pictureId));
         return "common/rotationChart/edit";
     }
