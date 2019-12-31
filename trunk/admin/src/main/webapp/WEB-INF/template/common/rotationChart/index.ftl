@@ -32,7 +32,7 @@
                 <ul class="tab-base">
                     <li><a href="JavaScript:void(0);" class="current"><@spring.message "manage"/></a></li>
                     <li>
-                        <a href=""><@spring.message "add"/></a>
+                        <a href="${base}/admin/shop_activity_common/findPicture.jhtml?pictureId=${id}"><@spring.message "add"/></a>
                     </li>
                 </ul>
             </div>
@@ -101,7 +101,7 @@
                             <#if list.auditStatus == 1>显示</#if>
                         </td>
                         <td>
-                            <a class="look" href="">编 辑</a>||
+                            <a class="look" href="${base}/admin/shop_activity_common/findPicture.jhtml?pictureId=${list.id}">编 辑</a>||
                             <a href="JavaScript:void(0);">删 除</a>
                         </td>
                     </tr>

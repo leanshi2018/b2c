@@ -114,7 +114,6 @@ public class ActivityCommonController extends GenericController {
                                   @RequestParam(required = false, value = "openType") String openType,
                                   @RequestParam(required = false, value = "jumpInterface") String jumpInterface,
                                   @RequestParam(required = false, value = "jumpJson") String jumpJson) {
-
         if(StringUtil.isEmpty(shopHomePicture.getPictureName())){
             model.addAttribute("msg", "名称不可以为空");
             return Constants.MSG_URL;
