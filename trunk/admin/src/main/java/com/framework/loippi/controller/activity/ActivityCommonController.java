@@ -135,16 +135,6 @@ public class ActivityCommonController extends GenericController {
             return Constants.MSG_URL;
         }
 
-        if(StringUtil.isEmpty(openType)){
-            model.addAttribute("msg", "请选择打开方式");
-            return Constants.MSG_URL;
-        }
-        if(StringUtil.isEmpty(jumpInterface)){
-            model.addAttribute("msg", "请选择跳转接口");
-            return Constants.MSG_URL;
-        }
-
-
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("page",openPage);
 
