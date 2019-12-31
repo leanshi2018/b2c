@@ -71,8 +71,21 @@ public class ActivityCommonController extends GenericController {
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopHomePictureService.findByPage(pageable));
-        return "/common/rotationChart/index.jhtml";
+        return "/common/rotationChart/index";
     }
+
+    /**
+     * 轮播图
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/findPicture")
+    public String findHomePicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
+        model.addAttribute("picture", shopHomePictureService.find(pictureId));
+        return "common/rotationChart/edit";
+    }
+
 
     /**
      * 轮播图添加和修改

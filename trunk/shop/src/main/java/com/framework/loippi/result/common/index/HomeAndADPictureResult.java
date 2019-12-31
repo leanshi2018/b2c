@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import com.framework.loippi.entity.common.RdKeyword;
 import com.framework.loippi.entity.common.ShopHomePicture;
 
 /**
@@ -23,5 +24,8 @@ public class HomeAndADPictureResult {
 
 	//品牌精品
 	List<ShopHomePicture> adPictures;
+
+	//关键词队列
+	List<RdKeyword> keywords;
 
 }
