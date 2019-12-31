@@ -79,30 +79,19 @@
                             <em class="pngFix"></em>主图
                         </td>
                         <td>
-                            <span class="sign">
-                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"
-                                   value="${picture.pictureUrl}"/>
-                            <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1"
-                                 width="188"
-                                 height="144"/>
-                              </span>
-                            </p>
-                        </#if>
-                        <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
-                                  onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                        <span class="error-message">建议上传图片尺寸351*184</span>
-                            <p>
-                                <span class="sign">
-                                    <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden" value="${picture.pictureUrl}"/>
-                                    <img src="${picture.pictureUrl!''} " id="mainPictureImg" nc_type="logo1" width="88" height="44"/>
-                                </span>
-                            </p>
-                            <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
-                                      onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                            <span class="error-message">建议上传图片尺寸480*680</span>
-                            <span class="error-message"></span>
+
                         </td>
-                    </tr>
+                    </tr><p>
+                            <span class="sign">
+                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
+                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
+                            <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
+                              </span>
+                </p>
+                    <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
+                              onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
+                    <span class="error-message">建议上传图片尺寸351*184</span>
+                    <span class="error-message"></span>
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>排序数字
@@ -223,14 +212,15 @@
                         </td>
                         <td>
                             <p>
-                                <span class="sign">
-                                    <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden" value=""/>
-                                    <img src="${picture.pictureUrl!''} " id="mainPictureImg" nc_type="logo1" width="88" height="44"/>
-                                </span>
+                            <span class="sign">
+                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
+                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
+                            <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
+                              </span>
                             </p>
                             <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
                                       onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                            <span class="error-message">建议上传图片尺寸480*680</span>
+                            <span class="error-message">建议上传图片尺寸351*184</span>
                             <span class="error-message"></span>
                         </td>
                     </tr>
