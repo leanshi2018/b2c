@@ -153,6 +153,7 @@ public class ActivityCommonController extends GenericController {
         JSONObject activityUrlJson = JSONObject.fromObject(map);
 
         shopHomePicture.setActivityUrl(activityUrlJson.toString());
+        shopHomePicture.setJumpName(openName);
 
         if (shopHomePicture.getId()==null){//添加
             shopHomePicture.setId(twiterIdService.getTwiterId());
