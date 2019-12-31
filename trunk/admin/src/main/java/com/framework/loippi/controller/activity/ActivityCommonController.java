@@ -3,8 +3,10 @@ package com.framework.loippi.controller.activity;
 import net.sf.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +27,7 @@ import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.common.ShopHomePictureService;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 
@@ -82,10 +85,10 @@ public class ActivityCommonController extends GenericController {
      */
     @RequestMapping(value = "/findPicture")
     public String findPicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
-        if (pictureId==null){
+        /*if (pictureId==null){
             model.addAttribute("msg", "id为空");
             return Constants.MSG_URL;
-        }
+        }*/
         model.addAttribute("picture", shopHomePictureService.find(pictureId));
         return "common/rotationChart/edit";
     }
@@ -97,8 +100,11 @@ public class ActivityCommonController extends GenericController {
      * @param shopHomePicture
      * @param model
      * @param attr
+     * @param openPage 跳转参数
+     * @param openName 中文
      * @param openType 打开方式
      * @param jumpInterface 跳转接口
+     * @param jumpJson 参数json
      * @return
      */
     @RequestMapping(value = "/saveOrUpdateHomePicture",method = RequestMethod.POST)
@@ -138,8 +144,21 @@ public class ActivityCommonController extends GenericController {
             return Constants.MSG_URL;
         }
 
+
         Map<String,Object> map = new HashMap<String,Object>();
-        map.put(openType,jumpInterface);
+        map.put("page",openPage);
+
+        if (jumpJson!=null){
+            Map<String, String> jsonMap = JacksonUtil.readJsonToMap(jumpJson);
+            Set<String> strings = jsonMap.keySet();
+            Iterator<String> iterator = strings.iterator();
+            while (iterator.hasNext()){
+                String key = iterator.next();
+                String value = jsonMap.get(key);
+                map.put(key,value);
+            }
+        }
+
         JSONObject activityUrlJson = JSONObject.fromObject(map);
 
         shopHomePicture.setActivityUrl(activityUrlJson.toString());
