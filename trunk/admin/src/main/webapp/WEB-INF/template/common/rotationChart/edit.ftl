@@ -44,7 +44,7 @@
         </div>
         <div class="fixed-empty">
         </div>
-        <form id="add_form" action="${base}/admin/shop_common_express/saveOrUpdateHomePicture.jhtml" method="post">
+        <form id="add_form" action="${base}/admin/shop_activity_common/saveOrUpdateHomePicture.jhtml" method="post">
             <table class="table tb-type2">
                 <tbody>
                 <tr>
@@ -79,9 +79,21 @@
                             <em class="pngFix"></em>主图
                         </td>
                         <td>
+                            <span class="sign">
+                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"
+                                   value="${picture.pictureUrl}"/>
+                            <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1"
+                                 width="188"
+                                 height="144"/>
+                              </span>
+                            </p>
+                        </#if>
+                        <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
+                                  onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
+                        <span class="error-message">建议上传图片尺寸351*184</span>
                             <p>
                                 <span class="sign">
-                                    <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden" value=""/>
+                                    <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden" value="${picture.pictureUrl}"/>
                                     <img src="${picture.pictureUrl!''} " id="mainPictureImg" nc_type="logo1" width="88" height="44"/>
                                 </span>
                             </p>
