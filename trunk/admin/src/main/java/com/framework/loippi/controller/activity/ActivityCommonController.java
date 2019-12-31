@@ -82,6 +82,10 @@ public class ActivityCommonController extends GenericController {
      */
     @RequestMapping(value = "/findPicture")
     public String findPicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
+        if (pictureId==null){
+            model.addAttribute("msg", "id为空");
+            return Constants.MSG_URL;
+        }
         model.addAttribute("picture", shopHomePictureService.find(pictureId));
         return "common/rotationChart/edit";
     }
@@ -99,8 +103,11 @@ public class ActivityCommonController extends GenericController {
      */
     @RequestMapping(value = "/saveOrUpdateHomePicture",method = RequestMethod.POST)
     public String saveOrUpdateHomePicture(HttpServletRequest request, @ModelAttribute ShopHomePicture shopHomePicture, ModelMap model, RedirectAttributes attr,
+                                  @RequestParam(required = false, value = "openPage") String openPage,
+                                  @RequestParam(required = false, value = "openName") String openName,
                                   @RequestParam(required = false, value = "openType") String openType,
-                                  @RequestParam(required = false, value = "jumpInterface") String jumpInterface) {
+                                  @RequestParam(required = false, value = "jumpInterface") String jumpInterface,
+                                  @RequestParam(required = false, value = "jumpJson") String jumpJson) {
 
         if(StringUtil.isEmpty(shopHomePicture.getPictureName())){
             model.addAttribute("msg", "名称不可以为空");
