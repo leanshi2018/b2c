@@ -1,4 +1,3 @@
-/*
 import com.allinpay.yunst.sdk.YunClient;
 import com.allinpay.yunst.sdk.bean.YunConfig;
 import com.allinpay.yunst.sdk.bean.YunRequest;
@@ -27,4 +26,3 @@ public class Mytest {
         }
     }
 }
-*/
