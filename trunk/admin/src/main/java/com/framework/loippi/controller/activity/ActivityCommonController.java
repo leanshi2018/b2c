@@ -71,7 +71,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopHomePictureService.findByPage(pageable));
-        return "/";
+        return "/common/rotationChart/index.jhtml";
     }
 
     /**
