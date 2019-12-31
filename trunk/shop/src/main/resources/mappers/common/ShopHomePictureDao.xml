@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com/framework/loippi/dao/common/ShopHomePictureDao.java:12">
+<mapper namespace="com.framework.loippi.dao.common.ShopHomePictureDao">
 
     <resultMap id="ShopHomePictureResultMap" type="com.framework.loippi.entity.common.ShopHomePicture">
         <id property="id" column="id"/>

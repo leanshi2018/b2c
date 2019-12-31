@@ -18,7 +18,7 @@ import com.framework.loippi.mybatis.ext.annotation.Table;
 @Table(name = "shop_home_picture")
 public class ShopHomePicture  implements GenericEntity{
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5081846432919091193L;
 
 	/**
 	 * 活动id
