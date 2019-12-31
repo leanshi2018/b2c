@@ -327,7 +327,7 @@ public class IndexAPIController extends BaseController {
             result.setAdPictures(adPictures);
         }
 
-		List<RdKeyword> keywordList = rdKeywordService.findAll();
+		List<RdKeyword> keywordList = rdKeywordService.findByAll();
 		if (keywordList.size()>0){
 			result.setKeywords(keywordList);
 		}else {

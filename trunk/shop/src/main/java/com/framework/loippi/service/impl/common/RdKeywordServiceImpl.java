@@ -2,6 +2,8 @@ package com.framework.loippi.service.impl.common;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -22,4 +24,9 @@ public class RdKeywordServiceImpl extends GenericServiceImpl<RdKeyword, Long> im
 
 	@Resource
 	private RdKeywordDao rdKeywordDao;
+
+	@Override
+	public List<RdKeyword> findByAll() {
+		return rdKeywordDao.findByAll();
+	}
 }

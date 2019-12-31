@@ -1,5 +1,7 @@
 package com.framework.loippi.dao.common;
 
+import java.util.List;
+
 import com.framework.loippi.entity.common.RdKeyword;
 import com.framework.loippi.mybatis.dao.GenericDao;
 
@@ -9,4 +11,5 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  * @description:dubbo com.framework.loippi.dao.common
  */
 public interface RdKeywordDao extends GenericDao<RdKeyword, Long> {
+	List<RdKeyword> findByAll();
 }

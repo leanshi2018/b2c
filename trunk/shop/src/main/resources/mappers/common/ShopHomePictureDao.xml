@@ -6,6 +6,7 @@
         <id property="id" column="id"/>
         <result property="pictureName" column="picture_name"/>
         <result property="pictureUrl" column="picture_url"/>
+        <result property="pictureJson" column="picture_json"/>
         <result property="pSort" column="p_sort"/>
         <result property="activityUrl" column="activity_url"/>
         <result property="auditStatus" column="audit_status"/>
@@ -14,11 +15,11 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,picture_name ,picture_url ,p_sort ,activity_url ,audit_status ,picture_type
+        id ,picture_name ,picture_url ,picture_json ,p_sort ,activity_url ,audit_status ,picture_type
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{pictureName},#{pictureUrl},#{pSort},#{activityUrl},#{auditStatus},#{pictureType}
+        #{id},#{pictureName},#{pictureUrl},#{pictureJson},#{pSort},#{activityUrl},#{auditStatus},#{pictureType}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -31,6 +32,9 @@
         </if>
         <if test="pictureUrl != null and pictureUrl != ''">
             AND picture_url = #{pictureUrl,jdbcType=VARCHAR}
+        </if>
+        <if test="pictureJson != null and pictureJson != ''">
+            AND picture_json = #{pictureJson,jdbcType=VARCHAR}
         </if>
         <if test="pSort != null">
             AND p_sort = #{pSort,jdbcType=INTEGER}
@@ -56,6 +60,9 @@
         </if>
         <if test="pictureUrl != null and pictureUrl != ''">
             picture_url = #{pictureUrl,jdbcType=VARCHAR},
+        </if>
+        <if test="pictureJson != null and pictureJson != ''">
+            picture_json = #{pictureJson,jdbcType=VARCHAR},
         </if>
         <if test="pSort != null">
             p_sort = #{pSort,jdbcType=INTEGER},

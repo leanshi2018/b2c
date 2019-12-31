@@ -122,5 +122,11 @@
         </where>
     </select>
 
+    <select id="findByAll" resultMap="RdKeywordResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_keyword
+        ORDER BY sort desc
+    </select>
 
 </mapper>
