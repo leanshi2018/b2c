@@ -240,6 +240,7 @@ public class ShopActivityController extends GenericController {
         shopActivity.setActivityType(ActivityTypeEnus.activitTypeMap.get(activityType));
         //填充优惠规则
         shopActivity.setPromotionType(ruleType);
+        shopActivity.setActivityStatus(0);
         //保存活动
         Map<String, String> map = shopActivityService.handleSaveActivity(shopActivity, activityType,
             Constants.PLATFORM_STORE_ID, "平台自营", true);
