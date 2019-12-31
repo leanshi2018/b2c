@@ -310,30 +310,14 @@ public class IndexAPIController extends BaseController {
     @RequestMapping("/api/index/getHomePicture.json")
     public String getHomePicture() {
 
-        HomeAndADPictureResult result = new HomeAndADPictureResult();
         //轮播图
         List<ShopHomePicture> homePictures = shopHomePictureService.findListByTypeAndStutus( 0,1);
-        if (homePictures==null){
-            result.setHomePictures(new ArrayList<ShopHomePicture>());
-        }else {
-            result.setHomePictures(homePictures);
-        }
 
         //广告位图
         List<ShopHomePicture> adPictures = shopHomePictureService.findListByTypeAndStutus(1,1);
-        if (adPictures==null){
-            result.setAdPictures(new ArrayList<ShopHomePicture>());
-        }else {
-            result.setAdPictures(adPictures);
-        }
 
 		List<RdKeyword> keywordList = rdKeywordService.findByAll();
-		if (keywordList.size()>0){
-			result.setKeywords(keywordList);
-		}else {
-			result.setKeywords(new ArrayList<RdKeyword>());
-		}
-		return ApiUtils.success(result);
+		return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
     }
 
 

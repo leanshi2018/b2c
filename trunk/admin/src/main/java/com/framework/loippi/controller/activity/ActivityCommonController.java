@@ -1,12 +1,8 @@
 package com.framework.loippi.controller.activity;
 
-import net.sf.json.JSONObject;
-
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +23,6 @@ import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.common.ShopHomePictureService;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 
@@ -135,7 +130,7 @@ public class ActivityCommonController extends GenericController {
             return Constants.MSG_URL;
         }
 
-        Map<String,Object> map = new HashMap<String,Object>();
+        /*Map<String,Object> map = new HashMap<String,Object>();
         map.put("page",openPage);
 
         if (jumpJson!=null){
@@ -149,9 +144,10 @@ public class ActivityCommonController extends GenericController {
             }
         }
 
-        JSONObject activityUrlJson = JSONObject.fromObject(map);
+        JSONObject activityUrlJson = JSONObject.fromObject(map);*/
 
-        shopHomePicture.setActivityUrl(activityUrlJson.toString());
+        shopHomePicture.setActivityUrl(openPage);
+        shopHomePicture.setPictureJson(jumpJson);
         shopHomePicture.setJumpName(openName);
 
         if (shopHomePicture.getId()==null){//添加

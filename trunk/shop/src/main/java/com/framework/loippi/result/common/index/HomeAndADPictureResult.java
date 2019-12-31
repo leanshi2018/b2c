@@ -3,11 +3,19 @@ package com.framework.loippi.result.common.index;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.sf.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.framework.loippi.entity.common.RdKeyword;
 import com.framework.loippi.entity.common.ShopHomePicture;
+import com.framework.loippi.pojo.activity.PictureVio;
+import com.framework.loippi.utils.JacksonUtil;
 
 /**
  * @author :ldq
@@ -20,12 +28,94 @@ import com.framework.loippi.entity.common.ShopHomePicture;
 public class HomeAndADPictureResult {
 
 	//促销活动
-	List<ShopHomePicture> homePictures;
+	List<PictureVio> homePictures;
 
 	//品牌精品
-	List<ShopHomePicture> adPictures;
+	List<PictureVio> adPictures;
 
 	//关键词队列
 	List<RdKeyword> keywords;
+
+	public static HomeAndADPictureResult build(List<ShopHomePicture> homePictures, List<ShopHomePicture> adPictures,List<RdKeyword> keywords) {
+
+		HomeAndADPictureResult result = new HomeAndADPictureResult();
+
+		if (homePictures==null){
+			result.setHomePictures(new ArrayList<PictureVio>());
+		}else {
+			List<PictureVio> list = new ArrayList<PictureVio>();
+			for (ShopHomePicture homePicture : homePictures) {
+				PictureVio pictureVio = new PictureVio();
+				pictureVio.setId(homePicture.getId());
+				pictureVio.setPictureName(homePicture.getPictureName());
+				pictureVio.setPictureUrl(homePicture.getPictureUrl());
+				pictureVio.setJumpName(homePicture.getJumpName());
+				pictureVio.setPSort(homePicture.getPSort());
+				pictureVio.setAuditStatus(homePicture.getAuditStatus());
+				pictureVio.setPictureType(homePicture.getPictureType());
+
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("page",homePicture.getActivityUrl());
+
+				if (homePicture.getPictureJson()!=null){
+					Map<String, String> jsonMap = JacksonUtil.readJsonToMap(homePicture.getPictureJson());
+					Set<String> strings = jsonMap.keySet();
+					Iterator<String> iterator = strings.iterator();
+					while (iterator.hasNext()){
+						String key = iterator.next();
+						String value = jsonMap.get(key);
+						map.put(key,value);
+					}
+				}
+
+				JSONObject activityUrlJson = JSONObject.fromObject(map);
+				pictureVio.setActivityUrl(activityUrlJson.toString());
+				list.add(pictureVio);
+			}
+			result.setHomePictures(list);
+		}
+
+		if (adPictures==null){
+			result.setAdPictures(new ArrayList<PictureVio>());
+		}else {
+			List<PictureVio> list = new ArrayList<PictureVio>();
+			for (ShopHomePicture adPicture : adPictures) {
+				PictureVio pictureVio = new PictureVio();
+				pictureVio.setId(adPicture.getId());
+				pictureVio.setPictureName(adPicture.getPictureName());
+				pictureVio.setPictureUrl(adPicture.getPictureUrl());
+				pictureVio.setJumpName(adPicture.getJumpName());
+				pictureVio.setPSort(adPicture.getPSort());
+				pictureVio.setAuditStatus(adPicture.getAuditStatus());
+				pictureVio.setPictureType(adPicture.getPictureType());
+
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("page",adPicture.getActivityUrl());
+
+				if (adPicture.getPictureJson()!=null){
+					Map<String, String> jsonMap = JacksonUtil.readJsonToMap(adPicture.getPictureJson());
+					Set<String> strings = jsonMap.keySet();
+					Iterator<String> iterator = strings.iterator();
+					while (iterator.hasNext()){
+						String key = iterator.next();
+						String value = jsonMap.get(key);
+						map.put(key,value);
+					}
+				}
+
+				JSONObject activityUrlJson = JSONObject.fromObject(map);
+				pictureVio.setActivityUrl(activityUrlJson.toString());
+				list.add(pictureVio);
+			}
+			result.setAdPictures(list);
+		}
+
+		if (keywords.size()>0){
+			result.setKeywords(keywords);
+		}else {
+			result.setKeywords(new ArrayList<RdKeyword>());
+		}
+		return result;
+	}
 
 }

@@ -1,23 +1,18 @@
-package com.framework.loippi.entity.common;
+package com.framework.loippi.pojo.activity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 /**
  * @author :ldq
- * @date:2019/12/26
- * @description:dubbo com.framework.loippi.entity.common
+ * @date:2019/12/31
+ * @description:dubbo com.framework.loippi.pojo.activity
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "shop_home_picture")
-public class ShopHomePicture  implements GenericEntity{
-
+public class PictureVio {
 	private static final long serialVersionUID = 5081846432919091193L;
 
 	/**
@@ -34,11 +29,6 @@ public class ShopHomePicture  implements GenericEntity{
 	 * 图片路径
 	 */
 	private String pictureUrl;
-
-	/**
-	 * 跳转需要参数json
-	 */
-	private String pictureJson;
 
 	/**
 	 * 跳转名称
