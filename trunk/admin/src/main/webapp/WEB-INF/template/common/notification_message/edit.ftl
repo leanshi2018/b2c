@@ -66,7 +66,7 @@
                     </tr>
 
 <#--                <#list    message.message as message>-->
-                    <#if message==null>
+                    <#if message=="">
                         <tr class="noborder">
                             <td class="required">
                                 <em class="pngFix"></em>消息标题
