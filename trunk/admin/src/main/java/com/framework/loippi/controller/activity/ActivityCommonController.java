@@ -73,6 +73,23 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
+     * 广告位列表
+     * @param request
+     * @param pageable
+     * @param model
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/findADPictureList")
+    public String findADPictureList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopHomePicture param) {
+        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("auditStatus",1).put("pictureType",1));
+        pageable.setOrderProperty("p_sort");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", shopHomePictureService.findByPage(pageable));
+        return "/common/ad_management/index";
+    }
+
+    /**
      * 轮播图
      * @param request
      * @param model
@@ -86,6 +103,22 @@ public class ActivityCommonController extends GenericController {
         }*/
         model.addAttribute("picture", shopHomePictureService.find(pictureId));
         return "common/rotationChart/edit";
+    }
+
+    /**
+     * 删除轮播图
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/delPicture")
+    public String delPicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
+        if (pictureId==null){
+            model.addAttribute("msg", "id为空");
+            return Constants.MSG_URL;
+        }
+        shopHomePictureService.delete(pictureId);
+        return "redirect:findHomePictureList.jhtml";
     }
 
 

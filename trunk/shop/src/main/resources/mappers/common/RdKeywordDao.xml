@@ -126,7 +126,7 @@
         SELECT
         <include refid="base_column"/>
         FROM rd_keyword
-        ORDER BY sort asc 
+        ORDER BY sort asc
     </select>
 
 </mapper>
