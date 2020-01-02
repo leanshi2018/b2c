@@ -106,6 +106,22 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
+     * 广告位图
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/findADPicture")
+    public String findADPicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
+        /*if (pictureId==null){
+            model.addAttribute("msg", "id为空");
+            return Constants.MSG_URL;
+        }*/
+        model.addAttribute("picture", shopHomePictureService.find(pictureId));
+        return "/common/ad_management/edit";
+    }
+
+    /**
      * 删除轮播图
      * @param request
      * @param model
