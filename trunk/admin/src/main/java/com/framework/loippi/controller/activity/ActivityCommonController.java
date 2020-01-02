@@ -193,6 +193,8 @@ public class ActivityCommonController extends GenericController {
                     return Constants.MSG_URL;
                 }
                 shopHomePictureService.save(shopHomePicture);
+
+                return "redirect:findHomePictureList.jhtml";
             }else {//广告位图
                 if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图排序只能是1-3");
@@ -204,8 +206,8 @@ public class ActivityCommonController extends GenericController {
                     return Constants.MSG_URL;
                 }
                 shopHomePictureService.save(shopHomePicture);
+                return "redirect:findADPictureList.jhtml";
             }
-            return "redirect:findHomePictureList.jhtml";
         }else {
             if (shopHomePicture.getPictureType()==0){//轮播图
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
@@ -220,6 +222,7 @@ public class ActivityCommonController extends GenericController {
                     }
                 }
                 shopHomePictureService.update(shopHomePicture);
+                return "redirect:findHomePictureList.jhtml";
             }else {//广告位图
                 if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图排序只能是1-3");
@@ -237,8 +240,8 @@ public class ActivityCommonController extends GenericController {
                     }
                 }
                 shopHomePictureService.update(shopHomePicture);
+                return "redirect:findADPictureList.jhtml";
             }
-            return "redirect:findHomePictureList.jhtml";
         }
 
     }
