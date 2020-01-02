@@ -16,16 +16,14 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="post" name="formSearch" id="formSearch"
-                  action="${base}/admin/jpush/findActivitys.jhtml">
+            <form method="post" name="formSearch" id="formSearch" action="">
                 <input type="hidden" name="pageNo" value="${1}">
-                <input type="hidden" name="id" value="${id}"/>
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
                         <td>
                             <input name="info" type="text" value="${info}" placeholder="请输入活动名称"/>
-                            <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
+                            <a href="${base}/admin/jpush/findActivitys.jhtml?info=${info}" class="btn-search" title="查询">
                             </a>
                         </td>
                     </tr>
@@ -61,15 +59,20 @@
                 </tbody>
                 <tfoot>
                 <tr>
-<#--                    <td colspan="20">-->
-<#--                        <@layout.pager pager/>-->
-<#--                    </td>-->
+                    <td colspan="20">
+                        <@layout.pager pager/>
+                    </td>
                 </tr>
                 </tfoot>
             </table>
         </div>
     </div>
     <script>
+        $(".btn-search").click(function(){
+            var href = $(this).attr("href");
+            $("#formSearch").attr("action", href).submit();
+            return false;
+        });
         function selSpeccoupons(id, name,info) {
             //$(obj).parent().parent().remove();
             //调用父级窗口

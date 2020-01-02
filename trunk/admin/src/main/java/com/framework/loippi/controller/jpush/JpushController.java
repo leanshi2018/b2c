@@ -9,17 +9,37 @@ import cn.jpush.api.push.model.Options;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
-import cn.jpush.api.push.model.notification.*;
+import cn.jpush.api.push.model.notification.AndroidNotification;
+import cn.jpush.api.push.model.notification.IosNotification;
+import cn.jpush.api.push.model.notification.Notification;
 import cn.jpush.api.schedule.ScheduleResult;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.JpushConstant;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.common.ShopCommonArticle;
 import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.jpush.Jpush;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
@@ -33,23 +53,7 @@ import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Controller("JpushController")
 @RequestMapping("/admin/jpush")
@@ -338,7 +342,7 @@ public class JpushController extends GenericController {
                             @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
         if(StringUtil.isEmpty(info)){
             model.addAttribute("activitys",null);
-            return "";//TODO
+            return "/common/select/selectActivitys";//TODO
         }
         Pageable pageable = new Pageable();
         pageable.setPageSize(pageSize);
