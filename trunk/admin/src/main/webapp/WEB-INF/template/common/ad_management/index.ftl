@@ -32,7 +32,7 @@
                 <ul class="tab-base">
                     <li><a href="JavaScript:void(0);" class="current"><@spring.message "manage"/></a></li>
                     <li>
-                        <a href="${base}/admin/shop_activity_common/findPicture.jhtml?pictureId=${id}"><@spring.message "add"/></a>
+                        <a href="${base}/admin/shop_activity_common/findADPicture.jhtml?pictureId=${id}"><@spring.message "add"/></a>
                     </li>
                 </ul>
             </div>
@@ -96,7 +96,7 @@
                             ${list.pSort}
                         </td>
                         <td>
-                            <a class="look" href="${base}/admin/shop_activity_common/findPicture.jhtml?pictureId=${list.id}">编 辑</a>
+                            <a class="look" href="${base}/admin/shop_activity_common/findADPicture.jhtml?pictureId=${list.id}">编 辑</a>
                         </td>
                     </tr>
                 </#list>
