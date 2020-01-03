@@ -191,7 +191,7 @@
 
                             <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1>checked</#if>>
                             是
-                            <input name="auditStatus" type="radio" value="2"  <#if picture.auditStatus==0>checked</#if>>
+                            <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
                             否
 
                             <span class="error-message"></span>
@@ -511,9 +511,9 @@
             })
         }
         function appendWareInfo(id, name,info) {
-            $("#info").val(info);
             $("#activityId").val(id);
             $("#activityname").val(name);
+            $("#info").val(info);
             var activitysId=$("#info").val();
             console.log("活动"+activitysId);
             $("#jsons").val("{\"activityId\":\"" + activitysId + "\"}");

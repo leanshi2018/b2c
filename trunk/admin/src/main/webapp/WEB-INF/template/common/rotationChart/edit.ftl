@@ -59,7 +59,7 @@
 
                             <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1||picture.auditStatus==null>checked</#if>>
                             是
-                            <input name="auditStatus" type="radio" value="2"  <#if picture.auditStatus==0>checked</#if>>
+                            <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
                             否
 
                             <span class="error-message"></span>
@@ -146,7 +146,8 @@
                                         <option value="learnpage" <#if picture.openPage == "learnpage">selected="selected" </#if>>学堂</option>
                                         <option value="learnarticlepage" <#if picture.openPage == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
                                         <option value="invitationpage" <#if picture.openPage == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                        <option value="activityGoodsListpage" <#if picture.openPage == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
+                                        <option value="activityGoodsListpage" <#if picture.openPage ==
+                                        "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
                                         <option value="buyCouponspage" id="buyCouponspage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
                                     <#--选择文章-->
@@ -287,7 +288,7 @@
                                     <#--选择活动-->
                                     <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
-                                    <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
+                                    <input name="info" id="info" type="hidden" value="6607622869365035008"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -500,7 +501,7 @@
         // }
         /*选择活动*/
         function activityGoodsListpage() {
-            var info = $("[name='info']").val();
+            var info = $("#info").val();
             layer.open({
                 type: 2,
                 move: false,
@@ -510,7 +511,7 @@
                 area: ['800px', '600px']
             })
         }
-        function appendWareInfo(id, name,info) {
+        function appendWareInfo(id,name,info) {
             $("#info").val(info);
             $("#activityId").val(id);
             $("#activityname").val(name);

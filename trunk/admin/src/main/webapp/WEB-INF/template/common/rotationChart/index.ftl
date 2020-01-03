@@ -8,7 +8,7 @@
     <script type="text/javascript" src="${base}/res/js/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
 </@layout.head>
 <style>
-    .th_w{width:6%;}
+    .th_w{width:8%;}
     .ths{width:16%;}
     .ui-widget-overlay {display: none;}
     /*.ui-widget-header{*/
