@@ -65,7 +65,7 @@ public class ActivityCommonController extends GenericController {
      */
     @RequestMapping(value = "/findHomePictureList")
     public String findHomePictureList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopHomePicture param) {
-        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("auditStatus",1).put("pictureType",0));
+        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",0));
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopHomePictureService.findByPage(pageable));
@@ -82,7 +82,7 @@ public class ActivityCommonController extends GenericController {
      */
     @RequestMapping(value = "/findADPictureList")
     public String findADPictureList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopHomePicture param) {
-        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("auditStatus",1).put("pictureType",1));
+        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",1));
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopHomePictureService.findByPage(pageable));
