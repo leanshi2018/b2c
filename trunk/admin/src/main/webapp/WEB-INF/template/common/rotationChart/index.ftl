@@ -91,9 +91,10 @@
                             <#if list.activityUrl == "invitationpage">我的邀请</#if>
                             <#if list.activityUrl == "activityGoodsListpage">活动页面</#if>
                             <#if list.activityUrl == 'buyCouponspage'>优惠券购买详情</#if>
-<#--                            <#if list.activityUrl??>${list.activityUrl}</#if>-->
+                            <#if list.jumpInterface??>${list.jumpInterface}</#if>
                         </td>
                         <td>
+                            <#if list.pSort == 1>1</#if>
                             ${list.pSort}
                         </td>
                         <td>

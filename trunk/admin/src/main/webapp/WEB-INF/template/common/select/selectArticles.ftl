@@ -16,15 +16,14 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="post" name="formSearch" id="formSearch"
-                  action="${base}/admin/plarformShopCoupon/coupon/select.jhtml?status=2">
+            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/findArticles.jhtml">
                 <input type="hidden" name="pageNo" value="${1}">
-                <input type="hidden" name="id" value="${id}"/>
+               <#-- <input type="hidden" name="id" value="${id}"/>-->
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
                         <td>
-                            <input name="info" type="text" value="${info}" placeholder="请输入活动名称"/>
+                            <input name="info" type="text" value="${info}" placeholder="请输入查询信息"/>
                             <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
                             </a>
                         </td>
@@ -70,10 +69,10 @@
         </div>
     </div>
     <script>
-        function selSpeccoupons(id, couponName) {
+        function selSpeccoupons(info) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendGoods(id, couponName);
+            parent.appendInfo(info);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

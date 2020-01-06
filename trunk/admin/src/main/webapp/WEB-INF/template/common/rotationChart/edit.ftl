@@ -97,7 +97,7 @@
                             <em class="pngFix"></em>排序数字
                         </td>
                         <td>
-                            <input name="pSort" id="pSort" type="text" value="${picture.pSort}" class="w200"/>
+                            <input name="pSort"  type="text" value="${picture.pSort}" class="w200"/>
                             <span class="error-message"></span>
                         </td>
                     </tr>
@@ -146,17 +146,16 @@
                                         <option value="learnpage" <#if picture.openPage == "learnpage">selected="selected" </#if>>学堂</option>
                                         <option value="learnarticlepage" <#if picture.openPage == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
                                         <option value="invitationpage" <#if picture.openPage == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                        <option value="activityGoodsListpage" <#if picture.openPage ==
-                                        "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
+<#--                                        <option value="activityGoodsListpage" <#if picture.openPage =="activityGoodsListpage">selected="selected" </#if>>活动页面</option>-->
                                         <option value="buyCouponspage" id="buyCouponspage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
                                     <#--选择文章-->
                                     <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
                                     <input type="hidden" class="text w500" value="${article.id}" name="id" >
                                     <#--选择活动-->
-                                    <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
+                                    <input name="activityname" type="text" id="activityname" value="${shopActivity.name}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
-                                    <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
+                                    <input name="info" id="info" type="hidden" value="${article.info}"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -192,7 +191,7 @@
 
                             <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1>checked</#if>>
                             是
-                            <input name="auditStatus" type="radio" value="2"  <#if picture.auditStatus==0>checked</#if>>
+                            <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
                             否
 
                             <span class="error-message"></span>
@@ -230,7 +229,7 @@
                             <em class="pngFix"></em>排序数字
                         </td>
                         <td>
-                            <input name="pSort" id="pSort" type="text" value="${picture.pSort}" class="w200"/>
+                            <input name="pSort"  type="text" value="${picture.pSort}" class="w200"/>
                             <span class="error-message"></span>
                         </td>
                     </tr>
@@ -239,11 +238,10 @@
                             <em class="pngFix"></em>打开方式
                         </td>
                         <td>
-                            <select name="openType" class="w200" id="openType">
-                                <option value="" selected="selected">请选择</option>
-                                <option value="跳转商品推荐页" id=""<#if picture.openType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品推荐页</option>
-                                <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
-                                <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
+                            <select name="openType" class="w200">
+                                <option value="跳转商品推荐页"<#if picture.openType == "跳转商品推荐页">selected="selected"</#if>>跳转商品推荐页</option>
+                                <option value="跳转路径" <#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
+                                <option value="跳转链接" <#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
                             </select>
                             <span class="error-message"></span>
                         </td>
@@ -265,7 +263,6 @@
                                     <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" class="w200"style="display: none;"/>
                                     <#--选择跳转路径-->
                                     <select name="openPage" class="w200" id="openPage"style="display: none;">
-                                        <option value="" selected="selected">请选择</option>
                                         <option value="homepage" <#if picture.openPage == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.openPage == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.openPage == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -288,7 +285,7 @@
                                     <#--选择活动-->
                                     <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
-                                    <input name="info" id="info" type="hidden" value="6607622869365035008"/>
+                                    <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -345,8 +342,8 @@
                 $("#searchactivity").css("display","");
                 $("#openName").val("活动页面");
             }else{
-                $("#activityname").css("display","");
-                $("#searchs").attr("onclick","");
+                $("#activityname").css("display","none");
+                $("#searchactivity").css("display","none");
             }
             if (value == "跳转路径") {
                 $("#openPage").css("display","");
@@ -454,7 +451,8 @@
                 $("#searchlearnarticle").css("display","");
                 $("#openName").val("学堂文章详情");
             }else{
-                $("#searchs").attr("onclick","");
+                $("#articleTitle").css("display","none");
+                $("#searchlearnarticle").css("display","none");
             }
             if(value=="invitationpage"){
                 $("#openName").val("我的邀请");
@@ -479,26 +477,50 @@
             }
 
         });
+        <#--$.ajax({-->
+        <#--    type: "POST",-->
+        <#--    url: "${base}/admin/jpush/findActivitys.jhtml?info="+info,-->
+        <#--    data: "",-->
+        <#--    success: function(msg){-->
+        <#--        var html='<div class="layui-layer layer-anim layui-layer-iframe " id="layui-layer1" type="iframe" times="1" showtime="0" contype="object" style="z-index: 19891015; width: 800px; height: 600px; top: 107.5px; left:20%;"><div class="layui-layer-title" style="">选择活动</div>\n' +-->
+        <#--            '<div id="" class="layui-layer-content">\n' +'<form method="post" name="formSearch" id="formSearch" action="">\n' +-->
+        <#--            '            <input type="hidden" name="pageNo" value="1">\n' +-->
+        <#--            '            <input type="hidden" name="goodsId" value="">\n' +-->
+        <#--            '            <table class="tb-type1 noborder search">\n' +-->
+        <#--            '                <tbody>\n' +-->
+        <#--            '                <tr>\n' +-->
+        <#--            '                    <td>\n' +-->
+        <#--            '                        <input name="keyWord" type="text" value="" placeholder="请输入查询信息">\n' +-->
+        <#--            '                        <a href="javascript:$(\' #formSearch\').submit();" class="btn-search " title="查询">\n' +-->
+        <#--            '                        &nbsp;</a>\n' +-->
+        <#--            '                    </td>\n' +-->
+        <#--            '                </tr>\n' +-->
+        <#--            '                </tbody>\n' +-->
+        <#--            '            </table>\n' +-->
+        <#--            '        </form>'+-->
+        <#--            '</div><span class="layui-layer-setwin"><a class="layui-layer-ico layui-layer-close layui-layer-close1" href="javascript:;"></a></span></div>'-->
+        <#--        $("#htmls").html(html);-->
+
+        <#--    }-->
+        <#--});-->
         /*选择学堂文章*/
         function learnarticlepage() {
-            // var activityId = $("[name='activityId']").val();
+            var infos = $("[name='info']").val();
             layer.open({
                 type: 2,
                 move: false,
                 shade: [0.3, '#393D49'],//开启遮罩层
                 title: '选择文章',
-                content: ['${base}/admin/jpush/findArticles.jhtml?info=' + activityId, 'yes'],
+                content: ['${base}${base}/admin/jpush/findArticles.jhtml?info=' + infos, 'yes'],
                 area: ['800px', '600px']
             })
         }
-        // function appendWareInfo(id, name) {
-        //     $("#activityId").val(id);
-        //     $("#activityname").val(name);
-        //     var activitysId=$("#activityId").val();
-        //     console.log("活动"+activitysId);
-        //     $("#jsons").val("{\"activityId\":\"" + activitysId + "\"}");
-        //
-        // }
+        function appendInfo(info) {
+            $("#info").val(info);
+            var info=$("#info").val();
+            $("#jsons").val("{\"info\":\"" + info + "\"}");
+
+        }
         /*选择活动*/
         function activityGoodsListpage() {
             var info = $("#info").val();
@@ -507,17 +529,16 @@
                 move: false,
                 shade: [0.3, '#393D49'],//开启遮罩层
                 title: '选择活动',
-                content: ['${base}/admin/jpush/findActivitys.jhtml?info=' + info, 'yes'],
+                content: ['${base}/admin/jpush/findActivitys.jhtml?info='+info, 'yes'],
                 area: ['800px', '600px']
             })
         }
-        function appendWareInfo(id,name,info) {
+        function appendWareInfo(info) {
             $("#info").val(info);
-            $("#activityId").val(id);
-            $("#activityname").val(name);
-            var activitysId=$("#info").val();
-            console.log("活动"+activitysId);
-            $("#jsons").val("{\"activityId\":\"" + activitysId + "\"}");
+            // $("#activityId").val(id);
+            // $("#activityname").val(name);
+            var info=$("#info").val();
+            $("#jsons").val("{\"info\":\"" + info + "\"}");
 
         }
         /*选择商品*/

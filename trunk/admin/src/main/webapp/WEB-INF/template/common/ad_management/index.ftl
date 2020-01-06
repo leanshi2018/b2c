@@ -90,7 +90,7 @@
                             <#if list.activityUrl == "invitationpage">我的邀请</#if>
                             <#if list.activityUrl == "activityGoodsListpage">活动页面</#if>
                             <#if list.activityUrl == 'buyCouponspage'>优惠券购买详情</#if>
-                            <#--                            <#if list.activityUrl??>${list.activityUrl}</#if>-->
+
                         </td>
                         <td>
                             ${list.pSort}
