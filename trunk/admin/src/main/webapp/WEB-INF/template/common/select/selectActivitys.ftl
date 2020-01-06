@@ -16,16 +16,14 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="post" name="formSearch" id="formSearch"
-                  action="${base}/admin/jpush/findActivitys.jhtml">
+            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/findActivitys.jhtml?info=${info}">
                 <input type="hidden" name="pageNo" value="${1}">
-                <input type="hidden" name="id" value="${id}"/>
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
                         <td>
-                            <input name="info" type="text" value="${info}" placeholder="请输入活动名称"/>
-                            <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
+                            <input name="info" type="text" id="info" value="${info}" placeholder="请输入活动名称"/>
+                            <a href="javascript:$('#formSearch').submit();" class="btn-search" title="查询">
                             </a>
                         </td>
                     </tr>
@@ -61,19 +59,27 @@
                 </tbody>
                 <tfoot>
                 <tr>
-<#--                    <td colspan="20">-->
-<#--                        <@layout.pager pager/>-->
-<#--                    </td>-->
+                    <td colspan="20">
+                        <@layout.pager pager/>
+                    </td>
                 </tr>
                 </tfoot>
             </table>
         </div>
     </div>
     <script>
-        function selSpeccoupons(id, name,info) {
+        // $(".btn-search").click(function(){
+        //     var info=$("#info").val();
+        //     $("#formSearch").attr("action", "" +info);
+        //     $('#formSearch').submit();
+        //     // var href = $(this).attr("href");
+        //     // $("#formSearch").attr("action", href).submit();
+        //     return false;
+        // });
+        function selSpeccoupons(id,name,info) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendWareInfo(id, name,info);
+            parent.appendWareInfo(id,name,info);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

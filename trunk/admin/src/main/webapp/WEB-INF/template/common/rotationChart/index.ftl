@@ -8,7 +8,7 @@
     <script type="text/javascript" src="${base}/res/js/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
 </@layout.head>
 <style>
-    .th_w{width:6%;}
+    .th_w{width:8%;}
     .ths{width:16%;}
     .ui-widget-overlay {display: none;}
     /*.ui-widget-header{*/
@@ -75,23 +75,23 @@
                             ${list.pictureName}
                         </td>
                         <td style="text-align: left">
-                            <#if list.jumpPath == 'homepage'>辑</#if>
-                            <#if list.jumpPath == "listpage">消息中心</#if>
-                            <#if list.jumpPath == "goodsdetailspage">商品详情</#if>
-                            <#if list.jumpPath == "mypage">我</#if>
-                            <#if list.jumpPath == "myresultspage">个人业绩</#if>
-                            <#if list.jumpPath == "orderpage">我的订单</#if>
-                            <#if list.jumpPath == "myintegralpage">我的积分</#if>
-                            <#if list.jumpPath == "rewardintegralpage">奖励积分</#if>
-                            <#if list.jumpPath == "shoppingintegralpage">购物积分</#if>
-                            <#if list.jumpPath == "buyintegralpage">换购积分</#if>
-                            <#if list.jumpPath == "bankcardpage">我的银行卡</#if>
-                            <#if list.jumpPath == "learnpage">学堂</#if>
-                            <#if list.jumpPath == "learnarticlepage">学堂文章详情</#if>
-                            <#if list.jumpPath == "invitationpage">我的邀请</#if>
-                            <#if list.jumpPath == "activityGoodsListpage">活动页面</#if>
-                            <#if list.jumpPath == 'buyCouponspage'>优惠券购买详情</#if>
-                            <#if list.jumpLink??>${list.jumpLink}</#if>
+                            <#if list.activityUrl == 'homepage'>辑</#if>
+                            <#if list.activityUrl == "listpage">消息中心</#if>
+                            <#if list.activityUrl == "goodsdetailspage">商品详情</#if>
+                            <#if list.activityUrl == "mypage">我</#if>
+                            <#if list.activityUrl == "myresultspage">个人业绩</#if>
+                            <#if list.activityUrl == "orderpage">我的订单</#if>
+                            <#if list.activityUrl == "myintegralpage">我的积分</#if>
+                            <#if list.activityUrl == "rewardintegralpage">奖励积分</#if>
+                            <#if list.activityUrl == "shoppingintegralpage">购物积分</#if>
+                            <#if list.activityUrl == "buyintegralpage">换购积分</#if>
+                            <#if list.activityUrl == "bankcardpage">我的银行卡</#if>
+                            <#if list.activityUrl == "learnpage">学堂</#if>
+                            <#if list.activityUrl == "learnarticlepage">学堂文章详情</#if>
+                            <#if list.activityUrl == "invitationpage">我的邀请</#if>
+                            <#if list.activityUrl == "activityGoodsListpage">活动页面</#if>
+                            <#if list.activityUrl == 'buyCouponspage'>优惠券购买详情</#if>
+<#--                            <#if list.activityUrl??>${list.activityUrl}</#if>-->
                         </td>
                         <td>
                             ${list.pSort}
@@ -102,7 +102,7 @@
                         </td>
                         <td>
                             <a class="look" href="${base}/admin/shop_activity_common/findPicture.jhtml?pictureId=${list.id}">编 辑</a>||
-                            <a href="JavaScript:void(0);">删 除</a>
+                            <a href="JavaScript:void(0);" onclick="del('${list.id}');">删 除</a>
                         </td>
                     </tr>
                 </#list>
@@ -117,6 +117,26 @@
         </form>
     </div>
     <script type="text/javascript">
+        function del(id) {
+            $("#editdetaildiv" ).dialog({
+                title: '确定删除选中轮播图？',
+                height: 170,
+                width: 250,
+                modal: true,
+                "buttons": {
+                    "取消": function () {
+                        $(this).dialog("close");
+                    },
+                    "确定": function () {
+                        $("#couponlist").attr("action", "${base}/admin/shop_activity_common/delPicture.jhtml?pictureId=" + id);
+                        $('#couponlist').submit();
+                        $(this).dialog("close");
+                        alert("删除成功！");
+                    }
+                }
+            })
+
+        }
         /*post提交*/
         $(".look").click(function(){
             var href = $(this).attr("href");
