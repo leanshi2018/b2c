@@ -198,6 +198,11 @@ public class ActivityCommonController extends GenericController {
         shopHomePicture.setActivityUrl(openPage);
         shopHomePicture.setPictureJson(jumpJson);
         shopHomePicture.setJumpName(openName);
+        if (jumpInterface==null){
+            shopHomePicture.setJumpInterface("");
+        }else {
+            shopHomePicture.setJumpInterface(jumpInterface);
+        }
 
         if (shopHomePicture.getId()==null){//添加
             shopHomePicture.setId(twiterIdService.getTwiterId());

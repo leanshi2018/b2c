@@ -67,7 +67,9 @@ public class HomeAndADPictureResult {
 						map.put(key,value);
 					}
 				}
-
+				if (homePicture.getPictureType()!=null){
+					map.put("urlPath",homePicture.getPictureType());
+				}
 				JSONObject activityUrlJson = JSONObject.fromObject(map);
 				pictureVio.setActivityUrl(activityUrlJson.toString());
 				list.add(pictureVio);
