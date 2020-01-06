@@ -10,17 +10,18 @@
         <result property="jumpName" column="jump_name"/>
         <result property="pSort" column="p_sort"/>
         <result property="activityUrl" column="activity_url"/>
+        <result property="jumpInterface" column="jump_interface"/>
         <result property="auditStatus" column="audit_status"/>
         <result property="pictureType" column="picture_type"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,picture_name ,picture_url ,picture_json ,jump_name ,p_sort ,activity_url ,audit_status ,picture_type
+        id ,picture_name ,picture_url ,picture_json ,jump_name ,p_sort ,activity_url ,jump_interface ,audit_status ,picture_type
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{pictureName},#{pictureUrl},#{pictureJson},#{jumpName},#{pSort},#{activityUrl},#{auditStatus},#{pictureType}
+        #{id},#{pictureName},#{pictureUrl},#{pictureJson},#{jumpName},#{pSort},#{activityUrl},#{jumpInterface},#{auditStatus},#{pictureType}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -45,6 +46,9 @@
         </if>
         <if test="activityUrl != null and activityUrl != ''">
             AND activity_url = #{activityUrl,jdbcType=VARCHAR}
+        </if>
+        <if test="jumpInterface != null and activityUrl != ''">
+            AND jump_interface = #{jumpInterface,jdbcType=VARCHAR}
         </if>
         <if test="auditStatus != null">
             AND audit_status = #{auditStatus,jdbcType=INTEGER}
@@ -76,6 +80,9 @@
         </if>
         <if test="activityUrl != null and activityUrl != ''">
             activity_url = #{activityUrl,jdbcType=VARCHAR},
+        </if>
+        <if test="jumpInterface != null and jumpInterface != ''">
+            jump_interface = #{jumpInterface,jdbcType=VARCHAR},
         </if>
         <if test="auditStatus != null">
             audit_status = #{auditStatus,jdbcType=INTEGER},

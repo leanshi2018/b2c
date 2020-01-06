@@ -36,6 +36,11 @@ public class ShopHomePicture  implements GenericEntity{
 	private String pictureUrl;
 
 	/**
+	 * 跳转连接
+	 */
+	private String jumpInterface;
+
+	/**
 	 * 跳转需要参数json
 	 */
 	private String pictureJson;

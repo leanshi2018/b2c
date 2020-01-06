@@ -44,6 +44,11 @@ public class PictureVio {
 	 * 活动连接
 	 */
 	private String activityUrl;
+
+	/**
+	 * 跳转连接
+	 */
+	private String jumpInterface;
 	/**
 	 * 审核状态
 	 * 0 禁用 1开启
