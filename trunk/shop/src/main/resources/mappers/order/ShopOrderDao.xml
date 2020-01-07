@@ -1402,7 +1402,7 @@
 
     <!--代发货订单-->
     <select id="findStatu20" parameterType="java.util.Map" resultMap="ShopOrderResultMap">
-        SELECT id FROM shop_order WHERE order_state=20
+        SELECT id FROM shop_order WHERE order_state=20 AND logistic_type=1
     </select>
 
     <!--发货修改状态和提交信息-->

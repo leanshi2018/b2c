@@ -542,6 +542,41 @@ public class CartAPIController extends BaseController {
         }
         result = result.build2(result, shopOrderDiscountTypeList, rdRanks, rdMmBasicInfo, shopMemberAddress,
                 orderDiscountTypeList);
+        //***************************************************************************************************************************
+        Integer flag=0;
+        Integer giftsNum=1;
+        ArrayList<ShopGoods> shopGoods = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date startTime = format.parse("2020-01-07 00:00:00");
+            Date endTime = format.parse("2020-01-16 23:59:59");
+            Date nowTime = new Date();
+            boolean b = belongCalendar(nowTime, startTime, endTime);
+            if(b){
+                flag=1;
+                if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1){//单笔订单满50mi，赠送手提袋一个，利是红包一包（10枚），酵素洗衣凝珠一桶
+                    ShopGoods goods1 = goodsService.find(6620198081273008128L);//酵素多效洗衣凝珠+利是红包+手提袋
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                }else if((rdMmRelation.getRank()==0&&result.getNeedToPay().compareTo(new BigDecimal("360"))!=-1)||
+                        (rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))==-1)){
+                    //单笔订单满360或25mi，赠送手提袋一个，利是红包一包（10枚），母婴洗衣凝珠一包
+                    ShopGoods goods1 = goodsService.find(6620197579269345280L);//母婴洗衣凝珠+利是红包+手提袋
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                }else {//凡有购买产品的订单，即赠送利是红包一包（10枚）
+                    ShopGoods goods1 = goodsService.find(6620193953163513856L);//利是红包一包（10枚）
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                }
+            }
+            result=result.build3(result,shopGoods,flag,giftsNum);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return ApiUtils.success(result);
     }
 
