@@ -53,6 +53,9 @@ public class HomeAndADPictureResult {
 				pictureVio.setPSort(homePicture.getPSort());
 				pictureVio.setAuditStatus(homePicture.getAuditStatus());
 				pictureVio.setPictureType(homePicture.getPictureType());
+				if (homePicture.getJumpInterface()!=null){
+					pictureVio.setJumpInterface(homePicture.getJumpInterface());
+				}
 
 				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("page",homePicture.getActivityUrl());
@@ -67,9 +70,7 @@ public class HomeAndADPictureResult {
 						map.put(key,value);
 					}
 				}
-				if (homePicture.getPictureType()!=null){
-					map.put("urlPath",homePicture.getPictureType());
-				}
+
 				JSONObject activityUrlJson = JSONObject.fromObject(map);
 				pictureVio.setActivityUrl(activityUrlJson.toString());
 				list.add(pictureVio);
@@ -90,6 +91,9 @@ public class HomeAndADPictureResult {
 				pictureVio.setPSort(adPicture.getPSort());
 				pictureVio.setAuditStatus(adPicture.getAuditStatus());
 				pictureVio.setPictureType(adPicture.getPictureType());
+				if (adPicture.getJumpInterface()!=null){
+					pictureVio.setJumpInterface(adPicture.getJumpInterface());
+				}
 
 				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("page",adPicture.getActivityUrl());
