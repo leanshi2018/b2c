@@ -92,6 +92,7 @@
                         </td>
                         <td style="text-align: left">
                             <#if list.audience=="all">全部</#if>
+                            <#if list.audience!="all">部分</#if>
                         </td>
                         <td style="text-align: left">
                             <#if list.pushMethod== 1>通知栏推送</#if>

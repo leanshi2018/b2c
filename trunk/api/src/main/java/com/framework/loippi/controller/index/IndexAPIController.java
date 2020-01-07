@@ -1,13 +1,33 @@
 package com.framework.loippi.controller.index;
 
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.framework.loippi.consts.ActivityStatus;
-import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.GoodsState;
 import com.framework.loippi.controller.BaseController;
-import com.framework.loippi.dao.activity.ShopActivityGoodsDao;
 import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
+import com.framework.loippi.entity.common.RdKeyword;
+import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.product.ShopGoodsRecommend;
@@ -17,10 +37,13 @@ import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.activity.promotion.ActivityGroupResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.goods.GoodsListResult;
+import com.framework.loippi.result.common.index.HomeAndADPictureResult;
 import com.framework.loippi.result.common.index.IndexDataResult;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.activity.ShopActivityGoodsService;
 import com.framework.loippi.service.activity.ShopActivityService;
+import com.framework.loippi.service.common.RdKeywordService;
+import com.framework.loippi.service.common.ShopHomePictureService;
 import com.framework.loippi.service.product.ShopGoodsBrandService;
 import com.framework.loippi.service.product.ShopGoodsClassService;
 import com.framework.loippi.service.product.ShopGoodsRecommendService;
@@ -31,23 +54,6 @@ import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
@@ -71,6 +77,10 @@ public class IndexAPIController extends BaseController {
     private RedisService redisService;
     @Resource
     private ShopGoodsBrandService shopGoodsBrandService;
+    @Resource
+    private ShopHomePictureService shopHomePictureService;
+    @Resource
+    private RdKeywordService rdKeywordService;
 
     /**
      * 首页数据（初始化数据）
@@ -291,5 +301,24 @@ public class IndexAPIController extends BaseController {
 
              return  shopActivityGoodsMap;
     }
+
+    /**
+     * 轮播图或广告位列表
+     * @return
+     */
+	@ResponseBody
+    @RequestMapping("/api/index/getHomePicture.json")
+    public String getHomePicture() {
+
+        //轮播图
+        List<ShopHomePicture> homePictures = shopHomePictureService.findListByTypeAndStutus( 0,1);
+
+        //广告位图
+        List<ShopHomePicture> adPictures = shopHomePictureService.findListByTypeAndStutus(1,1);
+
+		List<RdKeyword> keywordList = rdKeywordService.findByAll();
+		return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
+    }
+
 
 }

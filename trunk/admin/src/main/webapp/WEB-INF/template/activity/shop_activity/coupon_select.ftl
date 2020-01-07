@@ -85,7 +85,7 @@
         function selSpeccoupons(id, couponName) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendGoods(id, couponName);
+            parent.selSource(id, couponName);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);
