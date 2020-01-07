@@ -3,12 +3,14 @@ package com.framework.loippi.controller.user;
 import com.framework.loippi.entity.activity.ActivityGuide;
 import com.framework.loippi.entity.common.SceneActivity;
 import com.framework.loippi.entity.common.ShopCommonArea;
+import com.framework.loippi.entity.common.VenueInfo;
 import com.framework.loippi.entity.user.*;
 import com.framework.loippi.result.user.IntegrationMemberListResult;
 import com.framework.loippi.result.user.SubordinateUserInformationResult;
 import com.framework.loippi.service.activity.ActivityGuideService;
 import com.framework.loippi.service.common.SceneActivityService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.common.VenueInfoService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.*;
@@ -91,18 +93,23 @@ public class AuthcAPIController extends BaseController {
     private RdSysPeriodService periodService;
     @Resource
     private SceneActivityService sceneActivityService;
+    @Resource
+    private VenueInfoService venueInfoService;
 
     @Resource
     private Producer producer;
 
     @RequestMapping(value = "/sceneActivity/forword",method = RequestMethod.POST)
     public String sceneActivity(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,
-                                @RequestParam(value = "pwd",required = true)String pwd,HttpServletResponse response) {
+                                @RequestParam(value = "pwd",required = true)String pwd,HttpServletResponse response,@RequestParam(value = "venueUrl",required = true)String venueUrl) {
         response.setHeader("Access-Control-Allow-Origin", "*");
         if(StringUtil.isEmpty(mCode)){
             return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         if(StringUtil.isEmpty(pwd)){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
+        }
+        if(StringUtil.isEmpty(venueUrl)){
             return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
@@ -116,36 +123,69 @@ public class AuthcAPIController extends BaseController {
         if(!rdMmRelation.getLoginPwd().equals(pwd)){
             return ApiUtils.error(Xerror.LOGIN_PASSWORD_ERROR, "抱歉!请用蜗米商城扫码领取!");
         }
+        //根据url查找会场信息
+        VenueInfo venueInfo = venueInfoService.find("venueUrl",venueUrl);
+        if(venueInfo==null){
+            return ApiUtils.error("会场信息不存在");
+        }
+        if(venueInfo.getStartTime()==null||venueInfo.getEndTime()==null){
+            return ApiUtils.error("会场活动领取及结束时间异常");
+        }
+        boolean boo = belongCalendar(new Date(), venueInfo.getStartTime(), venueInfo.getEndTime());
+        if(!boo){
+            return ApiUtils.error("当前时间不处于该会场正常活动时间内");
+        }
         //查找是否领取过礼品
-        SceneActivity sceneActivity = sceneActivityService.find("mCode",mCode);
-        if(sceneActivity==null){
+        List<SceneActivity> list = sceneActivityService.findList(Paramap.create().put("mCode", mCode).put("venueNum", venueInfo.getVenueNum()));
+        if(list!=null&&list.size()>1){
+            return ApiUtils.error("数据异常");
+        }else if(list!=null&&list.size()==1){
+            return ApiUtils.success(list.get(0));
+        }else {
             SceneActivity activity = new SceneActivity();
             activity.setId(twiterIdService.getTwiterId());
             activity.setMCode(mCode);
             activity.setPresentStatus(0);
             activity.setMNickName(basicInfo.getMmNickName());
             activity.setImage(basicInfo.getMmAvatar());
+            activity.setVenueId(venueInfo.getId());
+            activity.setVenueNum(venueInfo.getVenueNum());
             sceneActivityService.save(activity);
             return ApiUtils.success(activity);
         }
-        return ApiUtils.success(sceneActivity);
     }
 
     @RequestMapping(value = "/sceneActivity/get",method = RequestMethod.POST)
     @ResponseBody
-    public String getGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,HttpServletResponse response) {
+    public String getGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,HttpServletResponse response
+            ,@RequestParam(value = "venueNum",required = true)String venueNum) {
         response.setHeader("Access-Control-Allow-Origin", "*");
         if(StringUtil.isEmpty(mCode)){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
+        }
+        if(StringUtil.isEmpty(venueNum)){
             return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
         if(basicInfo==null){
             return ApiUtils.error(Xerror.OBJECT_IS_NOT_EXIST, "用户不存在");
         }
-        SceneActivity sceneActivity = sceneActivityService.find("mCode",mCode);
-        if(sceneActivity==null){
+        VenueInfo venueInfo = venueInfoService.find("venueNum",venueNum);
+        if(venueInfo==null){
+            return ApiUtils.error("会场信息不存在");
+        }
+        if(venueInfo.getStartTime()==null||venueInfo.getEndTime()==null){
+            return ApiUtils.error("会场活动领取及结束时间异常");
+        }
+        boolean boo = belongCalendar(new Date(), venueInfo.getStartTime(), venueInfo.getEndTime());
+        if(!boo){
+            return ApiUtils.error("当前时间不处于该会场正常活动时间内");
+        }
+        List<SceneActivity> list = sceneActivityService.findList(Paramap.create().put("mCode", mCode).put("venueNum",venueNum));
+        if(list==null||list.size()!=1){
             return ApiUtils.error("数据异常");
         }
+        SceneActivity sceneActivity = list.get(0);
         if(sceneActivity.getPresentStatus()!=0){
             return ApiUtils.error("请勿重复领取");
         }
@@ -157,19 +197,35 @@ public class AuthcAPIController extends BaseController {
 
     @RequestMapping(value = "/sceneActivity/use",method = RequestMethod.POST)
     @ResponseBody
-    public String useGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,HttpServletResponse response) {
+    public String useGiftQualification(HttpServletRequest request,@RequestParam(value = "mCode",required = true) String mCode,HttpServletResponse response
+            ,@RequestParam(value = "venueNum",required = true)String venueNum) {
         response.setHeader("Access-Control-Allow-Origin", "*");
         if(StringUtil.isEmpty(mCode)){
+            return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
+        }
+        if(StringUtil.isEmpty(venueNum)){
             return ApiUtils.error(Xerror.PARAM_INVALID, "抱歉!请用蜗米商城扫码领取!");
         }
         RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode",mCode);
         if(basicInfo==null){
             return ApiUtils.error(Xerror.OBJECT_IS_NOT_EXIST, "用户不存在");
         }
-        SceneActivity sceneActivity = sceneActivityService.find("mCode",mCode);
-        if(sceneActivity==null){
+        VenueInfo venueInfo = venueInfoService.find("venueNum",venueNum);
+        if(venueInfo==null){
+            return ApiUtils.error( "会场信息不存在");
+        }
+        if(venueInfo.getStartTime()==null||venueInfo.getEndTime()==null){
+            return ApiUtils.error("会场活动领取及结束时间异常");
+        }
+        boolean boo = belongCalendar(new Date(), venueInfo.getStartTime(), venueInfo.getEndTime());
+        if(!boo){
+            return ApiUtils.error("当前时间不处于该会场正常活动时间内");
+        }
+        List<SceneActivity> list = sceneActivityService.findList(Paramap.create().put("mCode", mCode).put("venueNum",venueNum));
+        if(list==null||list.size()!=1){
             return ApiUtils.error("数据异常");
         }
+        SceneActivity sceneActivity = list.get(0);
         if(sceneActivity.getPresentStatus()!=1){
             return ApiUtils.error("该券已兑换");
         }
@@ -622,5 +678,23 @@ public class AuthcAPIController extends BaseController {
             }
         }
         return ApiUtils.error("当前无正在使用的活动指南");
+    }
+
+    public static boolean belongCalendar(Date nowTime, Date beginTime, Date endTime) {
+        //设置当前时间
+        Calendar date = Calendar.getInstance();
+        date.setTime(nowTime);
+        //设置开始时间
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(beginTime);
+        //设置结束时间
+        Calendar end = Calendar.getInstance();
+        end.setTime(endTime);
+        //处于开始时间之后，和结束时间之前的判断
+        if (date.after(begin) && date.before(end)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
