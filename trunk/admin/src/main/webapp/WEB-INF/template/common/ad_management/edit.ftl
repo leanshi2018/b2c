@@ -229,7 +229,7 @@
                             <em class="pngFix"></em>排序数字
                         </td>
                         <td>
-                            <input name="pSort" id="pSort" type="text" value="${picture.pSort}" class="w200"/>
+                            <input name="pSort" id="pSort" type="text" value="${picture.PSort}" class="w200"/>
                             <span class="error-message"></span>
                         </td>
                     </tr>

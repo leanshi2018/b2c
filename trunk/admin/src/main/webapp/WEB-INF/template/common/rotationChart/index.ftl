@@ -76,7 +76,7 @@
                         </td>
                         <td style="text-align: left">
                             <#if list.activityUrl == 'homepage'>辑</#if>
-                            <#if list.activityUrl == "listpage">消息中心</#if>
+                            <#if list.activityUrl == "messagepage">消息中心</#if>
                             <#if list.activityUrl == "goodsdetailspage">商品详情</#if>
                             <#if list.activityUrl == "mypage">我</#if>
                             <#if list.activityUrl == "myresultspage">个人业绩</#if>
@@ -94,8 +94,7 @@
                             <#if list.jumpInterface??>${list.jumpInterface}</#if>
                         </td>
                         <td>
-                            <#if list.pSort == 1>1</#if>
-                            ${list.pSort}
+                            ${list.PSort}
                         </td>
                         <td>
                             <#if list.auditStatus == 0>不显示</#if>

@@ -75,7 +75,7 @@
                         </td>
                         <td style="text-align: left">
                             <#if list.activityUrl == 'homepage'>辑</#if>
-                            <#if list.activityUrl == "listpage">消息中心</#if>
+                            <#if list.activityUrl == "messagepage">消息中心</#if>
                             <#if list.activityUrl == "goodsdetailspage">商品详情</#if>
                             <#if list.activityUrl == "mypage">我</#if>
                             <#if list.activityUrl == "myresultspage">个人业绩</#if>
@@ -90,10 +90,10 @@
                             <#if list.activityUrl == "invitationpage">我的邀请</#if>
                             <#if list.activityUrl == "activityGoodsListpage">活动页面</#if>
                             <#if list.activityUrl == 'buyCouponspage'>优惠券购买详情</#if>
-
+                            <#if list.jumpInterface??>${list.jumpInterface}</#if>
                         </td>
-                        <td>
-                            ${list.pSort}
+                        <td style="text-align: left">
+                            ${list.PSort}
                         </td>
                         <td>
                             <a class="look" href="${base}/admin/shop_activity_common/findADPicture.jhtml?pictureId=${list.id}">编 辑</a>

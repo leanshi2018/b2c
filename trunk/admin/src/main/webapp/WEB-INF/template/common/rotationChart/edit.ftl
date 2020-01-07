@@ -57,7 +57,7 @@
                         </td>
                         <td>
 
-                            <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1||picture.auditStatus==null>checked</#if>>
+                            <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1>checked</#if>>
                             是
                             <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
                             否
@@ -229,7 +229,7 @@
                             <em class="pngFix"></em>排序数字
                         </td>
                         <td>
-                            <input name="pSort"  type="text" value="${picture.pSort}" class="w200"/>
+                            <input name="pSort"  type="text" value="${picture.PSort}" class="w200"/>
                             <span class="error-message"></span>
                         </td>
                     </tr>
@@ -238,10 +238,10 @@
                             <em class="pngFix"></em>打开方式
                         </td>
                         <td>
-                            <select name="openType" class="w200">
-                                <option value="跳转商品推荐页"<#if picture.openType == "跳转商品推荐页">selected="selected"</#if>>跳转商品推荐页</option>
-                                <option value="跳转路径" <#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
-                                <option value="跳转链接" <#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
+                            <select name="openType" class="w200" id="openType">
+                                <option value="跳转商品推荐页" id=""<#if picture.pictureType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品推荐页</option>
+                                <option value="跳转路径" id=""<#if picture.pictureType == "跳转路径">selected="selected" </#if>>跳转路径</option>
+                                <option value="跳转链接" id=""<#if picture.pictureType == "跳转链接">selected="selected" </#if>>跳转链接</option>
                             </select>
                             <span class="error-message"></span>
                         </td>
@@ -260,7 +260,7 @@
 <#--                                        <option value="activityGoodsListpage" <#if picture.openPage == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>-->
 <#--                                    </select>-->
                                     <#--选择跳转链接-->
-                                    <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" class="w200"style="display: none;"/>
+                                    <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.setJumpInterface}" class="w200"style="display: none;"/>
                                     <#--选择跳转路径-->
                                     <select name="openPage" class="w200" id="openPage"style="display: none;">
                                         <option value="homepage" <#if picture.openPage == 'homepage'>selected="selected"</#if>>辑</option>
@@ -294,7 +294,9 @@
                                     </form>
                                     <#--选择优惠券-->
                                     <input type="hidden" id="couponId" name="couponId" value="${id}">
-                                    <#--                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
+                                    <#--                                <input type="hidden" id="couponLikeName" name="
+
+                                    couponLikeName" value="${couponLikeName}">-->
                                     <input name="couponName" id="couponName" type="text" value="${couponName}">
                                     <#--映射的名字-->
                                     <input name="openName" id="openName"class="w150" type="hidden" value=""/>
@@ -511,7 +513,7 @@
                 move: false,
                 shade: [0.3, '#393D49'],//开启遮罩层
                 title: '选择文章',
-                content: ['${base}${base}/admin/jpush/findArticles.jhtml?info=' + infos, 'yes'],
+                content: ['${base}/admin/jpush/findArticles.jhtml?info=' + infos, 'yes'],
                 area: ['800px', '600px']
             })
         }
