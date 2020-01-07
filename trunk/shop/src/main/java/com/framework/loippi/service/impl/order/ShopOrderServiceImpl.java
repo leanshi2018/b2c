@@ -2811,6 +2811,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     List<ShopOrderGoods> shopOrderGoodsList = shopOrderGoodsService.findList("orderId", order.getId());
                     if(shopOrderGoodsList!=null&&shopOrderGoodsList.size()>0){
                         for (ShopOrderGoods shopOrderGoods : shopOrderGoodsList) {
+                            if(shopOrderGoods.getIsPresentation()!=null&&shopOrderGoods.getIsPresentation()==1){
+                                continue;
+                            }
                             ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
                             ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find( shopGoods.getSpecId());
                             profit=profit.add(shopGoodsSpec.getSpecRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));
@@ -3893,6 +3896,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         List<ShopOrderGoods> shopOrderGoodsList = shopOrderGoodsService.findList("orderId", order.getId());
                         if(shopOrderGoodsList!=null&&shopOrderGoodsList.size()>0){
                             for (ShopOrderGoods shopOrderGoods : shopOrderGoodsList) {
+                                if(shopOrderGoods.getIsPresentation()!=null&&shopOrderGoods.getIsPresentation()==1){
+                                    continue;
+                                }
                                 ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
                                 ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find(shopGoods.getSpecId());
                                 profit=profit.add(shopGoodsSpec.getSpecRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));

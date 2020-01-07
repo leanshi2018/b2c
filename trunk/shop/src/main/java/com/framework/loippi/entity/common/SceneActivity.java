@@ -16,7 +16,7 @@ import java.util.Date;
 public class SceneActivity implements GenericEntity {
     private static final long serialVersionUID = 5081846432919091193L;
 
-    /** 订单索引id */
+    /** 主键id */
     @Column(id = true, name = "id")
     private Long id;
 
@@ -55,5 +55,17 @@ public class SceneActivity implements GenericEntity {
      */
     @Column(name = "image")
     private String image;
+
+    /**
+     *关联会场信息
+     */
+    @Column(name = "venue_id")
+    private Long venueId;
+
+    /**
+     *会场编码
+     */
+    @Column(name = "venue_num")
+    private Integer venueNum;
 
 }
