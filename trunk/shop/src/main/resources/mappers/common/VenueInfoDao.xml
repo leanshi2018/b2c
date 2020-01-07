@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.VenueInfoDao">
+
+	<resultMap id="VenueInfoResultMap" type="com.framework.loippi.entity.common.VenueInfo">
+		<id property="id" column="id"/>
+		<result property="venueNum" column="venue_num"/>
+		<result property="venueUrl" column="venue_url"/>
+		<result property="venueName" column="venue_name"/>
+		<result property="remark" column="remark"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+	</resultMap>
+
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		id ,venue_num ,venue_url ,venue_name ,remark,start_time,end_time
+	</sql>
+
+	<sql id="base_value_column">
+		#{id,jdbcType=BIGINT} ,#{venueNum} ,#{venueUrl} ,#{venueName},#{remark},#{startTime},#{endTime}
+	</sql>
+
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null">
+			AND id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="venueNum != null">
+			AND venue_num = #{venueNum,jdbcType=INTEGER}
+		</if>
+		<if test="venueUrl != null and venueUrl != ''">
+			AND venue_url = #{venueUrl,jdbcType=VARCHAR}
+		</if>
+		<if test="venueName != null and venueName != ''">
+			AND venue_name = #{venueName,jdbcType=VARCHAR}
+		</if>
+		<if test="remark != null and remark != ''">
+			AND remark = #{remark,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null">
+			AND start_time = #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND end_time = #{endTime}
+		</if>
+	</sql>
+
+	<sql id="set_column">
+		<if test="id != null">
+			id = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="venueNum != null">
+			venue_num = #{venueNum,jdbcType=INTEGER},
+		</if>
+		<if test="venueUrl != null and venueUrl != ''">
+			venue_url = #{venueUrl,jdbcType=VARCHAR},
+		</if>
+		<if test="venueName != null and venueName != ''">
+			venue_name = #{venueName,jdbcType=VARCHAR},
+		</if>
+		<if test="remark != null and remark != ''">
+			remark = #{remark,jdbcType=VARCHAR},
+		</if>
+		<if test="startTime != null">
+			start_time = #{startTime},
+		</if>
+		<if test="endTime != null">
+			end_time = #{endTime},
+		</if>
+	</sql>
+
+	<select id="find" resultMap="VenueInfoResultMap">
+		SELECT
+		<include refid="base_column"/>
+		FROM rd_venue_info
+		WHERE ID=#{id,jdbcType=BIGINT}
+	</select>
+
+	<select id="findAll" resultMap="VenueInfoResultMap">
+		SELECT
+		<include refid="base_column"/>
+		FROM rd_venue_info
+	</select>
+
+	<insert id="insert" parameterType="com.framework.loippi.entity.common.VenueInfo">
+		INSERT rd_venue_info
+		(
+		<include refid="base_column"/>
+		)
+		VALUES (<include refid="base_value_column"/>)
+	</insert>
+
+	<update id="update" parameterType="com.framework.loippi.entity.common.VenueInfo">
+		UPDATE rd_venue_info
+		<set>
+			<include refid="set_column"/>
+		</set>
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
+
+	<delete id="delete">
+		DELETE	FROM rd_venue_info
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+
+	<select id="findByParams" resultMap="VenueInfoResultMap">
+		SELECT
+		<include refid="base_column"/>
+		FROM rd_venue_info
+		<where>1=1
+			<include refid="where_column"/>
+		</where>
+	</select>
+
+	<select id="findByPage" resultMap="VenueInfoResultMap">
+		SELECT
+		<include refid="base_column"/>
+		FROM rd_venue_info
+		<where>1=1
+			<include refid="where_column"/>
+		</where>
+	</select>
+
+</mapper> 

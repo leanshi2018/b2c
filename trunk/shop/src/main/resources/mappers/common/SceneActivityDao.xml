@@ -13,15 +13,17 @@
 		<result property="useTime" column="use_time"/>
 		<result property="mNickName" column="mm_nick_name"/>
 		<result property="image" column="image"/>
+		<result property="venueId" column="venue_id"/>
+		<result property="venueNum" column="venue_num"/>
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		id ,mm_code ,present_status ,get_time ,use_time,mm_nick_name,image
+		id ,mm_code ,present_status ,get_time ,use_time,mm_nick_name,image,venue_id,venue_num
 	</sql>
 
 	<sql id="base_value_column">
-		#{id,jdbcType=BIGINT} ,#{mCode} ,#{presentStatus} ,#{getime},#{useTime},#{mNickName},#{image}
+		#{id,jdbcType=BIGINT} ,#{mCode} ,#{presentStatus} ,#{getime},#{useTime},#{mNickName},#{image},#{venueId},#{venueNum}
 	</sql>
 
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -47,6 +49,12 @@
 		<if test="image != null and image != ''">
 			AND image = #{image,jdbcType=VARCHAR}
 		</if>
+		<if test="venueId != null">
+			AND venue_id = #{venueId,jdbcType=BIGINT}
+		</if>
+		<if test="venueNum != null">
+			AND venue_num = #{venueNum,jdbcType=INTEGER}
+		</if>
 	</sql>
 
 	<sql id="set_column">
@@ -70,6 +78,12 @@
 		</if>
 		<if test="image != null and image != ''">
 			image = #{image,jdbcType=VARCHAR},
+		</if>
+		<if test="venueId != null">
+			venue_id = #{venueId,jdbcType=BIGINT},
+		</if>
+		<if test="venueNum != null">
+			venue_num = #{venueNum,jdbcType=INTEGER},
 		</if>
 	</sql>
 
