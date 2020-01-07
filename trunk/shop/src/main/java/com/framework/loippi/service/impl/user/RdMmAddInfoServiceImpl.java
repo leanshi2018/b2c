@@ -1,11 +1,14 @@
 package com.framework.loippi.service.impl.user;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.user.RdMmAddInfoDao;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmAddInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 
 /**
@@ -42,5 +45,10 @@ public class RdMmAddInfoServiceImpl extends GenericServiceImpl<RdMmAddInfo, Long
 			result = 1;
 		}
 		return result;
+	}
+
+	@Override
+	public List<RdMmAddInfo> findMentionAddrList() {
+		return rdMmAddInfoDao.findMentionAddrList();
 	}
 }
