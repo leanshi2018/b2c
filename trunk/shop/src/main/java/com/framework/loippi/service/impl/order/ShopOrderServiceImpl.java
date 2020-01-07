@@ -1682,7 +1682,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setShopOrderTypeId(shopOrderDiscountType.getId());
             //若支付完成
             if (orderSettlement.getOrderAmount().doubleValue() == 0) {//购物车集合计算所需支付金额为0 视为已经支付订单
-                order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                if (logisticType==2){
+                    order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                }else {
+                    order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                }
                 order.setPaymentState(OrderState.PAYMENT_STATE_YES); //付款状态
                 order.setPaymentTime(new Date());
                 String period = rdSysPeriodDao.getSysPeriodService(new Date());
@@ -2779,7 +2783,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 newOrder.setPaymentBranch(paymentBranch);
                 orderDao.update(newOrder);
                 */
-                order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                if (order.getLogisticType()==2){ //TODO 自提
+                    order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                }else {
+                    order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                }
                 order.setPaymentState(OrderState.PAYMENT_STATE_YES);
                 //TODO update by zc 2019-11-14 支付修改优惠券状态
                 List<CouponDetail> couponDetailList = couponDetailService.findList(Paramap.create().put("holdId",memberId).put("useState",1)
@@ -3864,7 +3872,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     orderLogDao.insert(orderLog);
                     //修改订单状态
                     ShopOrder newOrder = new ShopOrder();
-                    newOrder.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                    if (order.getLogisticType()==2){//TODO 自提
+                        newOrder.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                    }else {
+                        newOrder.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                    }
                     newOrder.setPaymentState(OrderState.PAYMENT_STATE_YES);
                     //TODO update by zc 2019-11-14 支付修改优惠券状态
                     List<CouponDetail> couponDetailList = couponDetailService.findList(Paramap.create().put("holdId",memberId).put("useState",1)

@@ -1,6 +1,8 @@
 package com.framework.loippi.service.user;
 
 
+import java.util.List;
+
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.service.GenericService;
 
@@ -15,4 +17,5 @@ public interface RdMmAddInfoService  extends GenericService<RdMmAddInfo, Long> {
     int updateDef(Integer addressId, String memberId);
 
 
+	List<RdMmAddInfo> findMentionAddrList();
 }

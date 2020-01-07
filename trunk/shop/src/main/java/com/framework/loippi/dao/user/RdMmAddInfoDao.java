@@ -1,6 +1,8 @@
 package com.framework.loippi.dao.user;
 
 
+import java.util.List;
+
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.mybatis.dao.GenericDao;
 
@@ -15,5 +17,5 @@ public interface RdMmAddInfoDao  extends GenericDao<RdMmAddInfo, Long> {
     void updateMember(RdMmAddInfo shopMemberAddress);
 
 
-
+	List<RdMmAddInfo> findMentionAddrList();
 }

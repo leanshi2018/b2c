@@ -48,14 +48,30 @@ public class HomeAndADPictureResult {
 				PictureVio pictureVio = new PictureVio();
 				pictureVio.setId(homePicture.getId());
 				pictureVio.setPictureName(homePicture.getPictureName());
-				pictureVio.setPictureUrl(homePicture.getPictureUrl());
-				pictureVio.setJumpName(homePicture.getJumpName());
+				if (homePicture.getPictureUrl()!=null){
+					pictureVio.setPictureUrl(homePicture.getPictureUrl());
+				}else {
+					pictureVio.setPictureUrl("");
+				}
+
+				if (homePicture.getJumpName()!=null){
+					pictureVio.setJumpName(homePicture.getJumpName());
+				}else {
+					pictureVio.setJumpName("");
+				}
 				pictureVio.setPSort(homePicture.getPSort());
 				pictureVio.setAuditStatus(homePicture.getAuditStatus());
 				pictureVio.setPictureType(homePicture.getPictureType());
+				if (homePicture.getJumpInterface()!=null){
+					pictureVio.setJumpInterface(homePicture.getJumpInterface());
+				}
 
 				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("page",homePicture.getActivityUrl());
+				if (homePicture.getActivityUrl()!=null){
+					map.put("page",homePicture.getActivityUrl());
+				}else {
+					map.put("page","");
+				}
 
 				if (homePicture.getPictureJson()!=null){
 					Map<String, String> jsonMap = JacksonUtil.readJsonToMap(homePicture.getPictureJson());
@@ -67,9 +83,7 @@ public class HomeAndADPictureResult {
 						map.put(key,value);
 					}
 				}
-				if (homePicture.getPictureType()!=null){
-					map.put("urlPath",homePicture.getPictureType());
-				}
+
 				JSONObject activityUrlJson = JSONObject.fromObject(map);
 				pictureVio.setActivityUrl(activityUrlJson.toString());
 				list.add(pictureVio);
@@ -85,14 +99,31 @@ public class HomeAndADPictureResult {
 				PictureVio pictureVio = new PictureVio();
 				pictureVio.setId(adPicture.getId());
 				pictureVio.setPictureName(adPicture.getPictureName());
-				pictureVio.setPictureUrl(adPicture.getPictureUrl());
-				pictureVio.setJumpName(adPicture.getJumpName());
+				if (adPicture.getPictureUrl()!=null){
+					pictureVio.setPictureUrl(adPicture.getPictureUrl());
+				}else {
+					pictureVio.setPictureUrl("");
+				}
+
+				if (adPicture.getJumpName()!=null){
+					pictureVio.setJumpName(adPicture.getJumpName());
+				}else {
+					pictureVio.setJumpName("");
+				}
 				pictureVio.setPSort(adPicture.getPSort());
 				pictureVio.setAuditStatus(adPicture.getAuditStatus());
 				pictureVio.setPictureType(adPicture.getPictureType());
+				if (adPicture.getJumpInterface()!=null){
+					pictureVio.setJumpInterface(adPicture.getJumpInterface());
+				}
 
 				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("page",adPicture.getActivityUrl());
+				if (adPicture.getActivityUrl()!=null){
+					map.put("page",adPicture.getActivityUrl());
+				}else {
+					map.put("page","");
+				}
+
 
 				if (adPicture.getPictureJson()!=null){
 					Map<String, String> jsonMap = JacksonUtil.readJsonToMap(adPicture.getPictureJson());
