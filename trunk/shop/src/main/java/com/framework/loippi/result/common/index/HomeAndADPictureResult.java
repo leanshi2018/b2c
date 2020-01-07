@@ -48,8 +48,17 @@ public class HomeAndADPictureResult {
 				PictureVio pictureVio = new PictureVio();
 				pictureVio.setId(homePicture.getId());
 				pictureVio.setPictureName(homePicture.getPictureName());
-				pictureVio.setPictureUrl(homePicture.getPictureUrl());
-				pictureVio.setJumpName(homePicture.getJumpName());
+				if (homePicture.getPictureUrl()!=null){
+					pictureVio.setPictureUrl(homePicture.getPictureUrl());
+				}else {
+					pictureVio.setPictureUrl("");
+				}
+
+				if (homePicture.getJumpName()!=null){
+					pictureVio.setJumpName(homePicture.getJumpName());
+				}else {
+					pictureVio.setJumpName("");
+				}
 				pictureVio.setPSort(homePicture.getPSort());
 				pictureVio.setAuditStatus(homePicture.getAuditStatus());
 				pictureVio.setPictureType(homePicture.getPictureType());
@@ -58,7 +67,11 @@ public class HomeAndADPictureResult {
 				}
 
 				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("page",homePicture.getActivityUrl());
+				if (homePicture.getActivityUrl()!=null){
+					map.put("page",homePicture.getActivityUrl());
+				}else {
+					map.put("page","");
+				}
 
 				if (homePicture.getPictureJson()!=null){
 					Map<String, String> jsonMap = JacksonUtil.readJsonToMap(homePicture.getPictureJson());
@@ -86,8 +99,17 @@ public class HomeAndADPictureResult {
 				PictureVio pictureVio = new PictureVio();
 				pictureVio.setId(adPicture.getId());
 				pictureVio.setPictureName(adPicture.getPictureName());
-				pictureVio.setPictureUrl(adPicture.getPictureUrl());
-				pictureVio.setJumpName(adPicture.getJumpName());
+				if (adPicture.getPictureUrl()!=null){
+					pictureVio.setPictureUrl(adPicture.getPictureUrl());
+				}else {
+					pictureVio.setPictureUrl("");
+				}
+
+				if (adPicture.getJumpName()!=null){
+					pictureVio.setJumpName(adPicture.getJumpName());
+				}else {
+					pictureVio.setJumpName("");
+				}
 				pictureVio.setPSort(adPicture.getPSort());
 				pictureVio.setAuditStatus(adPicture.getAuditStatus());
 				pictureVio.setPictureType(adPicture.getPictureType());
@@ -96,7 +118,12 @@ public class HomeAndADPictureResult {
 				}
 
 				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("page",adPicture.getActivityUrl());
+				if (adPicture.getActivityUrl()!=null){
+					map.put("page",adPicture.getActivityUrl());
+				}else {
+					map.put("page","");
+				}
+
 
 				if (adPicture.getPictureJson()!=null){
 					Map<String, String> jsonMap = JacksonUtil.readJsonToMap(adPicture.getPictureJson());
