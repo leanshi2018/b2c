@@ -368,7 +368,7 @@ public class JpushController extends GenericController {
                                 @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
         if(StringUtil.isEmpty(info)){
             model.addAttribute("articles",null);
-            return "";//TODO
+            return "/common/select/selectArticles";//TODO
         }
         Pageable pageable = new Pageable();
         pageable.setPageSize(pageSize);
