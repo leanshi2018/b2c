@@ -145,6 +145,9 @@ public class ShopGoodsEvaluateServiceImpl extends GenericServiceImpl<ShopGoodsEv
                 throw new StateResult(5110313, "已评价");
 
             }
+            if(orderGoods.getIsPresentation()!=null&&orderGoods.getIsPresentation()==1){
+                throw new StateResult(5110315, "赠品不可以评论");
+            }
 
             if (!orderGoods.getBuyerId().equals(member.getMmCode() + "")) {
                 throw new StateResult(5110314, "不是您购买的商品,不能评价");
