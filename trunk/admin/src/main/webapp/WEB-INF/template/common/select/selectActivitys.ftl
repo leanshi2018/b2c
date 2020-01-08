@@ -2,7 +2,7 @@
     <link href="${base}/res/css/member.css" rel="stylesheet" type="text/css"/>
     <script type="text/javascript" src="${base}/res/js/jquery-ui/jquery.ui.js"></script>
     <script type="text/javascript" src="${base}/res/js/jquery-ui/i18n/zh-CN.js" charset="utf-8"></script>
-    <link rel="stylesheet" type="text/css" href="${base}/res/js/jquery-ui/themes/ui-lightness/jquery.ui.css"/>
+    <link   rel="stylesheet" type="text/css" href="${base}/res/js/jquery-ui/themes/ui-lightness/jquery.ui.css"/>
     <script type="text/javascript" src="${base}/res/js/jquery.ajaxContent.pack.js"></script>
     <script type="text/javascript" src="${base}/res/js/ajaxfileupload/ajaxfileupload.js"></script>
     <script type="text/javascript" src="${base}/res/js/goods/jquery.poshytip.min.js" charset="utf-8"></script>
@@ -16,13 +16,13 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/findActivitys.jhtml?info=${info}">
+            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/findActivitys.jhtml">
                 <input type="hidden" name="pageNo" value="${1}">
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
                         <td>
-                            <input name="info" type="text" id="info" value="${info}" placeholder="请输入活动名称"/>
+                            <input name="info" type="text" id="info" value="${info}" placeholder="请输入查询信息"/>
                             <a href="javascript:$('#formSearch').submit();" class="btn-search" title="查询">
                             </a>
                         </td>
@@ -52,7 +52,7 @@
                         </td>
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpeccoupons('${activity.id}','${activity.name}','${activity.info}')">选择</a>
+                               onclick="selSpe('${activity.info}')">选择</a>
                         </td>
                     </tr>
                 </#list>
@@ -68,6 +68,7 @@
         </div>
     </div>
     <script>
+
         // $(".btn-search").click(function(){
         //     var info=$("#info").val();
         //     $("#formSearch").attr("action", "" +info);
@@ -76,10 +77,10 @@
         //     // $("#formSearch").attr("action", href).submit();
         //     return false;
         // });
-        function selSpeccoupons(id,name,info) {
+        function selSpe(info) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendWareInfo(id,name,info);
+            parent.appendWareInfo(info);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);
