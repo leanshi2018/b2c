@@ -197,5 +197,12 @@
 			<include refid="where_column" />
 		</where>
 	</select>
+
+	<!--查找自提地址-->
+	<select id="findMentionAddrList" resultMap="RdMmAddInfoResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_MM_ADD_INFO WHERE AID &lt; 0
+	</select>
 	
 </mapper> 

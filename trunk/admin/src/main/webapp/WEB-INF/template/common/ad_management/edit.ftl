@@ -59,7 +59,7 @@
 
                             <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1||picture.auditStatus==null>checked</#if>>
                             是
-                            <input name="auditStatus" type="radio" value="2"  <#if picture.auditStatus==0>checked</#if>>
+                            <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
                             否
 
                             <span class="error-message"></span>
@@ -124,9 +124,9 @@
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <#--选择跳转商品推荐页-->
-                                    <select name="" class="w200" id="toactitvty" style="display: none;">
-                                        <option value="" selected="selected">请选择</option>
-                                    </select>
+<#--                                    <select name="" class="w200" id="toactitvty" style="display: none;">-->
+<#--                                        <option value="" selected="selected">请选择</option>-->
+<#--                                    </select>-->
                                     <#--选择跳转链接-->
                                     <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" class="w200"style="display: none;"/>
                                     <#--选择跳转路径-->
@@ -229,7 +229,7 @@
                             <em class="pngFix"></em>排序数字
                         </td>
                         <td>
-                            <input name="pSort" id="pSort" type="text" value="${picture.pSort}" class="w200"/>
+                            <input name="pSort" id="pSort" type="text" value="${picture.PSort}" class="w200"/>
                             <span class="error-message"></span>
                         </td>
                     </tr>

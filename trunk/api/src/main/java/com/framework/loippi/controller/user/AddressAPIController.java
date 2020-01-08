@@ -1,7 +1,21 @@
 package com.framework.loippi.controller.user;
 
 
-import com.framework.loippi.consts.UpdateMemberInfoStatus;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.param.user.UserAddrsAddParam;
@@ -12,21 +26,10 @@ import com.framework.loippi.result.user.UserAddrsListResult;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.*;
-import com.framework.loippi.vo.address.MemberAddresVo;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Constants;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.Xerror;
 
 /**
  * 收货地址
@@ -55,6 +58,18 @@ public class AddressAPIController extends BaseController {
         List<RdMmAddInfo> lists = addressService.findByPage(pager).getContent();
         return ApiUtils.success(UserAddrsListResult.build(lists));
     }
+
+    //自提地址列表
+    @RequestMapping(value = "/mentionAddrList.json")
+    public String mentionAddrList(HttpServletRequest request) {
+
+        List<RdMmAddInfo> lists = addressService.findMentionAddrList();
+        if (lists.size()==0){
+            return ApiUtils.error("自提地址为空");
+        }
+        return ApiUtils.success(lists);
+    }
+
 
     //新增
     @RequestMapping(value = "/add.json", method = RequestMethod.POST)
