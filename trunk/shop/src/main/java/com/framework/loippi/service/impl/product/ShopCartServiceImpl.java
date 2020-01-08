@@ -473,6 +473,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         map.put("rankDiscount",BigDecimal.valueOf(rankDiscount));
         //存储优惠券优惠金额
         map.put("useCouponAmount",BigDecimal.valueOf(useCouponAmount));
+        map.put("goodsIds",goodsIds);
         return map;
     }
 
