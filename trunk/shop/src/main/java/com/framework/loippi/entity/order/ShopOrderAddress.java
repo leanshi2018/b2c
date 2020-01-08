@@ -107,5 +107,9 @@ public class ShopOrderAddress implements GenericEntity {
     @Column(name = "zip_code")
     private String zipCode;
 
-
+    /**
+     * 自提地址id
+     */
+    @Column(name = "mention_id")
+    private Long mentionId;
 }
