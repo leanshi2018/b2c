@@ -544,14 +544,36 @@ public class CartAPIController extends BaseController {
                 orderDiscountTypeList);
         //***************************************************************************************************************************
         Integer flag=0;
-        Integer giftsNum=1;
+        Integer giftsNum=0;
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date startTime = format.parse("2020-01-07 00:00:00");
+            Date startTime = format.parse("2020-01-11 00:00:00");
             Date endTime = format.parse("2020-01-16 23:59:59");
+            Date startTime1 = format.parse("2020-01-07 00:00:00");
+            Date endTime1 = format.parse("2020-01-10 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
+            boolean c = belongCalendar(nowTime, startTime1, endTime1);
+            if(c){
+                if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1){//单笔订单满50mi，赠送手提袋一个，利是红包一包（10枚），酵素洗衣凝珠一桶
+                    flag=1;
+                    ShopGoods goods1 = goodsService.find(6573037643838263296L);//酵素多效洗衣凝珠+利是红包+手提袋
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                    giftsNum=1;
+                }else if((rdMmRelation.getRank()==0&&result.getNeedToPay().compareTo(new BigDecimal("360"))!=-1)||
+                        (rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))==-1)){
+                    flag=1;
+                    //单笔订单满360或25mi，赠送手提袋一个，利是红包一包（10枚），母婴洗衣凝珠一包
+                    ShopGoods goods1 = goodsService.find(6573038322627645440L);//母婴洗衣凝珠+利是红包+手提袋
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                    giftsNum=1;
+                }
+            }
             if(b){
                 flag=1;
                 if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1){//单笔订单满50mi，赠送手提袋一个，利是红包一包（10枚），酵素洗衣凝珠一桶
@@ -559,6 +581,7 @@ public class CartAPIController extends BaseController {
                     if (goods1!=null){
                         shopGoods.add(goods1);
                     }
+                    giftsNum=1;
                 }else if((rdMmRelation.getRank()==0&&result.getNeedToPay().compareTo(new BigDecimal("360"))!=-1)||
                         (rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))==-1)){
                     //单笔订单满360或25mi，赠送手提袋一个，利是红包一包（10枚），母婴洗衣凝珠一包
@@ -566,10 +589,25 @@ public class CartAPIController extends BaseController {
                     if (goods1!=null){
                         shopGoods.add(goods1);
                     }
+                    giftsNum=1;
                 }else {//凡有购买产品的订单，即赠送利是红包一包（10枚）
                     ShopGoods goods1 = goodsService.find(6620193953163513856L);//利是红包一包（10枚）
                     if (goods1!=null){
                         shopGoods.add(goods1);
+                    }
+                    giftsNum=1;
+                }
+            }
+            if(c){//TODO
+                List<Long> goodsIds = (List<Long>) map.get("goodsIds");
+                for (Long goodsId : goodsIds) {
+                    if(goodsId.equals(6552743534695288832L)){//如果商品中有保湿面膜 则赠品赠送一个杯子
+                        ShopGoods goods1 = goodsService.find(6597416766391980032L);//利是红包一包（10枚）
+                        if (goods1!=null){
+                            shopGoods.add(goods1);
+                        }
+                        giftsNum=1;
+                        break;
                     }
                 }
             }
