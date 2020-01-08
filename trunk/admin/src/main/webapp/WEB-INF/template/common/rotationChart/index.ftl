@@ -21,6 +21,7 @@
     $(function () {
         $('#shopPMansongSubmit').click(function () {
             $('#formSearch').submit();
+            $("#pictureName").val($("#pictureName").val());
         });
     });
 </script>
@@ -44,7 +45,7 @@
                 <tbody>
                 <tr>
                     <th class="th_w">轮播图名称</th>
-                    <td class="ths"><input type="text" class="text" name="pictureName" value="${pictureName}" ></td>
+                    <td class="ths"><input type="text" class="text" name="pictureName" id="pictureName" value="${pictureName}" ></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="shopPMansongSubmit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
@@ -137,6 +138,7 @@
             })
 
         }
+
         /*post提交*/
         $(".look").click(function(){
             var href = $(this).attr("href");

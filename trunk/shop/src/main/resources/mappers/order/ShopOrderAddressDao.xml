@@ -18,15 +18,16 @@
         <result property="isDefault" column="is_default"/>
         <result property="provinceId" column="province_id"/>
         <result property="zipCode" column="zip_code"/>
+        <result property="mentionId" column="mention_id"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,member_id ,true_name ,area_id ,city_id ,area_info ,address ,tel_phone ,mob_phone ,is_default ,province_id ,zip_code 
+		 id ,member_id ,true_name ,area_id ,city_id ,area_info ,address ,tel_phone ,mob_phone ,is_default ,province_id ,zip_code  ,mention_id
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{memberId},#{trueName},#{areaId},#{cityId},#{areaInfo},#{address},#{telPhone},#{mobPhone},#{isDefault},#{provinceId},#{zipCode}
+		 #{id},#{memberId},#{trueName},#{areaId},#{cityId},#{areaInfo},#{address},#{telPhone},#{mobPhone},#{isDefault},#{provinceId},#{zipCode},#{mentionId}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -66,6 +67,9 @@
         </if>
         <if test="zipCode != null and zipCode != ''">
             AND zip_code = #{zipCode,jdbcType=VARCHAR}
+        </if>
+        <if test="mentionId != null and mentionId != ''">
+            AND mention_id = #{mentionId,jdbcType=BIGINT}
         </if>
         <if test="ids != null and ids != ''">
             AND ID IN
@@ -112,6 +116,9 @@
         </if>
         <if test="zipCode != null and zipCode != ''">
             zip_code = #{zipCode,jdbcType=VARCHAR},
+        </if>
+        <if test="mentionId != null">
+            mention_id = #{mentionId,jdbcType=BIGINT},
         </if>
     </sql>
 

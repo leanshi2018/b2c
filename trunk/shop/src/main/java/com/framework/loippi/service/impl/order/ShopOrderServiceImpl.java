@@ -1606,6 +1606,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             orderAddress.setCityId(-1L);
             orderAddress.setProvinceId(-1L);
             orderAddress.setAddress("");
+            orderAddress.setMentionId(addressId);
             orderAddressDao.insert(orderAddress);
 
         }

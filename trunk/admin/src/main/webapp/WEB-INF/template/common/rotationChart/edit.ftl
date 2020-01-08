@@ -294,9 +294,7 @@
                                     </form>
                                     <#--选择优惠券-->
                                     <input type="hidden" id="couponId" name="couponId" value="${id}">
-                                    <#--                                <input type="hidden" id="couponLikeName" name="
-
-                                    couponLikeName" value="${couponLikeName}">-->
+                                    <#--                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
                                     <input name="couponName" id="couponName" type="text" value="${couponName}">
                                     <#--映射的名字-->
                                     <input name="openName" id="openName"class="w150" type="hidden" value=""/>
