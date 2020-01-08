@@ -183,6 +183,7 @@
                 </#if>
 
                 <#if picture!=null>
+                    <input type="checkbox" name="ids" value="${picture.id}" />
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>是否显示

@@ -155,7 +155,7 @@
                                     <#--选择活动-->
                                     <input name="activityname" type="text" id="activityname" value="${shopActivity.name}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
-                                    <input name="info" id="info" type="hidden" value="${article.info}"/>
+                                    <input name="info" id="info" type="text" value="${article.info}"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
