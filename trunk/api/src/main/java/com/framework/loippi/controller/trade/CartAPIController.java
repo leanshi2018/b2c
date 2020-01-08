@@ -550,7 +550,7 @@ public class CartAPIController extends BaseController {
         try {
             /*Date startTime = format.parse("2020-01-11 00:00:00");
             Date endTime = format.parse("2020-01-16 23:59:59");*/
-            Date startTime1 = format.parse("2020-01-08 00:00:00");
+            Date startTime1 = format.parse("2020-01-09 00:00:00");
             Date endTime1 = format.parse("2020-01-17 13:59:59");
             Date nowTime = new Date();
             /*boolean b = belongCalendar(nowTime, startTime, endTime);*/
