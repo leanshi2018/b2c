@@ -340,10 +340,10 @@ public class JpushController extends GenericController {
     public String findActivitys(String info, ModelMap model,
                             @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
                             @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
-        if(StringUtil.isEmpty(info)){
+        /*if(StringUtil.isEmpty(info)){
             model.addAttribute("activitys",null);
             return "/common/select/selectActivitys";//TODO
-        }
+        }*/
         Pageable pageable = new Pageable();
         pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNo);
@@ -366,10 +366,10 @@ public class JpushController extends GenericController {
     public String findArticles(String info, ModelMap model,
                                 @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
                                 @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
-        if(StringUtil.isEmpty(info)){
+        /*if(StringUtil.isEmpty(info)){
             model.addAttribute("articles",null);
             return "/common/select/selectArticles";//TODO
-        }
+        }*/
         Pageable pageable = new Pageable();
         pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNo);
