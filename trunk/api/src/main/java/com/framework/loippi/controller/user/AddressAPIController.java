@@ -67,7 +67,7 @@ public class AddressAPIController extends BaseController {
         if (lists.size()==0){
             return ApiUtils.error("自提地址为空");
         }
-        return ApiUtils.success(lists);
+        return ApiUtils.success(UserAddrsListResult.build(lists));
     }
 
 
