@@ -602,6 +602,7 @@ public class CartAPIController extends BaseController {
                 List<Long> goodsIds = (List<Long>) map.get("goodsIds");
                 for (Long goodsId : goodsIds) {
                     if(goodsId.equals(6552743534695288832L)){//如果商品中有保湿面膜 则赠品赠送一个杯子
+                        flag=1;
                         ShopGoods goods1 = goodsService.find(6597416766391980032L);//利是红包一包（10枚）
                         if (goods1!=null){
                             shopGoods.add(goods1);
