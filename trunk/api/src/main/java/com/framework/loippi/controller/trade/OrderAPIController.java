@@ -418,7 +418,7 @@ public class OrderAPIController extends BaseController {
         //如果取货地址等于-1L 即为自提
         if (results.getLogisticType() == 2) {
             //表示为自提
-            shopMemberAddress = rdMmAddInfoService.find("aid", -1);
+            shopMemberAddress = rdMmAddInfoService.find(results.getAddress().getMentionId());
         }
         List LogisticsInformation = new ArrayList();
         OrderDetailResult orderDetailResult=new OrderDetailResult();
