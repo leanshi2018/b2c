@@ -137,7 +137,9 @@ public class EvaluateAPIController extends BaseController {
         if (orderGoods.getEvaluationStatus() != null && orderGoods.getEvaluationStatus() == 1) {
             return ApiUtils.error("已评价");
         }
-
+        if (orderGoods.getIsPresentation() != null && orderGoods.getIsPresentation() == 1) {
+            return ApiUtils.error("赠品不可以评价");
+        }
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if (!orderGoods.getBuyerId().equals(Long.parseLong(member.getMmCode()))) {
             return ApiUtils.error("不是您购买的商品,不能评价");
