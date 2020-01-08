@@ -234,10 +234,12 @@ public class ActivityCommonController extends GenericController {
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (pictureList.size()!=0){
                     for (ShopHomePicture homePicture : pictureList) {
-                        if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
-                            if (homePicture.getPSort()==shopHomePicture.getPSort() && homePicture.getPictureType()==0){
-                                model.addAttribute("msg", "轮播图排序"+shopHomePicture.getPSort()+"号已存在");
-                                return Constants.MSG_URL;
+                        if (homePicture.getPictureType()==0){
+                            if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
+                                if (homePicture.getPSort()==shopHomePicture.getPSort()){
+                                    model.addAttribute("msg", "轮播图排序"+shopHomePicture.getPSort()+"号已存在");
+                                    return Constants.MSG_URL;
+                                }
                             }
                         }
                     }
@@ -252,10 +254,12 @@ public class ActivityCommonController extends GenericController {
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (pictureList.size()!=0){
                     for (ShopHomePicture homePicture : pictureList) {
-                        if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
-                            if (homePicture.getPSort()==shopHomePicture.getPSort() && homePicture.getPictureType()==1){
-                                model.addAttribute("msg", "广告位图排序"+shopHomePicture.getPSort()+"号已存在");
-                                return Constants.MSG_URL;
+                        if (homePicture.getPictureType()==1){
+                            if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
+                                if (homePicture.getPSort()==shopHomePicture.getPSort()){
+                                    model.addAttribute("msg", "广告位图排序"+shopHomePicture.getPSort()+"号已存在");
+                                    return Constants.MSG_URL;
+                                }
                             }
                         }
                     }
