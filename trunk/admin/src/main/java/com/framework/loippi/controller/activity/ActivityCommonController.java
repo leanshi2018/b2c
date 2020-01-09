@@ -17,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
-import com.framework.loippi.dto.ShopHomePictureResult;
 import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TUserSettingService;
@@ -69,7 +68,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",0));
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", ShopHomePictureResult.build(shopHomePictureService.findByPage(pageable).getContent()));
+        model.addAttribute("page", shopHomePictureService.findByPage(pageable).getContent());
         return "/common/rotationChart/index";
     }
 
@@ -86,7 +85,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",1));
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", ShopHomePictureResult.build(shopHomePictureService.findByPage(pageable).getContent()));
+        model.addAttribute("page", shopHomePictureService.findByPage(pageable).getContent());
         return "/common/ad_management/index";
     }
 
