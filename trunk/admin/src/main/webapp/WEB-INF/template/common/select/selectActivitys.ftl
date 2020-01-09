@@ -52,7 +52,7 @@
                         </td>
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpe('${activity.info}')">选择</a>
+                               onclick="selSpeccoupons('${activity.name}','${activity.info}')">选择</a>
                         </td>
                     </tr>
                 </#list>
@@ -69,18 +69,10 @@
     </div>
     <script>
 
-        // $(".btn-search").click(function(){
-        //     var info=$("#info").val();
-        //     $("#formSearch").attr("action", "" +info);
-        //     $('#formSearch').submit();
-        //     // var href = $(this).attr("href");
-        //     // $("#formSearch").attr("action", href).submit();
-        //     return false;
-        // });
-        function selSpe(info) {
+        function selSpeccoupons(name,info) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendWareInfo(info);
+            parent.appendWareInfo(name,info);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);
