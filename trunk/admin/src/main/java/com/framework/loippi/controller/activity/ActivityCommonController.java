@@ -211,8 +211,7 @@ public class ActivityCommonController extends GenericController {
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (pictureList.size()!=0){
                     model.addAttribute("msg", "轮播图排序"+shopHomePicture.getPSort()+"号已存在");
-                    return "redirect:findHomePictureList.jhtml";
-                    //return Constants.MSG_URL;
+                    return Constants.MSG_URL;
                 }
                 shopHomePictureService.save(shopHomePicture);
 
@@ -220,14 +219,12 @@ public class ActivityCommonController extends GenericController {
             }else {//广告位图
                 if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图排序只能是1-3");
-                    return "redirect:findADPictureList.jhtml";
-                    //return Constants.MSG_URL;
+                    return Constants.MSG_URL;
                 }
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (pictureList.size()!=0){
                     model.addAttribute("msg", "广告位图排序"+shopHomePicture.getPSort()+"号已存在");
-                    return "redirect:findADPictureList.jhtml";
-                    //return Constants.MSG_URL;
+                    return Constants.MSG_URL;
                 }
                 shopHomePictureService.save(shopHomePicture);
                 return "redirect:findADPictureList.jhtml";
@@ -241,8 +238,7 @@ public class ActivityCommonController extends GenericController {
                             if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
                                 if (homePicture.getPSort()==shopHomePicture.getPSort()){
                                     model.addAttribute("msg", "轮播图排序"+shopHomePicture.getPSort()+"号已存在");
-                                    return "redirect:findHomePictureList.jhtml";
-                                    //return Constants.MSG_URL;
+                                    return Constants.MSG_URL;
                                 }
                             }
                         }
@@ -253,8 +249,7 @@ public class ActivityCommonController extends GenericController {
             }else {//广告位图
                 if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图排序只能是1-3");
-                    return "redirect:findADPictureList.jhtml";
-                    //return Constants.MSG_URL;
+                    return Constants.MSG_URL;
                 }
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (pictureList.size()!=0){
@@ -263,8 +258,7 @@ public class ActivityCommonController extends GenericController {
                             if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
                                 if (homePicture.getPSort()==shopHomePicture.getPSort()){
                                     model.addAttribute("msg", "广告位图排序"+shopHomePicture.getPSort()+"号已存在");
-                                    return "redirect:findADPictureList.jhtml";
-                                    //return Constants.MSG_URL;
+                                    return Constants.MSG_URL;
                                 }
                             }
                         }
