@@ -76,7 +76,7 @@
                             ${list.pictureName}
                         </td>
                         <td style="text-align: left">
-                            <#if list.activityUrl??>
+
                                 <#if list.activityUrl == 'homepage'>辑</#if>
                                 <#if list.activityUrl == "messagepage">消息中心</#if>
                                 <#if list.activityUrl == "goodsdetailspage">商品详情</#if>
@@ -93,7 +93,7 @@
                                 <#if list.activityUrl == "invitationpage">我的邀请</#if>
                                 <#if list.activityUrl == "activityGoodsListpage">活动页面</#if>
                                 <#if list.activityUrl == 'buyCouponspage'>优惠券购买详情</#if>
-                            </#if>
+
                             <#if list.jumpInterface??>${list.jumpInterface}</#if>
                         </td>
                         <td>

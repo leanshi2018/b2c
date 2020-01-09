@@ -150,12 +150,14 @@
                                         <option value="buyCouponspage" id="buyCouponspage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
                                     <#--选择文章-->
+                                    <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" id="contents">
                                     <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
                                     <input type="hidden" class="text w500" value="${article.id}" name="id" >
                                     <#--选择活动-->
                                     <input name="activityname" type="text" id="activityname" value="${shopActivity.name}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
                                     <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
+                                    <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -279,16 +281,17 @@
                                         <option value="learnpage" <#if picture.openPage == "learnpage">selected="selected" </#if>>学堂</option>
                                         <option value="learnarticlepage" <#if picture.openPage == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
                                         <option value="invitationpage" <#if picture.openPage == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                        <option value="buyCouponspage" id="openPage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
+                                        <option value="buyCouponspage"  <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
                                     <#--选择文章-->
                                     <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
                                     <input type="hidden" class="text w500" value="${article.id}" name="id" >
+                                    <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" >
                                     <#--选择活动-->
                                     <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
                                     <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
-                                    <input name="openPage" id="openpages" type="hidden" style="display: none;"/>
+                                    <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -343,23 +346,28 @@
             var value = $(this).children('option:selected').val();
             if (value == "跳转商品推荐页") {
                 $("#activityname").show();
-                $("#openpages").css("display","");
+                $("#openPage").attr("name","");
                 $("#searchactivity").css("display","");
                 $("#openName").val("活动页面");
             }else{
                 $("#activityname").css("display","none");
                 $("#searchactivity").css("display","none");
-                $("#openpages").css("display","none");
+
             }
             if (value == "跳转路径") {
+
                 $("#openPage").css("display","");
+                $("#openpages").attr("name","");
             }else{
                 $("#openPage").css("display","none");
+
             }
             if (value == "跳转链接") {
                 $("#jumpInterface").css("display","");
+                $("#openpages").attr("name","");
             }else{
                 $("#jumpInterface").css("display","none");
+
             }
         })
         //上传图片
@@ -412,6 +420,7 @@
 
         /*判断是否选择跳转路径*/
         $('#openPage').change(function(){
+            $("#openpages").attr("name","");
             var value=$(this).children('option:selected').val();
             if(value=="homepage"){
                 $("#openName").val("辑");
@@ -496,10 +505,13 @@
                 area: ['800px', '600px']
             })
         }
-        function appendInfo(name,info) {
+        function appendInfo(name,content,info) {
             $("#articleTitle").val(name);
-            var articleTitle=$("#articleTitle").val();
-            $("#jsons").val("{\"articleTitle\":\"" + articleTitle + "\"}");
+            $("#contents").val(content);
+            var articleContent=$("#contents").val();
+            var title=$("#articleTitle").val();
+            // console.log(articleContent);
+            $("#jsons").val("{\"url\":\"" + articleContent + "\",\"title\":\"" + title + "\"}");
 
         }
         /*选择活动*/
@@ -510,15 +522,16 @@
                 move: false,
                 shade: [0.3, '#393D49'],//开启遮罩层
                 title: '选择活动',
-                content: ['${base}/admin/jpush/findActivitys.jhtml?info='+info, 'yes'],
+                content: ['${base}/admin/jpush/findActivityings.jhtml?info='+info, 'yes'],
                 area: ['800px', '600px']
             })
         }
         function appendWareInfo(id,name,info) {
-            // $("#openpages").val("activityGoodsListpage");
+
             $("#activityname").val(name);
             $("#activityId").val(id);
             var activityId=$("#activityId").val();
+
             $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
 
         }

@@ -16,7 +16,7 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/findActivitys.jhtml">
+            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/findActivityings.jhtml">
 <#--                <input type="hidden" name="pageNo" value="${1}">-->
                 <table class="tb-type1 noborder search">
                     <tbody>
