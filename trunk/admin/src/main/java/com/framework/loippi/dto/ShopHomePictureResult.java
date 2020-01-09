@@ -112,12 +112,15 @@ public class ShopHomePictureResult {
 
 			if (shopHomePicture.getJumpName()==null){
 				if (shopHomePicture.getJumpInterface()==null){
+					result.setJumpName("");
 					result.setJumpInterface("");
 				}else {
+					result.setJumpName("");
 					result.setJumpInterface(shopHomePicture.getJumpInterface());
 				}
 			}else {
 				result.setJumpName(shopHomePicture.getJumpName());
+				result.setJumpInterface("");
 			}
 
 			list.add(result);
