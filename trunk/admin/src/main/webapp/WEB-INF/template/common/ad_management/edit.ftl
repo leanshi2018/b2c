@@ -183,6 +183,7 @@
                 </#if>
 
                 <#if picture!=null>
+                    <input type="hidden" name="id" value="${picture.id}" />
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>是否显示
@@ -344,8 +345,8 @@
                 $("#searchactivity").css("display","");
                 $("#openName").val("活动页面");
             }else{
-                $("#activityname").css("display","");
-                $("#searchs").attr("onclick","");
+                $("#activityname").css("display","none");
+                $("#searchactivity").css("display","none");
             }
             if (value == "跳转路径") {
                 $("#openPage").css("display","");
@@ -453,7 +454,8 @@
                 $("#searchlearnarticle").css("display","");
                 $("#openName").val("学堂文章详情");
             }else{
-                $("#searchs").attr("onclick","");
+                $("#articleTitle").css("display","none");
+                $("#searchlearnarticle").css("display","none");
             }
             if(value=="invitationpage"){
                 $("#openName").val("我的邀请");
@@ -478,26 +480,25 @@
             }
 
         });
+
         /*选择学堂文章*/
         function learnarticlepage() {
-            // var activityId = $("[name='activityId']").val();
+            var infos = $("[name='info']").val();
             layer.open({
                 type: 2,
                 move: false,
                 shade: [0.3, '#393D49'],//开启遮罩层
                 title: '选择文章',
-                content: ['${base}/admin/jpush/findArticles.jhtml?info=' + activityId, 'yes'],
+                content: ['${base}/admin/jpush/findArticles.jhtml?info=' + infos, 'yes'],
                 area: ['800px', '600px']
             })
         }
-        // function appendWareInfo(id, name) {
-        //     $("#activityId").val(id);
-        //     $("#activityname").val(name);
-        //     var activitysId=$("#activityId").val();
-        //     console.log("活动"+activitysId);
-        //     $("#jsons").val("{\"activityId\":\"" + activitysId + "\"}");
-        //
-        // }
+        function appendInfo(name,info) {
+            $("#articleTitle").val(name);
+            var articleTitle=$("#articleTitle").val();
+            $("#jsons").val("{\"articleTitle\":\"" + articleTitle + "\"}");
+
+        }
         /*选择活动*/
         function activityGoodsListpage() {
             var info = $("[name='info']").val();
@@ -506,17 +507,14 @@
                 move: false,
                 shade: [0.3, '#393D49'],//开启遮罩层
                 title: '选择活动',
-                content: ['${base}/admin/jpush/findActivitys.jhtml?info=' + info, 'yes'],
+                content: ['${base}/admin/jpush/findActivitys.jhtml?info='+info, 'yes'],
                 area: ['800px', '600px']
             })
         }
-        function appendWareInfo(id, name,info) {
-            $("#activityId").val(id);
+        function appendWareInfo(name,info) {
             $("#activityname").val(name);
-            $("#info").val(info);
-            var activitysId=$("#info").val();
-            console.log("活动"+activitysId);
-            $("#jsons").val("{\"activityId\":\"" + activitysId + "\"}");
+            var activityId=$("#activityId").val();
+            $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
 
         }
         /*选择商品*/
@@ -560,6 +558,7 @@
             console.log("优惠券"+id);
             $("#jsons").val("{\"id\":\"" + id + "\"}");
         }
+
 
     </script>
     <div class="clear"></div>

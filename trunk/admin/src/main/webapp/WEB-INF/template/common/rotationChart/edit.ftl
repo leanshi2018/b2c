@@ -155,7 +155,7 @@
                                     <#--选择活动-->
                                     <input name="activityname" type="text" id="activityname" value="${shopActivity.name}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
-                                    <input name="info" id="info" type="hidden" value="${article.info}"/>
+                                    <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -183,6 +183,7 @@
                 </#if>
 
                 <#if picture!=null>
+                    <input type="hidden" name="ids" value="${picture.id}" />
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>是否显示
@@ -214,7 +215,7 @@
                             <p>
                             <span class="sign">
                             <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
-                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
+                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="1"/>
                             <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
                               </span>
                             </p>
@@ -229,7 +230,7 @@
                             <em class="pngFix"></em>排序数字
                         </td>
                         <td>
-                            <input name="pSort"  type="text" value="${picture.PSort}" class="w200"/>
+                            <input name="pSort" id="pSort" type="text" value="${picture.PSort}" class="w200"/>
                             <span class="error-message"></span>
                         </td>
                     </tr>
@@ -239,9 +240,9 @@
                         </td>
                         <td>
                             <select name="openType" class="w200" id="openType">
-                                <option value="跳转商品推荐页" id=""<#if picture.pictureType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品推荐页</option>
-                                <option value="跳转路径" id=""<#if picture.pictureType == "跳转路径">selected="selected" </#if>>跳转路径</option>
-                                <option value="跳转链接" id=""<#if picture.pictureType == "跳转链接">selected="selected" </#if>>跳转链接</option>
+                                <option value="跳转商品推荐页" id=""<#if picture.openType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品推荐页</option>
+                                <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
+                                <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
                             </select>
                             <span class="error-message"></span>
                         </td>
@@ -255,14 +256,15 @@
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <#--选择跳转商品推荐页-->
-<#--                                    <select name="openPage" class="w200" id="toactitvty" style="display: none;">-->
-<#--                                        <option value="" selected="selected">请选择</option>-->
-<#--                                        <option value="activityGoodsListpage" <#if picture.openPage == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>-->
-<#--                                    </select>-->
+                                    <#--                                    <select name="openPage" class="w200" id="toactitvty" style="display: none;">-->
+                                    <#--                                        <option value="" selected="selected">请选择</option>-->
+                                    <#--                                        <option value="activityGoodsListpage" <#if picture.openPage == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>-->
+                                    <#--                                    </select>-->
                                     <#--选择跳转链接-->
-                                    <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.setJumpInterface}" class="w200"style="display: none;"/>
+                                    <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" class="w200"style="display: none;"/>
                                     <#--选择跳转路径-->
                                     <select name="openPage" class="w200" id="openPage"style="display: none;">
+                                        <option value="" selected="selected">请选择</option>
                                         <option value="homepage" <#if picture.openPage == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.openPage == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.openPage == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -277,7 +279,7 @@
                                         <option value="learnpage" <#if picture.openPage == "learnpage">selected="selected" </#if>>学堂</option>
                                         <option value="learnarticlepage" <#if picture.openPage == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
                                         <option value="invitationpage" <#if picture.openPage == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                        <option value="buyCouponspage" id="buyCouponspage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
+                                        <option value="buyCouponspage" id="openPage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
                                     <#--选择文章-->
                                     <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
@@ -311,6 +313,7 @@
                         </td>
                     </tr>
                 </#if>
+
 
                 </tbody>
                 <tfoot>
@@ -477,32 +480,7 @@
             }
 
         });
-        <#--$.ajax({-->
-        <#--    type: "POST",-->
-        <#--    url: "${base}/admin/jpush/findActivitys.jhtml?info="+info,-->
-        <#--    data: "",-->
-        <#--    success: function(msg){-->
-        <#--        var html='<div class="layui-layer layer-anim layui-layer-iframe " id="layui-layer1" type="iframe" times="1" showtime="0" contype="object" style="z-index: 19891015; width: 800px; height: 600px; top: 107.5px; left:20%;"><div class="layui-layer-title" style="">选择活动</div>\n' +-->
-        <#--            '<div id="" class="layui-layer-content">\n' +'<form method="post" name="formSearch" id="formSearch" action="">\n' +-->
-        <#--            '            <input type="hidden" name="pageNo" value="1">\n' +-->
-        <#--            '            <input type="hidden" name="goodsId" value="">\n' +-->
-        <#--            '            <table class="tb-type1 noborder search">\n' +-->
-        <#--            '                <tbody>\n' +-->
-        <#--            '                <tr>\n' +-->
-        <#--            '                    <td>\n' +-->
-        <#--            '                        <input name="keyWord" type="text" value="" placeholder="请输入查询信息">\n' +-->
-        <#--            '                        <a href="javascript:$(\' #formSearch\').submit();" class="btn-search " title="查询">\n' +-->
-        <#--            '                        &nbsp;</a>\n' +-->
-        <#--            '                    </td>\n' +-->
-        <#--            '                </tr>\n' +-->
-        <#--            '                </tbody>\n' +-->
-        <#--            '            </table>\n' +-->
-        <#--            '        </form>'+-->
-        <#--            '</div><span class="layui-layer-setwin"><a class="layui-layer-ico layui-layer-close layui-layer-close1" href="javascript:;"></a></span></div>'-->
-        <#--        $("#htmls").html(html);-->
 
-        <#--    }-->
-        <#--});-->
         /*选择学堂文章*/
         function learnarticlepage() {
             var infos = $("[name='info']").val();
@@ -515,15 +493,15 @@
                 area: ['800px', '600px']
             })
         }
-        function appendInfo(info) {
-            $("#info").val(info);
-            var info=$("#info").val();
-            $("#jsons").val("{\"info\":\"" + info + "\"}");
+        function appendInfo(name,info) {
+            $("#articleTitle").val(name);
+            var articleTitle=$("#articleTitle").val();
+            $("#jsons").val("{\"articleTitle\":\"" + articleTitle + "\"}");
 
         }
         /*选择活动*/
         function activityGoodsListpage() {
-            var info = $("#info").val();
+            var info = $("[name='info']").val();
             layer.open({
                 type: 2,
                 move: false,
@@ -533,12 +511,10 @@
                 area: ['800px', '600px']
             })
         }
-        function appendWareInfo(info) {
-            $("#info").val(info);
-            // $("#activityId").val(id);
-            // $("#activityname").val(name);
-            var info=$("#info").val();
-            $("#jsons").val("{\"info\":\"" + info + "\"}");
+        function appendWareInfo(name,info) {
+            $("#activityname").val(name);
+            var activityId=$("#activityId").val();
+            $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
 
         }
         /*选择商品*/

@@ -65,7 +65,6 @@
                         </td>
                     </tr>
 
-<#--                <#list    message.message as message>-->
                     <#if message=="">
                         <tr class="noborder">
                             <td class="required">
@@ -130,6 +129,13 @@
                                             <option value="activityGoodsListpage" <#if message.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
                                             <option value="buyCouponspage" id="buyCouponspage" <#if message.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                         </select>
+                                        <#--选择文章-->
+                                        <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
+                                        <input type="hidden" class="text w500" value="${article.id}" name="id" >
+                                        <#--选择活动-->
+                                        <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
+                                        <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
+                                        <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
                                         <#--选择商品-->
                                         <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                             <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -137,12 +143,19 @@
                                             <input class="pins" type="hidden" value="<#if shopGoods??>${shopGoods.className}</#if>" name="className" id="className">
                                         </form>
                                         <#--选择优惠券-->
-                                        <#--                                    <input type="hidden" id="couponId" name="couponId" value="${id}">-->
-                                        <#--                                    <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
-                                        <input name="jumpName" id="jumpName"class="w150" type="hidden" value=""/>
+                                        <input type="hidden" id="couponId" name="couponId" value="${id}">
+                                        <#--                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
+                                        <input name="couponName" id="couponName" type="text" value="${couponName}">
+                                        <#--映射的名字-->
+                                        <input name="openName" id="openName"class="w150" type="hidden" value=""/>
+                                        <#--拼接的json-->
                                         <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}"style="height:23px;display:none;"/>
-                                        <a class="btn-search" id="searchs" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;"></a>
+                                        <#--搜索商品的按鈕-->
                                         <a class="btn-search" id="searchgoods" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="goodsdetailspage()"></a>
+                                        <#--搜索优惠券-->
+                                        <a class="btn-search" id="searchbuys" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="buyCouponspage()"></a>
+                                        <a class="btn-search" id="searchactivity" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="activityGoodsListpage()"></a>
+                                        <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>
                                     </div>
 
 
@@ -169,8 +182,9 @@
                             </td>
                         </tr>
                     </#if>
-<#--                </#list>-->
+
                 <#if message!=null>
+                    <input type="hidden" name="id" value="${message.id}" />
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>消息标题
@@ -238,6 +252,13 @@
                                         <option value="activityGoodsListpage" <#if message.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
                                         <option value="buyCouponspage" id="buyCouponspage" <#if message.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
+                                    <#--选择文章-->
+                                    <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
+                                    <input type="hidden" class="text w500" value="${article.id}" name="id" >
+                                    <#--选择活动-->
+                                    <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
+                                    <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
+                                    <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -245,12 +266,19 @@
                                         <input class="pins" type="hidden" value="<#if shopGoods??>${shopGoods.className}</#if>" name="className" id="className">
                                     </form>
                                     <#--选择优惠券-->
-                                    <#--                                    <input type="hidden" id="couponId" name="couponId" value="${id}">-->
-                                    <#--                                    <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
-                                    <input name="jumpName" id="jumpName"class="w150" type="hidden" value=""/>
+                                    <input type="hidden" id="couponId" name="couponId" value="${id}">
+                                    <#--                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
+                                    <input name="couponName" id="couponName" type="text" value="${couponName}">
+                                    <#--映射的名字-->
+                                    <input name="openName" id="openName"class="w150" type="hidden" value=""/>
+                                    <#--拼接的json-->
                                     <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}"style="height:23px;display:none;"/>
-                                    <a class="btn-search" id="searchs" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;"></a>
+                                    <#--搜索商品的按鈕-->
                                     <a class="btn-search" id="searchgoods" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="goodsdetailspage()"></a>
+                                    <#--搜索优惠券-->
+                                    <a class="btn-search" id="searchbuys" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="buyCouponspage()"></a>
+                                    <a class="btn-search" id="searchactivity" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="activityGoodsListpage()"></a>
+                                    <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>
                                 </div>
 
 
@@ -283,9 +311,9 @@
                 <tr>
                     <td></td>
                     <td>
-                        <#if message!="">
-                            <a class="btn" href="javascript:history.go(-1);"
-                               style="float:left"><span><@spring.message "button.back"/></span></a>
+                        <#if message!=null>
+                        <a class="btn" href="javascript:history.go(-1);" style="float:left"><span><@spring.message "button.back"/></span></a>
+                            <a class="btn btn-success" id="subForm" type="submit">提交</a>
                         </#if>
 <#--                        <#if message==null>-->
 <#--                        <a class="btn" href="javascript:history.go(-1);" style="float:left"><span><@spring.message "button.back"/></span></a>-->
@@ -313,119 +341,180 @@
                 $('#digest').attr('value', contentSub);
             }
         }
-        $(function () {
+        /*判断是否选择打开方式*/
+        $('#openType').change(function() {
+            var value = $(this).children('option:selected').val();
+            if (value == "跳转商品推荐页") {
+                $("#activityname").show();
+                $("#searchactivity").css("display","");
+                $("#openName").val("活动页面");
+            }else{
+                $("#activityname").css("display","none");
+                $("#searchactivity").css("display","none");
+            }
+            if (value == "跳转路径") {
+                $("#openPage").css("display","");
+            }else{
+                $("#openPage").css("display","none");
+            }
+            if (value == "跳转链接") {
+                $("#jumpInterface").css("display","");
+            }else{
+                $("#jumpInterface").css("display","none");
+            }
+        })
+        //上传图片
+        function ajaxFileUploads(myBlogImage, imgId, img) {
+            $.ajaxFileUpload({
+                //处理文件上传操作的服务器端地址(可以传参数,已亲测可用)
+                url: '${base}/admin/fileupload/uploadImage.jhtml',
+                secureuri: false,                       //是否启用安全提交,默认为false
+                fileElementId: myBlogImage,           //文件选择框的id属性
+                dataType: 'json',                       //服务器返回的格式,可以是json或xml等
+                fileSize: 5120000,
+                allowType: 'jpg,jpeg,png,JPG,JPEG,PNG',
+                success: function (data, status) {        //服务器响应成功时的处理函数
 
-            console.log($("#jumpPath option:selected").val());
+                    if (true == data.success) {     //0表示上传成功(后跟上传后的文件路径),1表示失败(后跟失败描述)
+                        $("img[id='" + imgId + "']").attr("src", "" + data.result);
+                        $("#" + img).val(data.result);
+                    }
+                },
+                error: function (data, status, e) { //服务器响应失败时的处理函数
+                    <#--layer.msg('<@spring.message "goods_msg_requrid10"/>！！', 1, 8);-->
+                    $('#result').html('图片上传失败，请重试！！');
+                }
+            });
+        }
+        $(function () {
             /*判断跳转链接选中状态*/
             var link=$("#link").val();
             if(link!=""){
                 $("#jumps").attr("checked","checked");
             }
-
+            /*提交按钮*/
             $("#subForm").click(function () {
-                // var Title = $("#message").val();
-                // if (Title == "") {
-                //     alert('通知内容不能为空!');
-                //     return false;
-                // }
-                // var pushTime=$("#pushTime").val();
-                // var nowtime;
-                // setInterval(function(){
-                //     var date=new Date();
-                //     var year=date.getFullYear(); //获取当前年份
-                //     var mon=date.getMonth()+1; //获取当前月份
-                //     var da=date.getDate(); //获取当前日
-                //     var h=date.getHours(); //获取小时
-                //     var m=date.getMinutes(); //获取分钟
-                //     var s=date.getSeconds(); //获取秒
-                //     nowtime=year+'/'+mon+'/'+da+'/'+h+':'+m+':'+s;
-                // },1000)
-                // var pushtimes = new Date(pushTime.replace("-", "/").replace("-", "/"));
-                // if (pushtimes <= nowtime) {
-                //     alert("推送时间必须大于当前时间！");
-                //     return false;
-                // }
-                /*拼接部分用户*/
+                var Title = $("#title").val();
+                if (Title == "") {
+                    alert("请输入消息标题！");
+                    return false;
+                }
 
                 $('#add_form').submit();
             })
 
         });
 
-
         /*判断是否选择跳转路径*/
         $('#jumpPath').change(function(){
             var value=$(this).children('option:selected').val();
             if(value=="homepage"){
-                $("#jumpName").val("辑");
-
+                $("#openName").val("辑");
             }
             if(value=="messagepage"){
 
-                $("#jumpName").val("消息中心");
+                $("#openName").val("消息中心");
             }
             if (value=="goodsdetailspage"){
                 $("#goodsName").show();
+                $("#openName").val("商品详情");
                 $("#searchgoods").css("display","");
-                $("#jumpName").val("商品详情");
             }else {
                 $("#searchgoods").css("display","none");
-                $("#goodsName").("display","none");
+                $("#goodsName").css("display","none");
             }
             if(value=="mypage"){
-                $("#jumpName").val("我");
+                $("#openName").val("我");
             }
             if(value=="myresultspage"){
-                $("#jumpName").val("个人业绩");
+                $("#openName").val("个人业绩");
             }
             if(value=="orderpage"){
-                $("#jumpName").val("我的订单");
+                $("#openName").val("我的订单");
             }
             if(value=="myintegralpage"){
-                $("#jumpName").val("我的积分");
+                $("#openName").val("我的积分");
             }
             if(value=="rewardintegralpage"){
-                $("#jumpName").val("奖励积分");
+                $("#openName").val("奖励积分");
             }
             if(value=="shoppingintegralpage"){
-                $("#jumpName").val("购物积分");
+                $("#openName").val("购物积分");
             }
             if(value=="bankcardpage"){
-                $("#jumpName").val("我的银行卡");
+                $("#openName").val("我的银行卡");
             }
             if(value=="learnpage"){
-                $("#jumpName").val("学堂");
+                $("#openName").val("学堂");
             }
             if(value=="learnarticlepage"){
-                $("#searchs").css("display","");
-                $("#jsons").css("display","");
-                $("#searchs").attr("onclick","learnarticlepage()");
-                $("#jumpName").val("学堂文章详情");
+                $("#articleTitle").show();
+                $("#searchlearnarticle").css("display","");
+                $("#openName").val("学堂文章详情");
             }else{
-                $("#searchs").attr("onclick","");
+                $("#articleTitle").css("display","none");
+                $("#searchlearnarticle").css("display","none");
             }
             if(value=="invitationpage"){
-                $("#jumpName").val("我的邀请");
+                $("#openName").val("我的邀请");
             }
             if(value=="activityGoodsListpage"){
-                $("#searchs").css("display","");
-                $("#jsons").css("display","");
-                $("#searchs").attr("onclick","activityGoodsListpage()");
-                $("#jumpName").val("活动页面");
+                $("#activityname").show();
+                $("#searchactivity").css("display","");
+                $("#openName").val("活动页面");
             }else{
-                $("#searchs").attr("onclick","");
+                $("#activityname").css("display","none");
+                $("#searchactivity").css("display","none");
             }
             if (value=="buyCouponspage"){
                 $("#couponName").show();
-                $("#searchs").css("display","");
-                $("#jsons").attr("name","couponName");
+                $("#searchbuys").css("display","");
+                $("#openName").val("优惠券购买详情");
+
             }else{
-                $("#searchs").css("display","none");
+                $("#searchbuys").css("display","none");
                 $("#couponName").css("display","");
+
             }
 
         });
 
+        /*选择学堂文章*/
+        function learnarticlepage() {
+            var infos = $("[name='info']").val();
+            layer.open({
+                type: 2,
+                move: false,
+                shade: [0.3, '#393D49'],//开启遮罩层
+                title: '选择文章',
+                content: ['${base}/admin/jpush/findArticles.jhtml?info=' + infos, 'yes'],
+                area: ['800px', '600px']
+            })
+        }
+        function appendInfo(name,info) {
+            $("#articleTitle").val(name);
+            var articleTitle=$("#articleTitle").val();
+            $("#jsons").val("{\"articleTitle\":\"" + articleTitle + "\"}");
+
+        }
+        /*选择活动*/
+        function activityGoodsListpage() {
+            var info = $("[name='info']").val();
+            layer.open({
+                type: 2,
+                move: false,
+                shade: [0.3, '#393D49'],//开启遮罩层
+                title: '选择活动',
+                content: ['${base}/admin/jpush/findActivitys.jhtml?info='+info, 'yes'],
+                area: ['800px', '600px']
+            })
+        }
+        function appendWareInfo(name,info) {
+            $("#activityname").val(name);
+            var activityId=$("#activityId").val();
+            $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
+
+        }
         /*选择商品*/
         function goodsdetailspage() {
             var goodsId = $("[name='goodsId']").val();
@@ -442,24 +531,31 @@
             $("#goodsId").val(goodsId);
             $("#goodsName").val(goodsName);
             $("#className").val(className);
+            var goodsId=$("#goodsId").val();
+            console.log("商品"+goodsId);
+            $("#jsons").val("{\"goodsId\":\"" + goodsId + "\"}");
 
         }
+
         /*选择优惠券*/
-        <#--function buyCouponspage() {-->
-        <#--    var couponName = $("[name='couponName']").val();-->
-        <#--    layer.open({-->
-        <#--        type: 2,-->
-        <#--        move: false,-->
-        <#--        shade: [0.3, '#393D49'],//开启遮罩层-->
-        <#--        title: '选择优惠券',-->
-        <#--        content: ['${base}/admin/plarformShopCoupon/coupon/select.jhtml?status=2&couponName=' + couponName, 'yes'],-->
-        <#--        area: ['800px', '600px']-->
-        <#--    });-->
-        <#--}-->
-        <#--function appendGoods(id,couponName) {-->
-        <#--    $("#couponId").val(id);-->
-        <#--    $("#couponName").val(couponName);-->
-        <#--}-->
+        function buyCouponspage() {
+            var couponName = $("[name='couponName']").val();
+            layer.open({
+                type: 2,
+                move: false,
+                shade: [0.3, '#393D49'],//开启遮罩层
+                title: '选择优惠券',
+                content: ['${base}/admin/plarformShopCoupon/coupon/select.jhtml?status=2&couponName=' + couponName, 'yes'],
+                area: ['800px', '600px']
+            });
+        }
+        function selSource(id,couponName) {
+            $("#couponId").val(id);
+            $("#couponName").val(couponName);
+            var id= $("#couponId").val();
+            console.log("优惠券"+id);
+            $("#jsons").val("{\"id\":\"" + id + "\"}");
+        }
 
     </script>
     <div class="clear"></div>
