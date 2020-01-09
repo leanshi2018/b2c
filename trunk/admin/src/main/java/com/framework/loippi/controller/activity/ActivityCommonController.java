@@ -68,7 +68,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",0));
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", shopHomePictureService.findByPage(pageable).getContent());
+        model.addAttribute("page", shopHomePictureService.findByPage(pageable));
         return "/common/rotationChart/index";
     }
 
@@ -85,7 +85,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",1));
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", shopHomePictureService.findByPage(pageable).getContent());
+        model.addAttribute("page", shopHomePictureService.findByPage(pageable));
         return "/common/ad_management/index";
     }
 
