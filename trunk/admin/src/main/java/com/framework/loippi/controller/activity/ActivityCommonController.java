@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.dto.ShopHomePictureResult;
 import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TUserSettingService;
@@ -101,7 +102,7 @@ public class ActivityCommonController extends GenericController {
             model.addAttribute("msg", "id为空");
             return Constants.MSG_URL;
         }*/
-        model.addAttribute("picture", shopHomePictureService.find(pictureId));
+        model.addAttribute("picture", new ShopHomePictureResult().build(shopHomePictureService.find(pictureId)));
         return "common/rotationChart/edit";
     }
 
@@ -117,7 +118,7 @@ public class ActivityCommonController extends GenericController {
             model.addAttribute("msg", "id为空");
             return Constants.MSG_URL;
         }*/
-        model.addAttribute("picture", shopHomePictureService.find(pictureId));
+        model.addAttribute("picture", new ShopHomePictureResult().build(shopHomePictureService.find(pictureId)));
         return "/common/ad_management/edit";
     }
 
