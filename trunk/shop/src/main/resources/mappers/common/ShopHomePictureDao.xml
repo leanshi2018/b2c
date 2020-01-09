@@ -180,7 +180,7 @@
     <select id="findListByTypeAndStutus" parameterType="map" resultMap="ShopHomePictureResultMap">
         SELECT
         <include refid="base_column"/>
-        FROM shop_home_picture WHERE picture_type = #{pictureType} AND audit_status = #{auditStatus}
+        FROM shop_home_picture WHERE picture_type = #{pictureType} AND audit_status = #{auditStatus} order by p_sort
     </select>
 
 </mapper>
