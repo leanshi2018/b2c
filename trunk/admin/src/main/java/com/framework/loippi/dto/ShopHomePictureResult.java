@@ -68,10 +68,18 @@ public class ShopHomePictureResult {
 
 	public static ShopHomePictureResult build(ShopHomePicture shopHomePicture) {
 		ShopHomePictureResult result = new ShopHomePictureResult();
-		result.setId(shopHomePicture.getId());
-		result.setPSort(shopHomePicture.getPSort());
-		result.setPictureType(shopHomePicture.getPictureType());
-		result.setAuditStatus(shopHomePicture.getAuditStatus());
+		if (shopHomePicture.getId()!=null){
+			result.setId(shopHomePicture.getId());
+		}
+		if (shopHomePicture.getPSort()!=null){
+			result.setPSort(shopHomePicture.getPSort());
+		}
+		if (shopHomePicture.getPictureType()!=null){
+			result.setPictureType(shopHomePicture.getPictureType());
+		}
+		if (shopHomePicture.getAuditStatus()!=null){
+			result.setAuditStatus(shopHomePicture.getAuditStatus());
+		}
 		if (shopHomePicture.getPictureName()==null){
 			result.setPictureName("");
 		}else {
