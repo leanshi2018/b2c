@@ -1530,7 +1530,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
                 }
                 if (shopCommonArea.getExpressState()==1){//不配送
-                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址暂不配送");
                 }
                 orderAddress.setAreaId(shopCommonArea.getId());
                 orderAddress.setCityId(shopCommonArea.getId());
