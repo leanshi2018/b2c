@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.framework.loippi.entity.common.ShopHomePicture;
 
 /**
@@ -66,54 +69,60 @@ public class ShopHomePictureResult {
 	 */
 	private Integer pictureType;
 
-	public static ShopHomePictureResult build(ShopHomePicture shopHomePicture) {
-		ShopHomePictureResult result = new ShopHomePictureResult();
-		if (shopHomePicture.getId()!=null){
-			result.setId(shopHomePicture.getId());
-		}
-		if (shopHomePicture.getPSort()!=null){
-			result.setPSort(shopHomePicture.getPSort());
-		}
-		if (shopHomePicture.getPictureType()!=null){
-			result.setPictureType(shopHomePicture.getPictureType());
-		}
-		if (shopHomePicture.getAuditStatus()!=null){
-			result.setAuditStatus(shopHomePicture.getAuditStatus());
-		}
-		if (shopHomePicture.getPictureName()==null){
-			result.setPictureName("");
-		}else {
-			result.setPictureName(shopHomePicture.getPictureName());
-		}
+	public static List<ShopHomePictureResult> build(List<ShopHomePicture> shopHomePictureList) {
+		List<ShopHomePictureResult> list = new ArrayList<ShopHomePictureResult>();
+		for (ShopHomePicture shopHomePicture : shopHomePictureList) {
 
-		if (shopHomePicture.getPictureUrl()==null){
-			result.setPictureUrl("");
-		}else {
-			result.setPictureUrl(shopHomePicture.getPictureUrl());
-		}
-
-		if (shopHomePicture.getPictureJson()==null){
-			result.setPictureJson("");
-		}else {
-			result.setPictureJson(shopHomePicture.getPictureJson());
-		}
-
-		if (shopHomePicture.getActivityUrl()==null){
-			result.setActivityUrl("");
-		}else {
-			result.setActivityUrl(shopHomePicture.getActivityUrl());
-		}
-
-		if (shopHomePicture.getJumpName()==null){
-			if (shopHomePicture.getJumpInterface()==null){
-				result.setJumpInterface("");
-			}else {
-				result.setJumpInterface(shopHomePicture.getJumpInterface());
+			ShopHomePictureResult result = new ShopHomePictureResult();
+			if (shopHomePicture.getId()!=null){
+				result.setId(shopHomePicture.getId());
 			}
-		}else {
-			result.setJumpName(shopHomePicture.getJumpName());
+			if (shopHomePicture.getPSort()!=null){
+				result.setPSort(shopHomePicture.getPSort());
+			}
+			if (shopHomePicture.getPictureType()!=null){
+				result.setPictureType(shopHomePicture.getPictureType());
+			}
+			if (shopHomePicture.getAuditStatus()!=null){
+				result.setAuditStatus(shopHomePicture.getAuditStatus());
+			}
+			if (shopHomePicture.getPictureName()==null){
+				result.setPictureName("");
+			}else {
+				result.setPictureName(shopHomePicture.getPictureName());
+			}
+
+			if (shopHomePicture.getPictureUrl()==null){
+				result.setPictureUrl("");
+			}else {
+				result.setPictureUrl(shopHomePicture.getPictureUrl());
+			}
+
+			if (shopHomePicture.getPictureJson()==null){
+				result.setPictureJson("");
+			}else {
+				result.setPictureJson(shopHomePicture.getPictureJson());
+			}
+
+			if (shopHomePicture.getActivityUrl()==null){
+				result.setActivityUrl("");
+			}else {
+				result.setActivityUrl(shopHomePicture.getActivityUrl());
+			}
+
+			if (shopHomePicture.getJumpName()==null){
+				if (shopHomePicture.getJumpInterface()==null){
+					result.setJumpInterface("");
+				}else {
+					result.setJumpInterface(shopHomePicture.getJumpInterface());
+				}
+			}else {
+				result.setJumpName(shopHomePicture.getJumpName());
+			}
+
+			list.add(result);
 		}
 
-		return result;
+		return list;
 	}
 }

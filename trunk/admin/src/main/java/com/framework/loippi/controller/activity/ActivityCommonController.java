@@ -69,7 +69,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",0));
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", shopHomePictureService.findByPage(pageable));
+        model.addAttribute("page", ShopHomePictureResult.build(shopHomePictureService.findByPage(pageable).getContent()));
         return "/common/rotationChart/index";
     }
 
@@ -86,7 +86,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",1));
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", shopHomePictureService.findByPage(pageable));
+        model.addAttribute("page", ShopHomePictureResult.build(shopHomePictureService.findByPage(pageable).getContent()));
         return "/common/ad_management/index";
     }
 
@@ -102,7 +102,7 @@ public class ActivityCommonController extends GenericController {
             model.addAttribute("msg", "id为空");
             return Constants.MSG_URL;
         }*/
-        model.addAttribute("picture", new ShopHomePictureResult().build(shopHomePictureService.find(pictureId)));
+        model.addAttribute("picture", shopHomePictureService.find(pictureId));
         return "common/rotationChart/edit";
     }
 
@@ -118,7 +118,7 @@ public class ActivityCommonController extends GenericController {
             model.addAttribute("msg", "id为空");
             return Constants.MSG_URL;
         }*/
-        model.addAttribute("picture", new ShopHomePictureResult().build(shopHomePictureService.find(pictureId)));
+        model.addAttribute("picture", shopHomePictureService.find(pictureId));
         return "/common/ad_management/edit";
     }
 
