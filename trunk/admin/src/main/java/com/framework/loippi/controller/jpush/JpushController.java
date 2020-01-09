@@ -336,7 +336,7 @@ public class JpushController extends GenericController {
     /**
      * 查找活动
      */
-    @RequestMapping(value = "/findActivitys", method = RequestMethod.POST)
+    @RequestMapping(value = "/findActivitys", method = RequestMethod.GET)
     public String findActivitys(String info, ModelMap model,
                             @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
                             @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
@@ -362,7 +362,7 @@ public class JpushController extends GenericController {
     /**
      * 查找文章
      */
-    @RequestMapping(value = "/findArticles", method = RequestMethod.POST)
+    @RequestMapping(value = "/findArticles", method = RequestMethod.GET)
     public String findArticles(String info, ModelMap model,
                                 @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
                                 @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
