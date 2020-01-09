@@ -208,6 +208,7 @@ public class ActivityCommonController extends GenericController {
             shopHomePicture.setId(twiterIdService.getTwiterId());
 
             if (shopHomePicture.getPictureType()==0){//轮播图
+                System.out.println("轮播图添加");
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (pictureList.size()!=0){
                     model.addAttribute("msg", "轮播图排序"+shopHomePicture.getPSort()+"号已存在");
@@ -217,6 +218,7 @@ public class ActivityCommonController extends GenericController {
 
                 return "redirect:findHomePictureList.jhtml";
             }else {//广告位图
+                System.out.println("广告位图添加");
                 if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图排序只能是1-3");
                     return Constants.MSG_URL;
@@ -231,6 +233,7 @@ public class ActivityCommonController extends GenericController {
             }
         }else {
             if (shopHomePicture.getPictureType()==0){//轮播图
+                System.out.println("轮播图修改");
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (pictureList.size()!=0){
                     for (ShopHomePicture homePicture : pictureList) {
@@ -247,6 +250,7 @@ public class ActivityCommonController extends GenericController {
                 shopHomePictureService.update(shopHomePicture);
                 return "redirect:findHomePictureList.jhtml";
             }else {//广告位图
+                System.out.println("广告位图修改");
                 if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图排序只能是1-3");
                     return Constants.MSG_URL;
