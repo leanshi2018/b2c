@@ -17,7 +17,7 @@
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
             <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/findActivitys.jhtml">
-                <input type="hidden" name="pageNo" value="${1}">
+<#--                <input type="hidden" name="pageNo" value="${1}">-->
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
@@ -52,16 +52,16 @@
                         </td>
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpeccoupons('${activity.name}','${activity.info}')">选择</a>
+                               onclick="selSpeccoupons('${activity.id}','${activity.name}','${activity.info}')">选择</a>
                         </td>
                     </tr>
                 </#list>
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td colspan="20">
-                        <@layout.pager pager/>
-                    </td>
+<#--                    <td colspan="20">-->
+<#--                        <@layout.pager pager/>-->
+<#--                    </td>-->
                 </tr>
                 </tfoot>
             </table>
@@ -69,10 +69,10 @@
     </div>
     <script>
 
-        function selSpeccoupons(name,info) {
+        function selSpeccoupons(id,name,info) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendWareInfo(name,info);
+            parent.appendWareInfo(id,name,info);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

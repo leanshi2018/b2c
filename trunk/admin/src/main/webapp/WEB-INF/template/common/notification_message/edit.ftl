@@ -21,7 +21,7 @@
         width: 100px;
         text-align: center;
     }
-
+    #articleTitle,#activityname,#goodsName,#couponName{display: none;width: 209px;}
 </style>
 <@layout.body>
     <script type="text/javascript" src="${base}/res/js/jquery.js"></script>

@@ -183,7 +183,7 @@
                 </#if>
 
                 <#if picture!=null>
-                    <input type="hidden" name="ids" value="${picture.id}" />
+                    <input type="hidden" name="id" value="${picture.id}" />
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>是否显示
@@ -215,7 +215,7 @@
                             <p>
                             <span class="sign">
                             <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
-                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="1"/>
+                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
                             <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
                               </span>
                             </p>
@@ -288,6 +288,7 @@
                                     <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
                                     <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
+                                    <input name="openPage" id="openpages" type="hidden" style="display: none;"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -342,11 +343,13 @@
             var value = $(this).children('option:selected').val();
             if (value == "跳转商品推荐页") {
                 $("#activityname").show();
+                $("#openpages").css("display","");
                 $("#searchactivity").css("display","");
                 $("#openName").val("活动页面");
             }else{
                 $("#activityname").css("display","none");
                 $("#searchactivity").css("display","none");
+                $("#openpages").css("display","none");
             }
             if (value == "跳转路径") {
                 $("#openPage").css("display","");
@@ -511,8 +514,10 @@
                 area: ['800px', '600px']
             })
         }
-        function appendWareInfo(name,info) {
+        function appendWareInfo(id,name,info) {
+            // $("#openpages").val("activityGoodsListpage");
             $("#activityname").val(name);
+            $("#activityId").val(id);
             var activityId=$("#activityId").val();
             $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
 

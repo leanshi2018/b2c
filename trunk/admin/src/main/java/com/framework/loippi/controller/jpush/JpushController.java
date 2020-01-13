@@ -360,6 +360,31 @@ public class JpushController extends GenericController {
     }
 
     /**
+     * 查找活动
+     */
+    @RequestMapping(value = "/findActivityings", method = RequestMethod.GET)
+    public String findActivityings(String info, ModelMap model,
+                            @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                            @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize) {
+        /*if(StringUtil.isEmpty(info)){
+            model.addAttribute("activitys",null);
+            return "/common/select/selectActivitys";//TODO
+        }*/
+        Pageable pageable = new Pageable();
+        pageable.setPageSize(pageSize);
+        pageable.setPageNumber(pageNo);
+        pageable.setOrderDirection(Order.Direction.DESC);
+        pageable.setOrderProperty("create_time");
+        ShopActivity shopActivity = new ShopActivity();
+        shopActivity.setActivityStatus(20);
+        shopActivity.setActivityName(info);
+        pageable.setParameter(shopActivity);
+        Page<ShopActivity> page = shopActivityService.findByPage(pageable);
+        model.addAttribute("activitys",page);
+        return "/common/select/selectActivitys";//TODO
+    }
+
+    /**
      * 查找文章
      */
     @RequestMapping(value = "/findArticles", method = RequestMethod.GET)
