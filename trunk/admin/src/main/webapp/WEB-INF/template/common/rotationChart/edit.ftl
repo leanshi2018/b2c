@@ -241,10 +241,10 @@
                             <em class="pngFix"></em>打开方式
                         </td>
                         <td>
-                            <select name="pictureType" class="w200" id="openType">
-                                <option value="跳转商品推荐页" id=""<#if picture.pictureType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品推荐页</option>
-                                <option value="跳转路径" id=""<#if picture.pictureType == "跳转路径">selected="selected" </#if>>跳转路径</option>
-                                <option value="跳转链接" id=""<#if picture.pictureType == "跳转链接">selected="selected" </#if>>跳转链接</option>
+                            <select name="openType" class="w200" id="openType">
+                                <option value="跳转商品推荐页" id=""<#if picture.openType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品推荐页</option>
+                                <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
+                                <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
                             </select>
                             <span class="error-message"></span>
                         </td>
@@ -525,6 +525,7 @@
                 content: ['${base}/admin/jpush/findActivityings.jhtml?info='+info, 'yes'],
                 area: ['800px', '600px']
             })
+
         }
         function appendWareInfo(id,name,info) {
 

@@ -132,6 +132,7 @@
                                         <#--选择文章-->
                                         <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
                                         <input type="hidden" class="text w500" value="${article.id}" name="id" >
+                                        <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" >
                                         <#--选择活动-->
                                         <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
                                         <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
@@ -255,6 +256,7 @@
                                     <#--选择文章-->
                                     <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
                                     <input type="hidden" class="text w500" value="${article.id}" name="id" >
+                                    <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" >
                                     <#--选择活动-->
                                     <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
@@ -491,10 +493,13 @@
                 area: ['800px', '600px']
             })
         }
-        function appendInfo(name,info) {
+        function appendInfo(name,content,info) {
             $("#articleTitle").val(name);
-            var articleTitle=$("#articleTitle").val();
-            $("#jsons").val("{\"articleTitle\":\"" + articleTitle + "\"}");
+            $("#contents").val(content);
+            var articleContent=$("#contents").val();
+            var title=$("#articleTitle").val();
+            // console.log(articleContent);
+            $("#jsons").val("{\"url\":\"" + articleContent + "\",\"title\":\"" + title + "\"}");
 
         }
         /*选择活动*/
