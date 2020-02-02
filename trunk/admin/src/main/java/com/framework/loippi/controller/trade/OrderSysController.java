@@ -677,7 +677,7 @@ public class OrderSysController extends GenericController {
 
             /*******************************送杯子*******************************************/
             //TODO
-            if (product.get("SKU").equals("6942098967916") || product.get("SKU").equals("6942098967909")){//是OLOMI 益生菌固体饮料
+            /*if (product.get("SKU").equals("6942098967916") || product.get("SKU").equals("6942098967909")){//是OLOMI 益生菌固体饮料
                 if (cupNum==0){
                     Map<String,Object> productMap = new HashMap<String,Object>();//单个商品
                     productMap.put("ProducingArea","");
@@ -693,7 +693,7 @@ public class OrderSysController extends GenericController {
 
                     cupNum =1;
                 }
-            }
+            }*/
 
             //查看是否是特殊快递渠道商品
             String sku = (String)product.get("SKU");

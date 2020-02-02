@@ -578,7 +578,8 @@ public class CartAPIController extends BaseController {
                 flag=1;
                 if(rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1){//单笔订单满50mi，赠送手提袋一个，利是红包一包（10枚），酵素洗衣凝珠一桶
                     //ShopGoods goods1 = goodsService.find(6620198081273008128L);//酵素多效洗衣凝珠+利是红包+手提袋
-                    ShopGoods goods1 = goodsService.find(6622327967039098880L);//酵素多效洗衣凝珠+利是红包+手提袋 正式
+                    //ShopGoods goods1 = goodsService.find(6622327967039098880L);//酵素多效洗衣凝珠+利是红包+手提袋 正式
+                    ShopGoods goods1 = goodsService.find(6573037643838263296L);//酵素多效洗衣凝珠
                     if (goods1!=null){
                         shopGoods.add(goods1);
                     }
@@ -587,17 +588,18 @@ public class CartAPIController extends BaseController {
                         (rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))==-1)){
                     //单笔订单满360或25mi，赠送手提袋一个，利是红包一包（10枚），母婴洗衣凝珠一包
                     //ShopGoods goods1 = goodsService.find(6620197579269345280L);//母婴洗衣凝珠+利是红包+手提袋
-                    ShopGoods goods1 = goodsService.find(6622327604944834560L);//母婴洗衣凝珠+利是红包+手提袋 正式
+                    //ShopGoods goods1 = goodsService.find(6622327604944834560L);//母婴洗衣凝珠+利是红包+手提袋 正式
+                    ShopGoods goods1 = goodsService.find(6573038322627645440L);//母婴洗衣凝珠+利是红包+手提袋 正式
                     if (goods1!=null){
                         shopGoods.add(goods1);
                     }
                     giftsNum=1;
                 }else {//凡有购买产品的订单，即赠送利是红包一包（10枚）
                     //ShopGoods goods1 = goodsService.find(6620193953163513856L);//利是红包一包（10枚）
-                    ShopGoods goods1 = goodsService.find(6622325662478766080L);//利是红包一包（10枚）
+                    /*ShopGoods goods1 = goodsService.find(6622325662478766080L);//利是红包一包（10枚）
                     if (goods1!=null){
                         shopGoods.add(goods1);
-                    }
+                    }*/
                     giftsNum=1;
                 }
             }
