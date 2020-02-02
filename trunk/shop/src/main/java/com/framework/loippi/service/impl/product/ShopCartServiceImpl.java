@@ -10,6 +10,7 @@ import com.framework.loippi.controller.StateResult;
 import com.framework.loippi.dao.cart.ShopCartDao;
 import com.framework.loippi.dao.product.ShopGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsSpecDao;
+import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
 import com.framework.loippi.entity.activity.ShopActivityPromotionRule;
@@ -21,6 +22,7 @@ import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 
+import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.pojo.cart.CartInfo;
 import com.framework.loippi.pojo.cart.CartVo;
@@ -31,6 +33,7 @@ import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.impl.coupon.CouponServiceImpl;
 import com.framework.loippi.service.product.*;
+import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.utils.NumberUtils;
@@ -84,6 +87,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
     private CouponService couponService;
     @Autowired
     private CouponUserService couponUserService;
+    @Autowired
+    private RdMmRelationService rdMmRelationService;
 
     @Autowired
     public void setGenericDao() {
@@ -967,6 +972,20 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             //遍历集合，判断合法优惠券集合中可以用于当前订单的部分
             if(coupons!=null&&coupons.size()>0){
                 for (Coupon coupon : coupons) {
+                    //特定优惠券限制使用 TODO 2020-02-02
+                    if(coupon.getId().equals(6555008628095455330L)){
+                        RdMmRelation mmRelation = rdMmRelationService.find("mmCode", memberId);
+                        if(mmRelation==null||mmRelation.getRank()==null){
+                            throw new RuntimeException("当前会员信息异常");
+                        }
+                        if(mmRelation.getRank()!=0){
+                            noUseList.add(coupon);
+                            continue;
+                        }
+                    }
+                    //特定优惠券限制使用 TODO 2020-02-02
+
+
                     //解析优惠券的使用说明，判断优惠券是否适用于当前订单场景
                     //0.判断优惠券使用时间是否满足要求
                     Coupon coupon1=couponService.judgeNoStart(Paramap.create().put("id",coupon.getId()).put("searchUseTime",new Date()));

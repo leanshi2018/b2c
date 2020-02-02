@@ -1629,6 +1629,17 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             if(couponUser.getUseAbleNum()!=0&&couponUser.getUseNum()>=couponUser.getUseAbleNum()){
                 throw new RuntimeException("您当前选择的优惠券已到达使用数量上限");
             }
+            //特殊优惠券限制使用等级 TODO 2020-02-02
+            if(couponUser.getCouponId().equals(6555008628095455330L)){
+                RdMmRelation mmRelation = rdMmRelationService.find("mmCode", memberId);
+                if(mmRelation==null||mmRelation.getRank()==null){
+                    throw new RuntimeException("当前会员信息异常");
+                }
+                if(mmRelation.getRank()!=0){
+                    throw new RuntimeException("当前优惠券仅有普通会员可以使用");
+                }
+            }
+            //特殊优惠券限制使用等级 TODO
             //处理couponUser数据
             couponUser.setOwnNum(couponUser.getOwnNum()-1);//拥有数量减1
             couponUser.setUseNum(couponUser.getUseNum()+1);//使用数量加1
