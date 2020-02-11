@@ -43,4 +43,34 @@ public class CouponConstant {
      * 使用范围 9：组合条件使用
      */
     public static final int USE_SCOPE_OTHER_LIMIT = 9;
+
+
+
+
+
+    /**
+     * 三月优惠券ID
+     */
+    public static final Long MAR_COUPON_ID = 6555008628095455333L;
+    /**
+     * 四月优惠券ID
+     */
+    public static final Long APR_COUPON_ID = 6555008628095455333L;
+    /**
+     * 五月优惠券ID
+     */
+    public static final Long MAY_COUPON_ID = 6555008628095455333L;
+    /**
+     * 六月优惠券ID
+     */
+    public static final Long JUN_COUPON_ID = 6555008628095455333L;
+    /**
+     * 七月优惠券ID
+     */
+    public static final Long JUL_COUPON_ID = 6555008628095455333L;
+    /**
+     * 八月优惠券ID
+     */
+    public static final Long AUG_COUPON_ID = 6555008628095455333L;
+
 }

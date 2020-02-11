@@ -141,4 +141,9 @@ public class CouponDetail implements GenericEntity {
      */
     @Column(name = "refund_time")
     private Date refundTime;
+    /**
+     * 购买订单获取优惠券关联订单号id
+     */
+    @Column(name = "get_order_id")
+    private Long getOrderId;
 }

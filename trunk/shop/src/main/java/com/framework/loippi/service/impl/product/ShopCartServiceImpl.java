@@ -1,6 +1,25 @@
 package com.framework.loippi.service.impl.product;
 
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.consts.CartConstant;
 import com.framework.loippi.consts.CouponConstant;
 import com.framework.loippi.consts.GoodsState;
@@ -8,9 +27,6 @@ import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.StateResult;
 import com.framework.loippi.dao.cart.ShopCartDao;
-import com.framework.loippi.dao.product.ShopGoodsDao;
-import com.framework.loippi.dao.product.ShopGoodsSpecDao;
-import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
 import com.framework.loippi.entity.activity.ShopActivityPromotionRule;
@@ -21,18 +37,23 @@ import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdMmAddInfo;
-
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.pojo.cart.CartInfo;
 import com.framework.loippi.pojo.cart.CartVo;
 import com.framework.loippi.service.TwiterIdService;
-import com.framework.loippi.service.activity.*;
+import com.framework.loippi.service.activity.PromotionService;
+import com.framework.loippi.service.activity.ShopActivityGoodsService;
+import com.framework.loippi.service.activity.ShopActivityGoodsSpecService;
+import com.framework.loippi.service.activity.ShopActivityPromotionRuleService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
-import com.framework.loippi.service.impl.coupon.CouponServiceImpl;
-import com.framework.loippi.service.product.*;
+import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
+import com.framework.loippi.service.product.ShopGoodsFreightService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
@@ -41,17 +62,6 @@ import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.vo.cart.ShopCartVo;
 import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
 
 /**
  * SERVICE - ShopCart(购物车数据表)
@@ -979,6 +989,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                             throw new RuntimeException("当前会员信息异常");
                         }
                         if(mmRelation.getRank()!=0){
+                            coupon.setNoUseFalg(6);
                             noUseList.add(coupon);
                             continue;
                         }

@@ -1367,4 +1367,15 @@ public class OrderAPIController extends BaseController {
             .put("paySn", shopOrder.getPaySn()).put("ismodify", 0)
             .put("orderId", orderId).put("addr", addr));
     }
+
+    @RequestMapping("/api/order/checkSuccessOrNo")
+    @ResponseBody
+    public String checkSuccessOrNo( HttpServletRequest request, Long orderId) throws Exception {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (orderId == null) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        Map<String,Object> map=orderService.checkSuccessOrNo(member.getMmCode(),orderId);
+        return ApiUtils.success(map);
+    }
 }
