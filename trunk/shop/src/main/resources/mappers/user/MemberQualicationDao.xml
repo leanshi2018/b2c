@@ -53,19 +53,20 @@
 		<result column="net_end" property="netEnd" />
 		<result column="net_new_vip_number" property="netNewVipNumber" />
 		<result column="net_ac_number" property="netAcNumber" />
+		<result column="compliance_status" property="complianceStatus" />
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 id_rd_dis_qlf,PERIOD_CODE,MM_CODE,MM_NAME,SPONSOR_CODE,SPONSOR_NAME,MM_STATUS,RA_STATUS,RA_SHOP_YN,PPV,PPV_RETAIL,APPV_INIT,APPV_FINAL,A_RETAIL_INIT,A_RETAIL,A_RETAIL_FINAL,
 		 RANK_P2,RANK_P1,RANK_P0,RANK_AC,RANK_RECORD_HIGH,LEAF_YN,ORPHAN,LAYER,G7PV,NPV,GPV_FLAGSHIP,GROUP_RANK_MAX,DD_NEW_VIP_NUMBER,DD_RANK2_NUMBER,DD_AC_NUMBER,DL_RANK4_NUMBER,DL_RANK5_NUMBER,
-		 DL_RANK6_NUMBER,DL_RANK7_NUMBER,DL_RANK8_NUMBER,PPV_QUALIFIED,TOURISM_QUALIFIED,CAR_QUALIFIED,DIVIDEND_QUALIFIED,net_id,net_end,net_new_vip_number,net_ac_number
+		 DL_RANK6_NUMBER,DL_RANK7_NUMBER,DL_RANK8_NUMBER,PPV_QUALIFIED,TOURISM_QUALIFIED,CAR_QUALIFIED,DIVIDEND_QUALIFIED,net_id,net_end,net_new_vip_number,net_ac_number,compliance_status
 	</sql>
 	
 	<sql id="base_value_column">
 		 #{idRdDisQlf},#{periodCode},#{mCode},#{mName},#{sponsorCode},#{sponsorName},#{mStatus},#{raStatus},#{raShopYn},#{ppv},#{ppvRetail},#{appvInit},#{appvFinal},#{retailInit},#{retail},#{retailFinal},#{rankP2},#{rankP1},#{rankP0},
 		 #{rankAc},#{rankRecordHigh},#{leafYn},#{orphan},#{layer},#{g7pv},#{npv},#{gpvFlagship},#{groupRankMax},#{ddNewVIPNumber},#{ddRank2Number},#{ddAcNumber},#{dlRank4Number},#{dlRank5Number},#{dlRank6Number},#{dlRank7Number},#{dlRank8Number},
-		 #{ppvqualified},#{tourismQualified},#{carQualified},#{dividendQualified},#{netId},#{netEnd},#{netNewVipNumber},#{netAcNumber}
+		 #{ppvqualified},#{tourismQualified},#{carQualified},#{dividendQualified},#{netId},#{netEnd},#{netNewVipNumber},#{netAcNumber},#{complianceStatus}
 	</sql>
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
 	<sql id="where_column">
@@ -201,6 +202,9 @@
 		<if test="netAcNumber != null">
 			AND net_ac_number = #{netAcNumber,jdbcType=INTEGER}
 		</if>
+		<if test="complianceStatus != null">
+			AND compliance_status = #{complianceStatus,jdbcType=INTEGER}
+		</if>
 	</sql>
 	
 	<!-- 设置语句 -->
@@ -333,6 +337,9 @@
 		</if>
 		<if test="netAcNumber != null">
 			net_ac_number = #{netAcNumber,jdbcType=INTEGER},
+		</if>
+		<if test="complianceStatus != null">
+			compliance_status = #{complianceStatus,jdbcType=INTEGER},
 		</if>
 	</sql>
 
