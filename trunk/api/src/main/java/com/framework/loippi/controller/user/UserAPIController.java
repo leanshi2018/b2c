@@ -1536,4 +1536,30 @@ public class UserAPIController extends BaseController {
         String upToken = qiniuConfig.getUpToken(QiniuConfig.bucket, key);
         return ApiUtils.success(upToken);
     }
+
+    /**
+     * 是否达标发换购积分
+     */
+    @RequestMapping(value = "/compliance3m.json", method = RequestMethod.GET)
+    public String compliance3m(HttpServletRequest request, String mCode) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        RdSysPeriod period = periodService.getPeriodService(new Date());
+        if (period==null){
+            return ApiUtils.error("该月周期还未统计");
+        }
+
+        MemberQualification qualification = qualificationService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",period.getPeriodCode()));
+        if (qualification==null){
+            return ApiUtils.error("该会员还未生成业绩信息！");
+        }
+
+        if (qualification.getComplianceStatus()==1){
+            return ApiUtils.success("达标了提示用户：您已达标连续3月满25MI的任务，本月消费金额的15%下月会赠送相应的换购积分进行换购商品。本月多买多返，赶紧去购物吧");
+        }else{
+            return ApiUtils.error("该会员还未生成业绩信息！");
+        }
+
+    }
 }

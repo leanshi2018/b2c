@@ -107,4 +107,6 @@ public class MemberQualification implements GenericEntity {
     private Integer netNewVipNumber;//网络新vip人数
     @Column(name = "net_ac_number" )
     private Integer netAcNumber;//团队重复消费合格人数
+    @Column(name = "compliance_status" )
+    private Integer complianceStatus;//团队重复消费合格人数
 }
