@@ -27,15 +27,21 @@ import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.StateResult;
 import com.framework.loippi.dao.cart.ShopCartDao;
+import com.framework.loippi.dao.order.ShopOrderDao;
+import com.framework.loippi.dao.order.ShopOrderGoodsDao;
+import com.framework.loippi.dao.product.ShopGoodsStintDao;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
 import com.framework.loippi.entity.activity.ShopActivityPromotionRule;
 import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponUser;
+import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
+import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.entity.product.ShopGoodsStint;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
@@ -99,6 +105,12 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
     private CouponUserService couponUserService;
     @Autowired
     private RdMmRelationService rdMmRelationService;
+    @Autowired
+    private ShopGoodsStintDao shopGoodsStintDao;
+    @Autowired
+    private ShopOrderGoodsDao shopOrderGoodsDao;
+    @Autowired
+    private ShopOrderDao shopOrderDao;
 
     @Autowired
     public void setGenericDao() {
@@ -415,6 +427,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     targetGoods.getIsDel() == GoodsState.GOODS_NOT_DELETE;
             if (!isShow) {
                 map.put("error", "true");
+                map.put("code","10001");
                 map.put("message", targetGoods.getGoodsName() + "商品已下架");
                 return map;
             }
@@ -433,6 +446,42 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             shopCart.setPpv(targetSpec.getPpv());
             shopCart.setBigPpv(targetSpec.getBigPpv());
             shopCart.setWeight(targetSpec.getWeight());
+
+
+            /******************************2020.2.20判断限购商品**************************************/
+            List<ShopGoodsStint> shopGoodsStintList = shopGoodsStintDao.findBySerial(targetSpec.getSpecGoodsSerial());
+            if (shopGoodsStintList.size()>0){
+                Integer countTotal = 0;//历史总购买数量
+                ShopGoodsStint shopGoodsStint = shopGoodsStintList.get(0);
+                Integer stintNum = shopGoodsStint.getStintNum();//限购数量
+                Long goodsId = shopGoodsStint.getGoodsId();
+                Long specId = shopGoodsStint.getSpecId();
+                Map<String,Object> GSMap = new HashMap<String,Object>();
+                GSMap.put("goodsId",goodsId);
+                GSMap.put("specId",specId);
+                GSMap.put("buyerId",shopCart.getMemberId());
+                List<ShopOrderGoods> shopOrderGoodsList = shopOrderGoodsDao.findByGoodsIdAndSpecIdAndCode(GSMap);
+                if (shopOrderGoodsList.size()>0){
+                    for (ShopOrderGoods orderGoods : shopOrderGoodsList) {
+                        Long orderId = orderGoods.getOrderId();
+                        ShopOrder shopOrder = shopOrderDao.find(orderId);
+                        if (shopOrder.getOrderState()!=0){//订单是有效的（排除取消订单，即使退款退货都算已购买数量）
+                            Integer goodsNum = orderGoods.getGoodsNum();//购买商品数量
+                            countTotal = countTotal + goodsNum;
+                        }
+                    }
+                }
+
+                Integer goodsNum = shopCart.getGoodsNum();//当前订单购买数量
+                if (countTotal+goodsNum>stintNum){//超过购买限制数量
+                    map.put("error", "true");
+                    map.put("code","10002");
+                    map.put("message", targetGoods.getGoodsName() + "商品限购"+stintNum+"件");
+                    return map;
+                }
+
+            }
+            /***************************************************************************************/
         }
 
         List<CartInfo> cartInfoList = getCartInfoList1(cartList, shopOrderDiscountType, addr, memberId,activityIds,couponId);

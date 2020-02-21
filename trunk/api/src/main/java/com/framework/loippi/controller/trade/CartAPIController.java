@@ -516,6 +516,9 @@ public class CartAPIController extends BaseController {
                 .queryTotalPrice1(cartIds, member.getMmCode(), couponId, groupBuyActivityId, shopOrderDiscountType, addr);
         // 购物车数据
         if (map.get("error").equals("true")) {
+            if (map.get("code").equals("10002")){
+                return ApiUtils.error(map.get("message").toString());
+            }
             return ApiUtils.error("商品属性发生改变,请重新结算");
         }
         List<ShopCart> cartList = Lists.newArrayList();
