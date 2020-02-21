@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopGoodsStintDao">
+
+    <resultMap id="ShopGoodsStintResultMap" type="com.framework.loippi.entity.product.ShopGoodsStint">
+        <result property="id" column="id" />
+        <result property="goodsId" column="goods_id" />
+        <result property="goodsName" column="goods_name" />
+        <result property="specId" column="spec_id" />
+        <result property="specGoodsSerial" column="spec_goods_serial" />
+        <result property="stintNum" column="stint_num" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,goods_id ,goods_name ,spec_id ,spec_goods_serial ,stint_num
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{goodsId},#{goodsName},#{specId},#{specGoodsSerial},#{stintNum}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="goodsId != null">
+            AND goods_id = #{goodsId,jdbcType=BIGINT}
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            AND goods_name = #{goodsName,jdbcType=VARCHAR}
+        </if>
+        <if test="specId != null">
+            AND spec_id = #{specId,jdbcType=BIGINT}
+        </if>
+        <if test="specGoodsSerial != null and specGoodsSerial != ''">
+            AND spec_goods_serial = #{specGoodsSerial,jdbcType=VARCHAR}
+        </if>
+        <if test="stintNum != null">
+            AND stint_num = #{stintNum,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="goodsId != null">
+            goods_id = #{goodsId,jdbcType=BIGINT},
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            goods_name = #{goodsName,jdbcType=VARCHAR},
+        </if>
+        <if test="specId != null">
+            spec_id = #{specId,jdbcType=BIGINT},
+        </if>
+        <if test="specGoodsSerial != null and specGoodsSerial != ''">
+            spec_goods_serial = #{specGoodsSerial,jdbcType=VARCHAR},
+        </if>
+        <if test="stintNum != null">
+            stint_num = #{stintNum,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopGoodsStintResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	shop_goods_stint
+        WHERE	ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopGoodsStintResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	shop_goods_stint
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM shop_goods_stint
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopGoodsStint">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT shop_goods_stint
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopGoodsStint">
+        UPDATE	shop_goods_stint
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM shop_goods_stint
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM shop_goods_stint
+        WHERE	ID	IN
+        <foreach item="ShopGoodsStintIds" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopGoodsStintResultMap">
+        SELECT	<include refid="base_column" />
+        FROM shop_goods_stint
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopGoodsStintResultMap">
+        SELECT
+        <include refid="base_column" />
+        FROM shop_goods_stint
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+
+    <select id="findBySerial" parameterType="string" resultMap="ShopGoodsStintResultMap">
+        SELECT	<include refid="base_column" />
+        FROM shop_goods_stint
+        where  spec_goods_serial = #{specGoodsSerial}
+    </select>
+
+</mapper>

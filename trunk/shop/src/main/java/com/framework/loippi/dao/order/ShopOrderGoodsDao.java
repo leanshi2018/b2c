@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.order;
 
 import java.util.List;
+import java.util.Map;
 
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.mybatis.dao.GenericDao;
@@ -36,4 +37,6 @@ public interface ShopOrderGoodsDao extends GenericDao<ShopOrderGoods, Long> {
     void updateBatchForShipmentNum(List<ShopOrderGoods> shopOrderGoodsList);
 
 	List<ShopOrderGoods> listByOrderId(Long id);
+
+	List<ShopOrderGoods> findByGoodsIdAndSpecIdAndCode(Map<String, Object> gsMap);
 }
