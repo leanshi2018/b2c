@@ -1940,18 +1940,19 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
      * @return
      */
     @Override
-    public Map<String, Object> checkSuccessOrNo(String mmCode, Long orderId) {
+    public Map<String, Object> checkSuccessOrNo(String mmCode, String orderSn) {
         HashMap<String, Object> map = new HashMap<>();
-        ShopOrder shopOrder = orderDao.find(orderId);
-        if(shopOrder==null){
+        List<ShopOrder> orders = orderDao.findByParams(Paramap.create().put("orderSn", orderSn));
+        if(orders==null||orders.size()==0){
             throw new RuntimeException("订单不存在");
         }
+        ShopOrder shopOrder = orders.get(0);
         if(shopOrder.getPaymentState()==0){
             map.put("orderPaymentState",0);
             map.put("couponDetailList",null);
             return map;
         }
-        List<CouponDetail> list = couponDetailService.findList(Paramap.create().put("getOrderId", orderId).put("receiveId", mmCode));
+        List<CouponDetail> list = couponDetailService.findList(Paramap.create().put("getOrderId", shopOrder.getId()).put("receiveId", mmCode));
         map.put("orderPaymentState",1);
         map.put("couponDetailList",list);
         return map;

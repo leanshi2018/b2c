@@ -559,7 +559,7 @@
             $("#couponName").val(couponName);
             var id= $("#couponId").val();
             console.log("优惠券"+id);
-            $("#jsons").val("{\"id\":\"" + id + "\"}");
+            $("#jsons").val("{\"couponId\":\"" + id + "\"}");
         }
 
     </script>

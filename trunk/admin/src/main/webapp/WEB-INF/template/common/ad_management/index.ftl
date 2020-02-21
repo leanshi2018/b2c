@@ -92,7 +92,7 @@
                                 <#if list.activityUrl == "activityGoodsListpage">活动页面</#if>
                                 <#if list.activityUrl == 'buyCouponspage'>优惠券购买详情</#if>
                             </#if>
-                            <#if list.jumpInterface??>${list.jumpInterface}</#if>
+<#--                            <#if list.jumpInterface??>${list.jumpInterface}</#if>-->
 
 
                         </td>

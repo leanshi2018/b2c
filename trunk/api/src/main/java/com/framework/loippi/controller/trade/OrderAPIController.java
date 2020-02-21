@@ -1370,12 +1370,12 @@ public class OrderAPIController extends BaseController {
 
     @RequestMapping("/api/order/checkSuccessOrNo")
     @ResponseBody
-    public String checkSuccessOrNo( HttpServletRequest request, Long orderId) throws Exception {
+    public String checkSuccessOrNo( HttpServletRequest request, String orderSn) throws Exception {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
-        if (orderId == null) {
+        if (orderSn == null) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
-        Map<String,Object> map=orderService.checkSuccessOrNo(member.getMmCode(),orderId);
+        Map<String,Object> map=orderService.checkSuccessOrNo(member.getMmCode(),orderSn);
         return ApiUtils.success(map);
     }
 }

@@ -124,9 +124,9 @@
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <#--选择跳转商品推荐页-->
-<#--                                    <select name="" class="w200" id="toactitvty" style="display: none;">-->
-<#--                                        <option value="" selected="selected">请选择</option>-->
-<#--                                    </select>-->
+                                    <select name="" class="w200" id="toactitvty" style="display: none;">
+                                        <option value="" selected="selected">请选择</option>
+                                    </select>
                                     <#--选择跳转链接-->
                                     <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" class="w200"style="display: none;"/>
                                     <#--选择跳转路径-->
@@ -350,20 +350,22 @@
                 $("#openPage").attr("name","");
                 $("#searchactivity").css("display","");
                 $("#openName").val("活动页面");
+                $("#jumpInterface").attr("name","");
             }else{
                 $("#activityname").css("display","none");
                 $("#searchactivity").css("display","none");
 
             }
             if (value == "跳转路径") {
-
                 $("#openPage").css("display","");
                 $("#openpages").attr("name","");
+                $("#jumpInterface").attr("name","");
             }else{
                 $("#openPage").css("display","none");
 
             }
             if (value == "跳转链接") {
+                $("#jumpInterface").attr("name","jumpInterface");
                 $("#jumpInterface").css("display","");
                 $("#openpages").attr("name","");
             }else{
