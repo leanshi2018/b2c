@@ -500,4 +500,11 @@
 
     </select>
 
+    <select id="findByGoodsIdAndSpecIdAndCode" parameterType="map" resultMap="ShopOrderGoodsResultMap">
+        select
+        <include refid="base_column"/>
+        from shop_order_goods
+        where goods_id = #{goodsId} and spec_id = #{specId} and buyer_id = #{buyerId}
+    </select>
+
 </mapper>

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.CouponConstant;
 import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.consts.NewVipConstant;
 import com.framework.loippi.consts.OrderState;
@@ -1932,6 +1933,31 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         return orderPay;
     }
 
+    /**
+     * 根据订单id查看订单支付是否成功，如果支付成功，是否有因订单产生的优惠券发放
+     * @param mmCode
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Map<String, Object> checkSuccessOrNo(String mmCode, String orderSn) {
+        HashMap<String, Object> map = new HashMap<>();
+        List<ShopOrder> orders = orderDao.findByParams(Paramap.create().put("orderSn", orderSn));
+        if(orders==null||orders.size()==0){
+            throw new RuntimeException("订单不存在");
+        }
+        ShopOrder shopOrder = orders.get(0);
+        if(shopOrder.getPaymentState()==0){
+            map.put("orderPaymentState",0);
+            map.put("couponDetailList",null);
+            return map;
+        }
+        List<CouponDetail> list = couponDetailService.findList(Paramap.create().put("getOrderId", shopOrder.getId()).put("receiveId", mmCode));
+        map.put("orderPaymentState",1);
+        map.put("couponDetailList",list);
+        return map;
+    }
+
     @Override
     public ShopOrderPay addReplacementOrder(Long goodsId, Integer count, Long specId, Long memberId) {
         //商品信息
@@ -2896,6 +2922,74 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     }
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                     if (order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                        //2020-02-06 TODO 如果会员在指定月份升级，赠送优惠券
+                        //1 确定当前月份为几月份 如果在赠送月份，判断送哪几个月的优惠券
+                        ArrayList<CouponDetail> couponDetails = new ArrayList<>();
+                        Calendar calendar = Calendar.getInstance();
+                        int month = calendar.get(Calendar.MONTH) + 1;
+                        System.out.println(month);
+                        if(month>=3&&month<=6){//只有在三月到六月之间升级赠送
+                            int month2=month+1;
+                            int month3=month+2;
+                            RdMmBasicInfo mmBasicInfo = rdMmBasicInfoService.findByMCode(rdMmRelation.getMmCode());
+                            //2 查找当前月可使用升级优惠券user表
+                            if(month==3) {
+                                List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAR_COUPON_ID);
+                                if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.MAR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                                List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.APR_COUPON_ID);
+                                if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.APR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                                List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAY_COUPON_ID);
+                                if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.MAY_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                            }
+                            if(month==4) {
+                                List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.APR_COUPON_ID);
+                                if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.APR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                                List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAY_COUPON_ID);
+                                if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.MAY_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                                List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUN_COUPON_ID);
+                                if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.JUN_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                            }
+                            if(month==5) {
+                                List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAY_COUPON_ID);
+                                if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.MAY_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                                List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUN_COUPON_ID);
+                                if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.JUN_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                                List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUL_COUPON_ID);
+                                if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                            }
+                            if(month==6) {
+                                List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUN_COUPON_ID);
+                                if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.JUN_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                                List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUL_COUPON_ID);
+                                if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                                List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.AUG_COUPON_ID);
+                                if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                    sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                }
+                            }
+                        }
                         //进行用户升级通知
                         ShopCommonMessage message=new ShopCommonMessage();
                         message.setSendUid(rdMmRelation.getMmCode());
@@ -3869,6 +3963,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         List<ShopOrder> orderList = findList("paySn", payCommon.getOutTradeNo());
         String orderSn = "";
         if (CollectionUtils.isNotEmpty(orderList)) {
+            ArrayList<CouponDetail> couponDetails = new ArrayList<>();
             for (ShopOrder order : orderList) {
                 if (order.getOrderState() != 10) {
                     throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单已支付");
@@ -3970,6 +4065,73 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         }
                         //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
                         if (order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                            //2020-02-06 TODO 如果会员在指定月份升级，赠送优惠券
+                            //1 确定当前月份为几月份 如果在赠送月份，判断送哪几个月的优惠券
+                            Calendar calendar = Calendar.getInstance();
+                            int month = calendar.get(Calendar.MONTH) + 1;
+                            System.out.println(month);
+                            if(month>=3&&month<=6){//只有在三月到六月之间升级赠送
+                                int month2=month+1;
+                                int month3=month+2;
+                                RdMmBasicInfo mmBasicInfo = rdMmBasicInfoService.findByMCode(rdMmRelation.getMmCode());
+                                //2 查找当前月可使用升级优惠券user表
+                                if(month==3) {
+                                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAR_COUPON_ID);
+                                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.MAR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.APR_COUPON_ID);
+                                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.APR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAY_COUPON_ID);
+                                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.MAY_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                }
+                                if(month==4) {
+                                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.APR_COUPON_ID);
+                                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.APR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAY_COUPON_ID);
+                                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.MAY_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUN_COUPON_ID);
+                                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.JUN_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                }
+                                if(month==5) {
+                                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAY_COUPON_ID);
+                                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.MAY_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUN_COUPON_ID);
+                                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.JUN_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUL_COUPON_ID);
+                                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                }
+                                if(month==6) {
+                                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUN_COUPON_ID);
+                                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.JUN_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUL_COUPON_ID);
+                                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.AUG_COUPON_ID);
+                                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                                        sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    }
+                                }
+                            }
                             //进行用户升级通知
                             ShopCommonMessage message=new ShopCommonMessage();
                             message.setSendUid(rdMmRelation.getMmCode());
@@ -4144,14 +4306,60 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             result.put("status", 1);
             result.put("orderSn", orderSn);
             result.put("message", "支付成功");
+            result.put("couponDetailList", couponDetails);
             return result;
 
         }
         Map<String, Object> result = Maps.newConcurrentMap();
         result.put("status", 0);
         result.put("message", "支付失败");
+        result.put("couponDetailList", new ArrayList<CouponDetail>());
         return result;
     }
+
+
+
+    private void sendCoupon(Long couponId,RdMmRelation rdMmRelation,RdMmBasicInfo mmBasicInfo,ArrayList<CouponDetail> list,Long orderId){
+        Coupon coupon = couponService.find(couponId);
+        if(coupon==null||coupon.getStatus()!=2){
+            throw new RuntimeException("优惠券"+couponId+"异常");
+        }
+        //创建CouponUser记录
+        CouponUser couponUser = new CouponUser();
+        couponUser.setId(twiterIdService.getTwiterId());
+        couponUser.setMCode(rdMmRelation.getMmCode());
+        couponUser.setCouponId(couponId);
+        couponUser.setOwnNum(1);
+        couponUser.setUseAbleNum(coupon.getUseNumLimit());
+        couponUser.setUseNum(0);
+        couponUser.setHaveCouponNum(0);
+        couponUserService.save(couponUser);
+        //创建优惠券记录
+        CouponDetail couponDetail = new CouponDetail();
+        couponDetail.setId(twiterIdService.getTwiterId());
+        couponDetail.setRdCouponUserId(couponUser.getId());
+        couponDetail.setCouponId(coupon.getId());
+        couponDetail.setCouponSn("YH"+twiterIdService.getTwiterId());
+        couponDetail.setCouponName(coupon.getCouponName());
+        couponDetail.setReceiveId(rdMmRelation.getMmCode());
+        couponDetail.setReceiveNickName(mmBasicInfo.getMmNickName());
+        couponDetail.setReceiveTime(new Date());
+        couponDetail.setHoldId(rdMmRelation.getMmCode());
+        couponDetail.setHoldNickName(mmBasicInfo.getMmNickName());
+        couponDetail.setHoldTime(new Date());
+        couponDetail.setUseStartTime(coupon.getUseStartTime());
+        couponDetail.setUseEndTime(coupon.getUseEndTime());
+        couponDetail.setUseState(2);
+        couponDetail.setRefundState(0);
+        couponDetail.setGetOrderId(orderId);
+        couponDetailService.save(couponDetail);
+        list.add(couponDetail);
+        //修改优惠券发放数量
+        coupon.setReceivedNum(coupon.getReceivedNum()+1);
+        couponService.update(coupon);
+    }
+
+
 
     @Override
     public List<OrderCountVo> countMemberOrderNum(Map<String, Object> paramMap) {

@@ -28,7 +28,7 @@
     <div class="page">
         <div class="fixed-bar">
             <div class="item-title">
-                <h3>通知栏推送管理</h3>
+                <h3>通知栏推送</h3>
                 <ul class="tab-base">
                     <li><a href="JavaScript:void(0);" class="current"><@spring.message "manage"/></a></li>
                     <li>
@@ -44,7 +44,7 @@
                 <tbody>
                 <tr>
                     <th class="th_w">内容</th>
-                    <td class="ths"><input type="text" class="text" name="likelist" value="${likelist}" ></td>
+                    <td class="ths"><input type="text" class="text" name="likeMessage" value="${likeMessage}" ></td>
                     <th class="th_w">推送时间</th>
                     <td style="width: 36%;">
                         <input class="txt Wdate" type="text" id="query_start_time" name="searchLeftTime"
@@ -58,7 +58,7 @@
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="shopPMansongSubmit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
-                        <a href="" class="btns "><@spring.message "search.cancel"/></a>
+                        <a href="" class="btns "><span><@spring.message "search.cancel"/></span></a>
                     </td>
                 </tr>
                 </tbody>
@@ -138,7 +138,10 @@
                 <div id="editdetaildiv" ></div>
                 <tfoot>
                 <tr>
+                    <td colspan="16">
+<#--                        <@layout.pager page/>-->
 
+                    </td>
                 </tr>
                 </tfoot>
             </table>
