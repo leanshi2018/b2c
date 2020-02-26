@@ -51,11 +51,11 @@ public class CouponConstant {
     /**
      * 三月优惠券ID
      */
-    public static final Long MAR_COUPON_ID = 6555008628095455333L;
+    public static final Long MAR_COUPON_ID = 6555008628095455334L;
     /**
      * 四月优惠券ID
      */
-    public static final Long APR_COUPON_ID = 6555008628095455333L;
+    public static final Long APR_COUPON_ID = 6555008628095455335L;
     /**
      * 五月优惠券ID
      */
@@ -63,14 +63,14 @@ public class CouponConstant {
     /**
      * 六月优惠券ID
      */
-    public static final Long JUN_COUPON_ID = 6555008628095455333L;
+    public static final Long JUN_COUPON_ID = 6555008628095455337L;
     /**
      * 七月优惠券ID
      */
-    public static final Long JUL_COUPON_ID = 6555008628095455333L;
+    public static final Long JUL_COUPON_ID = 6555008628095455338L;
     /**
      * 八月优惠券ID
      */
-    public static final Long AUG_COUPON_ID = 6555008628095455333L;
+    public static final Long AUG_COUPON_ID = 6555008628095455339L;
 
 }
