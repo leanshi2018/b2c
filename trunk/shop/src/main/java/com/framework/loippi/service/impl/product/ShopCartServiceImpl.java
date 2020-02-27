@@ -468,6 +468,9 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                         if (shopOrder.getOrderState()!=0){//订单是有效的（排除取消订单，即使退款退货都算已购买数量）
                             Integer goodsNum = orderGoods.getGoodsNum();//购买商品数量
                             countTotal = countTotal + goodsNum;
+                            if (orderGoods.getIsPresentation()!=null && orderGoods.getIsPresentation() ==1){//是赠品
+                                countTotal = countTotal - goodsNum;
+                            }
                         }
                     }
                 }
