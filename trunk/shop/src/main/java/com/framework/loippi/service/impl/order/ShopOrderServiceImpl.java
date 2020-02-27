@@ -2936,15 +2936,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             if(month==2) {
                                 List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.FEB_COUPON_ID);
                                 if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
-                                    sendCoupon(CouponConstant.MAR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    sendCoupon(CouponConstant.FEB_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }
                                 List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAR_COUPON_ID);
                                 if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
-                                    sendCoupon(CouponConstant.APR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    sendCoupon(CouponConstant.MAR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }
                                 List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.APR_COUPON_ID);
                                 if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
-                                    sendCoupon(CouponConstant.MAY_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                    sendCoupon(CouponConstant.APR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }
                             }
                             if(month==3) {
@@ -4092,15 +4092,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(month==2) {
                                     List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.FEB_COUPON_ID);
                                     if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
-                                        sendCoupon(CouponConstant.MAR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                        sendCoupon(CouponConstant.FEB_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
                                     List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAR_COUPON_ID);
                                     if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
-                                        sendCoupon(CouponConstant.APR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                        sendCoupon(CouponConstant.MAR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
                                     List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.APR_COUPON_ID);
                                     if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
-                                        sendCoupon(CouponConstant.MAY_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                                        sendCoupon(CouponConstant.APR_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
                                 }
                                 if(month==3) {
