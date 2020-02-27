@@ -258,4 +258,8 @@ public class Coupon implements GenericEntity {
      * 当前查询用户未使用优惠券数量
      */
     private Integer searchUseNum;
+    /**
+     * 优惠券月份
+     */
+    private int monthNum;
 }

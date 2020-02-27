@@ -560,6 +560,7 @@ public class CartAPIController extends BaseController {
                         (rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1)){
                     //单笔订单满360或25mi，赠送酒精一瓶
                     ShopGoods goods1 = goodsService.find(6638361764952018944L);//酒精
+                    //ShopGoods goods1 = goodsService.find(6636551029166968832L);//酒精 formal
                     if (goods1!=null){
                         shopGoods.add(goods1);
                     }
