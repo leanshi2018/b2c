@@ -42,6 +42,9 @@ public class OrderSubmitResult {
      */
     private Integer paymentType;
 
+    //订单是否使用过积分
+    private Boolean usePointFlag;
+
     public static OrderSubmitResult build(RdMmIntegralRule rdMmIntegralRule,ShopOrderPay orderPay, RdMmAccountInfo rdMmAccountInfo) {
         OrderSubmitResult orderSubmitResult = new OrderSubmitResult();
         orderSubmitResult.setOrderPaySn(orderPay.getPaySn());
@@ -53,6 +56,7 @@ public class OrderSubmitResult {
             orderSubmitResult.setProportion(rdMmIntegralRule.getShoppingPointSr().doubleValue()*0.01);
         }
         orderSubmitResult.setPaymentType(Optional.ofNullable(orderPay.getPaymentType()).orElse(1));
+        orderSubmitResult.setUsePointFlag(orderPay.getUsePointFlag());
         return orderSubmitResult;
     }
 

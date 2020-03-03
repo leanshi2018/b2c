@@ -55,7 +55,7 @@ public class ShopOrderPayServiceImpl extends GenericServiceImpl<ShopOrderPay, Lo
         //1在线支付 2货到付款
         int paymentType=1;
         String orderSn="";
-
+        Boolean usePointFlag=false;
         for (ShopOrder order : orderList) {
             orderSn=order.getOrderSn()+",";
             amount += order.getOrderAmount().doubleValue();
@@ -65,6 +65,9 @@ public class ShopOrderPayServiceImpl extends GenericServiceImpl<ShopOrderPay, Lo
                     paymentType=2;
                 }
             }
+            if(order.getUsePointNum()!=null&&order.getUsePointNum()>0){
+                usePointFlag=true;
+            }
         }
         //将支付单号存入paySn
         pay.setPaySn(paySn);
@@ -73,6 +76,7 @@ public class ShopOrderPayServiceImpl extends GenericServiceImpl<ShopOrderPay, Lo
         pay.setOrderCreateTime(orderList.get(0).getCreateTime());
         pay.setPaymentType(paymentType);
         pay.setOrderSn(orderSn);
+        pay.setUsePointFlag(usePointFlag);
         return pay;
     }
 
