@@ -42,7 +42,7 @@ public class OrderSubmitResult {
      */
     private Integer paymentType;
 
-    //订单是否使用过积分
+    //订单是否可以使用积分支付
     private Boolean usePointFlag;
 
     public static OrderSubmitResult build(RdMmIntegralRule rdMmIntegralRule,ShopOrderPay orderPay, RdMmAccountInfo rdMmAccountInfo) {
