@@ -69,7 +69,7 @@ public class ShopOrderPay implements GenericEntity {
     //单个订单号
     private String orderSn;
 
-    //订单是否使用过积分
+    //是否可以使用积分支付
     private Boolean usePointFlag;
 }
 
