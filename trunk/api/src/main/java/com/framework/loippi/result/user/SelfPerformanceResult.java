@@ -47,7 +47,7 @@ public class SelfPerformanceResult {
 	 */
 	private BigDecimal npvMi;
 	/**
-	 * 新晋VIP人数
+	 * 新晋VIP人数  当期直邀VIP人数
 	 */
 	private int addVIPNumber;
 	/**
@@ -95,9 +95,13 @@ public class SelfPerformanceResult {
 
 	private Integer netAcNumber;//团队重复消费合格人数
 
+	private Integer ddRank1Number;//累计直邀VIP人数
+
 	private Integer ddRank2Number;//直接推荐代理的人数，代理级别为2
 
 	private Integer ddAcNumber;//直接推荐复消合格人数
+
+	private int rankRecordHigh;//历史最高级别
 
 	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, BigDecimal profits2, RdBonusMaster bonusMaster,List<String> periodCodeList, BigDecimal bugMi) {
 		Optional<RdMmBasicInfo> optionalBasicInfo = Optional.ofNullable(profile);
@@ -199,15 +203,21 @@ public class SelfPerformanceResult {
 			result.setNetAcNumber(qualification.getNetAcNumber());
 		}
 		if (qualification.getDdRank2Number()==null){
-			result.setNetAcNumber(0);
+			result.setDdRank2Number(0);
 		}else {
 			result.setDdRank2Number(qualification.getDdRank2Number());
 		}
+		if (qualification.getDdRank1Number()==null){
+			result.setDdRank1Number(0);
+		}else {
+			result.setDdRank1Number(qualification.getDdRank1Number());
+		}
 		if (qualification.getDdAcNumber()==null){
-			result.setNetAcNumber(0);
+			result.setDdAcNumber(0);
 		}else {
 			result.setDdAcNumber(qualification.getDdAcNumber());
 		}
+		result.setRankRecordHigh(qualification.getRankRecordHigh());
 		result.setPeriodCodeList(periodCodeList);
 		return result;
 	}
@@ -262,6 +272,7 @@ public class SelfPerformanceResult {
 		result.setAddVIPNumber(addVIPNumber);
 		result.setRankStr(rankStr);
 		result.setPeriodCodeList(periodCodeList);
+		result.setRankRecordHigh(qualification.getRankRecordHigh());
 		if (qualification.getNetNewVipNumber()==null){
 			result.setNetNewVipNumber(0);
 		}else {
@@ -271,6 +282,21 @@ public class SelfPerformanceResult {
 			result.setNetAcNumber(0);
 		}else {
 			result.setNetAcNumber(qualification.getNetAcNumber());
+		}
+		if (qualification.getDdAcNumber()==null){
+			result.setDdAcNumber(0);
+		}else {
+			result.setDdAcNumber(qualification.getDdAcNumber());
+		}
+		if (qualification.getDdRank2Number()==null){
+			result.setDdRank2Number(0);
+		}else {
+			result.setDdRank2Number(qualification.getDdRank2Number());
+		}
+		if (qualification.getDdRank1Number()==null){
+			result.setDdRank1Number(0);
+		}else {
+			result.setDdRank1Number(qualification.getDdRank1Number());
 		}
 		return result;
 	}

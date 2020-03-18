@@ -75,6 +75,8 @@ public class MemberQualification implements GenericEntity {
     private BigDecimal gpvFlagship;//达到旗舰店(7级)以上级别的人员，其同级以下团队的总业绩
     @Column(name = "GROUP_RANK_MAX" )
     private Integer groupRankMax;//团队最高级别（包括本人）
+    @Column(name = "DD_RANK1_NUMBER" )
+    private Integer ddRank1Number;//
     @Column(name = "DD_RANK2_NUMBER" )
     private Integer ddRank2Number;//直接推荐代理的人数，代理级别为2
     @Column(name = "DD_NEW_VIP_NUMBER" )
@@ -93,6 +95,8 @@ public class MemberQualification implements GenericEntity {
     private Integer dlRank8Number;//下属高级旗舰店网络数
     @Column(name = "PPV_QUALIFIED" )
     private Integer ppvqualified;//当月个人消费是否合格\r\n0：不合格\r\n1：合格
+    @Column(name = "H_PPV_QUALIFIED" )
+    private Integer hPpvQualified;//当月个人消费是否合格\r\n0：不合格\r\n1：合格
     @Column(name = "TOURISM_QUALIFIED" )
     private Integer tourismQualified;//当月旅游奖是否合格\r\n0：不合格\r\n1：合格
     @Column(name = "CAR_QUALIFIED" )

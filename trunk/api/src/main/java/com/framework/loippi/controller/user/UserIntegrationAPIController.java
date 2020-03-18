@@ -24,6 +24,7 @@ import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBank;
@@ -488,6 +489,88 @@ public class UserIntegrationAPIController extends BaseController {
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
         List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
                 .build4(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap);
+        paramap.put("memberList", integrationMemberListResultList);
+        return ApiUtils.success(paramap);
+    }
+
+    /**
+     * //购物积分用户列表
+     * @param request
+     * @param periodCode 周期编号
+     * @param sorting 排序种类 1：按mi值升序 2：按mi值降序  3：按加入时间升序 4.按加入时间降序 5.按会员级别升序  6.按会员级别降序 7.按照已发放零售利润升序 8.按照已发放零售利润降序
+     * @return
+     */
+    @RequestMapping(value = "/shp/memberListNew1.json")
+    public String memberListNew1(HttpServletRequest request,
+                             @RequestParam(value = "periodCode",required = false) String periodCode,
+                             @RequestParam(value = "sorting",required = true)Integer sorting) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        Paramap paramap = Paramap.create();
+        ArrayList<String> treePeriod = new ArrayList<String>();
+        String code="";
+        if(periodCode==null||"".equals(periodCode)){//如果传入周期参数为空，则查询当前周期
+
+            RdSysPeriod sysPeriod = sysPeriodDao.getPeriodService(new Date());
+            if(sysPeriod!=null){
+                code=sysPeriod.getPeriodCode();
+                treePeriod = findTreePeriod(sysPeriod.getPeriodCode());
+            }else {//当前时间没有周期，查询最近的一个周期
+                RdSysPeriod lastPeriod=sysPeriodDao.findLastPeriod();
+                code=lastPeriod.getPeriodCode();
+                treePeriod = findTreePeriod(lastPeriod.getPeriodCode());
+            }
+            paramap.put("periodCodeList",treePeriod);
+        }else {
+            code=periodCode;
+        }
+        List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode",member.getMmCode()).put("periodCode",periodCode));
+        /*HashMap<String, Object> map1 = new HashMap<>();
+        map1.put("sponsorCode",member.getMmCode());
+        //map1.put("sponsorCode","900000011");
+        map1.put("periodCode",code);*/
+        //List<MemberQualification> list =memberQualificationService.findBySponsorCodeAndPeriodCode(map1);
+        //List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode","900000011").put("periodCode",periodCode));
+        //if(list==null||list.size()==0){
+        //   ArrayList<MemberQualification> list1 = new ArrayList<>();
+        //  paramap.put("memberList",list1);
+        //   return ApiUtils.success(paramap);
+        //}
+        //List<String> mmCodes = new ArrayList();
+        //for (MemberQualification item : list) {
+        //    mmCodes.add(item.getMCode());
+        //}
+        //List<RdMmBasicInfo> rdMmBasicInfoList = new ArrayList<>();
+        //List<RdMmRelation> rdMmRelationList = rdMmRelationService.findList("sponsorCode", member.getMmCode());
+        List<RdMmRelation> rdMmRelationList = rdMmRelationService.findBySponsorCode( member.getMmCode());
+        ArrayList<String> mmCodes = new ArrayList<>();
+        if(rdMmRelationList!=null&&rdMmRelationList.size()>0){
+            for (RdMmRelation rdMmRelation : rdMmRelationList) {
+                mmCodes.add(rdMmRelation.getMmCode());
+            }
+        }
+        List<RdMmBasicInfo> rdMmBasicInfoList = new ArrayList<>();
+        if (mmCodes != null && mmCodes.size() > 0) {
+            rdMmBasicInfoList = rdMmBasicInfoService.findList("mmCodes", mmCodes);
+            //rdMmRelationList = rdMmRelationService.findList("mmCodes", mmCodes);
+        }
+        //查询从每一个会员获得的零售利润
+        HashMap<String, BigDecimal> hashMap = new HashMap<>();
+        for (String mmCode : mmCodes) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("buyerId",mmCode);
+            map.put("receiptorId",member.getMmCode());
+            map.put("createPeriod",code);
+            //map.put("state",1);
+            BigDecimal result=retailProfitService.findTotalProfit(map);
+            if(result!=null){
+                hashMap.put(mmCode,result);
+            }else {
+                hashMap.put(mmCode,BigDecimal.ZERO);
+            }
+        }
+        List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
+        List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
+                .build5(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap,list);
         paramap.put("memberList", integrationMemberListResultList);
         return ApiUtils.success(paramap);
     }
