@@ -101,7 +101,7 @@ public class SelfPerformanceResult {
 
 	private Integer ddAcNumber;//直接推荐复消合格人数
 
-	private int rankRecordHigh;//历史最高级别
+	private String rankRecordHigh;//历史最高级别
 
 	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, BigDecimal profits2, RdBonusMaster bonusMaster,List<String> periodCodeList, BigDecimal bugMi) {
 		Optional<RdMmBasicInfo> optionalBasicInfo = Optional.ofNullable(profile);
@@ -217,7 +217,31 @@ public class SelfPerformanceResult {
 		}else {
 			result.setDdAcNumber(qualification.getDdAcNumber());
 		}
-		result.setRankRecordHigh(qualification.getRankRecordHigh());
+
+		String rankRecordHighStr = "";
+		int rankRecordHigh = qualification.getRankRecordHigh();
+		if (rankRecordHigh==0){
+			rankRecordHighStr = "普通会员";
+		}else if (rankRecordHigh==1){
+			rankRecordHighStr = "VIP会员";
+		}else if (rankRecordHigh==2){
+			rankRecordHighStr = "代理会员";
+		}else if (rankRecordHigh==3){
+			rankRecordHighStr = "初级代理店";
+		}else if (rankRecordHigh==4){
+			rankRecordHighStr = "一级代理店";
+		}else if (rankRecordHigh==5){
+			rankRecordHighStr = "二级代理店";
+		}else if (rankRecordHigh==6){
+			rankRecordHighStr = "三级代理店";
+		}else if (rankRecordHigh==7){
+			rankRecordHighStr = "旗舰店";
+		}else if (rankRecordHigh==8){
+			rankRecordHighStr = "高级旗舰店";
+		}else {
+			rankRecordHighStr = "超级旗舰店";
+		}
+		result.setRankRecordHigh(rankRecordHighStr);
 		result.setPeriodCodeList(periodCodeList);
 		return result;
 	}
@@ -272,7 +296,31 @@ public class SelfPerformanceResult {
 		result.setAddVIPNumber(addVIPNumber);
 		result.setRankStr(rankStr);
 		result.setPeriodCodeList(periodCodeList);
-		result.setRankRecordHigh(qualification.getRankRecordHigh());
+
+		String rankRecordHighStr = "";
+		int rankRecordHigh = qualification.getRankRecordHigh();
+		if (rankRecordHigh==0){
+			rankRecordHighStr = "普通会员";
+		}else if (rankRecordHigh==1){
+			rankRecordHighStr = "VIP会员";
+		}else if (rankRecordHigh==2){
+			rankRecordHighStr = "代理会员";
+		}else if (rankRecordHigh==3){
+			rankRecordHighStr = "初级代理店";
+		}else if (rankRecordHigh==4){
+			rankRecordHighStr = "一级代理店";
+		}else if (rankRecordHigh==5){
+			rankRecordHighStr = "二级代理店";
+		}else if (rankRecordHigh==6){
+			rankRecordHighStr = "三级代理店";
+		}else if (rankRecordHigh==7){
+			rankRecordHighStr = "旗舰店";
+		}else if (rankRecordHigh==8){
+			rankRecordHighStr = "高级旗舰店";
+		}else {
+			rankRecordHighStr = "超级旗舰店";
+		}
+		result.setRankRecordHigh(rankRecordHighStr);
 		if (qualification.getNetNewVipNumber()==null){
 			result.setNetNewVipNumber(0);
 		}else {
