@@ -1,21 +1,19 @@
 package com.framework.loippi.result.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Optional;
+
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.vo.order.OrderSumPpv;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang.StringUtils;
-
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
 
 /**
  * Result - 分销用户资料信息显示
@@ -99,6 +97,15 @@ public class SubordinateUserInformationResult {
     private BigDecimal monthPpv;
     //当期购货额
     private BigDecimal monthMoney;
+    //新晋vip人数  当期直邀VIP人数
+    private Integer ddNewVIPNumber;
+    //累计直邀VIP人数
+    private Integer ddRank1Number;
+    private BigDecimal appvFinal;//个人累计PV
+    private Integer ddAcNumber;//直接推荐复消合格人数----直邀代理人数(当期活跃)
+    private Integer ddRank2Number;//直接推荐代理的人数，代理级别为2  ---- 直邀代理人数(累计直邀)
+    private Integer netAcNumber;//团队重复消费合格人数 ---- 整组重消活跃人数
+
 
 
 
@@ -183,6 +190,12 @@ public class SubordinateUserInformationResult {
         result.setPeriodGroupPv(Optional.ofNullable(memberQualification.getG7pv()).orElse(BigDecimal.ZERO));//设置小组MI
         result.setPeriodTeamPv(Optional.ofNullable(memberQualification.getNpv()).orElse(BigDecimal.ZERO));//设置整组MI
         result.setNetNewVipNum(Optional.ofNullable(memberQualification.getNetNewVipNumber()).orElse(0));//设置整组新晋vip人数
+        result.setDdNewVIPNumber(Optional.ofNullable(memberQualification.getDdNewVIPNumber()).orElse(0));//当期直邀VIP人数
+        result.setDdRank1Number(Optional.ofNullable(memberQualification.getDdRank1Number()).orElse(0));//累计直邀VIP人数
+        result.setAppvFinal(Optional.ofNullable(memberQualification.getAppvFinal()).orElse(BigDecimal.ZERO));//个人累计PV
+        result.setDdAcNumber(Optional.ofNullable(memberQualification.getDdAcNumber()).orElse(0));//直接推荐复消合格人数----直邀代理人数(当期活跃)
+        result.setDdRank2Number(Optional.ofNullable(memberQualification.getDdRank2Number()).orElse(0));//直接推荐代理的人数，代理级别为2  ---- 直邀代理人数(累计直邀)
+        result.setNetAcNumber(Optional.ofNullable(memberQualification.getNetAcNumber()).orElse(0));//团队重复消费合格人数 ---- 整组重消活跃人数
         return result;
     }
 
@@ -211,6 +224,12 @@ public class SubordinateUserInformationResult {
         result.setPeriodGroupPv(BigDecimal.ZERO);//设置小组MI
         result.setPeriodTeamPv(BigDecimal.ZERO);//设置整组MI
         result.setNetNewVipNum(0);//设置整组新晋vip人数
+        result.setDdNewVIPNumber(0);//当期直邀VIP人数
+        result.setDdRank1Number(0);//累计直邀VIP人数
+        result.setAppvFinal(BigDecimal.ZERO);//个人累计PV
+        result.setDdAcNumber(0);//直接推荐复消合格人数----直邀代理人数(当期活跃)
+        result.setDdRank2Number(0);//直接推荐代理的人数，代理级别为2  ---- 直邀代理人数(累计直邀)
+        result.setNetAcNumber(0);//团队重复消费合格人数 ---- 整组重消活跃人数
         return result;
     }
 }

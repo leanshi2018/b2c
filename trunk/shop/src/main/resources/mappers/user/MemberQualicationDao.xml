@@ -37,6 +37,7 @@
 		<result column="GPV_FLAGSHIP" property="gpvFlagship" />
 		<result column="GROUP_RANK_MAX" property="groupRankMax" />
 		<result column="DD_NEW_VIP_NUMBER" property="ddNewVIPNumber" />
+		<result column="DD_RANK1_NUMBER" property="ddRank1Number" />
 		<result column="DD_RANK2_NUMBER" property="ddRank2Number" />
 		<result column="DD_AC_NUMBER" property="ddAcNumber" />
 
@@ -46,6 +47,7 @@
 		<result column="DL_RANK7_NUMBER" property="dlRank7Number" />
 		<result column="DL_RANK8_NUMBER" property="dlRank8Number" />
 		<result column="PPV_QUALIFIED" property="ppvqualified" />
+		<result column="H_PPV_QUALIFIED" property="hPpvQualified" />
 		<result column="TOURISM_QUALIFIED" property="tourismQualified" />
 		<result column="CAR_QUALIFIED" property="carQualified" />
 		<result column="DIVIDEND_QUALIFIED" property="dividendQualified" />
@@ -59,14 +61,14 @@
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 id_rd_dis_qlf,PERIOD_CODE,MM_CODE,MM_NAME,SPONSOR_CODE,SPONSOR_NAME,MM_STATUS,RA_STATUS,RA_SHOP_YN,PPV,PPV_RETAIL,APPV_INIT,APPV_FINAL,A_RETAIL_INIT,A_RETAIL,A_RETAIL_FINAL,
-		 RANK_P2,RANK_P1,RANK_P0,RANK_AC,RANK_RECORD_HIGH,LEAF_YN,ORPHAN,LAYER,G7PV,NPV,GPV_FLAGSHIP,GROUP_RANK_MAX,DD_NEW_VIP_NUMBER,DD_RANK2_NUMBER,DD_AC_NUMBER,DL_RANK4_NUMBER,DL_RANK5_NUMBER,
-		 DL_RANK6_NUMBER,DL_RANK7_NUMBER,DL_RANK8_NUMBER,PPV_QUALIFIED,TOURISM_QUALIFIED,CAR_QUALIFIED,DIVIDEND_QUALIFIED,net_id,net_end,net_new_vip_number,net_ac_number,compliance_status
+		 RANK_P2,RANK_P1,RANK_P0,RANK_AC,RANK_RECORD_HIGH,LEAF_YN,ORPHAN,LAYER,G7PV,NPV,GPV_FLAGSHIP,GROUP_RANK_MAX,DD_NEW_VIP_NUMBER,DD_RANK1_NUMBER,DD_RANK2_NUMBER,DD_AC_NUMBER,DL_RANK4_NUMBER,DL_RANK5_NUMBER,
+		 DL_RANK6_NUMBER,DL_RANK7_NUMBER,DL_RANK8_NUMBER,PPV_QUALIFIED,H_PPV_QUALIFIED,TOURISM_QUALIFIED,CAR_QUALIFIED,DIVIDEND_QUALIFIED,net_id,net_end,net_new_vip_number,net_ac_number,compliance_status
 	</sql>
 	
 	<sql id="base_value_column">
 		 #{idRdDisQlf},#{periodCode},#{mCode},#{mName},#{sponsorCode},#{sponsorName},#{mStatus},#{raStatus},#{raShopYn},#{ppv},#{ppvRetail},#{appvInit},#{appvFinal},#{retailInit},#{retail},#{retailFinal},#{rankP2},#{rankP1},#{rankP0},
-		 #{rankAc},#{rankRecordHigh},#{leafYn},#{orphan},#{layer},#{g7pv},#{npv},#{gpvFlagship},#{groupRankMax},#{ddNewVIPNumber},#{ddRank2Number},#{ddAcNumber},#{dlRank4Number},#{dlRank5Number},#{dlRank6Number},#{dlRank7Number},#{dlRank8Number},
-		 #{ppvqualified},#{tourismQualified},#{carQualified},#{dividendQualified},#{netId},#{netEnd},#{netNewVipNumber},#{netAcNumber},#{complianceStatus}
+		 #{rankAc},#{rankRecordHigh},#{leafYn},#{orphan},#{layer},#{g7pv},#{npv},#{gpvFlagship},#{groupRankMax},#{ddNewVIPNumber},#{ddRank1Number},#{ddRank2Number},#{ddAcNumber},#{dlRank4Number},#{dlRank5Number},#{dlRank6Number},#{dlRank7Number},#{dlRank8Number},
+		 #{ppvqualified}, #{hPpvQualified},#{tourismQualified},#{carQualified},#{dividendQualified},#{netId},#{netEnd},#{netNewVipNumber},#{netAcNumber},#{complianceStatus}
 	</sql>
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
 	<sql id="where_column">
@@ -157,6 +159,9 @@
 		<if test="ddNewVIPNumber != null">
 			AND DD_NEW_VIP_NUMBER = #{ddNewVIPNumber,jdbcType=INTEGER}
 		</if>
+		<if test="ddRank1Number != null">
+			AND DD_RANK1_NUMBER = #{ddRank1Number,jdbcType=INTEGER}
+		</if>
 		<if test="ddRank2Number != null">
 			AND DD_RANK2_NUMBER = #{ddRank2Number,jdbcType=INTEGER}
 		</if>
@@ -180,6 +185,9 @@
 		</if>
 		<if test="ppvqualified != null">
 			AND PPV_QUALIFIED = #{ppvqualified,jdbcType=INTEGER}
+		</if>
+		<if test="hPpvQualified != null">
+			AND H_PPV_QUALIFIED = #{hPpvQualified,jdbcType=INTEGER}
 		</if>
 		<if test="tourismQualified != null">
 			AND TOURISM_QUALIFIED = #{tourismQualified,jdbcType=INTEGER}
@@ -293,6 +301,9 @@
 		<if test="groupRankMax != null">
 			GROUP_RANK_MAX = #{groupRankMax,jdbcType=INTEGER},
 		</if>
+		<if test="ddRank1Number != null">
+			DD_RANK1_NUMBER = #{ddRank1Number,jdbcType=INTEGER},
+		</if>
 		<if test="ddRank2Number != null">
 			DD_RANK2_NUMBER = #{ddRank2Number,jdbcType=INTEGER},
 		</if>
@@ -316,6 +327,9 @@
 		</if>
 		<if test="ppvqualified != null">
 			PPV_QUALIFIED = #{ppvqualified,jdbcType=INTEGER},
+		</if>
+		<if test="hPpvQualified != null">
+			H_PPV_QUALIFIED = #{hPpvQualified,jdbcType=INTEGER},
 		</if>
 		<if test="tourismQualified != null">
 			TOURISM_QUALIFIED = #{tourismQualified,jdbcType=INTEGER},
