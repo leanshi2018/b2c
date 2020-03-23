@@ -137,6 +137,7 @@ public class OrderResult {
 
         List<OrderResult> orderResults = Lists.newArrayList();
         for (ShopOrderVo shopOrderVo : shopOrderVos) {
+            Integer evaluateState = 1;//0 未 1 已
             List<goodsInfo> goodsInfoList = new ArrayList<>();
             int quantity = 0;
             for (ShopOrderGoods orderGoods : shopOrderVo.getShopOrderGoods()) {
@@ -155,6 +156,14 @@ public class OrderResult {
                     goodsInfo.setPpv(Optional.ofNullable(orderGoods.getBigPpv()).orElse(BigDecimal.ZERO));
                 }
                 goodsInfoList.add(goodsInfo);
+                if(orderGoods.getIsPresentation()!=null&&orderGoods.getIsPresentation()==1){
+                    continue;
+                }else {
+                    //判断商品是否评价
+                    if(orderGoods.getEvaluationStatus()==0){
+                        evaluateState=0;
+                    }
+                }
             }
 
             Optional<ShopOrderVo> optShopOrder = Optional.ofNullable(shopOrderVo);
@@ -192,6 +201,7 @@ public class OrderResult {
                     result.setIsRemind(0);
                 }
             }
+            result.setEvaluateState(evaluateState);
             orderResults.add(result);
 
         }
