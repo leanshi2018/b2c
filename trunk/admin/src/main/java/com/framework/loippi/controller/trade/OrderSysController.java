@@ -96,6 +96,7 @@ import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.TongLianUtils;
 import com.framework.loippi.utils.excel.ExportExcelUtils;
 import com.framework.loippi.vo.order.ShopOrderVo;
 import com.google.common.collect.Lists;
@@ -1669,5 +1670,103 @@ public class OrderSysController extends GenericController {
             request.getRequestDispatcher("/admin/order/otherList").forward(request, response);
         }
     }
+
+
+    /**
+     * 订单分账查询
+     * @param orderId
+     * @param model
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = {"/admin/order/getOrderSplitDetail1"})
+    public String getOrderSplitDetail1(Long orderId, ModelMap model, HttpServletRequest request) {
+
+        ShopOrder order = orderService.find(orderId);
+        if (order==null){
+            model.addAttribute("msg", "找不到该订单");
+            model.addAttribute("referer", request.getHeader("Referer"));
+            return Constants.MSG_URL;
+        }
+
+        String s = TongLianUtils.getOrderSplitRuleListDetail(order.getOrderSn());
+        if(!"".equals(s)) {
+            Map maps = (Map) JSON.parse(s);
+            String status = maps.get("status").toString();
+            String signedValue = maps.get("signedValue").toString();
+            if (status.equals("OK")) {
+                Map okMap = (Map) JSON.parse(signedValue);
+                Long state = (Long)okMap.get("state");//分账状态 0-失败 1-成功
+                if (state.longValue()==0){
+                    model.addAttribute("msg", "分账状态：失败");
+                    model.addAttribute("referer", request.getHeader("Referer"));
+                    return Constants.MSG_URL;
+                }
+
+                String orderNo = okMap.get("orderNo").toString();//通商云订单号
+                String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                String recieverId = okMap.get("recieverId").toString();//商户系统用户标识，商户系统中唯一编号。 收款方  消费订单和托付订单中的 收款人
+
+                List<Map<String, Object>> splitRuleListDetailList = (List<Map<String, Object>>)okMap.get("splitRuleListDetail");//分账明细
+                List<Map<String, Object>> splitList = new ArrayList<Map<String, Object>>();
+                for (Map<String, Object> map : splitRuleListDetailList) {
+                    String bizUserId = Optional.ofNullable(map.get("bizUserId").toString()).orElse("");//商户系统用户标识，商户系统中唯一编号。 如果是平台，则填#yunBizUserId_B2C#
+                    //String accountSetNo = Optional.ofNullable(map.get("accountSetNo").toString()).orElse("");//如果向会员分账，不上送，默认为唯一托管账户集。 如果向平台分账，请填写平台的标准账户集编号 （不支持 100003-准备金额度账户集）
+                    Long amount = Optional.ofNullable(Long.valueOf(map.get("amount").toString())).orElse(0l);//金额，单位：分
+                    Long fee = Optional.ofNullable(Long.valueOf(map.get("fee").toString())).orElse(0l);//手续费，内扣，单位：分
+                    String remark = Optional.ofNullable(map.get("remark").toString()).orElse("");//备注，最长 50 个字符
+                    List<Map<String, Object>> splitRuleList = (List<Map<String, Object>>)map.get("splitRuleList");//分账列表
+                    Map<String, Object> returnMap = new HashMap<String, Object>();
+                    returnMap.put(bizUserId,amount-fee);
+                    if (splitRuleList.size()>0){
+                        Map<String, Object> splitRuleMap = getSplitRuleList(splitRuleList,bizUserId,returnMap);
+                        splitList.add(splitRuleMap);
+                    }else{
+                        splitList.add(returnMap);
+                    }
+                }
+                model.addAttribute("splitList", splitList);
+            }else {
+                model.addAttribute("msg", maps.get("message"));
+                model.addAttribute("referer", request.getHeader("Referer"));
+                return Constants.MSG_URL;
+            }
+        }else {
+            model.addAttribute("msg", "调用通联接口失败");
+            model.addAttribute("referer", request.getHeader("Referer"));
+            return Constants.MSG_URL;
+        }
+
+        return "trade/shop_order/other_list";
+    }
+
+    //解析分账列表
+    public Map<String, Object> getSplitRuleList(List<Map<String, Object>> splitRuleList,String bizUserId,Map<String, Object> returnMap){
+        Map<String, Object> resMap = new HashMap<String, Object>();
+        for (Map<String, Object> map : splitRuleList) {
+            String bizUserId1 = Optional.ofNullable(map.get("bizUserId").toString()).orElse("");//商户系统用户标识，商户系统中唯一编号。 如果是平台，则填#yunBizUserId_B2C#
+            Long amount1 = Optional.ofNullable(Long.valueOf(map.get("amount").toString())).orElse(0l);//金额，单位：分
+            Long fee1 = Optional.ofNullable(Long.valueOf(map.get("fee").toString())).orElse(0l);//手续费，内扣，单位：分
+            //String remark1 = map.get("remark").toString();//备注，最长 50 个字符
+            returnMap.put(bizUserId,Optional.ofNullable(Long.valueOf(returnMap.get(bizUserId).toString())).orElse(0l)-amount1-fee1);
+            returnMap.put(bizUserId1,amount1-fee1);
+            List<Map<String, Object>> splitRuleList1 = (List<Map<String, Object>>)map.get("splitRuleList");//分账列表
+            if (splitRuleList1.size()>0){
+                Map<String, Object> splitRuleList2 = getSplitRuleList(splitRuleList1,bizUserId1,returnMap);
+
+                //把splitRuleList2复制回returnMap
+                Iterator it = splitRuleList2.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry entry = (Map.Entry) it.next();
+                    String key = (String)entry.getKey();
+                    returnMap.put(key, splitRuleList2.get(key) != null ? splitRuleList2.get(key) : "");
+
+                }
+                //TongLianUtils.mapCopy(splitRuleList2,returnMap);
+            }
+        }
+        return returnMap;
+    }
+
 
 }

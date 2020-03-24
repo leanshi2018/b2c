@@ -20,6 +20,13 @@
     </properties>
     <dependencies>
 
+        <!--通商云-->
+        <dependency>
+            <groupId>com.allinpay</groupId>
+            <artifactId>yunst-sdk</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>

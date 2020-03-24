@@ -1,6 +1,8 @@
 package com.framework.loippi.controller.trade;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.RequestContext;
 
+import com.alibaba.fastjson.JSON;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.RefundReturnState;
 import com.framework.loippi.controller.GenericController;
@@ -71,6 +74,7 @@ import com.framework.loippi.utils.Dateutil;
 import com.framework.loippi.utils.NumberUtils;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.TongLianUtils;
 import com.framework.loippi.utils.validator.DateUtils;
 import com.framework.loippi.vo.refund.ShopRefundReturnVo;
 
@@ -492,6 +496,166 @@ public class RefundReturnSysController extends GenericController {
 
 
     }
+
+    /**
+     * 通联退款 退款申请 TODO ldq.2020.3.17
+     */
+    @RequiresPermissions("admin:refundreturn:main")
+    @RequestMapping("/admin/refundreturn/tl/refund")
+    public String refundOrder(Model model, @RequestParam Long id,
+                         @RequestParam(required = false, value = "adminMessage", defaultValue = "") String adminMessage,
+                         @RequestParam(required = false, value = "returntype", defaultValue = "") String returntype,//returntype 值为0时表示人工确认后打钱给用户  1表示自动返款给用户
+                         @RequestParam(required = false, value = "orderpaytype", defaultValue = "") String orderpaytype,//订单支付类型
+                         @RequestParam(required = false, value = "refundAmount", defaultValue = "0") String refundAmount,//退款金额
+                         @RequestParam(required = false, value = "refundPpv", defaultValue = "0") String refundPpv,//退款pv
+                         @RequestParam(required = false, value = "refundPoint", defaultValue = "0") Integer refundPoint,//退款积分
+                         HttpServletRequest request, HttpServletResponse response) {
+        Principal principal = userService.getPrincipal();
+        User user = userService.find(principal.getId());
+        ShopRefundReturn refundReturn = refundReturnService.find(id);
+        //**************************update by zc 2019-10-30**********************************************
+        Long orderId = refundReturn.getOrderId();
+        ShopOrder shopOrder = orderService.find(orderId);
+        BigDecimal totalSumMoney = shopOrder.getOrderAmount().subtract(Optional.ofNullable(shopOrder.getRefundAmount()).orElse(BigDecimal.ZERO));
+        BigDecimal totalSumPoint = shopOrder.getPointRmbNum().subtract(Optional.ofNullable(shopOrder.getRefundPoint()).orElse(BigDecimal.ZERO));
+        BigDecimal decimalMoney = new BigDecimal(refundAmount);
+        BigDecimal decimalPoint = new BigDecimal(refundPoint);
+        if(decimalMoney.compareTo(totalSumMoney)==1){
+            model.addAttribute("msg", "退款金额大于可退款金额");
+            return Constants.MSG_URL;
+        }
+        if(decimalPoint.compareTo(totalSumPoint)==1){
+            model.addAttribute("msg", "退款积分大于可退款积分");
+            return Constants.MSG_URL;
+        }
+        //************************************************************************
+        if (refundReturn.getRefundType()==3 && "2".equals(returntype)){
+            // TODO: 2019/1/5 换单
+            List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsService.findList("returnOrderId",id);
+            orderService.addExchangeOrderReturnOrderId(shopReturnOrderGoodsList,refundReturn.getOrderId());
+            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", user.getUsername());
+            model.addAttribute("msg", "换货成功");
+            model.addAttribute("referer", "list.jhtml");
+            return Constants.MSG_URL;
+        }
+        else{
+            String backurl = Constants.MSG_URL;
+            BigDecimal money=new BigDecimal(0);
+            try {
+                money=new BigDecimal(refundAmount);
+            }catch (Exception e){
+                e.printStackTrace();
+                model.addAttribute("msg", "退款金额应输入数字");
+                return backurl;
+            }
+            refundReturn.setRefundAmount(money);
+            //refundReturn.setPpv(BigDecimal.valueOf(refundPpv));
+            refundReturn.setPpv(new BigDecimal(refundPpv));
+            refundReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+            //处理积分,pv值
+            if (refundReturn.getBatchNo()==null){
+                orderService.addRefundPoint(refundReturn);
+            }
+            //returntype 值为0时表示人工确认后打钱给用户  1表示自动返款给用户
+            //orderpaytype 等于2时为货到付款将执行人工退款
+            if (returntype.equals("1") && !"2".equals(orderpaytype)) {
+                //判断退款单的退款金额是否大于余额支付金额
+                ShopOrder order = orderService.find(refundReturn.getOrderId());
+                if (order != null && order.getStoreId().equals(0L)) {
+                    if (order.getPaymentCode().equals("alipayMobilePaymentPlugin")) {//支付宝退款
+                        String bathno =
+                                DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+                        ShopRefundReturn updateReturn = new ShopRefundReturn();
+                        updateReturn.setId(id); //记录ID
+                        updateReturn.setBatchNo(bathno); //退款批次号
+                        updateReturn.setRefundAmount(money);
+                        updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                        refundReturnService.update(updateReturn);//将批次号存入退款表
+                        AliPayRefund aliPayRefund = new AliPayRefund();
+                        //支付宝交易号 ，退款金额，退款理由
+                        aliPayRefund.setRefundAmountNum(1);//退款数量，目前是单笔退款
+                        aliPayRefund.setBatchNo(bathno);
+                        aliPayRefund.setTradeNo(order.getPaySn());
+                        aliPayRefund.setRefundAmount(refundReturn.getRefundAmount());
+                        //aliPayRefund.setRefundAmount(new BigDecimal(0.01));
+                        aliPayRefund.setRRefundReason(refundReturn.getReasonInfo());
+                        aliPayRefund.setDetaildata(order.getTradeSn(),
+                                refundReturn.getRefundAmount(),
+                                refundReturn.getReasonInfo());
+                        backurl = toalirefund(aliPayRefund, model, id, adminMessage);
+                    } else if (order.getPaymentCode().equals("weixinMobilePaymentPlugin")) {//微信开放平台支付
+                        WeiRefund weiRefund = new WeiRefund();
+                        String bathno =
+                                DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+                        ShopRefundReturn updateReturn = new ShopRefundReturn();
+                        updateReturn.setId(id); //记录ID
+                        updateReturn.setBatchNo(bathno); //退款批次号
+                        updateReturn.setRefundAmount(money);
+                        updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                        refundReturnService.update(updateReturn);//将批次号存入退款表
+                        weiRefund.setOutrefundno(bathno);//微信交易号
+                        weiRefund.setOuttradeno(order.getPaySn());//订单号
+                        weiRefund.setTotalfee((int) ((order.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+                        weiRefund.setRefundfee((int) ((refundReturn.getRefundAmount().doubleValue()) * 100));
+                        //weiRefund.setRefundfee(1);
+                        //weiRefund.setTotalfee(1);
+                        backurl = toweichatrefundTL(weiRefund, id, adminMessage, "open_weichatpay", model, request);
+                        //toweichatrefund();
+                    } else if (order.getPaymentCode().equals("weixinH5PaymentPlugin")) {//微信公共平台支付
+                        WeiRefund weiRefund = new WeiRefund();
+                        String bathno =
+                                DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+                        ShopRefundReturn updateReturn = new ShopRefundReturn();
+                        updateReturn.setId(id); //记录ID
+                        updateReturn.setBatchNo(bathno); //退款批次号
+                        updateReturn.setRefundAmount(money);
+                        updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                        refundReturnService.update(updateReturn);//将批次号存入退款表
+                        weiRefund.setOutrefundno(bathno);//微信交易号
+                        weiRefund.setOuttradeno(order.getPaySn());//订单号
+                        weiRefund.setTotalfee((int) ((order.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+                        weiRefund.setRefundfee((int) ((refundReturn.getRefundAmount().doubleValue()) * 100));
+//                        weiRefund.setRefundfee((int) (0.01 * 100));
+                        backurl = toweichatrefund(weiRefund, id, adminMessage, "mp_weichatpay", model, request);
+                    } else if (order.getPaymentCode().equals("balancePaymentPlugin")) {
+                        refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype,user.getUsername());
+                        model.addAttribute("msg", "退款成功");
+                    }else if (order.getPaymentCode().equals("pointsPaymentPlugin")) {
+                        if (refundReturn.getBatchNo()==null){
+                            String bathno =
+                                    DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+                            ShopRefundReturn updateReturn = new ShopRefundReturn();
+                            updateReturn.setId(id); //记录ID
+                            updateReturn.setBatchNo(bathno); //退款批次号
+                            updateReturn.setRefundAmount(money);
+                            updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                            refundReturnService.update(updateReturn);//将批次号存入退款表
+                        }
+                        refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype, user.getUsername());
+                        model.addAttribute("msg", "退款成功");
+                        backurl = Constants.MSG_URL;
+                    }
+                }
+            } else {
+                String bathno =
+                        DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+                ShopRefundReturn updateReturn = new ShopRefundReturn();
+                updateReturn.setId(id); //记录ID
+                updateReturn.setBatchNo(bathno); //退款批次号
+                updateReturn.setRefundAmount(money);
+                updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                refundReturnService.update(updateReturn);//将批次号存入退款表
+                refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype, user.getUsername());
+                model.addAttribute("msg", "退款成功");
+                backurl = Constants.MSG_URL;
+            }
+            model.addAttribute("referer", "list.jhtml");
+            return backurl;///common/common/show_msg
+        }
+
+
+    }
+
 
     /**
      * 单张优惠券退款
@@ -1167,6 +1331,71 @@ public class RefundReturnSysController extends GenericController {
         Map<String, Object> map = null;
         if (weitype.equals("open_weichatpay")) {//微信开放平台退款
             map = wechatMobileRefundService.toRefund(weiRefund);
+        } else if (weitype.equals("mp_weichatpay")) {//微信公共平台退款
+            map = wechatRefundService.toRefund(weiRefund);
+        }
+        String msg = "";
+        if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
+            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
+            msg = requestContext.getMessage("checksuccess");
+            model.addAttribute("msg", msg);
+        } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
+            model.addAttribute("msg",
+                    requestContext.getMessage("tsn.order_no") + "：" + weiRefund.getOuttradeno() + "<br/>" + requestContext
+                            .getMessage("Micro-channel_number") + "：" + weiRefund.getOutrefundno()
+                            + "<br/><span style='color:red;'>" + requestContext.getMessage("Micro-channel_error") + "：" + map
+                            .get("err_code_des") + "</span>");
+            model.addAttribute("noAuto", true);
+        }
+        model.addAttribute("referer_url", "/admin/shop_refund_return/list.jhtml");
+        return Constants.MSG_URL;
+    }
+
+    /**
+     * 跳到微信退款接口
+     */
+    public String toweichatrefundTL(WeiRefund weiRefund, Long id, String adminMessage, String weitype, Model model,
+                                  HttpServletRequest request) {
+        RequestContext requestContext = new RequestContext(request);
+
+        ShopRefundReturn refundReturn = refundReturnService.find(id);
+        ShopOrder shopOrder = orderService.find(refundReturn.getOrderId());
+
+        Map<String, Object> map = null;
+        if (weitype.equals("open_weichatpay")) {//微信开放平台退款
+            String backUrl = "";//后台通知地址
+            JSONArray refundList = new JSONArray();
+            JSONObject refundMember = new JSONObject();
+            //refundMember.accumulate("bizUserId",shopOrder.getBuyerId());//商户系统用户标识，商户系统中唯一编号
+            //refundMember.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);// 金额，单位：分
+            //refundList.add(refundMember);
+
+            String s = TongLianUtils.refundOrder(TongLianUtils.BIZ_USER_ID, shopOrder.getOrderSn(), shopOrder.getBuyerId().toString(), "D0", refundList,
+                    backUrl,shopOrder.getOrderAmount().longValue()*100,0l,0l,null);
+            if(!"".equals(s)) {
+                Map maps = (Map) JSON.parse(s);
+                String status = maps.get("status").toString();
+                String signedValue = maps.get("signedValue").toString();
+                if (status.equals("OK")) {
+                    Map okMap = (Map) JSON.parse(signedValue);
+                    String payStatus = okMap.get("payStatus").toString();//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
+                    if (payStatus.equals("fail")){
+                        String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
+                        map.put("result_code","FAIL");
+                        map.put("err_code_des","退款失败"+","+payFailMessage);
+                    }
+                    String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
+                    String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                    map.put("result_code","SUCCESS");
+                }else {
+                    map.put("result_code","FAIL");
+                    map.put("err_code_des","退款失败"+","+signedValue);
+                }
+            }else {
+                map.put("result_code","FAIL");
+                map.put("err_code_des","退款失败");
+            }
+            //map = wechatMobileRefundService.toRefund(weiRefund);
         } else if (weitype.equals("mp_weichatpay")) {//微信公共平台退款
             map = wechatRefundService.toRefund(weiRefund);
         }

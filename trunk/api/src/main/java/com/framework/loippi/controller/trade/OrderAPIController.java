@@ -1,10 +1,12 @@
 package com.framework.loippi.controller.trade;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.consts.PaymentTallyState;
@@ -61,6 +64,7 @@ import com.framework.loippi.result.app.order.OrderResult;
 import com.framework.loippi.result.app.order.OrderSubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.evaluate.EvaluateOrderGoodsResult;
+import com.framework.loippi.result.order.AppletsPayTLResult;
 import com.framework.loippi.result.order.RefundOrderResult;
 import com.framework.loippi.service.KuaidiService;
 import com.framework.loippi.service.RedisService;
@@ -94,6 +98,7 @@ import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.TongLianUtils;
 import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.order.ShopOrderVo;
 import com.framework.loippi.vo.refund.ReturnGoodsVo;
@@ -1378,4 +1383,410 @@ public class OrderAPIController extends BaseController {
         Map<String,Object> map=orderService.checkSuccessOrNo(member.getMmCode(),orderSn);
         return ApiUtils.success(map);
     }
+
+    /***************************通联接口***************************/
+
+    /**
+     * 通联
+     * 去付款
+     *
+     * @param paysn 支付订单编码
+     * @param paymentCode 支付代码名称: ZFB YL weiscan
+     * @param paymentId 支付方式索引id
+     * @param integration 积分
+     * @param paypassword 支付密码
+     * @param paymentType 1在线支付 2货到付款
+     */
+    @RequestMapping("/api/order/tl/pay")
+    @ResponseBody
+    public String payTlOrder(@RequestParam(value = "paysn") String paysn,
+                           @RequestParam(defaultValue = "pointsPaymentPlugin") String paymentCode,
+                           @RequestParam(defaultValue = "0") String paymentId,
+                           @RequestParam(defaultValue = "0") String integration,
+                           //@RequestParam(defaultValue = "0") Integer integration,
+                           @RequestParam(defaultValue = "0") String paypassword,
+                           @RequestParam(defaultValue = "1") Integer paymentType,
+                           HttpServletRequest request) {
+        if(integration==null&&"".equals(integration)){
+            return ApiUtils.error("请输入支付的积分金额");
+        }
+        int i = 0;
+        try {
+            String[] strings = integration.split("\\.");
+            String string = strings[0];
+            i = Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return ApiUtils.error("输入积分数额有误");
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        //处理购物积分
+        //获取购物积分购物比例
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
+        //if (integration != 0) {
+        if (i != 0) {
+            if (rdMmAccountInfo.getPaymentPwd() == null) {
+                return ApiUtils.error("你还未设置支付密码");
+            }
+            if (!Digests.validatePassword(paypassword, rdMmAccountInfo.getPaymentPwd())) {
+                return ApiUtils.error("支付密码错误");
+            }
+            if (rdMmAccountInfo.getWalletStatus() != 0) {
+                return ApiUtils.error("购物积分账户状态未激活或者已被冻结");
+            }
+            ShopOrderPay pay = orderPayService.findBySn(paysn);
+            //处理积分支付
+            orderService.ProcessingIntegrals(paysn, i, shopMember, pay, shoppingPointSr);
+            //orderService.ProcessingIntegrals(paysn, integration, shopMember, pay, shoppingPointSr);
+        }
+        List<ShopOrder> orderList = orderService.findList("paySn", paysn);
+        if (CollectionUtils.isEmpty(orderList)) {
+            return ApiUtils.error("订单不存在");
+        }
+
+        System.out.println("##########################################");
+        System.out
+                .println("###  订单支付编号：" + paysn + "  |  支付方式名称：" + paymentCode + " |  支付方式索引id：" + paymentId + "#########");
+        System.out.println("##########################################");
+        ShopOrderPay pay = orderPayService.findBySn(paysn);
+
+        //货到付款判断
+        if (paymentType == 2) {
+            if (pay.getPaymentType() != 2) {
+                return ApiUtils.error("该订单不是货到付款,请选择支付方式");
+            }
+        }
+        PayCommon payCommon = new PayCommon();
+        payCommon.setOutTradeNo(pay.getPaySn());
+        if ("balancePaymentPlugin".equals(paymentCode)) {
+            payCommon.setPayAmount(pay.getPayAmount());
+        } else {
+            //payCommon.setPayAmount(new BigDecimal(0.01));
+            payCommon.setPayAmount(pay.getPayAmount());
+        }
+        payCommon.setTitle("订单支付");
+        payCommon.setBody(pay.getPaySn() + "订单支付");
+        payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
+        payCommon.setReturnUrl(server + "/payment/payfront");
+        String sHtmlText = "";
+        Map<String, Object> model = new HashMap<String, Object>();
+        if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("alipayMobilePaymentPlugin")) {
+            orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            System.out.println("dd:" + PaymentTallyState.PAYMENTTALLY_TREM_PC);
+            paymentTallyService.savePaymentTally(paymentCode, "支付宝", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            //修改订单付款信息
+            sHtmlText = alipayMobileService.toPay(payCommon);//TODO
+            model.put("tocodeurl", sHtmlText);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("YL")) {
+            //修改订单付款信息
+            orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            paymentTallyService.savePaymentTally(paymentCode, "银联", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            sHtmlText = unionpayService.prePay(payCommon, request);//构造提交银联的表单
+            model.put("tocodeurl", sHtmlText);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("weixinMobilePaymentPlugin")) {
+            //修改订单付款信息
+            orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            paymentTallyService.savePaymentTally(paymentCode, "微信支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
+            model.put("tocodeurl", tocodeurl);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("balancePaymentPlugin")) {//余额支付
+//            Map<String, Object> data = orderService.payWallet(payCommon, member.getMmCode());
+//            model.putAll(data);
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("pointsPaymentPlugin")) {//积分全额支付
+            // TODO: 2018/12/18
+            //积分全额支付判断
+            if (paymentCode.equals("pointsPaymentPlugin")) {
+                if (pay.getPayAmount().compareTo(new BigDecimal(0)) != 0) {
+                    return ApiUtils.error("该订单不符合购物积分全抵现,请选择支付方式");
+                }
+            }
+            paymentTallyService.savePaymentTally(paymentCode, "积分全抵扣", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
+            Map<String, Object> data = orderService
+                    .updateOrderpay(payCommon, member.getMmCode(), "在线支付-购物积分", paymentCode, paymentId);
+            model.putAll(data);
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("cashOnDeliveryPlugin")) {//货到付款
+            // TODO: 2018/12/18
+            paymentTallyService.savePaymentTally(paymentCode, "货到付款", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
+            Map<String, Object> data = orderService
+                    .updateOrderpay(payCommon, member.getMmCode(), "货到付款", paymentCode, paymentId);
+            model.putAll(data);
+        }
+
+        return ApiUtils.success(model);
+    }
+
+
+
+    /**
+     * 通联接口 托管代收（支付）
+     * 小程序付款
+     *
+     * @param paysn 支付订单编码
+     * @param openId 微信返回的openId
+     * @param notifyUrl 回调地址
+     */
+    @RequestMapping("/api/order/applets/pay")
+    @ResponseBody
+    public String appletsPayTL(@RequestParam(value = "paysn") String paysn,@RequestParam(value = "openId") String openId,
+                             @RequestParam(value = "notifyUrl") String notifyUrl,HttpServletRequest request) {
+
+        //TODO  微信 通联
+        List<ShopOrder> orderList = orderService.findList("paySn", paysn);
+        if (CollectionUtils.isEmpty(orderList)) {
+            return ApiUtils.error("订单不存在");
+        }
+
+        ShopOrder shopOrder = orderList.get(0);
+        //收款列表
+        Map<String, Object> reciever = new LinkedHashMap<>();
+        reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);
+        reciever.put("amount",shopOrder.getOrderAmount().longValue()*100);
+        List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
+        /*JSONObject reciever = new JSONObject();
+        reciever.accumulate("bizUserId", TongLianUtils.BIZ_USER_ID);
+        reciever.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);*/
+        //JSONArray recieverList = new JSONArray();
+        recieverList.add(reciever);
+        //支付方式
+        Map<String, Object> object1 = new LinkedHashMap<>();
+        object1.put("limitPay","no_credit");//String 非贷记卡：no_credit 借、贷记卡：””需要传空字符串，不能不传
+        object1.put("amount",shopOrder.getOrderAmount().longValue()*100);//Long支付金额，单位：分
+        object1.put("acct",openId);//String  微信 JS 支付 openid——微信分配
+        Map<String, Object> payMethods = new LinkedHashMap<>();
+        payMethods.put("WECHATPAY_MINIPROGRAM",object1);
+        /*JSONObject object1 = new JSONObject();
+        object1.accumulate("limitPay","no_credit");//String 非贷记卡：no_credit 借、贷记卡：””需要传空字符串，不能不传
+        object1.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);//Long支付金额，单位：分
+        object1.accumulate("acct",openId);//String  微信 JS 支付 openid——微信分配
+        JSONObject payMethods = new JSONObject();
+        payMethods.accumulate("WECHATPAY_MINIPROGRAM",object1);*/
+        String s = TongLianUtils.agentCollectApply(shopOrder.getOrderSn(), shopOrder.getBuyerId().toString(), recieverList, 3l, null, "3001",
+                shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, null, notifyUrl, "",
+                payMethods, "", "", "1910", "其他", 1l, "", "");
+        if(!"".equals(s)){
+            Map maps = (Map) JSON.parse(s);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")){
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                String payStatus = okMap.get("payStatus").toString();//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
+                if (payStatus.equals("fail")){
+                    String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
+                    return ApiUtils.error("支付失败"+","+payFailMessage);
+                }
+                String orderNo = okMap.get("orderNo").toString();//通商云订单号
+                String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
+                String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                String tradeNo = okMap.get("tradeNo").toString();//交易编号
+
+                JSONObject weChatAPPInfo = (JSONObject)okMap.get("weChatAPPInfo");//微信 APP 支付 返回信息
+                JSONObject weiXinStr = (JSONObject)weChatAPPInfo.get("weixinstr");//微信 APP 支付 返回信息
+
+                String payInfo = okMap.get("payInfo").toString();//扫码支付信息/ JS 支付串信息（微信、支付宝、QQ 钱包）/微信小程序/微信原生 H5 支付串信息/支付宝原生 APP 支付串信息
+
+                Long validateType = (Long)okMap.get("validateType");//交易验证方式  当支付方式为收银宝快捷且 需验证短信验证码时才返回，返回值为“1”表示需继续调用 【确认支付（后台+短信验证码确认）】
+
+                AppletsPayTLResult result = new AppletsPayTLResult();
+                result.setPayStatus(payStatus);
+                result.setBizOrderNo(bizOrderNo);
+                result.setTradeNo(tradeNo);
+                result.setWeiXinStr(weiXinStr);
+                result.setPayInfo(payInfo);
+                result.setValidateType(validateType);
+                return ApiUtils.success(result);
+
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("支付失败"+","+message);
+            }
+        }else {
+            return ApiUtils.error("支付失败");
+        }
+
+    }
+
+    /**
+     * 通联接口 确认支付（后台+短信验证码确认）
+     * 小程序付款
+     *
+     * @param orderSn 订单申请的商户订单号 （支付订单）
+     * @param tradeNo  交易编号
+     * @param verificationCode  短信验证码
+     * @param consumerIp  ip 地址  用户公网 IP 用于分控校验 注：不能使用“127.0.0.1” “localhost”
+     */
+    @RequestMapping("/api/order/applets/confirm/pay")
+    @ResponseBody
+    public String confirmPay(@RequestParam(value = "orderSn") String orderSn,@RequestParam(value = "tradeNo") String tradeNo,
+                               @RequestParam(value = "verificationCode") String verificationCode,@RequestParam(value = "consumerIp") String consumerIp,
+                             HttpServletRequest request) {
+
+        String s = TongLianUtils.confirmPay(TongLianUtils.BIZ_USER_ID, orderSn, tradeNo, verificationCode, consumerIp);
+        if(!"".equals(s)) {
+            Map maps = (Map) JSON.parse(s);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                String payStatus = okMap.get("payStatus").toString();//成功：success 进行中：pending 失败：fail 支付状态发生变化时还将发送异步通知：提现在成功和失败都会通知商户；其他订单只在成功时通知商户。
+                if (payStatus.equals("fail")){
+                    String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
+                    return ApiUtils.error("支付失败"+","+payFailMessage);
+                }
+                String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
+                String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                return ApiUtils.success();
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("支付失败");
+            }
+        }else {
+            return ApiUtils.error("支付失败");
+        }
+    }
+
+    /**
+     * 通联接口 发送短信验证码
+     *
+     * @param mCode 商户系统用户标识，商户系统中唯一编号
+     * @param phone  手机号码
+     * @param verificationCodeType  验证码类型 9-绑定手机  6-解绑手机
+     */
+    @RequestMapping("/api/order/applets/sendVerificationCode")
+    @ResponseBody
+    public String sendVerificationCode(@RequestParam(value = "mCode") String mCode,@RequestParam(value = "phone") String phone,
+                              @RequestParam(value = "verificationCodeType") Long verificationCodeType,HttpServletRequest request) {
+        if (mCode==null||mCode.equals("")){
+            return ApiUtils.error("发送失败：会员编号为空");
+        }
+        if (phone==null||phone.trim().equals("")){
+            return ApiUtils.error("请输入手机号码");
+        }
+        String s = TongLianUtils.sendVerificationCode(mCode, phone, verificationCodeType);
+        if (!"".equals(s)){
+            Map maps = (Map) JSON.parse(s);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                //String signedValue = maps.get("signedValue").toString();
+                //Map okMap = (Map) JSON.parse(signedValue);
+                //String bizUserId = okMap.get("bizUserId").toString();
+                //String phoneBack = okMap.get("phone").toString();
+
+                return ApiUtils.success();
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("发送失败："+message);
+            }
+
+        }else {
+            return ApiUtils.error("发送失败");
+        }
+    }
+
+
+    /**
+     * 通联接口 解绑手机
+     *
+     * @param mCode 商户系统用户标识，商户系统中唯一编号
+     * @param phone  手机号码
+     * @param verificationCode  验证码
+     */
+    @RequestMapping("/api/order/applets/unbindPhone")
+    @ResponseBody
+    public String unbindPhone(@RequestParam(value = "mCode") String mCode,@RequestParam(value = "phone") String phone,
+                             @RequestParam(value = "verificationCode") String verificationCode,HttpServletRequest request) {
+
+        if (mCode==null||mCode.equals("")){
+            return ApiUtils.error("解绑失败：会员编号为空");
+        }
+        if (phone==null||phone.trim().equals("")){
+            return ApiUtils.error("请输入手机号码");
+        }
+        if (verificationCode==null||verificationCode.trim().equals("")){
+            return ApiUtils.error("请输入验证码");
+        }
+        String s = TongLianUtils.unbindPhone(mCode, phone, verificationCode);
+        if (!"".equals(s)){
+            Map maps = (Map) JSON.parse(s);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                String bizUserId = okMap.get("bizUserId").toString();
+                String phoneBack = okMap.get("phone").toString();
+                String result = okMap.get("result").toString();
+                if(result.equals("OK")){
+                    return ApiUtils.success("解绑成功");
+                }else {
+                    return ApiUtils.error("解绑失败");
+                }
+
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("解绑失败："+message);
+            }
+
+        }else {
+            return ApiUtils.error("解绑失败");
+        }
+    }
+
+    /**
+     * 通联接口 绑定手机
+     *
+     * @param mCode 商户系统用户标识，商户系统中唯一编号
+     * @param phone  手机号码
+     * @param verificationCode  验证码
+     */
+    @RequestMapping("/api/order/applets/bindPhone")
+    @ResponseBody
+    public String bindPhone(@RequestParam(value = "mCode") String mCode,@RequestParam(value = "phone") String phone,
+                             @RequestParam(value = "verificationCode") String verificationCode,HttpServletRequest request) {
+
+        if (mCode==null||mCode.equals("")){
+            return ApiUtils.error("绑定失败：会员编号为空");
+        }
+        if (phone==null||phone.trim().equals("")){
+            return ApiUtils.error("请输入手机号码");
+        }
+        if (verificationCode==null||verificationCode.trim().equals("")){
+            return ApiUtils.error("请输入验证码");
+        }
+        String s = TongLianUtils.bindPhone(mCode, phone, verificationCode);
+        if (!"".equals(s)){
+            Map maps = (Map) JSON.parse(s);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                String bizUserId = okMap.get("bizUserId").toString();
+                String phoneBack = okMap.get("phone").toString();
+                return ApiUtils.success("绑定成功");
+
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("绑定失败："+message);
+            }
+
+        }else {
+            return ApiUtils.error("绑定失败");
+        }
+    }
+
+
+
+
 }
