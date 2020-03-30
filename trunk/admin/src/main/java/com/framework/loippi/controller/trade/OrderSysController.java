@@ -39,6 +39,7 @@ import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.dto.OrderSplitDetail;
 import com.framework.loippi.dto.ShippingDto;
 import com.framework.loippi.dto.ShopExchangeOrderExcel;
 import com.framework.loippi.dto.ShopOrderExcel;
@@ -96,7 +97,6 @@ import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.TongLianUtils;
 import com.framework.loippi.utils.excel.ExportExcelUtils;
 import com.framework.loippi.vo.order.ShopOrderVo;
 import com.google.common.collect.Lists;
@@ -1671,15 +1671,83 @@ public class OrderSysController extends GenericController {
         }
     }
 
-
     /**
+     *
      * 订单分账查询
      * @param orderId
      * @param model
      * @param request
      * @return
      */
-    @RequestMapping(value = {"/admin/order/getOrderSplitDetail1"})
+    @RequestMapping(value = {"/admin/order/getOrderSplitDetail"})
+    public String getOrderSplitDetail(Long orderId, ModelMap model, HttpServletRequest request) {
+
+        ShopOrder order = orderService.find(orderId);
+        if (order==null){
+            model.addAttribute("msg", "找不到该订单");
+            model.addAttribute("referer", request.getHeader("Referer"));
+            return Constants.MSG_URL;
+        }
+
+        Integer cutStatus = order.getCutStatus();
+        if (cutStatus==null){
+            model.addAttribute("msg", "未分账");
+            model.addAttribute("referer", request.getHeader("Referer"));
+            return Constants.MSG_URL;
+        }else {
+            if(cutStatus==2){
+                BigDecimal orderAmount = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal cutAmount = Optional.ofNullable(order.getCutAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal firmSplitAmount = orderAmount.subtract(cutAmount).setScale(2,BigDecimal.ROUND_HALF_UP);
+                OrderSplitDetail detail = new OrderSplitDetail();
+                detail.setId(orderId);
+                detail.setOrderSn(order.getOrderSn());
+                detail.setOrderAmount(orderAmount);
+                detail.setFirmSplitAmount(firmSplitAmount);
+                detail.setCutGetId(Optional.ofNullable(order.getCutGetId()).orElse(""));
+
+                RdMmBasicInfo rdMmBasicInfo=rdMmBasicInfoService.find("mmCode",order.getCutGetId());
+                if (rdMmBasicInfo==null){
+                    detail.setCutGetName("");
+                }else {
+                    detail.setCutGetName(Optional.ofNullable(rdMmBasicInfo.getMmName()).orElse(""));
+                }
+
+                detail.setCutAcc(Optional.ofNullable(order.getCutAcc()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP));
+                model.addAttribute("detail", detail);
+            }else if (cutStatus==1){
+                model.addAttribute("msg", "不满足分账条件:"+Optional.ofNullable(order.getCutFailInfo()).orElse(""));
+                model.addAttribute("referer", request.getHeader("Referer"));
+                return Constants.MSG_URL;
+            }else if (cutStatus==3){
+                model.addAttribute("msg", "分账失败:"+Optional.ofNullable(order.getCutFailInfo()).orElse(""));
+                model.addAttribute("referer", request.getHeader("Referer"));
+                return Constants.MSG_URL;
+            }else if (cutStatus==4){
+                model.addAttribute("msg", "分账进行中");
+                model.addAttribute("referer", request.getHeader("Referer"));
+                return Constants.MSG_URL;
+            }else {
+                model.addAttribute("msg", "未分账");
+                model.addAttribute("referer", request.getHeader("Referer"));
+                return Constants.MSG_URL;
+            }
+        }
+
+        return "trade/shop_order/splitting_details";
+    }
+
+
+
+    /**
+     * 通联接口
+     * 订单分账查询
+     * @param orderId
+     * @param model
+     * @param request
+     * @return
+     */
+    /*@RequestMapping(value = {"/admin/order/getOrderSplitDetail1"})
     public String getOrderSplitDetail1(Long orderId, ModelMap model, HttpServletRequest request) {
 
         ShopOrder order = orderService.find(orderId);
@@ -1766,7 +1834,7 @@ public class OrderSysController extends GenericController {
             }
         }
         return returnMap;
-    }
+    }*/
 
 
 }

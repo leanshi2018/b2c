@@ -1,30 +1,35 @@
 package com.framework.loippi.controller;
 
-import com.framework.loippi.dto.WxJSApiResult;
-import com.framework.loippi.service.*;
-import com.framework.loippi.service.alipay.AlipayInternaService;
-import com.framework.loippi.service.alipay.AlipayMobileService;
-import com.framework.loippi.service.alipay.Alipayh5Service;
-import com.framework.loippi.service.union.UnionpayService;
-import com.framework.loippi.service.wechat.WechatH5Service;
-import com.framework.loippi.service.wechat.WechatMobileService;
-import com.framework.loippi.service.wechat.WechatScanService;
-import com.framework.loippi.utils.JacksonUtil;
-import com.framework.loippi.utils.wechat.h5.config.WachatContent;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import com.framework.loippi.dto.WxJSApiResult;
+import com.framework.loippi.service.BillService;
+import com.framework.loippi.service.TSystemPluginConfigService;
+import com.framework.loippi.service.alipay.AlipayInternaService;
+import com.framework.loippi.service.alipay.AlipayMobileService;
+import com.framework.loippi.service.alipay.Alipayh5Service;
+import com.framework.loippi.service.union.UnionpayService;
+import com.framework.loippi.service.wechat.WechatAppletsService;
+import com.framework.loippi.service.wechat.WechatH5Service;
+import com.framework.loippi.service.wechat.WechatMobileService;
+import com.framework.loippi.service.wechat.WechatScanService;
+import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.wechat.h5.config.WachatContent;
 
 /**
  * Created by longbh on 2017/8/5.
@@ -42,6 +47,8 @@ public class NotifyController {
     private UnionpayService unionpayService;
     @Resource
     private WechatMobileService wechatMobileService;
+    @Resource
+    private WechatAppletsService wechatAppletsService;
     @Resource
     private AlipayInternaService alipayInternaService;
     @Resource
@@ -69,6 +76,8 @@ public class NotifyController {
                 result = alipayMobileService.notifyCheck(request, sn);
             } else if ("unionpayMobilePaymentPlugin".equals(pluginId)) {//银联手机支付
                 result = unionpayService.notifyCheck(request, sn);
+            } else if ("weixinAppletsPaymentPlugin".equals(pluginId)) {//微信小程序支付
+                result = wechatAppletsService.notifyCheck(request, response, sn);
             } else if ("weixinMobilePaymentPlugin".equals(pluginId)) {//微信手机支付
                 result = wechatMobileService.notifyCheck(request, response, sn);
             } else if ("weixinInternaPaymentPlugin".equals(pluginId)) {//微信国际支付

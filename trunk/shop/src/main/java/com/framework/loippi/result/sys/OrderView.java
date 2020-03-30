@@ -180,6 +180,10 @@ public class OrderView {
     private Integer submitStatus;
     private String failInfo;
 
+    /**
+     *订单关联通联支付分账状态 0:未分账 1:不满足分账条件 2:已经分账  3:分账失败 4.分账进行中
+     */
+    private Integer cutStatus;
 
 
 

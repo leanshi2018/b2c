@@ -29,6 +29,7 @@ public class TongLianUtils {
 	//public static final String TL_CERT_PATH = "C:\\Users\\LDQ\\Desktop\\tongliansign\\TLCert-test.cer";
 	public static final String VERSION = "2.0";//接口版本
 	public static final String BIZ_USER_ID = "201807170002";//商户系统用户标识，商户系统中唯一编号    公司编号
+	public static final String ACCOUNT_SET_NO = "";//通商云分配的托管专用账户 集的编号
 
 	public static void getRequest() {
 		//final String serverUrl = "https://fintech.allinpay.com/service/soa"; //测试环境请咨询对接人员
@@ -400,14 +401,16 @@ public class TongLianUtils {
 	/**
 	 * 查询绑定银行卡
 	 * @param bizUserId  商户系统用户标识，商户系统中唯一编号
-	 * @param cardNo  银行卡号。如为空，则返回用户所有绑定银行卡。  RSA 加密  加密算法：RSA，将加密后的字节组转换为 16 进制字符串（大写）
+	 * @param cardNo  银行卡号。如为空，则返回用户所有绑定银行卡。  RSA 加密  加密算法：RSA，将加密后的字节组转换为 16 进制字符串（大写）  否
 	 * @return
 	 */
 	public static String queryBankCard(String bizUserId,String cardNo) {
 		getRequest();
 		final YunRequest request = new YunRequest("MemberService", "queryBankCard");
 		request.put("bizUserId", bizUserId);
-		request.put("cardNo", cardNo);
+		if(!"".equals(cardNo)){
+			request.put("cardNo", cardNo);
+		}
 		try {
 			String s = YunClient.request(request);
 			return s;
@@ -441,6 +444,53 @@ public class TongLianUtils {
 			e.printStackTrace();
 		}
 		return "";
+	}
+
+	/**
+	 * 查询账户收支明细
+	 * @param bizUserId  商户系统用户标识，商户 系统中唯一编号。
+	 * @param accountSetNo  收款人的账户集编号。 个人会员、企业会员填写托 管专用账户集编号。如果不 传，则查询该用户下所有现 金账户的收支明细。  否
+	 * @param dateStart  开始日期 yyyy-MM-dd，
+	 * @param dateEnd  结束日期  yyyy-MM-dd，最多允许查 3 个月内，跨度建议不超过 7 天
+	 * @param startPosition 起始位置 取值>0 eg：查询第 11 条到 20 条的 记录（start =11）
+	 * @param queryNum  查询条数 eg：查询第 11 条到 20 条的 记录（queryNum =10），查 询条数最多 5000
+	 * @return
+	 */
+	public static String queryInExpDetail(String bizUserId,String accountSetNo,String dateStart,String dateEnd,Long startPosition,Long queryNum) {
+		getRequest();
+		final YunRequest request = new YunRequest("OrderService", "queryInExpDetail");
+		request.put("bizUserId", bizUserId);
+		//request.put("accountSetNo", accountSetNo);
+		request.put("dateStart", dateStart);
+		request.put("dateEnd", dateEnd);
+		request.put("startPosition", startPosition);
+		request.put("queryNum", queryNum);
+		try {
+			String s = YunClient.request(request);
+			return s;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+
+	/**
+	 * 16进制表示的字符串转换为字节数组
+	 *
+	 * @param hexString 16进制表示的字符串
+	 * @return byte[] 字节数组
+	 */
+	public static byte[] hexStringToByteArray(String hexString) {
+		hexString = hexString.replaceAll(" ", "");
+		int len = hexString.length();
+		byte[] bytes = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			// 两位一组，表示一个字节,把这样表示的16进制字符串，还原成一个字节
+			bytes[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4) + Character
+					.digit(hexString.charAt(i+1), 16));
+		}
+		return bytes;
 	}
 
 	/**

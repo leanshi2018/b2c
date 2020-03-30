@@ -40,15 +40,27 @@
 		<result property="mmAvatar" column="MM_AVATAR" />
 		<result property="shareNum" column="SHARE_NUM" />
 		<result property="pushStatus" column="PUSH_STATUS" />
+		<!--通联-->
+		<result property="tongLianId" column="TONG_LIAN_ID" />
+		<result property="whetherTureName" column="WHETHER_TURE_NAME" />
+		<result property="allInContractStatus" column="ALL_IN_CONTRACT_STATUS" />
+		<result property="contractNo" column="CONTRACT_NO" />
+		<result property="allInPayPhoneStatus" column="ALL_IN_PAY_PHONE_STATUS" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 MM_ID ,MM_CODE ,MM_NAME ,MM_NICK_NAME ,ID_TYPE ,ID_CODE ,GENDER ,BIRTHDATE ,EMAIL ,NATION_ID ,ADD_PROVINCE_ID ,ADD_CITY_ID ,ADD_COUNTRY_ID ,ADD_TOWN_ID ,ADD_DETIAL ,ADD_POST ,MOBILE ,WECHAT_CODE ,QQ_CODE ,FACEBOOK_CODE ,PHONE ,CREATION_SOURCE ,CREATION_IP ,CREATION_DATE ,CREATION_BY ,CREATION_PERIOD ,UPDATE_SOURCE ,UPDATE_IP ,UPDATE_DATE ,UPDATE_BY ,UPDATE_PERIOD ,MM_AVATAR,SHARE_NUM,PUSH_STATUS
+		 MM_ID ,MM_CODE ,MM_NAME ,MM_NICK_NAME ,ID_TYPE ,ID_CODE ,GENDER ,BIRTHDATE ,EMAIL ,NATION_ID ,ADD_PROVINCE_ID ,ADD_CITY_ID ,ADD_COUNTRY_ID ,ADD_TOWN_ID ,
+		 ADD_DETIAL ,ADD_POST ,MOBILE ,WECHAT_CODE ,QQ_CODE ,FACEBOOK_CODE ,PHONE ,CREATION_SOURCE ,CREATION_IP ,CREATION_DATE ,CREATION_BY ,CREATION_PERIOD ,
+		 UPDATE_SOURCE ,UPDATE_IP ,UPDATE_DATE ,UPDATE_BY ,UPDATE_PERIOD ,MM_AVATAR,SHARE_NUM,PUSH_STATUS,TONG_LIAN_ID,WHETHER_TURE_NAME,ALL_IN_CONTRACT_STATUS,
+		 CONTRACT_NO,ALL_IN_PAY_PHONE_STATUS
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{mmId},#{mmCode},#{mmName},#{mmNickName},#{idType},#{idCode},#{gender},#{birthdate},#{email},#{nationId},#{addProvinceId},#{addCityId},#{addCountryId},#{addTownId},#{addDetial},#{addPost},#{mobile},#{wechatCode},#{qqCode},#{facebookCode},#{phone},#{creationSource},#{creationIp},#{creationDate},#{creationBy},#{creationPeriod},#{updateSource},#{updateIp},#{updateDate},#{updateBy},#{updatePeriod},#{mmAvatar},#{shareNum},#{pushStatus}
+		 #{mmId},#{mmCode},#{mmName},#{mmNickName},#{idType},#{idCode},#{gender},#{birthdate},#{email},#{nationId},#{addProvinceId},#{addCityId},#{addCountryId},
+		 #{addTownId},#{addDetial},#{addPost},#{mobile},#{wechatCode},#{qqCode},#{facebookCode},#{phone},#{creationSource},#{creationIp},#{creationDate},#{creationBy},
+		 #{creationPeriod},#{updateSource},#{updateIp},#{updateDate},#{updateBy},#{updatePeriod},#{mmAvatar},#{shareNum},#{pushStatus},#{tongLianId},#{whetherTureName},
+		 #{allInContractStatus},#{contractNo},#{allInPayPhoneStatus}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -155,6 +167,23 @@
 		<if test="pushStatus != null and pushStatus != ''">
 			AND PUSH_STATUS = #{pushStatus}
 		</if>
+
+		<if test="tongLianId != null and tongLianId != ''">
+			AND TONG_LIAN_ID = #{tongLianId}
+		</if>
+		<if test="whetherTureName != null ">
+			AND WHETHER_TURE_NAME = #{whetherTureName}
+		</if>
+		<if test="allInContractStatus != null ">
+			AND ALL_IN_CONTRACT_STATUS = #{allInContractStatus}
+		</if>
+		<if test="contractNo != null and contractNo != ''">
+			AND CONTRACT_NO = #{contractNo}
+		</if>
+		<if test="allInPayPhoneStatus != null ">
+			AND ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus}
+		</if>
+
 		<if test="info !=null and info != ''">
 			AND (MOBILE like CONCAT('%',#{info},'%') or MM_NICK_NAME like CONCAT('%',#{info},'%')or MM_CODE like CONCAT('%',#{info},'%'))
 		</if>
@@ -272,6 +301,22 @@
 		</if>
 		<if test="pushStatus != null and pushStatus != ''">
 			 PUSH_STATUS = #{pushStatus},
+		</if>
+
+		<if test="tongLianId != null and tongLianId != ''">
+			TONG_LIAN_ID = #{tongLianId},
+		</if>
+		<if test="whetherTureName != null">
+			WHETHER_TURE_NAME = #{whetherTureName},
+		</if>
+		<if test="allInContractStatus != null ">
+			ALL_IN_CONTRACT_STATUS = #{allInContractStatus},
+		</if>
+		<if test="contractNo != null and contractNo != ''">
+			CONTRACT_NO = #{contractNo},
+		</if>
+		<if test="allInPayPhoneStatus != null ">
+			ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus},
 		</if>
 	</sql>
 
