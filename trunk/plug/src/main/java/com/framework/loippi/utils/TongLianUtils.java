@@ -24,9 +24,9 @@ public class TongLianUtils {
 	public static final String PWD = "123456";//商户私钥密码
 	public static final String ALIAS = "1902271423530473681";//商户公钥证书
 	public static final String PATH = "C:\\Users\\Administrator\\Desktop\\sign\\1902271423530473681.pfx";//pfx证书路径
-	//public static final String PATH =  "C:\\Users\\LDQ\\Desktop\\tongliansign\\1902271423530473681.pfx";
+	//public static final String PATH =  "F:\sign\\1902271423530473681.pfx";
 	public static final String TL_CERT_PATH = "C:\\Users\\Administrator\\Desktop\\sign\\TLCert-test.cer";//cer证书路径
-	//public static final String TL_CERT_PATH = "C:\\Users\\LDQ\\Desktop\\tongliansign\\TLCert-test.cer";
+	//public static final String TL_CERT_PATH = "F:\sign\\TLCert-test.cer";
 	public static final String VERSION = "2.0";//接口版本
 	public static final String BIZ_USER_ID = "201807170002";//商户系统用户标识，商户系统中唯一编号    公司编号
 	public static final String ACCOUNT_SET_NO = "";//通商云分配的托管专用账户 集的编号

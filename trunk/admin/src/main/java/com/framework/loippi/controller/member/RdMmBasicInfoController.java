@@ -2,13 +2,7 @@ package com.framework.loippi.controller.member;
 
 import cn.jiguang.common.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.alibaba.fastjson.JSON;
-import com.allinpay.yunst.sdk.YunClient;
-import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
-import com.framework.loippi.dto.BindCardDto;
-import com.framework.loippi.dto.MemberWalletInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdRanksService;
@@ -33,7 +22,6 @@ import com.framework.loippi.support.Message;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.TongLianUtils;
 
 /**
  * Controller - 会员基础信息
@@ -164,7 +152,7 @@ public class RdMmBasicInfoController extends GenericController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/getMemberWalletInfo", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/getMemberWalletInfo", method = RequestMethod.GET)
 	public String getMemberWalletInfo(String mCode, ModelMap model, HttpServletRequest request) throws Exception {
 		if (mCode==null){
 			model.addAttribute("msg", "mCode未空");
@@ -282,5 +270,5 @@ public class RdMmBasicInfoController extends GenericController {
 
 		model.addAttribute("MemberWalletInfo", MemberWalletInfo.build(rdMmBasicInfo,bindCardDtoList,allAmount,freezeAmount,cardNoDecrypt,name,phone,userState));
 		return "";
-	}
+	}*/
 }

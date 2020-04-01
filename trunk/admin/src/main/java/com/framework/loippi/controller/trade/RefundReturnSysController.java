@@ -5,6 +5,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -389,6 +390,21 @@ public class RefundReturnSysController extends GenericController {
                 model.addAttribute("msg", "退款金额应输入数字");
                 return backurl;
             }
+
+            if (shopOrder.getShippingTime()!=null){//TODO 2020.3.30
+                Date shippingTime = shopOrder.getShippingTime();
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(shippingTime);
+                calendar.add(Calendar.DATE,15);
+                Date lastDate =  calendar.getTime();
+
+                if (lastDate.getTime()<new Date().getTime()){
+                    model.addAttribute("msg", "超过15天内可售后时间");
+                    return backurl;
+                }
+            }
+
             refundReturn.setRefundAmount(money);
             //refundReturn.setPpv(BigDecimal.valueOf(refundPpv));
             refundReturn.setPpv(new BigDecimal(refundPpv));

@@ -1,7 +1,6 @@
 package com.framework.loippi.controller.trade;
 
 import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -1593,8 +1592,8 @@ public class OrderAPIController extends BaseController {
                 String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
                 String tradeNo = okMap.get("tradeNo").toString();//交易编号
 
-                JSONObject weChatAPPInfo = (JSONObject)okMap.get("weChatAPPInfo");//微信 APP 支付 返回信息
-                JSONObject weiXinStr = (JSONObject)weChatAPPInfo.get("weixinstr");//微信 APP 支付 返回信息
+                Map<String, Object> weChatAPPInfo = (Map<String, Object>)okMap.get("weChatAPPInfo");//微信 APP 支付 返回信息
+                Map<String, Object> weiXinStr = (Map<String, Object>)weChatAPPInfo.get("weixinstr");//微信 APP 支付 返回信息
 
                 String payInfo = okMap.get("payInfo").toString();//扫码支付信息/ JS 支付串信息（微信、支付宝、QQ 钱包）/微信小程序/微信原生 H5 支付串信息/支付宝原生 APP 支付串信息
 
@@ -1661,21 +1660,21 @@ public class OrderAPIController extends BaseController {
     /**
      * 通联接口 发送短信验证码
      *
-     * @param mCode 商户系统用户标识，商户系统中唯一编号
      * @param phone  手机号码
      * @param verificationCodeType  验证码类型 9-绑定手机  6-解绑手机
      */
     @RequestMapping("/api/order/applets/sendVerificationCode")
     @ResponseBody
-    public String sendVerificationCode(@RequestParam(value = "mCode") String mCode,@RequestParam(value = "phone") String phone,
-                              @RequestParam(value = "verificationCodeType") Long verificationCodeType,HttpServletRequest request) {
-        if (mCode==null||mCode.equals("")){
-            return ApiUtils.error("发送失败：会员编号为空");
-        }
+    public String sendVerificationCode(@RequestParam(value = "phone") String phone,@RequestParam(value = "verificationCodeType") Long verificationCodeType,
+                                       HttpServletRequest request) {
+
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(com.framework.loippi.utils.Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
         if (phone==null||phone.trim().equals("")){
             return ApiUtils.error("请输入手机号码");
         }
-        String s = TongLianUtils.sendVerificationCode(mCode, phone, verificationCodeType);
+        String s = TongLianUtils.sendVerificationCode(member.getMmCode(), phone, verificationCodeType);
         if (!"".equals(s)){
             Map maps = (Map) JSON.parse(s);
             String status = maps.get("status").toString();
@@ -1700,25 +1699,24 @@ public class OrderAPIController extends BaseController {
     /**
      * 通联接口 解绑手机
      *
-     * @param mCode 商户系统用户标识，商户系统中唯一编号
      * @param phone  手机号码
      * @param verificationCode  验证码
      */
     @RequestMapping("/api/order/applets/unbindPhone")
     @ResponseBody
-    public String unbindPhone(@RequestParam(value = "mCode") String mCode,@RequestParam(value = "phone") String phone,
+    public String unbindPhone(@RequestParam(value = "phone") String phone,
                              @RequestParam(value = "verificationCode") String verificationCode,HttpServletRequest request) {
 
-        if (mCode==null||mCode.equals("")){
-            return ApiUtils.error("解绑失败：会员编号为空");
-        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(com.framework.loippi.utils.Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
         if (phone==null||phone.trim().equals("")){
             return ApiUtils.error("请输入手机号码");
         }
         if (verificationCode==null||verificationCode.trim().equals("")){
             return ApiUtils.error("请输入验证码");
         }
-        String s = TongLianUtils.unbindPhone(mCode, phone, verificationCode);
+        String s = TongLianUtils.unbindPhone(member.getMmCode(), phone, verificationCode);
         if (!"".equals(s)){
             Map maps = (Map) JSON.parse(s);
             String status = maps.get("status").toString();
@@ -1747,25 +1745,24 @@ public class OrderAPIController extends BaseController {
     /**
      * 通联接口 绑定手机
      *
-     * @param mCode 商户系统用户标识，商户系统中唯一编号
      * @param phone  手机号码
      * @param verificationCode  验证码
      */
     @RequestMapping("/api/order/applets/bindPhone")
     @ResponseBody
-    public String bindPhone(@RequestParam(value = "mCode") String mCode,@RequestParam(value = "phone") String phone,
+    public String bindPhone(@RequestParam(value = "phone") String phone,
                              @RequestParam(value = "verificationCode") String verificationCode,HttpServletRequest request) {
 
-        if (mCode==null||mCode.equals("")){
-            return ApiUtils.error("绑定失败：会员编号为空");
-        }
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(com.framework.loippi.utils.Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
         if (phone==null||phone.trim().equals("")){
             return ApiUtils.error("请输入手机号码");
         }
         if (verificationCode==null||verificationCode.trim().equals("")){
             return ApiUtils.error("请输入验证码");
         }
-        String s = TongLianUtils.bindPhone(mCode, phone, verificationCode);
+        String s = TongLianUtils.bindPhone(member.getMmCode(), phone, verificationCode);
         if (!"".equals(s)){
             Map maps = (Map) JSON.parse(s);
             String status = maps.get("status").toString();

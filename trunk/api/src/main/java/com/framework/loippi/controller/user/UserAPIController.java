@@ -1570,24 +1570,26 @@ public class UserAPIController extends BaseController {
     /**
      * 我的钱包
      * @param request
-     * @param mCode
      * @return
      */
     @RequestMapping(value = "/selfWallet.json", method = RequestMethod.POST)
-    public String selfWallet(HttpServletRequest request, String mCode) {
-        if (StringUtils.isEmpty(mCode)){
-            return ApiUtils.error("该会员编号为空");
+    public String selfWallet(HttpServletRequest request) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        if (StringUtils.isEmpty(member.getMmCode())){
+            return ApiUtils.error("该会员未登陆");
         }
 
         //会员基础信息
-        RdMmBasicInfo basicInfo = mmBasicInfoService.findByMCode(mCode);
+        RdMmBasicInfo basicInfo = mmBasicInfoService.findByMCode(member.getMmCode());
         if (basicInfo==null){
             return ApiUtils.error("找不到该会员信息！");
         }
 
         Long allAmount = 0l;//总额
         Long freezeAmount = 0l;//冻结额
-        String resBalance = TongLianUtils.queryBalance(mCode, TongLianUtils.ACCOUNT_SET_NO);
+        String resBalance = TongLianUtils.queryBalance(member.getMmCode(), TongLianUtils.ACCOUNT_SET_NO);
         if(!"".equals(resBalance)) {
             Map maps = (Map) JSON.parse(resBalance);
             String status = maps.get("status").toString();
@@ -1612,20 +1614,22 @@ public class UserAPIController extends BaseController {
     /**
      * 钱包收支明细
      * @param request
-     * @param mCode
      * @param currentPage  页码
      * @param queryNumInt  查询条数 eg：查询第 11 条到 20 条的 记录（queryNum =10），查询条数最多 5000
      * @return
      */
     @RequestMapping(value = "/walletDetail.json", method = RequestMethod.POST)
-    public String walletDetail(HttpServletRequest request, String mCode,
+    public String walletDetail(HttpServletRequest request,
                                /*@RequestParam(value = "dateStart",required = false,defaultValue = "") String dateStart,
                                @RequestParam(value = "dateEnd",required = false,defaultValue = "") String dateEnd,*/
                                @RequestParam(value = "currentPage",required = false,defaultValue = "1") Integer currentPage,
                                @RequestParam(value = "queryNum",required = false,defaultValue = "10") Integer queryNumInt) {
 
-        if (StringUtils.isEmpty(mCode)){
-            return ApiUtils.error("该会员编号为空");
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        if (StringUtils.isEmpty(member.getMmCode())){
+            return ApiUtils.error("该会员未登陆");
         }
         /*if (StringUtils.isEmpty(dateStart)){
             return ApiUtils.error("开始日期为空");
@@ -1646,7 +1650,7 @@ public class UserAPIController extends BaseController {
         Long startPosition = Long.parseLong(String.valueOf((currentPage-1)*10+1));//起始位置 取值>0 eg：查询第 11 条到 20条的 记录（start =11）
         Long queryNum = Long.parseLong(String.valueOf(queryNumInt));
         List<Map<String, Object>> inExpDetail = new ArrayList<>();
-        String resBalance = TongLianUtils.queryInExpDetail(mCode, "",dateStart,dateEnd,startPosition,queryNum);
+        String resBalance = TongLianUtils.queryInExpDetail(member.getMmCode(), "",dateStart,dateEnd,startPosition,queryNum);
         if(!"".equals(resBalance)) {
             Map maps = (Map) JSON.parse(resBalance);
             String status = maps.get("status").toString();
