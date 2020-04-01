@@ -177,6 +177,7 @@
 		<if test="allInPayPhoneStatus != null and allInPayPhoneStatus != ''">
 			AND ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus,jdbcType=INTEGER}
 		</if>
+
 		<if test="info !=null and info != ''">
 			AND (MOBILE like CONCAT('%',#{info},'%') or MM_NICK_NAME like CONCAT('%',#{info},'%')or MM_CODE like CONCAT('%',#{info},'%'))
 		</if>
@@ -295,20 +296,21 @@
 		<if test="pushStatus != null and pushStatus != ''">
 			 PUSH_STATUS = #{pushStatus},
 		</if>
+
 		<if test="tongLianId != null and tongLianId != ''">
 			TONG_LIAN_ID = #{tongLianId},
 		</if>
-		<if test="whetherTrueName != null and whetherTrueName != ''">
-			WHETHER_TURE_NAME = #{whetherTrueName,jdbcType=INTEGER},
+		<if test="whetherTureName != null">
+			WHETHER_TURE_NAME = #{whetherTureName},
 		</if>
-		<if test="allInContractStatus != null and allInContractStatus != ''">
-			ALL_IN_CONTRACT_STATUS = #{allInContractStatus,jdbcType=INTEGER},
+		<if test="allInContractStatus != null ">
+			ALL_IN_CONTRACT_STATUS = #{allInContractStatus},
 		</if>
 		<if test="contractNo != null and contractNo != ''">
-			CONTRACT_NO = #{contractNo,jdbcType=VARCHAR},
+			CONTRACT_NO = #{contractNo},
 		</if>
-		<if test="allInPayPhoneStatus != null and allInPayPhoneStatus != ''">
-			ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus,jdbcType=INTEGER},
+		<if test="allInPayPhoneStatus != null ">
+			ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus},
 		</if>
 	</sql>
 

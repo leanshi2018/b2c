@@ -3,7 +3,8 @@ package com.framework.loippi.result.order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.sf.json.JSONObject;
+
+import java.util.Map;
 
 /**
  * @author :ldq
@@ -30,7 +31,7 @@ public class AppletsPayTLResult {
 	/**
 	 * 微信 APP 支付 返回信息
 	 */
-	private JSONObject weiXinStr;
+	private Map<String, Object> weiXinStr;
 	/**
 	 * 扫码支付信息/ JS 支付串信息（微信、支付宝、QQ 钱包）/微信小程序/微信原生 H5 支付串信息/支付宝原生 APP 支付串信息
 	 */

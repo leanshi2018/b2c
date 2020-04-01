@@ -3,6 +3,7 @@ package com.framework.loippi.controller.user;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.BankCardsListResult;
 import com.framework.loippi.result.user.PersonCenterResult;
 import com.framework.loippi.result.user.SelfPerformanceResult;
+import com.framework.loippi.result.user.SelfWalletResult;
 import com.framework.loippi.result.user.SubordinateUserInformationResult;
 import com.framework.loippi.result.user.UserCollectResult;
 import com.framework.loippi.result.user.UserFootprintsResult;
@@ -83,6 +85,7 @@ import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.PostUtil;
 import com.framework.loippi.utils.SmsUtil;
 import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.TongLianUtils;
 import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.utils.qiniu.QiniuConfig;
 import com.framework.loippi.vo.address.MemberAddresVo;
@@ -1563,4 +1566,128 @@ public class UserAPIController extends BaseController {
         }
 
     }
+
+    /******************************************通联接口 2020.3.25 ldq*********************************************************/
+    /**
+     * 我的钱包
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/selfWallet.json", method = RequestMethod.POST)
+    public String selfWallet(HttpServletRequest request) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        if (StringUtils.isEmpty(member.getMmCode())){
+            return ApiUtils.error("该会员未登陆");
+        }
+
+        //会员基础信息
+        RdMmBasicInfo basicInfo = mmBasicInfoService.findByMCode(member.getMmCode());
+        if (basicInfo==null){
+            return ApiUtils.error("找不到该会员信息！");
+        }
+
+        Long allAmount = 0l;//总额
+        Long freezeAmount = 0l;//冻结额
+        String resBalance = TongLianUtils.queryBalance(member.getMmCode(), TongLianUtils.ACCOUNT_SET_NO);
+        if(!"".equals(resBalance)) {
+            Map maps = (Map) JSON.parse(resBalance);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                 allAmount = Optional.ofNullable(Long.valueOf(okMap.get("allAmount").toString())).orElse(0l);//总额
+                 freezeAmount =  Optional.ofNullable(Long.valueOf(okMap.get("freezenAmount").toString())).orElse(0l);//冻结额
+
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("通联接口发生错误："+message);
+            }
+        }else {
+            return ApiUtils.error("通联接口调取失败");
+        }
+
+        return ApiUtils.success(SelfWalletResult.build1(basicInfo,allAmount,freezeAmount));
+    }
+
+
+    /**
+     * 钱包收支明细
+     * @param request
+     * @param currentPage  页码
+     * @param queryNumInt  查询条数 eg：查询第 11 条到 20 条的 记录（queryNum =10），查询条数最多 5000
+     * @return
+     */
+    @RequestMapping(value = "/walletDetail.json", method = RequestMethod.POST)
+    public String walletDetail(HttpServletRequest request,
+                               /*@RequestParam(value = "dateStart",required = false,defaultValue = "") String dateStart,
+                               @RequestParam(value = "dateEnd",required = false,defaultValue = "") String dateEnd,*/
+                               @RequestParam(value = "currentPage",required = false,defaultValue = "1") Integer currentPage,
+                               @RequestParam(value = "queryNum",required = false,defaultValue = "10") Integer queryNumInt) {
+
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        if (StringUtils.isEmpty(member.getMmCode())){
+            return ApiUtils.error("该会员未登陆");
+        }
+        /*if (StringUtils.isEmpty(dateStart)){
+            return ApiUtils.error("开始日期为空");
+        }
+        if (StringUtils.isEmpty(dateEnd)){
+            return ApiUtils.error("结束日期为空");
+        }*/
+
+        java.text.SimpleDateFormat form = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String dateStart = form.format(new Date());//dateStart 开始日期 yyyy-MM-dd，
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MONTH,-1);
+        String dateEnd = form.format(calendar.getTime());//dateEnd 结束日期  yyyy-MM-dd，最多允许查 3 个月内，跨度建议不超过 7 天
+
+
+        Long startPosition = Long.parseLong(String.valueOf((currentPage-1)*10+1));//起始位置 取值>0 eg：查询第 11 条到 20条的 记录（start =11）
+        Long queryNum = Long.parseLong(String.valueOf(queryNumInt));
+        List<Map<String, Object>> inExpDetail = new ArrayList<>();
+        String resBalance = TongLianUtils.queryInExpDetail(member.getMmCode(), "",dateStart,dateEnd,startPosition,queryNum);
+        if(!"".equals(resBalance)) {
+            Map maps = (Map) JSON.parse(resBalance);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号
+                Long totalNum = Long.valueOf(okMap.get("totalNum").toString());//该账户收支明细总条数
+                inExpDetail = (List<Map<String, Object>>)okMap.get("inExpDetail");//收支明细
+                /*for (Map<String, Object> detailMap : inExpDetail) {
+                    String tradeNo = detailMap.get("tradeNo").toString();//收支明细流水号
+                    String accountSetName = detailMap.get("accountSetName").toString();//账户集名称
+                    String changeTime = detailMap.get("changeTime").toString();// 变更时间
+                    Long curAmount = Long.valueOf(detailMap.get("curAmount").toString());//现有金额
+                    Long oriAmount = Long.valueOf(detailMap.get("oriAmount").toString());//原始金额
+                    Long chgAmount = Long.valueOf(detailMap.get("chgAmount").toString());//变更金额
+                    Long curFreezenAmount = Long.valueOf(detailMap.get("curFreezenAmount").toString());//变更金额
+                    //String bizOrderNo = detailMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                    //String extendInfo = detailMap.get("extendInfo").toString();//备注
+                }*/
+
+
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("通联接口发生错误："+message);
+            }
+        }else {
+            return ApiUtils.error("通联接口调取失败");
+        }
+
+        if (inExpDetail.size()>0){
+            return ApiUtils.success(inExpDetail);
+        }
+
+        return ApiUtils.error("没有明细");
+    }
+
+
 }

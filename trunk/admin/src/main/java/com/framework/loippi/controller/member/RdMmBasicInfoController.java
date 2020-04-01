@@ -1,33 +1,27 @@
 package com.framework.loippi.controller.member;
 
 import cn.jiguang.common.utils.StringUtils;
-import com.framework.loippi.controller.GenericController;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdRanksService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.validator.DateUtils;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
 import javax.annotation.Resource;
 
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.support.Message;
+import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.Paramap;
 
 /**
  * Controller - 会员基础信息
@@ -47,7 +41,6 @@ public class RdMmBasicInfoController extends GenericController {
 	/**
 	 * 跳转添加页面
 	 * 
-	 * @param id
 	 * @param model
 	 * @return
 	 */
@@ -123,7 +116,7 @@ public class RdMmBasicInfoController extends GenericController {
 		return SUCCESS_MESSAGE;
 	}
 
-	    @RequestMapping(value = "/listDialog")
+	@RequestMapping(value = "/listDialog")
     public ModelAndView listDialog(
             Model model,
             @RequestParam(required = false, value = "pageNo", defaultValue = "") String pageNo,
@@ -152,4 +145,130 @@ public class RdMmBasicInfoController extends GenericController {
         // 转发请求到FTL页面
         return modelAndView;
     }
+
+    /*******************************************************通联接口*********************************************************/
+	/**TODO
+	 * 会员钱包管理页面
+	 * @param model
+	 * @return
+	 */
+	/*@RequestMapping(value = "/getMemberWalletInfo", method = RequestMethod.GET)
+	public String getMemberWalletInfo(String mCode, ModelMap model, HttpServletRequest request) throws Exception {
+		if (mCode==null){
+			model.addAttribute("msg", "mCode未空");
+			model.addAttribute("referer", request.getHeader("Referer"));
+			return Constants.MSG_URL;
+		}
+		RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.findByMCode(mCode);
+		if (rdMmBasicInfo==null){
+			model.addAttribute("msg", "找不到该会员基础信息");
+			model.addAttribute("referer", request.getHeader("Referer"));
+			return Constants.MSG_URL;
+		}
+
+		Long userState = 0l;
+		String name = "";
+		String phone = "";
+		String cardNoDecrypt = "";
+		String s = TongLianUtils.getMemberInfo(mCode);
+		if(!"".equals(s)) {
+			Map maps = (Map) JSON.parse(s);
+			String status = maps.get("status").toString();
+			if (status.equals("OK")) {
+				String signedValue = maps.get("signedValue").toString();
+				Map okMap = (Map) JSON.parse(signedValue);
+				//Long memberType = Optional.ofNullable(Long.valueOf(okMap.get("memberType").toString())).orElse(0l);// 会员类型 2企业 3个人
+				Map<String, Object> freezeAmount =  (Map<String, Object>)okMap.get("freezeAmount");//会员信息 否
+				if (freezeAmount!=null){
+					userState = Long.valueOf(freezeAmount.get("userState").toString());//用户状态。  1有效  3审核失败 5已锁 7待审核
+
+					name = freezeAmount.get("name").toString();//姓名 否
+					//String userId = freezeAmount.get("userId").toString();//通商云用户 id
+					phone = freezeAmount.get("phone").toString();//手机号码 否
+					String identityCardNo = freezeAmount.get("identityCardNo").toString();//身份证号码，RSA 加密。否
+					//byte[] bytes = TongLianUtils.hexStringToByteArray(identityCardNo);
+					cardNoDecrypt = YunClient.decrypt(identityCardNo);
+					//Boolean isPhoneChecked = (Boolean)freezeAmount.get("isPhoneChecked");//是否绑定手机  否
+					//String registerTime = freezeAmount.get("registerTime").toString();//创建时间 yyyy-MM-dd HH:mm:ss 否
+					//Boolean isIdentityChecked = (Boolean)freezeAmount.get("isIdentityChecked");//是否进行实名认证 否
+					//String realNameTime = freezeAmount.get("realNameTime").toString();//实名认证时间 yyyy-MM-dd HH:mm:ss 否
+					//String remark = freezeAmount.get("remark").toString();//备注  否
+					//Boolean isSetPayPwd = (Boolean)freezeAmount.get("isSetPayPwd");//是否已签电子协议  f
+					//Boolean isSignContract = (Boolean)freezeAmount.get("isSignContract");//是否已签电子协议 f
+				}
+
+			}else {
+				String message = maps.get("message").toString();
+				model.addAttribute("msg", "通联接口发生错误:"+Optional.ofNullable(message).orElse(""));
+				model.addAttribute("referer", request.getHeader("Referer"));
+				return Constants.MSG_URL;
+			}
+		}else {
+			model.addAttribute("msg", "通联接口调取失败");
+			model.addAttribute("referer", request.getHeader("Referer"));
+			return Constants.MSG_URL;
+		}
+
+		List<BindCardDto> bindCardDtoList = new ArrayList<BindCardDto>();
+		String res = TongLianUtils.queryBankCard(mCode,"");
+		if(!"".equals(res)) {
+			Map maps = (Map) JSON.parse(res);
+			String status = maps.get("status").toString();
+			if (status.equals("OK")) {
+				String signedValue = maps.get("signedValue").toString();
+				Map okMap = (Map) JSON.parse(signedValue);
+				List<Map<String, Object>> bindCardList =  (List<Map<String, Object>>)okMap.get("bindCardList");//已绑定银行卡信息列表
+				if (bindCardList.size()>0){
+					for (Map<String, Object> bindCard : bindCardList) {
+						BindCardDto bindCardDto = new BindCardDto();
+						bindCardDto.setMmCode(mCode);
+						bindCardDto.setBankName(Optional.ofNullable(bindCard.get("bankName").toString()).orElse(""));
+						bindCardDto.setBankCardNo(Optional.ofNullable(bindCard.get("bankCardNo").toString()).orElse(""));
+						bindCardDto.setAccName(Optional.ofNullable(rdMmBasicInfo.getMmName()).orElse(""));
+						bindCardDto.setCardType(Optional.ofNullable(Long.valueOf(bindCard.get("cardType").toString())).orElse(1l));
+						bindCardDto.setIsSafeCard((Boolean) bindCard.get("isSafeCard"));
+						bindCardDto.setBindState(Optional.ofNullable(Long.valueOf(bindCard.get("bindState").toString())).orElse(1l));
+						bindCardDtoList.add(bindCardDto);
+					}
+				}
+
+			}else {
+				String message = maps.get("message").toString();
+				model.addAttribute("msg", "通联接口发生错误:"+Optional.ofNullable(message).orElse(""));
+				model.addAttribute("referer", request.getHeader("Referer"));
+				return Constants.MSG_URL;
+			}
+		}else {
+			model.addAttribute("msg", "通联接口调取失败");
+			model.addAttribute("referer", request.getHeader("Referer"));
+			return Constants.MSG_URL;
+		}
+
+		Long allAmount = 0l;//总额
+		Long freezeAmount = 0l;//冻结额
+		String resBalance = TongLianUtils.queryBalance(mCode, TongLianUtils.ACCOUNT_SET_NO);
+		if(!"".equals(resBalance)) {
+			Map maps = (Map) JSON.parse(resBalance);
+			String status = maps.get("status").toString();
+			if (status.equals("OK")) {
+				String signedValue = maps.get("signedValue").toString();
+				Map okMap = (Map) JSON.parse(signedValue);
+				allAmount = Optional.ofNullable(Long.valueOf(okMap.get("allAmount").toString())).orElse(0l);//总额
+				freezeAmount =  Optional.ofNullable(Long.valueOf(okMap.get("freezenAmount").toString())).orElse(0l);//冻结额
+
+			}else {
+				String message = maps.get("message").toString();
+				model.addAttribute("msg", "通联接口发生错误:"+Optional.ofNullable(message).orElse(""));
+				model.addAttribute("referer", request.getHeader("Referer"));
+				return Constants.MSG_URL;
+			}
+		}else {
+			model.addAttribute("msg", "通联接口调取失败");
+			model.addAttribute("referer", request.getHeader("Referer"));
+			return Constants.MSG_URL;
+		}
+
+		model.addAttribute("MemberWalletInfo", MemberWalletInfo.build(rdMmBasicInfo,bindCardDtoList,allAmount,freezeAmount,cardNoDecrypt,name,phone,userState));
+		return "";
+	}*/
 }
