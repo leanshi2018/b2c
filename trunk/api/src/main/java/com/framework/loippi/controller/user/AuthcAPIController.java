@@ -1,39 +1,35 @@
 package com.framework.loippi.controller.user;
 
-import com.framework.loippi.entity.activity.ActivityGuide;
-import com.framework.loippi.entity.common.SceneActivity;
-import com.framework.loippi.entity.common.ShopCommonArea;
-import com.framework.loippi.entity.common.VenueInfo;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.result.user.IntegrationMemberListResult;
-import com.framework.loippi.result.user.SubordinateUserInformationResult;
-import com.framework.loippi.service.activity.ActivityGuideService;
-import com.framework.loippi.service.common.SceneActivityService;
-import com.framework.loippi.service.common.ShopCommonAreaService;
-import com.framework.loippi.service.common.VenueInfoService;
-import com.framework.loippi.service.coupon.CouponService;
-import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.user.*;
-import com.framework.loippi.utils.*;
-import com.framework.loippi.vo.order.OrderSumPpv;
-import org.springframework.web.bind.annotation.*;
 import redis.clients.jedis.exceptions.JedisException;
+
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.alibaba.fastjson.JSON;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.activity.ActivityGuide;
+import com.framework.loippi.entity.common.SceneActivity;
+import com.framework.loippi.entity.common.VenueInfo;
 import com.framework.loippi.entity.user.OldSysRelationship;
 import com.framework.loippi.entity.user.RaMember;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -45,6 +41,9 @@ import com.framework.loippi.param.auths.AuthsResetPasswordParam;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.activity.ActivityGuideService;
+import com.framework.loippi.service.common.SceneActivityService;
+import com.framework.loippi.service.common.VenueInfoService;
+import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
 import com.framework.loippi.service.user.MemberQualificationService;
@@ -55,6 +54,13 @@ import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.PostUtil;
+import com.framework.loippi.utils.SmsUtil;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
 import com.google.code.kaptcha.Producer;
 
 /**
@@ -551,7 +557,7 @@ public class AuthcAPIController extends BaseController {
      * 注册时初始化会员参数
      */
     private void initRdMmBasicInfo(RdMmBasicInfo rdMmBasicInfo, AuthsRegisterParam param,
-        RdMmAccountInfo rdMmAccountInfo, RdMmRelation rdMmRelation) {
+                                   RdMmAccountInfo rdMmAccountInfo, RdMmRelation rdMmRelation) {
         rdMmBasicInfo.setGender(0);//默认性别
         rdMmBasicInfo.setCreationDate(new Date());
         rdMmBasicInfo.setMmAvatar(StringUtil.formatImg(prefix, "http://rdnmall.com/touxiang.jpg"));//会员头像
@@ -561,6 +567,7 @@ public class AuthcAPIController extends BaseController {
         //rdMmBasicInfo.setMmName(param.getMemberTrueName());
         rdMmBasicInfo.setMmName(Optional.ofNullable(param.getName()).orElse(""));
         rdMmBasicInfo.setPushStatus(1);
+        rdMmBasicInfo.setAllInPayPhoneStatus(0);
         rdMmRelation.setARetail(BigDecimal.ZERO);
         rdMmRelation.setLoginPwd(Digests.entryptPassword(param.getPassword()));
         rdMmRelation.setSponsorCode(param.getInvitCode());
@@ -575,6 +582,7 @@ public class AuthcAPIController extends BaseController {
         rdMmAccountInfo.setWalletBlance(zero);
         rdMmAccountInfo.setRedemptionStatus(2);
         rdMmAccountInfo.setRedemptionBlance(zero);
+        rdMmAccountInfo.setLastWithdrawalTime(new Date());//注册时生成最后一次提现时间为当前注册时间
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.order;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -164,4 +165,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
 	List<ShopOrder> findStatu20();
 
 	void updateOrderStatus(Map<String, Object> map);
+
+    List<ShopOrder> findNoCutOrder(HashMap<String, Object> map);
 }

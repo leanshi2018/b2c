@@ -163,9 +163,10 @@ public class UserAPIController extends BaseController {
             return ApiUtils.success(result);
         }
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        List<RdMmBank> banks = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("inValid",1));
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
-        PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks);
+        PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks,banks);
         //查询会员提醒消息数量
         Integer remindNum=shopMemberMessageService.findMessageRemindNum(Long.parseLong(member.getMmCode()));
         //查询会员订单消息数量

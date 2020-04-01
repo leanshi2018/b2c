@@ -18,4 +18,8 @@ public interface RdMmAccountInfoDao  extends GenericDao<RdMmAccountInfo, Long> {
 	void updateAddBonusBlance(Map<String, Object> map);
 
 	List<RdMmAccountInfo> findByMCode(String mmCode);
+
+	RdMmAccountInfo findAccByMCode(String sponsorCode);
+
+	List<RdMmAccountInfo> findLastWithdrawalOneHundred();
 }

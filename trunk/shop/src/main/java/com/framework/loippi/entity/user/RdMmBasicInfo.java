@@ -1,13 +1,14 @@
 package com.framework.loippi.entity.user;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 会员基础信息
@@ -158,6 +159,26 @@ public class RdMmBasicInfo implements GenericEntity {
 	/** 推送状态 1 可以进行推送 2 不可以进行推送 */
 	@Column(name = "PUSH_STATUS" )
 	private Integer pushStatus;
+
+	/** 关联通联支付id */
+	@Column(name = "TONG_LIAN_ID" )
+	private String tongLianId;
+
+	/** 通联支付实名制认证标识 0：未认证 1：已通过认证 */
+	@Column(name = "WHETHER_TURE_NAME" )
+	private Integer whetherTrueName;
+
+	/** 0:未签约 1：已签约  通联支付签约状态 */
+	@Column(name = "ALL_IN_CONTRACT_STATUS" )
+	private Integer allInContractStatus;
+
+	/** 通联支付签约成功返回签约码*/
+	@Column(name = "CONTRACT_NO" )
+	private String contractNo;
+
+	/** 0:未绑定通联支付手机号 1：已绑定 2：已解绑（解绑后未绑定新的手机号）*/
+	@Column(name = "ALL_IN_PAY_PHONE_STATUS" )
+	private Integer allInPayPhoneStatus;
 
 	private String info;
 	private String verificationMobile;

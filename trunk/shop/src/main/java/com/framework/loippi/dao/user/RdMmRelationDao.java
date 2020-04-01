@@ -1,10 +1,10 @@
 package com.framework.loippi.dao.user;
 
 
+import java.util.List;
+
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.mybatis.dao.GenericDao;
-
-import java.util.List;
 
 /**
  * DAO - RdMmRelation(会员关系状态表)
@@ -15,4 +15,6 @@ import java.util.List;
 public interface RdMmRelationDao  extends GenericDao<RdMmRelation, Long> {
 
     List<RdMmRelation> findBySponsorCode(String mmCode);
+
+    RdMmRelation findBySpoCode(String code);
 }

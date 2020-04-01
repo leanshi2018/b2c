@@ -3,20 +3,13 @@ package com.framework.loippi.job;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+
 import javax.annotation.Resource;
 
-import com.framework.loippi.dao.ShopCommonMessageDao;
-import com.framework.loippi.dao.ShopMemberMessageDao;
-import com.framework.loippi.dao.order.ShopOrderGoodsDao;
-import com.framework.loippi.entity.ShopCommonMessage;
-import com.framework.loippi.entity.ShopMemberMessage;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.service.TwiterIdService;
-import com.framework.loippi.service.order.ShopOrderGoodsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +17,19 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.allinpay.yunst.sdk.YunClient;
+import com.allinpay.yunst.sdk.bean.YunRequest;
+import com.framework.loippi.consts.AllInPayBillCutConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.dao.ShopCommonMessageDao;
+import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
+import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.product.ShopGoodsSpecDao;
 import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
@@ -35,6 +38,8 @@ import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.dao.user.RetailProfitDao;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -42,6 +47,7 @@ import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RetailProfit;
+import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.support.Pageable;
@@ -89,6 +95,8 @@ public class ShopOrderJob {
     private ShopCommonMessageDao shopCommonMessageDao;
     @Resource
     private ShopMemberMessageDao shopMemberMessageDao;
+    @Resource
+    private ShopOrderDao shopOrderDao;
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 //
 
@@ -282,4 +290,227 @@ public class ShopOrderJob {
         System.out.println(hashMap);
         System.out.println("#######################################");*/
     //}
+    /**
+     * 定时分账
+     */
+    //@Scheduled(cron = "0 30 08 * * ? " )  //每天上午八点三十分钟执行一次
+    //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    public void timingAccCut(){
+        System.out.println("###############################执行定时分账任务#####################################");
+        //查询当前系统时间向前的第二天的已完成支付且未取消的订单 （条件：1.已支付 2.未取消 3.已经发货 4.未进行过分账操作 5.支付时间区间在指定日期内）
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE,-2);
+        Date time = calendar.getTime();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timeStr = format.format(time);
+        String[] s = timeStr.split(" ");
+        String s1 = s[0];
+        String startTime=s1+" 00:00:00";
+        String endTime=s1+" 23:59:59";
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("startTime",startTime);
+        map.put("endTime",endTime);
+        map.put("paymentState",1);
+        map.put("orderState",0);
+        map.put("cutStatus",0);
+        List<ShopOrder> list=shopOrderDao.findNoCutOrder(map);
+        //对筛选出的订单做进一步的判断，判断是否满足分账条件 1.判断订单现金支付部分是否满足分账标准（暂时定义为100） 2.查询一个积分账户满足分账分佣条件的用户，进行分账
+        if(list!=null&&list.size()>0){
+            for (ShopOrder shopOrder : list) {
+                //逐个订单进行处理 判断是否满足分账的条件
+                //1.判断支付金额是否满足
+                BigDecimal orderAmount = shopOrder.getOrderAmount();
+                if(orderAmount.compareTo(new BigDecimal(Integer.toString(AllInPayBillCutConstant.CUT_MINIMUM)))==-1){
+                    shopOrder.setCutStatus(1);
+                    shopOrder.setCutFailInfo("金额不满足分账条件");
+                    shopOrderDao.update(shopOrder);
+                    continue;
+                }
+                Boolean flag=false;
+                //2.为当前订单找到一个合适的分账对象
+                //2.1 获取当前订单需要分账出去的金额
+                BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(2,BigDecimal.ROUND_DOWN);//当前订单需要分出去多少钱，单位为圆
+                BigDecimal acc = amount.divide(new BigDecimal("0.95"),0,BigDecimal.ROUND_UP);//奖励积分需要的积分数量 积分取整
+                RdMmAccountInfo rdMmAccountInfo = cutGetPeople(shopOrder, acc);
+                if(rdMmAccountInfo==null||rdMmAccountInfo.getMmCode()==null){//说明通过推荐人思路未找到合适的分账对象
+                    //从积分账户提现记录中筛选出合适条件的进行匹配
+                    //按照上次提现时间进行排序，时间越靠前的，放在前面，分页查询第一页，前一百条记录
+                    List<RdMmAccountInfo> accountInfos=rdMmAccountInfoDao.findLastWithdrawalOneHundred();
+                    if(accountInfos!=null&&accountInfos.size()>0){
+                        for (RdMmAccountInfo accountInfo : accountInfos) {
+                            if(accountInfo.getBonusBlance().compareTo(acc)!=-1){
+                                //调用分账处理方法
+                                try {
+                                    cutDispose(shopOrder,accountInfo,amount,acc);
+                                    flag=true;
+                                    break;//分账结束，跳出查询适用分账用户信息循环
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                }else {//根据rdMmAccountInfo 进行分账处理
+                    try {
+                        cutDispose(shopOrder,rdMmAccountInfo,amount,acc);
+                        flag=true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                //如果根据推荐人已经提现记录都未找到合适的推荐人，则flag的值依旧为定义时的false，则不进行分账，只修改订单中关联分账信息的记录
+                if(flag==false){
+                    shopOrder.setCutStatus(1);
+                    shopOrder.setCutFailInfo("未查询到满足条件的用户进行分账");
+                    shopOrderDao.update(shopOrder);
+                    continue;
+                }
+            }
+        }
+    }
+
+    /**
+     * 根据扣减积分金额，找到一个合适的获取分账信息的会员
+     * @param shopOrder
+     * @param acc
+     */
+    public RdMmAccountInfo cutGetPeople(ShopOrder shopOrder,BigDecimal acc){
+        Boolean flag=true;
+        String code=Long.toString(shopOrder.getBuyerId());
+        RdMmAccountInfo info = new RdMmAccountInfo();
+        while (flag){//根据订单购买人查询其推荐人信息，看推荐人是否满足分账条件，如果不满足继续往上查找，直至找到或者查询到公司节点为止 找到返回该会员积分账户信息 如果未找到，返回null
+            System.out.println(code);
+            RdMmRelation rdMmRelation=rdMmRelationDao.findBySpoCode(code);
+            if(rdMmRelation==null||rdMmRelation.getSponsorCode()==null){//如果关系表为null或者该会员推荐人信息异常 结束该方法
+                flag=false;
+            }else if(rdMmRelation.getSponsorCode().equals("101000158")){//如果推荐人为公司节点
+                flag=false;
+            } else {
+                //获取推荐人的积分账户信息记录
+                RdMmAccountInfo rdMmAccountInfo=rdMmAccountInfoDao.findAccByMCode(rdMmRelation.getSponsorCode());
+                if(rdMmAccountInfo==null||rdMmAccountInfo.getBonusStatus()==null||rdMmAccountInfo.getBonusStatus()!=0||rdMmAccountInfo.getBonusBlance().compareTo(acc)==-1){
+                    code=rdMmRelation.getSponsorCode();
+                }else {
+                    info=rdMmAccountInfo;
+                }
+            }
+        }
+        return info;//返回后判断info中是否存在会员编号即可判断是否通过推荐人方式查询找到分账对象
+    }
+
+
+
+    /**
+     * 根据查询到的合适的分账受益人积分账户信息进行分账，处理用户积分(减扣积分，修改用户最新提现时间)，生成积分交易日志，修改订单内订单分账状态
+     * @param shopOrder
+     * @param accountInfo
+     */
+    public void cutDispose(ShopOrder shopOrder,RdMmAccountInfo accountInfo,BigDecimal amount,BigDecimal acc) throws Exception{
+        //1.请求通商云服务器，进行分账
+        final YunRequest request = new YunRequest("OrderService", "signalAgentPay");
+        try {
+            request.put("bizOrderNo", shopOrder.getPaySn());
+            JSONArray collectPayList = new JSONArray();
+            HashMap<String, Object> collect1 = new HashMap<>();
+            collect1.put("bizOrderNo",shopOrder.getPaySn());
+            collect1.put("amount", shopOrder.getOrderAmount().multiply(new BigDecimal("100")));
+            collect1.put("fee", (shopOrder.getOrderAmount().subtract(amount)).multiply(new BigDecimal("100")));
+            collectPayList.add(new JSONObject(collect1));
+            request.put("collectPayList", collectPayList);
+            request.put("bizUserId", accountInfo.getMmCode());
+            request.put("accountSetNo","100001");//TODO
+            request.put("backUrl","http://192.168.1.157:8085/api/allinpay/contract/cutBack.json");//TODO
+            request.put("amount",shopOrder.getOrderAmount().multiply(new BigDecimal("100")));
+            request.put("fee",(shopOrder.getOrderAmount().subtract(amount)).multiply(new BigDecimal("100")));
+            request.put("tradeCode","4001");
+            String res = YunClient.request(request);
+            System.out.println("res: " + res);
+            JSONObject resp = JSON.parseObject(res);
+            if(resp.getString("status").equals("error")){//如果分账失败 则记录失败原因
+                shopOrder.setCutStatus(3);
+                shopOrder.setCutAmount(BigDecimal.ZERO);
+                shopOrder.setCutAcc(BigDecimal.ZERO);
+                shopOrder.setCutFailInfo(resp.getString("message")+",错误代码："+resp.getString("errorCode"));
+                shopOrderDao.update(shopOrder);
+            }
+            if(resp.getString("status").equals("OK")){
+                String signedValue = resp.getString("signedValue");
+                JSONObject signedValueMap = JSON.parseObject(signedValue);
+                String payStatus = signedValueMap.getString("payStatus");
+                if(payStatus.equals("success")){//代付（分账）成功 修改订单内分账状态 扣减积分 生成积分日志
+                    //1.修改订单
+                    shopOrder.setCutStatus(2);
+                    shopOrder.setCutAcc(acc);
+                    shopOrder.setCutAmount(amount);
+                    shopOrder.setCutTime(new Date());
+                    shopOrderDao.update(shopOrder);
+                    //2.生成积分变更记录
+                    RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                    rdMmAccountLog.setMmCode(accountInfo.getMmCode());
+                    List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",accountInfo.getMmCode()));
+                    rdMmAccountLog.setMmNickName(basicInfos.get(0).getMmNickName());
+                    rdMmAccountLog.setTransTypeCode("WD");
+                    rdMmAccountLog.setAccType("SBB");
+                    rdMmAccountLog.setTrSourceType("BNK");
+                    rdMmAccountLog.setTrOrderOid(shopOrder.getId());
+                    rdMmAccountLog.setBlanceBefore(accountInfo.getBonusBlance());
+                    rdMmAccountLog.setAmount(acc);
+                    rdMmAccountLog.setBlanceAfter(accountInfo.getBonusBlance().add(acc));
+                    rdMmAccountLog.setTransDate(new Date());
+                    String period = rdSysPeriodDao.getSysPeriodService(new Date());
+                    if(period!=null){
+                        rdMmAccountLog.setTransPeriod(period);
+                    }
+                    rdMmAccountLog.setPresentationFeeNow(acc.subtract(amount));
+                    rdMmAccountLog.setActualWithdrawals(amount);
+                    rdMmAccountLog.setTransDesc("平台订单支付自动分账提现");
+                    rdMmAccountLog.setAutohrizeDesc("平台订单支付自动分账提现");
+                    rdMmAccountLog.setStatus(3);
+                    rdMmAccountLog.setAccStatus(2);
+                    rdMmAccountLogDao.insert(rdMmAccountLog);
+                    //3.扣减用户积分
+                    accountInfo.setBonusBlance(accountInfo.getBonusBlance().subtract(acc));
+                    accountInfo.setLastWithdrawalTime(new Date());
+                    rdMmAccountInfoDao.update(accountInfo);
+                    //4.生成通知消息
+                    ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                    shopCommonMessage.setSendUid(accountInfo.getMmCode());
+                    shopCommonMessage.setType(1);
+                    shopCommonMessage.setOnLine(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setBizType(2);
+                    shopCommonMessage.setIsTop(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setTitle("自动提现积分扣减通知");
+                    shopCommonMessage.setContent("已帮您自动提现"+acc+"奖励积分到钱包，请在奖励积分明细内查询");
+                    Long msgId = twiterIdService.getTwiterId();
+                    shopCommonMessage.setId(msgId);
+                    shopCommonMessageDao.insert(shopCommonMessage);
+                    ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                    shopMemberMessage.setBizType(2);
+                    shopMemberMessage.setCreateTime(new Date());
+                    shopMemberMessage.setId(twiterIdService.getTwiterId());
+                    shopMemberMessage.setIsRead(0);
+                    shopMemberMessage.setMsgId(msgId);
+                    shopMemberMessage.setUid(Long.parseLong(accountInfo.getMmCode()));
+                    shopMemberMessageDao.insert(shopMemberMessage);
+                }
+                if(payStatus.equals("pending")){//修改订单分账状态分账进行中，等待分账回调信息
+                    shopOrder.setCutStatus(4);
+                    shopOrder.setCutAcc(acc);
+                    shopOrder.setCutAmount(amount);
+                    shopOrderDao.update(shopOrder);
+                }
+                if(payStatus.equals("fail")){//修改订单分账状态 分账失败，记录失败原因
+                    shopOrder.setCutStatus(3);
+                    shopOrder.setCutAmount(BigDecimal.ZERO);
+                    shopOrder.setCutAcc(BigDecimal.ZERO);
+                    shopOrder.setCutFailInfo(signedValueMap.getString("payFailMessage"));
+                    shopOrderDao.update(shopOrder);
+                }
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

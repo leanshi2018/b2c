@@ -4,11 +4,13 @@ package com.framework.loippi.controller.user;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +18,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.controller.StateResult;
+import com.framework.loippi.entity.common.ShopCommonArea;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.param.user.UserAddrsAddParam;
 import com.framework.loippi.param.user.UserAddrsUpdateParam;
@@ -24,6 +31,8 @@ import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.UserAddrsAddResult;
 import com.framework.loippi.result.user.UserAddrsListResult;
 import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.order.ShopOrderAddressService;
+import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
@@ -44,6 +53,12 @@ public class AddressAPIController extends BaseController {
     private RdMmAddInfoService addressService;
     @Resource
     private ShopCommonAreaService shopCommonAreaService;
+    @Resource
+    private ShopOrderService shopOrderService;
+    @Resource
+    private ShopCommonAreaService areaService;
+    @Resource
+    private ShopOrderAddressService shopOrderAddressService;
 
     //列表
     @RequestMapping(value = "/list.json")
@@ -69,7 +84,136 @@ public class AddressAPIController extends BaseController {
         }
         return ApiUtils.success(UserAddrsListResult.build(lists));
     }
-
+    /**
+     *
+     * @param param 地址详细信息
+     * @param orderSn 订单编号
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/updateOrderAdd.json", method = RequestMethod.POST)
+    public String updateOrderAdd(@Valid UserAddrsAddParam param,String orderSn,
+                                 HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("请登录");
+        }
+        ShopOrder shopOrder = shopOrderService.find("orderSn",orderSn);
+        if(shopOrder==null){
+            return ApiUtils.error("订单信息异常");
+        }
+        if(shopOrder.getOrderState()!=10&&shopOrder.getOrderState()!=20){
+            return ApiUtils.error("只有待发货及待付款订单可以修改订单地址");
+        }
+        //1.根据传入信息 新增一个地址信息
+        RdMmAddInfo address = new RdMmAddInfo();
+        address.setMobile(param.getMobile());
+        address.setConsigneeName(param.getName());
+        address.setMmCode(member.getMmCode());
+        address.setDefaultadd(param.getIsDefault());
+        address.setAddDetial(param.getAddr());
+        address.setAddProvinceCode(param.getAddProvinceCode());
+        address.setAddCityCode(param.getAddCityCode());
+        address.setAddCountryCode(param.getAddCountryCode());
+        address.setValid(1);
+        List<RdMmAddInfo> addresses = addressService.findList(Paramap.create()
+                .put("mmCode", member.getMmCode()));
+        // 如果当前用户只有一条收货地址，把其它地址改为非默认
+        if (addresses.size() == 0) {
+            address.setDefaultadd(1);
+        }
+        Long saveId = addressService.save(address);
+        if (address.getDefaultadd() == 1) {
+            addressService.updateDef(address.getAid(), member.getMmCode());
+        }
+        //2.修改订单关联的地址信息
+        Long twiterId = twiterIdService.getTwiterId();
+        ShopOrderAddress orderAddress = new ShopOrderAddress();
+        if (address == null) {
+            throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXIT, "收货地址不能为空");
+        }
+        orderAddress.setIsDefault(Optional.ofNullable(address.getDefaultadd()).orElse(0).toString());
+        orderAddress.setId(twiterId);
+        orderAddress.setMemberId(Long.parseLong(address.getMmCode()));
+        orderAddress.setTrueName(address.getConsigneeName());
+        orderAddress.setAddress(address.getAddDetial());
+        orderAddress.setMobPhone(address.getMobile());
+        orderAddress
+                .setAreaInfo(address.getAddProvinceCode() + address.getAddCityCode() + address.getAddCountryCode());
+        if ("".equals(address.getAddCountryCode())){
+            ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCityCode());
+            if (shopCommonArea==null) {
+                throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+            }
+            if (shopCommonArea.getExpressState()==1){//不配送
+                throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址暂不配送");
+            }
+            orderAddress.setAreaId(shopCommonArea.getId());
+            orderAddress.setCityId(shopCommonArea.getId());
+            orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
+            shopOrderAddressService.save(orderAddress);
+        }else{
+            List<ShopCommonArea> shopCommonAreas = areaService.findByAreaName(address.getAddCountryCode());//区
+            if (CollectionUtils.isEmpty(shopCommonAreas)) {
+                throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+            }
+            if (shopCommonAreas.size()>1){
+                List<ShopCommonArea> shopCommonCitys = areaService.findByAreaName(address.getAddCityCode());//市
+                if (shopCommonCitys==null) {
+                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                }
+                if (shopCommonCitys.size()==1){
+                    ShopCommonArea shopCommonCity = shopCommonCitys.get(0);
+                    orderAddress.setCityId(shopCommonCity.getId());
+                    orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                    for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                        if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
+                            orderAddress.setAreaId(shopCommonArea.getId());
+                            if (shopCommonArea.getExpressState()==1){//不配送
+                                throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                            }
+                        }
+                    }
+                }else {
+                    ShopCommonArea shopCommonProvice = areaService.find("areaName", address.getAddProvinceCode());//省
+                    for (ShopCommonArea shopCommonCity : shopCommonCitys) {
+                        if (shopCommonCity.getAreaParentId().longValue()==shopCommonProvice.getId().longValue()){
+                            orderAddress.setCityId(shopCommonCity.getId());
+                            orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                            for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                                if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
+                                    orderAddress.setAreaId(shopCommonArea.getId());
+                                    if (shopCommonArea.getExpressState()==1){//不配送
+                                        throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                shopOrderAddressService.save(orderAddress);
+            }else{
+                ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
+                if (shopCommonArea.getExpressState()==1){//不配送
+                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                }
+                orderAddress.setAreaId(shopCommonArea.getId());
+                //if ()
+                orderAddress.setCityId(shopCommonArea.getAreaParentId());
+                ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
+                if (shopCommonArea2==null) {
+                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                }
+                orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
+                shopOrderAddressService.save(orderAddress);
+            }
+        }
+        //3.修改订单表关联的订单地址id
+        shopOrder.setAddressId(twiterId);
+        shopOrder.setIsModify(1);
+        shopOrderService.update(shopOrder);
+        return ApiUtils.success("修改收货地址信息成功");
+    }
 
     //新增
     @RequestMapping(value = "/add.json", method = RequestMethod.POST)

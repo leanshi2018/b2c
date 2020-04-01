@@ -272,5 +272,8 @@
 	<select id="findBySponsorCode" parameterType="string" resultMap="RdMmRelationResultMap">
 		select * from RD_MM_RELATION where SPONSOR_CODE = #{sponsorCode}
 	</select>
-	
+
+	<select id="findBySpoCode" parameterType="string" resultMap="RdMmRelationResultMap">
+		select * from RD_MM_RELATION where SPONSOR_CODE = #{sponsorCode}
+	</select>
 </mapper> 

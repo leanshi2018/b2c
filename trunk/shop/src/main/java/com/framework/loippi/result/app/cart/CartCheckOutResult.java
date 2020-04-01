@@ -1,25 +1,27 @@
 package com.framework.loippi.result.app.cart;
 
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.utils.NumberUtils;
-import com.framework.loippi.vo.cart.ShopCartVo;
 import com.framework.loippi.vo.gifts.Gifts;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import java.math.BigDecimal;
-import java.util.*;
-
-import lombok.Data;
-import lombok.experimental.Accessors;
 
 /**
  * 购物车结算
@@ -225,6 +227,8 @@ public class CartCheckOutResult {
                                 .setPpv(optCart.map(ShopCart::getPpv).orElse(BigDecimal.ZERO));
                         Integer type=shopOrderDiscountType.getPreferentialType();
                         goodsResult.setGoodsMarketPrice(cart.getGoodsRetailPrice());
+                        goodsResult.setVipPrice(cart.getGoodsMemberPrice());
+                        goodsResult.setBigPpvPrice(cart.getGoodsBigPrice());
 //                        if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_MEMBER) {
 //                            goodsResult.setGoodsMarketPrice(cart.getGoodsMemberPrice());
 //                        }
@@ -263,8 +267,8 @@ public class CartCheckOutResult {
                 .setReceiveName(optAddress.map(RdMmAddInfo::getConsigneeName).orElse(""))
                 .setReceivePhone(optAddress.map(RdMmAddInfo::getMobile).orElse(""))
                 .setReceiveAddrInfo(optAddress.map(RdMmAddInfo::getAddProvinceCode).orElse("") +
-                                optAddress.map(RdMmAddInfo::getAddCityCode).orElse("")+
-                                optAddress.map(RdMmAddInfo::getAddCountryCode).orElse("")+
+                        optAddress.map(RdMmAddInfo::getAddCityCode).orElse("")+
+                        optAddress.map(RdMmAddInfo::getAddCountryCode).orElse("")+
                         optAddress.map(RdMmAddInfo::getAddDetial).orElse(""))
                 .setShopOrderTypeId(Optional.ofNullable(shopOrderTypeId).orElse(-1L));
 
@@ -321,7 +325,7 @@ public class CartCheckOutResult {
     }
 
     public static CartCheckOutResult buildNew(Map<String, Object> moneyMap,
-                                           List<ShopCart> cartList, RdMmAddInfo address, Long shopOrderTypeId, ShopOrderDiscountType shopOrderDiscountType) {
+                                              List<ShopCart> cartList, RdMmAddInfo address, Long shopOrderTypeId, ShopOrderDiscountType shopOrderDiscountType) {
         CartCheckOutResult cartCheckOutResult = new CartCheckOutResult().setHadReceiveAddr(address == null ? 0 : 1);
         Optional<RdMmAddInfo> optAddress = Optional.ofNullable(address);
         // 个人收货信息信息
@@ -371,9 +375,9 @@ public class CartCheckOutResult {
                 // 可用积分抵扣金额
 //            .setRewardPointAmount(Optional.ofNullable((BigDecimal) moneyMap.get("rewardPointPrice")).orElse(new BigDecimal("0")))
                 // 商品金额
-                .setGoodsTotalAmount(Optional.ofNullable((BigDecimal) moneyMap.get("totalGoodsPrice")).orElse(new BigDecimal("0")))
-                // 优惠券金额
-                .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponPrice")).orElse(new BigDecimal("0")))
+                .setGoodsTotalAmount(Optional.ofNullable((BigDecimal) moneyMap.get("totalGoodsPrice")).orElse(new BigDecimal("0")).subtract(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0"))))
+                // 优惠总金额
+                .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponPrice")).orElse(new BigDecimal("0")).subtract(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0"))))
                 // 实付款
                 .setNeedToPay(Optional.ofNullable((BigDecimal) moneyMap.get("totalPrice")).orElse(new BigDecimal("0")))
                 //运费
@@ -447,15 +451,15 @@ public class CartCheckOutResult {
             }
         }
 
-            selectShopOrderType selectShopOrderType = new selectShopOrderType();
-            selectShopOrderType.setShopOrderTypeId(-1L);
+        selectShopOrderType selectShopOrderType = new selectShopOrderType();
+        selectShopOrderType.setShopOrderTypeId(-1L);
         if (shopMemberGrade.getRankClass()>0){
             selectShopOrderType.setShopOrderTypeName("会员订单");
         }else{
             selectShopOrderType.setShopOrderTypeName("普通订单");
         }
-            selectShopOrderType.setIsSelect(1);
-            selectShopOrderTypeList.add(0, selectShopOrderType);
+        selectShopOrderType.setIsSelect(1);
+        selectShopOrderTypeList.add(0, selectShopOrderType);
 
         userInfo.setUserName(shopMember.getMmNickName());
         userInfo.setUserPhone(shopMember.getMobile());

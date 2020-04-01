@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.allinpay.yunst.sdk.YunClient;
+import com.allinpay.yunst.sdk.bean.YunRequest;
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmBasicInfoDao;
@@ -32,6 +34,7 @@ import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.OldSysRelationshipService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 
 
@@ -195,6 +198,30 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             redisService.delete(rdMmRelation.getSponsorCode());
         }
 
+        //获取当前时间设置的业务周期
+        //通联接口互通
+        //进行通联进行会员数据交互存储
+        final YunRequest request = new YunRequest("MemberService", "createMember");
+        request.put("bizUserId", rdMmBasicInfo.getMmCode());
+        request.put("memberType", 3);
+        request.put("source", 1);
+        try {
+            String s = YunClient.request(request);
+            Map<String, Object> map = JacksonUtil.convertMap(s);
+            if(map.get("status").equals("OK")){
+                String jsonStr = (String) map.get("signedValue");
+                Map<String, Object> stringObjectMap = JacksonUtil.convertMap(jsonStr);
+                String userId = (String) stringObjectMap.get("userId");
+                rdMmBasicInfo.setTongLianId(userId);
+            }else if(map.get("status").equals("error")){
+                String message = (String) map.get("message");
+                throw new RuntimeException(message);
+            } else {
+                throw new RuntimeException("通联支付注册异常");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //获取当前时间设置的业务周期
         String period = rdSysPeriodDao.getSysPeriodService(new Date());
         rdMmBasicInfo.setCreationPeriod(period);

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
@@ -131,6 +132,10 @@ public class ShopOrder implements GenericEntity {
     /** 优惠总金额 */
     @Column(name = "discount" )
     private java.math.BigDecimal discount;
+
+    /** 等级优惠总金额 */
+    @Column(name = "discount" )
+    private java.math.BigDecimal rankDiscount;
 
     /** 优惠券优惠金额 */
     @Column(name = "coupon_discount" )
@@ -376,6 +381,42 @@ public class ShopOrder implements GenericEntity {
      */
     @Column(name = "fail_info" )
     private String failInfo;
+
+    /**
+     *订单关联通联支付分账状态 0:未分账 1:不满足分账条件 2:已经分账  3:分账失败 4：分账进行中
+     */
+    @Column(name = "cut_status" )
+    private Integer cutStatus;
+
+    /**
+     * 不满足分账条件或分账失败 原因备注
+     */
+    @Column(name = "cut_fail_info" )
+    private String cutFailInfo;
+
+    /**
+     * 订单自动提现分账受益人
+     */
+    @Column(name = "cut_get_id" )
+    private String cutGetId;
+
+    /**
+     * 分账金额 注：具体分账金额视分账状态而定，仅当分账状态为2时成立
+     */
+    @Column(name = "cut_amount" )
+    private BigDecimal cutAmount;
+
+    /**
+     * 分账扣减积分 注：具体分账金额视分账状态而定，仅当分账状态为2时成立
+     */
+    @Column(name = "cut_acc" )
+    private BigDecimal cutAcc;
+
+    /**
+     * 分账时间
+     */
+    @Column(name = "cut_time" )
+    private Date cutTime;
 
 /*********************添加*********************/
     /**
