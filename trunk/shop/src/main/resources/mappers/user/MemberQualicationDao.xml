@@ -171,7 +171,7 @@
 		<if test="dlRank4Number != null">
 			AND DL_RANK4_NUMBER = #{dlRank4Number,jdbcType=INTEGER}
 		</if>
-		<if test="dlRank5Number != null'">
+		<if test="dlRank5Number != null">
 			AND DL_RANK5_NUMBER = #{dlRank5Number,jdbcType=INTEGER}
 		</if>
 		<if test="dlRank6Number != null">

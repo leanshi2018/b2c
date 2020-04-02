@@ -49,7 +49,7 @@ public class MemberWalletInfo {
 		result.setMobile(Optional.ofNullable(phone).orElse(""));
 		result.setMmName(Optional.ofNullable(name).orElse(""));
 		result.setIdCode(Optional.ofNullable(cardNoDecrypt).orElse(""));
-		result.setWhetherTureName(Optional.ofNullable(rdMmBasicInfo.getWhetherTureName()).orElse(0));
+		result.setWhetherTureName(Optional.ofNullable(rdMmBasicInfo.getWhetherTrueName()).orElse(0));
 		result.setAllInContractStatus(Optional.ofNullable(rdMmBasicInfo.getAllInContractStatus()).orElse(0));
 		result.setWalletAmount(Optional.ofNullable(new BigDecimal(allAmount)).orElse(BigDecimal.ZERO));
 		result.setFreezeAmount(Optional.ofNullable(new BigDecimal(freezeAmount)).orElse(BigDecimal.ZERO));

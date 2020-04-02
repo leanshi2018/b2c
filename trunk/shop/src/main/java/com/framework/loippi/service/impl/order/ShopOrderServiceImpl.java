@@ -1778,6 +1778,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             //            order.setDiscount(orderVo.getDiscount());
             //            //促销优惠金额
             //            order.setPromoPrice(orderVo.getPromoPrice());
+            System.out.println(order);
             orderDao.insertEntity(order);
             // todo 推荐反拥
             //扣除用户使用的优惠券

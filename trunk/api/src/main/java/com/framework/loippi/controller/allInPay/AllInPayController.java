@@ -151,6 +151,7 @@ public class AllInPayController extends BaseController {
     @RequestMapping(value = "/setRealName.json", method = RequestMethod.POST)
     public String setRealName(String name,String identityNo, HttpServletRequest request) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        System.out.println(member);
         if(member==null){
             return ApiUtils.error(Xerror.USER_UNLOGIN_JSON_CODE);
         }
