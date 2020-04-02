@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="RdMmWithdrawLogDao">
+
+    <resultMap id="RdMmWithdrawLogMap" type="com.framework.loippi.entity.walet.RdMmWithdrawLog">
+        <result property="id" column="id" />
+        <result property="withdrawSn" column="withdraw_sn" />
+        <result property="mCode" column="mm_code" />
+        <result property="withdrawAmount" column="withdraw_amount" />
+        <result property="withdrawBank" column="withdraw_bank" />
+        <result property="withdrawStatus" column="withdraw_status" />
+        <result property="withdrawTime" column="withdraw_time" />
+        <result property="tlOrderNo" column="tl_order_no" />
+        <result property="withdrawMemo" column="withdraw_memo" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,withdraw_sn ,mm_code ,withdraw_amount ,withdraw_status ,withdraw_time ,tl_order_no ,withdraw_memo
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{withdrawSn},#{mCode},#{withdrawAmount},#{withdrawStatus},#{withdrawTime},#{tlOrderNo},#{withdrawMemo}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null ">
+            AND id = #{id}
+        </if>
+        <if test="withdrawSn != null and withdrawSn != ''">
+            AND withdraw_sn = #{withdrawSn,jdbcType=VARCHAR}
+        </if>
+        <if test="mCode != null and mCode != ''">
+            AND mm_code = #{mCode,jdbcType=VARCHAR}
+        </if>
+        <if test="withdrawAmount != null and withdrawAmount != ''">
+            AND withdraw_amount = #{withdrawAmount}
+        </if>
+        <if test="withdrawStatus != null">
+            AND withdraw_status = #{withdrawStatus}
+        </if>
+        <if test="withdrawTime != null ">
+            AND withdraw_time = #{withdrawTime}
+        </if>
+        <if test="tlOrderNo != null and tlOrderNo != ''">
+            AND tl_order_no = #{tlOrderNo}
+        </if>
+        <if test="withdrawMemo != null and withdrawMemo != ''">
+            AND withdraw_memo = #{withdrawMemo}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id},
+        </if>
+        <if test="withdrawSn != null and withdrawSn != ''">
+            withdraw_sn = #{withdrawSn,jdbcType=VARCHAR},
+        </if>
+        <if test="mCode != null and mCode != ''">
+            mm_code = #{mCode,jdbcType=VARCHAR},
+        </if>
+        <if test="withdrawAmount != null">
+            withdraw_amount = #{withdrawAmount},
+        </if>
+        <if test="withdrawStatus != null">
+            withdraw_status = #{withdrawStatus},
+        </if>
+        <if test="withdrawTime != null">
+            withdraw_time = #{withdrawTime},
+        </if>
+        <if test="tlOrderNo != null">
+            tl_order_no = #{tlOrderNo},
+        </if>
+        <if test="withdrawMemo != null">
+            withdraw_memo = #{withdrawMemo},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdMmWithdrawLogMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_mm_withdraw_log
+        WHERE	ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdMmWithdrawLogMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_mm_withdraw_log
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_mm_withdraw_log
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.walet.RdMmWithdrawLog">
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+        <!--SELECT LAST_INSERT_ID() AS ID    -->
+        <!--</selectKey>  -->
+        INSERT rd_mm_withdraw_log
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.walet.RdMmWithdrawLog">
+        UPDATE	rd_mm_withdraw_log
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_mm_withdraw_log
+		WHERE	id = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_mm_withdraw_log
+        WHERE	id	IN
+        <foreach item="RdMmWithdrawLogId" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdMmWithdrawLogMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_mm_withdraw_log
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdMmWithdrawLogMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_mm_withdraw_log
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+</mapper>

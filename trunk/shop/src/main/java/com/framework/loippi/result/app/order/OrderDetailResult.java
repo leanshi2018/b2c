@@ -52,6 +52,14 @@ public class OrderDetailResult {
      */
     private String receiverAddress;
     /**
+     * 收货人地址 省市区
+     */
+   /* private String addressPCD;
+    *//**
+     * 收货人地址 详细地址
+     *//*
+    private String addressDetail;*/
+    /**
      * 订单所用积分数量
      */
     private Integer usePointNum;
@@ -275,6 +283,8 @@ public class OrderDetailResult {
             orderDetailResult.setReceiverName(optAddr.map(ShopOrderAddress::getTrueName).orElse(""));
             orderDetailResult.setReceiverAddress(optAddr.map(ShopOrderAddress::getAreaInfo).orElse("")
                     + optAddr.map(ShopOrderAddress::getAddress).orElse(""));
+            /*orderDetailResult.setAddressPCD(optAddr.map(ShopOrderAddress::getAreaInfo).orElse(""));
+            orderDetailResult.setAddressDetail(optAddr.map(ShopOrderAddress::getAddress).orElse(""));*/
             orderDetailResult.setReceiverMobile(optAddr.map(ShopOrderAddress::getMobPhone).orElse(""));
         }else{
             //自提
