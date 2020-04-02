@@ -474,6 +474,58 @@ public class TongLianUtils {
 		return "";
 	}
 
+	/**
+	 * 提现申请
+	 * @param bizOrderNo  商户订单号（支付订单）
+	 * @param bizUserId  商户系统用户标识，商户 系统中唯一编号。
+	 * @param accountSetNo  账户集编号 个人会员、企业会员填写托管专用 账户集编号 若平台，填写平台对应账户集编号， 详细注：不支持 100002-标准保护金账 户集，100003-准备金额度账户集、 100004/5 中间账户集
+	 * @param amount  订单金额 单位：分，包含手续费
+	 * @param fee  手续费 内扣，如果不存在，则填0。 单位：分。如 amount 为100，fee 为2，实际到账金额为98，平台手续费收入为 2
+	 * @param validateType 交易验证方式 0.无验证（仅渠道验证，通商云不做交易验证） 1.短信验证码（通商云发送并验证短信验证码，有效期 3 分钟） 2.支付密码（验证通商云支付密码）
+	 * @param backUrl 后台通知地址
+	 * @param orderExpireDatetime 订单过期时间
+	 * @param payMethod 支付方式 如不传，则默认为通联通代付 否
+	 * @param bankCardNo  银行卡号/账号
+	 * @param bankCardPro 银行卡/账户属性 0：个人银行卡 1：企业对公账户 如果不传默认为 0 平台提现，必填 1   否
+	 * @param withdrawType 提现方式 D0：D+0 到账 D1：D+1 到账 T1customized：T+1 到账，仅工作 日代付 D0customized：D+0 到账，根据平 台资金头寸付款 默认为 D0  否
+	 * @param industryCode 行业代码  （1910）
+	 * @param industryName 行业名称  （其他）
+	 * @param source 访问终端类型 1.Mobile 2.PC
+	 * @param summary 摘要最多 20 个字符 否
+	 * @param extendInfo 扩展信息 最多 50 个字符 否
+	 * @return
+	 */
+	public static String withdrawApply(String bizOrderNo,String bizUserId,String accountSetNo,Long amount,Long fee,Long validateType,String backUrl,
+									   String orderExpireDatetime,Map<String, Object> payMethod,String bankCardNo,Long bankCardPro,String withdrawType,
+									   String industryCode,String industryName,Long source,String summary,String extendInfo) {
+		getRequest();
+		final YunRequest request = new YunRequest("OrderService", "withdrawApply");
+		request.put("bizOrderNo", bizOrderNo);
+		request.put("bizUserId", bizUserId);
+		request.put("accountSetNo", accountSetNo);
+		request.put("amount", amount);
+		request.put("fee", fee);
+		request.put("validateType", validateType);
+		request.put("backUrl", backUrl);
+		request.put("orderExpireDatetime", orderExpireDatetime);
+		//request.put("payMethod", payMethod);
+		request.put("bankCardNo", bankCardNo);
+		//request.put("bankCardPro", bankCardPro);
+		request.put("withdrawType", withdrawType);
+		request.put("industryCode", industryCode);
+		request.put("industryName", industryName);
+		request.put("source", source);
+		request.put("summary", summary);
+		request.put("extendInfo", extendInfo);
+		try {
+			String s = YunClient.request(request);
+			return s;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+
 
 	/**
 	 * 16进制表示的字符串转换为字节数组

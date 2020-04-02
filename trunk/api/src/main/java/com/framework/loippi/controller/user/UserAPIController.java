@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.allinpay.yunst.sdk.YunClient;
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.common.ShopApp;
@@ -39,10 +40,12 @@ import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
+import com.framework.loippi.entity.walet.RdMmWithdrawLog;
 import com.framework.loippi.enus.SocialType;
 import com.framework.loippi.enus.UserLoginType;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.param.user.UserAddBankCardsParam;
+import com.framework.loippi.param.wallet.BindCardDto;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.BankCardsListResult;
 import com.framework.loippi.result.user.PersonCenterResult;
@@ -52,6 +55,7 @@ import com.framework.loippi.result.user.SubordinateUserInformationResult;
 import com.framework.loippi.result.user.UserCollectResult;
 import com.framework.loippi.result.user.UserFootprintsResult;
 import com.framework.loippi.result.user.UserProfileResult;
+import com.framework.loippi.result.user.WithdrawBalanceResult;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.ShopMemberMessageService;
 import com.framework.loippi.service.common.ShopAppService;
@@ -74,6 +78,7 @@ import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
+import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.BankCardUtils;
@@ -149,6 +154,8 @@ public class UserAPIController extends BaseController {
     private ShopMemberMessageService shopMemberMessageService;
     @Resource
     private RdMmBankDiscernService rdMmBankDiscernService;
+    @Resource
+    private RdMmWithdrawLogService rdMmWithdrawLogService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -1573,7 +1580,7 @@ public class UserAPIController extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/selfWallet.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/selfWallet.json")
     public String selfWallet(HttpServletRequest request) {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
@@ -1689,5 +1696,192 @@ public class UserAPIController extends BaseController {
         return ApiUtils.error("没有明细");
     }
 
+    /**
+     * 通联接口（绑定的银行卡）
+     * 查询绑定银行卡
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/queryBankCard.json")
+    public String queryBankCard(HttpServletRequest request) throws Exception {
+
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        List<BindCardDto> bindCardDtoList = new ArrayList<BindCardDto>();
+        String res = TongLianUtils.queryBankCard(member.getMmCode(),"");
+        if(!"".equals(res)) {
+            Map maps = (Map) JSON.parse(res);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                List<Map<String, Object>> bindCardList =  (List<Map<String, Object>>)okMap.get("bindCardList");//已绑定银行卡信息列表
+                if (bindCardList.size()>0){
+                    for (Map<String, Object> bindCard : bindCardList) {
+                        BindCardDto bindCardDto = new BindCardDto();
+                        bindCardDto.setMmCode(member.getMmCode());
+                        bindCardDto.setBankName(Optional.ofNullable(bindCard.get("bankName").toString()).orElse(""));
+                        if (bindCard.get("bankCardNo").toString()==null){
+                            bindCardDto.setBankCardNo("");
+                        }else {
+                            String bankCardNo = YunClient.decrypt(bindCard.get("bankCardNo").toString());
+                            bindCardDto.setBankCardNo(bankCardNo);
+                        }
+                        bindCardDto.setAccName(Optional.ofNullable(member.getMmName()).orElse(""));
+                        bindCardDto.setCardType(Optional.ofNullable(Long.valueOf(bindCard.get("cardType").toString())).orElse(1l));
+                        bindCardDto.setIsSafeCard((Boolean) bindCard.get("isSafeCard"));
+                        bindCardDto.setBindState(Optional.ofNullable(Long.valueOf(bindCard.get("bindState").toString())).orElse(1l));
+                        bindCardDtoList.add(bindCardDto);
+                    }
+                    return ApiUtils.success(bindCardDtoList);
+                }else {
+                    return ApiUtils.error("未有绑定的银行卡");
+                }
+
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("通联接口发生错误："+message);
+            }
+        }else {
+            return ApiUtils.error("通联接口调取失败");
+        }
+    }
+
+    /**
+     * 提现余额(提现到银行卡页面)
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/withdrawBalance.json")
+    public String withdrawBalance(HttpServletRequest request) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        if (StringUtils.isEmpty(member.getMmCode())){
+            return ApiUtils.error("该会员未登陆");
+        }
+
+        //会员基础信息
+        RdMmBasicInfo basicInfo = mmBasicInfoService.findByMCode(member.getMmCode());
+        if (basicInfo==null){
+            return ApiUtils.error("找不到该会员信息！");
+        }
+
+        Long allAmount = 0l;//总额
+        Long freezeAmount = 0l;//冻结额
+        String resBalance = TongLianUtils.queryBalance(basicInfo.getMmCode(), TongLianUtils.ACCOUNT_SET_NO);
+        if(!"".equals(resBalance)) {
+            Map maps = (Map) JSON.parse(resBalance);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                allAmount = Optional.ofNullable(Long.valueOf(okMap.get("allAmount").toString())).orElse(0l);//总额
+                freezeAmount =  Optional.ofNullable(Long.valueOf(okMap.get("freezenAmount").toString())).orElse(0l);//冻结额
+                if (allAmount==null){
+                    allAmount = 0l;
+                }
+                if (freezeAmount==null){
+                    freezeAmount = 0l;
+                }
+                Long withdrawAmount = allAmount - freezeAmount;
+                if (withdrawAmount.longValue()<=0){
+                    withdrawAmount = 0l;
+                }
+                return ApiUtils.success(WithdrawBalanceResult.build1(basicInfo,withdrawAmount));
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("通联接口发生错误："+message);
+            }
+        }else {
+            return ApiUtils.error("通联接口调取失败");
+        }
+    }
+
+    /**
+     * 请求提现
+     * @param request
+     * @param amount
+     * @param fee
+     * @param bankCardNoR
+     * @return
+     */
+    @RequestMapping(value = "/queryWithdraw.json")
+    public String queryWithdraw(HttpServletRequest request,@RequestParam(value = "amount") Long amount,
+                                @RequestParam(value = "fee") Long fee,@RequestParam(value = "bankCardNoR") String bankCardNoR) throws Exception {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        if (StringUtils.isEmpty(member.getMmCode())){
+            return ApiUtils.error("该会员未登陆");
+        }
+
+        //会员基础信息
+        RdMmBasicInfo basicInfo = mmBasicInfoService.findByMCode(member.getMmCode());
+        if (basicInfo==null){
+            return ApiUtils.error("找不到该会员信息！");
+        }
+
+        //提现上限是5万元，下限是10元，超过则气泡提示
+        if (amount==null){
+            return ApiUtils.error("提现金额不能为0！");
+        }else {
+            if(amount.longValue()<10 || amount.longValue()>50000){
+                return ApiUtils.error("提现上限是5万元，下限是10元");
+            }
+        }
+
+        if (bankCardNoR==null || "".equals(bankCardNoR)){
+            return ApiUtils.error("请选择银行卡");
+        }
+
+        String withdrawSn = "W"+twiterIdService.getTwiterId();
+
+        String backUrl = server + "/api/paynotify/notifyMobile/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
+        String bankCardNoL = YunClient.encrypt(bankCardNoR);
+        String resBalance = TongLianUtils.withdrawApply(withdrawSn,basicInfo.getMmCode(), TongLianUtils.ACCOUNT_SET_NO,amount*100,fee*100,0l,
+                backUrl,"",null,bankCardNoL,0l,"D0","1910","其他",1l,"","");
+        if(!"".equals(resBalance)) {
+            Map maps = (Map) JSON.parse(resBalance);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                RdMmWithdrawLog rdMmWithdrawLog = new RdMmWithdrawLog();
+                rdMmWithdrawLog.setId(twiterIdService.getTwiterId());
+                rdMmWithdrawLog.setWithdrawSn(withdrawSn);
+                rdMmWithdrawLog.setMCode(basicInfo.getMmCode());
+                rdMmWithdrawLog.setWithdrawAmount(new BigDecimal(amount));
+                rdMmWithdrawLog.setWithdrawBank(bankCardNoR);
+                rdMmWithdrawLog.setWithdrawTime(new Date());
+
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                String payStatus = okMap.get("payStatus").toString();//支付状态 仅交易验证方式为“0”时返回 成功：success 进行中：pending 失败：fail 提现在成功和失败时都会通知商户。 其他订单只在成功时会通知商户。  否
+                if (payStatus.equals("fail")){
+                    String payFailMessage = okMap.get("payFailMessage").toString();//支付失败信息 仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效 否
+                    rdMmWithdrawLog.setWithdrawStatus(1);
+                    rdMmWithdrawLog.setTlOrderNo("");
+                    rdMmWithdrawLog.setWithdrawMemo(payFailMessage);
+                    rdMmWithdrawLogService.save(rdMmWithdrawLog);
+                    return ApiUtils.error("提现请求失败："+payFailMessage);
+                }
+                String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。 仅交易验证方式为“0”时返回 否
+                String orderNo = okMap.get("orderNo").toString();//通商云订单号
+                String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                String extendInfo = okMap.get("extendInfo").toString();//扩展信息 否
+
+                rdMmWithdrawLog.setWithdrawStatus(2);
+                rdMmWithdrawLog.setTlOrderNo(orderNo);
+                rdMmWithdrawLog.setWithdrawMemo("");
+                rdMmWithdrawLogService.save(rdMmWithdrawLog);
+                return ApiUtils.success();
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("通联接口发生错误："+message);
+            }
+        }else {
+            return ApiUtils.error("通联接口调取失败");
+        }
+    }
 
 }

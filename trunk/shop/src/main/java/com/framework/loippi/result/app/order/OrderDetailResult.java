@@ -279,6 +279,8 @@ public class OrderDetailResult {
             orderDetailResult.setReceiverName(optAddr.map(ShopOrderAddress::getTrueName).orElse(""));
             orderDetailResult.setReceiverAddress(optAddr.map(ShopOrderAddress::getAreaInfo).orElse("")
                     + optAddr.map(ShopOrderAddress::getAddress).orElse(""));
+            /*orderDetailResult.setAddressPCD(optAddr.map(ShopOrderAddress::getAreaInfo).orElse(""));
+            orderDetailResult.setAddressDetail(optAddr.map(ShopOrderAddress::getAddress).orElse(""));*/
             orderDetailResult.setReceiverMobile(optAddr.map(ShopOrderAddress::getMobPhone).orElse(""));
             orderDetailResult.setAddressDetail(optAddr.map(ShopOrderAddress::getAddress).orElse(""));
         }else{
