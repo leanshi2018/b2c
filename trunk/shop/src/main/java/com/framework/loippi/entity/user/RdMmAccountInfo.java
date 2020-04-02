@@ -1,14 +1,15 @@
 package com.framework.loippi.entity.user;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Date;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 会员账户信息
@@ -79,5 +80,12 @@ public class RdMmAccountInfo implements GenericEntity {
 	/** 支付密码:加密保存 */
 	@Column(name = "PAYMENT_PWD" )
 	private String paymentPwd;
-	
+
+	/** 上次提现时间 新注册用户使用注册时间 */
+	@Column(name = "LAST_WITHDRAWAL_TIME" )
+	private Date lastWithdrawalTime;
+
+	/** 是否开启自动提现  0:未开启 1：已开启*/
+	@Column(name = "AUTOMATIC_WITHDRAWAL" )
+	private Integer automaticWithdrawal;
 }

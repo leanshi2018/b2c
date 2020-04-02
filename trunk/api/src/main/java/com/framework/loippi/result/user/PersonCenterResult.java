@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.framework.loippi.consts.OrderState;
+import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
@@ -115,7 +116,20 @@ public class PersonCenterResult {
     //加密后密码
     private String pwd;
 
-    public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade) {
+    //是否绑定银行卡  0:未绑定  1：已绑定（该银行卡绑定是指手动提现银行卡绑定状态，与通联银行卡绑定无关）
+    private Integer badingBankFlag;
+
+    //是否进行通联支付实名制认证 0：未实名制认证 1：已实名制认证
+    private Integer trueNameFlag;
+
+    //0:未签约 1：已签约  通联支付签约状态
+    private Integer allInPayContractStatus;
+
+    //0:未绑定通联支付手机号 1：已绑定 2：已解绑（解绑后未绑定新的手机号）  用户是否绑定了通联支付手机号码
+    private Integer allInPayPhoneStatus;
+
+
+    public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
         PersonCenterResult result = new PersonCenterResult();
         result.setAvatar(optional.map(RdMmBasicInfo::getMmAvatar).orElse(""));
@@ -133,6 +147,14 @@ public class PersonCenterResult {
                 result.setLookVip(1);
             }
         }
+        if(banks!=null&&banks.size()>0){
+            result.setBadingBankFlag(1);
+        }else {
+            result.setBadingBankFlag(0);
+        }
+        result.setAllInPayContractStatus(optional.map(RdMmBasicInfo::getAllInContractStatus).orElse(0));
+        result.setAllInPayPhoneStatus(optional.map(RdMmBasicInfo::getAllInPayPhoneStatus).orElse(0));
+        result.setTrueNameFlag(optional.map(RdMmBasicInfo::getWhetherTrueName).orElse(0));
         return result;
     }
 

@@ -20,15 +20,18 @@
 		<result property="alipayAcc" column="ALIPAY_ACC" />
 		<result property="paymentPhone" column="PAYMENT_PHONE" />
 		<result property="paymentPwd" column="PAYMENT_PWD" />
+		<result property="lastWithdrawalTime" column="LAST_WITHDRAWAL_TIME" />
+		<result property="automaticWithdrawal" column="AUTOMATIC_WITHDRAWAL" />
 	</resultMap>
-	
+
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 MM_CODE ,BONUS_STATUS ,BONUS_CURRENCY ,BONUS_BLANCE ,WALLET_STATUS ,WALLET_CURRENCY ,WALLET_BLANCE ,REDEMPTION_STATUS ,REDEMPTION_CURRENCY ,REDEMPTION_BLANCE ,WECHAT_ACC ,ALIPAY_ACC ,PAYMENT_PHONE ,PAYMENT_PWD 
+		 MM_CODE ,BONUS_STATUS ,BONUS_CURRENCY ,BONUS_BLANCE ,WALLET_STATUS ,WALLET_CURRENCY ,WALLET_BLANCE ,REDEMPTION_STATUS ,REDEMPTION_CURRENCY ,REDEMPTION_BLANCE ,WECHAT_ACC ,ALIPAY_ACC ,PAYMENT_PHONE ,PAYMENT_PWD,LAST_WITHDRAWAL_TIME,AUTOMATIC_WITHDRAWAL
 	</sql>
-	
+
 	<sql id="base_value_column">
-		 #{mmCode},#{bonusStatus},#{bonusCurrency},#{bonusBlance},#{walletStatus},#{walletCurrency},#{walletBlance},#{redemptionStatus},#{redemptionCurrency},#{redemptionBlance},#{wechatAcc},#{alipayAcc},#{paymentPhone},#{paymentPwd}
+		 #{mmCode},#{bonusStatus},#{bonusCurrency},#{bonusBlance},#{walletStatus},#{walletCurrency},#{walletBlance},#{redemptionStatus},#{redemptionCurrency},#{redemptionBlance},#{wechatAcc},#{alipayAcc},#{paymentPhone},#{paymentPwd},#{lastWithdrawalTime},
+		 #{automaticWithdrawal}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -75,6 +78,12 @@
 		<if test="paymentPwd != null and paymentPwd != ''">
 			AND PAYMENT_PWD = #{paymentPwd,jdbcType=VARCHAR}
 		</if>
+		<if test="lastWithdrawalTime != null">
+			AND LAST_WITHDRAWAL_TIME = #{lastWithdrawalTime}
+		</if>
+		<if test="automaticWithdrawal != null and automaticWithdrawal != ''">
+			AND AUTOMATIC_WITHDRAWAL = #{automaticWithdrawal,jdbcType=INTEGER}
+		</if>
 	</sql>
 	
 	<!-- 设置语句 -->
@@ -120,6 +129,12 @@
 		</if>
 		<if test="paymentPwd != null and paymentPwd != ''">
 			PAYMENT_PWD = #{paymentPwd,jdbcType=VARCHAR},
+		</if>
+		<if test="lastWithdrawalTime != null">
+			LAST_WITHDRAWAL_TIME = #{lastWithdrawalTime},
+		</if>
+		<if test="automaticWithdrawal != null and automaticWithdrawal != ''">
+			AUTOMATIC_WITHDRAWAL = #{automaticWithdrawal,jdbcType=INTEGER},
 		</if>
 	</sql>
 
@@ -201,5 +216,13 @@
 
 	<select id="findByMCode" parameterType="string" resultMap="RdMmAccountInfoResultMap">
 		SELECT * FROM RD_MM_ACCOUNT_INFO WHERE MM_CODE = #{mmCode}
+	</select>
+
+	<select id="findAccByMCode" parameterType="string" resultMap="RdMmAccountInfoResultMap">
+		SELECT * FROM RD_MM_ACCOUNT_INFO WHERE MM_CODE = #{mmCode}
+	</select>
+
+	<select id="findLastWithdrawalOneHundred" resultMap="RdMmAccountInfoResultMap">
+		SELECT * FROM RD_MM_ACCOUNT_INFO WHERE BONUS_STATUS = 0 and AUTOMATIC_WITHDRAWAL = 1 order by LAST_WITHDRAWAL_TIME asc limit 0,100
 	</select>
 </mapper> 

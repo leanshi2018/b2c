@@ -66,12 +66,11 @@ public class SelfWalletResult {
 		}else {
 			result.setAllInContractStatus("已签约");
 		}
-		if (basicInfo.getWhetherTureName()==null || basicInfo.getWhetherTureName()!=1){
+		if (basicInfo.getWhetherTrueName()==null||basicInfo.getWhetherTrueName()!=1){
 			result.setWhetherTureName("未激活");
 		}else {
 			result.setAllInContractStatus("已激活");
 		}
-
 		return result;
 	}
 

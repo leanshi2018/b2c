@@ -160,23 +160,23 @@ public class RdMmBasicInfo implements GenericEntity {
 	@Column(name = "PUSH_STATUS" )
 	private Integer pushStatus;
 
-	/** 注册关联通联账户id */
+	/** 关联通联支付id */
 	@Column(name = "TONG_LIAN_ID" )
 	private String tongLianId;
 
-	/** 0:未认证 1：已认证 */
+	/** 通联支付实名制认证标识 0：未认证 1：已通过认证 */
 	@Column(name = "WHETHER_TURE_NAME" )
-	private Integer whetherTureName;
+	private Integer whetherTrueName;
 
 	/** 0:未签约 1：已签约  通联支付签约状态 */
 	@Column(name = "ALL_IN_CONTRACT_STATUS" )
 	private Integer allInContractStatus;
 
-	/** 通联支付签约成功返回签约码 */
+	/** 通联支付签约成功返回签约码*/
 	@Column(name = "CONTRACT_NO" )
 	private String contractNo;
 
-	/** 0:未绑定通联支付手机号 1：已绑定 2：已解绑（解绑后未绑定新的手机号） */
+	/** 0:未绑定通联支付手机号 1：已绑定 2：已解绑（解绑后未绑定新的手机号）*/
 	@Column(name = "ALL_IN_PAY_PHONE_STATUS" )
 	private Integer allInPayPhoneStatus;
 

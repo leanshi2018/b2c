@@ -1757,6 +1757,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setPpv(orderVo.getPpv());
             //订单运费优惠价格
             order.setShippingPreferentialFee(orderVo.getPreferentialFreightAmount());
+            //订单等级优惠金额
+            order.setRankDiscount(orderVo.getRankAmount());
             //订单使用优惠券金额
             order.setCouponDiscount(orderVo.getUseCouponAmount());
             order.setOrderPlatform(2);
@@ -1776,6 +1778,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             //            order.setDiscount(orderVo.getDiscount());
             //            //促销优惠金额
             //            order.setPromoPrice(orderVo.getPromoPrice());
+            System.out.println(order);
             orderDao.insertEntity(order);
             // todo 推荐反拥
             //扣除用户使用的优惠券
@@ -3267,6 +3270,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             OrderVo orderVo = new OrderVo();
             orderVo.setBrandId(cartInfo.getBrandId());
             orderVo.setBrandName(cartInfo.getBrandName());
+            orderVo.setRankAmount(Optional.ofNullable(cartInfo.getRankAmount()).orElse(BigDecimal.ZERO));
             // 商品总价格
             orderVo.setGoodsAmount(cartInfo.getGoodsTotalPrice());
             // 优惠券金额

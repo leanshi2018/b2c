@@ -1,11 +1,12 @@
 package com.framework.loippi.pojo.order;
 
-import com.google.common.collect.Lists;
-import java.math.BigDecimal;
-import java.util.List;
-import javax.naming.ldap.PagedResultsControl;
 import lombok.Data;
 import lombok.ToString;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 /**
  * 生成订单使用的订单超类
@@ -53,6 +54,10 @@ public class OrderVo {
      * 商品优惠价格
      */
     private BigDecimal couponAmount;
+    /**
+     * 会员等级优惠价格
+     */
+    private BigDecimal rankAmount;
     /**
      *运费
      */

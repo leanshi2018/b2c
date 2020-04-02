@@ -1,22 +1,24 @@
 package com.framework.loippi.result.app.order;
 
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.entity.coupon.CouponDetail;
-import com.framework.loippi.vo.gifts.Gifts;
-import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import com.cloopen.rest.sdk.utils.DateUtil;
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
+import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.result.app.cart.BaseGoodsResult;
 import com.framework.loippi.vo.order.ShopOrderVo;
+import com.google.common.collect.Lists;
 
 /**
  * 订单详情--返回app数据
@@ -65,9 +67,13 @@ public class OrderDetailResult {
     private BigDecimal goodsTotalAmount;
 
     /**
-     * 优惠卷 金额
+     * 优惠金额
      */
     public BigDecimal couponAmount;
+    /**
+     * 优惠卷抵扣金额
+     */
+    public BigDecimal useCouponAmount;
 
     /**
      * 实付金额
@@ -203,17 +209,17 @@ public class OrderDetailResult {
         private Integer activityType;
 
         private BigDecimal ppv;
-            //是否发货 0没发货 1已发货
-    private Integer isShipment;
+        //是否发货 0没发货 1已发货
+        private Integer isShipment;
         public static List<OrderGoods> buildList(List<ShopOrderGoods> orderGoodsList) throws Exception {
             return BaseGoodsResult.buildList(orderGoodsList,
-                result -> new OrderGoods()
-                    .setIsShipment(
-                            (result.getShippingExpressId()!=null && result.getShippingCode()!=null && !"".equals(result.getShippingCode())?1:0)
-                    )
-                    .setPpv(Optional.ofNullable(result.getPpv()).orElse(BigDecimal.ZERO))
-                    .setActivityId(Optional.ofNullable(result.getActivityId()).orElse(0L))
-                    .setActivityType(Optional.ofNullable(result.getActivityType()).orElse(0)));
+                    result -> new OrderGoods()
+                            .setIsShipment(
+                                    (result.getShippingExpressId()!=null && result.getShippingCode()!=null && !"".equals(result.getShippingCode())?1:0)
+                            )
+                            .setPpv(Optional.ofNullable(result.getPpv()).orElse(BigDecimal.ZERO))
+                            .setActivityId(Optional.ofNullable(result.getActivityId()).orElse(0L))
+                            .setActivityType(Optional.ofNullable(result.getActivityType()).orElse(0)));
         }
     }
 
@@ -223,39 +229,37 @@ public class OrderDetailResult {
         Optional<ShopOrderAddress> optAddr = optOrder.map(ShopOrderVo::getAddress);
 
         OrderDetailResult orderDetailResult = new OrderDetailResult()
-            .setOrderSn(optOrder.map(ShopOrderVo::getOrderSn).orElse(""))
-            .setState(optOrder.map(ShopOrderVo::getOrderState).orElse(-1))
-            .setOrderId(optOrder.map(ShopOrderVo::getId).orElse(-1L))
-            .setPaySn(optOrder.map(ShopOrderVo::getPaySn).orElse(""))
-            .setPaymentCode(optOrder.map(ShopOrderVo::getPaymentCode).orElse(""))
-            .setExpressCode(optOrder.map(ShopOrderVo::getShippingExpressCode).orElse(""))
-            .setShippingCode(optOrder.map(ShopOrderVo::getShippingCode).orElse(""))
-            .setEvaluateState(optOrder.map(ShopOrderVo::getEvaluationStatus).orElse(0).intValue())
-            .setChatAccount("qqcloud_"+optOrder.map(ShopOrderVo::getStoreId).orElse(0L).toString())
-            .setOrderGoodsList(OrderGoods.buildList(order.getShopOrderGoods()))
-            .setBrandId(optOrder.map(ShopOrderVo::getBrandId).orElse(-1L))
-            .setBrandName(optOrder.map(ShopOrderVo::getBrandName).orElse(""))
-            .setCancelCause(optOrder.map(ShopOrderVo::getCancelCause).orElse(""))
-            .setTotalPpv(optOrder.map(ShopOrderVo::getPpv).orElse(BigDecimal.ZERO))
-               //订单生成时间
-            .setCreateTime(Optional.ofNullable(DateUtil.dateToStr(order.getCreateTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))
-               // 支付(付款)时间
-            .setPaymentTime(Optional.ofNullable(DateUtil.dateToStr(order.getPaymentTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))
-             //配送时间
-            .setShippingTime(Optional.ofNullable(DateUtil.dateToStr(order.getShippingTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))
-             //订单完成时间
-            .setFinnshedTime(Optional.ofNullable(DateUtil.dateToStr(order.getFinnshedTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))
+                .setOrderSn(optOrder.map(ShopOrderVo::getOrderSn).orElse(""))
+                .setState(optOrder.map(ShopOrderVo::getOrderState).orElse(-1))
+                .setOrderId(optOrder.map(ShopOrderVo::getId).orElse(-1L))
+                .setPaySn(optOrder.map(ShopOrderVo::getPaySn).orElse(""))
+                .setPaymentCode(optOrder.map(ShopOrderVo::getPaymentCode).orElse(""))
+                .setExpressCode(optOrder.map(ShopOrderVo::getShippingExpressCode).orElse(""))
+                .setShippingCode(optOrder.map(ShopOrderVo::getShippingCode).orElse(""))
+                .setEvaluateState(optOrder.map(ShopOrderVo::getEvaluationStatus).orElse(0).intValue())
+                .setChatAccount("qqcloud_"+optOrder.map(ShopOrderVo::getStoreId).orElse(0L).toString())
+                .setOrderGoodsList(OrderGoods.buildList(order.getShopOrderGoods()))
+                .setBrandId(optOrder.map(ShopOrderVo::getBrandId).orElse(-1L))
+                .setBrandName(optOrder.map(ShopOrderVo::getBrandName).orElse(""))
+                .setCancelCause(optOrder.map(ShopOrderVo::getCancelCause).orElse(""))
+                .setTotalPpv(optOrder.map(ShopOrderVo::getPpv).orElse(BigDecimal.ZERO))
+                //订单生成时间
+                .setCreateTime(Optional.ofNullable(DateUtil.dateToStr(order.getCreateTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))
+                // 支付(付款)时间
+                .setPaymentTime(Optional.ofNullable(DateUtil.dateToStr(order.getPaymentTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))
+                //配送时间
+                .setShippingTime(Optional.ofNullable(DateUtil.dateToStr(order.getShippingTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))
+                //订单完成时间
+                .setFinnshedTime(Optional.ofNullable(DateUtil.dateToStr(order.getFinnshedTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))
                 //备注
-            .setOrderMessage(optOrder.map(ShopOrderVo::getOrderMessage).orElse(""))
-            .setUsePointNum(optOrder.map(ShopOrderVo::getUsePointNum).orElse(0).intValue())
+                .setOrderMessage(optOrder.map(ShopOrderVo::getOrderMessage).orElse(""))
+                .setUsePointNum(optOrder.map(ShopOrderVo::getUsePointNum).orElse(0).intValue())
                 //是否被后台修改
-            .setIsModify(optOrder.map(ShopOrderVo::getIsModify).orElse(0).intValue())
+                .setIsModify(optOrder.map(ShopOrderVo::getIsModify).orElse(0).intValue())
                 // 可用积分抵扣金额
-            .setRewardPointAmount(optOrder.map(ShopOrderVo::getPointRmbNum).orElse(new BigDecimal("0")))
+                .setRewardPointAmount(optOrder.map(ShopOrderVo::getPointRmbNum).orElse(new BigDecimal("0")))
                 // 商品金额
-                .setGoodsTotalAmount(optOrder.map(ShopOrderVo::getGoodsAmount).orElse(new BigDecimal("0")))
-                // 优惠券金额
-                .setCouponAmount(optOrder.map(ShopOrderVo::getGoodsAmount).orElse(new BigDecimal("0")))
+                .setGoodsTotalAmount(optOrder.map(ShopOrderVo::getGoodsAmount).orElse(new BigDecimal("0").subtract(optOrder.map(ShopOrderVo::getRankDiscount).orElse(BigDecimal.ZERO))))
                 // 实付款
                 .setNeedToPay(optOrder.map(ShopOrderVo::getOrderAmount).orElse(new BigDecimal("0")))
                 //运费
@@ -263,12 +267,14 @@ public class OrderDetailResult {
                 //运费优惠
                 .setPreferentialFreightAmount(optOrder.map(ShopOrderVo::getShippingPreferentialFee).orElse(new BigDecimal("0")))
                 //优惠金额
-                .setCouponAmount(optOrder.map(ShopOrderVo::getDiscount).orElse(new BigDecimal("0")));
+                .setCouponAmount(optOrder.map(ShopOrderVo::getDiscount).orElse(new BigDecimal("0")).subtract(optOrder.map(ShopOrderVo::getRankDiscount).orElse(BigDecimal.ZERO)))
+                //使用优惠券金额
+                .setUseCouponAmount(optOrder.map(ShopOrderVo::getCouponDiscount).orElse(new BigDecimal("0")));
         if (order.getLogisticType()==1){
             orderDetailResult.setLogisticType(1);
             orderDetailResult.setReceiverName(optAddr.map(ShopOrderAddress::getTrueName).orElse(""));
             orderDetailResult.setReceiverAddress(optAddr.map(ShopOrderAddress::getAreaInfo).orElse("")
-                            + optAddr.map(ShopOrderAddress::getAddress).orElse(""));
+                    + optAddr.map(ShopOrderAddress::getAddress).orElse(""));
             orderDetailResult.setReceiverMobile(optAddr.map(ShopOrderAddress::getMobPhone).orElse(""));
         }else{
             //自提

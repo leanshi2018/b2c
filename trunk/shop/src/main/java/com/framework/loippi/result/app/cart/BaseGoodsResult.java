@@ -1,21 +1,19 @@
 package com.framework.loippi.result.app.cart;
 
-import com.framework.loippi.entity.order.ShopOrderGoods;
-
-import com.framework.loippi.result.app.order.ResultFunction;
-import com.framework.loippi.utils.NumberUtils;
-import com.google.common.collect.Lists;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.ss.formula.functions.T;
-import sun.rmi.server.InactiveGroupException;
+
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.result.app.order.ResultFunction;
+import com.framework.loippi.utils.NumberUtils;
+import com.google.common.collect.Lists;
 
 /**
  * 功能： app页面通用商品数据
@@ -67,6 +65,14 @@ public class BaseGoodsResult {
      * 商品pv值
      */
     private BigDecimal ppv;
+    /**
+     * vip价格
+     */
+    private BigDecimal vipPrice;
+    /**
+     * 大单pv价格
+     */
+    private BigDecimal bigPpvPrice;
 
 //    //是否发货 0没发货 1已发货
 //    private Integer isShipment;
@@ -96,6 +102,8 @@ public class BaseGoodsResult {
                 baseGoodsResult.setSpecInfo(optOrderGoods.map(ShopOrderGoods::getSpecInfo).orElse(""));
                 baseGoodsResult.setSpecId(optOrderGoods.map(ShopOrderGoods::getSpecId).orElse(-1L));
                 baseGoodsResult.setPpv(optOrderGoods.map(ShopOrderGoods::getPpv).orElse(BigDecimal.ZERO));
+                baseGoodsResult.setVipPrice(optOrderGoods.map(ShopOrderGoods::getVipPrice).orElse(BigDecimal.ZERO));
+                baseGoodsResult.setBigPpvPrice(optOrderGoods.map(ShopOrderGoods::getGoodsPrice).orElse(BigDecimal.ZERO));
 //            if (shopOrderGood.getShippingExpressId()!=null && shopOrderGood.getShippingCode()!=null && !"".equals(shopOrderGood.getShippingCode())){
 //                baseGoodsResult.setIsShipment(1);
 //            }else{
