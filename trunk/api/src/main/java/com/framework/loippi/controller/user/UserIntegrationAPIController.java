@@ -533,7 +533,7 @@ public class UserIntegrationAPIController extends BaseController {
             Integer ddAcNumber = Optional.ofNullable(qualification.getDdAcNumber()).orElse(0);//复消人数
             paramap.put("addNumber","直邀（"+rank1Number+"）"+"   代理（"+rank2Number+"） 复消（"+ddAcNumber+"）");
         }else {
-
+            paramap.put("addNumber","直邀（0）   代理（0） 复消（0）");
         }
         /*HashMap<String, Object> map1 = new HashMap<>();
         map1.put("sponsorCode",member.getMmCode());

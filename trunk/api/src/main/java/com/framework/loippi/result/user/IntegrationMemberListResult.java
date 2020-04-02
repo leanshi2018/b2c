@@ -470,46 +470,60 @@ public class IntegrationMemberListResult {
                 memberInfo.setGradeId(0);
                 memberInfo.setGradeName(map.get(0));
             }*/
-            for (MemberQualification qualification : memberQualificationList) {
-                if(qualification.getMCode().equals(rdMmRelation.getMmCode())){
-                    //等级和等级名称
-                    if((qualification.getRankP0()+"")!=null){
-                        memberInfo.setGradeId(qualification.getRankP0());
-                        if(map.get(qualification.getRankP0())!=null){
-                            memberInfo.setGradeName(map.get(qualification.getRankP0()));
+            if (memberQualificationList.size()>0){
+                for (MemberQualification qualification : memberQualificationList) {
+                    if(qualification.getMCode().equals(rdMmRelation.getMmCode())){
+                        //等级和等级名称
+                        if((qualification.getRankP0()+"")!=null){
+                            memberInfo.setGradeId(qualification.getRankP0());
+                            if(map.get(qualification.getRankP0())!=null){
+                                memberInfo.setGradeName(map.get(qualification.getRankP0()));
+                            }else {
+                                memberInfo.setGradeName("");
+                            }
                         }else {
-                            memberInfo.setGradeName("");
+                            memberInfo.setGradeId(0);
+                            memberInfo.setGradeName(map.get(0));
                         }
+                        //头像颜色
+                        if (qualification.getPpvqualified()!=1 && qualification.getHPpvQualified()!=1){
+                            memberInfo.setMemberAvatarColour("灰色");
+                        }else{
+                            memberInfo.setMemberAvatarColour("灰色");
+                            if (qualification.getPpvqualified()==1){
+                                memberInfo.setMemberAvatarColour("橙色");
+                            }
+                            if (qualification.getHPpvQualified()==1){
+                                memberInfo.setMemberAvatarColour("红色");
+                            }
+                        }
+
+                        //当期ppv和累计ppv
+                        if (qualification.getPpv()!=null){
+                            memberInfo.setPpv(qualification.getPpv());
+                        }else {
+                            memberInfo.setPpv(new BigDecimal("0.00"));
+                        }
+                        if (qualification.getAppvFinal()!=null){
+                            memberInfo.setTotalPv(qualification.getAppvFinal());
+                        }else {
+                            memberInfo.setTotalPv(new BigDecimal("0.00"));
+                        }
+
                     }else {
                         memberInfo.setGradeId(0);
                         memberInfo.setGradeName(map.get(0));
-                    }
-                    //头像颜色
-                    if (qualification.getPpvqualified()!=1 && qualification.getHPpvQualified()!=1){
                         memberInfo.setMemberAvatarColour("灰色");
-                    }else{
-                        memberInfo.setMemberAvatarColour("灰色");
-                        if (qualification.getPpvqualified()==1){
-                            memberInfo.setMemberAvatarColour("橙色");
-                        }
-                        if (qualification.getHPpvQualified()==1){
-                            memberInfo.setMemberAvatarColour("红色");
-                        }
-                    }
-
-                    //当期ppv和累计ppv
-                    if (qualification.getPpv()!=null){
-                        memberInfo.setPpv(qualification.getPpv());
-                    }else {
                         memberInfo.setPpv(new BigDecimal("0.00"));
-                    }
-                    if (qualification.getAppvFinal()!=null){
-                        memberInfo.setTotalPv(qualification.getAppvFinal());
-                    }else {
                         memberInfo.setTotalPv(new BigDecimal("0.00"));
                     }
-
                 }
+            }else {
+                memberInfo.setGradeId(0);
+                memberInfo.setGradeName(map.get(0));
+                memberInfo.setMemberAvatarColour("灰色");
+                memberInfo.setPpv(new BigDecimal("0.00"));
+                memberInfo.setTotalPv(new BigDecimal("0.00"));
             }
             //memberInfo.setTotalPv(Optional.ofNullable(memberQualification.getPpv()).orElse(BigDecimal.ZERO));
             BigDecimal decimal = hashMap.get(rdMmRelation.getMmCode());

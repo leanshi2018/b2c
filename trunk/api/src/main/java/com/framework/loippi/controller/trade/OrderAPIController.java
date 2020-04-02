@@ -1783,6 +1783,90 @@ public class OrderAPIController extends BaseController {
         }
     }
 
+    /**
+     * 通联接口 发送短信验证码（无需验证码）
+     *
+     * @param verificationCodeType  验证码类型 9-绑定手机  6-解绑手机
+     */
+    @RequestMapping("/api/order/applets/sendVerificationCodeNew")
+    @ResponseBody
+    public String sendVerificationCodeNew(@RequestParam(value = "verificationCodeType") Long verificationCodeType,
+                                       HttpServletRequest request) {
+
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(com.framework.loippi.utils.Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        if (member==null){
+            return ApiUtils.error("该用户还未登陆");
+        }
+
+        if (member.getMobile()==null||member.getMobile().trim().equals("")){
+            return ApiUtils.error("该用户未绑定手机号");
+        }
+        String s = TongLianUtils.sendVerificationCode(member.getMmCode(), member.getMobile(), verificationCodeType);
+        if (!"".equals(s)){
+            Map maps = (Map) JSON.parse(s);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                //String signedValue = maps.get("signedValue").toString();
+                //Map okMap = (Map) JSON.parse(signedValue);
+                //String bizUserId = okMap.get("bizUserId").toString();
+                //String phoneBack = okMap.get("phone").toString();
+
+                return ApiUtils.success("发送成功");
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("发送失败："+message);
+            }
+
+        }else {
+            return ApiUtils.error("发送失败");
+        }
+    }
+
+
+    /**
+     * 通联接口 绑定手机（无需验证码）
+     *
+     * @param verificationCode  验证码
+     */
+    @RequestMapping("/api/order/applets/bindPhoneNew")
+    @ResponseBody
+    public String bindPhoneNew(@RequestParam(value = "verificationCode") String verificationCode,HttpServletRequest request) {
+
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(com.framework.loippi.utils.Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        if (member==null){
+            return ApiUtils.error("该用户还未登陆");
+        }
+
+        if (member.getMobile()==null||member.getMobile().trim().equals("")){
+            return ApiUtils.error("该用户未绑定手机号");
+        }
+        if (verificationCode==null||verificationCode.trim().equals("")){
+            return ApiUtils.error("请输入验证码");
+        }
+        String s = TongLianUtils.bindPhone(member.getMmCode(), member.getMobile(), verificationCode);
+        if (!"".equals(s)){
+            Map maps = (Map) JSON.parse(s);
+            String status = maps.get("status").toString();
+            if (status.equals("OK")) {
+                String signedValue = maps.get("signedValue").toString();
+                Map okMap = (Map) JSON.parse(signedValue);
+                String bizUserId = okMap.get("bizUserId").toString();
+                String phoneBack = okMap.get("phone").toString();
+                return ApiUtils.success("绑定成功");
+
+            }else {
+                String message = maps.get("message").toString();
+                return ApiUtils.error("绑定失败："+message);
+            }
+
+        }else {
+            return ApiUtils.error("绑定失败");
+        }
+    }
 
 
 
