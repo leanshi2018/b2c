@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 /**
  * @author :ldq
  * @date:2019/12/9
- * @description:dubbo com.framework.loippi.utils.web
+ * @description:dubbo com.framework.loippi.util.web
  */
 public class ImageVerificationCode {
 

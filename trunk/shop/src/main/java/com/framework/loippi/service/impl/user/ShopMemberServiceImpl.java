@@ -16,7 +16,7 @@
 //import com.framework.loippi.service.user.ShopMemberService;
 //import com.framework.loippi.support.Page;
 //import com.framework.loippi.support.Pageable;
-//import com.framework.loippi.utils.Paramap;
+//import com.framework.loippi.util.Paramap;
 //import com.framework.loippi.vo.stats.StatsCountVo;
 //import com.framework.loippi.vo.user.UserInfoDto;
 //import org.springframework.beans.factory.annotation.Autowired;

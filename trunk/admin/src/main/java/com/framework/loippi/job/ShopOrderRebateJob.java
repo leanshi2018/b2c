@@ -15,7 +15,7 @@
 //import com.framework.loippi.service.order.ShopOrderGoodsService;
 //import com.framework.loippi.service.user.ShopMemberService;
 //import com.framework.loippi.service.walet.ShopWalletLogService;
-//import com.framework.loippi.utils.JsonUtil;
+//import com.framework.loippi.util.JsonUtil;
 //import com.framework.loippi.vo.activity.ShopOrderRebateVo;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.context.annotation.Lazy;

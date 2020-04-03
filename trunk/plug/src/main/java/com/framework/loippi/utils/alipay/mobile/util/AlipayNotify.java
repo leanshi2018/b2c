@@ -1,4 +1,4 @@
-//package com.framework.loippi.utils.alipay.mobile.util;
+//package com.framework.loippi.util.alipay.mobile.util;
 //
 //import java.io.BufferedReader;
 //import java.io.InputStreamReader;
@@ -6,8 +6,8 @@
 //import java.net.URL;
 //import java.util.Map;
 //
-//import com.framework.loippi.utils.alipay.mobile.config.AlipayConfig;
-//import com.framework.loippi.utils.alipay.mobile.sign.RSA;
+//import com.framework.loippi.util.alipay.mobile.config.AlipayConfig;
+//import com.framework.loippi.util.alipay.mobile.sign.RSA;
 //
 ///* *
 // *类名：AlipayNotify
