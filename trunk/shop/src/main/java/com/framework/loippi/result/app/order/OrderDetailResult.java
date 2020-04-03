@@ -52,13 +52,9 @@ public class OrderDetailResult {
      */
     private String receiverAddress;
     /**
-     * 收货人地址 省市区
+     * 收货人地址详情
      */
-   /* private String addressPCD;
-    *//**
-     * 收货人地址 详细地址
-     *//*
-    private String addressDetail;*/
+    private String addressDetail;
     /**
      * 订单所用积分数量
      */
@@ -286,6 +282,7 @@ public class OrderDetailResult {
             /*orderDetailResult.setAddressPCD(optAddr.map(ShopOrderAddress::getAreaInfo).orElse(""));
             orderDetailResult.setAddressDetail(optAddr.map(ShopOrderAddress::getAddress).orElse(""));*/
             orderDetailResult.setReceiverMobile(optAddr.map(ShopOrderAddress::getMobPhone).orElse(""));
+            orderDetailResult.setAddressDetail(optAddr.map(ShopOrderAddress::getAddress).orElse(""));
         }else{
             //自提
             orderDetailResult.setLogisticType(2);
@@ -295,10 +292,12 @@ public class OrderDetailResult {
                 orderDetailResult.setReceiverAddress(Optional.ofNullable(
                         shopMemberAddress.getAddProvinceCode()+shopMemberAddress.getAddCityCode()+shopMemberAddress.getAddCountryCode()
                 ).orElse("后台还未设置")+Optional.ofNullable(shopMemberAddress.getAddDetial()).orElse(""));
+                orderDetailResult.setAddressDetail(optAddr.map(ShopOrderAddress::getAddress).orElse(""));
             }else{
                 orderDetailResult.setReceiverName("后台还未设置");
                 orderDetailResult.setReceiverMobile("后台还未设置");
                 orderDetailResult.setReceiverAddress("后台还未设置");
+                orderDetailResult.setAddressDetail("后台还未设置");
             }
         }
         if (orderDetailResult.getState()==20 && !"".equals(Optional.ofNullable(DateUtil.dateToStr(order.getShippingTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))){
