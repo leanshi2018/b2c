@@ -1501,7 +1501,33 @@
         order_sn = #{orderSn}
     </update>
 
+    <!--快递订单分账查询-->
     <select id="findNoCutOrder" parameterType="java.util.Map" resultMap="ShopOrderResultMap">
+        select
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+        <where>
+            <if test="startTime != null and startTime != ''">
+                and shipping_time >= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and shipping_time &lt;= #{endTime}
+            </if>
+            <if test="paymentState != null">
+                and payment_state = #{paymentState}
+            </if>
+            <if test="orderState != null">
+                and order_state != #{orderState}
+            </if>
+            <if test="cutStatus != null">
+                and cut_status = #{cutStatus}
+            </if>
+            and logisticType = 1
+        </where>
+    </select>
+
+    <!--自提订单分账查询-->
+    <select id="findNoCutOrder1" parameterType="java.util.Map" resultMap="ShopOrderResultMap">
         select
         <include refid="base_column"/>
         FROM SHOP_ORDER
@@ -1521,7 +1547,7 @@
             <if test="cutStatus != null">
                 and cut_status = #{cutStatus}
             </if>
-            and shipping_time is not null
+            and logisticType = 2
         </where>
     </select>
     <!--&lt;!&ndash; 根据不同的时间段查出相应的订单量 &ndash;&gt;-->

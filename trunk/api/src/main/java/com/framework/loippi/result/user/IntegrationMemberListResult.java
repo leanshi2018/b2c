@@ -49,9 +49,9 @@ public class IntegrationMemberListResult {
      */
     private String memberAvatar;
     /**
-     * 会员头像颜色
+     * 会员头像颜色 0.灰色 1.橙色 2.红色
      */
-    private String memberAvatarColour;
+    private Integer memberAvatarColour;
 
     //等级名称
     private String gradeName;
@@ -486,15 +486,19 @@ public class IntegrationMemberListResult {
                             memberInfo.setGradeName(map.get(0));
                         }
                         //头像颜色
-                        if (qualification.getPpvqualified()!=1 && qualification.getHPpvQualified()!=1){
-                            memberInfo.setMemberAvatarColour("灰色");
-                        }else{
-                            memberInfo.setMemberAvatarColour("灰色");
-                            if (qualification.getPpvqualified()==1){
-                                memberInfo.setMemberAvatarColour("橙色");
-                            }
-                            if (qualification.getHPpvQualified()==1){
-                                memberInfo.setMemberAvatarColour("红色");
+                        if (qualification.getPpvqualified()==null || qualification.getHPpvQualified()==null){
+                            memberInfo.setMemberAvatarColour(0);
+                        }else {
+                            if (qualification.getPpvqualified()!=1 && qualification.getHPpvQualified()!=1){
+                                memberInfo.setMemberAvatarColour(0);
+                            }else{
+                                memberInfo.setMemberAvatarColour(0);
+                                if (qualification.getPpvqualified()==1){
+                                    memberInfo.setMemberAvatarColour(1);
+                                }
+                                if (qualification.getHPpvQualified()==1){
+                                    memberInfo.setMemberAvatarColour(2);
+                                }
                             }
                         }
 
@@ -513,7 +517,7 @@ public class IntegrationMemberListResult {
                     }else {
                         memberInfo.setGradeId(0);
                         memberInfo.setGradeName(map.get(0));
-                        memberInfo.setMemberAvatarColour("灰色");
+                        memberInfo.setMemberAvatarColour(0);
                         memberInfo.setPpv(new BigDecimal("0.00"));
                         memberInfo.setTotalPv(new BigDecimal("0.00"));
                     }
@@ -521,7 +525,7 @@ public class IntegrationMemberListResult {
             }else {
                 memberInfo.setGradeId(0);
                 memberInfo.setGradeName(map.get(0));
-                memberInfo.setMemberAvatarColour("灰色");
+                memberInfo.setMemberAvatarColour(0);
                 memberInfo.setPpv(new BigDecimal("0.00"));
                 memberInfo.setTotalPv(new BigDecimal("0.00"));
             }

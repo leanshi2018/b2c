@@ -167,4 +167,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
 	void updateOrderStatus(Map<String, Object> map);
 
     List<ShopOrder> findNoCutOrder(HashMap<String, Object> map);
+
+	List<ShopOrder> findNoCutOrder1(HashMap<String, Object> map);
 }

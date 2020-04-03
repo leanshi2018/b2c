@@ -299,7 +299,7 @@ public class ShopOrderJob {
         System.out.println("###############################执行定时分账任务#####################################");
         //查询当前系统时间向前的第二天的已完成支付且未取消的订单 （条件：1.已支付 2.未取消 3.已经发货 4.未进行过分账操作 5.支付时间区间在指定日期内）
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE,-2);
+        calendar.add(Calendar.DATE,-15);
         Date time = calendar.getTime();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = format.format(time);
@@ -314,9 +314,62 @@ public class ShopOrderJob {
         map.put("orderState",0);
         map.put("cutStatus",0);
         List<ShopOrder> list=shopOrderDao.findNoCutOrder(map);
+        List<ShopOrder> list1=shopOrderDao.findNoCutOrder1(map);
         //对筛选出的订单做进一步的判断，判断是否满足分账条件 1.判断订单现金支付部分是否满足分账标准（暂时定义为100） 2.查询一个积分账户满足分账分佣条件的用户，进行分账
         if(list!=null&&list.size()>0){
             for (ShopOrder shopOrder : list) {
+                //逐个订单进行处理 判断是否满足分账的条件
+                //1.判断支付金额是否满足
+                BigDecimal orderAmount = shopOrder.getOrderAmount();
+                if(orderAmount.compareTo(new BigDecimal(Integer.toString(AllInPayBillCutConstant.CUT_MINIMUM)))==-1){
+                    shopOrder.setCutStatus(1);
+                    shopOrder.setCutFailInfo("金额不满足分账条件");
+                    shopOrderDao.update(shopOrder);
+                    continue;
+                }
+                Boolean flag=false;
+                //2.为当前订单找到一个合适的分账对象
+                //2.1 获取当前订单需要分账出去的金额
+                BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(2,BigDecimal.ROUND_DOWN);//当前订单需要分出去多少钱，单位为圆
+                BigDecimal acc = amount.divide(new BigDecimal("0.95"),0,BigDecimal.ROUND_UP);//奖励积分需要的积分数量 积分取整
+                RdMmAccountInfo rdMmAccountInfo = cutGetPeople(shopOrder, acc);
+                if(rdMmAccountInfo==null||rdMmAccountInfo.getMmCode()==null){//说明通过推荐人思路未找到合适的分账对象
+                    //从积分账户提现记录中筛选出合适条件的进行匹配
+                    //按照上次提现时间进行排序，时间越靠前的，放在前面，分页查询第一页，前一百条记录
+                    List<RdMmAccountInfo> accountInfos=rdMmAccountInfoDao.findLastWithdrawalOneHundred();
+                    if(accountInfos!=null&&accountInfos.size()>0){
+                        for (RdMmAccountInfo accountInfo : accountInfos) {
+                            if(accountInfo.getBonusBlance().compareTo(acc)!=-1){
+                                //调用分账处理方法
+                                try {
+                                    cutDispose(shopOrder,accountInfo,amount,acc);
+                                    flag=true;
+                                    break;//分账结束，跳出查询适用分账用户信息循环
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                }else {//根据rdMmAccountInfo 进行分账处理
+                    try {
+                        cutDispose(shopOrder,rdMmAccountInfo,amount,acc);
+                        flag=true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                //如果根据推荐人已经提现记录都未找到合适的推荐人，则flag的值依旧为定义时的false，则不进行分账，只修改订单中关联分账信息的记录
+                if(flag==false){
+                    shopOrder.setCutStatus(1);
+                    shopOrder.setCutFailInfo("未查询到满足条件的用户进行分账");
+                    shopOrderDao.update(shopOrder);
+                    continue;
+                }
+            }
+        }
+        if(list1!=null&&list1.size()>0){
+            for (ShopOrder shopOrder : list1) {
                 //逐个订单进行处理 判断是否满足分账的条件
                 //1.判断支付金额是否满足
                 BigDecimal orderAmount = shopOrder.getOrderAmount();

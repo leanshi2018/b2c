@@ -40,7 +40,6 @@ import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
-import com.framework.loippi.entity.walet.RdMmWithdrawLog;
 import com.framework.loippi.enus.SocialType;
 import com.framework.loippi.enus.UserLoginType;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -78,7 +77,6 @@ import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
-import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.BankCardUtils;
@@ -152,10 +150,11 @@ public class UserAPIController extends BaseController {
     private MemberQualificationService memberQualificationService;
     @Resource
     private ShopMemberMessageService shopMemberMessageService;
+    /*@Resource
+    private RdMmWithdrawLogService rdMmWithdrawLogService;*/
     @Resource
     private RdMmBankDiscernService rdMmBankDiscernService;
-    @Resource
-    private RdMmWithdrawLogService rdMmWithdrawLogService;
+
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -1580,7 +1579,7 @@ public class UserAPIController extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/selfWallet.json")
+    @RequestMapping(value = "/selfWallet.json", method = RequestMethod.POST)
     public String selfWallet(HttpServletRequest request) {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
@@ -1628,8 +1627,6 @@ public class UserAPIController extends BaseController {
      */
     @RequestMapping(value = "/walletDetail.json", method = RequestMethod.POST)
     public String walletDetail(HttpServletRequest request,
-                               /*@RequestParam(value = "dateStart",required = false,defaultValue = "") String dateStart,
-                               @RequestParam(value = "dateEnd",required = false,defaultValue = "") String dateEnd,*/
                                @RequestParam(value = "currentPage",required = false,defaultValue = "1") Integer currentPage,
                                @RequestParam(value = "queryNum",required = false,defaultValue = "10") Integer queryNumInt) {
 
@@ -1639,12 +1636,6 @@ public class UserAPIController extends BaseController {
         if (StringUtils.isEmpty(member.getMmCode())){
             return ApiUtils.error("该会员未登陆");
         }
-        /*if (StringUtils.isEmpty(dateStart)){
-            return ApiUtils.error("开始日期为空");
-        }
-        if (StringUtils.isEmpty(dateEnd)){
-            return ApiUtils.error("结束日期为空");
-        }*/
 
         java.text.SimpleDateFormat form = new java.text.SimpleDateFormat("yyyy-MM-dd");
         String dateStart = form.format(new Date());//dateStart 开始日期 yyyy-MM-dd，
@@ -1702,7 +1693,7 @@ public class UserAPIController extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/queryBankCard.json")
+    @RequestMapping(value = "/queryBankCard.json", method = RequestMethod.POST)
     public String queryBankCard(HttpServletRequest request) throws Exception {
 
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
@@ -1748,12 +1739,12 @@ public class UserAPIController extends BaseController {
         }
     }
 
-    /**
+    /*
      * 提现余额(提现到银行卡页面)
      * @param request
      * @return
      */
-    @RequestMapping(value = "/withdrawBalance.json")
+    @RequestMapping(value = "/withdrawBalance.json", method = RequestMethod.POST)
     public String withdrawBalance(HttpServletRequest request) {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
@@ -1799,7 +1790,7 @@ public class UserAPIController extends BaseController {
         }
     }
 
-    /**
+    /*
      * 请求提现
      * @param request
      * @param amount
@@ -1807,7 +1798,7 @@ public class UserAPIController extends BaseController {
      * @param bankCardNoR
      * @return
      */
-    @RequestMapping(value = "/queryWithdraw.json")
+    /*@RequestMapping(value = "/queryWithdraw.json", method = RequestMethod.POST)
     public String queryWithdraw(HttpServletRequest request,@RequestParam(value = "amount") Long amount,
                                 @RequestParam(value = "fee") Long fee,@RequestParam(value = "bankCardNoR") String bankCardNoR) throws Exception {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
@@ -1882,6 +1873,6 @@ public class UserAPIController extends BaseController {
         }else {
             return ApiUtils.error("通联接口调取失败");
         }
-    }
+    }*/
 
 }
