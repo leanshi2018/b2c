@@ -40,6 +40,7 @@ import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
+import com.framework.loippi.entity.walet.RdMmWithdrawLog;
 import com.framework.loippi.enus.SocialType;
 import com.framework.loippi.enus.UserLoginType;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -77,6 +78,7 @@ import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
+import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.BankCardUtils;
@@ -150,10 +152,10 @@ public class UserAPIController extends BaseController {
     private MemberQualificationService memberQualificationService;
     @Resource
     private ShopMemberMessageService shopMemberMessageService;
-    /*@Resource
-    private RdMmWithdrawLogService rdMmWithdrawLogService;*/
     @Resource
     private RdMmBankDiscernService rdMmBankDiscernService;
+    @Resource
+    private RdMmWithdrawLogService rdMmWithdrawLogService;
 
     @Value("#{properties['wap.server']}")
     private String wapServer;
@@ -1798,7 +1800,7 @@ public class UserAPIController extends BaseController {
      * @param bankCardNoR
      * @return
      */
-    /*@RequestMapping(value = "/queryWithdraw.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/queryWithdraw.json", method = RequestMethod.POST)
     public String queryWithdraw(HttpServletRequest request,@RequestParam(value = "amount") Long amount,
                                 @RequestParam(value = "fee") Long fee,@RequestParam(value = "bankCardNoR") String bankCardNoR) throws Exception {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
@@ -1854,7 +1856,7 @@ public class UserAPIController extends BaseController {
                     rdMmWithdrawLog.setTlOrderNo("");
                     rdMmWithdrawLog.setWithdrawMemo(payFailMessage);
                     rdMmWithdrawLogService.save(rdMmWithdrawLog);
-                    return ApiUtils.error("提现请求失败："+payFailMessage);
+                    return ApiUtils.error("提现请求失败："+rdMmWithdrawLog);
                 }
                 String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。 仅交易验证方式为“0”时返回 否
                 String orderNo = okMap.get("orderNo").toString();//通商云订单号
@@ -1865,7 +1867,7 @@ public class UserAPIController extends BaseController {
                 rdMmWithdrawLog.setTlOrderNo(orderNo);
                 rdMmWithdrawLog.setWithdrawMemo("");
                 rdMmWithdrawLogService.save(rdMmWithdrawLog);
-                return ApiUtils.success();
+                return ApiUtils.success(rdMmWithdrawLog);
             }else {
                 String message = maps.get("message").toString();
                 return ApiUtils.error("通联接口发生错误："+message);
@@ -1873,6 +1875,6 @@ public class UserAPIController extends BaseController {
         }else {
             return ApiUtils.error("通联接口调取失败");
         }
-    }*/
+    }
 
 }
