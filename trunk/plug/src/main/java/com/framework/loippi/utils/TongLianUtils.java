@@ -15,7 +15,7 @@ import com.allinpay.yunst.sdk.bean.YunRequest;
  * 通联工具类
  * @author :ldq
  * @date:2020/3/5
- * @description:dubbo com.framework.loippi.utils
+ * @description:dubbo com.framework.loippi.util
  */
 public class TongLianUtils {
 

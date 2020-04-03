@@ -18,9 +18,9 @@
 //import com.framework.loippi.service.user.ShopMemberService;
 //import com.framework.loippi.service.wallet.ShopWalletCashService;
 //import com.framework.loippi.service.wallet.ShopWalletRechargeService;
-//import com.framework.loippi.utils.ApiUtils;
-//import com.framework.loippi.utils.Constants;
-//import com.framework.loippi.utils.Dateutil;
+//import com.framework.loippi.util.ApiUtils;
+//import com.framework.loippi.util.Constants;
+//import com.framework.loippi.util.Dateutil;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.stereotype.Controller;
 //import org.springframework.web.bind.annotation.RequestMapping;

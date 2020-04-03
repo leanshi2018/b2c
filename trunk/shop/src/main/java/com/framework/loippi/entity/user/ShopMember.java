@@ -3,7 +3,7 @@
 //import com.framework.loippi.mybatis.eitity.GenericEntity;
 //import com.framework.loippi.mybatis.ext.annotation.Column;
 //import com.framework.loippi.mybatis.ext.annotation.Table;
-//import com.framework.loippi.utils.validator.Words;
+//import com.framework.loippi.util.validator.Words;
 //import lombok.AllArgsConstructor;
 //import lombok.Data;
 //import lombok.NoArgsConstructor;

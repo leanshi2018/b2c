@@ -1,4 +1,4 @@
-//package com.framework.loippi.utils.alipay.mobile.util;
+//package com.framework.loippi.util.alipay.mobile.util;
 //
 //import java.io.UnsupportedEncodingException;
 //import java.net.URLEncoder;
@@ -9,8 +9,8 @@
 //
 //import com.framework.loippi.entity.Pay;
 //import com.framework.loippi.entity.PayCommon;
-//import com.framework.loippi.utils.alipay.mobile.config.AlipayConfig;
-//import com.framework.loippi.utils.alipay.mobile.sign.Base64;
+//import com.framework.loippi.util.alipay.mobile.config.AlipayConfig;
+//import com.framework.loippi.util.alipay.mobile.sign.Base64;
 //
 ///**
 // * 支付宝签名工具

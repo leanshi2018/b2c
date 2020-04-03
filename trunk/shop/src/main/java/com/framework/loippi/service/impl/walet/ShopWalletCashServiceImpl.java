@@ -12,7 +12,7 @@
 //import com.framework.loippi.service.TwiterIdService;
 //import com.framework.loippi.service.impl.GenericServiceImpl;
 //
-//import com.framework.loippi.utils.Dateutil;
+//import com.framework.loippi.util.Dateutil;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Service;
 //

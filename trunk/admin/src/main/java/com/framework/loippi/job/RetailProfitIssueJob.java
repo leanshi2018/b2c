@@ -28,7 +28,7 @@ import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RetailProfit;
-import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.util.Paramap;
 
 @Service
 @EnableScheduling

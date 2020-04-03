@@ -11,7 +11,7 @@ import com.google.code.kaptcha.util.Config;
 /**
  * @author :ldq
  * @date:2019/12/10
- * @description:dubbo com.framework.loippi.utils
+ * @description:dubbo com.framework.loippi.util
  */
 
 @Configuration

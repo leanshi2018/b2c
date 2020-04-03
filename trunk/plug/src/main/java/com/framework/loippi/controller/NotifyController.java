@@ -29,6 +29,7 @@ import com.framework.loippi.service.wechat.WechatH5Service;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.service.wechat.WechatScanService;
 import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.wechat.applets.util.GetOpenIDUtil;
 import com.framework.loippi.utils.wechat.h5.config.WachatContent;
 
 /**
@@ -211,4 +212,26 @@ public class NotifyController {
             return JacksonUtil.toJson(params);
         }
     }
+
+    @RequestMapping(value = {"/getOpenId"}, method = {RequestMethod.GET,
+        RequestMethod.POST})
+    public
+    @ResponseBody
+    Object getOpenId(String code) {
+        if (code == null || code.length() == 0) {
+            throw new NullPointerException("code不能为空!");
+        }
+        return GetOpenIDUtil.oauth2GetOpenid(WachatContent.appid, code, WachatContent.appsecret);
+    }
+
+    @RequestMapping({"/withdrawBank/{pluginId}/{sn}.json"})
+    public void withdrawBank(HttpServletRequest request,
+                                   @PathVariable String pluginId,//提现订单号
+                                   @PathVariable String sn,//会员编号
+                                   HttpServletResponse response) {
+
+
+    }
+
+
 }
