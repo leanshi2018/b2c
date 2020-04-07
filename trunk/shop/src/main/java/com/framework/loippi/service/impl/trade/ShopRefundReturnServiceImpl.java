@@ -2,6 +2,7 @@ package com.framework.loippi.service.impl.trade;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -490,6 +491,15 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
     @Override
     public List<ShopRefundReturn> findByOrderId(long orderId) {
         return shopRefundReturnDao.findByOrderId(orderId);
+    }
+
+    @Override
+    public void updateTlStatusById(String refundSn, Integer tlRefundStatus, String msg) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("id",Long.valueOf(refundSn));
+        map.put("tlRefundStatus",tlRefundStatus);
+        map.put("adminMessage",msg);
+        shopRefundReturnDao.updateTlStatusById(map);
     }
 
 //    @Override

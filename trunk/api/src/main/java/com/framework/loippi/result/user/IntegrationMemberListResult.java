@@ -503,7 +503,7 @@ public class IntegrationMemberListResult {
                                 }
                             }
                         }else {
-                            memberInfo.setMemberAvatarColour(0);
+                            memberInfo.setMemberAvatarColour(3);
                         }
 
                         //当期ppv和累计ppv

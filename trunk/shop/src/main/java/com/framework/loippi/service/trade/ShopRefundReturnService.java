@@ -1,12 +1,12 @@
 package com.framework.loippi.service.trade;
 
+import java.util.List;
+
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.vo.refund.ShopRefundReturnVo;
-
-import java.util.List;
 
 /**
  * SERVICE - ShopRefundReturn(退款退货)
@@ -67,4 +67,6 @@ public interface ShopRefundReturnService extends GenericService<ShopRefundReturn
     Page listWithGoods(Pageable pageable);
 
     List<ShopRefundReturn> findByOrderId(long orderId);
+
+	void updateTlStatusById(String refundSn, Integer tlRefundStatus, String msg);
 }
