@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.allinpay.yunst.sdk.YunClient;
 import com.allinpay.yunst.sdk.bean.YunRequest;
@@ -32,6 +33,8 @@ import com.framework.loippi.utils.Xerror;
  * 功能： api对接通联支付入口
  */
 @Controller("allInPayController")
+@ResponseBody
+@RequestMapping("/api/allInPay")
 @Slf4j
 public class AllInPayController extends BaseController {
     @Resource
