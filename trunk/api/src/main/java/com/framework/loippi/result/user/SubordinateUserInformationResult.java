@@ -109,6 +109,7 @@ public class SubordinateUserInformationResult {
     private Integer ddAcNumber;//直接推荐复消合格人数----直邀代理人数(当期活跃)
     private Integer ddRank2Number;//直接推荐代理的人数，代理级别为2  ---- 直邀代理人数(累计直邀)
     private Integer netAcNumber;//团队重复消费合格人数 ---- 整组重消活跃人数
+    private String rankRecordHigh;//历史最高级别
 
 
 
@@ -221,6 +222,31 @@ public class SubordinateUserInformationResult {
             result.setMemberAvatarColour(0);
         }
 
+        if (memberQualification.getRankRecordHigh()==0){
+            result.setRankRecordHigh("普通会员");
+        }else if (memberQualification.getRankRecordHigh()==1){
+            result.setRankRecordHigh("VIP会员");
+        }else if (memberQualification.getRankRecordHigh()==2){
+            result.setRankRecordHigh("代理会员");
+        }else if (memberQualification.getRankRecordHigh()==3){
+            result.setRankRecordHigh("初级代理店");
+        }else if (memberQualification.getRankRecordHigh()==4){
+            result.setRankRecordHigh("一级代理店");
+        }else if (memberQualification.getRankRecordHigh()==5){
+            result.setRankRecordHigh("二级代理店");
+        }else if (memberQualification.getRankRecordHigh()==6){
+            result.setRankRecordHigh("三级代理店");
+        }else if (memberQualification.getRankRecordHigh()==7){
+            result.setRankRecordHigh("旗舰店");
+        }else if (memberQualification.getRankRecordHigh()==8){
+            result.setRankRecordHigh("高级旗舰店");
+        }else if (memberQualification.getRankRecordHigh()==9){
+            result.setRankRecordHigh("超级旗舰店");
+        }else {
+            result.setRankRecordHigh("普通会员");
+        }
+
+
         return result;
     }
 
@@ -256,6 +282,7 @@ public class SubordinateUserInformationResult {
         result.setDdRank2Number(0);//直接推荐代理的人数，代理级别为2  ---- 直邀代理人数(累计直邀)
         result.setNetAcNumber(0);//团队重复消费合格人数 ---- 整组重消活跃人数
         result.setMemberAvatarColour(0);
+        result.setRankRecordHigh("普通会员");
         return result;
     }
 }
