@@ -1,14 +1,14 @@
 package com.framework.loippi.entity.trade;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 退款退货表
@@ -262,6 +262,11 @@ public class ShopRefundReturn implements GenericEntity {
      */
     @Column(name = "ppv")
     private BigDecimal ppv;
+    /**
+     *  通联退款状态 0.失败（默认） 1.进行中 2.成功
+     */
+    @Column(name = "tl_refund_status")
+    private Integer tlRefundStatus;
 
     /*********************
      * 添加

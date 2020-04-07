@@ -46,6 +46,7 @@
         <result property="expressCode" column="express_code" />
         <result property="buyerMobile" column="buyer_mobile" />
         <result property="ppv" column="ppv" />
+        <result property="tlRefundStatus" column="tl_refund_status" />
     </resultMap>
 
     <resultMap id="shopRefundReturnVoResultMap" type="com.framework.loippi.vo.refund.ShopRefundReturnVo">
@@ -64,12 +65,12 @@
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
 		 id ,order_id ,order_sn ,refund_sn ,store_id ,store_name ,buyer_id ,buyer_name ,goods_num ,reward_point_amount ,refund_amount  ,order_goods_type ,refund_type ,seller_state ,refund_state ,return_type,brand_name
-		 ,order_lock ,goods_state ,create_time ,seller_time ,admin_time ,reason_id ,reason_info ,pic_info ,buyer_message ,seller_message ,admin_message ,express_id ,invoice_no ,ship_time ,delay_time ,receive_time ,receive_message ,commis_rate ,express_name ,batch_no,express_code,buyer_mobile,ppv
+		 ,order_lock ,goods_state ,create_time ,seller_time ,admin_time ,reason_id ,reason_info ,pic_info ,buyer_message ,seller_message ,admin_message ,express_id ,invoice_no ,ship_time ,delay_time ,receive_time ,receive_message ,commis_rate ,express_name ,batch_no,express_code,buyer_mobile,ppv,tl_refund_status
 	</sql>
 
     <sql id="base_value_column">
 		 #{id},#{orderId},#{orderSn},#{refundSn},#{storeId},#{storeName},#{buyerId},#{buyerName},#{goodsNum},#{rewardPointAmount},#{refundAmount},#{orderGoodsType},#{refundType},#{sellerState},#{refundState}
-		 ,#{returnType},#{brandName},#{orderLock},#{goodsState},#{createTime},#{sellerTime},#{adminTime},#{reasonId},#{reasonInfo},#{picInfo},#{buyerMessage},#{sellerMessage},#{adminMessage},#{expressId},#{invoiceNo},#{shipTime},#{delayTime},#{receiveTime},#{receiveMessage},#{commisRate},#{expressName},#{batchNo},#{expressCode},#{buyerMobile},#{ppv}
+		 ,#{returnType},#{brandName},#{orderLock},#{goodsState},#{createTime},#{sellerTime},#{adminTime},#{reasonId},#{reasonInfo},#{picInfo},#{buyerMessage},#{sellerMessage},#{adminMessage},#{expressId},#{invoiceNo},#{shipTime},#{delayTime},#{receiveTime},#{receiveMessage},#{commisRate},#{expressName},#{batchNo},#{expressCode},#{buyerMobile},#{ppv},#{tlRefundStatus}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -202,6 +203,9 @@
         </if>
         <if test="ppv != null and ppv != ''">
             AND ppv = #{ppv}
+        </if>
+        <if test="tlRefundStatus != null">
+            AND tl_refund_status = #{tlRefundStatus}
         </if>
         <if test="keyWordMobile != null and keyWordMobile != ''">
             AND buyer_mobile like CONCAT('%',#{keyWordMobile},'%')
@@ -338,6 +342,9 @@
         </if>
         <if test="ppv != null and ppv != ''">
              ppv = #{ppv},
+        </if>
+        <if test="tlRefundStatus != null">
+            tl_refund_status = #{tlRefundStatus},
         </if>
         <if test="specName != null and specName != ''">
             spec_name = #{specName,jdbcType=VARCHAR},
@@ -488,4 +495,11 @@
     <!--</if>-->
     <!--</select>-->
 
+    <update id="updateTlStatusById" parameterType="map">
+        UPDATE SHOP_REFUND_RETURN
+        SET
+        admin_message = #{adminMessage},
+        tl_refund_status = #{tlRefundStatus}
+        WHERE id = #{id}
+    </update>
 </mapper> 

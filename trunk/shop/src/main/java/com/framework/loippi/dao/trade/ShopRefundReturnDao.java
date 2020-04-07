@@ -1,16 +1,16 @@
 package com.framework.loippi.dao.trade;
 
-import com.framework.loippi.entity.trade.ShopRefundReturn;
-import com.framework.loippi.mybatis.dao.GenericDao;
+import java.util.List;
+import java.util.Map;
 
-import com.framework.loippi.mybatis.paginator.domain.PageBounds;
-import com.framework.loippi.mybatis.paginator.domain.PageList;
-import com.framework.loippi.vo.order.ShopOrderVo;
-import com.framework.loippi.vo.refund.ReturnGoodsVo;
-import com.framework.loippi.vo.refund.ShopRefundReturnVo;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.mybatis.dao.GenericDao;
+import com.framework.loippi.mybatis.paginator.domain.PageBounds;
+import com.framework.loippi.mybatis.paginator.domain.PageList;
+import com.framework.loippi.vo.refund.ReturnGoodsVo;
+import com.framework.loippi.vo.refund.ShopRefundReturnVo;
 
 /**
  * DAO - ShopRefundReturn(退货退款)
@@ -38,4 +38,6 @@ public interface ShopRefundReturnDao extends GenericDao<ShopRefundReturn, Long> 
     PageList<ReturnGoodsVo> listRefundReturnVoWithGoods(Object parameter, PageBounds pageBounds);
 
     List<ShopRefundReturn> findByOrderId(long orderId);
+
+	void updateTlStatusById(Map<String, Object> map);
 }
