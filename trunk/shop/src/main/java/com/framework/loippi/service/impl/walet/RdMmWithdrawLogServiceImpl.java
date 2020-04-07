@@ -1,5 +1,8 @@
 package com.framework.loippi.service.impl.walet;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,5 +30,14 @@ public class RdMmWithdrawLogServiceImpl extends GenericServiceImpl<RdMmWithdrawL
 	@Autowired
 	public void setGenericDao() {
 		super.setGenericDao(rdMmWithdrawLogDao);
+	}
+
+	@Override
+	public void updateStatusBySnAndMCode(int withdrawStatus, String withdrawSn, String mCode) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("withdrawStatus",withdrawStatus);
+		map.put("withdrawSn",withdrawSn);
+		map.put("mCode",mCode);
+		rdMmWithdrawLogDao.updateStatusBySnAndMCode(map);
 	}
 }

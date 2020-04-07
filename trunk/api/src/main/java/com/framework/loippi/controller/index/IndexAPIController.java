@@ -54,6 +54,8 @@ import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.wechat.applets.util.GetOpenIDUtil;
+import com.framework.loippi.utils.wechat.h5.config.WachatContent;
 
 
 @Controller
@@ -318,6 +320,17 @@ public class IndexAPIController extends BaseController {
 
 		List<RdKeyword> keywordList = rdKeywordService.findByAll();
 		return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
+    }
+
+    @RequestMapping(value = {"/api/index/getOpenId.json"}, method = {RequestMethod.GET,
+            RequestMethod.POST})
+    public
+    @ResponseBody
+    Object getOpenId(String code) {
+        if (code == null || code.length() == 0) {
+            throw new NullPointerException("code不能为空!");
+        }
+        return GetOpenIDUtil.oauth2GetOpenid(WachatContent.appid, code, WachatContent.appsecret);
     }
 
 

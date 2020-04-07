@@ -1831,7 +1831,7 @@ public class UserAPIController extends BaseController {
 
         String withdrawSn = "W"+twiterIdService.getTwiterId();
 
-        String backUrl = server + "/api/paynotify/notifyMobile/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
+        String backUrl = server + "/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
         String bankCardNoL = YunClient.encrypt(bankCardNoR);
         String resBalance = TongLianUtils.withdrawApply(withdrawSn,basicInfo.getMmCode(), TongLianUtils.ACCOUNT_SET_NO,amount*100,fee*100,0l,
                 backUrl,"",null,bankCardNoL,0l,"D0","1910","其他",1l,"","");

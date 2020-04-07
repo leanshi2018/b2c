@@ -200,6 +200,9 @@ public class ShopMemberPaymentTallyServiceImpl extends GenericServiceImpl<ShopMe
                 case "open_weichatpay":
                     paramMap.put("paymentCode", "weixinMobilePaymentPlugin");
                     break;
+                case "applet_weichatpay":
+                    paramMap.put("paymentCode", "weixinAppletsPaymentPlugin");
+                    break;
                 case "alipay":
                     paramMap.put("paymentCode", "alipayMobilePaymentPlugin");
                     break;

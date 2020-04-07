@@ -306,6 +306,9 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                 case "weixinMobilePaymentPlugin":
                     paymentTally.setPaymentName("微信手机支付");//支付名称
                     break;
+                case "weixinAppletsPaymentPlugin":
+                    paymentTally.setPaymentName("微信小程序支付");//支付名称
+                    break;
                 case "weixinInternaPaymentPlugin":
                     paymentTally.setPaymentName("微信国际支付");//支付名称
                     break;

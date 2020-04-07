@@ -1536,12 +1536,10 @@ public class OrderAPIController extends BaseController {
      *
      * @param paysn 支付订单编码
      * @param openId 微信返回的openId
-     * @param notifyUrl 回调地址
      */
     @RequestMapping("/api/order/applets/pay")
     @ResponseBody
-    public String appletsPayTL(@RequestParam(value = "paysn") String paysn,@RequestParam(value = "openId") String openId,
-                             @RequestParam(value = "notifyUrl") String notifyUrl,HttpServletRequest request) {
+    public String appletsPayTL(@RequestParam(value = "paysn") String paysn,@RequestParam(value = "openId") String openId,HttpServletRequest request) {
 
         //TODO  微信 通联
         List<ShopOrder> orderList = orderService.findList("paySn", paysn);
@@ -1573,7 +1571,10 @@ public class OrderAPIController extends BaseController {
         object1.accumulate("acct",openId);//String  微信 JS 支付 openid——微信分配
         JSONObject payMethods = new JSONObject();
         payMethods.accumulate("WECHATPAY_MINIPROGRAM",object1);*/
-        String s = TongLianUtils.agentCollectApply(shopOrder.getOrderSn(), shopOrder.getBuyerId().toString(), recieverList, 3l, null, "3001",
+
+        String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + paysn + ".json";
+
+        String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, null, "3001",
                 shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, null, notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");
         if(!"".equals(s)){
@@ -1622,18 +1623,18 @@ public class OrderAPIController extends BaseController {
      * 通联接口 确认支付（后台+短信验证码确认）
      * 小程序付款
      *
-     * @param orderSn 订单申请的商户订单号 （支付订单）
+     * @param paySn 订单申请的商户订单号 （支付订单）
      * @param tradeNo  交易编号
      * @param verificationCode  短信验证码
      * @param consumerIp  ip 地址  用户公网 IP 用于分控校验 注：不能使用“127.0.0.1” “localhost”
      */
-    @RequestMapping("/api/order/applets/confirm/pay")
+    /*@RequestMapping("/api/order/applets/confirm/pay")
     @ResponseBody
-    public String confirmPay(@RequestParam(value = "orderSn") String orderSn,@RequestParam(value = "tradeNo") String tradeNo,
+    public String confirmPay(@RequestParam(value = "paySn") String paySn,@RequestParam(value = "tradeNo") String tradeNo,
                                @RequestParam(value = "verificationCode") String verificationCode,@RequestParam(value = "consumerIp") String consumerIp,
                              HttpServletRequest request) {
 
-        String s = TongLianUtils.confirmPay(TongLianUtils.BIZ_USER_ID, orderSn, tradeNo, verificationCode, consumerIp);
+        String s = TongLianUtils.confirmPay(TongLianUtils.BIZ_USER_ID, paySn, tradeNo, verificationCode, consumerIp);
         if(!"".equals(s)) {
             Map maps = (Map) JSON.parse(s);
             String status = maps.get("status").toString();
@@ -1655,7 +1656,7 @@ public class OrderAPIController extends BaseController {
         }else {
             return ApiUtils.error("支付失败");
         }
-    }
+    }*/
 
     /**
      * 通联接口 发送短信验证码

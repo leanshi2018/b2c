@@ -531,9 +531,14 @@ public class UserIntegrationAPIController extends BaseController {
             Integer rank1Number = Optional.ofNullable(qualification.getDdRank1Number()).orElse(0);//累计直邀VIP人数
             Integer rank2Number = Optional.ofNullable(qualification.getDdRank2Number()).orElse(0);//累计直邀代理人数
             Integer ddAcNumber = Optional.ofNullable(qualification.getDdAcNumber()).orElse(0);//复消人数
-            paramap.put("addNumber","直邀（"+rank1Number+"）"+"   代理（"+rank2Number+"） 复消（"+ddAcNumber+"）");
+
+            paramap.put("rank1Number",rank1Number);//直邀
+            paramap.put("rank2Number",rank2Number);//代理
+            paramap.put("ddAcNumber",ddAcNumber);//复消
         }else {
-            paramap.put("addNumber","直邀（0）   代理（0） 复消（0）");
+            paramap.put("rank1Number",0);//直邀
+            paramap.put("rank2Number",0);//代理
+            paramap.put("ddAcNumber",0);//复消
         }
         /*HashMap<String, Object> map1 = new HashMap<>();
         map1.put("sponsorCode",member.getMmCode());

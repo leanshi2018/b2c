@@ -2,6 +2,8 @@ package com.framework.loippi.service.wechat.impl;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.framework.loippi.service.PaymentService;
 import com.framework.loippi.service.TSystemPluginConfigService;
 import com.framework.loippi.service.wechat.WechatAppletsService;
+import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.wechat.mobile.config.WXpayConfig;
 
 /**
@@ -35,10 +38,27 @@ public class WechatAppletsServiceImpl implements WechatAppletsService {
 
 	@Override
 	public String notifyCheck(HttpServletRequest request, HttpServletResponse response, String sn) {
-		System.out.println("通联支付回调数据："+response);
+		//通联支付回调数据
+		String rps = request.getParameter("rps");
+		System.out.println("************************");
+		System.out.println("小程序支付回调："+rps);
+		System.out.println("************************");
+		Map<String, Object> map = JacksonUtil.convertMap(rps);
+		String status = (String) map.get("status");
+		//支付失败
+		if(status.equals("error")) {
+			paymentService.updatePayfailBack(sn);
+		}
 
+		//支付成功
+		if(status.equals("OK")){
+			Map<String, Object> returnValue = (Map<String, Object>)map.get("returnValue");
+			String orderNo = returnValue.get("orderNo").toString();//通商云订单号
+			String bizOrderNo = returnValue.get("bizOrderNo").toString();//商户订单号（支付订单）
+			Long amount = Long.valueOf(returnValue.get("amount").toString())*100; //订单金额  单位：分
+			paymentService.updatePayBack(bizOrderNo, orderNo, "applet_weichatpay",amount.toString());
+		}
 
-
-		return null;
+		return "success";
 	}
 }
