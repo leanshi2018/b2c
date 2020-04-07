@@ -35,6 +35,10 @@ public class SubordinateUserInformationResult {
     //会员等级名称
     private String memberGradeName;
     /**
+     * 会员头像颜色 0.灰色 1.橙色 2.红色 3.白色
+     */
+    private Integer memberAvatarColour;
+    /**
      * 与推荐人的绑定关系
      */
     private Integer raSpoStatus;
@@ -196,6 +200,27 @@ public class SubordinateUserInformationResult {
         result.setDdAcNumber(Optional.ofNullable(memberQualification.getDdAcNumber()).orElse(0));//直接推荐复消合格人数----直邀代理人数(当期活跃)
         result.setDdRank2Number(Optional.ofNullable(memberQualification.getDdRank2Number()).orElse(0));//直接推荐代理的人数，代理级别为2  ---- 直邀代理人数(累计直邀)
         result.setNetAcNumber(Optional.ofNullable(memberQualification.getNetAcNumber()).orElse(0));//团队重复消费合格人数 ---- 整组重消活跃人数
+
+        if (rdMmRelation.getRank()!=0){
+            if (memberQualification.getPpvqualified()==null || memberQualification.getHPpvQualified()==null){
+                result.setMemberAvatarColour(0);
+            }else {
+                if (memberQualification.getPpvqualified()!=1 && memberQualification.getHPpvQualified()!=1){
+                    result.setMemberAvatarColour(0);
+                }else{
+                    result.setMemberAvatarColour(0);
+                    if (memberQualification.getPpvqualified()==1){
+                        result.setMemberAvatarColour(1);
+                    }
+                    if (memberQualification.getHPpvQualified()==1){
+                        result.setMemberAvatarColour(2);
+                    }
+                }
+            }
+        }else {
+            result.setMemberAvatarColour(0);
+        }
+
         return result;
     }
 
