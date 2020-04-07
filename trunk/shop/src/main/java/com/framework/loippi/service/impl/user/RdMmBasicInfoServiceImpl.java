@@ -139,6 +139,11 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             if (oldSysRelationship.getNYnRegistered()==1) {
                 throw new RuntimeException("老用户已注册或者绑定！");
             }
+            //验证原系统用户信息是否已经同步到蜗米超过一年，如果超过一年，不给老系统会员注册
+            Date creationTime = oldSysRelationship.getCreationTime();
+            if((new Date().getTime()/1000-creationTime.getTime()/1000)>31622400){
+                throw new RuntimeException("您的老会员注册已超一年期限，无法使用该号码注册");
+            }
             Map<String, String> map = oldSysRelationshipService.findOldSysSpcode(oldSysRelationship.getOSpcode());
             System.out.println(map);
             String sponsorCode = map.get("mmCode");

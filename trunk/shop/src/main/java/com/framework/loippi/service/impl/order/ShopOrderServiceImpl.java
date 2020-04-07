@@ -2696,7 +2696,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         updateOrder.setFinnshedTime(new Date());
         orderDao.update(updateOrder);
         //###############################零售利润###################################################
-/*        if(order.getOrderType()==1){//如果当前确认收货订单为零售订单，查看零售订单，修改预期发放时间
+        if(order.getOrderType()==1&&order.getLogisticType()==2){//如果当前确认收货订单为零售订单且自提，查看零售订单，修改预期发放时间
             RetailProfit retailProfit = retailProfitService.find("orderId", order.getId());
             if(retailProfit==null){
                 log.info(order.getOrderSn()+"订单支付未产生零售利润");
@@ -2711,7 +2711,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
                 retailProfitService.update(retailProfit);
             }
-        }*/
+        }
         //##########################################################################################
         /*********************订单日志*********************/
         ShopOrderLog orderLog = new ShopOrderLog();
