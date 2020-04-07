@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
 import com.framework.loippi.utils.JacksonUtil;
 
@@ -27,6 +28,8 @@ public class TLNotifyController {
 
 	@Resource
 	private RdMmWithdrawLogService rdMmWithdrawLogService;
+	@Resource
+	private ShopRefundReturnService refundReturnService;
 
 	/**
 	 * 提现回调
@@ -67,7 +70,7 @@ public class TLNotifyController {
 	 */
 	@RequestMapping({"/refundBank/{refundSn}/{mCode}.json"})
 	public void refundBank(HttpServletRequest request,
-							 @PathVariable String refundSn,//提现订单号
+							 @PathVariable String refundSn,//退款表Id
 							 @PathVariable String mCode,//会员编号
 							 HttpServletResponse response) {
 		//request中的param
@@ -79,13 +82,12 @@ public class TLNotifyController {
 		String status = (String) map.get("status");
 		if(status.equals("error")){
 
-
 		}
 		if(status.equals("pending")){
 
 		}
 		if(status.equals("OK")){
-
+			refundReturnService.updateRefundReturnAudiReturn(Long.valueOf(refundSn), "","1", "");
 		}
 	}
 }

@@ -475,7 +475,7 @@ public class RefundReturnSysController extends GenericController {
                         //weiRefund.setRefundfee(1);
                         //weiRefund.setTotalfee(1);
                         //http://52.184.34.141/admin/ = http://glht.rdnmall.cn/admin/
-                        String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/refundBank/" + id + "/" + shopOrder.getBuyerId() + ".json";//后台通知地址 TODO
+                        String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/refundBank/" + id.toString() + "/" + shopOrder.getBuyerId() + ".json";//后台通知地址 TODO
                         backurl = toweichatrefundTL(weiRefund, id, adminMessage, "applet_weichatpay", model,backUrl, request);
                         //toweichatrefund();
                     } else if (order.getPaymentCode().equals("weixinH5PaymentPlugin")) {//微信公共平台支付
@@ -1280,8 +1280,8 @@ public class RefundReturnSysController extends GenericController {
         }
         String msg = "";
         if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
-            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
-            model.addAttribute("msg", "退款申请成功");
+            //refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
+            model.addAttribute("msg", "通联退款申请成功，具体到账时间等待通联回调");
         } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
             model.addAttribute("msg",map.get("err_code_des"));
             model.addAttribute("noAuto", true);

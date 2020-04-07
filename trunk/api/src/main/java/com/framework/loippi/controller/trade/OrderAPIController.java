@@ -1537,7 +1537,7 @@ public class OrderAPIController extends BaseController {
      * @param paysn 支付订单编码
      * @param openId 微信返回的openId
      */
-    @RequestMapping("/api/order/applets/pay")
+    @RequestMapping("/api/index/order/applets/pay")
     @ResponseBody
     public String appletsPayTL(@RequestParam(value = "paysn") String paysn,@RequestParam(value = "openId") String openId,HttpServletRequest request) {
 
