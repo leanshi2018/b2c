@@ -300,8 +300,8 @@
 		<if test="tongLianId != null and tongLianId != ''">
 			TONG_LIAN_ID = #{tongLianId},
 		</if>
-		<if test="whetherTureName != null">
-			WHETHER_TURE_NAME = #{whetherTureName},
+		<if test="whetherTrueName != null">
+			WHETHER_TURE_NAME = #{whetherTrueName},
 		</if>
 		<if test="allInContractStatus != null ">
 			ALL_IN_CONTRACT_STATUS = #{allInContractStatus},
