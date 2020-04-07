@@ -201,6 +201,8 @@ public class SubordinateUserInformationResult {
         result.setDdAcNumber(Optional.ofNullable(memberQualification.getDdAcNumber()).orElse(0));//直接推荐复消合格人数----直邀代理人数(当期活跃)
         result.setDdRank2Number(Optional.ofNullable(memberQualification.getDdRank2Number()).orElse(0));//直接推荐代理的人数，代理级别为2  ---- 直邀代理人数(累计直邀)
         result.setNetAcNumber(Optional.ofNullable(memberQualification.getNetAcNumber()).orElse(0));//团队重复消费合格人数 ---- 整组重消活跃人数
+        result.setMonthPpv(Optional.ofNullable(memberQualification.getPpv()).orElse(BigDecimal.ZERO));//ppv
+        result.setMonthMoney(Optional.ofNullable(memberQualification.getRetail()).orElse(BigDecimal.ZERO));//购买额
 
         if (rdMmRelation.getRank()!=0){
             if (memberQualification.getPpvqualified()==null || memberQualification.getHPpvQualified()==null){
@@ -283,6 +285,8 @@ public class SubordinateUserInformationResult {
         result.setNetAcNumber(0);//团队重复消费合格人数 ---- 整组重消活跃人数
         result.setMemberAvatarColour(0);
         result.setRankRecordHigh("普通会员");
+        result.setMonthPpv(BigDecimal.ZERO);//ppv
+        result.setMonthMoney(BigDecimal.ZERO);//购买额
         return result;
     }
 }
