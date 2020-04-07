@@ -1578,7 +1578,7 @@ public class OrderAPIController extends BaseController {
                 shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");*/
         String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
-                Long.valueOf("0.01") * 100, 0l, 0l, "", notifyUrl, "",
+                1l, 0l, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");
 
         if(!"".equals(s)){
