@@ -1574,9 +1574,13 @@ public class OrderAPIController extends BaseController {
 
         String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + paysn + ".json";
 
-        String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
+        /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
                 shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, "", notifyUrl, "",
+                payMethods, "", "", "1910", "其他", 1l, "", "");*/
+        String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
+                Long.valueOf("0.01") * 100, 0l, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");
+
         if(!"".equals(s)){
             Map maps = (Map) JSON.parse(s);
             String status = maps.get("status").toString();
