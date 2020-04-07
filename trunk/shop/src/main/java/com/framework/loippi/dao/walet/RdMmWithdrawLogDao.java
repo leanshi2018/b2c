@@ -1,5 +1,7 @@
 package com.framework.loippi.dao.walet;
 
+import java.util.Map;
+
 import com.framework.loippi.entity.walet.RdMmWithdrawLog;
 import com.framework.loippi.mybatis.dao.GenericDao;
 
@@ -9,4 +11,5 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  * @description:dubbo com.framework.loippi.dao.walet
  */
 public interface RdMmWithdrawLogDao extends GenericDao<RdMmWithdrawLog, Long> {
+	void updateStatusBySnAndMCode(Map<String, Object> map);
 }

@@ -29,7 +29,6 @@ import com.framework.loippi.service.wechat.WechatH5Service;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.service.wechat.WechatScanService;
 import com.framework.loippi.utils.JacksonUtil;
-import com.framework.loippi.utils.wechat.applets.util.GetOpenIDUtil;
 import com.framework.loippi.utils.wechat.h5.config.WachatContent;
 
 /**
@@ -213,7 +212,7 @@ public class NotifyController {
         }
     }
 
-    @RequestMapping(value = {"/getOpenId"}, method = {RequestMethod.GET,
+    /*@RequestMapping(value = {"/getOpenId"}, method = {RequestMethod.GET,
         RequestMethod.POST})
     public
     @ResponseBody
@@ -222,16 +221,29 @@ public class NotifyController {
             throw new NullPointerException("code不能为空!");
         }
         return GetOpenIDUtil.oauth2GetOpenid(WachatContent.appid, code, WachatContent.appsecret);
-    }
+    }*/
 
-    @RequestMapping({"/withdrawBank/{pluginId}/{sn}.json"})
+    /*@RequestMapping({"/withdrawBank/{pluginId}/{sn}.json"})
     public void withdrawBank(HttpServletRequest request,
                                    @PathVariable String pluginId,//提现订单号
                                    @PathVariable String sn,//会员编号
                                    HttpServletResponse response) {
+        //request中的param
+        String rps = request.getParameter("rps");
+        System.out.println("************************");
+        System.out.println("提现回调："+rps);
+        System.out.println("************************");
+        Map<String, Object> map = JacksonUtil.convertMap(rps);
+        String status = (String) map.get("status");
+        if(status.equals("error")){
+
+        }
+        if(status.equals("OK")){
+
+        }
 
 
-    }
+    }*/
 
 
 }

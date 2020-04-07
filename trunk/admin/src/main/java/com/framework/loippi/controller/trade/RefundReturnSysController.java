@@ -474,7 +474,9 @@ public class RefundReturnSysController extends GenericController {
                          weiRefund.setRefundfee((int) ((refundReturn.getRefundAmount().doubleValue()) * 100));
                         //weiRefund.setRefundfee(1);
                         //weiRefund.setTotalfee(1);
-                        backurl = toweichatrefundTL(weiRefund, id, adminMessage, "open_weichatpay", model, request);
+                        //http://52.184.34.141/admin/ = http://glht.rdnmall.cn/admin/
+                        String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/refundBank/" + id + "/" + shopOrder.getBuyerId() + ".json";//后台通知地址 TODO
+                        backurl = toweichatrefundTL(weiRefund, id, adminMessage, "applet_weichatpay", model,backUrl, request);
                         //toweichatrefund();
                     } else if (order.getPaymentCode().equals("weixinH5PaymentPlugin")) {//微信公共平台支付
                         WeiRefund weiRefund = new WeiRefund();
@@ -1228,9 +1230,9 @@ public class RefundReturnSysController extends GenericController {
     }
 
     /**
-     * 跳到微信退款接口
+     * 跳到微信退款接口和通联退款接口 TODO
      */
-    public String toweichatrefundTL(WeiRefund weiRefund, Long id, String adminMessage, String weitype, Model model,
+    public String toweichatrefundTL(WeiRefund weiRefund, Long id, String adminMessage, String weitype, Model model,String backUrl,
                                   HttpServletRequest request) {
         RequestContext requestContext = new RequestContext(request);
 
@@ -1238,15 +1240,15 @@ public class RefundReturnSysController extends GenericController {
         ShopOrder shopOrder = orderService.find(refundReturn.getOrderId());
 
         Map<String, Object> map = null;
-        if (weitype.equals("open_weichatpay")) {//微信开放平台退款
-            String backUrl = "";//后台通知地址
+        if (weitype.equals("applet_weichatpay")) {//通联退款
+            //String backUrl = server + "/admin/paynotify/withdrawBank/" + id + "/" + shopOrder.getBuyerId() + ".json";//后台通知地址
             JSONArray refundList = new JSONArray();
             JSONObject refundMember = new JSONObject();
             //refundMember.accumulate("bizUserId",shopOrder.getBuyerId());//商户系统用户标识，商户系统中唯一编号
             //refundMember.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);// 金额，单位：分
             //refundList.add(refundMember);
 
-            String s = TongLianUtils.refundOrder(TongLianUtils.BIZ_USER_ID, shopOrder.getOrderSn(), shopOrder.getBuyerId().toString(), "D0", refundList,
+            String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),shopOrder.getOrderSn(), shopOrder.getBuyerId().toString(), "D0", refundList,
                     backUrl,shopOrder.getOrderAmount().longValue()*100,0l,0l,null);
             if(!"".equals(s)) {
                 Map maps = (Map) JSON.parse(s);
@@ -1279,14 +1281,9 @@ public class RefundReturnSysController extends GenericController {
         String msg = "";
         if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
             refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
-            msg = requestContext.getMessage("checksuccess");
-            model.addAttribute("msg", msg);
+            model.addAttribute("msg", "退款申请成功");
         } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
-            model.addAttribute("msg",
-                    requestContext.getMessage("tsn.order_no") + "：" + weiRefund.getOuttradeno() + "<br/>" + requestContext
-                            .getMessage("Micro-channel_number") + "：" + weiRefund.getOutrefundno()
-                            + "<br/><span style='color:red;'>" + requestContext.getMessage("Micro-channel_error") + "：" + map
-                            .get("err_code_des") + "</span>");
+            model.addAttribute("msg",map.get("err_code_des"));
             model.addAttribute("noAuto", true);
         }
         model.addAttribute("referer_url", "/admin/shop_refund_return/list.jhtml");

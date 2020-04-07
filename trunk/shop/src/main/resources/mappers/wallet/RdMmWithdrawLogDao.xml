@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- namespace必须指向Dao接口 -->
-<mapper namespace="RdMmWithdrawLogDao">
+<mapper namespace="com.framework.loippi.dao.walet.RdMmWithdrawLogDao">
 
     <resultMap id="RdMmWithdrawLogMap" type="com.framework.loippi.entity.walet.RdMmWithdrawLog">
         <result property="id" column="id" />
@@ -155,5 +155,9 @@
             <include refid="where_column" />
         </where>
     </select>
+
+    <update id="updateStatusBySnAndMCode" parameterType="map">
+        UPDATE	rd_mm_withdraw_log SET withdraw_status = #{withdrawStatus} WHERE withdraw_sn = #{withdrawSn} AND mm_code = #{mCode}
+    </update>
 
 </mapper>

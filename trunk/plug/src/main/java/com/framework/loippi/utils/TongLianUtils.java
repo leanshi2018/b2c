@@ -29,7 +29,7 @@ public class TongLianUtils {
 	//public static final String TL_CERT_PATH = "F:\sign\\TLCert-test.cer";
 	public static final String VERSION = "2.0";//接口版本
 	public static final String BIZ_USER_ID = "201807170002";//商户系统用户标识，商户系统中唯一编号    公司编号
-	public static final String ACCOUNT_SET_NO = "";//通商云分配的托管专用账户 集的编号
+	public static final String ACCOUNT_SET_NO = "56029005999Z8RA";//通商云分配的托管专用账户集的编号
 
 	public static void getRequest() {
 		//final String serverUrl = "https://fintech.allinpay.com/service/soa"; //测试环境请咨询对接人员

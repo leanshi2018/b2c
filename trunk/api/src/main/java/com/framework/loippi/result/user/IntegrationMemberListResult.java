@@ -49,7 +49,7 @@ public class IntegrationMemberListResult {
      */
     private String memberAvatar;
     /**
-     * 会员头像颜色 0.灰色 1.橙色 2.红色
+     * 会员头像颜色 0.灰色 1.橙色 2.红色 3.白色
      */
     private Integer memberAvatarColour;
 
@@ -486,20 +486,24 @@ public class IntegrationMemberListResult {
                             memberInfo.setGradeName(map.get(0));
                         }
                         //头像颜色
-                        if (qualification.getPpvqualified()==null || qualification.getHPpvQualified()==null){
-                            memberInfo.setMemberAvatarColour(0);
-                        }else {
-                            if (qualification.getPpvqualified()!=1 && qualification.getHPpvQualified()!=1){
+                        if (rdMmRelation.getRank()!=0){
+                            if (qualification.getPpvqualified()==null || qualification.getHPpvQualified()==null){
                                 memberInfo.setMemberAvatarColour(0);
-                            }else{
-                                memberInfo.setMemberAvatarColour(0);
-                                if (qualification.getPpvqualified()==1){
-                                    memberInfo.setMemberAvatarColour(1);
-                                }
-                                if (qualification.getHPpvQualified()==1){
-                                    memberInfo.setMemberAvatarColour(2);
+                            }else {
+                                if (qualification.getPpvqualified()!=1 && qualification.getHPpvQualified()!=1){
+                                    memberInfo.setMemberAvatarColour(0);
+                                }else{
+                                    memberInfo.setMemberAvatarColour(0);
+                                    if (qualification.getPpvqualified()==1){
+                                        memberInfo.setMemberAvatarColour(1);
+                                    }
+                                    if (qualification.getHPpvQualified()==1){
+                                        memberInfo.setMemberAvatarColour(2);
+                                    }
                                 }
                             }
+                        }else {
+                            memberInfo.setMemberAvatarColour(0);
                         }
 
                         //当期ppv和累计ppv
