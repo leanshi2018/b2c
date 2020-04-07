@@ -521,7 +521,7 @@ public class IntegrationMemberListResult {
                     }else {
                         memberInfo.setGradeId(0);
                         memberInfo.setGradeName(map.get(0));
-                        memberInfo.setMemberAvatarColour(0);
+                        memberInfo.setMemberAvatarColour(3);
                         memberInfo.setPpv(new BigDecimal("0.00"));
                         memberInfo.setTotalPv(new BigDecimal("0.00"));
                     }
@@ -529,7 +529,7 @@ public class IntegrationMemberListResult {
             }else {
                 memberInfo.setGradeId(0);
                 memberInfo.setGradeName(map.get(0));
-                memberInfo.setMemberAvatarColour(0);
+                memberInfo.setMemberAvatarColour(3);
                 memberInfo.setPpv(new BigDecimal("0.00"));
                 memberInfo.setTotalPv(new BigDecimal("0.00"));
             }
