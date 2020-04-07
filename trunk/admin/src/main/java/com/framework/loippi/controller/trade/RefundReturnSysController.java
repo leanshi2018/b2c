@@ -1280,7 +1280,7 @@ public class RefundReturnSysController extends GenericController {
         }
         String msg = "";
         if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
-            //refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
+            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
             model.addAttribute("msg", "通联退款申请成功，具体到账时间等待通联回调");
         } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
             model.addAttribute("msg",map.get("err_code_des"));

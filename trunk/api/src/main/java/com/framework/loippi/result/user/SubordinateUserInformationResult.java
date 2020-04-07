@@ -255,6 +255,7 @@ public class SubordinateUserInformationResult {
         result.setDdAcNumber(0);//直接推荐复消合格人数----直邀代理人数(当期活跃)
         result.setDdRank2Number(0);//直接推荐代理的人数，代理级别为2  ---- 直邀代理人数(累计直邀)
         result.setNetAcNumber(0);//团队重复消费合格人数 ---- 整组重消活跃人数
+        result.setMemberAvatarColour(0);
         return result;
     }
 }
