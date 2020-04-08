@@ -345,5 +345,22 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         return rdMmBasicInfoDao.findByKeyWord(put);
     }
 
+    @Override
+    public void updatePhoneStatusAndPhoneByMCode(String phone, Integer allInPayPhoneStatus, String mmCode) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("mmCode", mmCode);
+        map.put("allInPayPhone", phone);
+        map.put("allInPayPhoneStatus", allInPayPhoneStatus);
+        rdMmBasicInfoDao.updatePhoneStatusAndPhoneByMCode(map);
+    }
+
+    @Override
+    public void updatePhoneStatusByMCode(Integer allInPayPhoneStatus, String mmCode) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("mmCode", mmCode);
+        map.put("allInPayPhoneStatus", allInPayPhoneStatus);
+        rdMmBasicInfoDao.updatePhoneStatusByMCode(map);
+    }
+
 
 }

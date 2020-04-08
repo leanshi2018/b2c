@@ -45,17 +45,18 @@
 		<result property="allInContractStatus" column="ALL_IN_CONTRACT_STATUS" />
 		<result property="contractNo" column="CONTRACT_NO" />
 		<result property="allInPayPhoneStatus" column="ALL_IN_PAY_PHONE_STATUS" />
+		<result property="allInPayPhone" column="ALL_IN_PAY_PHONE" />
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 MM_ID ,MM_CODE ,MM_NAME ,MM_NICK_NAME ,ID_TYPE ,ID_CODE ,GENDER ,BIRTHDATE ,EMAIL ,NATION_ID ,ADD_PROVINCE_ID ,ADD_CITY_ID ,ADD_COUNTRY_ID ,ADD_TOWN_ID ,ADD_DETIAL ,ADD_POST ,MOBILE ,WECHAT_CODE ,QQ_CODE ,FACEBOOK_CODE ,PHONE ,CREATION_SOURCE ,CREATION_IP ,CREATION_DATE ,CREATION_BY ,CREATION_PERIOD ,UPDATE_SOURCE ,UPDATE_IP ,UPDATE_DATE ,UPDATE_BY ,UPDATE_PERIOD ,MM_AVATAR,SHARE_NUM,PUSH_STATUS,TONG_LIAN_ID,WHETHER_TURE_NAME,
-		 ALL_IN_CONTRACT_STATUS,CONTRACT_NO,ALL_IN_PAY_PHONE_STATUS
+		 ALL_IN_CONTRACT_STATUS,CONTRACT_NO,ALL_IN_PAY_PHONE_STATUS,ALL_IN_PAY_PHONE
 	</sql>
 
 	<sql id="base_value_column">
 		 #{mmId},#{mmCode},#{mmName},#{mmNickName},#{idType},#{idCode},#{gender},#{birthdate},#{email},#{nationId},#{addProvinceId},#{addCityId},#{addCountryId},#{addTownId},#{addDetial},#{addPost},#{mobile},#{wechatCode},#{qqCode},#{facebookCode},#{phone},#{creationSource},#{creationIp},#{creationDate},#{creationBy},#{creationPeriod},#{updateSource},#{updateIp},#{updateDate},#{updateBy},#{updatePeriod},#{mmAvatar},#{shareNum},#{pushStatus},#{tongLianId},
-		 #{whetherTrueName},#{allInContractStatus},#{contractNo},#{allInPayPhoneStatus}
+		 #{whetherTrueName},#{allInContractStatus},#{contractNo},#{allInPayPhoneStatus},#{allInPayPhone}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -176,6 +177,9 @@
 		</if>
 		<if test="allInPayPhoneStatus != null and allInPayPhoneStatus != ''">
 			AND ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus,jdbcType=INTEGER}
+		</if>
+		<if test="allInPayPhone != null and allInPayPhone != ''">
+			AND ALL_IN_PAY_PHONE = #{allInPayPhone}
 		</if>
 
 		<if test="info !=null and info != ''">
@@ -312,6 +316,9 @@
 		<if test="allInPayPhoneStatus != null ">
 			ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus},
 		</if>
+		<if test="allInPayPhone != null ">
+			ALL_IN_PAY_PHONE = #{allInPayPhone},
+		</if>
 	</sql>
 
 	<!-- 根据ID查询 -->
@@ -441,4 +448,16 @@
 			</if>
 		</where>
 	</select>
+
+	<update id="updatePhoneStatusAndPhoneByMCode" parameterType="map">
+		UPDATE	RD_MM_BASIC_INFO
+		SET
+		ALL_IN_PAY_PHONE = #{allInPayPhone},
+		ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus}
+		WHERE	MM_CODE = #{mmCode}
+	</update>
+
+	<update id="updatePhoneStatusByMCode" parameterType="map">
+		UPDATE	RD_MM_BASIC_INFO SET ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus} WHERE	MM_CODE = #{mmCode}
+	</update>
 </mapper> 

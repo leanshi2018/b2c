@@ -180,6 +180,10 @@ public class RdMmBasicInfo implements GenericEntity {
 	@Column(name = "ALL_IN_PAY_PHONE_STATUS" )
 	private Integer allInPayPhoneStatus;
 
+	/** 通联支付绑定的手机号码*/
+	@Column(name = "ALL_IN_PAY_PHONE" )
+	private String allInPayPhone;
+
 	private String info;
 	private String verificationMobile;
 	private String verificationNickName;

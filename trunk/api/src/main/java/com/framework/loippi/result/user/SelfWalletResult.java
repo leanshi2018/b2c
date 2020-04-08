@@ -46,7 +46,7 @@ public class SelfWalletResult {
 		if (basicInfo.getWhetherTrueName()==null||basicInfo.getWhetherTrueName()!=1){
 			result.setAmountStatus(2);
 		}else {
-			if (freezeAmount.longValue()<=0){
+			if (freezeAmount.longValue()>0){
 				result.setAmountStatus(3);
 			}else {
 				if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()!=1){

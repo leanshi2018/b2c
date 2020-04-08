@@ -1,11 +1,12 @@
 package com.framework.loippi.dao.user;
 
 
+import java.util.List;
+import java.util.Map;
+
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.utils.Paramap;
-
-import java.util.List;
 
 /**
  * DAO - RdMmBasicInfo(会员基础信息)
@@ -27,4 +28,8 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
 	RdMmBasicInfo findByMCode(String mCode);
 
     List<RdMmBasicInfo> findByKeyWord(Paramap put);
+
+	void updatePhoneStatusAndPhoneByMCode(Map<String, Object> map);
+
+	void updatePhoneStatusByMCode(Map<String, Object> map);
 }

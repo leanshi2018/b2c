@@ -1732,6 +1732,7 @@ public class OrderAPIController extends BaseController {
                 String phoneBack = okMap.get("phone").toString();
                 String result = okMap.get("result").toString();
                 if(result.equals("OK")){
+                    rdMmBasicInfoService.updatePhoneStatusByMCode(2,member.getMmCode());
                     return ApiUtils.success("解绑成功");
                 }else {
                     return ApiUtils.error("解绑失败");
@@ -1776,6 +1777,7 @@ public class OrderAPIController extends BaseController {
                 Map okMap = (Map) JSON.parse(signedValue);
                 String bizUserId = okMap.get("bizUserId").toString();
                 String phoneBack = okMap.get("phone").toString();
+                rdMmBasicInfoService.updatePhoneStatusAndPhoneByMCode(phone,1,member.getMmCode());
                 return ApiUtils.success("绑定成功");
 
             }else {
@@ -1831,7 +1833,7 @@ public class OrderAPIController extends BaseController {
 
 
     /**
-     * 通联接口 绑定手机（无需验证码）
+     * 通联接口 绑定手机（无需）
      *
      * @param verificationCode  验证码
      */
@@ -1861,6 +1863,7 @@ public class OrderAPIController extends BaseController {
                 Map okMap = (Map) JSON.parse(signedValue);
                 String bizUserId = okMap.get("bizUserId").toString();
                 String phoneBack = okMap.get("phone").toString();
+                rdMmBasicInfoService.updatePhoneStatusAndPhoneByMCode(member.getMobile(),1,member.getMmCode());
                 return ApiUtils.success("绑定成功");
 
             }else {

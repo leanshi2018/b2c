@@ -256,7 +256,7 @@ public class AllInPayController extends BaseController {
             rdMmAccountInfo.setAutomaticWithdrawal(1);
             rdMmBasicInfoService.update(rdMmBasicInfo);
             rdMmAccountInfoService.update(rdMmAccountInfo);
-            return ApiUtils.success("1","已为您重新开启通联钱包自动提现功能");
+            return ApiUtils.success("2","已为您重新开启通联钱包自动提现功能");
         }else {
             try {
                 String webParamUrl = "http://116.228.64.55:6900/yungateway/member/signContract.html?";//测试环境签约地址
@@ -268,7 +268,7 @@ public class AllInPayController extends BaseController {
                 allInRequest.put("source", 1);//访问终端 1：mobile 2：PC
                 String res = YunClient.encodeOnce(allInRequest);
                 webParamUrl += res;
-                return ApiUtils.success("2",webParamUrl);//返回完整签约地址 携带用户信息
+                return ApiUtils.success("1",webParamUrl);//返回完整签约地址 携带用户信息
             } catch (Exception e) {
                 e.printStackTrace();
             }
