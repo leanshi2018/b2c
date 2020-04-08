@@ -1551,7 +1551,8 @@ public class OrderAPIController extends BaseController {
         //收款列表
         Map<String, Object> reciever = new LinkedHashMap<>();
         reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);
-        reciever.put("amount",shopOrder.getOrderAmount().longValue()*100);
+        //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
+        reciever.put("amount",1l);
         List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
         /*JSONObject reciever = new JSONObject();
         reciever.accumulate("bizUserId", TongLianUtils.BIZ_USER_ID);
@@ -1561,7 +1562,8 @@ public class OrderAPIController extends BaseController {
         //支付方式
         Map<String, Object> object1 = new LinkedHashMap<>();
         object1.put("limitPay","no_credit");//String 非贷记卡：no_credit 借、贷记卡：””需要传空字符串，不能不传
-        object1.put("amount",shopOrder.getOrderAmount().longValue()*100);//Long支付金额，单位：分
+        //object1.put("amount",shopOrder.getOrderAmount().longValue()*100);//Long支付金额，单位：分 TODO 正式
+        object1.put("amount",1l);//Long支付金额，单位：分
         object1.put("acct",openId);//String  微信 JS 支付 openid——微信分配
         Map<String, Object> payMethods = new LinkedHashMap<>();
         payMethods.put("WECHATPAY_MINIPROGRAM",object1);
@@ -1573,10 +1575,13 @@ public class OrderAPIController extends BaseController {
         payMethods.accumulate("WECHATPAY_MINIPROGRAM",object1);*/
 
         String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + paysn + ".json";
-
+        //TODO 正式
         /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
                 shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");*/
+        System.out.println("paySn:"+paysn);
+        System.out.println("code:"+shopOrder.getBuyerId().toString());
+
         String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
                 1l, 0l, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");
@@ -1587,8 +1592,8 @@ public class OrderAPIController extends BaseController {
             if (status.equals("OK")){
                 String signedValue = maps.get("signedValue").toString();
                 Map okMap = (Map) JSON.parse(signedValue);
-                String payStatus = okMap.get("payStatus").toString();//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
-                if (payStatus.equals("fail")){
+                String payStatus = Optional.ofNullable(okMap.get("payStatus").toString()).orElse("");//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
+                if (!"".equals(payStatus) && payStatus.equals("fail")){
                     String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
                     return ApiUtils.error("支付失败"+","+payFailMessage);
                 }
