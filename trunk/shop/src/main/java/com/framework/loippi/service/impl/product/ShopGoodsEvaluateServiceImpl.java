@@ -220,9 +220,12 @@ public class ShopGoodsEvaluateServiceImpl extends GenericServiceImpl<ShopGoodsEv
             //最后一次循环在判断是否全部评价完
             if (index == shopOrderGoodsList.size() - 1) {
                 Paramap paramap = Paramap.create().put("orderId", evaluateGoods.getGevalOrderid())
-                    .put("evaluationStatus", 0);
+                        .put("evaluationStatus", 0);
+                Paramap paramap1 = Paramap.create().put("orderId", evaluateGoods.getGevalOrderid())
+                        .put("isPresentation", 1);
                 Long countNotEvaluate = shopOrderGoodsDao.count(paramap);
-                if (countNotEvaluate != null && countNotEvaluate.intValue() == 0) {
+                Long countNotEvaluate1 = shopOrderGoodsDao.count(paramap1);
+                if (countNotEvaluate != null && countNotEvaluate.intValue() == countNotEvaluate1.intValue()) {
                     ShopOrder shopOrder = new ShopOrder();
                     shopOrder.setId(evaluateGoods.getGevalOrderid());
                     shopOrder.setEvaluationStatus(1);
