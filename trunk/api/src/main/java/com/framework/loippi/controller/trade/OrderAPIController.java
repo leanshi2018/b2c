@@ -1597,7 +1597,8 @@ public class OrderAPIController extends BaseController {
         JSONObject payMethods = new JSONObject();
         payMethods.accumulate("WECHATPAY_MINIPROGRAM",object1);*/
 
-        String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
+        //String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
+        String notifyUrl = "http://zc6887712.nat300.top/api/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
         //TODO 正式
         /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
                 shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, "", notifyUrl, "",
