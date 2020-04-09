@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.allinpay.yunst.sdk.YunClient;
+import com.framework.loippi.consts.NotifyConsts;
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.common.ShopApp;
@@ -1831,8 +1832,8 @@ public class UserAPIController extends BaseController {
 
         String withdrawSn = "W"+twiterIdService.getTwiterId();
 
-        //String backUrl = server + "/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
-        String backUrl = "http://96zk3a.natappfree.cc/admin_war_exploded/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
+        //String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
+        String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
         String bankCardNoL = YunClient.encrypt(bankCardNoR);
         String resBalance = TongLianUtils.withdrawApply(withdrawSn,basicInfo.getMmCode(), TongLianUtils.ACCOUNT_SET_NO,amount*100,fee*100,0l,
                 backUrl,"",null,bankCardNoL,0l,"D0","1910","其他",1l,"","");

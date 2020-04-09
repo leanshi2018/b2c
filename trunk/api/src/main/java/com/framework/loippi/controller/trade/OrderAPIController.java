@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.NotifyConsts;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
@@ -1604,7 +1605,7 @@ public class OrderAPIController extends BaseController {
         payMethods.accumulate("WECHATPAY_MINIPROGRAM",object1);*/
 
         //String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
-        String notifyUrl = "http://zc6887712.nat300.top/api/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
+        String notifyUrl = NotifyConsts.APP_NOTIFY_FILE+ "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
         //TODO 正式
         /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
                 shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, "", notifyUrl, "",
