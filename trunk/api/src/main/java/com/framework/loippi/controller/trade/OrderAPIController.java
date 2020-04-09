@@ -1629,7 +1629,7 @@ public class OrderAPIController extends BaseController {
                 String appId = Optional.ofNullable(okMap.get("appId").toString()).orElse("");
                 String timeStamp = Optional.ofNullable(okMap.get("timeStamp").toString()).orElse("");
                 String nonceStr = Optional.ofNullable(okMap.get("nonceStr").toString()).orElse("");
-                String prepayId = Optional.ofNullable(okMap.get("package").toString()).orElse("");
+                String packageS = Optional.ofNullable(okMap.get("package").toString()).orElse("");
                 String signType = Optional.ofNullable(okMap.get("signType").toString()).orElse("");
                 String paySign = Optional.ofNullable(okMap.get("paySign").toString()).orElse("");
 
@@ -1642,6 +1642,8 @@ public class OrderAPIController extends BaseController {
                 result.setSignType(signType);
                 result.setNonceStr(nonceStr);
                 result.setAppId(appId);
+                result.setTimeStamp(timeStamp);
+                result.setPackageS(packageS);
                 return ApiUtils.success(result);
 
             }else {

@@ -38,5 +38,13 @@ public class AppletsPayTLResult {
 	 * 应用 ID
 	 */
 	private String appId;
+	/**
+	 * 时间戳
+	 */
+	private String timeStamp;
+	/**
+	 *
+	 */
+	private String packageS;
 
 }
