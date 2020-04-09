@@ -1627,7 +1627,9 @@ public class OrderAPIController extends BaseController {
             if (status.equals("OK")){
                 String signedValue = maps.get("signedValue").toString();
                 Map okMap = (Map) JSON.parse(signedValue);
-                if (okMap.get("payStatus").toString()!=null){
+                if (okMap.get("payStatus").toString()==null){
+
+                }else {
                     String payStatus = Optional.ofNullable(okMap.get("payStatus").toString()).orElse("");//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
                     if (!"".equals(payStatus) && payStatus.equals("fail")){
                         String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
@@ -1642,13 +1644,14 @@ public class OrderAPIController extends BaseController {
                 //Map<String, Object> weChatAPPInfo = (Map<String, Object>)okMap.get("weChatAPPInfo");//微信 APP 支付 返回信息
                 //Map<String, Object> weiXinStr = (Map<String, Object>)weChatAPPInfo.get("weixinstr");//微信 APP 支付 返回信息
 
-                Map<String, Object> payInfo = (Map<String, Object>)okMap.get("payInfo");//扫码支付信息/ JS 支付串信息（微信、支付宝、QQ 钱包）/微信小程序/微信原生 H5 支付串信息/支付宝原生 APP 支付串信息
-                String appId = Optional.ofNullable(okMap.get("appId").toString()).orElse("");
-                String timeStamp = Optional.ofNullable(okMap.get("timeStamp").toString()).orElse("");
-                String nonceStr = Optional.ofNullable(okMap.get("nonceStr").toString()).orElse("");
-                String packageS = Optional.ofNullable(okMap.get("package").toString()).orElse("");
-                String signType = Optional.ofNullable(okMap.get("signType").toString()).orElse("");
-                String paySign = Optional.ofNullable(okMap.get("paySign").toString()).orElse("");
+                String payInfo = okMap.get("payInfo").toString();//扫码支付信息/ JS 支付串信息（微信、支付宝、QQ 钱包）/微信小程序/微信原生 H5 支付串信息/支付宝原生 APP 支付串信息
+                Map payMap = (Map) JSON.parse(payInfo);
+                String appId = Optional.ofNullable(payMap.get("appId").toString()).orElse("");
+                String timeStamp = Optional.ofNullable(payMap.get("timeStamp").toString()).orElse("");
+                String nonceStr = Optional.ofNullable(payMap.get("nonceStr").toString()).orElse("");
+                String packageS = Optional.ofNullable(payMap.get("package").toString()).orElse("");
+                String signType = Optional.ofNullable(payMap.get("signType").toString()).orElse("");
+                String paySign = Optional.ofNullable(payMap.get("paySign").toString()).orElse("");
 
                 //Long validateType = (Long)okMap.get("validateType");//交易验证方式  当支付方式为收银宝快捷且 需验证短信验证码时才返回，返回值为“1”表示需继续调用 【确认支付（后台+短信验证码确认）】
 
