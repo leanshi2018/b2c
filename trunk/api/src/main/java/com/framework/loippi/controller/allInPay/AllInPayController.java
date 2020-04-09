@@ -184,6 +184,16 @@ public class AllInPayController extends BaseController {
             Map<String, Object> map = JacksonUtil.convertMap(s);
             if(map.get("status").equals("OK")){
                 rdMmBasicInfo.setWhetherTrueName(1);
+                String signedValue = (String) map.get("signedValue");
+                Map<String, Object> map1 = JacksonUtil.convertMap(signedValue);
+                String str1 = (String) map1.get("name");
+                String str2 = (String) map1.get("identityNo");
+                if(str1!=null){
+
+                }
+                if(str2!=null){
+
+                }
                 rdMmBasicInfoService.update(rdMmBasicInfo);
                 return ApiUtils.success("实名制认证成功");
             }else if(map.get("status").equals("error")){

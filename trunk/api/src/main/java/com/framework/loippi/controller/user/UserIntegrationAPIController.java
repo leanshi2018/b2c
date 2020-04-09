@@ -27,7 +27,6 @@ import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
@@ -234,9 +233,10 @@ public class UserIntegrationAPIController extends BaseController {
                 .put("shpIntegration", rdMmAccountInfo.getWalletBlance().setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
 
+    //int bankCardId,
     //奖励积分提现确认
     @RequestMapping(value = "/bop/cashWithdrawal/finish.json")
-    public String bopCashWithdrawal(HttpServletRequest request, int bankCardId, Double integration, String paypassword) {
+    public String bopCashWithdrawal(HttpServletRequest request,  Double integration, String paypassword) {
         if ("".equals(paypassword)) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
@@ -265,12 +265,11 @@ public class UserIntegrationAPIController extends BaseController {
         if(list!=null&&list.size()>0){
             return ApiUtils.error("您已有一笔提现申请待审核，如需要，取消后重新提交");
         }
-
         //银行卡信息
-        RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(bankCardId+""));
+        /*RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(bankCardId+""));
         if (rdMmBank == null) {
             return ApiUtils.error("不存在该银行卡");
-        }
+        }*/
         /*if (rdMmBank.getBankSigning()==0){
             if (rdMmBank.getSigningStatus()==1){
                 return ApiUtils.error("该银行卡签约正在审核中，审核通过后再提现");
@@ -279,7 +278,7 @@ public class UserIntegrationAPIController extends BaseController {
         }*/
 
         List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
-            .findList(Paramap.create().put("order", "RID desc"));
+                .findList(Paramap.create().put("order", "RID desc"));
         RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
         if (CollectionUtils.isNotEmpty(rdMmIntegralRuleList)) {
             rdMmIntegralRule = rdMmIntegralRuleList.get(0);
@@ -289,7 +288,8 @@ public class UserIntegrationAPIController extends BaseController {
         }
         BigDecimal bonusPointWd =BigDecimal.valueOf(Optional.ofNullable(rdMmIntegralRule.getBonusPointWd()).orElse(0)* 0.01);
         List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
-        RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd, bankCardId);
+        //RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd, bankCardId);
+        RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd);
         rdMmAccountLogList.add(rdMmAccountLog);
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
         ArrayList<ShopCommonMessage> shopCommonMessages = new ArrayList<>();
@@ -317,11 +317,13 @@ public class UserIntegrationAPIController extends BaseController {
         shopMemberMessages.add(shopMemberMessage);
         Integer transNumber = rdMmAccountInfoService.saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null, shopCommonMessages, shopMemberMessages);
         // TODO: 2018/12/28 待处理
-        return ApiUtils.success(Paramap.create().put("bankCardCode",
+        /*return ApiUtils.success(Paramap.create().put("bankCardCode",
             "****     ****     ****     " + rdMmBank.getAccCode().substring(rdMmBank.getAccCode().length() - 4))
             .put("transferOutMoney", integration)
-            .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));
-
+            .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));*/
+        return ApiUtils.success(Paramap.create()
+                .put("transferOutMoney", integration)
+                .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));
         /*return ApiUtils.error("该功能在升级，请耐心等待！");*/
     }
 

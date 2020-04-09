@@ -1729,7 +1729,7 @@ public class UserAPIController extends BaseController {
                     }
                     return ApiUtils.success(bindCardDtoList);
                 }else {
-                    return ApiUtils.error("未有绑定的银行卡");
+                    return ApiUtils.success();
                 }
 
             }else {

@@ -42,6 +42,8 @@
 		<result property="pushStatus" column="PUSH_STATUS" />
 		<result property="tongLianId" column="TONG_LIAN_ID" />
 		<result property="whetherTrueName" column="WHETHER_TURE_NAME" />
+		<result property="trueId" column="TURE_ID" />
+		<result property="trueName" column="TURE_NAME" />
 		<result property="allInContractStatus" column="ALL_IN_CONTRACT_STATUS" />
 		<result property="contractNo" column="CONTRACT_NO" />
 		<result property="allInPayPhoneStatus" column="ALL_IN_PAY_PHONE_STATUS" />
@@ -51,12 +53,12 @@
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 MM_ID ,MM_CODE ,MM_NAME ,MM_NICK_NAME ,ID_TYPE ,ID_CODE ,GENDER ,BIRTHDATE ,EMAIL ,NATION_ID ,ADD_PROVINCE_ID ,ADD_CITY_ID ,ADD_COUNTRY_ID ,ADD_TOWN_ID ,ADD_DETIAL ,ADD_POST ,MOBILE ,WECHAT_CODE ,QQ_CODE ,FACEBOOK_CODE ,PHONE ,CREATION_SOURCE ,CREATION_IP ,CREATION_DATE ,CREATION_BY ,CREATION_PERIOD ,UPDATE_SOURCE ,UPDATE_IP ,UPDATE_DATE ,UPDATE_BY ,UPDATE_PERIOD ,MM_AVATAR,SHARE_NUM,PUSH_STATUS,TONG_LIAN_ID,WHETHER_TURE_NAME,
-		 ALL_IN_CONTRACT_STATUS,CONTRACT_NO,ALL_IN_PAY_PHONE_STATUS,ALL_IN_PAY_PHONE
+		 TURE_ID,TURE_NAME, ALL_IN_CONTRACT_STATUS,CONTRACT_NO,ALL_IN_PAY_PHONE_STATUS,ALL_IN_PAY_PHONE
 	</sql>
 
 	<sql id="base_value_column">
 		 #{mmId},#{mmCode},#{mmName},#{mmNickName},#{idType},#{idCode},#{gender},#{birthdate},#{email},#{nationId},#{addProvinceId},#{addCityId},#{addCountryId},#{addTownId},#{addDetial},#{addPost},#{mobile},#{wechatCode},#{qqCode},#{facebookCode},#{phone},#{creationSource},#{creationIp},#{creationDate},#{creationBy},#{creationPeriod},#{updateSource},#{updateIp},#{updateDate},#{updateBy},#{updatePeriod},#{mmAvatar},#{shareNum},#{pushStatus},#{tongLianId},
-		 #{whetherTrueName},#{allInContractStatus},#{contractNo},#{allInPayPhoneStatus},#{allInPayPhone}
+		 #{whetherTrueName},#{trueId},#{trueName},#{allInContractStatus},#{contractNo},#{allInPayPhoneStatus},#{allInPayPhone}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -168,6 +170,12 @@
 		</if>
 		<if test="whetherTrueName != null and whetherTrueName != ''">
 			AND WHETHER_TURE_NAME = #{whetherTrueName,jdbcType=INTEGER}
+		</if>
+		<if test="trueId != null and trueId != ''">
+			AND TURE_ID = #{trueId,jdbcType=TIMESTAMP}
+		</if>
+		<if test="trueName != null and trueName != ''">
+			AND TURE_NAME = #{trueName,jdbcType=TIMESTAMP}
 		</if>
 		<if test="allInContractStatus != null and allInContractStatus != ''">
 			AND ALL_IN_CONTRACT_STATUS = #{allInContractStatus,jdbcType=INTEGER}
@@ -306,6 +314,12 @@
 		</if>
 		<if test="whetherTrueName != null">
 			WHETHER_TURE_NAME = #{whetherTrueName},
+		</if>
+		<if test="trueId != null and trueId != ''">
+			TURE_ID = #{trueId,jdbcType=TIMESTAMP},
+		</if>
+		<if test="trueName != null and trueName != ''">
+			TURE_NAME = #{trueName,jdbcType=TIMESTAMP},
 		</if>
 		<if test="allInContractStatus != null ">
 			ALL_IN_CONTRACT_STATUS = #{allInContractStatus},

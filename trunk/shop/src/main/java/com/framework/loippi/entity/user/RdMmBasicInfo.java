@@ -168,6 +168,14 @@ public class RdMmBasicInfo implements GenericEntity {
 	@Column(name = "WHETHER_TURE_NAME" )
 	private Integer whetherTrueName;
 
+	/** 通联支付实名制认证身份证号 */
+	@Column(name = "TURE_ID" )
+	private String trueId;
+
+	/** 通联支付实名制姓名 */
+	@Column(name = "TURE_NAME" )
+	private String trueName;
+
 	/** 0:未签约 1：已签约  通联支付签约状态 */
 	@Column(name = "ALL_IN_CONTRACT_STATUS" )
 	private Integer allInContractStatus;

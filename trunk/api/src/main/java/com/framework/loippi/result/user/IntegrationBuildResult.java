@@ -1,16 +1,14 @@
 package com.framework.loippi.result.user;
 
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 
 /**
  *
@@ -64,7 +62,7 @@ public class IntegrationBuildResult extends RdMmAccountLog {
         rdMmAccountLog.setTransDate(new Date());
         return rdMmAccountLog;
     }
-    public static RdMmAccountLog bonusWD(RdMmBasicInfo shopMember,RdMmAccountInfo rdMmAccountInfo,Double integration,BigDecimal bonusPointWd,Integer bankCardId) {
+    public static RdMmAccountLog bonusWD(RdMmBasicInfo shopMember, RdMmAccountInfo rdMmAccountInfo, Double integration, BigDecimal bonusPointWd) {
         RdMmAccountLog rdMmAccountLog=new RdMmAccountLog();
         rdMmAccountLog.setTransTypeCode("WD");
         rdMmAccountLog.setAccType("");
@@ -76,7 +74,7 @@ public class IntegrationBuildResult extends RdMmAccountLog {
         rdMmAccountLog.setAmount(BigDecimal.valueOf(integration));
         rdMmAccountLog.setPresentationFeeNow(bonusPointWd);
         rdMmAccountLog.setActualWithdrawals(BigDecimal.valueOf(integration).subtract(bonusPointWd.multiply(BigDecimal.valueOf(integration))));
-        rdMmAccountLog.setTrBankOid(bankCardId);
+        //rdMmAccountLog.setTrBankOid(bankCardId);
         //提现需审核初始为申请状态
         rdMmAccountLog.setStatus(2);
         rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
