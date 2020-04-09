@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-
 /**
  * @author :ldq
  * @date:2020/3/11
@@ -25,20 +23,20 @@ public class AppletsPayTLResult {
 	 */
 	private String bizOrderNo;
 	/**
-	 * 交易编号
+	 *
 	 */
-	private String tradeNo;
+	private String paySign;
 	/**
-	 * 微信 APP 支付 返回信息
+	 *
 	 */
-	private Map<String, Object> weiXinStr;
+	private String signType;
 	/**
-	 * 扫码支付信息/ JS 支付串信息（微信、支付宝、QQ 钱包）/微信小程序/微信原生 H5 支付串信息/支付宝原生 APP 支付串信息
+	 * 随机字符串
 	 */
-	private String payInfo;
+	private String nonceStr;
 	/**
-	 * 交易验证方式 当支付方式为收银宝快捷且 需验证短信验证码时才返回，返回值为“1”表示需继续调用 【确认支付（后台+短信验证码确认）】
+	 * 应用 ID
 	 */
-	private Long validateType;
+	private String appId;
 
 }

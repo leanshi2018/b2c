@@ -1586,6 +1586,26 @@ public class OrderAPIController extends BaseController {
                 1l, 0l, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");
 
+        /*
+        response:{"sysid":"1902271423530473681","sign":"WWAff/cGqCfJUmUO/raqavyS+b3LsltQcxatJEDyLi8BG9JJvPxrNZ7IQ+sOJVK1k9nRfcm1XPMIK7nnyC/
+        5h8dywkhx1yMNTf89y7M/rmO61Y7OKbEUMZe+mJ13QDWSPjwhC/IDQ/URfFQy+kksjEvdKjm+cG4h1B6oH7hDTgc=",
+        "signedValue":"{\"orderNo\":\"1247788418784595968\",\"payInfo\":\"{\\\"appId\\\":\\\"wxd9b2267890ad0c2c\\\",\\\"timeStamp\\\":\\\"1586330905\\\",
+        \\\"nonceStr\\\":\\\"78a2fe1092ea42919fd084d2219a40e1\\\",\\\"package\\\":\\\"prepay_id=wx081528252809422e50b5bf871236939600\\\",\\\"signType\\\":\\\"RSA\\\",
+        \\\"paySign\\\":\\\"VLbYq97wdvhTYW9oTzoVOWBpK0jGALl+EPfUvTtq3vun25qvdc1IBLVeMWc1Ib89uCd5skIMGcitdIjUM/3h7KjuuFRpgJVpJb/FPMmuwe7Ij4zj8ocpj7U7qy5IKQFaxAHt
+        OAcRAu0phTRQXrS9cIzEIyjcCgydCuY9fYDN+C95rQ+1QemchAotp4GUs08+dXcTFm+gSdb5zySHtq+Qd8sMnTghUjmBDmvpJltfhgV/6yg2yAwXbfOgmnaM/FvKr63nEwmOssZvdi4kIxfUNL1cJOtBdMwoPF
+        WoIwDeHNxPZ1Db3v9np96ljc9q3haELrosH8U6r+OivtZuRGAJYw==\\\"}\",\"bizUserId\":\"900013801\",\"bizOrderNo\":\"P20200408151314390\"}","status":"OK"}
+
+
+        {\"orderNo\":\"1247788418784595968\",
+        \"payInfo\":{\\\"appId\\\":\\\"wxd9b2267890ad0c2c\\\",
+                    \\\"timeStamp\\\":\\\"1586330905\\\",
+                    \\\"nonceStr\\\":\\\"78a2fe1092ea42919fd084d2219a40e1\\\",
+                    \\\"package\\\":\\\"prepay_id=wx081528252809422e50b5bf871236939600\\\",
+                    \\\"signType\\\":\\\"RSA\\\",
+                    \\\"paySign\\\":\\\"VLbYq97wdvhTYW9oTzoVOWBpK0jGALl+EPfUvTtq3vun25qvdc1IBLVeMWc1Ib89uCd5skIMGcitdIjUM/3h7KjuuFRpgJVpJb/FPMmuwe7Ij4zj8ocpj7U7qy5IKQFaxAHtOAcRAu0phTRQXrS9cIzEIyjcCgydCuY9fYDN+C95rQ+1QemchAotp4GUs08+dXcTFm+gSdb5zySHtq+Qd8sMnTghUjmBDmvpJltfhgV/6yg2yAwXbfOgmnaM/FvKr63nEwmOssZvdi4kIxfUNL1cJOtBdMwoPFWoIwDeHNxPZ1Db3v9np96ljc9q3haELrosH8U6r+OivtZuRGAJYw==\\\"}\",
+        \"bizUserId\":\"900013801\",
+        \"bizOrderNo\":\"P20200408151314390\"}
+        * */
         if(!"".equals(s)){
             Map maps = (Map) JSON.parse(s);
             String status = maps.get("status").toString();
@@ -1597,29 +1617,35 @@ public class OrderAPIController extends BaseController {
                     String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
                     return ApiUtils.error("支付失败"+","+payFailMessage);
                 }
-                String orderNo = okMap.get("orderNo").toString();//通商云订单号
-                String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
-                String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
-                String tradeNo = okMap.get("tradeNo").toString();//交易编号
+                String orderNo = Optional.ofNullable(okMap.get("orderNo").toString()).orElse("");//通商云订单号
+                String bizUserId = Optional.ofNullable(okMap.get("bizUserId").toString()).orElse("");//商户系统用户标识，商户 系统中唯一编号。
+                String bizOrderNo = Optional.ofNullable(okMap.get("bizOrderNo").toString()).orElse("");//商户订单号（支付订单）
+                //String tradeNo = Optional.ofNullable(okMap.get("tradeNo").toString()).orElse("");//交易编号
 
-                Map<String, Object> weChatAPPInfo = (Map<String, Object>)okMap.get("weChatAPPInfo");//微信 APP 支付 返回信息
-                Map<String, Object> weiXinStr = (Map<String, Object>)weChatAPPInfo.get("weixinstr");//微信 APP 支付 返回信息
+                //Map<String, Object> weChatAPPInfo = (Map<String, Object>)okMap.get("weChatAPPInfo");//微信 APP 支付 返回信息
+                //Map<String, Object> weiXinStr = (Map<String, Object>)weChatAPPInfo.get("weixinstr");//微信 APP 支付 返回信息
 
-                String payInfo = okMap.get("payInfo").toString();//扫码支付信息/ JS 支付串信息（微信、支付宝、QQ 钱包）/微信小程序/微信原生 H5 支付串信息/支付宝原生 APP 支付串信息
+                Map<String, Object> payInfo = (Map<String, Object>)okMap.get("payInfo");//扫码支付信息/ JS 支付串信息（微信、支付宝、QQ 钱包）/微信小程序/微信原生 H5 支付串信息/支付宝原生 APP 支付串信息
+                String appId = Optional.ofNullable(okMap.get("appId").toString()).orElse("");
+                String timeStamp = Optional.ofNullable(okMap.get("timeStamp").toString()).orElse("");
+                String nonceStr = Optional.ofNullable(okMap.get("nonceStr").toString()).orElse("");
+                String prepayId = Optional.ofNullable(okMap.get("package").toString()).orElse("");
+                String signType = Optional.ofNullable(okMap.get("signType").toString()).orElse("");
+                String paySign = Optional.ofNullable(okMap.get("paySign").toString()).orElse("");
 
-                Long validateType = (Long)okMap.get("validateType");//交易验证方式  当支付方式为收银宝快捷且 需验证短信验证码时才返回，返回值为“1”表示需继续调用 【确认支付（后台+短信验证码确认）】
+                //Long validateType = (Long)okMap.get("validateType");//交易验证方式  当支付方式为收银宝快捷且 需验证短信验证码时才返回，返回值为“1”表示需继续调用 【确认支付（后台+短信验证码确认）】
 
                 AppletsPayTLResult result = new AppletsPayTLResult();
                 result.setPayStatus(payStatus);
                 result.setBizOrderNo(bizOrderNo);
-                result.setTradeNo(tradeNo);
-                result.setWeiXinStr(weiXinStr);
-                result.setPayInfo(payInfo);
-                result.setValidateType(validateType);
+                result.setPaySign(paySign);
+                result.setSignType(signType);
+                result.setNonceStr(nonceStr);
+                result.setAppId(appId);
                 return ApiUtils.success(result);
 
             }else {
-                String message = maps.get("message").toString();
+                String message = Optional.ofNullable(maps.get("message").toString()).orElse("");
                 return ApiUtils.error("支付失败"+","+message);
             }
         }else {
@@ -1696,7 +1722,7 @@ public class OrderAPIController extends BaseController {
 
                 return ApiUtils.success("发送成功");
             }else {
-                String message = maps.get("message").toString();
+                String message = Optional.ofNullable(maps.get("message").toString()).orElse("");
                 return ApiUtils.error("发送失败："+message);
             }
 
