@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.walet.RdBizPayDao">
+
+    <resultMap id="RdBizPayMap" type="com.framework.loippi.entity.walet.RdBizPay">
+        <result property="id" column="id" />
+        <result property="paySn" column="pay_sn" />
+        <result property="bizPaySn" column="biz_pay_sn" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,pay_sn ,biz_pay_sn
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{paySn},#{bizPaySn}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null ">
+            AND id = #{id}
+        </if>
+        <if test="paySn != null and paySn != ''">
+            AND pay_sn = #{paySn,jdbcType=VARCHAR}
+        </if>
+        <if test="bizPaySn != null and bizPaySn != ''">
+            AND biz_pay_sn = #{bizPaySn,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id},
+        </if>
+        <if test="paySn != null and paySn != ''">
+            pay_sn = #{paySn,jdbcType=VARCHAR},
+        </if>
+        <if test="bizPaySn != null and bizPaySn != ''">
+            biz_pay_sn = #{bizPaySn,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdBizPayMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_biz_pay
+        WHERE	ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdBizPayMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_biz_pay
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_biz_pay
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.walet.RdBizPay">
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+        <!--SELECT LAST_INSERT_ID() AS ID    -->
+        <!--</selectKey>  -->
+        INSERT rd_biz_pay
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.walet.RdBizPay">
+        UPDATE	rd_biz_pay
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_biz_pay
+		WHERE	id = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_biz_pay
+        WHERE	id	IN
+        <foreach item="RdMmWithdrawLogId" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdBizPayMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_biz_pay
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdBizPayMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_biz_pay
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+
+</mapper>

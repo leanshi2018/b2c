@@ -52,6 +52,7 @@ import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.param.cart.CartAddParam;
@@ -89,6 +90,7 @@ import com.framework.loippi.service.user.RdMmAddInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
@@ -162,6 +164,8 @@ public class OrderAPIController extends BaseController {
     private CouponService couponService;
     @Resource
     private CouponDetailService couponDetailService;
+    @Resource
+    private RdBizPayService rdBizPayService;
 
     /**
      * 提交订单
@@ -664,6 +668,14 @@ public class OrderAPIController extends BaseController {
             paymentTallyService.savePaymentTally(paymentCode, "微信支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
             String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
             model.put("tocodeurl", tocodeurl);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("weixinAppletsPaymentPlugin")) {
+            //修改订单付款信息
+            orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            paymentTallyService.savePaymentTally(paymentCode, "微信小程序支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            //String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
+            model.put("tocodeurl", "");
             model.put("orderSn", pay.getOrderSn());
         } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("balancePaymentPlugin")) {//余额支付
 //            Map<String, Object> data = orderService.payWallet(payCommon, member.getMmCode());
@@ -1541,11 +1553,22 @@ public class OrderAPIController extends BaseController {
     @ResponseBody
     public String appletsPayTL(@RequestParam(value = "paysn") String paysn,@RequestParam(value = "openId") String openId,HttpServletRequest request) {
 
+        if (paysn==null || "".equals(paysn)){
+            return ApiUtils.error("订单号不存在");
+        }
+
+        String[] split = paysn.split("###");
+        String mmPaySn = split[0];//这个才是我们的pansn
+
         //TODO  微信 通联
-        List<ShopOrder> orderList = orderService.findList("paySn", paysn);
+        List<ShopOrder> orderList = orderService.findList("paySn", mmPaySn);
         if (CollectionUtils.isEmpty(orderList)) {
             return ApiUtils.error("订单不存在");
         }
+        RdBizPay rdBizPay = new RdBizPay();
+        rdBizPay.setPaySn(mmPaySn);
+        rdBizPay.setBizPaySn(paysn);
+        rdBizPayService.save(rdBizPay);
 
         ShopOrder shopOrder = orderList.get(0);
         //收款列表
@@ -1574,13 +1597,11 @@ public class OrderAPIController extends BaseController {
         JSONObject payMethods = new JSONObject();
         payMethods.accumulate("WECHATPAY_MINIPROGRAM",object1);*/
 
-        String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + paysn + ".json";
+        String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
         //TODO 正式
         /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
                 shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");*/
-        System.out.println("paySn:"+paysn);
-        System.out.println("code:"+shopOrder.getBuyerId().toString());
 
         String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
                 1l, 0l, 0l, "", notifyUrl, "",
@@ -1627,7 +1648,7 @@ public class OrderAPIController extends BaseController {
             if (status.equals("OK")){
                 String signedValue = maps.get("signedValue").toString();
                 Map okMap = (Map) JSON.parse(signedValue);
-                if (okMap.get("payStatus").toString()==null){
+                /*if (okMap.get("payStatus").toString()==null){
 
                 }else {
                     String payStatus = Optional.ofNullable(okMap.get("payStatus").toString()).orElse("");//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
@@ -1635,7 +1656,7 @@ public class OrderAPIController extends BaseController {
                         String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
                         return ApiUtils.error("支付失败"+","+payFailMessage);
                     }
-                }
+                }*/
                 String orderNo = Optional.ofNullable(okMap.get("orderNo").toString()).orElse("");//通商云订单号
                 String bizUserId = Optional.ofNullable(okMap.get("bizUserId").toString()).orElse("");//商户系统用户标识，商户 系统中唯一编号。
                 String bizOrderNo = Optional.ofNullable(okMap.get("bizOrderNo").toString()).orElse("");//商户订单号（支付订单）
