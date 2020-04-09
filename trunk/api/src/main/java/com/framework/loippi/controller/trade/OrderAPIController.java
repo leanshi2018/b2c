@@ -1553,12 +1553,18 @@ public class OrderAPIController extends BaseController {
     @ResponseBody
     public String appletsPayTL(@RequestParam(value = "paysn") String paysn,@RequestParam(value = "openId") String openId,HttpServletRequest request) {
 
+
         if (paysn==null || "".equals(paysn)){
             return ApiUtils.error("订单号不存在");
         }
 
-        String[] split = paysn.split("###");
+        String[] split = paysn.split("WOMI");
         String mmPaySn = split[0];//这个才是我们的pansn
+
+        System.out.println("*****************");
+        System.out.println("paysn="+paysn);
+        System.out.println("mmPaySn="+mmPaySn);
+        System.out.println("*****************");
 
         //TODO  微信 通联
         List<ShopOrder> orderList = orderService.findList("paySn", mmPaySn);

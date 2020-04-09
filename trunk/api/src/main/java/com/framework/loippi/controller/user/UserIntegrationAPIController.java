@@ -64,7 +64,8 @@ import com.framework.loippi.utils.Xerror;
 @ResponseBody
 @RequestMapping("/api/integration")
 public class UserIntegrationAPIController extends BaseController {
-
+    @Resource
+    RdMmAccountLogService rdMmAccountLogService;
     @Resource
     RdMmAccountInfoService rdMmAccountInfoService;
     @Resource
@@ -260,6 +261,10 @@ public class UserIntegrationAPIController extends BaseController {
             return ApiUtils.error("积分不足，不可提现");
         }
 
+        List<RdMmAccountLog> list = rdMmAccountLogService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("transTypeCode","WD").put("status",2));
+        if(list!=null&&list.size()>0){
+            return ApiUtils.error("您已有一笔提现申请待审核，如需要，取消后重新提交");
+        }
 
         //银行卡信息
         RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(bankCardId+""));
