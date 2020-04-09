@@ -22,8 +22,18 @@
 </@layout.head>
 <@layout.body>
     <div class="page">
-        <table class="table tb-type2 order">
-
+        <div class="fixed-bar">
+            <div class="item-title">
+                <h3>订单分账明细</h3>
+                <ul class="tab-base">
+                    <li><a href="JavaScript:void(0);" class="current"><span>管理</span></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="fixed-empty"></div>
+        <form method="post" action="" name="formSearch" id="formSearch">
+            <input name="id" value="${order.id}" type="hidden" id="id">
+            <input type="hidden" name="pageNumber" value="${1}">
             <tbody>
             <tr class="space">
                 <th colspan="15">订单信息</th>
@@ -31,9 +41,9 @@
             <tr>
                 <td>
                     <ul>
-                        <li><strong>订单号：</strong></li>
-                        <li><strong>订单实付金额：</strong></li>
-                        <li><strong>公司分账后收入：</strong></li>
+                        <li><strong>订单号：</strong>${id}</li>
+                        <li><strong>订单实付金额：</strong>${orderSn}</li>
+                        <li><strong>公司分账后收入：</strong>${firmSplitAmount}</li>
                     </ul>
                 </td>
             </tr>
@@ -53,13 +63,13 @@
                             <th class="align-center">分账金额（元）</th>
                             <th class="align-center">积分扣减</th>
                         </tr>
-                        <#list shippingDto.goodsInfoList as goods>
+                        <#list pages.Detail as order>
                             <tr>
-                                <td class="w96 align-center"><p>${goods.goodsName}</p></td>
-                                <td class="w96 align-center">${goods.specInfo}</td>
-                                <td class="w96 align-center">${goods.quantity}</td>
-                                <td class="w96 align-center">${goods.specInfo}</td>
-                                <td class="w96 align-center">${goods.quantity}</td>
+                                <td class="w96 align-center"><p></p></td>
+                                <td class="w96 align-center">${order.cutGetId}</td>
+                                <td class="w96 align-center">${order.cutGetName}</td>
+                                <td class="w96 align-center">${order.cutAmount}</td>
+                                <td class="w96 align-center">${order.cutAcc}</td>
                             </tr>
 
                         <#else >

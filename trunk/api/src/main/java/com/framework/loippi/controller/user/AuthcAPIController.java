@@ -568,6 +568,7 @@ public class AuthcAPIController extends BaseController {
         rdMmBasicInfo.setMmName(Optional.ofNullable(param.getName()).orElse(""));
         rdMmBasicInfo.setPushStatus(1);
         rdMmBasicInfo.setAllInPayPhoneStatus(0);
+        rdMmBasicInfo.setAllInContractStatus(0);
         rdMmRelation.setARetail(BigDecimal.ZERO);
         rdMmRelation.setLoginPwd(Digests.entryptPassword(param.getPassword()));
         rdMmRelation.setSponsorCode(param.getInvitCode());
