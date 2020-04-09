@@ -68,6 +68,7 @@ public class AllInPayContractController {
      */
     @RequestMapping(value = "/signBack.jhtml")
     public void allInPayContractBack(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        System.out.println("进入通联");
         String rps = request.getParameter("rps");
         System.out.println(rps);
         Map<String, Object> map = JacksonUtil.convertMap(rps);
