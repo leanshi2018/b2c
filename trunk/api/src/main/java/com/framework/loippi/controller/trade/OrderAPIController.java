@@ -1605,6 +1605,21 @@ public class OrderAPIController extends BaseController {
                     \\\"paySign\\\":\\\"VLbYq97wdvhTYW9oTzoVOWBpK0jGALl+EPfUvTtq3vun25qvdc1IBLVeMWc1Ib89uCd5skIMGcitdIjUM/3h7KjuuFRpgJVpJb/FPMmuwe7Ij4zj8ocpj7U7qy5IKQFaxAHtOAcRAu0phTRQXrS9cIzEIyjcCgydCuY9fYDN+C95rQ+1QemchAotp4GUs08+dXcTFm+gSdb5zySHtq+Qd8sMnTghUjmBDmvpJltfhgV/6yg2yAwXbfOgmnaM/FvKr63nEwmOssZvdi4kIxfUNL1cJOtBdMwoPFWoIwDeHNxPZ1Db3v9np96ljc9q3haELrosH8U6r+OivtZuRGAJYw==\\\"}\",
         \"bizUserId\":\"900013801\",
         \"bizOrderNo\":\"P20200408151314390\"}
+
+
+        response:{"sysid":"1902271423530473681",
+        "sign":"g4s/E0Bo/wbE15LRyZYDfR3yb3gWamNCY3DX8GFNQOfzx1RieFPj2Ca7Pt8mV4rs775a6HMHq4As7lVlLrF8E67axMaClW3NgxumKIxtLlU+3X8uj0+kHXek67QZou5Od16ZHi0FERRZe33kVgQzUyeQ4HGW1Hbnzy9uC8nn8Vs=",
+        "signedValue":"{\"orderNo\":\"1248079192394862592\",
+                        \"payInfo\":\"{\\\"appId\\\":\\\"wxd9b2267890ad0c2c\\\",
+                                        \\\"timeStamp\\\":\\\"1586400230\\\",
+                                        \\\"nonceStr\\\":\\\"812c69734d564129bf198916261753c7\\\",
+                                        \\\"package\\\":\\\"prepay_id=wx09104350750980868426ce9b1724485100\\\",
+                                        \\\"signType\\\":\\\"RSA\\\",
+                                        \\\"paySign\\\":\\\"rMxpYxjDyiujorLUiaqK+0BWJJxkZTKGBEW1Cfet1eAy3gQ4Icgrsyy+A2amJP+B5dI8NZ75I/V1eHx9LEF9NHiBodaGAPnlpUhO0KinXXsW3IoNtkJBh+z39cVFjjPJlLtNYpOkorzYX4tv8tLtEEVnAaHHVixJNVeAwsW/FtmWo5EnNC8iQKzcPoIIL143UnZ9+aFcx77i7EyvB1KOYw/P3gofe4feqNb9tMNVHCuBjpdmD3FwV8K4ur/LPlXcb9JP33DkoA012w+vHEEWcjXxoisEoEDuYuEcH+yTFsa71s0CCl5JUronUb4ghpzIoYZYCVObz0sGyAD73xb/6A==\\\"}\",
+                        \"bizUserId\":\"900013801\",
+                        \"bizOrderNo\":\"P20200409104339751\"}",
+        "status":"OK"}
+
         * */
         if(!"".equals(s)){
             Map maps = (Map) JSON.parse(s);
@@ -1612,10 +1627,12 @@ public class OrderAPIController extends BaseController {
             if (status.equals("OK")){
                 String signedValue = maps.get("signedValue").toString();
                 Map okMap = (Map) JSON.parse(signedValue);
-                String payStatus = Optional.ofNullable(okMap.get("payStatus").toString()).orElse("");//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
-                if (!"".equals(payStatus) && payStatus.equals("fail")){
-                    String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
-                    return ApiUtils.error("支付失败"+","+payFailMessage);
+                if (okMap.get("payStatus").toString()!=null){
+                    String payStatus = Optional.ofNullable(okMap.get("payStatus").toString()).orElse("");//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
+                    if (!"".equals(payStatus) && payStatus.equals("fail")){
+                        String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
+                        return ApiUtils.error("支付失败"+","+payFailMessage);
+                    }
                 }
                 String orderNo = Optional.ofNullable(okMap.get("orderNo").toString()).orElse("");//通商云订单号
                 String bizUserId = Optional.ofNullable(okMap.get("bizUserId").toString()).orElse("");//商户系统用户标识，商户 系统中唯一编号。
@@ -1636,7 +1653,7 @@ public class OrderAPIController extends BaseController {
                 //Long validateType = (Long)okMap.get("validateType");//交易验证方式  当支付方式为收银宝快捷且 需验证短信验证码时才返回，返回值为“1”表示需继续调用 【确认支付（后台+短信验证码确认）】
 
                 AppletsPayTLResult result = new AppletsPayTLResult();
-                result.setPayStatus(payStatus);
+                result.setPayStatus(status);
                 result.setBizOrderNo(bizOrderNo);
                 result.setPaySign(paySign);
                 result.setSignType(signType);
@@ -1761,18 +1778,17 @@ public class OrderAPIController extends BaseController {
             if (status.equals("OK")) {
                 String signedValue = maps.get("signedValue").toString();
                 Map okMap = (Map) JSON.parse(signedValue);
-                String bizUserId = okMap.get("bizUserId").toString();
-                String phoneBack = okMap.get("phone").toString();
-                String result = okMap.get("result").toString();
+                //String bizUserId = Optional.ofNullable(okMap.get("bizUserId").toString()).orElse("");
+                //String phoneBack = Optional.ofNullable(okMap.get("phone").toString()).orElse("");
+                String result = Optional.ofNullable(okMap.get("result").toString()).orElse("");
                 if(result.equals("OK")){
                     rdMmBasicInfoService.updatePhoneStatusByMCode(2,member.getMmCode());
                     return ApiUtils.success("解绑成功");
                 }else {
                     return ApiUtils.error("解绑失败");
                 }
-
             }else {
-                String message = maps.get("message").toString();
+                String message = Optional.ofNullable(maps.get("message").toString()).orElse("");
                 return ApiUtils.error("解绑失败："+message);
             }
 
@@ -1808,13 +1824,13 @@ public class OrderAPIController extends BaseController {
             if (status.equals("OK")) {
                 String signedValue = maps.get("signedValue").toString();
                 Map okMap = (Map) JSON.parse(signedValue);
-                String bizUserId = okMap.get("bizUserId").toString();
-                String phoneBack = okMap.get("phone").toString();
-                rdMmBasicInfoService.updatePhoneStatusAndPhoneByMCode(phone,1,member.getMmCode());
+                //String bizUserId = Optional.ofNullable(okMap.get("bizUserId").toString()).orElse("");
+                String phoneBack = Optional.ofNullable(okMap.get("phone").toString()).orElse("");
+                rdMmBasicInfoService.updatePhoneStatusAndPhoneByMCode(phoneBack,1,member.getMmCode());
                 return ApiUtils.success("绑定成功");
 
             }else {
-                String message = maps.get("message").toString();
+                String message = Optional.ofNullable(maps.get("message").toString()).orElse("");
                 return ApiUtils.error("绑定失败："+message);
             }
 
@@ -1855,7 +1871,7 @@ public class OrderAPIController extends BaseController {
 
                 return ApiUtils.success("发送成功");
             }else {
-                String message = maps.get("message").toString();
+                String message = Optional.ofNullable(maps.get("message").toString()).orElse("");
                 return ApiUtils.error("发送失败："+message);
             }
 
@@ -1894,13 +1910,13 @@ public class OrderAPIController extends BaseController {
             if (status.equals("OK")) {
                 String signedValue = maps.get("signedValue").toString();
                 Map okMap = (Map) JSON.parse(signedValue);
-                String bizUserId = okMap.get("bizUserId").toString();
-                String phoneBack = okMap.get("phone").toString();
-                rdMmBasicInfoService.updatePhoneStatusAndPhoneByMCode(member.getMobile(),1,member.getMmCode());
+                //String bizUserId = Optional.ofNullable(okMap.get("bizUserId").toString()).orElse("");
+                String phoneBack = Optional.ofNullable(okMap.get("phone").toString()).orElse("");
+                rdMmBasicInfoService.updatePhoneStatusAndPhoneByMCode(phoneBack,1,member.getMmCode());
                 return ApiUtils.success("绑定成功");
 
             }else {
-                String message = maps.get("message").toString();
+                String message = Optional.ofNullable(maps.get("message").toString()).orElse("");
                 return ApiUtils.error("绑定失败："+message);
             }
 
