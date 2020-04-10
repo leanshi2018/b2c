@@ -1730,7 +1730,7 @@ public class UserAPIController extends BaseController {
                     }
                     return ApiUtils.success(bindCardDtoList);
                 }else {
-                    return ApiUtils.success();
+                    return ApiUtils.success(bindCardDtoList);
                 }
 
             }else {
