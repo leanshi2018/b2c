@@ -1,6 +1,8 @@
 package com.framework.loippi.service.impl.walet;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,5 +37,13 @@ public class RdBizPayServiceImpl extends GenericServiceImpl<RdBizPay, Long> impl
 	@Override
 	public List<RdBizPay> findByPaysn(String paySn) {
 		return rdBizPayDao.findByPaysn(paySn);
+	}
+
+	@Override
+	public List<RdBizPay> findByPaysnAndStatus(String paySn, Integer invalidStatus) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("paySn",paySn);
+		map.put("invalidStatus",invalidStatus);
+		return rdBizPayDao.findByPaysnAndStatus(map);
 	}
 }

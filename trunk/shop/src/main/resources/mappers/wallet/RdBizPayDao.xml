@@ -131,4 +131,9 @@
         FROM rd_biz_pay WHERE pay_sn = #{paySn}
     </select>
 
+    <select id="findByPaysnAndStatus" parameterType="map" resultMap="RdBizPayMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_biz_pay WHERE pay_sn = #{paySn} AND invalid_status = #{invalidStatus}
+    </select>
 </mapper>
