@@ -1802,8 +1802,8 @@ public class UserAPIController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/queryWithdraw.json", method = RequestMethod.POST)
-    public String queryWithdraw(HttpServletRequest request,@RequestParam(value = "amount") Long amount,
-                                @RequestParam(value = "fee") Long fee,@RequestParam(value = "bankCardNoR") String bankCardNoR) throws Exception {
+    public String queryWithdraw(HttpServletRequest request,@RequestParam(value = "amount") Float amount,
+                                @RequestParam(value = "fee") Float fee,@RequestParam(value = "bankCardNoR") String bankCardNoR) throws Exception {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
 
@@ -1821,7 +1821,7 @@ public class UserAPIController extends BaseController {
         if (amount==null){
             return ApiUtils.error("提现金额不能为0！");
         }else {
-            if(amount.longValue()<10 || amount.longValue()>50000){
+            if(amount.floatValue()<10 || amount.floatValue()>50000){
                 return ApiUtils.error("提现上限是5万元，下限是10元");
             }
         }
@@ -1832,10 +1832,15 @@ public class UserAPIController extends BaseController {
 
         String withdrawSn = "W"+twiterIdService.getTwiterId();
 
+        Float a = amount*100;//金额 分
+        Float f = fee*100;//手续费 分
+        Long amountL = Long.valueOf(a.longValue());
+        Long feeL = Long.valueOf(f.longValue());
+
         //String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
         String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
         String bankCardNoL = YunClient.encrypt(bankCardNoR);
-        String resBalance = TongLianUtils.withdrawApply(withdrawSn,basicInfo.getMmCode(), TongLianUtils.ACCOUNT_SET_NO,amount*100,fee*100,0l,
+        String resBalance = TongLianUtils.withdrawApply(withdrawSn,basicInfo.getMmCode(), TongLianUtils.ACCOUNT_SET_NO,amountL,feeL,0l,
                 backUrl,"",null,bankCardNoL,0l,"D0","1910","其他",1l,"","");
         if(!"".equals(resBalance)) {
             Map maps = (Map) JSON.parse(resBalance);
