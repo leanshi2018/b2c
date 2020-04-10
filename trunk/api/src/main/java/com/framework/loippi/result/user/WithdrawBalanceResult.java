@@ -31,13 +31,23 @@ public class WithdrawBalanceResult {
 	 * 提现手续费（通联收）
 	 */
 	private BigDecimal withdrawFee;
+	/**
+	 * 提现上限
+	 */
+	private BigDecimal upLimitAmount;
+	/**
+	 * 提现下限
+	 */
+	private BigDecimal lowerLimitAmount;
 
 
 	public static WithdrawBalanceResult build1(RdMmBasicInfo basicInfo, Long withdrawAmount){
 		WithdrawBalanceResult result = new WithdrawBalanceResult();
 		result.setMmCode(basicInfo.getMmCode());
 		result.setWithdrawAmount(new BigDecimal(withdrawAmount).divide(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP));
-		result.setWithdrawFee(new BigDecimal(1));
+		result.setWithdrawFee(new BigDecimal("1"));
+		result.setUpLimitAmount(new BigDecimal("50000"));
+		result.setLowerLimitAmount(new BigDecimal("10"));
 		return result;
 	}
 
