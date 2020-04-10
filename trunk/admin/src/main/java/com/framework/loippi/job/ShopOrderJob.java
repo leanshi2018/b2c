@@ -442,7 +442,7 @@ public class ShopOrderJob {
             } else {
                 //获取推荐人的积分账户信息记录
                 RdMmAccountInfo rdMmAccountInfo=rdMmAccountInfoDao.findAccByMCode(rdMmRelation.getSponsorCode());
-                if(rdMmAccountInfo==null||rdMmAccountInfo.getBonusStatus()==null||rdMmAccountInfo.getBonusStatus()!=0||rdMmAccountInfo.getBonusBlance().compareTo(acc)==-1){
+                if(rdMmAccountInfo==null||rdMmAccountInfo.getBonusStatus()==null||rdMmAccountInfo.getBonusStatus()!=0||rdMmAccountInfo.getBonusBlance().compareTo(acc)==-1||rdMmAccountInfo.getAutomaticWithdrawal()==0){
                     code=rdMmRelation.getSponsorCode();
                 }else {
                     info=rdMmAccountInfo;
