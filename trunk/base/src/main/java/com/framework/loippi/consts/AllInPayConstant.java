@@ -20,6 +20,6 @@ public interface AllInPayConstant {
     /**
      * 通联网络签约app回调地址
      */
-    public static final String SIGN_BACK_URL_APP="http://www.baidu.com";
-    //public static final String SIGN_BACK_URL_APP="http://www.rdnmall.com/signing.html";
+    //public static final String SIGN_BACK_URL_APP="http://www.baidu.com";
+    public static final String SIGN_BACK_URL_APP="http://www.rdnmall.com/signing.html";
 }
