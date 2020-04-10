@@ -190,10 +190,10 @@ public class AllInPayController extends BaseController {
                 String str1 = (String) map1.get("name");
                 String str2 = (String) map1.get("identityNo");
                 if(str1!=null){
-
+                    rdMmBasicInfo.setTrueName(str1);
                 }
                 if(str2!=null){
-
+                    rdMmBasicInfo.setTrueId(str2);
                 }
                 rdMmBasicInfoService.update(rdMmBasicInfo);
                 return ApiUtils.success("实名制认证成功");
