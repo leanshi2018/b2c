@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.allInPay;
 
+import com.framework.loippi.consts.AllInPayConstant;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -189,10 +190,10 @@ public class AllInPayController extends BaseController {
                 String str1 = (String) map1.get("name");
                 String str2 = (String) map1.get("identityNo");
                 if(str1!=null){
-
+                    rdMmBasicInfo.setTrueName(str1);
                 }
                 if(str2!=null){
-
+                    rdMmBasicInfo.setTrueId(str2);
                 }
                 rdMmBasicInfoService.update(rdMmBasicInfo);
                 return ApiUtils.success("实名制认证成功");
@@ -257,24 +258,27 @@ public class AllInPayController extends BaseController {
         if(rdMmBasicInfo==null){
             return ApiUtils.error("会员基础信息异常");
         }
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", rdMmBasicInfo.getMmCode());
+        if(rdMmAccountInfo==null){
+            return ApiUtils.error("会员账户积分信息异常");
+        }
         if(rdMmBasicInfo.getAllInContractStatus()!=null&&rdMmBasicInfo.getAllInContractStatus()==1){
             return ApiUtils.error("当前会员已完成通联钱包自动提现签约");
         }
         if(rdMmBasicInfo.getAllInContractStatus()!=null&&rdMmBasicInfo.getAllInContractStatus()==2){
             rdMmBasicInfo.setAllInContractStatus(1);
-            RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", rdMmBasicInfo.getMmCode());
             rdMmAccountInfo.setAutomaticWithdrawal(1);
             rdMmBasicInfoService.update(rdMmBasicInfo);
             rdMmAccountInfoService.update(rdMmAccountInfo);
             return ApiUtils.success("2","已为您重新开启通联钱包自动提现功能");
         }else {
             try {
-                String webParamUrl = "http://116.228.64.55:6900/yungateway/member/signContract.html?";//测试环境签约地址
+                String webParamUrl = AllInPayConstant.SIGN_URL;//测试环境签约地址
                 //String webParamUrl = "https://fintech.allinpay.com/yungateway/member/signContract.html?";//正式环境签约地址
                 final YunRequest allInRequest = new YunRequest("MemberService", "signContract");
                 allInRequest.put("bizUserId", mmCode);
-                allInRequest.put("jumpUrl","http://www.baidu.com");//TODO 预留签约成功后跳转前端页面
-                allInRequest.put("backUrl","http://brv588.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml");//后台接收回调地址
+                allInRequest.put("jumpUrl",AllInPayConstant.SIGN_BACK_URL_APP);//TODO 预留签约成功后跳转前端页面
+                allInRequest.put("backUrl",AllInPayConstant.SIGN_BACK_URL);//后台接收回调地址
                 allInRequest.put("source", 1);//访问终端 1：mobile 2：PC
                 String res = YunClient.encodeOnce(allInRequest);
                 webParamUrl += res;
@@ -345,6 +349,7 @@ public class AllInPayController extends BaseController {
                 System.out.println(bankCode);
                 Integer cardType = (Integer) resultMap.get("cardType");
                 System.out.println(cardType);
+                return ApiUtils.success("绑定银行卡成功");
             }else if(map.get("status").equals("error")){
                 String message = (String) map.get("message");
                 return ApiUtils.error(message);
