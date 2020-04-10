@@ -189,13 +189,12 @@ public class AllInPayController extends BaseController {
                 Map<String, Object> map1 = JacksonUtil.convertMap(signedValue);
                 String str1 = (String) map1.get("name");
                 String str2 = (String) map1.get("identityNo");
-                System.out.println(str1+"****"+str1.length());
-                System.out.println(str2+"****"+str2.length());
+                String decrypt = RSAUtil.decrypt(str2);
                 if(str1!=null){
                     rdMmBasicInfo.setTrueName(str1.trim());
                 }
                 if(str2!=null){
-                    rdMmBasicInfo.setTrueId(str2.trim());
+                    rdMmBasicInfo.setTrueId(decrypt.trim());
                 }
                 rdMmBasicInfoService.update(rdMmBasicInfo);
                 return ApiUtils.success("实名制认证成功");
