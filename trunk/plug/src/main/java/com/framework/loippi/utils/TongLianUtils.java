@@ -20,17 +20,24 @@ import com.allinpay.yunst.sdk.bean.YunRequest;
 public class TongLianUtils {
 
 	public static final String SERVER_URL = "http://116.228.64.55:6900/service/soa";//测试环境请咨询对接人员(通商云门户测试环境地址)
-	public static final String SYS_ID = "1902271423530473681";//商户私钥证书
-	public static final String PWD = "123456";//商户私钥密码
-	public static final String ALIAS = "1902271423530473681";//商户公钥证书
-	public static final String PATH = "C:\\Users\\Administrator\\Desktop\\sign\\1902271423530473681.pfx";//pfx证书路径
-	//public static final String PATH =  "F:\sign\\1902271423530473681.pfx";
-	public static final String TL_CERT_PATH = "C:\\Users\\Administrator\\Desktop\\sign\\TLCert-test.cer";//cer证书路径
-	//public static final String TL_CERT_PATH = "F:\sign\\TLCert-test.cer";
+	//public static final String SYS_ID = "1902271423530473681";//商户私钥证书
+	public static final String SYS_ID = "1908201117222883218";//商户私钥证书
+	//public static final String PWD = "123456";//商户私钥密码
+	public static final String PWD = "111111";//商户私钥密码
+	//public static final String ALIAS = "1902271423530473681";//商户公钥证书
+	public static final String ALIAS = "1908201117222883218";//商户公钥证书
+	//public static final String PATH = "C:\\Users\\Administrator\\Desktop\\sign\\1902271423530473681.pfx";//pfx证书路径
+	public static final String PATH = "C:\\Users\\Administrator\\Desktop\\signtest\\1908201117222883218.pfx";//pfx证书路径
+	//public static final String PATH =  "F:\\sign\\1902271423530473681.pfx";
+	//public static final String PATH =  "F:\\signtest\\1908201117222883218.pfx";
+	//public static final String TL_CERT_PATH = "C:\\Users\\Administrator\\Desktop\\sign\\TLCert-test.cer";//cer证书路径
+	public static final String TL_CERT_PATH = "C:\\Users\\Administrator\\Desktop\\signtest\\TLYunstCert_test.cer";//cer证书路径
+	//public static final String TL_CERT_PATH = "F:\\sign\\TLCert-test.cer";
+	//public static final String TL_CERT_PATH = "F:\\signtest\\TLYunstCert_test.cer";
 	public static final String VERSION = "2.0";//接口版本
 	public static final String BIZ_USER_ID = "201807170002";//商户系统用户标识，商户系统中唯一编号    公司编号
-	//public static final String ACCOUNT_SET_NO = "56029005999Z8RA";//通商云分配的托管专用账户集的编号
-	public static final String ACCOUNT_SET_NO = "200126";//通商云分配的托管专用账户集的编号
+	//public static final String ACCOUNT_SET_NO = "200126";//通商云分配的托管专用账户集的编号
+	public static final String ACCOUNT_SET_NO = "400142";//通商云分配的托管专用账户集的编号
 
 	public static void getRequest() {
 		//final String serverUrl = "https://fintech.allinpay.com/service/soa"; //测试环境请咨询对接人员
@@ -518,6 +525,34 @@ public class TongLianUtils {
 		request.put("source", source);
 		request.put("summary", summary);
 		request.put("extendInfo", extendInfo);
+		try {
+			String s = YunClient.request(request);
+			return s;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	/**
+	 * 平台转账
+	 * @param bizTransferNo  商户系统转账订单号，商 户系统唯一
+	 * @param sourceAccountSetNo  源账户集编号  （10001）
+	 * @param targetBizUserId  目标商户系统用户标识， 商户系统中唯一编号。收款会员的 BizUserId
+	 * @param targetAccountSetNo  目标账户集编号  通商云分配的托管专用账户 集的编号
+	 * @param amount 金额 分
+	 * @param extendInfo  扩展信息 否
+	 * @return
+	 */
+	public static String applicationTransfer(String bizTransferNo,String sourceAccountSetNo,String targetBizUserId,String targetAccountSetNo,Long amount,String extendInfo) {
+		getRequest();
+		final YunRequest request = new YunRequest("OrderService", "applicationTransfer");
+		request.put("bizTransferNo", bizTransferNo);
+		request.put("sourceAccountSetNo", sourceAccountSetNo);
+		request.put("targetBizUserId", targetBizUserId);
+		request.put("targetAccountSetNo", targetAccountSetNo);
+		request.put("amount", amount);
+		//request.put("extendInfo", extendInfo);
 		try {
 			String s = YunClient.request(request);
 			return s;
