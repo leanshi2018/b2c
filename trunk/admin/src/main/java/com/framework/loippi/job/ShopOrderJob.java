@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.framework.loippi.consts.AllInPayConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -472,7 +473,7 @@ public class ShopOrderJob {
             request.put("collectPayList", collectPayList);
             request.put("bizUserId", accountInfo.getMmCode());
             request.put("accountSetNo","100001");//TODO
-            request.put("backUrl","http://brv588.natappfree.cc/admin_war_exploded/admin/allinpayContract/cutBack.jhtml");//TODO
+            request.put("backUrl", AllInPayConstant.CUT_BILL_BACKURL);//TODO
             request.put("amount",shopOrder.getOrderAmount().multiply(new BigDecimal("100")));
             request.put("fee",(shopOrder.getOrderAmount().subtract(amount)).multiply(new BigDecimal("100")));
             request.put("tradeCode","4001");

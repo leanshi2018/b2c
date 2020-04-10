@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.allInPay;
 
+import com.framework.loippi.consts.AllInPayConstant;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -269,12 +270,12 @@ public class AllInPayController extends BaseController {
             return ApiUtils.success("2","已为您重新开启通联钱包自动提现功能");
         }else {
             try {
-                String webParamUrl = "http://116.228.64.55:6900/yungateway/member/signContract.html?";//测试环境签约地址
+                String webParamUrl = AllInPayConstant.SIGN_URL;//测试环境签约地址
                 //String webParamUrl = "https://fintech.allinpay.com/yungateway/member/signContract.html?";//正式环境签约地址
                 final YunRequest allInRequest = new YunRequest("MemberService", "signContract");
                 allInRequest.put("bizUserId", mmCode);
-                allInRequest.put("jumpUrl","http://www.baidu.com");//TODO 预留签约成功后跳转前端页面
-                allInRequest.put("backUrl","http://brv588.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml");//后台接收回调地址
+                allInRequest.put("jumpUrl",AllInPayConstant.SIGN_BACK_URL_APP);//TODO 预留签约成功后跳转前端页面
+                allInRequest.put("backUrl",AllInPayConstant.SIGN_BACK_URL);//后台接收回调地址
                 allInRequest.put("source", 1);//访问终端 1：mobile 2：PC
                 String res = YunClient.encodeOnce(allInRequest);
                 webParamUrl += res;
