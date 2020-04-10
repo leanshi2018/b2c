@@ -472,7 +472,7 @@ public class ShopOrderJob {
             request.put("collectPayList", collectPayList);
             request.put("bizUserId", accountInfo.getMmCode());
             request.put("accountSetNo","100001");//TODO
-            request.put("backUrl","http://brv588.natappfree.cc/admin_war_exploded/admin/allinpayContract/cutBack.jhtml");//TODO
+            request.put("backUrl","http://96zk3a.natappfree.cc/admin_war_exploded/admin/allinpayContract/cutBack.jhtml");//TODO
             request.put("amount",shopOrder.getOrderAmount().multiply(new BigDecimal("100")));
             request.put("fee",(shopOrder.getOrderAmount().subtract(amount)).multiply(new BigDecimal("100")));
             request.put("tradeCode","4001");

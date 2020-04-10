@@ -274,7 +274,7 @@ public class AllInPayController extends BaseController {
                 final YunRequest allInRequest = new YunRequest("MemberService", "signContract");
                 allInRequest.put("bizUserId", mmCode);
                 allInRequest.put("jumpUrl","http://www.baidu.com");//TODO 预留签约成功后跳转前端页面
-                allInRequest.put("backUrl","http://brv588.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml");//后台接收回调地址
+                allInRequest.put("backUrl","http://96zk3a.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml");//后台接收回调地址
                 allInRequest.put("source", 1);//访问终端 1：mobile 2：PC
                 String res = YunClient.encodeOnce(allInRequest);
                 webParamUrl += res;
