@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
@@ -33,7 +31,6 @@ import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 
 @Slf4j
@@ -71,18 +68,17 @@ public class AllInPayContractController {
         System.out.println("进入通联");
         String rps = request.getParameter("rps");
         System.out.println(rps);
-        Map<String, Object> map = JacksonUtil.convertMap(rps);
-        String status = (String) map.get("status");
+        JSONObject jsonObject = JSONObject.parseObject(rps);
+        String status = jsonObject.getString("status");
         if(status.equals("OK")){
-            String contractNo = (String) map.get("contractNo");//如果成功，获取会员签约点子协议编号
+            String contractNo = jsonObject.getString("contractNo");//如果成功，获取会员签约点子协议编号
             System.out.println(contractNo);
-            String returnValue = (String) map.get("returnValue");
-            String replace = returnValue.replace("{bizUserId=", "");
-            String replace1 = replace.replace("}", "");
-            System.out.println(replace1);
+            String returnValue =jsonObject.getString("returnValue");
+            JSONObject jsonObject1 = JSONObject.parseObject(returnValue);
+            String bizUserId = jsonObject1.getString("bizUserId");
             //获取用户的会员编号以及签约成功点子协议编号
-            RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", replace1);
-            RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoDao.findAccByMCode(replace1);
+            RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", bizUserId);
+            RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoDao.findAccByMCode(bizUserId);
             if(rdMmBasicInfo!=null&&rdMmAccountInfo!=null){
                 rdMmBasicInfo.setContractNo(contractNo);
                 rdMmBasicInfo.setAllInContractStatus(1);
@@ -103,15 +99,15 @@ public class AllInPayContractController {
     public void allInPayCutBack(HttpServletRequest request, HttpServletResponse response) throws IOException{
         String rps = request.getParameter("rps");
         System.out.println(rps);
-        JSONObject resp = JSON.parseObject(rps);
-        if(resp.getString("status").equals("error")){//如果分账失败 则记录失败原因
+        JSONObject jsonObject = JSONObject.parseObject(rps);
+        if(jsonObject.getString("status").equals("error")){//如果分账失败 则记录失败原因
             /*shopOrder.setCutStatus(3);
             shopOrder.setCutFailInfo(resp.getString("message")+",错误代码："+resp.getString("errorCode"));
             shopOrderDao.update(shopOrder);*/
         }
-        if(resp.getString("status").equals("OK")){
-            String signedValue = resp.getString("signedValue");
-            JSONObject signedValueMap = JSON.parseObject(signedValue);
+        if(jsonObject.getString("status").equals("OK")){
+            String signedValue = jsonObject.getString("signedValue");
+            JSONObject signedValueMap = JSONObject.parseObject(signedValue);
             String payStatus = signedValueMap.getString("payStatus");
             String bizOrderNo = signedValueMap.getString("bizOrderNo");
             List<ShopOrder> shopOrders = shopOrderDao.findByParams(Paramap.create().put("paySn",bizOrderNo));
