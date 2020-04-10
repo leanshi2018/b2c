@@ -27,11 +27,17 @@ public class WithdrawBalanceResult {
 	 * 余额
 	 */
 	private BigDecimal withdrawAmount;
+	/**
+	 * 提现手续费（通联收）
+	 */
+	private BigDecimal withdrawFee;
+
 
 	public static WithdrawBalanceResult build1(RdMmBasicInfo basicInfo, Long withdrawAmount){
 		WithdrawBalanceResult result = new WithdrawBalanceResult();
 		result.setMmCode(basicInfo.getMmCode());
 		result.setWithdrawAmount(new BigDecimal(withdrawAmount).divide(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP));
+		result.setWithdrawFee(new BigDecimal(1));
 		return result;
 	}
 

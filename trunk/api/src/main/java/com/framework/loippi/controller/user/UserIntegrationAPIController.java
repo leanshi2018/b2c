@@ -322,6 +322,8 @@ public class UserIntegrationAPIController extends BaseController {
             .put("transferOutMoney", integration)
             .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));*/
         return ApiUtils.success(Paramap.create()
+                .put("presentationFeeNow", rdMmAccountLog.getPresentationFeeNow())
+                .put("actualWithdrawals", rdMmAccountLog.getActualWithdrawals())
                 .put("transferOutMoney", integration)
                 .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));
         /*return ApiUtils.error("该功能在升级，请耐心等待！");*/
