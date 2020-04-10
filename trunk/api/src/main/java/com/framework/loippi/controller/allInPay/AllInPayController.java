@@ -190,10 +190,10 @@ public class AllInPayController extends BaseController {
                 String str1 = (String) map1.get("name");
                 String str2 = (String) map1.get("identityNo");
                 if(str1!=null){
-
+                    rdMmBasicInfo.setTrueName(str1);
                 }
                 if(str2!=null){
-
+                    rdMmBasicInfo.setTrueId(str2);
                 }
                 rdMmBasicInfoService.update(rdMmBasicInfo);
                 return ApiUtils.success("实名制认证成功");
@@ -258,12 +258,15 @@ public class AllInPayController extends BaseController {
         if(rdMmBasicInfo==null){
             return ApiUtils.error("会员基础信息异常");
         }
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", rdMmBasicInfo.getMmCode());
+        if(rdMmAccountInfo==null){
+            return ApiUtils.error("会员账户积分信息异常");
+        }
         if(rdMmBasicInfo.getAllInContractStatus()!=null&&rdMmBasicInfo.getAllInContractStatus()==1){
             return ApiUtils.error("当前会员已完成通联钱包自动提现签约");
         }
         if(rdMmBasicInfo.getAllInContractStatus()!=null&&rdMmBasicInfo.getAllInContractStatus()==2){
             rdMmBasicInfo.setAllInContractStatus(1);
-            RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", rdMmBasicInfo.getMmCode());
             rdMmAccountInfo.setAutomaticWithdrawal(1);
             rdMmBasicInfoService.update(rdMmBasicInfo);
             rdMmAccountInfoService.update(rdMmAccountInfo);
@@ -346,6 +349,7 @@ public class AllInPayController extends BaseController {
                 System.out.println(bankCode);
                 Integer cardType = (Integer) resultMap.get("cardType");
                 System.out.println(cardType);
+                return ApiUtils.success("绑定银行卡成功");
             }else if(map.get("status").equals("error")){
                 String message = (String) map.get("message");
                 return ApiUtils.error(message);
