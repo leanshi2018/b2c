@@ -9,15 +9,16 @@
         <result property="id" column="id" />
         <result property="paySn" column="pay_sn" />
         <result property="bizPaySn" column="biz_pay_sn" />
+        <result property="invalidStatus" column="invalid_status" />
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,pay_sn ,biz_pay_sn
+		 id ,pay_sn ,biz_pay_sn,invalid_status
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{paySn},#{bizPaySn}
+		 #{id},#{paySn},#{bizPaySn},#{invalidStatus}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -120,5 +121,14 @@
         </where>
     </select>
 
+    <update id="updateStatus" parameterType="string">
+            UPDATE rd_biz_pay SET invalid_status=0 WHERE pay_sn = #{paySn}
+    </update>
+
+    <select id="findByPaysn" parameterType="string" resultMap="RdBizPayMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_biz_pay WHERE pay_sn = #{paySn}
+    </select>
 
 </mapper>

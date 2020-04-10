@@ -1,5 +1,7 @@
 package com.framework.loippi.service.wallet;
 
+import java.util.List;
+
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.service.GenericService;
 
@@ -9,4 +11,7 @@ import com.framework.loippi.service.GenericService;
  * @description:dubbo com.framework.loippi.service.wallet
  */
 public interface RdBizPayService extends GenericService<RdBizPay, Long> {
+	void updateStatus(String mmPaySn);
+
+	List<RdBizPay> findByPaysn(String mmPaySn);
 }

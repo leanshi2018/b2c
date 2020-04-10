@@ -29,4 +29,7 @@ public class RdBizPay implements GenericEntity {
 
 	@Column(name = "biz_pay_sn" )
 	private String bizPaySn;
+
+	@Column(name = "invalid_status" )
+	private Integer invalidStatus;
 }

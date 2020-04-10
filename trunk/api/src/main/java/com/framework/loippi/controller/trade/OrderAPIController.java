@@ -1572,9 +1572,17 @@ public class OrderAPIController extends BaseController {
         if (CollectionUtils.isEmpty(orderList)) {
             return ApiUtils.error("订单不存在");
         }
+
+        //过去的作废
+        List<RdBizPay> rdBizPayList = rdBizPayService.findByPaysn(mmPaySn);
+        if(rdBizPayList.size()>0){
+            rdBizPayService.updateStatus(mmPaySn);
+        }
+
         RdBizPay rdBizPay = new RdBizPay();
         rdBizPay.setPaySn(mmPaySn);
         rdBizPay.setBizPaySn(paysn);
+        rdBizPay.setInvalidStatus(1);
         rdBizPayService.save(rdBizPay);
 
         ShopOrder shopOrder = orderList.get(0);

@@ -1,5 +1,7 @@
 package com.framework.loippi.service.impl.walet;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,4 +26,14 @@ public class RdBizPayServiceImpl extends GenericServiceImpl<RdBizPay, Long> impl
 	public void setGenericDao() {
 		super.setGenericDao(rdBizPayDao);
 }
+
+	@Override
+	public void updateStatus(String paySn) {
+		rdBizPayDao.updateStatus(paySn);
+	}
+
+	@Override
+	public List<RdBizPay> findByPaysn(String paySn) {
+		return rdBizPayDao.findByPaysn(paySn);
+	}
 }
