@@ -1837,8 +1837,8 @@ public class UserAPIController extends BaseController {
         Long amountL = Long.valueOf(a.longValue());
         Long feeL = Long.valueOf(f.longValue());
 
-        //String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
-        String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
+        //String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".jhtml";//后台通知地址
+        String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".jhtml";//后台通知地址
         String bankCardNoL = YunClient.encrypt(bankCardNoR);
         String resBalance = TongLianUtils.withdrawApply(withdrawSn,basicInfo.getMmCode(), TongLianUtils.ACCOUNT_SET_NO,amountL,feeL,0l,
                 backUrl,"",null,bankCardNoL,0l,"D0","1910","其他",1l,"","");
