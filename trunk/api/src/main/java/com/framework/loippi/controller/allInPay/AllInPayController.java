@@ -258,12 +258,15 @@ public class AllInPayController extends BaseController {
         if(rdMmBasicInfo==null){
             return ApiUtils.error("会员基础信息异常");
         }
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", rdMmBasicInfo.getMmCode());
+        if(rdMmAccountInfo==null){
+            return ApiUtils.error("会员账户积分信息异常");
+        }
         if(rdMmBasicInfo.getAllInContractStatus()!=null&&rdMmBasicInfo.getAllInContractStatus()==1){
             return ApiUtils.error("当前会员已完成通联钱包自动提现签约");
         }
         if(rdMmBasicInfo.getAllInContractStatus()!=null&&rdMmBasicInfo.getAllInContractStatus()==2){
             rdMmBasicInfo.setAllInContractStatus(1);
-            RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", rdMmBasicInfo.getMmCode());
             rdMmAccountInfo.setAutomaticWithdrawal(1);
             rdMmBasicInfoService.update(rdMmBasicInfo);
             rdMmAccountInfoService.update(rdMmAccountInfo);

@@ -176,7 +176,7 @@ public class RdMmBasicInfo implements GenericEntity {
 	@Column(name = "TURE_NAME" )
 	private String trueName;
 
-	/** 0:未签约 1：已签约  通联支付签约状态 */
+	/** 0:未签约 1：已签约  通联支付签约状态 2.已签约但未开启自动提现*/
 	@Column(name = "ALL_IN_CONTRACT_STATUS" )
 	private Integer allInContractStatus;
 
