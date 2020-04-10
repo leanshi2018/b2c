@@ -346,6 +346,7 @@ public class AllInPayController extends BaseController {
                 System.out.println(bankCode);
                 Integer cardType = (Integer) resultMap.get("cardType");
                 System.out.println(cardType);
+                return ApiUtils.success("绑定银行卡成功");
             }else if(map.get("status").equals("error")){
                 String message = (String) map.get("message");
                 return ApiUtils.error(message);
