@@ -189,11 +189,12 @@ public class AllInPayController extends BaseController {
                 Map<String, Object> map1 = JacksonUtil.convertMap(signedValue);
                 String str1 = (String) map1.get("name");
                 String str2 = (String) map1.get("identityNo");
+                String decrypt = RSAUtil.decrypt(str2);
                 if(str1!=null){
-                    rdMmBasicInfo.setTrueName(str1);
+                    rdMmBasicInfo.setTrueName(str1.trim());
                 }
                 if(str2!=null){
-                    rdMmBasicInfo.setTrueId(str2);
+                    rdMmBasicInfo.setTrueId(decrypt.trim());
                 }
                 rdMmBasicInfoService.update(rdMmBasicInfo);
                 return ApiUtils.success("实名制认证成功");
@@ -201,7 +202,7 @@ public class AllInPayController extends BaseController {
                 String message = (String) map.get("message");
                 return ApiUtils.error(message);
             } else {
-                throw new RuntimeException("实名制认证失败，请稍后重试");
+                return ApiUtils.error("实名制认证失败，请稍后重试");
             }
         } catch (Exception e) {
             e.printStackTrace();
