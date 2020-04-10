@@ -51,6 +51,7 @@ import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TSystemPluginConfigService;
 import com.framework.loippi.service.UserService;
@@ -69,6 +70,7 @@ import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
+import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.service.wechat.WechatRefundService;
 import com.framework.loippi.support.Pageable;
@@ -129,6 +131,8 @@ public class RefundReturnSysController extends GenericController {
     private RdSysPeriodService rdSysPeriodService;
     @Autowired
     private CouponRefundService couponRefundService;
+    @Resource
+    private RdBizPayService rdBizPayService;
 
 
 
@@ -1241,53 +1245,65 @@ public class RefundReturnSysController extends GenericController {
         ShopRefundReturn refundReturn = refundReturnService.find(id);
         ShopOrder shopOrder = orderService.find(refundReturn.getOrderId());
 
-        Map<String, Object> map = null;
-        if (weitype.equals("applet_weichatpay")) {//通联退款
-            //String backUrl = server + "/admin/paynotify/withdrawBank/" + id + "/" + shopOrder.getBuyerId() + ".json";//后台通知地址
-            JSONArray refundList = new JSONArray();
-            JSONObject refundMember = new JSONObject();
-            //refundMember.accumulate("bizUserId",shopOrder.getBuyerId());//商户系统用户标识，商户系统中唯一编号
-            //refundMember.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);// 金额，单位：分
-            //refundList.add(refundMember);
+        String paySn = shopOrder.getPaySn();
+        List<RdBizPay> rdBizPayList = rdBizPayService.findByPaysnAndStatus(paySn,1);
+        String bizPaySn = "";
+        if (rdBizPayList.size()==1){
+            RdBizPay rdBizPay = rdBizPayList.get(0);
+            bizPaySn = rdBizPay.getBizPaySn();
 
-            String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),shopOrder.getOrderSn(), shopOrder.getBuyerId().toString(), "D0", refundList,
-                    backUrl,shopOrder.getOrderAmount().longValue()*100,0l,0l,null);
-            if(!"".equals(s)) {
-                Map maps = (Map) JSON.parse(s);
-                String status = maps.get("status").toString();
-                if (status.equals("OK")) {
-                    String signedValue = maps.get("signedValue").toString();
-                    Map okMap = (Map) JSON.parse(signedValue);
-                    String payStatus = okMap.get("payStatus").toString();//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
-                    if (payStatus.equals("fail")){
-                        String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
+            Map<String, Object> map = null;
+            if (weitype.equals("applet_weichatpay")) {//通联退款
+                //String backUrl = server + "/admin/paynotify/withdrawBank/" + id + "/" + shopOrder.getBuyerId() + ".json";//后台通知地址
+                JSONArray refundList = new JSONArray();
+                JSONObject refundMember = new JSONObject();
+                //refundMember.accumulate("bizUserId",shopOrder.getBuyerId());//商户系统用户标识，商户系统中唯一编号
+                //refundMember.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);// 金额，单位：分
+                //refundList.add(refundMember);
+
+                String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
+                        backUrl,shopOrder.getOrderAmount().longValue()*100,0l,0l,null);
+                if(!"".equals(s)) {
+                    Map maps = (Map) JSON.parse(s);
+                    String status = maps.get("status").toString();
+                    if (status.equals("OK")) {
+                        String signedValue = maps.get("signedValue").toString();
+                        Map okMap = (Map) JSON.parse(signedValue);
+                        String payStatus = okMap.get("payStatus").toString();//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
+                        if (payStatus.equals("fail")){
+                            String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
+                            map.put("result_code","FAIL");
+                            map.put("err_code_des","退款失败"+","+payFailMessage);
+                        }
+                        String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
+                        String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                        map.put("result_code","SUCCESS");
+                    }else {
                         map.put("result_code","FAIL");
-                        map.put("err_code_des","退款失败"+","+payFailMessage);
+                        String message = maps.get("message").toString();
+                        map.put("err_code_des","退款失败"+","+message);
                     }
-                    String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
-                    String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
-                    map.put("result_code","SUCCESS");
                 }else {
                     map.put("result_code","FAIL");
-                    String message = maps.get("message").toString();
-                    map.put("err_code_des","退款失败"+","+message);
+                    map.put("err_code_des","退款失败");
                 }
-            }else {
-                map.put("result_code","FAIL");
-                map.put("err_code_des","退款失败");
+                //map = wechatMobileRefundService.toRefund(weiRefund);
+            } else if (weitype.equals("mp_weichatpay")) {//微信公共平台退款
+                map = wechatRefundService.toRefund(weiRefund);
             }
-            //map = wechatMobileRefundService.toRefund(weiRefund);
-        } else if (weitype.equals("mp_weichatpay")) {//微信公共平台退款
-            map = wechatRefundService.toRefund(weiRefund);
-        }
-        String msg = "";
-        if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
-            refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
-            model.addAttribute("msg", "通联退款申请成功，具体到账时间等待通联回调");
-        } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
-            model.addAttribute("msg",map.get("err_code_des"));
+            String msg = "";
+            if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
+                refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", "");
+                model.addAttribute("msg", "通联退款申请成功，具体到账时间等待通联回调");
+            } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
+                model.addAttribute("msg",map.get("err_code_des"));
+                model.addAttribute("noAuto", true);
+            }
+        }else {
+            model.addAttribute("msg","通联订单号多个");
             model.addAttribute("noAuto", true);
         }
+
         model.addAttribute("referer_url", "/admin/shop_refund_return/list.jhtml");
         return Constants.MSG_URL;
     }

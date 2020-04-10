@@ -55,6 +55,7 @@ import com.framework.loippi.entity.order.ShopOrderLogistics;
 import com.framework.loippi.entity.product.ShopExpressSpecialGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
+import com.framework.loippi.entity.product.ShopGoodsPresale;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdGoodsAdjustment;
 import com.framework.loippi.entity.user.RdMmAddInfo;
@@ -80,6 +81,7 @@ import com.framework.loippi.service.order.ShopOrderLogisticsService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopExpressSpecialGoodsService;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
+import com.framework.loippi.service.product.ShopGoodsPresaleService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.user.RdGoodsAdjustmentService;
@@ -157,6 +159,8 @@ public class OrderSysController extends GenericController {
     private CouponDetailService couponDetailService;
     @Resource
     private ShopCommonExpressNotAreaService shopCommonExpressNotAreaService;
+    @Resource
+    private ShopGoodsPresaleService shopGoodsPresaleService;
     // 订单编辑中
     private static final int ORDER_EDITING = 0;
     // 订单编辑完成
@@ -623,6 +627,10 @@ public class OrderSysController extends GenericController {
                 }
             }
         }
+
+
+        List<ShopGoodsPresale> presaleAll = shopGoodsPresaleService.findAll();
+
 /*********************************************排除洗发水*************************************************/
         /*List<Map<String,Object>> productListss = new ArrayList<Map<String,Object>>();//商品list
         for (Map<String, Object> product : productLists) {
@@ -698,6 +706,18 @@ public class OrderSysController extends GenericController {
             if (specialGoodsMap.containsKey(sku)){//存在
                 eExpressCode = specialGoodsMap.get(sku);
             }
+
+            /************************************预售商品（有的话跳过该订单不发）*********************************************/
+            //TODO
+            /*if (presaleAll.size()>0){
+                for (ShopGoodsPresale goodsPresale : presaleAll) {
+                    if (product.get("SKU").equals(goodsPresale.getSpecGoodsSerial())){
+                        Map<String,Object> resultMap = new HashMap<String,Object>();
+                        resultMap.put("res","");
+                        return resultMap;
+                    }
+                }
+            }*/
 
         }
         map.put("ChannelInfoID",eExpressCode);
