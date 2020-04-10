@@ -226,6 +226,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("通联支付注册异常");
         }
         //获取当前时间设置的业务周期
         String period = rdSysPeriodDao.getSysPeriodService(new Date());

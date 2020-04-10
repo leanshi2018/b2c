@@ -178,7 +178,8 @@ public class UserAPIController extends BaseController {
         List<RdMmBank> banks = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("inValid",1));
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
-        PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks,banks);
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks,banks,rdMmAccountInfo);
         //查询会员提醒消息数量
         Integer remindNum=shopMemberMessageService.findMessageRemindNum(Long.parseLong(member.getMmCode()));
         //查询会员订单消息数量
@@ -230,7 +231,6 @@ public class UserAPIController extends BaseController {
 
         result = PersonCenterResult.build2(result, countOrderStatusVoList);
         //是否设置登录密码
-        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         if (StringUtil.isEmpty(rdMmAccountInfo.getPaymentPwd())) {
             result.setIsPaymentPasswd(0);
         } else {

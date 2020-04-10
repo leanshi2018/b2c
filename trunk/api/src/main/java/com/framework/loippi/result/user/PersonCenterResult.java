@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.framework.loippi.consts.OrderState;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdRanks;
@@ -125,12 +126,16 @@ public class PersonCenterResult {
     //0:未签约 1：已签约  通联支付签约状态
     private Integer allInPayContractStatus;
 
+    //0:未开启 1：已开启 是否开启自动提现
+    private Integer whetherWithdrawalAuto;
+
     //0:未绑定通联支付手机号 1：已绑定 2：已解绑（解绑后未绑定新的手机号）  用户是否绑定了通联支付手机号码
     private Integer allInPayPhoneStatus;
 
 
-    public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks) {
+    public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
+        Optional<RdMmAccountInfo> optional2 = Optional.ofNullable(rdMmAccountInfo);
         PersonCenterResult result = new PersonCenterResult();
         result.setAvatar(optional.map(RdMmBasicInfo::getMmAvatar).orElse(""));
         result.setNickname(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
@@ -141,6 +146,7 @@ public class PersonCenterResult {
         result.setMessageNum(0);
         result.setLookPpv(0);
         result.setLookVip(0);
+        result.setWhetherWithdrawalAuto(optional2.map(RdMmAccountInfo::getAutomaticWithdrawal).orElse(0));
         if (shopMemberGrade!=null) {
             if (shopMemberGrade.getRankClass()>0){
                 result.setLookPpv(1);
