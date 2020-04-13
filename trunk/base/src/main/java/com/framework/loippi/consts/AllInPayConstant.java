@@ -14,12 +14,12 @@ public interface AllInPayConstant {
     /**
      * 通联网络签约后台回调地址
      */
-    public static final String SIGN_BACK_URL="http://brv588.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml";
+    public static final String SIGN_BACK_URL="http://96zk3a.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml";
     //public static final String SIGN_BACK_URL="https://fintech.allinpay.com/yungateway/member/signContract.html?";
 
     /**
      * 通联网络签约app回调地址
      */
-    public static final String SIGN_BACK_URL_APP="http://www.baidu.com";
-    //public static final String SIGN_BACK_URL_APP="http://www.rdnmall.com/signing.html";
+    //public static final String SIGN_BACK_URL_APP="http://www.baidu.com";
+    public static final String SIGN_BACK_URL_APP="http://www.rdnmall.com/signing.html";
 }

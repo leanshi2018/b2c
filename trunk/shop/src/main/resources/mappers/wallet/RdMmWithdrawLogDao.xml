@@ -157,7 +157,7 @@
     </select>
 
     <update id="updateStatusBySnAndMCode" parameterType="map">
-        UPDATE	rd_mm_withdraw_log SET withdraw_status = #{withdrawStatus} WHERE withdraw_sn = #{withdrawSn} AND mm_code = #{mCode}
+        UPDATE	rd_mm_withdraw_log SET withdraw_status = #{withdrawStatus} WHERE withdraw_sn = #{withdrawSn}
     </update>
 
 </mapper>
