@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.walet.RdMmWithdrawLogDao;
 import com.framework.loippi.entity.walet.RdMmWithdrawLog;
 import com.framework.loippi.service.impl.GenericServiceImpl;
@@ -24,8 +23,6 @@ public class RdMmWithdrawLogServiceImpl extends GenericServiceImpl<RdMmWithdrawL
 
 	@Autowired
 	private RdMmWithdrawLogDao rdMmWithdrawLogDao;
-	@Autowired
-	private RdMmBasicInfoDao rdMmBasicInfoDao;
 
 	@Autowired
 	public void setGenericDao() {
@@ -33,7 +30,7 @@ public class RdMmWithdrawLogServiceImpl extends GenericServiceImpl<RdMmWithdrawL
 	}
 
 	@Override
-	public void updateStatusBySnAndMCode(int withdrawStatus, String withdrawSn) {
+	public void updateStatusBySnAndMCode(Integer withdrawStatus, String withdrawSn) {
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("withdrawStatus",withdrawStatus);
 		map.put("withdrawSn",withdrawSn);
