@@ -49,9 +49,22 @@ public class TLNotifyController {
 		System.out.println("************************");
 		System.out.println("提现回调："+rps);
 		System.out.println("************************");
-		Map<String, Object> map = JacksonUtil.convertMap(rps);
-		String status = (String) map.get("status");
-		String returnValue = (String) map.get("returnValue");
+
+		/*
+		{"returnValue":{"buyerBizUserId":"900013805",
+						"amount":1000,
+						"orderNo":"1249537142296711168",
+						"extendInfo":"",
+						"payDatetime":"2020-04-13 11:17:34",
+						"acct":"621485******2516",
+						"bizOrderNo":"W6655302743650996224"},
+			"method":"pay","service":"OrderService","status":"OK"}
+		* */
+		Map map = (Map) JSON.parse(rps);
+		//Map<String, Object> map = JacksonUtil.convertMap(rps);
+		String status = map.get("status").toString();
+		System.out.println(status);
+		String returnValue = map.get("returnValue").toString();
 		Map returnMap = (Map) JSON.parse(returnValue);
 
 		String orderNo = returnMap.get("orderNo").toString();
@@ -59,12 +72,14 @@ public class TLNotifyController {
 		String buyerBizUserId = returnMap.get("buyerBizUserId").toString();
 
 		if(status.equals("error")){
+			System.out.println("失败！");
 			rdMmWithdrawLogService.updateStatusBySnAndMCode(1,bizOrderNo);
 		}
 		if(status.equals("pending")){
 			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,bizOrderNo);
 		}
 		if(status.equals("OK")){
+			System.out.println("成功！");
 			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,bizOrderNo);
 		}
 	}
