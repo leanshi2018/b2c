@@ -1631,8 +1631,7 @@ public class UserAPIController extends BaseController {
     @RequestMapping(value = "/walletDetail.json", method = RequestMethod.POST)
     public String walletDetail(HttpServletRequest request,
                                @RequestParam(value = "currentPage",required = false,defaultValue = "1") Integer currentPage,
-                               @RequestParam(value = "queryNum",required = false,defaultValue = "10") Integer queryNumInt) {
-
+                               @RequestParam(value = "queryNumInt",required = false,defaultValue = "10") Integer queryNumInt) {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
 

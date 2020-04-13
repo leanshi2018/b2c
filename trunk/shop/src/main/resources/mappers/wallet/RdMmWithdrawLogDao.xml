@@ -160,7 +160,7 @@
         UPDATE rd_mm_withdraw_log SET withdraw_status = #{withdrawStatus},withdraw_bank = #{withdrawBank} WHERE withdraw_sn = #{withdrawSn}
     </update>
 
-    <select id="findBySn" resultMap="RdMmWithdrawLogMap">
+    <select id="findBySn" parameterType="string" resultMap="RdMmWithdrawLogMap">
         SELECT	<include refid="base_column" />
         FROM rd_mm_withdraw_log
         WHERE withdraw_sn = #{withdrawSn}

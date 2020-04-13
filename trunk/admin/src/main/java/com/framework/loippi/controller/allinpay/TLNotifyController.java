@@ -73,10 +73,9 @@ public class TLNotifyController {
 		String buyerBizUserId = returnMap.get("buyerBizUserId").toString();
 		String acct = returnMap.get("acct").toString();
 
-		System.out.println(bizOrderNo);
-		RdMmWithdrawLog withdrawLog = rdMmWithdrawLogService.findBySn(bizOrderNo);
-		System.out.println(withdrawLog);
-
+		System.out.println(bizOrderNo.trim());
+		RdMmWithdrawLog bySn = rdMmWithdrawLogService.findBySn(bizOrderNo.trim());
+		System.out.println(bySn);
 
 		if(status.equals("error")){
 			System.out.println("失败！");
