@@ -12,4 +12,6 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  */
 public interface RdMmWithdrawLogDao extends GenericDao<RdMmWithdrawLog, Long> {
 	void updateStatusBySnAndMCode(Map<String, Object> map);
+
+	RdMmWithdrawLog findBySn(String withdrawSn);
 }
