@@ -1658,6 +1658,21 @@ public class OrderAPIController extends BaseController {
         "status":"OK"}
 
         * */
+
+        /*
+        response:{"sysid":"1908201117222883218",
+                   "sign":"tgoTflSieEo5WPKacv0V3+jQHDtVtzub8H92D+5MK2MKNrZZxy5NikM5UqamA7Ic8/q5AQL/poyZSlMCQEY1VoJxrxyo3bn8KjqcfZtgoIVurl+uQs8xJYuRuZQd0HPDFpcuFFhVqJ/8Nww0lpfu2njK8K5c+zpwW8ZEI8JhLnc=",
+                   "signedValue":"{\"orderNo\":\"1249642168751001600\",
+                                   \"payInfo\":\"{\\\"appId\\\":\\\"wx6e94bb18bedf3c4c\\\",
+                                                   \\\"timeStamp\\\":\\\"1586772871\\\",
+                                                   \\\"nonceStr\\\":\\\"52a1b1f1d5054597ad358b843fcee1bb\\\",
+                                                   \\\"package\\\":\\\"prepay_id=wx131814316474011d690423be1628019200\\\",
+                                                   \\\"signType\\\":\\\"RSA\\\",
+                                                   \\\"paySign\\\":\\\"dgi9IHp1kF5AUl4NEiIwZdjzyXxuWfFeehz7hQETKcfjBGv3FjJERs7277GF1qolaU1TxlHsDadcl2AtwqU72xui47gbfjUfPm6uORalOpsetkHRpN6Z6FKlqx492na2HkXicl6s6BPWYf9uJ/xC3/tXKiDepGoUspOha0ViMG8NuSXVfskgWvtak/x48R8SAvqXtvPa49Dn+rj79DuxJ30gum2qsom3p7jxkC2iC9FR4V9euOQwndQFY2OB9cvzAn5cGzVsvEsPnrOG1qIxfme6gLf8a9ze4iUowKRyMDlKTujJirCy/lvbamF6RxbiuOxSd5O5ZuAWvhiJ9S+lBw==\\\"}\",
+                                   \"bizUserId\":\"900013811\",
+                                   \"bizOrderNo\":\"P20200413181414156WOMI28814\"}",
+                   "status":"OK"}
+        * */
         if(!"".equals(s)){
             Map maps = (Map) JSON.parse(s);
             String status = maps.get("status").toString();
