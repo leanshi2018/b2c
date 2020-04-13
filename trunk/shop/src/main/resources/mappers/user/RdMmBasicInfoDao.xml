@@ -48,17 +48,18 @@
 		<result property="contractNo" column="CONTRACT_NO" />
 		<result property="allInPayPhoneStatus" column="ALL_IN_PAY_PHONE_STATUS" />
 		<result property="allInPayPhone" column="ALL_IN_PAY_PHONE" />
+		<result property="LockWalletStatus" column="LOCK_WALLET_STATUS" />
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 MM_ID ,MM_CODE ,MM_NAME ,MM_NICK_NAME ,ID_TYPE ,ID_CODE ,GENDER ,BIRTHDATE ,EMAIL ,NATION_ID ,ADD_PROVINCE_ID ,ADD_CITY_ID ,ADD_COUNTRY_ID ,ADD_TOWN_ID ,ADD_DETIAL ,ADD_POST ,MOBILE ,WECHAT_CODE ,QQ_CODE ,FACEBOOK_CODE ,PHONE ,CREATION_SOURCE ,CREATION_IP ,CREATION_DATE ,CREATION_BY ,CREATION_PERIOD ,UPDATE_SOURCE ,UPDATE_IP ,UPDATE_DATE ,UPDATE_BY ,UPDATE_PERIOD ,MM_AVATAR,SHARE_NUM,PUSH_STATUS,TONG_LIAN_ID,WHETHER_TURE_NAME,
-		 TURE_ID,TURE_NAME, ALL_IN_CONTRACT_STATUS,CONTRACT_NO,ALL_IN_PAY_PHONE_STATUS,ALL_IN_PAY_PHONE
+		 TURE_ID,TURE_NAME, ALL_IN_CONTRACT_STATUS,CONTRACT_NO,ALL_IN_PAY_PHONE_STATUS,ALL_IN_PAY_PHONE,LOCK_WALLET_STATUS
 	</sql>
 
 	<sql id="base_value_column">
 		 #{mmId},#{mmCode},#{mmName},#{mmNickName},#{idType},#{idCode},#{gender},#{birthdate},#{email},#{nationId},#{addProvinceId},#{addCityId},#{addCountryId},#{addTownId},#{addDetial},#{addPost},#{mobile},#{wechatCode},#{qqCode},#{facebookCode},#{phone},#{creationSource},#{creationIp},#{creationDate},#{creationBy},#{creationPeriod},#{updateSource},#{updateIp},#{updateDate},#{updateBy},#{updatePeriod},#{mmAvatar},#{shareNum},#{pushStatus},#{tongLianId},
-		 #{whetherTrueName},#{trueId},#{trueName},#{allInContractStatus},#{contractNo},#{allInPayPhoneStatus},#{allInPayPhone}
+		 #{whetherTrueName},#{trueId},#{trueName},#{allInContractStatus},#{contractNo},#{allInPayPhoneStatus},#{allInPayPhone},#{LockWalletStatus}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -188,6 +189,9 @@
 		</if>
 		<if test="allInPayPhone != null and allInPayPhone != ''">
 			AND ALL_IN_PAY_PHONE = #{allInPayPhone}
+		</if>
+		<if test="LockWalletStatus != null">
+			AND LOCK_WALLET_STATUS = #{LockWalletStatus}
 		</if>
 
 		<if test="info !=null and info != ''">
@@ -332,6 +336,9 @@
 		</if>
 		<if test="allInPayPhone != null ">
 			ALL_IN_PAY_PHONE = #{allInPayPhone},
+		</if>
+		<if test="LockWalletStatus != null ">
+			LOCK_WALLET_STATUS = #{LockWalletStatus},
 		</if>
 	</sql>
 
