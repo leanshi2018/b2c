@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.fastjson.JSON;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.entity.walet.RdMmWithdrawLog;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
 import com.framework.loippi.utils.JacksonUtil;
@@ -40,7 +41,7 @@ public class TLNotifyController {
 	 * @param response
 	 */
 	@RequestMapping(value = "/withdrawBank.jhtml")
-	public void withdrawBank(HttpServletRequest request,HttpServletResponse response) throws IOException {
+	public void withdrawBank(HttpServletRequest request,HttpServletResponse response) throws IOException{
 
 		System.out.println("进来提现回调");
 
@@ -70,17 +71,23 @@ public class TLNotifyController {
 		String orderNo = returnMap.get("orderNo").toString();
 		String bizOrderNo = returnMap.get("bizOrderNo").toString();
 		String buyerBizUserId = returnMap.get("buyerBizUserId").toString();
+		String acct = returnMap.get("acct").toString();
+
+		System.out.println(bizOrderNo);
+		RdMmWithdrawLog withdrawLog = rdMmWithdrawLogService.findBySn(bizOrderNo);
+		System.out.println(withdrawLog);
+
 
 		if(status.equals("error")){
 			System.out.println("失败！");
-			rdMmWithdrawLogService.updateStatusBySnAndMCode(1,bizOrderNo);
+			rdMmWithdrawLogService.updateStatusBySnAndMCode(1,bizOrderNo,acct);
 		}
 		if(status.equals("pending")){
-			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,bizOrderNo);
+			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,bizOrderNo,acct);
 		}
 		if(status.equals("OK")){
 			System.out.println("成功！");
-			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,bizOrderNo);
+			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,bizOrderNo,acct);
 		}
 	}
 

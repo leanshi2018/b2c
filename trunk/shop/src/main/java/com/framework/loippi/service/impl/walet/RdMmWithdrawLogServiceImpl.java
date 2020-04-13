@@ -30,10 +30,16 @@ public class RdMmWithdrawLogServiceImpl extends GenericServiceImpl<RdMmWithdrawL
 	}
 
 	@Override
-	public void updateStatusBySnAndMCode(Integer withdrawStatus, String withdrawSn) {
+	public void updateStatusBySnAndMCode(Integer withdrawStatus, String withdrawSn,String withdrawBank) {
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("withdrawStatus",withdrawStatus);
 		map.put("withdrawSn",withdrawSn);
+		map.put("withdrawBank",withdrawBank);
 		rdMmWithdrawLogDao.updateStatusBySnAndMCode(map);
+	}
+
+	@Override
+	public RdMmWithdrawLog findBySn(String withdrawSn) {
+		return rdMmWithdrawLogDao.findBySn(withdrawSn);
 	}
 }
