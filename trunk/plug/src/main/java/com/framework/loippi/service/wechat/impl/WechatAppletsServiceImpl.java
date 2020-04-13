@@ -38,6 +38,10 @@ public class WechatAppletsServiceImpl implements WechatAppletsService {
 
 	@Override
 	public String notifyCheck(HttpServletRequest request, HttpServletResponse response, String sn) {
+
+		String[] womiSn = sn.split("WOMI");
+		String paySn = womiSn[0];
+
 		//通联支付回调数据
 		String rps = request.getParameter("rps");
 		System.out.println("************************");
@@ -47,7 +51,7 @@ public class WechatAppletsServiceImpl implements WechatAppletsService {
 		String status = (String) map.get("status");
 		//支付失败
 		if(status.equals("error")) {
-			paymentService.updatePayfailBack(sn);
+			paymentService.updatePayfailBack(paySn);
 		}
 
 		//支付成功
@@ -55,8 +59,10 @@ public class WechatAppletsServiceImpl implements WechatAppletsService {
 			Map<String, Object> returnValue = (Map<String, Object>)map.get("returnValue");
 			String orderNo = returnValue.get("orderNo").toString();//通商云订单号
 			String bizOrderNo = returnValue.get("bizOrderNo").toString();//商户订单号（支付订单）
+			String[] split = bizOrderNo.split("WOMI");
+			String paySn1 = split[0];
 			Long amount = Long.valueOf(returnValue.get("amount").toString())*100; //订单金额  单位：分
-			paymentService.updatePayBack(bizOrderNo, orderNo, "applet_weichatpay",amount.toString());
+			paymentService.updatePayBack(paySn1, orderNo, "applet_weichatpay",amount.toString());
 		}
 
 		return "success";
