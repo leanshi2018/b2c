@@ -2,6 +2,7 @@ package com.framework.loippi.controller.allinpay;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,7 +40,10 @@ public class TLNotifyController {
 	 * @param response
 	 */
 	@RequestMapping(value = "/withdrawBank.jhtml")
-	public void withdrawBank(HttpServletRequest request,HttpServletResponse response) {
+	public void withdrawBank(HttpServletRequest request,HttpServletResponse response) throws IOException {
+
+		System.out.println("进来提现回调");
+
 		//request中的param
 		String rps = request.getParameter("rps");
 		System.out.println("************************");
@@ -71,7 +75,8 @@ public class TLNotifyController {
 	 * @param response
 	 */
 	@RequestMapping(value ="/refundBank.jhtml")
-	public void refundBank(HttpServletRequest request,HttpServletResponse response) {
+	public void refundBank(HttpServletRequest request,HttpServletResponse response) throws IOException{
+		System.out.println("进来退款回调");
 		//request中的param
 		String rps = request.getParameter("rps");
 		System.out.println("************************");
