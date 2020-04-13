@@ -19,7 +19,8 @@
                 /admin/common/index.jhtml = anon
                 /admin/allinpayContract/signBack.jhtml = anon
                 /admin/allinpayContract/cutBack.jhtml = anon
-                /admin/paynotify/** = anon
+                /admin/paynotify/withdrawBank.jhtml = anon
+                /admin/paynotify/refundBank.jhtml = anon
                 /admin/api/** = anon
                 /resources/** = anon
                 /api/** = anon

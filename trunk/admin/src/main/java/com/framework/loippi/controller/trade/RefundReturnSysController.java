@@ -481,7 +481,7 @@ public class RefundReturnSysController extends GenericController {
                         //weiRefund.setTotalfee(1);
                         //http://52.184.34.141/admin/ = http://glht.rdnmall.cn/admin/
                         //String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/refundBank/" + id.toString() + "/" + shopOrder.getBuyerId() + ".jhtml";//后台通知地址 TODO
-                        String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+"/admin/paynotify/refundBank/" + id.toString() + "/" + shopOrder.getBuyerId() + ".jhtml";//后台通知地址 TODO
+                        String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+"/admin/paynotify/refundBank.jhtml";//后台通知地址 TODO
                         backurl = toweichatrefundTL(weiRefund, id, adminMessage, "applet_weichatpay", model,backUrl, request);
                         //toweichatrefund();
                     } else if (order.getPaymentCode().equals("weixinH5PaymentPlugin")) {//微信公共平台支付

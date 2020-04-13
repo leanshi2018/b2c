@@ -33,11 +33,10 @@ public class RdMmWithdrawLogServiceImpl extends GenericServiceImpl<RdMmWithdrawL
 	}
 
 	@Override
-	public void updateStatusBySnAndMCode(int withdrawStatus, String withdrawSn, String mCode) {
+	public void updateStatusBySnAndMCode(int withdrawStatus, String withdrawSn) {
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("withdrawStatus",withdrawStatus);
 		map.put("withdrawSn",withdrawSn);
-		map.put("mCode",mCode);
 		rdMmWithdrawLogDao.updateStatusBySnAndMCode(map);
 	}
 }
