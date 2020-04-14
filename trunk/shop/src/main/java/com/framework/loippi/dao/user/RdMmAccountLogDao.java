@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.user;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,4 +21,8 @@ public interface RdMmAccountLogDao  extends GenericDao<RdMmAccountLog, Long> {
 	RdMmAccountLog findByTransNumber(Integer transNumber);
 
 	int updateCancellWD(Map<String, Object> map);
+
+    RdMmAccountLog findCutByOrderId(HashMap<String, Object> map);
+
+    void updateByCutOrderId(HashMap<String, Object> id);
 }

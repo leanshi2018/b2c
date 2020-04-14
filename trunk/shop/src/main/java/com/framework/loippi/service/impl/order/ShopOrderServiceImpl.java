@@ -1,6 +1,7 @@
 package com.framework.loippi.service.impl.order;
 
 
+import com.framework.loippi.dao.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -48,10 +49,6 @@ import com.framework.loippi.dao.product.ShopGoodsSpecDao;
 import com.framework.loippi.dao.trade.ShopRefundReturnDao;
 import com.framework.loippi.dao.trade.ShopReturnLogDao;
 import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
-import com.framework.loippi.dao.user.RdGoodsAdjustmentDao;
-import com.framework.loippi.dao.user.RdMmRelationDao;
-import com.framework.loippi.dao.user.RdSysPeriodDao;
-import com.framework.loippi.dao.user.ShopMemberPaymentTallyDao;
 import com.framework.loippi.dao.ware.RdInventoryWarningDao;
 import com.framework.loippi.dao.ware.RdWareAdjustDao;
 import com.framework.loippi.entity.AliPayRefund;
@@ -168,6 +165,13 @@ import com.google.common.collect.Maps;
 @Slf4j
 @Transactional
 public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> implements ShopOrderService {
+
+    @Autowired
+    private RdMmAccountLogDao rdMmAccountLogDao;
+    @Autowired
+    private RdMmBasicInfoDao rdMmBasicInfoDao;
+    @Autowired
+    private RdMmAccountInfoDao rdMmAccountInfoDao;
     @Autowired
     private RdSysPeriodService rdSysPeriodService;
     @Resource
@@ -615,6 +619,14 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             }
 
         }
+        //查询当前订单是否判定分账扣减分账收款人积分 如果扣减，找到归还用户 TODO
+        if(order.getCutStatus()==5){
+            refundSpoPoint(order);
+            order.setCutStatus(6);
+            order.setCutAcc(BigDecimal.ZERO);
+            order.setCutAmount(BigDecimal.ZERO);
+            order.setCutGetId("");
+        }
         // 修改订单状态
         // 前端取消订单不需要依据订单锁定状态
         // 后台取消订单需要依据订单锁定状态
@@ -738,6 +750,65 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
             }
         }
+    }
+
+    private void refundSpoPoint(ShopOrderVo order) {
+        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode", order.getCutGetId());
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("transTypeCode","WD");
+        map.put("accType","SBB");
+        map.put("trSourceType","BNK");
+        map.put("trOrderOid",order.getId());
+        map.put("accStatus",0);
+        RdMmAccountLog rdMmAccountLog1 =rdMmAccountLogDao.findCutByOrderId(map);
+        if(rdMmAccountLog1!=null){
+            rdMmAccountLog1.setAccStatus(1);
+            rdMmAccountLogDao.updateByCutOrderId(map);
+        }
+        RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+        rdMmAccountLog.setMmCode(accountInfo.getMmCode());
+        List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",accountInfo.getMmCode()));
+        rdMmAccountLog.setMmNickName(basicInfos.get(0).getMmNickName());
+        rdMmAccountLog.setTransTypeCode("CF");
+        rdMmAccountLog.setAccType("SBB");
+        rdMmAccountLog.setTrSourceType("BNK");
+        rdMmAccountLog.setTrOrderOid(order.getId());
+        rdMmAccountLog.setBlanceBefore(accountInfo.getBonusBlance());
+        rdMmAccountLog.setAmount(order.getCutAcc());
+        rdMmAccountLog.setBlanceAfter(accountInfo.getBonusBlance().add(order.getCutAcc()));
+        rdMmAccountLog.setTransDate(new Date());
+        String period = rdSysPeriodDao.getSysPeriodService(new Date());
+        if(period!=null){
+            rdMmAccountLog.setTransPeriod(period);
+        }
+        rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
+        rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+        rdMmAccountLog.setStatus(3);
+        rdMmAccountLogDao.insert(rdMmAccountLog);
+        accountInfo.setBonusBlance(accountInfo.getBonusBlance().add(order.getCutAcc()));
+        rdMmAccountInfoDao.update(accountInfo);
+        //4.生成通知消息
+        ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+        shopCommonMessage.setSendUid(accountInfo.getMmCode());
+        shopCommonMessage.setType(1);
+        shopCommonMessage.setOnLine(1);
+        shopCommonMessage.setCreateTime(new Date());
+        shopCommonMessage.setBizType(2);
+        shopCommonMessage.setIsTop(1);
+        shopCommonMessage.setCreateTime(new Date());
+        shopCommonMessage.setTitle("自动提现失败积分退还通知");
+        shopCommonMessage.setContent("提现订单创建失败，退还"+order.getCutAcc()+"奖励积分到积分账户");
+        Long msgId = twiterIdService.getTwiterId();
+        shopCommonMessage.setId(msgId);
+        shopCommonMessageDao.insert(shopCommonMessage);
+        ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+        shopMemberMessage.setBizType(2);
+        shopMemberMessage.setCreateTime(new Date());
+        shopMemberMessage.setId(twiterIdService.getTwiterId());
+        shopMemberMessage.setIsRead(0);
+        shopMemberMessage.setMsgId(msgId);
+        shopMemberMessage.setUid(Long.parseLong(accountInfo.getMmCode()));
+        shopMemberMessageDao.insert(shopMemberMessage);
     }
 
     @Override
@@ -4585,6 +4656,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
     @Override
     public void addRefundPoint(ShopRefundReturn refundReturn) {
+        //判定该订单是否有预扣积分
+        ShopOrderVo shopOrder = findWithAddrAndGoods(refundReturn.getOrderId());
+        if(shopOrder.getCutStatus()==5){
+            refundSpoPoint(shopOrder);
+            shopOrder.setCutStatus(6);
+            shopOrder.setCutAcc(BigDecimal.ZERO);
+            shopOrder.setCutAmount(BigDecimal.ZERO);
+            shopOrder.setCutGetId("");
+            orderDao.update(shopOrder);
+        }
         if (refundReturn.getRewardPointAmount().compareTo(BigDecimal.ZERO) == 1) {
             ShopOrder order = orderDao.find(refundReturn.getOrderId());
             RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", refundReturn.getBuyerId());

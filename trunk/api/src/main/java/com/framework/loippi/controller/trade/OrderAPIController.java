@@ -1,14 +1,12 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.consts.*;
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -25,11 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.consts.NotifyConsts;
-import com.framework.loippi.consts.OrderState;
-import com.framework.loippi.consts.PaymentTallyState;
-import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.controller.StateResult;
@@ -48,11 +41,6 @@ import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAddInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -86,11 +74,6 @@ import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.union.UnionpayService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAddInfoService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.support.Page;
@@ -167,6 +150,11 @@ public class OrderAPIController extends BaseController {
     private CouponDetailService couponDetailService;
     @Resource
     private RdBizPayService rdBizPayService;
+    @Resource
+    private RdSysPeriodService rdSysPeriodService;
+    @Resource
+    private RdMmAccountLogService rdMmAccountLogService;
+
 
     /**
      * 提交订单
@@ -1588,9 +1576,14 @@ public class OrderAPIController extends BaseController {
         ShopOrder shopOrder = orderList.get(0);
         //收款列表
         Map<String, Object> reciever = new LinkedHashMap<>();
-        reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);
+        //查询一个满足条件的收款人，扣除积分，返回用户编号以及分账金额
+        HashMap<String,Object> map=getCutNumber(shopOrder);
+        RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
+        BigDecimal acc = (BigDecimal) map.get("acc");
+        //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
+        reciever.put("bizUserId", accountInfo.getMmCode());//TODO
         //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
-        reciever.put("amount",1l);
+        reciever.put("amount",acc.longValue()*100);
         List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
         /*JSONObject reciever = new JSONObject();
         reciever.accumulate("bizUserId", TongLianUtils.BIZ_USER_ID);
@@ -1711,6 +1704,84 @@ public class OrderAPIController extends BaseController {
             return ApiUtils.error("支付失败");
         }
 
+    }
+
+
+
+    /**
+     * 查找合适的分账收款人 并扣减积分
+     * @param shopOrder
+     * @return
+     */
+    private HashMap<String, Object> getCutNumber(ShopOrder shopOrder) {
+        HashMap<String, Object> map = new HashMap<>();
+        //1.判断支付金额是否满足
+        BigDecimal orderAmount = shopOrder.getOrderAmount();
+        if(orderAmount.compareTo(new BigDecimal(Integer.toString(AllInPayBillCutConstant.CUT_MINIMUM)))==-1){
+            //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
+            RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
+            map.put("accountInfo",accountInfo);
+            map.put("acc",BigDecimal.ZERO);
+            rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
+            return map;
+        }
+        BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(0,BigDecimal.ROUND_UP);//当前订单需要分出去多少钱，单位为圆
+        BigDecimal acc = amount;//奖励积分需要的积分数量 积分取整
+        RdMmAccountInfo rdMmAccountInfo = cutGetPeople(shopOrder, acc);
+        if(rdMmAccountInfo!=null){
+            map.put("accountInfo",rdMmAccountInfo);
+            map.put("acc",acc);
+            rdMmAccountInfoService.reduceAcc(shopOrder,rdMmAccountInfo,acc);
+            return map;
+        }else {
+            List<RdMmAccountInfo> accountInfos=rdMmAccountInfoService.findLastWithdrawalOneHundred();
+            if(accountInfos!=null&&accountInfos.size()>0){
+                for (RdMmAccountInfo accountInfo : accountInfos) {
+                    if(accountInfo.getBonusBlance().compareTo(acc)!=-1){
+                        map.put("accountInfo",accountInfo);
+                        map.put("acc",acc);
+                        rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,acc);
+                        return map;
+                    }
+                }
+            }
+        }
+        //都不满足，走公司小B分账
+        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
+        map.put("accountInfo",accountInfo);
+        map.put("acc",BigDecimal.ZERO);
+        rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
+        return map;
+    }
+
+    /**
+     * 根据扣减积分金额，找到一个合适的获取分账信息的会员
+     * @param shopOrder
+     * @param acc
+     */
+    public RdMmAccountInfo cutGetPeople(ShopOrder shopOrder,BigDecimal acc){
+        Boolean flag=true;
+        String code=Long.toString(shopOrder.getBuyerId());
+        RdMmAccountInfo info = new RdMmAccountInfo();
+        while (flag){//根据订单购买人查询其推荐人信息，看推荐人是否满足分账条件，如果不满足继续往上查找，直至找到或者查询到公司节点为止 找到返回该会员积分账户信息 如果未找到，返回null
+            System.out.println(code);
+            RdMmRelation rdMmRelation=rdMmRelationService.find("mmCode",code);
+            if(rdMmRelation==null||rdMmRelation.getSponsorCode()==null){//如果关系表为null或者该会员推荐人信息异常 结束该方法
+                flag=false;
+            }else if(rdMmRelation.getSponsorCode().equals("101000158")){//如果推荐人为公司节点
+                flag=false;
+            } else {
+                //获取推荐人的积分账户信息记录
+                RdMmAccountInfo rdMmAccountInfo=rdMmAccountInfoService.find("mmCode",rdMmRelation.getSponsorCode());
+                if(rdMmAccountInfo==null||rdMmAccountInfo.getBonusStatus()==null||rdMmAccountInfo.getBonusStatus()!=0||rdMmAccountInfo.getBonusBlance().compareTo(acc)==-1||rdMmAccountInfo.getAutomaticWithdrawal()==0){
+                    code=rdMmRelation.getSponsorCode();
+                }else {
+                    info=rdMmAccountInfo;
+                    flag=false;
+                }
+            }
+        }
+        return info;//返回后判断info中是否存在会员编号即可判断是否通过推荐人方式查询找到分账对象
     }
 
     /**

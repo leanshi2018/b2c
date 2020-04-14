@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -117,10 +118,22 @@ public class AllInPayContractController {
                 shopOrder.setCutStatus(2);
                 shopOrder.setCutTime(new Date());
                 shopOrderDao.update(shopOrder);
+                //2.修改积分日志表状态
                 String mmCode = shopOrder.getCutGetId();
-                RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(mmCode);
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("transTypeCode","WD");
+                map.put("accType","SBB");
+                map.put("trSourceType","BNK");
+                map.put("trOrderOid",shopOrder.getId());
+                map.put("accStatus",0);
+                RdMmAccountLog rdMmAccountLog =rdMmAccountLogDao.findCutByOrderId(map);
+                if(rdMmAccountLog!=null){
+                    rdMmAccountLog.setAccStatus(2);
+                    rdMmAccountLogDao.updateByCutOrderId(map);
+                }
+                /*RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(mmCode);*/
                 //2.生成积分变更记录
-                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                /*RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
                 rdMmAccountLog.setMmCode(mmCode);
                 List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",mmCode));
                 rdMmAccountLog.setMmNickName(basicInfos.get(0).getMmNickName());
@@ -168,9 +181,68 @@ public class AllInPayContractController {
                 shopMemberMessage.setIsRead(0);
                 shopMemberMessage.setMsgId(msgId);
                 shopMemberMessage.setUid(Long.parseLong(accountInfo.getMmCode()));
-                shopMemberMessageDao.insert(shopMemberMessage);
+                shopMemberMessageDao.insert(shopMemberMessage);*/
             }
             if(payStatus.equals("fail")){
+                //分账失败 归还预扣积分
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("transTypeCode","WD");
+                map.put("accType","SBB");
+                map.put("trSourceType","BNK");
+                map.put("trOrderOid",shopOrder.getId());
+                map.put("accStatus",0);
+                RdMmAccountLog rdMmAccountLog1 =rdMmAccountLogDao.findCutByOrderId(map);
+                if(rdMmAccountLog1!=null){
+                    rdMmAccountLog1.setAccStatus(1);
+                    rdMmAccountLogDao.updateByCutOrderId(map);
+                }
+                String mmCode = shopOrder.getCutGetId();
+                RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(mmCode);
+                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                rdMmAccountLog.setMmCode(accountInfo.getMmCode());
+                List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",accountInfo.getMmCode()));
+                rdMmAccountLog.setMmNickName(basicInfos.get(0).getMmNickName());
+                rdMmAccountLog.setTransTypeCode("CF");
+                rdMmAccountLog.setAccType("SBB");
+                rdMmAccountLog.setTrSourceType("BNK");
+                rdMmAccountLog.setTrOrderOid(shopOrder.getId());
+                rdMmAccountLog.setBlanceBefore(accountInfo.getBonusBlance());
+                rdMmAccountLog.setAmount(shopOrder.getCutAcc());
+                rdMmAccountLog.setBlanceAfter(accountInfo.getBonusBlance().add(shopOrder.getCutAcc()));
+                rdMmAccountLog.setTransDate(new Date());
+                String period = rdSysPeriodDao.getSysPeriodService(new Date());
+                if(period!=null){
+                    rdMmAccountLog.setTransPeriod(period);
+                }
+                rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
+                rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+                rdMmAccountLog.setStatus(3);
+                rdMmAccountLogDao.insert(rdMmAccountLog);
+                accountInfo.setBonusBlance(accountInfo.getBonusBlance().add(shopOrder.getCutAcc()));
+                rdMmAccountInfoDao.update(accountInfo);
+                //4.生成通知消息
+                ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                shopCommonMessage.setSendUid(accountInfo.getMmCode());
+                shopCommonMessage.setType(1);
+                shopCommonMessage.setOnLine(1);
+                shopCommonMessage.setCreateTime(new Date());
+                shopCommonMessage.setBizType(2);
+                shopCommonMessage.setIsTop(1);
+                shopCommonMessage.setCreateTime(new Date());
+                shopCommonMessage.setTitle("自动提现失败积分退还通知");
+                shopCommonMessage.setContent("订单自动提现失败，退还"+shopOrder.getCutAcc()+"奖励积分到积分账户");
+                Long msgId = twiterIdService.getTwiterId();
+                shopCommonMessage.setId(msgId);
+                shopCommonMessageDao.insert(shopCommonMessage);
+                ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                shopMemberMessage.setBizType(2);
+                shopMemberMessage.setCreateTime(new Date());
+                shopMemberMessage.setId(twiterIdService.getTwiterId());
+                shopMemberMessage.setIsRead(0);
+                shopMemberMessage.setMsgId(msgId);
+                shopMemberMessage.setUid(Long.parseLong(accountInfo.getMmCode()));
+                shopMemberMessageDao.insert(shopMemberMessage);
+                //分账失败 修改订单
                 shopOrder.setCutStatus(3);
                 shopOrder.setCutAmount(BigDecimal.ZERO);
                 shopOrder.setCutAcc(BigDecimal.ZERO);

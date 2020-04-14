@@ -54,7 +54,8 @@ TF:他人转入
 OT:订单退款 
 OP:订单支付 
 TT:转给他人 
-PC:购买商品并评论 
+PC:购买商品并评论
+CF:自动自提失败退还积分
 EG:换购商品 */
 	@Column(name = "TRANS_TYPE_CODE" )
 	private String transTypeCode;
