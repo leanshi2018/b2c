@@ -3,10 +3,7 @@ package com.framework.loippi.job;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -106,8 +103,11 @@ public class ShopOrderJob {
      */
     @Scheduled(cron = "0 */30 * * * ?")  //每30分钟执行一次
     public void cancelTimeOutPaymentOrder() {
-        log.info("#################################################################");
+        /*log.info("#################################################################");
         log.info("#####################  开始执行-订单24小时取消 ###################");
+        log.info("#################################################################");*/
+        log.info("#################################################################");
+        log.info("#####################  开始执行-订单1小时取消 ###################");
         log.info("#################################################################");
         int pageNo = 1;
         int pageSize = 500;
@@ -117,7 +117,9 @@ public class ShopOrderJob {
         do {
             pager.setPageSize(pageSize);
             pager.setPageNumber(pageNo);
-            pager.setParameter(Paramap.create().put("orderState", 10).put("lockState", "0").put("servenDay", DateUtils.addDays(new Date(), -1)));
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) - 1);
+            pager.setParameter(Paramap.create().put("orderState", 10).put("lockState", "0").put("servenDay", calendar.getTime()));
             List<ShopOrder> orderList = orderService.findByPage(pager).getContent();
             if (orderList != null && orderList.size() > 0) {
                 orderList.forEach(order -> {
@@ -300,7 +302,7 @@ public class ShopOrderJob {
         System.out.println("###############################执行定时分账任务#####################################");
         //查询当前系统时间向前的第二天的已完成支付且未取消的订单 （条件：1.已支付 2.未取消 3.已经发货 4.未进行过分账操作 5.支付时间区间在指定日期内）
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE,-15);
+        calendar.add(Calendar.DATE,-10);
         Date time = calendar.getTime();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = format.format(time);
@@ -313,26 +315,58 @@ public class ShopOrderJob {
         map.put("endTime",endTime);
         map.put("paymentState",1);
         map.put("orderState",0);
-        map.put("cutStatus",0);
+        map.put("cutStatus",5);//查询符合时间范围内预扣积分的订单
         List<ShopOrder> list=shopOrderDao.findNoCutOrder(map);
         List<ShopOrder> list1=shopOrderDao.findNoCutOrder1(map);
-        //对筛选出的订单做进一步的判断，判断是否满足分账条件 1.判断订单现金支付部分是否满足分账标准（暂时定义为100） 2.查询一个积分账户满足分账分佣条件的用户，进行分账
         if(list!=null&&list.size()>0){
+            for (ShopOrder shopOrder : list) {
+                //1.根据订单内预扣积分信息，进行分账
+                RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(shopOrder.getCutGetId());
+                if(accountInfo!=null){
+                    try {
+                        cutDispose(shopOrder,accountInfo,Optional.ofNullable(shopOrder.getCutAmount()).orElse(BigDecimal.ZERO),Optional.ofNullable(shopOrder.getCutAcc()).orElse(BigDecimal.ZERO));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        if(list1!=null&&list1.size()>0){
+            for (ShopOrder shopOrder : list1) {
+                //1.根据订单内预扣积分信息，进行分账
+                RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(shopOrder.getCutGetId());
+                if(accountInfo!=null){
+                    try {
+                        cutDispose(shopOrder,accountInfo,Optional.ofNullable(shopOrder.getCutAmount()).orElse(BigDecimal.ZERO),Optional.ofNullable(shopOrder.getCutAcc()).orElse(BigDecimal.ZERO));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        //对筛选出的订单做进一步的判断，判断是否满足分账条件 1.判断订单现金支付部分是否满足分账标准（暂时定义为100） 2.查询一个积分账户满足分账分佣条件的用户，进行分账
+/*        if(list!=null&&list.size()>0){
             for (ShopOrder shopOrder : list) {
                 //逐个订单进行处理 判断是否满足分账的条件
                 //1.判断支付金额是否满足
                 BigDecimal orderAmount = shopOrder.getOrderAmount();
                 if(orderAmount.compareTo(new BigDecimal(Integer.toString(AllInPayBillCutConstant.CUT_MINIMUM)))==-1){
-                    shopOrder.setCutStatus(1);
-                    shopOrder.setCutFailInfo("金额不满足分账条件");
-                    shopOrderDao.update(shopOrder);
+                    //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
+                    RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(AllInPayBillCutConstant.COMPANY_CUT_B);
+                    try {
+                        cutDispose(shopOrder,accountInfo,BigDecimal.ZERO,BigDecimal.ZERO);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     continue;
                 }
                 Boolean flag=false;
                 //2.为当前订单找到一个合适的分账对象
                 //2.1 获取当前订单需要分账出去的金额
-                BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(2,BigDecimal.ROUND_DOWN);//当前订单需要分出去多少钱，单位为圆
-                BigDecimal acc = amount.divide(new BigDecimal("0.95"),0,BigDecimal.ROUND_UP);//奖励积分需要的积分数量 积分取整
+                BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(0,BigDecimal.ROUND_UP);//当前订单需要分出去多少钱，单位为圆
+                //BigDecimal acc = amount.divide(new BigDecimal("0.95"),0,BigDecimal.ROUND_UP);//奖励积分需要的积分数量 积分取整
+                BigDecimal acc = amount;//奖励积分需要的积分数量 积分取整
                 RdMmAccountInfo rdMmAccountInfo = cutGetPeople(shopOrder, acc);
                 if(rdMmAccountInfo==null||rdMmAccountInfo.getMmCode()==null){//说明通过推荐人思路未找到合适的分账对象
                     //从积分账户提现记录中筛选出合适条件的进行匹配
@@ -362,9 +396,13 @@ public class ShopOrderJob {
                 }
                 //如果根据推荐人已经提现记录都未找到合适的推荐人，则flag的值依旧为定义时的false，则不进行分账，只修改订单中关联分账信息的记录
                 if(flag==false){
-                    shopOrder.setCutStatus(1);
-                    shopOrder.setCutFailInfo("未查询到满足条件的用户进行分账");
-                    shopOrderDao.update(shopOrder);
+                    //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
+                    RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(AllInPayBillCutConstant.COMPANY_CUT_B);
+                    try {
+                        cutDispose(shopOrder,accountInfo,BigDecimal.ZERO,BigDecimal.ZERO);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     continue;
                 }
             }
@@ -420,7 +458,7 @@ public class ShopOrderJob {
                     continue;
                 }
             }
-        }
+        }*/
     }
 
     /**
@@ -446,6 +484,7 @@ public class ShopOrderJob {
                     code=rdMmRelation.getSponsorCode();
                 }else {
                     info=rdMmAccountInfo;
+                    flag=false;
                 }
             }
         }
@@ -459,6 +498,7 @@ public class ShopOrderJob {
      * @param shopOrder
      * @param accountInfo
      */
+
     public void cutDispose(ShopOrder shopOrder,RdMmAccountInfo accountInfo,BigDecimal amount,BigDecimal acc) throws Exception{
         //1.请求通商云服务器，进行分账
         final YunRequest request = new YunRequest("OrderService", "signalAgentPay");
@@ -468,19 +508,76 @@ public class ShopOrderJob {
             HashMap<String, Object> collect1 = new HashMap<>();
             collect1.put("bizOrderNo",shopOrder.getPaySn());
             collect1.put("amount", shopOrder.getOrderAmount().multiply(new BigDecimal("100")));
-            collect1.put("fee", (shopOrder.getOrderAmount().subtract(amount)).multiply(new BigDecimal("100")));
+            collect1.put("fee", ((shopOrder.getOrderAmount().subtract(amount))).multiply(new BigDecimal("100")));
             collectPayList.add(new JSONObject(collect1));
             request.put("collectPayList", collectPayList);
             request.put("bizUserId", accountInfo.getMmCode());
             request.put("accountSetNo","100001");//TODO
             request.put("backUrl", AllInPayConstant.CUT_BILL_BACKURL);//TODO
             request.put("amount",shopOrder.getOrderAmount().multiply(new BigDecimal("100")));
-            request.put("fee",(shopOrder.getOrderAmount().subtract(amount)).multiply(new BigDecimal("100")));
+            request.put("fee",((shopOrder.getOrderAmount().subtract(amount))).multiply(new BigDecimal("100")));
             request.put("tradeCode","4001");
             String res = YunClient.request(request);
             System.out.println("res: " + res);
             JSONObject resp = JSON.parseObject(res);
             if(resp.getString("status").equals("error")){//如果分账失败 则记录失败原因
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("transTypeCode","WD");
+                map.put("accType","SBB");
+                map.put("trSourceType","BNK");
+                map.put("trOrderOid",shopOrder.getId());
+                map.put("accStatus",0);
+                RdMmAccountLog rdMmAccountLog1 =rdMmAccountLogDao.findCutByOrderId(map);
+                if(rdMmAccountLog1!=null){
+                    rdMmAccountLog1.setAccStatus(1);
+                    rdMmAccountLogDao.updateByCutOrderId(map);
+                }
+                String mmCode = shopOrder.getCutGetId();
+                //RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(mmCode);
+                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                rdMmAccountLog.setMmCode(accountInfo.getMmCode());
+                List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",accountInfo.getMmCode()));
+                rdMmAccountLog.setMmNickName(basicInfos.get(0).getMmNickName());
+                rdMmAccountLog.setTransTypeCode("CF");
+                rdMmAccountLog.setAccType("SBB");
+                rdMmAccountLog.setTrSourceType("BNK");
+                rdMmAccountLog.setTrOrderOid(shopOrder.getId());
+                rdMmAccountLog.setBlanceBefore(accountInfo.getBonusBlance());
+                rdMmAccountLog.setAmount(shopOrder.getCutAcc());
+                rdMmAccountLog.setBlanceAfter(accountInfo.getBonusBlance().add(shopOrder.getCutAcc()));
+                rdMmAccountLog.setTransDate(new Date());
+                String period = rdSysPeriodDao.getSysPeriodService(new Date());
+                if(period!=null){
+                    rdMmAccountLog.setTransPeriod(period);
+                }
+                rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
+                rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+                rdMmAccountLog.setStatus(3);
+                rdMmAccountLogDao.insert(rdMmAccountLog);
+                accountInfo.setBonusBlance(accountInfo.getBonusBlance().add(shopOrder.getCutAcc()));
+                rdMmAccountInfoDao.update(accountInfo);
+                //4.生成通知消息
+                ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                shopCommonMessage.setSendUid(accountInfo.getMmCode());
+                shopCommonMessage.setType(1);
+                shopCommonMessage.setOnLine(1);
+                shopCommonMessage.setCreateTime(new Date());
+                shopCommonMessage.setBizType(2);
+                shopCommonMessage.setIsTop(1);
+                shopCommonMessage.setCreateTime(new Date());
+                shopCommonMessage.setTitle("自动提现失败积分退还通知");
+                shopCommonMessage.setContent("订单自动提现失败，退还"+shopOrder.getCutAcc()+"奖励积分到积分账户");
+                Long msgId = twiterIdService.getTwiterId();
+                shopCommonMessage.setId(msgId);
+                shopCommonMessageDao.insert(shopCommonMessage);
+                ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                shopMemberMessage.setBizType(2);
+                shopMemberMessage.setCreateTime(new Date());
+                shopMemberMessage.setId(twiterIdService.getTwiterId());
+                shopMemberMessage.setIsRead(0);
+                shopMemberMessage.setMsgId(msgId);
+                shopMemberMessage.setUid(Long.parseLong(accountInfo.getMmCode()));
+                shopMemberMessageDao.insert(shopMemberMessage);
                 shopOrder.setCutStatus(3);
                 shopOrder.setCutAmount(BigDecimal.ZERO);
                 shopOrder.setCutAcc(BigDecimal.ZERO);
@@ -499,32 +596,61 @@ public class ShopOrderJob {
                     shopOrder.setCutTime(new Date());
                     shopOrderDao.update(shopOrder);
                     //2.生成积分变更记录
+                    String mmCode = shopOrder.getCutGetId();
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("transTypeCode","WD");
+                    map.put("accType","SBB");
+                    map.put("trSourceType","BNK");
+                    map.put("trOrderOid",shopOrder.getId());
+                    map.put("accStatus",0);
+                    RdMmAccountLog rdMmAccountLog =rdMmAccountLogDao.findCutByOrderId(map);
+                    if(rdMmAccountLog!=null){
+                        rdMmAccountLog.setAccStatus(2);
+                        rdMmAccountLogDao.updateByCutOrderId(map);
+                    }
+                }
+                if(payStatus.equals("pending")){//修改订单分账状态分账进行中，等待分账回调信息
+                    shopOrder.setCutStatus(4);
+                    shopOrder.setCutAcc(acc);
+                    shopOrder.setCutAmount(amount);
+                    shopOrderDao.update(shopOrder);
+                }
+                if(payStatus.equals("fail")){//修改订单分账状态 分账失败，记录失败原因
+                    //分账失败 归还预扣积分
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("transTypeCode","WD");
+                    map.put("accType","SBB");
+                    map.put("trSourceType","BNK");
+                    map.put("trOrderOid",shopOrder.getId());
+                    map.put("accStatus",0);
+                    RdMmAccountLog rdMmAccountLog1 =rdMmAccountLogDao.findCutByOrderId(map);
+                    if(rdMmAccountLog1!=null){
+                        rdMmAccountLog1.setAccStatus(1);
+                        rdMmAccountLogDao.updateByCutOrderId(map);
+                    }
+                    String mmCode = shopOrder.getCutGetId();
+                    //RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(mmCode);
                     RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
                     rdMmAccountLog.setMmCode(accountInfo.getMmCode());
                     List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",accountInfo.getMmCode()));
                     rdMmAccountLog.setMmNickName(basicInfos.get(0).getMmNickName());
-                    rdMmAccountLog.setTransTypeCode("WD");
+                    rdMmAccountLog.setTransTypeCode("CF");
                     rdMmAccountLog.setAccType("SBB");
                     rdMmAccountLog.setTrSourceType("BNK");
                     rdMmAccountLog.setTrOrderOid(shopOrder.getId());
                     rdMmAccountLog.setBlanceBefore(accountInfo.getBonusBlance());
-                    rdMmAccountLog.setAmount(acc);
-                    rdMmAccountLog.setBlanceAfter(accountInfo.getBonusBlance().add(acc));
+                    rdMmAccountLog.setAmount(shopOrder.getCutAcc());
+                    rdMmAccountLog.setBlanceAfter(accountInfo.getBonusBlance().add(shopOrder.getCutAcc()));
                     rdMmAccountLog.setTransDate(new Date());
                     String period = rdSysPeriodDao.getSysPeriodService(new Date());
                     if(period!=null){
                         rdMmAccountLog.setTransPeriod(period);
                     }
-                    rdMmAccountLog.setPresentationFeeNow(acc.subtract(amount));
-                    rdMmAccountLog.setActualWithdrawals(amount);
-                    rdMmAccountLog.setTransDesc("平台订单支付自动分账提现");
-                    rdMmAccountLog.setAutohrizeDesc("平台订单支付自动分账提现");
+                    rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
+                    rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
                     rdMmAccountLog.setStatus(3);
-                    rdMmAccountLog.setAccStatus(2);
                     rdMmAccountLogDao.insert(rdMmAccountLog);
-                    //3.扣减用户积分
-                    accountInfo.setBonusBlance(accountInfo.getBonusBlance().subtract(acc));
-                    accountInfo.setLastWithdrawalTime(new Date());
+                    accountInfo.setBonusBlance(accountInfo.getBonusBlance().add(shopOrder.getCutAcc()));
                     rdMmAccountInfoDao.update(accountInfo);
                     //4.生成通知消息
                     ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
@@ -535,8 +661,8 @@ public class ShopOrderJob {
                     shopCommonMessage.setBizType(2);
                     shopCommonMessage.setIsTop(1);
                     shopCommonMessage.setCreateTime(new Date());
-                    shopCommonMessage.setTitle("自动提现积分扣减通知");
-                    shopCommonMessage.setContent("已帮您自动提现"+acc+"奖励积分到钱包，请在奖励积分明细内查询");
+                    shopCommonMessage.setTitle("自动提现失败积分退还通知");
+                    shopCommonMessage.setContent("订单自动提现失败，退还"+shopOrder.getCutAcc()+"奖励积分到积分账户");
                     Long msgId = twiterIdService.getTwiterId();
                     shopCommonMessage.setId(msgId);
                     shopCommonMessageDao.insert(shopCommonMessage);
@@ -548,14 +674,7 @@ public class ShopOrderJob {
                     shopMemberMessage.setMsgId(msgId);
                     shopMemberMessage.setUid(Long.parseLong(accountInfo.getMmCode()));
                     shopMemberMessageDao.insert(shopMemberMessage);
-                }
-                if(payStatus.equals("pending")){//修改订单分账状态分账进行中，等待分账回调信息
-                    shopOrder.setCutStatus(4);
-                    shopOrder.setCutAcc(acc);
-                    shopOrder.setCutAmount(amount);
-                    shopOrderDao.update(shopOrder);
-                }
-                if(payStatus.equals("fail")){//修改订单分账状态 分账失败，记录失败原因
+                    //分账失败 修改订单
                     shopOrder.setCutStatus(3);
                     shopOrder.setCutAmount(BigDecimal.ZERO);
                     shopOrder.setCutAcc(BigDecimal.ZERO);

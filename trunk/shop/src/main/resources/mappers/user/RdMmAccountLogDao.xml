@@ -357,4 +357,16 @@
         WHERE TRANS_NUMBER = #{transNumber}
     </update>
 
+	<select id="findCutByOrderId" parameterType="java.util.Map" resultMap="RdMmAccountLogResultMap">
+		SELECT	<include refid="base_column" />
+		from RD_MM_ACCOUNT_LOG
+		where TRANS_TYPE_CODE = #{transTypeCode} and ACC_TYPE = #{accType} and TR_SOURCE_TYPE = #{trSourceType} and TR_ORDER_OID = #{trOrderOid} and ACC_STATUS = #{accStatus}
+	</select>
+
+	<update id="updateByCutOrderId" parameterType="java.util.Map" >
+        UPDATE RD_MM_ACCOUNT_LOG
+        SET
+        ACC_STATUS = 2
+        WHERE TRANS_TYPE_CODE = #{transTypeCode} and ACC_TYPE = #{accType} and TR_SOURCE_TYPE = #{trSourceType} and TR_ORDER_OID = #{trOrderOid}
+    </update>
 </mapper> 
