@@ -1631,8 +1631,7 @@ public class UserAPIController extends BaseController {
     @RequestMapping(value = "/walletDetail.json", method = RequestMethod.POST)
     public String walletDetail(HttpServletRequest request,
                                @RequestParam(value = "currentPage",required = false,defaultValue = "1") Integer currentPage,
-                               @RequestParam(value = "queryNum",required = false,defaultValue = "10") Integer queryNumInt) {
-
+                               @RequestParam(value = "queryNumInt",required = false,defaultValue = "10") Integer queryNumInt) {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
 
@@ -1641,12 +1640,12 @@ public class UserAPIController extends BaseController {
         }
 
         java.text.SimpleDateFormat form = new java.text.SimpleDateFormat("yyyy-MM-dd");
-        String dateStart = form.format(new Date());//dateStart 开始日期 yyyy-MM-dd，
+        String dateEnd = form.format(new Date());//dateStart 开始日期 yyyy-MM-dd，
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MONTH,-1);
-        String dateEnd = form.format(calendar.getTime());//dateEnd 结束日期  yyyy-MM-dd，最多允许查 3 个月内，跨度建议不超过 7 天
+        String dateStart = form.format(calendar.getTime());//dateEnd 结束日期  yyyy-MM-dd，最多允许查 3 个月内，跨度建议不超过 7 天
 
 
         Long startPosition = Long.parseLong(String.valueOf((currentPage-1)*10+1));//起始位置 取值>0 eg：查询第 11 条到 20条的 记录（start =11）
@@ -1837,8 +1836,8 @@ public class UserAPIController extends BaseController {
         Long amountL = Long.valueOf(a.longValue());
         Long feeL = Long.valueOf(f.longValue());
 
-        //String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
-        String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".json";//后台通知地址
+        //String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/withdrawBank/" + withdrawSn + "/" + basicInfo.getMmCode() + ".jhtml";//后台通知地址
+        String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/withdrawBank.jhtml";//后台通知地址
         String bankCardNoL = YunClient.encrypt(bankCardNoR);
         String resBalance = TongLianUtils.withdrawApply(withdrawSn,basicInfo.getMmCode(), TongLianUtils.ACCOUNT_SET_NO,amountL,feeL,0l,
                 backUrl,"",null,bankCardNoL,0l,"D0","1910","其他",1l,"","");

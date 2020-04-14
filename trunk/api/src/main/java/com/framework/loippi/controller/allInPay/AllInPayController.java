@@ -1,6 +1,5 @@
 package com.framework.loippi.controller.allInPay;
 
-import com.framework.loippi.consts.AllInPayConstant;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.allinpay.yunst.sdk.YunClient;
 import com.allinpay.yunst.sdk.bean.YunRequest;
 import com.allinpay.yunst.sdk.util.RSAUtil;
+import com.framework.loippi.consts.AllInPayConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.user.RdMmAccountInfo;

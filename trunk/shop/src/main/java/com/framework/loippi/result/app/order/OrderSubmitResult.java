@@ -44,6 +44,10 @@ public class OrderSubmitResult {
 
     //订单是否可以使用积分支付
     private Boolean usePointFlag;
+    /**
+     * 0默认未支付1已支付(只有第三方支付接口通知到时才会更改此状态)
+     */
+    private String apiPayState;
 
     public static OrderSubmitResult build(RdMmIntegralRule rdMmIntegralRule,ShopOrderPay orderPay, RdMmAccountInfo rdMmAccountInfo) {
         OrderSubmitResult orderSubmitResult = new OrderSubmitResult();
@@ -57,6 +61,7 @@ public class OrderSubmitResult {
         }
         orderSubmitResult.setPaymentType(Optional.ofNullable(orderPay.getPaymentType()).orElse(1));
         orderSubmitResult.setUsePointFlag(orderPay.getUsePointFlag());
+        orderSubmitResult.setApiPayState(orderPay.getApiPayState());
         return orderSubmitResult;
     }
 

@@ -9,5 +9,7 @@ import com.framework.loippi.service.GenericService;
  * @description:dubbo com.framework.loippi.service.wallet
  */
 public interface RdMmWithdrawLogService extends GenericService<RdMmWithdrawLog, Long> {
-	void updateStatusBySnAndMCode(int withdrawStatus, String withdrawSn, String mCode);
+	void updateStatusBySnAndMCode(Integer withdrawStatus, String withdrawSn,String withdrawBank);
+
+	RdMmWithdrawLog findBySn(String withdrawSn);
 }
