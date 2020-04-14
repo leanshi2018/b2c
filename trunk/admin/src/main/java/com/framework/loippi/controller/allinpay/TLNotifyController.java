@@ -73,20 +73,19 @@ public class TLNotifyController {
 		String buyerBizUserId = returnMap.get("buyerBizUserId").toString();
 		String acct = returnMap.get("acct").toString();
 
-		System.out.println(bizOrderNo.trim());
-		RdMmWithdrawLog bySn = rdMmWithdrawLogService.findBySn(bizOrderNo.trim());
-		System.out.println(bySn);
+		RdMmWithdrawLog withdrawLog = rdMmWithdrawLogService.findByMCode(buyerBizUserId);
+		System.out.println(withdrawLog);
 
 		if(status.equals("error")){
 			System.out.println("失败！");
-			rdMmWithdrawLogService.updateStatusBySnAndMCode(1,bizOrderNo,acct);
+			rdMmWithdrawLogService.updateStatusBySnAndMCode(1,withdrawLog.getWithdrawSn(),acct);
 		}
 		if(status.equals("pending")){
-			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,bizOrderNo,acct);
+			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,withdrawLog.getWithdrawSn(),acct);
 		}
 		if(status.equals("OK")){
 			System.out.println("成功！");
-			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,bizOrderNo,acct);
+			rdMmWithdrawLogService.updateStatusBySnAndMCode(0,withdrawLog.getWithdrawSn(),acct);
 		}
 	}
 

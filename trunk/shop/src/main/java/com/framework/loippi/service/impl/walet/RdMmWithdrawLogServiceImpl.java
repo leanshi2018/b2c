@@ -40,4 +40,9 @@ public class RdMmWithdrawLogServiceImpl extends GenericServiceImpl<RdMmWithdrawL
 	public RdMmWithdrawLog findBySn(String withdrawSn) {
 		return rdMmWithdrawLogDao.findBySn(withdrawSn);
 	}
+
+	@Override
+	public RdMmWithdrawLog findByMCode(String mCode) {
+		return rdMmWithdrawLogDao.findByMCode(mCode);
+	}
 }

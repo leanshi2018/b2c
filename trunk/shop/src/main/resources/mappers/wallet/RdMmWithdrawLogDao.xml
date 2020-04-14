@@ -167,4 +167,12 @@
         SELECT	* FROM rd_mm_withdraw_log WHERE withdraw_sn = #{withdrawSn}
     </select>
 
+    <!--
+    SELECT * FROM rd_mm_withdraw_log WHERE mm_code = #{mCode}
+    -->
+    <select id="findByMCode" parameterType="string" resultMap="RdMmWithdrawLogMap">
+        select * from rd_mm_withdraw_log  where withdraw_time in (SELECT MAX(withdraw_time) FROM rd_mm_withdraw_log WHERE mm_code = #{mCode})
+
+    </select>
+
 </mapper>

@@ -12,4 +12,6 @@ public interface RdMmWithdrawLogService extends GenericService<RdMmWithdrawLog, 
 	void updateStatusBySnAndMCode(Integer withdrawStatus, String withdrawSn,String withdrawBank);
 
 	RdMmWithdrawLog findBySn(String withdrawSn);
+
+	RdMmWithdrawLog findByMCode(String mCode);
 }
