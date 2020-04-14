@@ -65,7 +65,7 @@ public class CouponConstant {
     /**
      * 五月优惠券ID
      */
-    public static final Long MAY_COUPON_ID = 6555008628095455333L;
+    public static final Long MAY_COUPON_ID = 6555008628095455336L;
     //public static final Long MAY_COUPON_ID = 6555008628095455334L;
     /**
      * 六月优惠券ID
