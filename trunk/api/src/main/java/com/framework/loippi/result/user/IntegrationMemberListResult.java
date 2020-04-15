@@ -520,6 +520,14 @@ public class IntegrationMemberListResult {
 
                     }
                 }
+                //全都没找到的话
+                if (memberInfo.getMemberAvatarColour()==null){
+                    memberInfo.setGradeId(0);
+                    memberInfo.setGradeName(map.get(0));
+                    memberInfo.setMemberAvatarColour(3);
+                    memberInfo.setPpv(new BigDecimal("0.00"));
+                    memberInfo.setTotalPv(new BigDecimal("0.00"));
+                }
             }else {
                 memberInfo.setGradeId(0);
                 memberInfo.setGradeName(map.get(0));
