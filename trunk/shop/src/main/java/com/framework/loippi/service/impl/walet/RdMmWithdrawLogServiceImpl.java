@@ -1,6 +1,7 @@
 package com.framework.loippi.service.impl.walet;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,16 @@ public class RdMmWithdrawLogServiceImpl extends GenericServiceImpl<RdMmWithdrawL
 	}
 
 	@Override
-	public RdMmWithdrawLog findByMCode(String mCode) {
+	public List<RdMmWithdrawLog> findByMCode(String mCode) {
 		return rdMmWithdrawLogDao.findByMCode(mCode);
+	}
+
+	@Override
+	public void updateStatusById(Integer withdrawStatus, Long id, String withdrawBank) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("withdrawStatus",withdrawStatus);
+		map.put("id",id);
+		map.put("withdrawBank",withdrawBank);
+		rdMmWithdrawLogDao.updateStatusById(map);
 	}
 }

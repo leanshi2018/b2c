@@ -1,5 +1,6 @@
 package com.framework.loippi.dao.walet;
 
+import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.entity.walet.RdMmWithdrawLog;
@@ -15,5 +16,7 @@ public interface RdMmWithdrawLogDao extends GenericDao<RdMmWithdrawLog, Long> {
 
 	RdMmWithdrawLog findBySn(String withdrawSn);
 
-	RdMmWithdrawLog findByMCode(String mCode);
+	List<RdMmWithdrawLog> findByMCode(String mCode);
+
+	void updateStatusById(Map<String, Object> map);
 }

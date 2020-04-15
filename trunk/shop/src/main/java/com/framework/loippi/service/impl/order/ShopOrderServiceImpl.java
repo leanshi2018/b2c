@@ -1,7 +1,6 @@
 package com.framework.loippi.service.impl.order;
 
 
-import com.framework.loippi.dao.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -49,6 +48,13 @@ import com.framework.loippi.dao.product.ShopGoodsSpecDao;
 import com.framework.loippi.dao.trade.ShopRefundReturnDao;
 import com.framework.loippi.dao.trade.ShopReturnLogDao;
 import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
+import com.framework.loippi.dao.user.RdGoodsAdjustmentDao;
+import com.framework.loippi.dao.user.RdMmAccountInfoDao;
+import com.framework.loippi.dao.user.RdMmAccountLogDao;
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
+import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.dao.user.RdSysPeriodDao;
+import com.framework.loippi.dao.user.ShopMemberPaymentTallyDao;
 import com.framework.loippi.dao.ware.RdInventoryWarningDao;
 import com.framework.loippi.dao.ware.RdWareAdjustDao;
 import com.framework.loippi.entity.AliPayRefund;
@@ -620,7 +626,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
         }
         //查询当前订单是否判定分账扣减分账收款人积分 如果扣减，找到归还用户 TODO
-        if(order.getCutStatus()==5){
+        if(order.getCutStatus()!=null&&order.getCutStatus()==5){
             refundSpoPoint(order);
             order.setCutStatus(6);
             order.setCutAcc(BigDecimal.ZERO);
@@ -4658,7 +4664,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     public void addRefundPoint(ShopRefundReturn refundReturn) {
         //判定该订单是否有预扣积分
         ShopOrderVo shopOrder = findWithAddrAndGoods(refundReturn.getOrderId());
-        if(shopOrder.getCutStatus()==5){
+        if(shopOrder.getCutStatus()!=null&&shopOrder.getCutStatus()==5){
             refundSpoPoint(shopOrder);
             shopOrder.setCutStatus(6);
             shopOrder.setCutAcc(BigDecimal.ZERO);
