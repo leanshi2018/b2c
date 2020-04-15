@@ -799,7 +799,15 @@ public class OrderSysController extends GenericController {
         if (Optional.ofNullable(orderVo.getLogisticType()).orElse(0)==2){
             model.addAttribute("sincelift", "sincelift");
         }
-        RdMmAddInfo shopMemberAddress=rdMmAddInfoService.find("aid",-1);
+
+        if (orderVo.getAddress()==null){
+            RdMmAddInfo shopMemberAddress=rdMmAddInfoService.find("aid",-1);
+            model.addAttribute("shopMemberAddress", shopMemberAddress);
+        }else {
+            ShopOrderAddress shopOrderAddress = orderVo.getAddress();
+            RdMmAddInfo shopMemberAddress=rdMmAddInfoService.find("aid",shopOrderAddress.getMentionId());
+            model.addAttribute("shopMemberAddress", shopMemberAddress);
+        }
         model.addAttribute("type", type);
         if (orderVo.getOrderType()==5){
             model.addAttribute("orderType", 5);
@@ -833,7 +841,6 @@ public class OrderSysController extends GenericController {
         model.addAttribute("order", orderVo);
         model.addAttribute("areas", areas);
         model.addAttribute("shopMember", rdMmBasicInfo);
-        model.addAttribute("shopMemberAddress", shopMemberAddress);
         if (Optional.ofNullable(type).orElse(0)==1){
 
             return "/trade/shop_order/edit";
