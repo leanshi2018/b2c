@@ -14,7 +14,7 @@ public interface AllInPayConstant {
     /**
      * 通联网络签约后台回调地址
      */
-    public static final String SIGN_BACK_URL="http://wt5hsu.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml";
+    public static final String SIGN_BACK_URL="http://7wqjjp.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml";
     //public static final String SIGN_BACK_URL="https://fintech.allinpay.com/yungateway/member/signContract.html?";
 
     /**

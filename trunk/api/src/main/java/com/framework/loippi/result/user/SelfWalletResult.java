@@ -49,10 +49,10 @@ public class SelfWalletResult {
 			if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()!=1){
 				result.setAmountStatus(1);
 			}else {
-				if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()!=0){
-					result.setAmountStatus(3);
-				}else {
+				if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()==1){
 					result.setAmountStatus(0);
+				}else {
+					result.setAmountStatus(3);
 				}
 			}
 		}

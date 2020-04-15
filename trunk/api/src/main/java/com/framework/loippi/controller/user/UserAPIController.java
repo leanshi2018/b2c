@@ -1682,11 +1682,7 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error("通联接口调取失败");
         }
 
-        if (inExpDetail.size()>0){
-            return ApiUtils.success(inExpDetail);
-        }
-
-        return ApiUtils.error("没有明细");
+        return ApiUtils.success(inExpDetail);
     }
 
     /**

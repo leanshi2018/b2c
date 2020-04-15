@@ -1559,6 +1559,12 @@ public class OrderAPIController extends BaseController {
         List<ShopOrder> orderList = orderService.findList("paySn", mmPaySn);
         if (CollectionUtils.isEmpty(orderList)) {
             return ApiUtils.error("订单不存在");
+        }else {
+            ShopOrder shopOrder = orderList.get(0);
+            Integer orderState = shopOrder.getOrderState();
+            if (orderState!=10){
+                return ApiUtils.error("订单已支付");
+            }
         }
 
         //过去的作废
