@@ -532,7 +532,10 @@ public class UserIntegrationAPIController extends BaseController {
         }else {
             code=periodCode;
         }
-        List<MemberQualification> list = memberQualificationService.findList(Paramap.create().put("sponsorCode",member.getMmCode()).put("periodCode",periodCode));
+        HashMap<String, Object> map1 = new HashMap<>();
+        map1.put("sponsorCode",member.getMmCode());
+        map1.put("periodCode",code);
+        List<MemberQualification> list = memberQualificationService.findBySponsorCodeAndPeriodCode(map1);
         List<MemberQualification> qualificationList = memberQualificationService.findList(Paramap.create().put("mCode",member.getMmCode()).put("periodCode",periodCode));
         if(qualificationList.size()>0){
             MemberQualification qualification = qualificationList.get(0);
