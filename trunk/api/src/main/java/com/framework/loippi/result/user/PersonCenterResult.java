@@ -126,7 +126,7 @@ public class PersonCenterResult {
     //0:未签约 1：已签约  通联支付签约状态
     private Integer allInPayContractStatus;
 
-    //0:未开启 1：已开启 是否开启自动提现
+    //0:未开启 1：已签约并开启自动提现 2:已签约且关闭自动提现
     private Integer whetherWithdrawalAuto;
 
     //0:未绑定通联支付手机号 1：已绑定 2：已解绑（解绑后未绑定新的手机号）  用户是否绑定了通联支付手机号码
@@ -146,7 +146,7 @@ public class PersonCenterResult {
         result.setMessageNum(0);
         result.setLookPpv(0);
         result.setLookVip(0);
-        result.setWhetherWithdrawalAuto(optional2.map(RdMmAccountInfo::getAutomaticWithdrawal).orElse(0));
+        result.setWhetherWithdrawalAuto(optional.map(RdMmBasicInfo::getAllInContractStatus).orElse(0));
         if (shopMemberGrade!=null) {
             if (shopMemberGrade.getRankClass()>0){
                 result.setLookPpv(1);
