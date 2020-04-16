@@ -7,8 +7,11 @@ import org.springframework.stereotype.Service;
 
 import com.framework.loippi.dao.user.RdMmAddInfoDao;
 import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
 
 
 /**
@@ -50,5 +53,11 @@ public class RdMmAddInfoServiceImpl extends GenericServiceImpl<RdMmAddInfo, Long
 	@Override
 	public List<RdMmAddInfo> findMentionAddrList() {
 		return rdMmAddInfoDao.findMentionAddrList();
+	}
+
+	@Override
+	public Object findMentionAddrListByPage(Pageable pageable) {
+		PageList<RdMmAddInfo> result = rdMmAddInfoDao.findMentionAddrListByPage(pageable.getParameter(), pageable.getPageBounds());
+		return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
 	}
 }

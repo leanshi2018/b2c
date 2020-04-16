@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.service.GenericService;
+import com.framework.loippi.support.Pageable;
 
 /**
  * SERVICE - RdMmAddInfo(会员地址表)
@@ -18,4 +19,6 @@ public interface RdMmAddInfoService  extends GenericService<RdMmAddInfo, Long> {
 
 
 	List<RdMmAddInfo> findMentionAddrList();
+
+	Object findMentionAddrListByPage(Pageable pageable);
 }
