@@ -39,6 +39,7 @@ import com.framework.loippi.result.user.IntegrationListResult;
 import com.framework.loippi.result.user.IntegrationMemberListResult;
 import com.framework.loippi.result.user.UserIntegrationListResult;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
+import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.MemberQualificationService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAccountLogService;
@@ -55,6 +56,7 @@ import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.vo.order.OrderSumPpv;
 
 /**
  * 积分 Created by Administrator on 2017/11/23.
@@ -87,6 +89,8 @@ public class UserIntegrationAPIController extends BaseController {
     private RetailProfitService retailProfitService;
     @Resource
     private RdSysPeriodDao sysPeriodDao;
+    @Resource
+    private ShopOrderService shopOrderService;
     //积分列表
     @RequestMapping(value = "/list.json")
     public String list(HttpServletRequest request) {

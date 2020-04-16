@@ -52,15 +52,15 @@ public class MemberQualification implements GenericEntity {
     @Column(name = "A_RETAIL_FINAL" )
     private BigDecimal retailFinal;//个人零售购买的期末值
     @Column(name = "RANK_P2" )
-    private int rankP2;//
+    private Integer rankP2;//
     @Column(name = "RANK_P1" )
-    private int rankP1;//
+    private Integer rankP1;//
     @Column(name = "RANK_P0" )
-    private int rankP0;//
+    private Integer rankP0;//
     @Column(name = "RANK_AC" )
-    private int rankAc;//当期计算后个人级别
+    private Integer rankAc;//当期计算后个人级别
     @Column(name = "RANK_RECORD_HIGH" )
-    private int rankRecordHigh;//历史最高级别
+    private Integer rankRecordHigh;//历史最高级别
     @Column(name = "LEAF_YN" )
     private int leafYn;//是否叶子节点\r\n0：不是\r\n1：是叶子节点
     @Column(name = "ORPHAN" )
