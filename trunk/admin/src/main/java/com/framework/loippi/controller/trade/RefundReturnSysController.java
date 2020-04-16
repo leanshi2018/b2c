@@ -1261,12 +1261,10 @@ public class RefundReturnSysController extends GenericController {
                 //refundMember.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);// 金额，单位：分
                 //refundList.add(refundMember);
 
-                String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
-                        backUrl,1l,0l,0l,null);
-/*
+/*                String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
+                        backUrl,1l,0l,0l,null);*/
                 String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
                         backUrl,shopOrder.getOrderAmount().longValue()*100,0l,0l,null);
-*/
                 if(!"".equals(s)) {
                     Map maps = (Map) JSON.parse(s);
                     String status = maps.get("status").toString();
