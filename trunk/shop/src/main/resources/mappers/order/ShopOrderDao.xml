@@ -175,7 +175,7 @@
 		 #{addressId},#{payId},#{paySn},#{balanceState},#{balanceTime},#{shippingExpressCode},#{predepositAmount},#{cancelCause},#{lockState},#{barterState},#{barterNum},
 		 #{usePointNum},#{pointRmbNum},#{isDel},#{batchNo},#{isRemind},#{isModify},#{brandId},#{brandName},#{ppv},#{shippingPreferentialFee},#{remindTime},
 		 #{shopOrderTypeId},#{creationPeriod} ,#{logisticType} ,#{refundPoint},#{refundPpv},#{cancelTime},#{submitStatus},#{failInfo},#{cutStatus},#{cutFailInfo},
-		 ,#{cutGetId},#{cutAmount},#{cutAcc},#{cutTime},#{rankDiscount}
+		 #{cutGetId},#{cutAmount},#{cutAcc},#{cutTime},#{rankDiscount}
 	</sql>
 
 
@@ -693,32 +693,32 @@
              refund_ppv = #{refundPpv},
         </if>
         <if test="cancelTime != null and cancelTime != ''">
-             cancel_time = #{cancelTime}
+             cancel_time = #{cancelTime},
         </if>
         <if test="submitStatus != null">
-            submit_status = #{submitStatus}
+            submit_status = #{submitStatus},
         </if>
         <if test="failInfo != null and failInfo != ''">
-            fail_info = #{failInfo}
+            fail_info = #{failInfo,
         </if>
 
         <if test="cutStatus != null ">
-            cut_status = #{cutStatus}
+            cut_status = #{cutStatus},
         </if>
         <if test="cutFailInfo != null and cutFailInfo != ''">
-            cut_fail_info = #{cutFailInfo}
+            cut_fail_info = #{cutFailInfo},
         </if>
         <if test="cutGetId != null and cutGetId != ''">
-            cut_get_id = #{cutGetId}
+            cut_get_id = #{cutGetId},
         </if>
         <if test="cutAmount != null">
-            cut_amount = #{cutAmount}
+            cut_amount = #{cutAmount},
         </if>
         <if test="cutAcc != null">
-            cut_acc = #{cutAcc}
+            cut_acc = #{cutAcc},
         </if>
         <if test="cutTime != null">
-            cut_time = #{cutTime}
+            cut_time = #{cutTime},
         </if>
         <if test="rankDiscount != null and rankDiscount != ''">
             rank_discount = #{rankDiscount},

@@ -3,11 +3,14 @@ package com.framework.loippi.job;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.framework.loippi.consts.AllInPayConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.allinpay.yunst.sdk.YunClient;
 import com.allinpay.yunst.sdk.bean.YunRequest;
-import com.framework.loippi.consts.AllInPayBillCutConstant;
+import com.framework.loippi.consts.AllInPayConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.dao.ShopCommonMessageDao;
@@ -50,7 +53,6 @@ import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.validator.DateUtils;
 
 /**   暂时屏蔽
  * 功能：根据设置定时更新订单
@@ -512,7 +514,7 @@ public class ShopOrderJob {
             collectPayList.add(new JSONObject(collect1));
             request.put("collectPayList", collectPayList);
             request.put("bizUserId", accountInfo.getMmCode());
-            request.put("accountSetNo","100001");//TODO
+            request.put("accountSetNo","400142");//TODO
             request.put("backUrl", AllInPayConstant.CUT_BILL_BACKURL);//TODO
             request.put("amount",shopOrder.getOrderAmount().multiply(new BigDecimal("100")));
             request.put("fee",((shopOrder.getOrderAmount().subtract(amount))).multiply(new BigDecimal("100")));
