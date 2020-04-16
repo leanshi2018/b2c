@@ -1600,6 +1600,9 @@ public class OrderAPIController extends BaseController {
         rdBizPayService.save(rdBizPay);
 
         ShopOrder shopOrder = orderList.get(0);
+        BigDecimal orderAmount = shopOrder.getOrderAmount();
+        double b = orderAmount.doubleValue()*100;
+        Long oAmount = new Double(b).longValue();
         //收款列表
         Map<String, Object> reciever = new LinkedHashMap<>();
         //查询一个满足条件的收款人，扣除积分，返回用户编号以及分账金额
@@ -1619,7 +1622,7 @@ public class OrderAPIController extends BaseController {
         //支付方式
         Map<String, Object> object1 = new LinkedHashMap<>();
         //object1.put("limitPay","no_credit");//String 非贷记卡：no_credit 借、贷记卡：””需要传空字符串，不能不传
-        object1.put("amount",shopOrder.getOrderAmount().longValue()*100);//Long支付金额，单位：分 TODO 正式
+        object1.put("amount",oAmount);//Long支付金额，单位：分 TODO 正式
         //object1.put("amount",1l);//Long支付金额，单位：分
         object1.put("acct",openId);//String  微信 JS 支付 openid——微信分配
         object1.put("vspCusid","56029005999Z8RA");
@@ -1639,7 +1642,7 @@ public class OrderAPIController extends BaseController {
         String notifyUrl = NotifyConsts.APP_NOTIFY_FILE+ "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
         //TODO 正式
         String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
-                shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, "", notifyUrl, "",
+                oAmount, 0l, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");
 
         /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
