@@ -296,6 +296,11 @@ public class OrderSysController extends GenericController {
                                 }
                             }
                         }
+                    }else {
+                        ShopOrder shopOrder1 = new ShopOrder();
+                        shopOrder1.setId(shopOrder.getId());
+                        shopOrder1.setOrderState(30);
+                        orderService.update(shopOrder1);
                     }
                 }
             }
@@ -305,52 +310,59 @@ public class OrderSysController extends GenericController {
             System.out.println("进来了全部发货");
             List<ShopOrder> orderList = orderService.findStatu20();//所有代发货订单
             for (ShopOrder shopOrder : orderList) {
-                Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
-                String resultS = (String)resMap.get("res");
-                if (!"".equals(resultS)){
-                    if(resultS.substring(0,1).equals("{")){
-                        Map maps = (Map) JSON.parse(resultS);
-                        String success = (String) maps.get("success");//是否成功
-                        String orderSn = (String) maps.get("CsRefNo");//订单编号
-                        if (success.equals("success")) {//发货成功
-                            String trackingNo = (String) maps.get("TrackingNo");//运单号
-                            if (!Character.isDigit(trackingNo.charAt(0))) {//不是数字，就是发货失败，有可能在草稿箱
+                if (shopOrder.getLogisticType()==1){
+                    Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
+                    String resultS = (String)resMap.get("res");
+                    if (!"".equals(resultS)){
+                        if(resultS.substring(0,1).equals("{")){
+                            Map maps = (Map) JSON.parse(resultS);
+                            String success = (String) maps.get("success");//是否成功
+                            String orderSn = (String) maps.get("CsRefNo");//订单编号
+                            if (success.equals("success")) {//发货成功
+                                String trackingNo = (String) maps.get("TrackingNo");//运单号
+                                if (!Character.isDigit(trackingNo.charAt(0))) {//不是数字，就是发货失败，有可能在草稿箱
+                                    String failInfo = (String) maps.get("Info");//失败信息
+                                    System.out.println("failInfo");
+                                    orderService.updateOrderStatus(orderSn, 20, 20, failInfo, "");
+                                } else {
+                                    //TrackingNo第一个字符是数字
+                                    if (!"".equals(trackingNo)) {// 订单状态：待收货 提交状态：已提交 失败原因："" +运单号
+                                        System.out.println("待收货");
+                                        Integer orderState = 30;
+                                        Integer submitStatus = 10;
+                                        String failInfo = "";
+                                        orderService.updateOrderStatus(orderSn, orderState, submitStatus, failInfo, trackingNo);
+                                    } else {//状订单态：仓库在备货 提交状态：已提交 失败原因：""
+                                        System.out.println("仓库在备货");
+                                        orderService.updateOrderStatus(orderSn, 25, 10, "", "");
+                                    }
+                                    List<Map<String, Object>> products = (List<Map<String, Object>>) resMap.get("Products");//发货的数据
+                                    /*for (Map<String, Object> product : products) {
+                                        String sku = (String) product.get("SKU");//发货商品规格编号
+                                        Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
+                                        ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
+                                        Long goodsSpecId = goodsSpec.getId();//商品规格id
+                                        inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", goodsSpecId, quantity);
+                                    }*/
+
+                                    List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
+                                    List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
+                                    List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo);//需要修改订单商品信息
+                                    shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
+                                }
+                            }
+                            if (success.equals("failure")) {//发货失败   提交状态：提交失败 失败原因：failInfo
                                 String failInfo = (String) maps.get("Info");//失败信息
                                 System.out.println("failInfo");
                                 orderService.updateOrderStatus(orderSn, 20, 20, failInfo, "");
-                            } else {
-                                //TrackingNo第一个字符是数字
-                                if (!"".equals(trackingNo)) {// 订单状态：待收货 提交状态：已提交 失败原因："" +运单号
-                                    System.out.println("待收货");
-                                    Integer orderState = 30;
-                                    Integer submitStatus = 10;
-                                    String failInfo = "";
-                                    orderService.updateOrderStatus(orderSn, orderState, submitStatus, failInfo, trackingNo);
-                                } else {//状订单态：仓库在备货 提交状态：已提交 失败原因：""
-                                    System.out.println("仓库在备货");
-                                    orderService.updateOrderStatus(orderSn, 25, 10, "", "");
-                                }
-                                List<Map<String, Object>> products = (List<Map<String, Object>>) resMap.get("Products");//发货的数据
-                                /*for (Map<String, Object> product : products) {
-                                    String sku = (String) product.get("SKU");//发货商品规格编号
-                                    Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
-                                    ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
-                                    Long goodsSpecId = goodsSpec.getId();//商品规格id
-                                    inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", goodsSpecId, quantity);
-                                }*/
-
-                                List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
-                                List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
-                                List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo);//需要修改订单商品信息
-                                shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
                             }
                         }
-                        if (success.equals("failure")) {//发货失败   提交状态：提交失败 失败原因：failInfo
-                            String failInfo = (String) maps.get("Info");//失败信息
-                            System.out.println("failInfo");
-                            orderService.updateOrderStatus(orderSn, 20, 20, failInfo, "");
-                        }
                     }
+                }else {//自提
+                    ShopOrder shopOrder1 = new ShopOrder();
+                    shopOrder1.setId(shopOrder.getId());
+                    shopOrder1.setOrderState(30);
+                    orderService.update(shopOrder1);
                 }
             }
         }
@@ -849,6 +861,58 @@ public class OrderSysController extends GenericController {
         return "/trade/shop_order/view";
     }
 
+    /**
+     * 查询全部自提地址
+     */
+    @RequiresPermissions("admin:order:main")
+    @RequestMapping(value = "/admin/order/mentionAddressAll", method = RequestMethod.GET)
+    @ResponseBody
+    public String mentionAddressAll(@RequestParam(required = false, value = "pageNo", defaultValue = "1") Integer pageNo,
+                                    String provinceCode,String phone,ModelMap model) {
+        Pageable pageable = new Pageable(pageNo, 20);
+        pageable.setParameter(Paramap.create().put("aid", 0l).put("addProvinceCode",provinceCode).put("phone",phone));
+        pageable.setOrderProperty("create_time");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        List<RdMmAddInfo> lists = rdMmAddInfoService.findMentionAddrList();
+        if (lists.size()==0){
+            showErrorJson("自提地址为空");
+        }
+        model.addAttribute("page", rdMmAddInfoService.findMentionAddrListByPage(pageable));
+        showSuccessJson(lists);
+        return json;
+    }
+
+    /**
+     * 修改自提点
+     */
+    @RequiresPermissions("admin:order:main")
+    @RequestMapping("/admin/order/updateOrdermentionAddress")
+    @ResponseBody
+    public String updateOrdermentionAddress(@RequestParam Long orderId,
+                                            @RequestParam Long aId,
+                                            HttpServletRequest request) {
+        RequestContext requestContext = new RequestContext(request);
+        ShopOrder shopOrder = orderService.find(orderId);
+        if (shopOrder==null){
+            showErrorJson(requestContext.getMessage("delivery_refuse_states_error"));
+            return json;
+        }
+
+        if (shopOrder.getOrderState().longValue()==10||shopOrder.getOrderState().longValue()==20||shopOrder.getOrderState().longValue()==30){
+            Long addressId = shopOrder.getAddressId();
+            ShopOrderAddress orderAddress = new ShopOrderAddress();
+            orderAddress.setId(addressId);
+            orderAddress.setMentionId(aId);
+            orderAddressService.update(orderAddress);
+            //将成功的信号传导前台
+            showSuccessJson(requestContext.getMessage("delivery_save"));
+            return json;
+        }else {
+            showErrorJson("该订单状态不在修改范围");
+            return json;
+        }
+    }
+
 
     @RequestMapping(value = "/admin/order/otherView", method = RequestMethod.GET)
     public String otherView(@RequestParam long id, ModelMap model,Integer type) {
@@ -947,6 +1011,77 @@ public class OrderSysController extends GenericController {
                 redisService.save(orderId+"orderVo",orderVo);
             }
             orderService.update(shopOrder);
+            //将成功的信号传导前台
+            showSuccessJson(requestContext.getMessage("delivery_save"));
+        } else {
+            showErrorJson(requestContext.getMessage("delivery_refuse_states_error"));
+        }
+        return json;
+    }
+
+    /**
+     * 修改订单取货方式
+     */
+    @RequiresPermissions("admin:order:main")
+    @RequestMapping("/admin/order/updateLogisticTypeNew")
+    @ResponseBody
+    public String updateLogisticTypeNew(Integer logisticType , @RequestParam Long orderId,@RequestParam(required = false, value = "aId", defaultValue = "-1l") Long aId,
+                                     HttpServletRequest request) {
+        RequestContext requestContext = new RequestContext(request);
+        // 验证提交数据有效性
+        if (logisticType==null) {
+            return json;
+        }
+        // 未发货可以修改, 发货后不能修改
+        int[] canModifyAddressStates = {OrderState.ORDER_STATE_NO_PATMENT, OrderState.ORDER_STATE_UNFILLED};
+        // 可以修改收货地址的数量
+        Long count = orderService
+                .count(Paramap.create().put("id", orderId).put("orderStates", canModifyAddressStates).put("storeId", 0L));
+        if (count == 1) {
+            ShopOrder shopOrder1 = orderService.find(orderId);
+            Integer orderState = shopOrder1.getOrderState();
+
+            ShopOrder shopOrder=new ShopOrder();
+            shopOrder.setId(orderId);
+            shopOrder.setIsModify(1);
+            if (logisticType==1){
+                logisticType=2;
+                //是否已付款
+                if (orderState==OrderState.ORDER_STATE_NO_PATMENT){
+                    showErrorJson(requestContext.getMessage("delivery_refuse_states_error"));
+                    return json;
+                }
+
+                //修改订单表地址
+                Long addressId = shopOrder1.getAddressId();
+                ShopOrderAddress orderAddress = new ShopOrderAddress();
+                orderAddress.setId(addressId);
+                orderAddress.setAreaId(-1l);
+                orderAddress.setCityId(-1l);
+                orderAddress.setAreaInfo("自提没有保存收货地址");
+                orderAddress.setProvinceId(-1l);
+                orderAddress.setMentionId(aId);
+                orderAddressService.update(orderAddress);
+
+                //修改订单状态为待收货
+                shopOrder.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+            }else if (logisticType==2){
+                logisticType=1;
+            }
+            shopOrder.setLogisticType(logisticType);
+            ShopOrderVo orderVo=new ShopOrderVo();
+            if (redisService.get(orderId+"orderVo")!=null ){
+                orderVo=redisService.get(orderId+"orderVo",ShopOrderVo.class);
+            }else{
+                orderVo = orderService.findWithAddrAndGoods(orderId);
+            }
+            if (orderVo!=null && orderVo.getOrderState()==10){
+                orderVo.setLogisticType(logisticType);
+                orderVo=orderService.modifyOrderCalculatePrice(orderVo,orderId,orderVo.getShopOrderTypeId());
+                redisService.save(orderId+"orderVo",orderVo);
+            }
+            orderService.update(shopOrder);
+
             //将成功的信号传导前台
             showSuccessJson(requestContext.getMessage("delivery_save"));
         } else {

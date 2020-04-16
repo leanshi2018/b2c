@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.mybatis.dao.GenericDao;
+import com.framework.loippi.mybatis.paginator.domain.PageBounds;
+import com.framework.loippi.mybatis.paginator.domain.PageList;
 
 /**
  * DAO - RdMmAddInfo(会员地址表)
@@ -18,4 +20,6 @@ public interface RdMmAddInfoDao  extends GenericDao<RdMmAddInfo, Long> {
 
 
 	List<RdMmAddInfo> findMentionAddrList();
+
+	PageList<RdMmAddInfo> findMentionAddrListByPage(Object parameter, PageBounds pageBounds);
 }
