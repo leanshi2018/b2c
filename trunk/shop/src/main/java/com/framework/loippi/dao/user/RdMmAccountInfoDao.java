@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.user;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -21,5 +22,5 @@ public interface RdMmAccountInfoDao  extends GenericDao<RdMmAccountInfo, Long> {
 
 	RdMmAccountInfo findAccByMCode(String sponsorCode);
 
-	List<RdMmAccountInfo> findLastWithdrawalOneHundred();
+	List<RdMmAccountInfo> findLastWithdrawalOneHundred(BigDecimal acc);
 }

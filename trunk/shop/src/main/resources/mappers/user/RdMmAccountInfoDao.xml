@@ -222,7 +222,7 @@
 		SELECT * FROM RD_MM_ACCOUNT_INFO WHERE MM_CODE = #{mmCode}
 	</select>
 
-	<select id="findLastWithdrawalOneHundred" resultMap="RdMmAccountInfoResultMap">
-		SELECT * FROM RD_MM_ACCOUNT_INFO WHERE BONUS_STATUS = 0 and AUTOMATIC_WITHDRAWAL = 1 and BONUS_BLANCE >= 100 order by LAST_WITHDRAWAL_TIME asc limit 0,100
+	<select id="findLastWithdrawalOneHundred" resultMap="RdMmAccountInfoResultMap" parameterType="java.math.BigDecimal">
+		SELECT * FROM RD_MM_ACCOUNT_INFO WHERE BONUS_STATUS = 0 and AUTOMATIC_WITHDRAWAL = 1 and BONUS_BLANCE >= #{acc} order by LAST_WITHDRAWAL_TIME asc limit 0,100
 	</select>
 </mapper> 
