@@ -1323,7 +1323,7 @@ public class RefundReturnSysController extends GenericController {
 
 
                         //返还分账人积分
-                        if (shopOrder.getCutStatus()==6){
+                        if (shopOrder.getCutStatus()==2||shopOrder.getCutStatus()==5){
                             String cutGetId = shopOrder.getCutGetId();//分账人编号
                             BigDecimal cutAcc = shopOrder.getCutAcc();//分账人扣的积分
                             if(!AllInPayBillCutConstant.COMPANY_CUT_B.equals(cutGetId)){
@@ -1333,7 +1333,7 @@ public class RefundReturnSysController extends GenericController {
                                 RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
                                 rdMmAccountLog.setTransTypeCode("CF");
                                 rdMmAccountLog.setAccType("SWB");
-                                rdMmAccountLog.setTrSourceType("OWB");
+                                rdMmAccountLog.setTrSourceType("BNK");
                                 rdMmAccountLog.setMmCode(shopMember.getMmCode());
                                 rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
                                 rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
