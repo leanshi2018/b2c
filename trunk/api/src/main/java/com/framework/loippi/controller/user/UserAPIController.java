@@ -1736,7 +1736,7 @@ public class UserAPIController extends BaseController {
                     }
                     detail.put("curAmount",Long.valueOf(detailMap.get("curAmount").toString()));//现有金额
                     detail.put("bizOrderNo",detailMap.get("bizOrderNo").toString());// 商户订单号（支付订单）
-
+                    inExpDetailList.add(detail);
                     /*String changeTime = detailMap.get("changeTime").toString();// 变更时间
                     Long oriAmount = Long.valueOf(detailMap.get("oriAmount").toString());//原始金额
                     String tradeNo = detailMap.get("tradeNo").toString();//收支明细流水号
