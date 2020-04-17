@@ -2621,8 +2621,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         map.put("result_code", "SUCCESS");
                     } else {
                         map.put("result_code", "FAIL");
-                        String message = maps.get("message").toString();
-                        map.put("err_code_des", "退款失败" + "," + message);
+                        map.put("err_code_des", "退款失败" );
                     }
                 } else {
                     map.put("result_code", "FAIL");
