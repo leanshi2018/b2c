@@ -2553,7 +2553,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
      * 跳到微信退款接口
      */
     private void toweichatrefundTL(WeiRefund weiRefund, String weitype,Long orderId) {
-        Map<String, Object> map = null;
+        Map<String, Object> map = new HashMap<>();
         ShopOrder shopOrder = orderDao.find(orderId);
         BigDecimal orderAmount = shopOrder.getOrderAmount();
         double b = orderAmount.doubleValue()*100;
