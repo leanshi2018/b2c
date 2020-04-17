@@ -1584,7 +1584,7 @@ public class OrderSysController extends GenericController {
             }
         }
 
-        return "trade/shop_order/splitting_details";
+        return "/trade/shop_order/splitting_details";
     }
 
 
