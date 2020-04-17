@@ -699,7 +699,7 @@
             submit_status = #{submitStatus},
         </if>
         <if test="failInfo != null and failInfo != ''">
-            fail_info = #{failInfo,
+            fail_info = #{failInfo},
         </if>
 
         <if test="cutStatus != null ">
