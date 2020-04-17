@@ -1612,17 +1612,12 @@ public class OrderAPIController extends BaseController {
         }
         HashMap<String,Object> map=getCutNumber(shopOrder);
         RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
-        if (accountInfo==null){
-            reciever.put("bizUserId", "");
-            reciever.put("amount",0L);
-        }else {
-            BigDecimal acc = (BigDecimal) map.get("acc");
-            double accdouble = acc.doubleValue() * 100;
-            //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
-            reciever.put("bizUserId", accountInfo.getMmCode());//TODO
-            //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
-            reciever.put("amount",new Double(accdouble).longValue());
-        }
+        BigDecimal acc = (BigDecimal) map.get("acc");
+        double accdouble = acc.doubleValue() * 100;
+        //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
+        reciever.put("bizUserId", accountInfo.getMmCode());//TODO
+        //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
+        reciever.put("amount",new Double(accdouble).longValue());
         List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
         /*HashMap<String,Object> map=getCutNumber(shopOrder);
         RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
@@ -1842,8 +1837,8 @@ public class OrderAPIController extends BaseController {
         BigDecimal orderAmount = shopOrder.getOrderAmount();
         if(orderAmount.compareTo(new BigDecimal(Integer.toString(AllInPayBillCutConstant.CUT_MINIMUM)))==-1){
             //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
-            //RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
-            map.put("accountInfo",null);
+            RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
+            map.put("accountInfo",accountInfo);
             map.put("acc",BigDecimal.ZERO);
             //rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
             return map;
@@ -1870,8 +1865,8 @@ public class OrderAPIController extends BaseController {
             }
         }
         //都不满足，走公司小B分账
-        //RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
-        map.put("accountInfo",null);
+        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
+        map.put("accountInfo",accountInfo);
         map.put("acc",BigDecimal.ZERO);
         //rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
         return map;
