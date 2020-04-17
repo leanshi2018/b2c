@@ -31,9 +31,8 @@
             </div>
         </div>
         <div class="fixed-empty"></div>
-        <form method="post" action="" name="formSearch" id="formSearch">
-            <input name="id" value="${order.id}" type="hidden" id="id">
-            <input type="hidden" name="pageNumber" value="${1}">
+        <form method="post" action="${base}/admin/order/getOrderSplitDetail.json" name="formSearch" id="formSearch">
+            <input type="hidden" name="pageNo" value="${1}">
             <tbody>
             <tr class="space">
                 <th colspan="15">订单信息</th>
@@ -41,9 +40,9 @@
             <tr>
                 <td>
                     <ul>
-                        <li><strong>订单号：</strong>${id}</li>
-                        <li><strong>订单实付金额：</strong>${orderSn}</li>
-                        <li><strong>公司分账后收入：</strong>${firmSplitAmount}</li>
+                        <li><strong>订单号：</strong>${detail.orderSn}</li>
+                        <li><strong>订单实付金额：</strong>${detail.orderSn}</li>
+                        <li><strong>公司分账后收入：</strong>${detail.orderAmount}</li>
                     </ul>
                 </td>
             </tr>
@@ -63,13 +62,13 @@
                             <th class="align-center">分账金额（元）</th>
                             <th class="align-center">积分扣减</th>
                         </tr>
-                        <#list pages.Detail as order>
+                        <#list page.detail as details>
                             <tr>
                                 <td class="w96 align-center"><p></p></td>
-                                <td class="w96 align-center">${order.cutGetId}</td>
-                                <td class="w96 align-center">${order.cutGetName}</td>
-                                <td class="w96 align-center">${order.cutAmount}</td>
-                                <td class="w96 align-center">${order.cutAcc}</td>
+                                <td class="w96 align-center">${details.cutGetId}</td>
+                                <td class="w96 align-center">${details.cutGetName}</td>
+                                <td class="w96 align-center">${details.cutAmount}</td>
+                                <td class="w96 align-center">${details.cutAcc}</td>
                             </tr>
 
                         <#else >

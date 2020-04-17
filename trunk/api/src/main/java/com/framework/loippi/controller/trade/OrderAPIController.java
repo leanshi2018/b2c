@@ -1,7 +1,5 @@
 package com.framework.loippi.controller.trade;
 
-import com.allinpay.yunst.sdk.YunClient;
-import com.allinpay.yunst.sdk.bean.YunRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -2141,32 +2139,6 @@ public class OrderAPIController extends BaseController {
 
         if (member.getMobile()==null||member.getMobile().trim().equals("")){
             return ApiUtils.error("该用户未绑定手机号");
-        }
-        if(member.getTongLianId()==null||member.getTongLianId().trim().equals("")){
-            //说明用户没有注册通联id
-            final YunRequest request1 = new YunRequest("MemberService", "createMember");
-            request1.put("bizUserId", member.getMmCode());
-            request1.put("memberType", 3);
-            request1.put("source", 1);
-            try {
-                String s = YunClient.request(request1);
-                Map<String, Object> map = JacksonUtil.convertMap(s);
-                if(map.get("status").equals("OK")){
-                    String jsonStr = (String) map.get("signedValue");
-                    Map<String, Object> stringObjectMap = JacksonUtil.convertMap(jsonStr);
-                    String userId = (String) stringObjectMap.get("userId");
-                    member.setTongLianId(userId);
-                    rdMmBasicInfoService.update(member);
-                }else if(map.get("status").equals("error")){
-                    String message = (String) map.get("message");
-                    throw new RuntimeException(message);
-                } else {
-                    throw new RuntimeException("通联支付注册异常");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("通联支付注册异常");
-            }
         }
         if (verificationCode==null||verificationCode.trim().equals("")){
             return ApiUtils.error("请输入验证码");

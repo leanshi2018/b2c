@@ -37,4 +37,6 @@ public interface RdMmAccountInfoService  extends GenericService<RdMmAccountInfo,
     List<RdMmAccountInfo> findLastWithdrawalOneHundred(BigDecimal acc);
 
     void reduceAcc(ShopOrder shopOrder, RdMmAccountInfo accountInfo, BigDecimal acc);
+
+	Long updateStatus(RdMmAccountInfo rdMmAccountInfo);
 }

@@ -1244,6 +1244,7 @@ public class RefundReturnSysController extends GenericController {
         ShopRefundReturn refundReturn = refundReturnService.find(id);
         ShopOrder shopOrder = orderService.find(refundReturn.getOrderId());
         BigDecimal cutAmount = shopOrder.getCutAmount();//分账人金额
+        double c = cutAmount.doubleValue()*100;
         BigDecimal orderAmount = shopOrder.getOrderAmount();//订单总金额
         BigDecimal fee = orderAmount.subtract(cutAmount);
 
@@ -1271,9 +1272,17 @@ public class RefundReturnSysController extends GenericController {
                 //String backUrl = server + "/admin/paynotify/withdrawBank/" + id + "/" + shopOrder.getBuyerId() + ".json";//后台通知地址
                 List<Map<String, Object>> refundList = new ArrayList<Map<String, Object>>();
                 Map<String, Object> refundMember = new HashMap<String, Object>();
-                //refundMember.accumulate("bizUserId",shopOrder.getBuyerId());//商户系统用户标识，商户系统中唯一编号
-                //refundMember.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);// 金额，单位：分
-                //refundList.add(refundMember);
+                if (shopOrder.getCutStatus()==2){//已分账
+                    refundMember.put("accountSetNo",TongLianUtils.ACCOUNT_SET_NO);//商户系统用户标识，商户系统中唯一编号
+                    refundMember.put("bizUserId",shopOrder.getCutGetId());//商户系统用户标识，商户系统中唯一编号
+                    refundMember.put("amount",new Double(c).longValue());// 金额，单位：分
+                    refundList.add(refundMember);
+                }
+                if (shopOrder.getCutStatus()==5){//未分账
+                    refundMember.put("bizUserId",shopOrder.getCutGetId());//商户系统用户标识，商户系统中唯一编号
+                    refundMember.put("amount",new Double(c).longValue());// 金额，单位：分
+                    refundList.add(refundMember);
+                }
 
 /*                String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
                         backUrl,1l,0l,0l,null);*/
