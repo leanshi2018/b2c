@@ -1597,6 +1597,7 @@ public class OrderAPIController extends BaseController {
         rdBizPay.setPaySn(mmPaySn);
         rdBizPay.setBizPaySn(paysn);
         rdBizPay.setInvalidStatus(1);
+        rdBizPay.setCutPaySn("C"+mmPaySn);
         rdBizPayService.save(rdBizPay);
 
         ShopOrder shopOrder = orderList.get(0);
@@ -1606,14 +1607,29 @@ public class OrderAPIController extends BaseController {
         //收款列表
         Map<String, Object> reciever = new LinkedHashMap<>();
         //查询一个满足条件的收款人，扣除积分，返回用户编号以及分账金额
-        HashMap<String,Object> map=getCutNumber(shopOrder);
+        if(shopOrder.getCutStatus()!=null&&(shopOrder.getCutStatus()==0||shopOrder.getCutStatus()==1||shopOrder.getCutStatus()==5)){
+            HashMap<String,Object> map=getCutNumber(shopOrder);
+            RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
+            BigDecimal acc = (BigDecimal) map.get("acc");
+            double accdouble = acc.doubleValue() * 100;
+            //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
+            reciever.put("bizUserId", accountInfo.getMmCode());//TODO
+            //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
+            reciever.put("amount",new Double(accdouble).longValue());
+        }else {
+            reciever.put("bizUserId", "");//TODO
+            //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
+            reciever.put("amount",0L);
+        }
+        List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
+        /*HashMap<String,Object> map=getCutNumber(shopOrder);
         RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
         BigDecimal acc = (BigDecimal) map.get("acc");
+        double accdouble = acc.doubleValue() * 100;
         //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
+        Long accL = new Double(accdouble).longValue();
         reciever.put("bizUserId", accountInfo.getMmCode());//TODO
         //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
-        reciever.put("amount",acc.longValue()*100);
-        List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
         /*JSONObject reciever = new JSONObject();
         reciever.accumulate("bizUserId", TongLianUtils.BIZ_USER_ID);
         reciever.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);*/
@@ -1642,7 +1658,7 @@ public class OrderAPIController extends BaseController {
         String notifyUrl = NotifyConsts.APP_NOTIFY_FILE+ "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
         //TODO 正式
         String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
-                oAmount, 0l, 0l, "", notifyUrl, "",
+                oAmount, oAmount-(Long)reciever.get("amount"), 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");
 
         /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
