@@ -133,7 +133,7 @@
 		<if test="lastWithdrawalTime != null">
 			LAST_WITHDRAWAL_TIME = #{lastWithdrawalTime},
 		</if>
-		<if test="automaticWithdrawal != null and automaticWithdrawal != ''">
+		<if test="automaticWithdrawal != null">
 			AUTOMATIC_WITHDRAWAL = #{automaticWithdrawal,jdbcType=INTEGER},
 		</if>
 	</sql>
@@ -225,4 +225,10 @@
 	<select id="findLastWithdrawalOneHundred" resultMap="RdMmAccountInfoResultMap" parameterType="java.math.BigDecimal">
 		SELECT * FROM RD_MM_ACCOUNT_INFO WHERE BONUS_STATUS = 0 and AUTOMATIC_WITHDRAWAL = 1 and BONUS_BLANCE >= #{acc} order by LAST_WITHDRAWAL_TIME asc limit 0,100
 	</select>
+
+	<update id="updateStatus" parameterType="com.framework.loippi.entity.user.RdMmAccountInfo">
+		UPDATE	RD_MM_ACCOUNT_INFO
+		set AUTOMATIC_WITHDRAWAL = 0
+		WHERE	MM_CODE = #{mmCode,jdbcType=VARCHAR}
+	</update>
 </mapper> 

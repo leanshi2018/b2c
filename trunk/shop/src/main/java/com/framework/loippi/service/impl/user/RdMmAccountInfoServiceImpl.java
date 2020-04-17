@@ -216,4 +216,9 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 			shopOrderDao.update(shopOrder);
 		}
 	}
+
+	@Override
+	public Long updateStatus(RdMmAccountInfo rdMmAccountInfo) {
+		return rdMmAccountInfoDao.updateStatus(rdMmAccountInfo);
+	}
 }

@@ -23,4 +23,6 @@ public interface RdMmAccountInfoDao  extends GenericDao<RdMmAccountInfo, Long> {
 	RdMmAccountInfo findAccByMCode(String sponsorCode);
 
 	List<RdMmAccountInfo> findLastWithdrawalOneHundred(BigDecimal acc);
+
+	Long updateStatus(RdMmAccountInfo rdMmAccountInfo);
 }

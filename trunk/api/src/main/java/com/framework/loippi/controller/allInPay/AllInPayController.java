@@ -235,8 +235,10 @@ public class AllInPayController extends BaseController {
         }
         rdMmBasicInfo.setAllInContractStatus(2);
         rdMmAccountInfo.setAutomaticWithdrawal(0);
-        rdMmBasicInfoService.update(rdMmBasicInfo);
-        rdMmAccountInfoService.update(rdMmAccountInfo);
+        Long a = rdMmBasicInfoService.update(rdMmBasicInfo);
+        Long b = rdMmAccountInfoService.updateStatus(rdMmAccountInfo);
+        System.out.println(b);
+        System.out.println(a);
         return ApiUtils.success("已为您关闭通联钱包自动提现功能");
     }
 
