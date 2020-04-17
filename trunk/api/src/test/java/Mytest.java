@@ -1,9 +1,15 @@
+import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Test;
+
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.allinpay.yunst.sdk.YunClient;
 import com.allinpay.yunst.sdk.bean.YunConfig;
 import com.allinpay.yunst.sdk.bean.YunRequest;
+import com.framework.loippi.consts.AllInPayConstant;
 
 public class Mytest {
     public static void main(String[] args) {
@@ -35,6 +41,40 @@ public class Mytest {
             System.out.println("status="+status);
             System.out.println("signedValue="+signedValue);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 分账
+     */
+    @Test
+    public void testCut() {
+        final YunRequest request = new YunRequest("OrderService", "signalAgentPay");
+        try {
+            request.put("bizOrderNo", "P20200416184106847WOMI399467");
+            JSONArray collectPayList = new JSONArray();
+            HashMap<String, Object> collect1 = new HashMap<>();
+            collect1.put("bizOrderNo","P20200416210503484WOMI66218");
+            collect1.put("amount", 200L);
+            collectPayList.add(new JSONObject(collect1));
+            request.put("collectPayList", collectPayList);
+            request.put("bizUserId","900013839");
+            request.put("accountSetNo","400142");//TODO
+            request.put("backUrl", AllInPayConstant.CUT_BILL_BACKURL);//TODO
+            request.put("amount",200L);
+            request.put("fee",100L);
+            request.put("tradeCode","4001");
+            String res = YunClient.request(request);
+            System.out.println("res: " + res);
+
+            JSONObject resp = JSON.parseObject(res);
+            System.out.println(resp.getString("status"));
+            System.out.println(resp.getString("signedValue"));
+            System.out.println(resp.getString("sign"));
+            System.out.println(resp.getString("errorCode"));
+            System.out.println(resp.getString("message"));
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
