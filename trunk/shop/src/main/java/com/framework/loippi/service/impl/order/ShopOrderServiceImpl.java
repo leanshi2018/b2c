@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.framework.loippi.consts.AllInPayBillCutConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.CouponConstant;
 import com.framework.loippi.consts.IntegrationNameConsts;
@@ -634,7 +635,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         }
         //查询当前订单是否判定分账扣减分账收款人积分 如果扣减，找到归还用户 TODO
         if(order.getCutStatus()!=null&&order.getCutStatus()==5){
-            refundSpoPoint(order);
+            //refundSpoPoint(order);
             order.setCutStatus(6);
             //order.setCutAcc(BigDecimal.ZERO);
             //order.setCutAmount(BigDecimal.ZERO);
@@ -2496,61 +2497,63 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         }
 
         //返还分账人积分
-        if (order.getCutStatus()==6){
+        if (order.getCutStatus()==2||order.getCutStatus()==5){
             String cutGetId = order.getCutGetId();//分账人编号
             BigDecimal cutAcc = order.getCutAcc();//分账人扣的积分
+            if(!AllInPayBillCutConstant.COMPANY_CUT_B.equals(cutGetId)){
+                RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", cutGetId);
+                RdMmAccountInfo cutAccountInfo = rdMmAccountInfoService.find("mmCode", cutGetId);
 
-            RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", cutGetId);
-            RdMmAccountInfo cutAccountInfo = rdMmAccountInfoService.find("mmCode", cutGetId);
+                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                rdMmAccountLog.setTransTypeCode("CF");
+                rdMmAccountLog.setAccType("SWB");
+                rdMmAccountLog.setTrSourceType("OWB");
+                rdMmAccountLog.setMmCode(shopMember.getMmCode());
+                rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
+                rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
+                rdMmAccountLog.setBlanceBefore(cutAccountInfo.getBonusBlance());
+                rdMmAccountLog.setAmount(cutAcc);
+                //无需审核直接成功
+                rdMmAccountLog.setStatus(3);
+                rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
+                rdMmAccountLog.setCreationTime(new Date());
+                rdMmAccountLog.setAutohrizeBy("后台管理员");
+                rdMmAccountLog.setAutohrizeTime(new Date());
+                cutAccountInfo.setBonusBlance(cutAccountInfo.getBonusBlance().add(cutAcc));
+                rdMmAccountLog.setBlanceAfter(cutAccountInfo.getBonusBlance().add(cutAcc));
+                rdMmAccountLog.setTransDate(new Date());
+                String period = rdSysPeriodDao.getSysPeriodService(new Date());
+                if(period!=null){
+                    rdMmAccountLog.setTransPeriod(period);
+                }
+                rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
+                rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+                rdMmAccountLogService.save(rdMmAccountLog);
+                rdMmAccountInfoService.update(cutAccountInfo);
 
-            RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
-            rdMmAccountLog.setTransTypeCode("CF");
-            rdMmAccountLog.setAccType("SWB");
-            rdMmAccountLog.setTrSourceType("OWB");
-            rdMmAccountLog.setMmCode(shopMember.getMmCode());
-            rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
-            rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
-            rdMmAccountLog.setBlanceBefore(cutAccountInfo.getBonusBlance());
-            rdMmAccountLog.setAmount(cutAcc);
-            //无需审核直接成功
-            rdMmAccountLog.setStatus(3);
-            rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
-            rdMmAccountLog.setCreationTime(new Date());
-            rdMmAccountLog.setAutohrizeBy("后台管理员");
-            rdMmAccountLog.setAutohrizeTime(new Date());
-            cutAccountInfo.setBonusBlance(cutAccountInfo.getBonusBlance().add(cutAcc));
-            rdMmAccountLog.setBlanceAfter(cutAccountInfo.getBonusBlance().add(cutAcc));
-            rdMmAccountLog.setTransDate(new Date());
-            String period = rdSysPeriodDao.getSysPeriodService(new Date());
-            if(period!=null){
-                rdMmAccountLog.setTransPeriod(period);
+                ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
+                shopCommonMessage1.setSendUid(shopMember.getMmCode());
+                shopCommonMessage1.setType(1);
+                shopCommonMessage1.setOnLine(1);
+                shopCommonMessage1.setCreateTime(new Date());
+                shopCommonMessage1.setBizType(2);
+                shopCommonMessage1.setIsTop(1);
+                shopCommonMessage1.setCreateTime(new Date());
+                shopCommonMessage1.setTitle("自动提现失败积分退还通知");
+                shopCommonMessage1.setContent("提现订单创建失败，退还"+cutAcc+"奖励积分到积分账户");
+                Long msgId = twiterIdService.getTwiterId();
+                shopCommonMessage1.setId(msgId);
+                shopCommonMessageDao.insert(shopCommonMessage1);
+                ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                shopMemberMessage1.setBizType(2);
+                shopMemberMessage1.setCreateTime(new Date());
+                shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                shopMemberMessage1.setIsRead(0);
+                shopMemberMessage1.setMsgId(msgId);
+                shopMemberMessage1.setUid(Long.parseLong(shopMember.getMmCode()));
+                shopMemberMessageDao.insert(shopMemberMessage1);
             }
-            rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
-            rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
-            rdMmAccountLogService.save(rdMmAccountLog);
-            rdMmAccountInfoService.update(cutAccountInfo);
 
-            ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
-            shopCommonMessage1.setSendUid(shopMember.getMmCode());
-            shopCommonMessage1.setType(1);
-            shopCommonMessage1.setOnLine(1);
-            shopCommonMessage1.setCreateTime(new Date());
-            shopCommonMessage1.setBizType(2);
-            shopCommonMessage1.setIsTop(1);
-            shopCommonMessage1.setCreateTime(new Date());
-            shopCommonMessage1.setTitle("自动提现失败积分退还通知");
-            shopCommonMessage1.setContent("提现订单创建失败，退还"+cutAcc+"奖励积分到积分账户");
-            Long msgId = twiterIdService.getTwiterId();
-            shopCommonMessage1.setId(msgId);
-            shopCommonMessageDao.insert(shopCommonMessage1);
-            ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
-            shopMemberMessage1.setBizType(2);
-            shopMemberMessage1.setCreateTime(new Date());
-            shopMemberMessage1.setId(twiterIdService.getTwiterId());
-            shopMemberMessage1.setIsRead(0);
-            shopMemberMessage1.setMsgId(msgId);
-            shopMemberMessage1.setUid(Long.parseLong(shopMember.getMmCode()));
-            shopMemberMessageDao.insert(shopMemberMessage1);
         }
 
 //        }
