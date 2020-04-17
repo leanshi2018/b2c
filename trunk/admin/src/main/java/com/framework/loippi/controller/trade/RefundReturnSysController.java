@@ -1,12 +1,12 @@
 package com.framework.loippi.controller.trade;
 
 import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -1257,15 +1257,15 @@ public class RefundReturnSysController extends GenericController {
             Map<String, Object> map = null;
             if (weitype.equals("applet_weichatpay")) {//通联退款
                 //String backUrl = server + "/admin/paynotify/withdrawBank/" + id + "/" + shopOrder.getBuyerId() + ".json";//后台通知地址
-                JSONArray refundList = new JSONArray();
-                JSONObject refundMember = new JSONObject();
+                List<Map<String, Object>> refundList = new ArrayList<Map<String, Object>>();
+                Map<String, Object> refundMember = new HashMap<String, Object>();
                 //refundMember.accumulate("bizUserId",shopOrder.getBuyerId());//商户系统用户标识，商户系统中唯一编号
                 //refundMember.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);// 金额，单位：分
                 //refundList.add(refundMember);
 
 /*                String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
                         backUrl,1l,0l,0l,null);*/
-                String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
+                String s = TongLianUtils.refundOrder(weiRefund.getOutrefundno().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
                         backUrl,oAmount,0l,0l,null);
                 if(!"".equals(s)) {
                     Map maps = (Map) JSON.parse(s);

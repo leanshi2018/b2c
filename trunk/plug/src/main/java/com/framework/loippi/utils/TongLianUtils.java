@@ -1,7 +1,5 @@
 package com.framework.loippi.utils;
 
-import net.sf.json.JSONArray;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -108,7 +106,17 @@ public class TongLianUtils {
 		final YunRequest request = new YunRequest("OrderService", "agentCollectApply");
 		request.put("bizOrderNo", bizOrderNo);
 		request.put("payerId", payerId);
-		request.put("recieverList", recieverList);
+		if (recieverList.size()>0){
+			if (recieverList.size()==1){
+				Map<String, Object> map = recieverList.get(0);
+				String bizUserId = map.get("bizUserId").toString();
+					if (!"".equals(bizUserId)){
+						request.put("recieverList", recieverList);
+					}
+			}else {
+				request.put("recieverList", recieverList);
+			}
+		}
 		//request.put("goodsType", goodsType);
 		//request.put("bizGoodsNo", bizGoodsNo);
 		request.put("tradeCode", tradeCode);
@@ -175,7 +183,7 @@ public class TongLianUtils {
 	 * @param extendInfo  扩展信息 否
 	 * @return
 	 */
-	public static String refundOrder(String bizOrderNo, String oriBizOrderNo, String bizUserId, String refundType, JSONArray refundList,
+	public static String refundOrder(String bizOrderNo, String oriBizOrderNo, String bizUserId, String refundType, List<Map<String, Object>> refundList,
 									 String backUrl, Long amount, Long couponAmount, Long feeAmount,String extendInfo) {
 		getRequest();
 		final YunRequest request = new YunRequest("OrderService", "refund");
