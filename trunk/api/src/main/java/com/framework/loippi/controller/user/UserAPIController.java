@@ -1650,8 +1650,67 @@ public class UserAPIController extends BaseController {
 
         Long startPosition = Long.parseLong(String.valueOf((currentPage-1)*10+1));//起始位置 取值>0 eg：查询第 11 条到 20条的 记录（start =11）
         Long queryNum = Long.parseLong(String.valueOf(queryNumInt));
-        List<Map<String, Object>> inExpDetail = new ArrayList<>();
+        List<Map<String, Object>> inExpDetailList = new ArrayList<>();
         String resBalance = TongLianUtils.queryInExpDetail(member.getMmCode(), "",dateStart,dateEnd,startPosition,queryNum);
+        /*
+        response:  {
+                    "sysid": "1908201117222883218",
+                    "sign": "itFp5mr8qXTQOFtXdXnDUD+FQFpf+ovcKPEA3lWNdoICmH3AkB27sHvYo5NNmB0By6UrjRjd7elj5bR3pNI0bV0Gu1LrSTXRQcPIQ/C/im9oB5ZkCSU/8zfs12krwSG35EWakklsQfziWTI5+UTWbC6oeq5pFSUk+leITLcwSyM=",
+                    "signedValue": "{
+                                    "totalNum": 4,
+                                    "inExpDetail": [
+                                                {
+                                                "changeTime": "2020-04-17 17:13:30",
+                                                "oriAmount": 1000,
+                                                "tradeNo": "2004171713204826983807",
+                                                "curFreezenAmount": 0,
+                                                "accountSetName": "上海分公司测试应用-托管账户集",
+                                                "chgAmount": -1000,
+                                                "type": "无验证代收",
+                                                "curAmount": 0,
+                                                "bizOrderNo": "P20200417170831604WOMI12876"
+                                                },
+                                                {
+                                                "changeTime": "2020-04-17 17:13:30",
+                                                "oriAmount": 0,
+                                                "tradeNo": "2004171713200299983806",
+                                                "curFreezenAmount": 0,
+                                                "accountSetName": "上海分公司测试应用-托管账户集",
+                                                "chgAmount": 1000,
+                                                "type": "充值",
+                                                "curAmount": 1000,
+                                                "bizOrderNo": "P20200417170831604WOMI12876"
+                                                },
+                                                {
+                                                "changeTime": "2020-04-17 17:05:50",
+                                                "oriAmount": 1000,
+                                                "tradeNo": "2004171705430555983790",
+                                                "curFreezenAmount": 0,
+                                                "accountSetName": "上海分公司测试应用-托管账户集",
+                                                "chgAmount": -1000,
+                                                "type": "无验证代收",
+                                                "curAmount": 0,
+                                                "bizOrderNo": "P20200417170505896WOMI53528"
+                                                },
+                                                {
+                                                "changeTime": "2020-04-17 17:05:50",
+                                                "oriAmount": 0,
+                                                "tradeNo": "2004171705432467983789",
+                                                "curFreezenAmount": 0,
+                                                "accountSetName": "上海分公司测试应用-托管账户集",
+                                                "chgAmount": 1000,
+                                                "type": "充值",
+                                                "curAmount": 1000,
+                                                "bizOrderNo": "P20200417170505896WOMI53528"
+                                                }
+                                    ],
+                                    "bizUserId": "900013856"
+                                    }",
+                    "status": "OK"
+                    }
+
+        * */
+
         if(!"".equals(resBalance)) {
             Map maps = (Map) JSON.parse(resBalance);
             String status = maps.get("status").toString();
@@ -1660,18 +1719,36 @@ public class UserAPIController extends BaseController {
                 Map okMap = (Map) JSON.parse(signedValue);
                 String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号
                 Long totalNum = Long.valueOf(okMap.get("totalNum").toString());//该账户收支明细总条数
-                inExpDetail = (List<Map<String, Object>>)okMap.get("inExpDetail");//收支明细
-                /*for (Map<String, Object> detailMap : inExpDetail) {
-                    String tradeNo = detailMap.get("tradeNo").toString();//收支明细流水号
-                    String accountSetName = detailMap.get("accountSetName").toString();//账户集名称
-                    String changeTime = detailMap.get("changeTime").toString();// 变更时间
-                    Long curAmount = Long.valueOf(detailMap.get("curAmount").toString());//现有金额
+                List<Map<String, Object>> inExpDetail = (List<Map<String, Object>>)okMap.get("inExpDetail");//收支明细
+
+                for (Map<String, Object> detailMap : inExpDetail) {
+                    Map<String, Object> detail = new HashMap<String, Object>();
+                    detail.put("changeTime",detailMap.get("changeTime").toString());// 变更时间
+                    detail.put("oriAmount",Long.valueOf(detailMap.get("oriAmount").toString()));//原始金额
+                    detail.put("tradeNo",detailMap.get("tradeNo").toString());//收支明细流水号
+                    detail.put("curFreezenAmount",Long.valueOf(detailMap.get("curFreezenAmount").toString()));//变更金额
+                    detail.put("accountSetName",detailMap.get("accountSetName").toString());//账户集名称
+                    detail.put("chgAmount",Long.valueOf(detailMap.get("chgAmount").toString()));//变更金额
+                    if ("代付".equals(detailMap.get("type").toString())){
+                        detail.put("type","自动提现积分到账");// 类型
+                    }else {
+                        detail.put("type",detailMap.get("type").toString());// 类型
+                    }
+                    detail.put("curAmount",Long.valueOf(detailMap.get("curAmount").toString()));//现有金额
+                    detail.put("bizOrderNo",detailMap.get("bizOrderNo").toString());// 商户订单号（支付订单）
+
+                    /*String changeTime = detailMap.get("changeTime").toString();// 变更时间
                     Long oriAmount = Long.valueOf(detailMap.get("oriAmount").toString());//原始金额
-                    Long chgAmount = Long.valueOf(detailMap.get("chgAmount").toString());//变更金额
+                    String tradeNo = detailMap.get("tradeNo").toString();//收支明细流水号
                     Long curFreezenAmount = Long.valueOf(detailMap.get("curFreezenAmount").toString());//变更金额
-                    //String bizOrderNo = detailMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                    String accountSetName = detailMap.get("accountSetName").toString();//账户集名称
+                    Long chgAmount = Long.valueOf(detailMap.get("chgAmount").toString());//变更金额
+                    String type = detailMap.get("type").toString();//类型
+                    Long curAmount = Long.valueOf(detailMap.get("curAmount").toString());//现有金额
+                    String bizOrderNo = detailMap.get("bizOrderNo").toString();// 商户订单号（支付订单）
                     //String extendInfo = detailMap.get("extendInfo").toString();//备注
-                }*/
+                    */
+                }
 
 
             }else {
@@ -1682,7 +1759,7 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error("通联接口调取失败");
         }
 
-        return ApiUtils.success(inExpDetail);
+        return ApiUtils.success(inExpDetailList);
     }
 
     /**
