@@ -1839,8 +1839,8 @@ public class OrderAPIController extends BaseController {
             //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
             RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
             map.put("accountInfo",accountInfo);
-            map.put("acc",BigDecimal.ZERO);
-            //rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
+            map.put("acc",new BigDecimal("0.01"));
+            rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
             return map;
         }
         BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(0,BigDecimal.ROUND_UP);//当前订单需要分出去多少钱，单位为圆
@@ -1867,8 +1867,8 @@ public class OrderAPIController extends BaseController {
         //都不满足，走公司小B分账
         RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
         map.put("accountInfo",accountInfo);
-        map.put("acc",BigDecimal.ZERO);
-        //rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
+        map.put("acc",new BigDecimal("0.01"));
+        rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
         return map;
     }
 

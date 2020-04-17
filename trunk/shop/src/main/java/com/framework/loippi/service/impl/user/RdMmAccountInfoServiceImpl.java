@@ -150,6 +150,14 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 
 	@Override
 	public void reduceAcc(ShopOrder shopOrder, RdMmAccountInfo accountInfo, BigDecimal acc) {
+		if(acc.compareTo(BigDecimal.ZERO)==0){//如果acc等于0 默认到公司小B账户0.01元 积分不进行处理
+			shopOrder.setCutStatus(5);
+			shopOrder.setCutGetId(accountInfo.getMmCode());
+			shopOrder.setCutAmount(new BigDecimal("0.01"));
+			shopOrder.setCutAcc(new BigDecimal("0.01"));
+			shopOrderDao.update(shopOrder);
+		}
+		if(acc.compareTo(BigDecimal.ZERO)==1){
 			RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
 			rdMmAccountLog.setMmCode(accountInfo.getMmCode());
 			List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",accountInfo.getMmCode()));
@@ -205,5 +213,6 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 			shopOrder.setCutAmount(acc);
 			shopOrder.setCutAcc(acc);
 			shopOrderDao.update(shopOrder);
+		}
 	}
 }

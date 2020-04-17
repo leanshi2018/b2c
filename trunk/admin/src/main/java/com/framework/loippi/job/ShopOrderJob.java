@@ -581,13 +581,15 @@ public class ShopOrderJob {
         try {
             List<RdBizPay> rdBizPayList = rdBizPayService.findByPaysnAndStatus(shopOrder.getPaySn(),1);
             RdBizPay rdBizPay = rdBizPayList.get(0);
-            String cutPaySn = rdBizPay.getCutPaySn();
             BigDecimal cutAmount = shopOrder.getCutAmount();
+            if(cutAmount.compareTo(BigDecimal.ZERO)!=1){
+                return;
+            }
             double cutAll = cutAmount.doubleValue() * 100;
             request.put("bizOrderNo", rdBizPay.getCutPaySn());
             JSONArray collectPayList = new JSONArray();
             HashMap<String, Object> collect1 = new HashMap<>();
-            collect1.put("bizOrderNo",cutPaySn);
+            collect1.put("bizOrderNo",rdBizPay.getBizPaySn());
             collect1.put("amount",cutAll);
             collectPayList.add(new JSONObject(collect1));
             request.put("collectPayList", collectPayList);
