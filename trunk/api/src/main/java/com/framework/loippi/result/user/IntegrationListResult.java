@@ -39,6 +39,8 @@ public class IntegrationListResult {
      OP:订单支付
      TT:转给他人
      PC:购买商品并评论
+     CF:自动自提失败退还积分
+     AWD:自动自提积分预扣减
      EG:换购商品 */
     private String transTypeCode;
     /** 交易类型代码
@@ -106,6 +108,12 @@ public class IntegrationListResult {
                          symbol="+";
                      }else if ("MDB".equals(transTypeCode) && item.getStatus()==3){
                          transTypeName="补扣奖励积分";
+                     }
+                     else if ("AWD".equals(transTypeCode) && item.getStatus()==3){
+                         transTypeName="自动提现预扣减积分成功";
+                     }
+                     else if ("CF".equals(transTypeCode) && item.getStatus()==3){
+                         transTypeName="自动提现失败积分退还";
                      }
                  }else if (type==2) {
                      //购物积分

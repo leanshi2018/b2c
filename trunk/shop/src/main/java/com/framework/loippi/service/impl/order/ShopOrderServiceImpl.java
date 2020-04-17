@@ -1579,6 +1579,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     @Override
     public ShopOrderPay addOrderReturnPaySnNew1(String cartIds, String memberId, Map<String, Object> orderMsgMap, Long addressId,
                                                 Long couponId, Integer isPp, Integer platform, Long groupBuyActivityId, Long groupOrderId, ShopOrderDiscountType shopOrderDiscountType, Integer logisticType, Integer paymentType, Long giftId, Integer giftNum) {
+        if(shopOrderDiscountType.getPreferentialType()==3){//如果是大单价，传递过来的优惠券也不予理会
+            couponId=null;
+        }
         // 平台优惠券id
         // 单个订单id
         Long orderId = null;
