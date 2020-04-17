@@ -1781,7 +1781,7 @@ public class OrderAPIController extends BaseController {
     private void refundSpoPoint(ShopOrder order) {
         RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode", order.getCutGetId());
         HashMap<String, Object> map = new HashMap<>();
-        map.put("transTypeCode","WD");
+        map.put("transTypeCode","AWD");
         map.put("accType","SBB");
         map.put("trSourceType","BNK");
         map.put("trOrderOid",order.getId());
