@@ -2634,6 +2634,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 log.info("用户微信退款成功");
             } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
                 System.out.println(map.get("err_code_des"));
+                throw new StateResult(5010301, map.get("err_code_des").toString());
             }else {
                 throw new RuntimeException("退款失败");
             }
