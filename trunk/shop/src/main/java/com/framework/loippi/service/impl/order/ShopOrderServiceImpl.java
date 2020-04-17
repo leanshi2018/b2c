@@ -2555,10 +2555,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private void toweichatrefundTL(WeiRefund weiRefund, String weitype,Long orderId) {
         Map<String, Object> map = new HashMap<>();
         ShopOrder shopOrder = orderDao.find(orderId);
+        BigDecimal cutAmount = shopOrder.getCutAmount();//分账人金额
+
         BigDecimal orderAmount = shopOrder.getOrderAmount();
         double b = orderAmount.doubleValue()*100;
         Long oAmount = new Double(b).longValue();
         String paySn = shopOrder.getPaySn();
+
+        BigDecimal feeAmountBig = orderAmount.subtract(cutAmount);//公司的抽佣
+        double f = feeAmountBig.doubleValue()*100;
+        Long feeAmount = new Double(f).longValue();
 
         Map<String,Object> mapSn = new HashMap<String,Object>();
         mapSn.put("paySn",paySn);
@@ -2579,7 +2585,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 //refundList.add(refundMember);
 
                 String s = TongLianUtils.refundOrder(weiRefund.getOutrefundno().toString(), bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
-                        backUrl, oAmount, 0l, 0l, null);
+                        backUrl, oAmount, 0l, feeAmount, null);
 
                 /*
                 response:{

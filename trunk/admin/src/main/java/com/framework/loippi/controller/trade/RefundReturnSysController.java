@@ -1243,10 +1243,21 @@ public class RefundReturnSysController extends GenericController {
 
         ShopRefundReturn refundReturn = refundReturnService.find(id);
         ShopOrder shopOrder = orderService.find(refundReturn.getOrderId());
-        //BigDecimal orderAmount = shopOrder.getOrderAmount();
+        BigDecimal cutAmount = shopOrder.getCutAmount();//分账人金额
+        BigDecimal orderAmount = shopOrder.getOrderAmount();//订单总金额
+        BigDecimal fee = orderAmount.subtract(cutAmount);
+
         BigDecimal refundAmount = updateReturn.getRefundAmount();
         double b = refundAmount.doubleValue()*100;
         Long oAmount = new Double(b).longValue();
+
+        BigDecimal feeAmountBig = new BigDecimal("0");
+        if (cutAmount.compareTo(refundAmount)==-1){//退款金额大于分账金额
+            feeAmountBig = refundAmount.subtract(cutAmount);
+        }
+        double f = feeAmountBig.doubleValue()*100;
+        Long feeAmount = new Double(f).longValue();
+
 
         String paySn = shopOrder.getPaySn();
         List<RdBizPay> rdBizPayList = rdBizPayService.findByPaysnAndStatus(paySn,1);
@@ -1255,7 +1266,7 @@ public class RefundReturnSysController extends GenericController {
             RdBizPay rdBizPay = rdBizPayList.get(0);
             bizPaySn = rdBizPay.getBizPaySn();
 
-            Map<String, Object> map = null;
+            Map<String, Object> map = new HashMap<>();
             if (weitype.equals("applet_weichatpay")) {//通联退款
                 //String backUrl = server + "/admin/paynotify/withdrawBank/" + id + "/" + shopOrder.getBuyerId() + ".json";//后台通知地址
                 List<Map<String, Object>> refundList = new ArrayList<Map<String, Object>>();
@@ -1267,7 +1278,7 @@ public class RefundReturnSysController extends GenericController {
 /*                String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
                         backUrl,1l,0l,0l,null);*/
                 String s = TongLianUtils.refundOrder(weiRefund.getOutrefundno().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
-                        backUrl,oAmount,0l,0l,null);
+                        backUrl,oAmount,0l,feeAmount,null);
                 if(!"".equals(s)) {
                     Map maps = (Map) JSON.parse(s);
                     String status = maps.get("status").toString();
