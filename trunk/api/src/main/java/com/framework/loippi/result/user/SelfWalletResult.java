@@ -46,10 +46,10 @@ public class SelfWalletResult {
 		if (basicInfo.getWhetherTrueName()==null||basicInfo.getWhetherTrueName()!=1){
 			result.setAmountStatus(2);
 		}else {
-			if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()!=1){
+			if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()==0){
 				result.setAmountStatus(1);
 			}else {
-				if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()==1){
+				if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()==1||basicInfo.getAllInContractStatus()==2){
 					result.setAmountStatus(0);
 				}else {
 					result.setAmountStatus(3);
