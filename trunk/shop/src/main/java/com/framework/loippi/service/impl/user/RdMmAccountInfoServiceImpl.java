@@ -9,26 +9,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.framework.loippi.dao.order.ShopOrderDao;
-import com.framework.loippi.dao.user.RdMmBasicInfoDao;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.service.TwiterIdService;
-import com.framework.loippi.utils.Paramap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
+import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmAccountLogDao;
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.utils.Paramap;
 
 /**
  * SERVICE - RdMmAccountInfo(会员账户信息)

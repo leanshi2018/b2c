@@ -14,9 +14,6 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.xml.namespace.QName;
 
-import com.framework.loippi.consts.AllInPayBillCutConstant;
-import com.framework.loippi.entity.walet.RdBizPay;
-import com.framework.loippi.service.wallet.RdBizPayService;
 import org.apache.axis.client.Call;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -33,6 +30,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.allinpay.yunst.sdk.YunClient;
 import com.allinpay.yunst.sdk.bean.YunRequest;
+import com.framework.loippi.consts.AllInPayBillCutConstant;
 import com.framework.loippi.consts.AllInPayConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.PaymentTallyState;
@@ -69,6 +67,7 @@ import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RetailProfit;
+import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.entity.ware.RdWareAdjust;
 import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.service.TwiterIdService;
@@ -85,6 +84,7 @@ import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.user.RdGoodsAdjustmentService;
+import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
 import com.framework.loippi.service.ware.RdWareAdjustService;
 import com.framework.loippi.service.ware.RdWarehouseService;
@@ -373,13 +373,14 @@ public class ShopOrderJob {
      */
     //@Scheduled(cron = "0 30 08 * * ? " )  //每天上午八点三十分钟执行一次
     //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
-    @Scheduled(cron = "0 5/20 * * * ?")  //每20分钟执行一次
+    @Scheduled(cron = "0 0/3 * * * ?")  //每3分钟执行一次
     public void timingAccCut(){
         System.out.println("###############################执行定时分账任务#####################################");
         //查询当前系统时间向前的第二天的已完成支付且未取消的订单 （条件：1.已支付 2.未取消 3.已经发货 4.未进行过分账操作 5.支付时间区间在指定日期内）
-        Calendar calendar = Calendar.getInstance();
+       /* Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE,-10);
-        Date time = calendar.getTime();
+        Date time = calendar.getTime();*/
+        Date time = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = format.format(time);
         String[] s = timeStr.split(" ");

@@ -1522,7 +1522,7 @@
             <if test="cutStatus != null">
                 and cut_status = #{cutStatus}
             </if>
-            and logisticType = 1
+            and logistic_type = 1
         </where>
     </select>
 
@@ -1547,7 +1547,7 @@
             <if test="cutStatus != null">
                 and cut_status = #{cutStatus}
             </if>
-            and logisticType = 2
+            and logistic_type = 2
         </where>
     </select>
     <!--&lt;!&ndash; 根据不同的时间段查出相应的订单量 &ndash;&gt;-->
