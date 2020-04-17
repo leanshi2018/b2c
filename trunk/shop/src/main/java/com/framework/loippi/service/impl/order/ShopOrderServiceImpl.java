@@ -2497,7 +2497,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         }
 
         //返还分账人积分
-        if (order.getCutStatus()==2||order.getCutStatus()==5){
+        if (order.getCutStatus()==6){
             String cutGetId = order.getCutGetId();//分账人编号
             BigDecimal cutAcc = order.getCutAcc();//分账人扣的积分
             if(!AllInPayBillCutConstant.COMPANY_CUT_B.equals(cutGetId)){
