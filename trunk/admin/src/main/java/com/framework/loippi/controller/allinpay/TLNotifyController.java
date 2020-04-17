@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.fastjson.JSON;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
+import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
 import com.framework.loippi.utils.JacksonUtil;
 
@@ -33,7 +35,10 @@ public class TLNotifyController {
 	private RdMmWithdrawLogService rdMmWithdrawLogService;
 	@Resource
 	private ShopRefundReturnService refundReturnService;
-
+	@Resource
+	private ShopOrderService orderService;
+	@Resource
+	private RdBizPayService rdBizPayService;
 	/**
 	 * 提现回调
 	 * @param request
@@ -133,6 +138,20 @@ public class TLNotifyController {
 			String oriBizOrderNo = Optional.ofNullable(returnMap.get("oriBizOrderNo").toString()).orElse("");//原商户订单号
 			Long amount = Optional.ofNullable(Long.valueOf(returnMap.get("amount").toString())).orElse(0l);//订单金额
 			refundReturnService.updateTlStatusById(bizOrderNo,2,adminMsg);
+
+			/*List<RdBizPay> rdBizPayList = rdBizPayService.findByPaysnAndStatus(oriBizOrderNo,1);
+			RdBizPay rdBizPay = rdBizPayList.get(0);
+			String bizPaySn = rdBizPay.getBizPaySn();
+			ShopOrder order = orderService.findByBuyPaySn(bizPaySn);
+			if (order!=null){
+				if (order.getCutStatus()==6){
+					if (order.getCutAmount().compareTo(new BigDecimal(0))==1){//大于0
+
+					}
+				}
+			}*/
+
+
 		}
 	}
 }

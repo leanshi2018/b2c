@@ -169,4 +169,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     List<ShopOrder> findNoCutOrder(HashMap<String, Object> map);
 
 	List<ShopOrder> findNoCutOrder1(HashMap<String, Object> map);
+
+	ShopOrder findByBuyPaySn(String paySn);
 }
