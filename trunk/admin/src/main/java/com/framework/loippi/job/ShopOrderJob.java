@@ -503,6 +503,7 @@ public class ShopOrderJob {
         //1.请求通商云服务器，进行分账
         final YunRequest request = new YunRequest("OrderService", "signalAgentPay");
         try {
+
             request.put("bizOrderNo", shopOrder.getPaySn());
             JSONArray collectPayList = new JSONArray();
             HashMap<String, Object> collect1 = new HashMap<>();

@@ -10,15 +10,16 @@
         <result property="paySn" column="pay_sn" />
         <result property="bizPaySn" column="biz_pay_sn" />
         <result property="invalidStatus" column="invalid_status" />
+        <result property="cutPaySn" column="cut_pay_sn" />
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,pay_sn ,biz_pay_sn,invalid_status
+		 id ,pay_sn ,biz_pay_sn,invalid_status,cutPaySn
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{paySn},#{bizPaySn},#{invalidStatus}
+		 #{id},#{paySn},#{bizPaySn},#{invalidStatus},#{cut_pay_sn}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -32,6 +33,9 @@
         <if test="bizPaySn != null and bizPaySn != ''">
             AND biz_pay_sn = #{bizPaySn,jdbcType=VARCHAR}
         </if>
+        <if test="cutPaySn != null and cutPaySn != ''">
+            AND cut_pay_sn = #{cutPaySn,jdbcType=VARCHAR}
+        </if>
     </sql>
 
     <!-- 设置语句 -->
@@ -44,6 +48,9 @@
         </if>
         <if test="bizPaySn != null and bizPaySn != ''">
             biz_pay_sn = #{bizPaySn,jdbcType=VARCHAR},
+        </if>
+        <if test="cutPaySn != null and cutPaySn != ''">
+            cut_pay_sn = #{cutPaySn,jdbcType=VARCHAR},
         </if>
     </sql>
 

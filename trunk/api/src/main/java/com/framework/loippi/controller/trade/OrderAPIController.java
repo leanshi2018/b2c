@@ -1577,6 +1577,7 @@ public class OrderAPIController extends BaseController {
         rdBizPay.setPaySn(mmPaySn);
         rdBizPay.setBizPaySn(paysn);
         rdBizPay.setInvalidStatus(1);
+        rdBizPay.setCutPaySn("C"+mmPaySn);
         rdBizPayService.save(rdBizPay);
 
         ShopOrder shopOrder = orderList.get(0);
@@ -1586,10 +1587,11 @@ public class OrderAPIController extends BaseController {
         HashMap<String,Object> map=getCutNumber(shopOrder);
         RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
         BigDecimal acc = (BigDecimal) map.get("acc");
+        double accdouble = acc.doubleValue() * 100;
         //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
         reciever.put("bizUserId", accountInfo.getMmCode());//TODO
         //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
-        reciever.put("amount",acc.longValue()*100);
+        reciever.put("amount",new Double(accdouble).longValue());
         List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
         /*JSONObject reciever = new JSONObject();
         reciever.accumulate("bizUserId", TongLianUtils.BIZ_USER_ID);
