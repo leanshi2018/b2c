@@ -2561,8 +2561,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         String paySn = shopOrder.getPaySn();
 
         Map<String,Object> mapSn = new HashMap<String,Object>();
-        map.put("paySn",paySn);
-        map.put("invalidStatus",1);
+        mapSn.put("paySn",paySn);
+        mapSn.put("invalidStatus",1);
         List<RdBizPay> rdBizPayList = rdBizPaydao.findByPaysnAndStatus(mapSn);
         String bizPaySn = "";
         if (rdBizPayList.size()==1) {
@@ -2580,6 +2580,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
                 String s = TongLianUtils.refundOrder(weiRefund.getOutrefundno().toString(), bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
                         backUrl, oAmount, 0l, 0l, null);
+
+                /*
+                response:{
+                        "sysid": "1908201117222883218",
+                        "sign": "sy23spYwnbMKuoSDPMQv5XKrNyWRCGq/fGI04+pHQmHqMInxgnpORpmLTDzYcsj25LeGui2H+E26XIPWWAJv2l5XnSxw48d9iRaCXETfXUDC2WpQHV3P9F//o6xPIdXv2RoNhggUbZr4glCSaOzhYjJTsobH2qPjrc9enGpaJC0=",
+                        "signedValue": "{\"feeAmount\":0,\"amount\":100,\"couponAmount\":0,\"orderNo\":\"1251043997779005440\",\"payStatus\":\"success\",\"bizOrderNo\":\"202004171504487710\"}",
+                        "status": "OK"
+                        }
+                * */
+
                 if (!"".equals(s)) {
                     Map maps = (Map) JSON.parse(s);
                     String status = maps.get("status").toString();

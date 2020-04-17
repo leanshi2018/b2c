@@ -1,14 +1,15 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.dao.ShopCommonMessageDao;
-import com.framework.loippi.dao.ShopMemberMessageDao;
-import com.framework.loippi.entity.ShopCommonMessage;
-import com.framework.loippi.entity.ShopMemberMessage;
-import com.framework.loippi.entity.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,11 @@ import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.controller.StateResult;
+import com.framework.loippi.dao.ShopCommonMessageDao;
+import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.entity.PayCommon;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.coupon.Coupon;
@@ -49,6 +54,12 @@ import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -1839,8 +1850,8 @@ public class OrderAPIController extends BaseController {
             //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
             RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
             map.put("accountInfo",accountInfo);
-            map.put("acc",BigDecimal.ZERO);
-            //rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
+            map.put("acc",BigDecimal.ONE);//TODO
+            rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
             return map;
         }
         BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(0,BigDecimal.ROUND_UP);//当前订单需要分出去多少钱，单位为圆
@@ -1868,7 +1879,7 @@ public class OrderAPIController extends BaseController {
         RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
         map.put("accountInfo",accountInfo);
         map.put("acc",BigDecimal.ZERO);
-        //rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
+        rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
         return map;
     }
 
