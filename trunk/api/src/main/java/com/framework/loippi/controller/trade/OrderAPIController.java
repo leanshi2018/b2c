@@ -1610,9 +1610,12 @@ public class OrderAPIController extends BaseController {
         RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
         BigDecimal acc = (BigDecimal) map.get("acc");
         //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
+        double accdouble = acc.doubleValue() * 100;
+        Long accL = new Double(accdouble).longValue();
+        //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
         reciever.put("bizUserId", accountInfo.getMmCode());//TODO
         //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
-        reciever.put("amount",acc.longValue()*100);
+        reciever.put("amount",accL);
         List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
         /*JSONObject reciever = new JSONObject();
         reciever.accumulate("bizUserId", TongLianUtils.BIZ_USER_ID);
@@ -1642,7 +1645,7 @@ public class OrderAPIController extends BaseController {
         String notifyUrl = NotifyConsts.APP_NOTIFY_FILE+ "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
         //TODO 正式
         String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
-                oAmount, 0l, 0l, "", notifyUrl, "",
+                oAmount, oAmount-accL, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");
 
         /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
