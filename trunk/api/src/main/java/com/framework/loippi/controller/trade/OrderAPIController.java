@@ -1,14 +1,14 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.dao.ShopCommonMessageDao;
+import com.framework.loippi.dao.ShopMemberMessageDao;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -49,11 +49,6 @@ import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAddInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -118,6 +113,10 @@ import com.framework.loippi.vo.refund.ReturnGoodsVo;
 @Slf4j
 public class OrderAPIController extends BaseController {
 
+    @Resource
+    private ShopMemberMessageDao shopMemberMessageDao;
+    @Resource
+    private ShopCommonMessageDao shopCommonMessageDao;
     @Resource
     private ShopOrderService orderService;
     @Resource
@@ -1607,19 +1606,22 @@ public class OrderAPIController extends BaseController {
         //收款列表
         Map<String, Object> reciever = new LinkedHashMap<>();
         //查询一个满足条件的收款人，扣除积分，返回用户编号以及分账金额
-        if(shopOrder.getCutStatus()!=null&&(shopOrder.getCutStatus()==0||shopOrder.getCutStatus()==1||shopOrder.getCutStatus()==5)){
-            HashMap<String,Object> map=getCutNumber(shopOrder);
-            RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
+        if(shopOrder.getCutStatus()!=null&&shopOrder.getCutStatus()==5){
+            //如果该订单以及扣除过推荐人积分预提现，先返回推荐人积分
+            refundSpoPoint(shopOrder);
+        }
+        HashMap<String,Object> map=getCutNumber(shopOrder);
+        RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
+        if (accountInfo==null){
+            reciever.put("bizUserId", "");
+            reciever.put("amount",0L);
+        }else {
             BigDecimal acc = (BigDecimal) map.get("acc");
             double accdouble = acc.doubleValue() * 100;
             //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
             reciever.put("bizUserId", accountInfo.getMmCode());//TODO
             //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
             reciever.put("amount",new Double(accdouble).longValue());
-        }else {
-            reciever.put("bizUserId", "");//TODO
-            //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
-            reciever.put("amount",0L);
         }
         List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
         /*HashMap<String,Object> map=getCutNumber(shopOrder);
@@ -1770,7 +1772,64 @@ public class OrderAPIController extends BaseController {
 
     }
 
-
+    private void refundSpoPoint(ShopOrder order) {
+        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode", order.getCutGetId());
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("transTypeCode","WD");
+        map.put("accType","SBB");
+        map.put("trSourceType","BNK");
+        map.put("trOrderOid",order.getId());
+        map.put("accStatus",0);
+        RdMmAccountLog rdMmAccountLog1 =rdMmAccountLogService.findCutByOrderId(map);
+        if(rdMmAccountLog1!=null){
+            rdMmAccountLog1.setAccStatus(1);
+            rdMmAccountLogService.updateByCutOrderId(map);
+        }
+        RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+        rdMmAccountLog.setMmCode(accountInfo.getMmCode());
+        RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode", accountInfo.getMmCode());
+        rdMmAccountLog.setMmNickName(basicInfo.getMmNickName());
+        rdMmAccountLog.setTransTypeCode("CF");
+        rdMmAccountLog.setAccType("SBB");
+        rdMmAccountLog.setTrSourceType("BNK");
+        rdMmAccountLog.setTrOrderOid(order.getId());
+        rdMmAccountLog.setBlanceBefore(accountInfo.getBonusBlance());
+        rdMmAccountLog.setAmount(order.getCutAcc());
+        rdMmAccountLog.setBlanceAfter(accountInfo.getBonusBlance().add(order.getCutAcc()));
+        rdMmAccountLog.setTransDate(new Date());
+        String period = rdSysPeriodService.getSysPeriodService(new Date());
+        if(period!=null){
+            rdMmAccountLog.setTransPeriod(period);
+        }
+        rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
+        rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+        rdMmAccountLog.setStatus(3);
+        rdMmAccountLogService.save(rdMmAccountLog);
+        accountInfo.setBonusBlance(accountInfo.getBonusBlance().add(order.getCutAcc()));
+        rdMmAccountInfoService.update(accountInfo);
+        //4.生成通知消息
+        ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+        shopCommonMessage.setSendUid(accountInfo.getMmCode());
+        shopCommonMessage.setType(1);
+        shopCommonMessage.setOnLine(1);
+        shopCommonMessage.setCreateTime(new Date());
+        shopCommonMessage.setBizType(2);
+        shopCommonMessage.setIsTop(1);
+        shopCommonMessage.setCreateTime(new Date());
+        shopCommonMessage.setTitle("自动提现失败积分退还通知");
+        shopCommonMessage.setContent("提现订单创建失败，退还"+order.getCutAcc()+"奖励积分到积分账户");
+        Long msgId = twiterIdService.getTwiterId();
+        shopCommonMessage.setId(msgId);
+        shopCommonMessageDao.insert(shopCommonMessage);
+        ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+        shopMemberMessage.setBizType(2);
+        shopMemberMessage.setCreateTime(new Date());
+        shopMemberMessage.setId(twiterIdService.getTwiterId());
+        shopMemberMessage.setIsRead(0);
+        shopMemberMessage.setMsgId(msgId);
+        shopMemberMessage.setUid(Long.parseLong(accountInfo.getMmCode()));
+        shopMemberMessageDao.insert(shopMemberMessage);
+    }
 
     /**
      * 查找合适的分账收款人 并扣减积分
@@ -1783,10 +1842,10 @@ public class OrderAPIController extends BaseController {
         BigDecimal orderAmount = shopOrder.getOrderAmount();
         if(orderAmount.compareTo(new BigDecimal(Integer.toString(AllInPayBillCutConstant.CUT_MINIMUM)))==-1){
             //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
-            RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
-            map.put("accountInfo",accountInfo);
+            //RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
+            map.put("accountInfo",null);
             map.put("acc",BigDecimal.ZERO);
-            rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
+            //rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
             return map;
         }
         BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(0,BigDecimal.ROUND_UP);//当前订单需要分出去多少钱，单位为圆
@@ -1811,10 +1870,10 @@ public class OrderAPIController extends BaseController {
             }
         }
         //都不满足，走公司小B分账
-        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
-        map.put("accountInfo",accountInfo);
+        //RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
+        map.put("accountInfo",null);
         map.put("acc",BigDecimal.ZERO);
-        rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
+        //rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
         return map;
     }
 

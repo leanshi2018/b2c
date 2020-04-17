@@ -52,4 +52,14 @@ public class RdMmAccountLogServiceImpl extends GenericServiceImpl<RdMmAccountLog
 		map.put("autohrizeTime",new Date());
 		return rdMmAccountLogDao.updateCancellWD(map);
 	}
+
+	@Override
+	public RdMmAccountLog findCutByOrderId(HashMap<String, Object> map) {
+		return rdMmAccountLogDao.findCutByOrderId(map);
+	}
+
+	@Override
+	public void updateByCutOrderId(HashMap<String, Object> map) {
+		rdMmAccountLogDao.updateByCutOrderId(map);
+	}
 }

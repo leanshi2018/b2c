@@ -14,6 +14,9 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.xml.namespace.QName;
 
+import com.framework.loippi.consts.AllInPayBillCutConstant;
+import com.framework.loippi.entity.walet.RdBizPay;
+import com.framework.loippi.service.wallet.RdBizPayService;
 import org.apache.axis.client.Call;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -160,6 +163,9 @@ public class ShopOrderJob {
     private ShopGoodsPresaleService shopGoodsPresaleService;
     @Resource
     private ShopExpressSpecialGoodsService shopExpressSpecialGoodsService;
+    @Resource
+    private RdBizPayService rdBizPayService;
+
 
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 
@@ -367,6 +373,7 @@ public class ShopOrderJob {
      */
     //@Scheduled(cron = "0 30 08 * * ? " )  //每天上午八点三十分钟执行一次
     //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    @Scheduled(cron = "0 5/20 * * * ?")  //每20分钟执行一次
     public void timingAccCut(){
         System.out.println("###############################执行定时分账任务#####################################");
         //查询当前系统时间向前的第二天的已完成支付且未取消的订单 （条件：1.已支付 2.未取消 3.已经发货 4.未进行过分账操作 5.支付时间区间在指定日期内）
@@ -572,20 +579,23 @@ public class ShopOrderJob {
         //1.请求通商云服务器，进行分账
         final YunRequest request = new YunRequest("OrderService", "signalAgentPay");
         try {
-
-            request.put("bizOrderNo", shopOrder.getPaySn());
+            List<RdBizPay> rdBizPayList = rdBizPayService.findByPaysnAndStatus(shopOrder.getPaySn(),1);
+            RdBizPay rdBizPay = rdBizPayList.get(0);
+            String cutPaySn = rdBizPay.getCutPaySn();
+            BigDecimal cutAmount = shopOrder.getCutAmount();
+            double cutAll = cutAmount.doubleValue() * 100;
+            request.put("bizOrderNo", rdBizPay.getCutPaySn());
             JSONArray collectPayList = new JSONArray();
             HashMap<String, Object> collect1 = new HashMap<>();
-            collect1.put("bizOrderNo",shopOrder.getPaySn());
-            collect1.put("amount", shopOrder.getOrderAmount().multiply(new BigDecimal("100")));
-            collect1.put("fee", ((shopOrder.getOrderAmount().subtract(amount))).multiply(new BigDecimal("100")));
+            collect1.put("bizOrderNo",cutPaySn);
+            collect1.put("amount",cutAll);
             collectPayList.add(new JSONObject(collect1));
             request.put("collectPayList", collectPayList);
             request.put("bizUserId", accountInfo.getMmCode());
-            request.put("accountSetNo","400142");//TODO
+            request.put("accountSetNo", AllInPayBillCutConstant.ACCOUNT_SET_NO);//TODO
             request.put("backUrl", AllInPayConstant.CUT_BILL_BACKURL);//TODO
-            request.put("amount",shopOrder.getOrderAmount().multiply(new BigDecimal("100")));
-            request.put("fee",((shopOrder.getOrderAmount().subtract(amount))).multiply(new BigDecimal("100")));
+            request.put("amount",cutAll);
+            request.put("fee",0L);
             request.put("tradeCode","4001");
             String res = YunClient.request(request);
             System.out.println("res: " + res);
