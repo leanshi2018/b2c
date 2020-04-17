@@ -163,7 +163,7 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 			rdMmAccountLog.setMmCode(accountInfo.getMmCode());
 			List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",accountInfo.getMmCode()));
 			rdMmAccountLog.setMmNickName(basicInfos.get(0).getMmNickName());
-			rdMmAccountLog.setTransTypeCode("WD");
+			rdMmAccountLog.setTransTypeCode("AWD");
 			rdMmAccountLog.setAccType("SBB");
 			rdMmAccountLog.setTrSourceType("BNK");
 			rdMmAccountLog.setTrOrderOid(shopOrder.getId());

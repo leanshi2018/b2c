@@ -186,7 +186,7 @@ public class AllInPayContractController {
             if(payStatus.equals("fail")){
                 //分账失败 归还预扣积分
                 HashMap<String, Object> map = new HashMap<>();
-                map.put("transTypeCode","WD");
+                map.put("transTypeCode","AWD");
                 map.put("accType","SBB");
                 map.put("trSourceType","BNK");
                 map.put("trOrderOid",shopOrder.getId());

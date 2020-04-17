@@ -605,7 +605,7 @@ public class ShopOrderJob {
             JSONObject resp = JSON.parseObject(res);
             if(resp.getString("status").equals("error")){//如果分账失败 则记录失败原因
                 HashMap<String, Object> map = new HashMap<>();
-                map.put("transTypeCode","WD");
+                map.put("transTypeCode","AWD");
                 map.put("accType","SBB");
                 map.put("trSourceType","BNK");
                 map.put("trOrderOid",shopOrder.getId());
@@ -701,7 +701,7 @@ public class ShopOrderJob {
                 if(payStatus.equals("fail")){//修改订单分账状态 分账失败，记录失败原因
                     //分账失败 归还预扣积分
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("transTypeCode","WD");
+                    map.put("transTypeCode","AWD");
                     map.put("accType","SBB");
                     map.put("trSourceType","BNK");
                     map.put("trOrderOid",shopOrder.getId());
