@@ -583,18 +583,21 @@ public class ShopOrderJob {
             List<RdBizPay> rdBizPayList = rdBizPayService.findByPaysnAndStatus(shopOrder.getPaySn(),1);
             RdBizPay rdBizPay = rdBizPayList.get(0);
             BigDecimal cutAmount = shopOrder.getCutAmount();
-            //double cutAll = cutAmount.doubleValue() * 100;
+            if(cutAmount.compareTo(BigDecimal.ZERO)!=1){
+                return;
+            }
+            double cutAll = cutAmount.doubleValue() * 100;
             request.put("bizOrderNo", rdBizPay.getCutPaySn());
             JSONArray collectPayList = new JSONArray();
             HashMap<String, Object> collect1 = new HashMap<>();
             collect1.put("bizOrderNo",rdBizPay.getBizPaySn());
-            collect1.put("amount",1L);
+            collect1.put("amount",cutAll);
             collectPayList.add(new JSONObject(collect1));
             request.put("collectPayList", collectPayList);
             request.put("bizUserId", accountInfo.getMmCode());
             request.put("accountSetNo", AllInPayBillCutConstant.ACCOUNT_SET_NO);//TODO
             request.put("backUrl", AllInPayConstant.CUT_BILL_BACKURL);//TODO
-            request.put("amount",1L);
+            request.put("amount",cutAll);
             request.put("fee",0L);
             request.put("tradeCode","4001");
             String res = YunClient.request(request);

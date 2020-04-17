@@ -150,62 +150,69 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 
 	@Override
 	public void reduceAcc(ShopOrder shopOrder, RdMmAccountInfo accountInfo, BigDecimal acc) {
-			if(acc.compareTo(BigDecimal.ZERO)==1){
-				RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
-				rdMmAccountLog.setMmCode(accountInfo.getMmCode());
-				List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",accountInfo.getMmCode()));
-				rdMmAccountLog.setMmNickName(basicInfos.get(0).getMmNickName());
-				rdMmAccountLog.setTransTypeCode("WD");
-				rdMmAccountLog.setAccType("SBB");
-				rdMmAccountLog.setTrSourceType("BNK");
-				rdMmAccountLog.setTrOrderOid(shopOrder.getId());
-				rdMmAccountLog.setBlanceBefore(accountInfo.getBonusBlance());
-				rdMmAccountLog.setAmount(acc);
-				rdMmAccountLog.setBlanceAfter(accountInfo.getBonusBlance().subtract(acc));
-				rdMmAccountLog.setTransDate(new Date());
-				String period = rdSysPeriodDao.getSysPeriodService(new Date());
-				if(period!=null){
-					rdMmAccountLog.setTransPeriod(period);
-				}
-				rdMmAccountLog.setPresentationFeeNow(BigDecimal.ZERO);
-				rdMmAccountLog.setActualWithdrawals(acc);
-				rdMmAccountLog.setTransDesc("平台订单支付自动分账提现");
-				rdMmAccountLog.setAutohrizeDesc("平台订单支付自动分账提现");
-				rdMmAccountLog.setStatus(3);
-				rdMmAccountLog.setAccStatus(0);
-				rdMmAccountLogDao.insert(rdMmAccountLog);
-				//3.扣减用户积分
-				accountInfo.setBonusBlance(accountInfo.getBonusBlance().subtract(acc));
-				accountInfo.setLastWithdrawalTime(new Date());
-				rdMmAccountInfoDao.update(accountInfo);
-				//4.生成通知消息
-				ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
-				shopCommonMessage.setSendUid(accountInfo.getMmCode());
-				shopCommonMessage.setType(1);
-				shopCommonMessage.setOnLine(1);
-				shopCommonMessage.setCreateTime(new Date());
-				shopCommonMessage.setBizType(2);
-				shopCommonMessage.setIsTop(1);
-				shopCommonMessage.setCreateTime(new Date());
-				shopCommonMessage.setTitle("自动提现积分预扣减通知");
-				shopCommonMessage.setContent("已预扣减"+acc+"奖励积分，十天后发放到钱包，如发放失败，将返回积分账户，具体请查询积分明细");
-				Long msgId = twiterIdService.getTwiterId();
-				shopCommonMessage.setId(msgId);
-				shopCommonMessageDao.insert(shopCommonMessage);
-				ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
-				shopMemberMessage.setBizType(2);
-				shopMemberMessage.setCreateTime(new Date());
-				shopMemberMessage.setId(twiterIdService.getTwiterId());
-				shopMemberMessage.setIsRead(0);
-				shopMemberMessage.setMsgId(msgId);
-				shopMemberMessage.setUid(Long.parseLong(accountInfo.getMmCode()));
-				shopMemberMessageDao.insert(shopMemberMessage);
+		if(acc.compareTo(BigDecimal.ZERO)==0){//如果acc等于0 默认到公司小B账户0.01元 积分不进行处理
+			shopOrder.setCutStatus(5);
+			shopOrder.setCutGetId(accountInfo.getMmCode());
+			shopOrder.setCutAmount(new BigDecimal("0.01"));
+			shopOrder.setCutAcc(new BigDecimal("0.01"));
+			shopOrderDao.update(shopOrder);
+		}
+		if(acc.compareTo(BigDecimal.ZERO)==1){
+			RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+			rdMmAccountLog.setMmCode(accountInfo.getMmCode());
+			List<RdMmBasicInfo> basicInfos = rdMmBasicInfoDao.findByParams(Paramap.create().put("mmCode",accountInfo.getMmCode()));
+			rdMmAccountLog.setMmNickName(basicInfos.get(0).getMmNickName());
+			rdMmAccountLog.setTransTypeCode("WD");
+			rdMmAccountLog.setAccType("SBB");
+			rdMmAccountLog.setTrSourceType("BNK");
+			rdMmAccountLog.setTrOrderOid(shopOrder.getId());
+			rdMmAccountLog.setBlanceBefore(accountInfo.getBonusBlance());
+			rdMmAccountLog.setAmount(acc);
+			rdMmAccountLog.setBlanceAfter(accountInfo.getBonusBlance().subtract(acc));
+			rdMmAccountLog.setTransDate(new Date());
+			String period = rdSysPeriodDao.getSysPeriodService(new Date());
+			if(period!=null){
+				rdMmAccountLog.setTransPeriod(period);
 			}
+			rdMmAccountLog.setPresentationFeeNow(BigDecimal.ZERO);
+			rdMmAccountLog.setActualWithdrawals(acc);
+			rdMmAccountLog.setTransDesc("平台订单支付自动分账提现");
+			rdMmAccountLog.setAutohrizeDesc("平台订单支付自动分账提现");
+			rdMmAccountLog.setStatus(3);
+			rdMmAccountLog.setAccStatus(0);
+			rdMmAccountLogDao.insert(rdMmAccountLog);
+			//3.扣减用户积分
+			accountInfo.setBonusBlance(accountInfo.getBonusBlance().subtract(acc));
+			accountInfo.setLastWithdrawalTime(new Date());
+			rdMmAccountInfoDao.update(accountInfo);
+			//4.生成通知消息
+			ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+			shopCommonMessage.setSendUid(accountInfo.getMmCode());
+			shopCommonMessage.setType(1);
+			shopCommonMessage.setOnLine(1);
+			shopCommonMessage.setCreateTime(new Date());
+			shopCommonMessage.setBizType(2);
+			shopCommonMessage.setIsTop(1);
+			shopCommonMessage.setCreateTime(new Date());
+			shopCommonMessage.setTitle("自动提现积分预扣减通知");
+			shopCommonMessage.setContent("已预扣减"+acc+"奖励积分，十天后发放到钱包，如发放失败，将返回积分账户，具体请查询积分明细");
+			Long msgId = twiterIdService.getTwiterId();
+			shopCommonMessage.setId(msgId);
+			shopCommonMessageDao.insert(shopCommonMessage);
+			ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+			shopMemberMessage.setBizType(2);
+			shopMemberMessage.setCreateTime(new Date());
+			shopMemberMessage.setId(twiterIdService.getTwiterId());
+			shopMemberMessage.setIsRead(0);
+			shopMemberMessage.setMsgId(msgId);
+			shopMemberMessage.setUid(Long.parseLong(accountInfo.getMmCode()));
+			shopMemberMessageDao.insert(shopMemberMessage);
 			//5.修改订单分账相关信息
 			shopOrder.setCutStatus(5);
 			shopOrder.setCutGetId(accountInfo.getMmCode());
 			shopOrder.setCutAmount(acc);
 			shopOrder.setCutAcc(acc);
 			shopOrderDao.update(shopOrder);
+		}
 	}
 }

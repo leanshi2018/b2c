@@ -1850,6 +1850,7 @@ public class OrderAPIController extends BaseController {
             //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
             RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
             map.put("accountInfo",accountInfo);
+            map.put("acc",new BigDecimal("0.01"));
             map.put("acc",new BigDecimal("0.01"));//TODO
             rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
             return map;
@@ -1878,7 +1879,7 @@ public class OrderAPIController extends BaseController {
         //都不满足，走公司小B分账
         RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",AllInPayBillCutConstant.COMPANY_CUT_B);
         map.put("accountInfo",accountInfo);
-        map.put("acc",BigDecimal.ZERO);
+        map.put("acc",new BigDecimal("0.01"));
         rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,BigDecimal.ZERO);
         return map;
     }
