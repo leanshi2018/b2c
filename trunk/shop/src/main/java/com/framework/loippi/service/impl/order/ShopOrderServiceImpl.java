@@ -23,10 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.CouponConstant;
 import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.consts.NewVipConstant;
+import com.framework.loippi.consts.NotifyConsts;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
@@ -55,6 +57,7 @@ import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.dao.user.ShopMemberPaymentTallyDao;
+import com.framework.loippi.dao.walet.RdBizPayDao;
 import com.framework.loippi.dao.ware.RdInventoryWarningDao;
 import com.framework.loippi.dao.ware.RdWareAdjustDao;
 import com.framework.loippi.entity.AliPayRefund;
@@ -92,6 +95,7 @@ import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.user.RetailProfit;
 import com.framework.loippi.entity.user.ShopMemberPaymentTally;
+import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAdjust;
 import com.framework.loippi.enus.ActivityTypeEnus;
@@ -147,6 +151,7 @@ import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.RandomUtils;
 import com.framework.loippi.utils.SnowFlake;
 import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.TongLianUtils;
 import com.framework.loippi.utils.validator.DateUtils;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
 import com.framework.loippi.vo.goods.GoodsStatisticsVo;
@@ -286,6 +291,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private CouponDetailService couponDetailService;
     @Resource
     private WechatRefundService wechatRefundService;
+    @Resource
+    private RdBizPayDao rdBizPaydao;
     @Autowired
     public void setGenericDao() {
         super.setGenericDao(orderDao);
@@ -2017,7 +2024,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     /**
      * 根据订单id查看订单支付是否成功，如果支付成功，是否有因订单产生的优惠券发放
      * @param mmCode
-     * @param orderId
      * @return
      */
     @Override
@@ -2372,6 +2378,20 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     //weiRefund.setRefundfee(1);
                     //weiRefund.setTotalfee(1);
                     toweichatrefund(weiRefund, "open_weichatpay");
+                } else if ("weixinAppletsPaymentPlugin".equals(order.getPaymentCode())) {//微信小程序支付
+                    WeiRefund weiRefund = new WeiRefund();
+                    String bathno = RandomUtils.getRandomNumberStringWithTime(4, "yyyyMMddHHmmss");
+                    ShopOrder updateOrder = new ShopOrder();
+                    updateOrder.setId(order.getId()); //记录ID
+                    updateOrder.setBatchNo(bathno); //退款批次号
+                    orderDao.update(updateOrder);//将批次号存入退款表
+                    weiRefund.setOutrefundno(bathno);//微信交易号
+                    weiRefund.setOuttradeno(order.getPaySn());//订单号
+                    weiRefund.setTotalfee((int) ((order.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+                    weiRefund.setRefundfee((int) ((order.getOrderAmount().doubleValue()) * 100));
+                    //weiRefund.setRefundfee(1);
+                    //weiRefund.setTotalfee(1);
+                    toweichatrefundTL(weiRefund, "applet_weichatpay",order.getId());
                 } else if ("alipayMobilePaymentPlugin".equals(order.getPaymentCode())) {
                     String bathno = RandomUtils.getRandomNumberStringWithTime(4, "yyyyMMddHHmmss");
                     ShopOrder updateOrder = new ShopOrder();
@@ -2530,6 +2550,78 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     }
 
     /**
+     * 跳到微信退款接口
+     */
+    private void toweichatrefundTL(WeiRefund weiRefund, String weitype,Long orderId) {
+        Map<String, Object> map = null;
+        ShopOrder shopOrder = orderDao.find(orderId);
+        BigDecimal orderAmount = shopOrder.getOrderAmount();
+        double b = orderAmount.doubleValue()*100;
+        Long oAmount = new Double(b).longValue();
+        String paySn = shopOrder.getPaySn();
+
+        Map<String,Object> mapSn = new HashMap<String,Object>();
+        map.put("paySn",paySn);
+        map.put("invalidStatus",1);
+        List<RdBizPay> rdBizPayList = rdBizPaydao.findByPaysnAndStatus(mapSn);
+        String bizPaySn = "";
+        if (rdBizPayList.size()==1) {
+            RdBizPay rdBizPay = rdBizPayList.get(0);
+            bizPaySn = rdBizPay.getBizPaySn();
+
+            String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+"/admin/paynotify/refundBank.jhtml";//后台通知地址 TODO
+            if ("applet_weichatpay".equals(weitype)) {//微信开放平台退款
+
+                List<Map<String, Object>> refundList = new ArrayList<Map<String, Object>>();
+                Map<String, Object> refundMember = new HashMap<String, Object>();
+                //refundMember.accumulate("bizUserId",shopOrder.getBuyerId());//商户系统用户标识，商户系统中唯一编号
+                //refundMember.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);// 金额，单位：分
+                //refundList.add(refundMember);
+
+                String s = TongLianUtils.refundOrder(weiRefund.getOutrefundno().toString(), bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
+                        backUrl, oAmount, 0l, 0l, null);
+                if (!"".equals(s)) {
+                    Map maps = (Map) JSON.parse(s);
+                    String status = maps.get("status").toString();
+                    if (status.equals("OK")) {
+                        String signedValue = maps.get("signedValue").toString();
+                        Map okMap = (Map) JSON.parse(signedValue);
+                        String payStatus = okMap.get("payStatus").toString();//仅交易验证方式为“0”时返回成功：success 进行中：pending 失败：fail 订单成功时会发订单结果通知商户。
+                        if (payStatus.equals("fail")) {
+                            String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
+                            map.put("result_code", "FAIL");
+                            map.put("err_code_des", "退款失败" + "," + payFailMessage);
+                        }
+                        String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
+                        String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                        map.put("result_code", "SUCCESS");
+                    } else {
+                        map.put("result_code", "FAIL");
+                        String message = maps.get("message").toString();
+                        map.put("err_code_des", "退款失败" + "," + message);
+                    }
+                } else {
+                    map.put("result_code", "FAIL");
+                    map.put("err_code_des", "退款失败");
+                }
+            }
+
+            String msg = "";
+            if (map.size() != 0 && map.get("result_code").equals("SUCCESS")) {
+                log.info("用户微信退款成功");
+            } else if (map.size() != 0 && map.get("result_code").equals("FAIL")) {
+                System.out.println(map.get("err_code_des"));
+            }else {
+                throw new RuntimeException("退款失败");
+            }
+
+        }else {
+            throw new RuntimeException("退款失败:通联订单号多个");
+        }
+
+    }
+
+    /**
      * 跳到支付宝退款接口
      */
     public void toalirefund(AliPayRefund aliPayRefund) {
@@ -2552,6 +2644,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 break;
             case "weixinMobilePaymentPlugin":
                 paymentTally.setPaymentName("微信手机支付");//支付名称
+                break;
+            case "weixinAppletsPaymentPlugin":
+                paymentTally.setPaymentName("微信小程序支付");//支付名称
                 break;
             case "weixinInternaPaymentPlugin":
                 paymentTally.setPaymentName("微信国际支付");//支付名称
