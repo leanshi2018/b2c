@@ -474,16 +474,40 @@ public class IntegrationMemberListResult {
                 for (MemberQualification qualification : memberQualificationList) {
                     if(qualification.getMCode().equals(rdMmRelation.getMmCode())){
                         //等级和等级名称
-                        if((qualification.getRankP0()+"")!=null){
+                        if(qualification.getRankP0()!=null){
                             memberInfo.setGradeId(qualification.getRankP0());
+                            if (qualification.getRankP0()==0){
+                                memberInfo.setGradeName("普通会员");
+                            }else if (qualification.getRankP0()==1){
+                                memberInfo.setGradeName("VIP会员");
+                            }else if (qualification.getRankP0()==2){
+                                memberInfo.setGradeName("代理会员");
+                            }else if (qualification.getRankP0()==3){
+                                memberInfo.setGradeName("初级代理店");
+                            }else if (qualification.getRankP0()==4){
+                                memberInfo.setGradeName("一级代理店");
+                            }else if (qualification.getRankP0()==5){
+                                memberInfo.setGradeName("二级代理店");
+                            }else if (qualification.getRankP0()==6){
+                                memberInfo.setGradeName("三级代理店");
+                            }else if (qualification.getRankP0()==7){
+                                memberInfo.setGradeName("旗舰店");
+                            }else if (qualification.getRankP0()==8){
+                                memberInfo.setGradeName("高级旗舰店");
+                            }else if (qualification.getRankP0()==9){
+                                memberInfo.setGradeName("超级旗舰店");
+                            }else {
+                                memberInfo.setGradeName("普通会员");
+                            }
+                            /*memberInfo.setGradeId(qualification.getRankP0());
                             if(map.get(qualification.getRankP0())!=null){
                                 memberInfo.setGradeName(map.get(qualification.getRankP0()));
                             }else {
                                 memberInfo.setGradeName("");
-                            }
+                            }*/
                         }else {
                             memberInfo.setGradeId(0);
-                            memberInfo.setGradeName(map.get(0));
+                            memberInfo.setGradeName("普通会员");
                         }
                         //头像颜色
                         if (rdMmRelation.getRank()!=0){
@@ -523,14 +547,14 @@ public class IntegrationMemberListResult {
                 //全都没找到的话
                 if (memberInfo.getMemberAvatarColour()==null){
                     memberInfo.setGradeId(0);
-                    memberInfo.setGradeName(map.get(0));
+                    memberInfo.setGradeName("普通会员");
                     memberInfo.setMemberAvatarColour(3);
                     memberInfo.setPpv(new BigDecimal("0.00"));
                     memberInfo.setTotalPv(new BigDecimal("0.00"));
                 }
             }else {
                 memberInfo.setGradeId(0);
-                memberInfo.setGradeName(map.get(0));
+                memberInfo.setGradeName("普通会员");
                 memberInfo.setMemberAvatarColour(3);
                 memberInfo.setPpv(new BigDecimal("0.00"));
                 memberInfo.setTotalPv(new BigDecimal("0.00"));

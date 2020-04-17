@@ -1244,7 +1244,9 @@ public class RefundReturnSysController extends GenericController {
 
         ShopRefundReturn refundReturn = refundReturnService.find(id);
         ShopOrder shopOrder = orderService.find(refundReturn.getOrderId());
-
+        BigDecimal orderAmount = shopOrder.getOrderAmount();
+        double b = orderAmount.doubleValue()*100;
+        Long oAmount = new Double(b).longValue();
         String paySn = shopOrder.getPaySn();
         List<RdBizPay> rdBizPayList = rdBizPayService.findByPaysnAndStatus(paySn,1);
         String bizPaySn = "";
@@ -1261,12 +1263,10 @@ public class RefundReturnSysController extends GenericController {
                 //refundMember.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);// 金额，单位：分
                 //refundList.add(refundMember);
 
+/*                String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
+                        backUrl,1l,0l,0l,null);*/
                 String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
-                        backUrl,1l,0l,0l,null);
-/*
-                String s = TongLianUtils.refundOrder(refundReturn.getId().toString(),bizPaySn, shopOrder.getBuyerId().toString(), "D0", refundList,
-                        backUrl,shopOrder.getOrderAmount().longValue()*100,0l,0l,null);
-*/
+                        backUrl,oAmount,0l,0l,null);
                 if(!"".equals(s)) {
                     Map maps = (Map) JSON.parse(s);
                     String status = maps.get("status").toString();

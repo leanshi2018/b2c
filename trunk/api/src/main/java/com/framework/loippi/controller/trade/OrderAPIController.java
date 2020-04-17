@@ -1,12 +1,14 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.consts.*;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +25,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.framework.loippi.consts.AllInPayBillCutConstant;
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.NotifyConsts;
+import com.framework.loippi.consts.OrderState;
+import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.controller.StateResult;
@@ -41,6 +49,11 @@ import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -74,6 +87,13 @@ import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.union.UnionpayService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.support.Page;
@@ -1581,6 +1601,9 @@ public class OrderAPIController extends BaseController {
         rdBizPayService.save(rdBizPay);
 
         ShopOrder shopOrder = orderList.get(0);
+        BigDecimal orderAmount = shopOrder.getOrderAmount();
+        double b = orderAmount.doubleValue()*100;
+        Long oAmount = new Double(b).longValue();
         //收款列表
         Map<String, Object> reciever = new LinkedHashMap<>();
         //查询一个满足条件的收款人，扣除积分，返回用户编号以及分账金额
@@ -1600,12 +1623,16 @@ public class OrderAPIController extends BaseController {
         recieverList.add(reciever);
         //支付方式
         Map<String, Object> object1 = new LinkedHashMap<>();
-        object1.put("limitPay","no_credit");//String 非贷记卡：no_credit 借、贷记卡：””需要传空字符串，不能不传
-        //object1.put("amount",shopOrder.getOrderAmount().longValue()*100);//Long支付金额，单位：分 TODO 正式
-        object1.put("amount",1l);//Long支付金额，单位：分
+        //object1.put("limitPay","no_credit");//String 非贷记卡：no_credit 借、贷记卡：””需要传空字符串，不能不传
+        object1.put("amount",oAmount);//Long支付金额，单位：分 TODO 正式
+        //object1.put("amount",1l);//Long支付金额，单位：分
         object1.put("acct",openId);//String  微信 JS 支付 openid——微信分配
+        object1.put("vspCusid","56029005999Z8RA");
+        object1.put("subAppid","wx6e94bb18bedf3c4c");
+        object1.put("limitPay","");
         Map<String, Object> payMethods = new LinkedHashMap<>();
-        payMethods.put("WECHATPAY_MINIPROGRAM",object1);
+        //payMethods.put("WECHATPAY_MINIPROGRAM",object1);
+        payMethods.put("WECHATPAY_MINIPROGRAM_ORG",object1);
         /*JSONObject object1 = new JSONObject();
         object1.accumulate("limitPay","no_credit");//String 非贷记卡：no_credit 借、贷记卡：””需要传空字符串，不能不传
         object1.accumulate("amount",shopOrder.getOrderAmount().longValue()*100);//Long支付金额，单位：分
@@ -1616,13 +1643,13 @@ public class OrderAPIController extends BaseController {
         //String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
         String notifyUrl = NotifyConsts.APP_NOTIFY_FILE+ "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
         //TODO 正式
-        /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
-                shopOrder.getOrderAmount().longValue() * 100, 0l, 0l, "", notifyUrl, "",
-                payMethods, "", "", "1910", "其他", 1l, "", "");*/
-
         String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
-                1l, 0l, 0l, "", notifyUrl, "",
+                oAmount, 0l, 0l, "", notifyUrl, "",
                 payMethods, "", "", "1910", "其他", 1l, "", "");
+
+        /*String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
+                1l, 0l, 0l, "", notifyUrl, "",
+                payMethods, "", "", "1910", "其他", 1l, "", "");*/
 
         /*
         response:{"sysid":"1902271423530473681","sign":"WWAff/cGqCfJUmUO/raqavyS+b3LsltQcxatJEDyLi8BG9JJvPxrNZ7IQ+sOJVK1k9nRfcm1XPMIK7nnyC/
