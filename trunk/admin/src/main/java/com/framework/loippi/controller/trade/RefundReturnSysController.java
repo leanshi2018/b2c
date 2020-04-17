@@ -465,14 +465,13 @@ public class RefundReturnSysController extends GenericController {
                         //toweichatrefund();
                     } else if (order.getPaymentCode().equals("weixinAppletsPaymentPlugin")) {//微信小程序支付  通联退款 退款申请 TODO ldq.2020.3.17
                         WeiRefund weiRefund = new WeiRefund();
-                        String bathno =
-                                DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
+                        String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
                         ShopRefundReturn updateReturn = new ShopRefundReturn();
                         updateReturn.setId(id); //记录ID
-                        updateReturn.setBatchNo(bathno); //退款批次号
+                        //updateReturn.setBatchNo(bathno); //退款批次号
                         updateReturn.setRefundAmount(money);
                         updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
-                        refundReturnService.update(updateReturn);//将批次号存入退款表
+                        //refundReturnService.update(updateReturn);//将批次号存入退款表
                         weiRefund.setOutrefundno(bathno);//微信交易号
                         weiRefund.setOuttradeno(order.getPaySn());//订单号
                          weiRefund.setTotalfee((int) ((order.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
@@ -482,7 +481,7 @@ public class RefundReturnSysController extends GenericController {
                         //http://52.184.34.141/admin/ = http://glht.rdnmall.cn/admin/
                         //String backUrl = "http://glht.rdnmall.cn/admin/admin/paynotify/refundBank/" + id.toString() + "/" + shopOrder.getBuyerId() + ".jhtml";//后台通知地址 TODO
                         String backUrl = NotifyConsts.ADMIN_NOTIFY_FILE+"/admin/paynotify/refundBank.jhtml";//后台通知地址 TODO
-                        backurl = toweichatrefundTL(weiRefund, id, adminMessage, "applet_weichatpay", model,backUrl, request);
+                        backurl = toweichatrefundTL(weiRefund, id, adminMessage, "applet_weichatpay", model,backUrl, request,updateReturn);
                         //toweichatrefund();
                     } else if (order.getPaymentCode().equals("weixinH5PaymentPlugin")) {//微信公共平台支付
                         WeiRefund weiRefund = new WeiRefund();
@@ -1239,14 +1238,16 @@ public class RefundReturnSysController extends GenericController {
      * 跳到微信退款接口和通联退款接口 TODO
      */
     public String toweichatrefundTL(WeiRefund weiRefund, Long id, String adminMessage, String weitype, Model model,String backUrl,
-                                  HttpServletRequest request) {
+                                  HttpServletRequest request,ShopRefundReturn updateReturn) {
         RequestContext requestContext = new RequestContext(request);
 
         ShopRefundReturn refundReturn = refundReturnService.find(id);
         ShopOrder shopOrder = orderService.find(refundReturn.getOrderId());
-        BigDecimal orderAmount = shopOrder.getOrderAmount();
-        double b = orderAmount.doubleValue()*100;
+        //BigDecimal orderAmount = shopOrder.getOrderAmount();
+        BigDecimal refundAmount = updateReturn.getRefundAmount();
+        double b = refundAmount.doubleValue()*100;
         Long oAmount = new Double(b).longValue();
+
         String paySn = shopOrder.getPaySn();
         List<RdBizPay> rdBizPayList = rdBizPayService.findByPaysnAndStatus(paySn,1);
         String bizPaySn = "";
@@ -1279,8 +1280,17 @@ public class RefundReturnSysController extends GenericController {
                             map.put("result_code","FAIL");
                             map.put("err_code_des","退款失败"+","+payFailMessage);
                         }
-                        String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
+                        //String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
                         String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                        String orderNo = okMap.get("orderNo").toString();//商户订单号（支付订单）
+
+                        updateReturn.setBatchNo(orderNo); //退款批次号
+                        refundReturnService.update(updateReturn);//将批次号存入退款表
+                        ShopOrder updateOrder = new ShopOrder();
+                        updateOrder.setId(shopOrder.getId()); //记录ID
+                        updateOrder.setBatchNo(orderNo); //退款批次号
+                        orderService.update(updateOrder);//将批次号存入退款表
+
                         map.put("result_code","SUCCESS");
                     }else {
                         map.put("result_code","FAIL");

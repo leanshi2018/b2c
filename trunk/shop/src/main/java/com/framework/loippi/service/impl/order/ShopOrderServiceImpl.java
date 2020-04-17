@@ -2381,10 +2381,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 } else if ("weixinAppletsPaymentPlugin".equals(order.getPaymentCode())) {//微信小程序支付
                     WeiRefund weiRefund = new WeiRefund();
                     String bathno = RandomUtils.getRandomNumberStringWithTime(4, "yyyyMMddHHmmss");
-                    ShopOrder updateOrder = new ShopOrder();
+                    /*ShopOrder updateOrder = new ShopOrder();
                     updateOrder.setId(order.getId()); //记录ID
                     updateOrder.setBatchNo(bathno); //退款批次号
-                    orderDao.update(updateOrder);//将批次号存入退款表
+                    orderDao.update(updateOrder);//将批次号存入退款表*/
                     weiRefund.setOutrefundno(bathno);//微信交易号
                     weiRefund.setOuttradeno(order.getPaySn());//订单号
                     weiRefund.setTotalfee((int) ((order.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
@@ -2585,7 +2585,14 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 response:{
                         "sysid": "1908201117222883218",
                         "sign": "sy23spYwnbMKuoSDPMQv5XKrNyWRCGq/fGI04+pHQmHqMInxgnpORpmLTDzYcsj25LeGui2H+E26XIPWWAJv2l5XnSxw48d9iRaCXETfXUDC2WpQHV3P9F//o6xPIdXv2RoNhggUbZr4glCSaOzhYjJTsobH2qPjrc9enGpaJC0=",
-                        "signedValue": "{\"feeAmount\":0,\"amount\":100,\"couponAmount\":0,\"orderNo\":\"1251043997779005440\",\"payStatus\":\"success\",\"bizOrderNo\":\"202004171504487710\"}",
+                        "signedValue": "{
+                                        "feeAmount": 0,
+                                        "amount": 100,
+                                        "couponAmount": 0,
+                                        "orderNo": "1251043997779005440",
+                                        "payStatus": "success",
+                                        "bizOrderNo": "202004171504487710"
+                                        }",
                         "status": "OK"
                         }
                 * */
@@ -2602,8 +2609,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             map.put("result_code", "FAIL");
                             map.put("err_code_des", "退款失败" + "," + payFailMessage);
                         }
-                        String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
+                        //String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
                         String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                        String orderNo = okMap.get("orderNo").toString();//商户订单号（支付订单）
+
+                        ShopOrder updateOrder = new ShopOrder();
+                        updateOrder.setId(orderId); //记录ID
+                        updateOrder.setBatchNo(orderNo); //退款批次号
+                        orderDao.update(updateOrder);//将批次号存入退款表
+
                         map.put("result_code", "SUCCESS");
                     } else {
                         map.put("result_code", "FAIL");
