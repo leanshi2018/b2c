@@ -4861,7 +4861,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     @Override
     public void addRefundPoint(ShopRefundReturn refundReturn) {
         //判定该订单是否有预扣积分
-        ShopOrderVo shopOrder = findWithAddrAndGoods(refundReturn.getOrderId());
+        /*ShopOrderVo shopOrder = findWithAddrAndGoods(refundReturn.getOrderId());
         if(shopOrder.getCutStatus()!=null&&shopOrder.getCutStatus()==5){
             refundSpoPoint(shopOrder);
             shopOrder.setCutStatus(6);
@@ -4869,7 +4869,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             //shopOrder.setCutAmount(BigDecimal.ZERO);
             //shopOrder.setCutGetId("");
             orderDao.update(shopOrder);
-        }
+        }*/
         if (refundReturn.getRewardPointAmount().compareTo(BigDecimal.ZERO) == 1) {
             ShopOrder order = orderDao.find(refundReturn.getOrderId());
             RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", refundReturn.getBuyerId());

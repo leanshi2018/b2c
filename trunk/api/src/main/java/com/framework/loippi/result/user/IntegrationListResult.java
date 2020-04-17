@@ -113,6 +113,7 @@ public class IntegrationListResult {
                          transTypeName="自动提现预扣减积分成功";
                      }
                      else if ("CF".equals(transTypeCode) && item.getStatus()==3){
+                         symbol="+";
                          transTypeName="自动提现失败积分退还";
                      }
                  }else if (type==2) {
