@@ -29,12 +29,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.RequestContext;
 
 import com.alibaba.fastjson.JSON;
+import com.framework.loippi.consts.AllInPayBillCutConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.NotifyConsts;
 import com.framework.loippi.consts.RefundReturnState;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.AliPayRefund;
 import com.framework.loippi.entity.Principal;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.TSystemPluginConfig;
 import com.framework.loippi.entity.User;
 import com.framework.loippi.entity.WeiRefund;
@@ -53,6 +56,8 @@ import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.service.ShopCommonMessageService;
+import com.framework.loippi.service.ShopMemberMessageService;
 import com.framework.loippi.service.TSystemPluginConfigService;
 import com.framework.loippi.service.UserService;
 import com.framework.loippi.service.alipay.AlipayRefundService;
@@ -133,6 +138,10 @@ public class RefundReturnSysController extends GenericController {
     private CouponRefundService couponRefundService;
     @Resource
     private RdBizPayService rdBizPayService;
+    @Resource
+    private ShopCommonMessageService shopCommonMessageService;
+    @Resource
+    private ShopMemberMessageService shopMemberMessageService;
 
 
 
@@ -1310,6 +1319,70 @@ public class RefundReturnSysController extends GenericController {
                         updateOrder.setId(shopOrder.getId()); //记录ID
                         updateOrder.setBatchNo(orderNo); //退款批次号
                         orderService.update(updateOrder);//将批次号存入退款表
+
+
+
+                        //返还分账人积分
+                        if (shopOrder.getCutStatus()==2||shopOrder.getCutStatus()==5){
+                            String cutGetId = shopOrder.getCutGetId();//分账人编号
+                            BigDecimal cutAcc = shopOrder.getCutAcc();//分账人扣的积分
+                            if(!AllInPayBillCutConstant.COMPANY_CUT_B.equals(cutGetId)){
+                                RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", cutGetId);
+                                RdMmAccountInfo cutAccountInfo = rdMmAccountInfoService.find("mmCode", cutGetId);
+
+                                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                                rdMmAccountLog.setTransTypeCode("CF");
+                                rdMmAccountLog.setAccType("SWB");
+                                rdMmAccountLog.setTrSourceType("BNK");
+                                rdMmAccountLog.setMmCode(shopMember.getMmCode());
+                                rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
+                                rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
+                                rdMmAccountLog.setBlanceBefore(cutAccountInfo.getBonusBlance());
+                                rdMmAccountLog.setAmount(cutAcc);
+                                //无需审核直接成功
+                                rdMmAccountLog.setStatus(3);
+                                rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
+                                rdMmAccountLog.setCreationTime(new Date());
+                                rdMmAccountLog.setAutohrizeBy("后台管理员");
+                                rdMmAccountLog.setAutohrizeTime(new Date());
+                                cutAccountInfo.setBonusBlance(cutAccountInfo.getBonusBlance().add(cutAcc));
+                                rdMmAccountLog.setBlanceAfter(cutAccountInfo.getBonusBlance().add(cutAcc));
+                                rdMmAccountLog.setTransDate(new Date());
+                                String period = rdSysPeriodService.getSysPeriodService(new Date());
+                                if(period!=null){
+                                    rdMmAccountLog.setTransPeriod(period);
+                                }
+                                rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
+                                rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+                                rdMmAccountLogService.save(rdMmAccountLog);
+                                rdMmAccountInfoService.update(cutAccountInfo);
+
+                                ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
+                                shopCommonMessage1.setSendUid(shopMember.getMmCode());
+                                shopCommonMessage1.setType(1);
+                                shopCommonMessage1.setOnLine(1);
+                                shopCommonMessage1.setCreateTime(new Date());
+                                shopCommonMessage1.setBizType(2);
+                                shopCommonMessage1.setIsTop(1);
+                                shopCommonMessage1.setCreateTime(new Date());
+                                shopCommonMessage1.setTitle("自动提现失败积分退还通知");
+                                shopCommonMessage1.setContent("提现订单创建失败，退还"+cutAcc+"奖励积分到积分账户");
+                                Long msgId = twiterIdService.getTwiterId();
+                                shopCommonMessage1.setId(msgId);
+                                shopCommonMessageService.save(shopCommonMessage1);
+                                ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                                shopMemberMessage1.setBizType(2);
+                                shopMemberMessage1.setCreateTime(new Date());
+                                shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                                shopMemberMessage1.setIsRead(0);
+                                shopMemberMessage1.setMsgId(msgId);
+                                shopMemberMessage1.setUid(Long.parseLong(shopMember.getMmCode()));
+                                shopMemberMessageService.save(shopMemberMessage1);
+                            }
+
+                        }
+
+
 
                         map.put("result_code","SUCCESS");
                     }else {
