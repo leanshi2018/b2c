@@ -1864,7 +1864,7 @@ public class OrderAPIController extends BaseController {
             rdMmAccountInfoService.reduceAcc(shopOrder,rdMmAccountInfo,acc);
             return map;
         }else {
-            List<RdMmAccountInfo> accountInfos=rdMmAccountInfoService.findLastWithdrawalOneHundred();
+            List<RdMmAccountInfo> accountInfos=rdMmAccountInfoService.findLastWithdrawalOneHundred(acc);
             if(accountInfos!=null&&accountInfos.size()>0){
                 for (RdMmAccountInfo accountInfo : accountInfos) {
                     if(accountInfo.getBonusBlance().compareTo(acc)!=-1){

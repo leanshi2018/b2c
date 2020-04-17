@@ -34,7 +34,7 @@ public interface RdMmAccountInfoService  extends GenericService<RdMmAccountInfo,
 
 	List<RdMmAccountInfo> findByMCode(String mCode);
 
-    List<RdMmAccountInfo> findLastWithdrawalOneHundred();
+    List<RdMmAccountInfo> findLastWithdrawalOneHundred(BigDecimal acc);
 
     void reduceAcc(ShopOrder shopOrder, RdMmAccountInfo accountInfo, BigDecimal acc);
 }

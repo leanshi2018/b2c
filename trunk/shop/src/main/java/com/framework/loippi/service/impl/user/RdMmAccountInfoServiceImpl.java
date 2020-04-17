@@ -144,8 +144,9 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 	}
 
 	@Override
-	public List<RdMmAccountInfo> findLastWithdrawalOneHundred() {
-		return rdMmAccountInfoDao.findLastWithdrawalOneHundred();
+	public List<RdMmAccountInfo> findLastWithdrawalOneHundred(BigDecimal acc) {
+		List<RdMmAccountInfo> lastWithdrawalOneHundred = rdMmAccountInfoDao.findLastWithdrawalOneHundred(acc);
+		return lastWithdrawalOneHundred;
 	}
 
 	@Override
