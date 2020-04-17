@@ -321,6 +321,8 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
 	Map<String, Object> checkSuccessOrNo(String mmCode, String orderId);
 
+	ShopOrder findByBuyPaySn(String bizPaySn);
+
 
 	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }
