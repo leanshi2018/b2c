@@ -4,7 +4,7 @@ public interface AllInPayConstant {
     /**
      * 分账回调地址
      */
-    public static final String CUT_BILL_BACKURL="http://wsuftx.natappfree.cc/admin_war_exploded/admin/allinpayContract/cutBack.jhtml";
+    public static final String CUT_BILL_BACKURL="http://7awtnv.natappfree.cc/admin_war_exploded/admin/allinpayContract/cutBack.jhtml";
     /**
      * 通联网络签约地址 正式测试区分
      */
@@ -14,7 +14,7 @@ public interface AllInPayConstant {
     /**
      * 通联网络签约后台回调地址
      */
-    public static final String SIGN_BACK_URL="http://wsuftx.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml";
+    public static final String SIGN_BACK_URL="http://7awtnv.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml";
     //public static final String SIGN_BACK_URL="https://fintech.allinpay.com/yungateway/member/signContract.html?";
 
     /**

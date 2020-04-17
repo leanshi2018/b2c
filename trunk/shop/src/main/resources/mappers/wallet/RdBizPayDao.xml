@@ -15,11 +15,11 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,pay_sn ,biz_pay_sn,invalid_status,cutPaySn
+		 id ,pay_sn ,biz_pay_sn,invalid_status,cut_pay_sn
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{paySn},#{bizPaySn},#{invalidStatus},#{cut_pay_sn}
+		 #{id},#{paySn},#{bizPaySn},#{invalidStatus},#{cutPaySn}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
