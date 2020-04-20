@@ -16,10 +16,10 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="post" name="formSearch" id="formSearch"
+            <form method="get" name="formSearch" id="formSearch"
                   action="${base}/admin/order/mentionAddressAll.jhtml">
                 <input type="hidden" name="pageNo" value="${1}">
-                <input type="hidden" name="id" value="${id}"/>
+<#--                <input type="hidden" name="id" value="${id}"/>-->
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
@@ -76,7 +76,7 @@
         function Specaddress(phone, provinceCode) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.selSource(phone, provinceCode);
+            parent.appendInfo(phone, provinceCode);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

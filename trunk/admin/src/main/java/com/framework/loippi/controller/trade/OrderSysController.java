@@ -1531,7 +1531,7 @@ public class OrderSysController extends GenericController {
      */
     @RequiresPermissions("admin:order:main")
     @RequestMapping(value = "/admin/order/getOrderSplitDetail")
-    public String getOrderSplitDetail(HttpServletRequest request, ModelMap model, Long orderId) {
+    public String getOrderSplitDetail(HttpServletRequest request, ModelMap model, @RequestParam(required = true, value = "orderId")Long orderId) {
 
         ShopOrder order = orderService.find(orderId);
         if (order==null){

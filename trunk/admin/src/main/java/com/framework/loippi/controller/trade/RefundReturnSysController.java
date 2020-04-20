@@ -1318,6 +1318,7 @@ public class RefundReturnSysController extends GenericController {
                             ShopOrder updateOrder = new ShopOrder();
                             updateOrder.setId(shopOrder.getId()); //记录ID
                             updateOrder.setBatchNo(orderNo); //退款批次号
+                            updateOrder.setCutStatus(6);
                             orderService.update(updateOrder);//将批次号存入退款表
 
                             //返还分账人积分
