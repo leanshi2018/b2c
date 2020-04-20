@@ -1611,7 +1611,7 @@ public class UserAPIController extends BaseController {
 
             }else {
                 String message = maps.get("message").toString();
-                return ApiUtils.error("通联接口发生错误："+message);
+                return ApiUtils.error(""+message);
             }
         }else {
             return ApiUtils.error("通联接口调取失败");
@@ -1753,7 +1753,7 @@ public class UserAPIController extends BaseController {
 
             }else {
                 String message = maps.get("message").toString();
-                return ApiUtils.error("通联接口发生错误："+message);
+                return ApiUtils.error(""+message);
             }
         }else {
             return ApiUtils.error("通联接口调取失败");
@@ -1858,7 +1858,7 @@ public class UserAPIController extends BaseController {
                 return ApiUtils.success(WithdrawBalanceResult.build1(basicInfo,withdrawAmount));
             }else {
                 String message = maps.get("message").toString();
-                return ApiUtils.error("通联接口发生错误："+message);
+                return ApiUtils.error(""+message);
             }
         }else {
             return ApiUtils.error("通联接口调取失败");
@@ -1949,7 +1949,7 @@ public class UserAPIController extends BaseController {
                 return ApiUtils.success(rdMmWithdrawLog);
             }else {
                 String message = maps.get("message").toString();
-                return ApiUtils.error("通联接口发生错误："+message);
+                return ApiUtils.error(""+message);
             }
         }else {
             return ApiUtils.error("通联接口调取失败");
