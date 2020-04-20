@@ -101,47 +101,55 @@ public class IntegrationDetailResult {
     private int type;
     /** 授权说明（同意或不同意的理由） */
     private String autohrizeDesc;
+    /** 比例 */
+    private Integer backWithdrawals;
     public static IntegrationDetailResult build(RdMmAccountLog rdMmAccountLog, RdMmBasicInfo shopMember, RdMmIntegralRule rdMmIntegralRule, Integer type) {
         IntegrationDetailResult integrationListResult=new IntegrationDetailResult();
 
 //             Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0)
-                 integrationListResult.setAutohrizeDesc(Optional.ofNullable(rdMmAccountLog.getAutohrizeDesc()).orElse(""));
-                 integrationListResult.setAmount(Optional.ofNullable(rdMmAccountLog.getAmount()).orElse(new BigDecimal(0)));
-                 integrationListResult.setBlanceAfter(Optional.ofNullable(rdMmAccountLog.getBlanceAfter()).orElse(new BigDecimal(0)));
-                 integrationListResult.setBlanceBefore(Optional.ofNullable(rdMmAccountLog.getBlanceBefore()).orElse(new BigDecimal(0)));
-                 integrationListResult.setTransDate(Optional.ofNullable(DateUtil.dateToStr(rdMmAccountLog.getTransDate(),"yyyy-MM-dd HH:mm:ss")).orElse(""));
-                 integrationListResult.setTransNumber(Optional.ofNullable(rdMmAccountLog.getTransNumber()).orElse(0));
-                 integrationListResult.setTransTypeCode(Optional.ofNullable(rdMmAccountLog.getTransTypeCode()).orElse(""));
-                 integrationListResult.setStatus(Optional.ofNullable(rdMmAccountLog.getStatus()).orElse(0));
-                 integrationListResult.setTrMmCode(Optional.ofNullable(rdMmAccountLog.getTrMmCode()).orElse(""));
-                 integrationListResult.setTransDesc(Optional.ofNullable(rdMmAccountLog.getTransDesc()).orElse(""));
-                 if (rdMmAccountLog.getTrMmCode()!=null){
-                     integrationListResult.setTrMmName(shopMember.getMmNickName());
-                 }else{
-                     integrationListResult.setTrMmName("");
-                 }
-                 integrationListResult.setTrOrderOid( Optional.ofNullable(rdMmAccountLog.getTrOrderOid()).orElse(0L));
-                 integrationListResult.setAutohrizeBy(Optional.ofNullable(rdMmAccountLog.getAutohrizeBy()).orElse(""));
-                 integrationListResult.setAutohrizeTime(Optional.ofNullable(DateUtil.dateToStr(rdMmAccountLog.getAutohrizeTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""));
-                 integrationListResult.setType(type);
-                 if (rdMmIntegralRule!=null){
-                     if (type==1){ //奖励积分
-                         Double proportions =Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0)*0.01;
-                         integrationListResult.setProportion(proportions.intValue());
-                         integrationListResult.setTax(Optional.ofNullable(rdMmIntegralRule.getBonusPointWd()).orElse(0));
-                         integrationListResult.setWithdrawnAmount(integrationListResult.getAmount().subtract(Optional.ofNullable(rdMmAccountLog.getAmount()).orElse(new BigDecimal(0)).multiply(BigDecimal.valueOf(Optional.ofNullable(rdMmIntegralRule.getBonusPointWd()).orElse(0)*0.01))).setScale(2, RoundingMode.HALF_UP));
-                     }
-                     if (type==2){//购物积分
-                         Double proportions =Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0)*0.01;
-                         integrationListResult.setProportion(proportions.intValue());
-                     }
-                 }
+         integrationListResult.setAutohrizeDesc(Optional.ofNullable(rdMmAccountLog.getAutohrizeDesc()).orElse(""));
+         integrationListResult.setAmount(Optional.ofNullable(rdMmAccountLog.getAmount()).orElse(new BigDecimal(0)));
+         integrationListResult.setBlanceAfter(Optional.ofNullable(rdMmAccountLog.getBlanceAfter()).orElse(new BigDecimal(0)));
+         integrationListResult.setBlanceBefore(Optional.ofNullable(rdMmAccountLog.getBlanceBefore()).orElse(new BigDecimal(0)));
+         integrationListResult.setTransDate(Optional.ofNullable(DateUtil.dateToStr(rdMmAccountLog.getTransDate(),"yyyy-MM-dd HH:mm:ss")).orElse(""));
+         integrationListResult.setTransNumber(Optional.ofNullable(rdMmAccountLog.getTransNumber()).orElse(0));
+         integrationListResult.setTransTypeCode(Optional.ofNullable(rdMmAccountLog.getTransTypeCode()).orElse(""));
+         integrationListResult.setStatus(Optional.ofNullable(rdMmAccountLog.getStatus()).orElse(0));
+         integrationListResult.setTrMmCode(Optional.ofNullable(rdMmAccountLog.getTrMmCode()).orElse(""));
+         integrationListResult.setTransDesc(Optional.ofNullable(rdMmAccountLog.getTransDesc()).orElse(""));
+         if (rdMmAccountLog.getTrMmCode()!=null){
+             integrationListResult.setTrMmName(shopMember.getMmNickName());
+         }else{
+             integrationListResult.setTrMmName("");
+         }
+         integrationListResult.setTrOrderOid( Optional.ofNullable(rdMmAccountLog.getTrOrderOid()).orElse(0L));
+         integrationListResult.setAutohrizeBy(Optional.ofNullable(rdMmAccountLog.getAutohrizeBy()).orElse(""));
+         integrationListResult.setAutohrizeTime(Optional.ofNullable(DateUtil.dateToStr(rdMmAccountLog.getAutohrizeTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""));
+         integrationListResult.setType(type);
+         if (rdMmIntegralRule!=null){
+             if (type==1){ //奖励积分
+                 Double proportions =Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0)*0.01;
+                 integrationListResult.setProportion(proportions.intValue());
+                 integrationListResult.setTax(Optional.ofNullable(rdMmIntegralRule.getBonusPointWd()).orElse(0));
+                 integrationListResult.setWithdrawnAmount(integrationListResult.getAmount().subtract(Optional.ofNullable(rdMmAccountLog.getAmount()).orElse(new BigDecimal(0)).multiply(BigDecimal.valueOf(Optional.ofNullable(rdMmIntegralRule.getBonusPointWd()).orElse(0)*0.01))).setScale(2, RoundingMode.HALF_UP));
+             }
+             if (type==2){//购物积分
+                 Double proportions =Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0)*0.01;
+                 integrationListResult.setProportion(proportions.intValue());
+             }
+         }
         String transTypeCode=rdMmAccountLog.getTransTypeCode();
         String transTypeName="";
+        Integer backWithdrawals = 0;
         if (type==1){
             if ("SP".equals(transTypeCode)){
                 transTypeName="积分转出";
             }else if ("WD".equals(transTypeCode)){
+                if (rdMmAccountLog.getBackWithdrawals()==null){
+                    backWithdrawals = 0;
+                }else {
+                    backWithdrawals = rdMmAccountLog.getBackWithdrawals();
+                }
                 transTypeName="提现";
             }else if ("BA".equals(transTypeCode)){
                 transTypeName="奖金转入";
@@ -185,8 +193,8 @@ public class IntegrationDetailResult {
                 transTypeName = "补扣换购积分";
             }
         }
-
         integrationListResult.setTransTypeName(transTypeName);
+        integrationListResult.setBackWithdrawals(backWithdrawals);
         return integrationListResult;
     }
 

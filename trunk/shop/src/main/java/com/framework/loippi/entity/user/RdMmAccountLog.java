@@ -114,7 +114,11 @@ CSH：现金 */
 	/** 实际提现额 */
 	@Column(name = "ACTUAL_WITHDRAWALS" )
 	private BigDecimal actualWithdrawals;
-	
+
+	/** 实际提现额 */
+	@Column(name = "BACK_WITHDRAWALS" )
+	private Integer backWithdrawals;
+
 	/** 交易时间 */
 	@Column(name = "TRANS_DATE" )
 	private Date transDate;

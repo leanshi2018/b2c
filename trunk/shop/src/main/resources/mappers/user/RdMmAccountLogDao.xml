@@ -36,15 +36,16 @@
 		<result property="autohrizeDesc" column="AUTOHRIZE_DESC" />
 		<result property="presentationFeeNow" column="PRESENTATION_FEE_NOW" />
 		<result property="actualWithdrawals" column="ACTUAL_WITHDRAWALS" />
+		<result property="backWithdrawals" column="BACK_WITHDRAWALS" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 TRANS_NUMBER ,BATCH_NUMBER ,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,ACC_STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC ,PRESENTATION_FEE_NOW,ACTUAL_WITHDRAWALS
+		 TRANS_NUMBER ,BATCH_NUMBER ,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,ACC_STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC ,PRESENTATION_FEE_NOW,ACTUAL_WITHDRAWALS,BACK_WITHDRAWALS
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{transNumber},#{batchNumber},#{mmCode},#{mmNickName},#{transTypeCode},#{accType},#{trSourceType},#{trMmCode},#{trBankOid},#{trOrderOid},#{currencyCode},#{blanceBefore},#{amount},#{blanceAfter},#{transDate},#{transPeriod},#{transDesc},#{status},#{accStatus},#{washedYn},#{orignTransNumber},#{creationBy},#{creationTime},#{updateBy},#{updateTime},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{presentationFeeNow},#{actualWithdrawals}
+		 #{transNumber},#{batchNumber},#{mmCode},#{mmNickName},#{transTypeCode},#{accType},#{trSourceType},#{trMmCode},#{trBankOid},#{trOrderOid},#{currencyCode},#{blanceBefore},#{amount},#{blanceAfter},#{transDate},#{transPeriod},#{transDesc},#{status},#{accStatus},#{washedYn},#{orignTransNumber},#{creationBy},#{creationTime},#{updateBy},#{updateTime},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{presentationFeeNow},#{actualWithdrawals},#{backWithdrawals}
 	</sql>
 	<sql id="base_list_column">
 		TRANS_NUMBER,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC
@@ -145,6 +146,9 @@
 		</if>
 		<if test="actualWithdrawals != null and actualWithdrawals != ''">
 			AND ACTUAL_WITHDRAWALS = #{actualWithdrawals}
+		</if>
+		<if test="backWithdrawals != null ">
+			AND BACK_WITHDRAWALS = #{backWithdrawals}
 		</if>
 		<if test="time != null and time != ''">
 			AND CREATION_TIME BETWEEN CONCAT( #{time},'-01 00:00:00') and CONCAT( #{time},'-31 23:59:59')
@@ -251,6 +255,9 @@
 		</if>
 		<if test="actualWithdrawals != null and actualWithdrawals != ''">
 			 ACTUAL_WITHDRAWALS = #{actualWithdrawals},
+		</if>
+		<if test="backWithdrawals != null">
+			BACK_WITHDRAWALS = #{backWithdrawals},
 		</if>
 	</sql>
 

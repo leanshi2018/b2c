@@ -57,7 +57,7 @@
 
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpecaddress('${address.id}','${address.couponName}')">选择</a>
+                               onclick="Specaddress('${address.phone}','${address.provinceCode}')">选择</a>
                         </td>
                     </tr>
                 </#list>
@@ -73,10 +73,10 @@
         </div>
     </div>
     <script>
-        function selSpecaddress(id, couponName) {
+        function Specaddress(phone, provinceCode) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.selSource(id, couponName);
+            parent.selSource(phone, provinceCode);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

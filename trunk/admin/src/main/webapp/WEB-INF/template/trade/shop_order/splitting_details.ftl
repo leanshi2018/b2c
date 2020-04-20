@@ -7,6 +7,7 @@
     <script type="text/javascript" src="${base}/resources/js/jquery.form.js"></script>
     <script src="${base}/res/js/area.js" charset="utf-8"></script>
     <link rel="stylesheet" type="text/css" href="${base}/res/js/jquery-ui/themes/ui-lightness/jquery.ui.css"/>
+    <script type="text/javascript" src="${base}/res/js/internation/goods/order/jquery.goods_order_zh_CN.js"></script>
     <style>
         .transinput {
             background-color: transparent;

@@ -1611,7 +1611,12 @@ public class UserAPIController extends BaseController {
 
             }else {
                 String message = maps.get("message").toString();
-                return ApiUtils.error(""+message);
+                String errorCode = maps.get("errorCode").toString();
+                if (!errorCode.equals("30002")){
+                    return ApiUtils.error(""+message);
+                }else {
+                    basicInfo.setLockWalletStatus(1);
+                }
             }
         }else {
             return ApiUtils.error("通联接口调取失败");
