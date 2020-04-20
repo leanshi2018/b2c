@@ -2511,7 +2511,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
                     rdMmAccountLog.setTransTypeCode("CF");
                     rdMmAccountLog.setAccType("SWB");
-                    rdMmAccountLog.setTrSourceType("OWB");
+                    rdMmAccountLog.setTrSourceType("BNK");
                     rdMmAccountLog.setMmCode(shopMember.getMmCode());
                     rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
                     rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
@@ -2523,8 +2523,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     rdMmAccountLog.setCreationTime(new Date());
                     rdMmAccountLog.setAutohrizeBy("后台管理员");
                     rdMmAccountLog.setAutohrizeTime(new Date());
-                    cutAccountInfo.setBonusBlance(cutAccountInfo.getBonusBlance().add(cutAcc));
                     rdMmAccountLog.setBlanceAfter(cutAccountInfo.getBonusBlance().add(cutAcc));
+                    cutAccountInfo.setBonusBlance(cutAccountInfo.getBonusBlance().add(cutAcc));
                     rdMmAccountLog.setTransDate(new Date());
                     String period = rdSysPeriodDao.getSysPeriodService(new Date());
                     if(period!=null){
@@ -2692,17 +2692,18 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
                             map.put("result_code", "FAIL");
                             map.put("err_code_des", "退款失败" + "," + payFailMessage);
+                        }else {
+                            //String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
+                            String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                            String orderNo = okMap.get("orderNo").toString();//商户订单号（支付订单）
+
+                            ShopOrder updateOrder = new ShopOrder();
+                            updateOrder.setId(orderId); //记录ID
+                            updateOrder.setBatchNo(orderNo); //退款批次号
+                            orderDao.update(updateOrder);//将批次号存入退款表
+
+                            map.put("result_code", "SUCCESS");
                         }
-                        //String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
-                        String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
-                        String orderNo = okMap.get("orderNo").toString();//商户订单号（支付订单）
-
-                        ShopOrder updateOrder = new ShopOrder();
-                        updateOrder.setId(orderId); //记录ID
-                        updateOrder.setBatchNo(orderNo); //退款批次号
-                        orderDao.update(updateOrder);//将批次号存入退款表
-
-                        map.put("result_code", "SUCCESS");
                     } else {
                         map.put("result_code", "FAIL");
                         map.put("err_code_des", "退款失败" );
