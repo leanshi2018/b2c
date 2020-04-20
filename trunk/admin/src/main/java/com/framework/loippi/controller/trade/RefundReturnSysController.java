@@ -1324,6 +1324,7 @@ public class RefundReturnSysController extends GenericController {
 
                         //返还分账人积分
                         if (shopOrder.getCutStatus()==2||shopOrder.getCutStatus()==5){
+                            System.out.println("**************售后返还积分");
                             String cutGetId = shopOrder.getCutGetId();//分账人编号
                             BigDecimal cutAcc = shopOrder.getCutAcc();//分账人扣的积分
                             if(!AllInPayBillCutConstant.COMPANY_CUT_B.equals(cutGetId)){
@@ -1356,7 +1357,7 @@ public class RefundReturnSysController extends GenericController {
                                 rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
                                 rdMmAccountLogService.save(rdMmAccountLog);
                                 rdMmAccountInfoService.update(cutAccountInfo);
-
+                                System.out.println("**************售后提示");
                                 ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
                                 shopCommonMessage1.setSendUid(shopMember.getMmCode());
                                 shopCommonMessage1.setType(1);
