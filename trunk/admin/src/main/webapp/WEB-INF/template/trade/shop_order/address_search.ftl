@@ -17,7 +17,7 @@
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
             <form method="get" name="formSearch" id="formSearch"
-                  action="${base}/admin/order/mentionAddressAll.jhtml">
+                  action="${base}/admin/order/mentionAddressAll.json">
                 <input type="hidden" name="pageNo" value="${1}">
 <#--                <input type="hidden" name="id" value="${id}"/>-->
                 <table class="tb-type1 noborder search">
