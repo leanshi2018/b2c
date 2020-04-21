@@ -552,7 +552,7 @@ public class ShopOrderJob {
             RdMmRelation rdMmRelation=rdMmRelationDao.findBySpoCode(code);
             if(rdMmRelation==null||rdMmRelation.getSponsorCode()==null){//如果关系表为null或者该会员推荐人信息异常 结束该方法
                 flag=false;
-            }else if(rdMmRelation.getSponsorCode().equals("101000158")){//如果推荐人为公司节点
+            }else if(rdMmRelation.getSponsorCode().equals("101000158")||(rdMmRelation.getSponsorCode().equals("900000000"))){//如果推荐人为公司节点
                 flag=false;
             } else {
                 //获取推荐人的积分账户信息记录

@@ -163,6 +163,10 @@ public class IntegrationDetailResult {
                 transTypeName="补偿奖励积分";
             }else if ("MDB".equals(transTypeCode)){
                 transTypeName="补扣奖励积分";
+            }else if ("AWD".equals(transTypeCode)){
+                transTypeName="自动提现预扣减积分";
+            }else if ("CF".equals(transTypeCode)){
+                transTypeName="自动自提失败退还积分";
             }
         }else if (type==2) {
             if ("BT".equals(transTypeCode)) {
