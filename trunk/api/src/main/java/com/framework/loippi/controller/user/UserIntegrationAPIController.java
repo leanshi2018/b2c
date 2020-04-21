@@ -12,6 +12,7 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.user.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +25,6 @@ import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.user.MemberQualification;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.IntegrationBuildResult;
@@ -825,6 +819,18 @@ public class UserIntegrationAPIController extends BaseController {
         return ApiUtils.success(IntegrationDetailResult.build(rdMmAccountLog, shopMember, rdMmIntegralRule, type));
     }
 
-
+    //积分提现绑卡查询
+    @RequestMapping(value = "/getBank.json")
+    public String getBank(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("用户未登录");
+        }
+        List<RdMmBank> list = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("defaultbank",1));
+        if(list!=null&&list.size()>0){
+            return ApiUtils.success(list.get(0));
+        }
+        return ApiUtils.error("该用户没有设置默认提现银行卡");
+    }
 }
 
