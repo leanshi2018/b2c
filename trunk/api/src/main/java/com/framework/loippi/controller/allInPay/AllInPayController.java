@@ -2,6 +2,7 @@ package com.framework.loippi.controller.allInPay;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -364,5 +365,31 @@ public class AllInPayController extends BaseController {
         }
         return ApiUtils.error("网络异常，请稍后重试");
     }
-
+    /**
+     * 获取会员实名制认证信息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getTrueInfo.json", method = RequestMethod.GET)
+    public String getTrueInfo(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error(Xerror.USER_UNLOGIN_JSON_CODE);
+        }
+        String mmCode = member.getMmCode();
+        if(mmCode==null){
+            return ApiUtils.error("会员基础信息异常");
+        }
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", mmCode);
+        if(rdMmBasicInfo==null){
+            return ApiUtils.error("会员基础信息异常");
+        }
+        if(rdMmBasicInfo.getWhetherTrueName()==null||rdMmBasicInfo.getWhetherTrueName()!=1){
+            return ApiUtils.error("会员尚未进行实名制认证");
+        }
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name",rdMmBasicInfo.getTrueName());
+        map.put("cardId",rdMmBasicInfo.getTrueId());
+        return ApiUtils.success(map);
+    }
 }
