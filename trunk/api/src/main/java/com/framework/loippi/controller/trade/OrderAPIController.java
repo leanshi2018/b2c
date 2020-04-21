@@ -1674,42 +1674,6 @@ public class OrderAPIController extends BaseController {
                 payMethods, "", "", "1910", "其他", 1l, "", "");*/
 
         /*
-        response:{"sysid":"1902271423530473681","sign":"WWAff/cGqCfJUmUO/raqavyS+b3LsltQcxatJEDyLi8BG9JJvPxrNZ7IQ+sOJVK1k9nRfcm1XPMIK7nnyC/
-        5h8dywkhx1yMNTf89y7M/rmO61Y7OKbEUMZe+mJ13QDWSPjwhC/IDQ/URfFQy+kksjEvdKjm+cG4h1B6oH7hDTgc=",
-        "signedValue":"{\"orderNo\":\"1247788418784595968\",\"payInfo\":\"{\\\"appId\\\":\\\"wxd9b2267890ad0c2c\\\",\\\"timeStamp\\\":\\\"1586330905\\\",
-        \\\"nonceStr\\\":\\\"78a2fe1092ea42919fd084d2219a40e1\\\",\\\"package\\\":\\\"prepay_id=wx081528252809422e50b5bf871236939600\\\",\\\"signType\\\":\\\"RSA\\\",
-        \\\"paySign\\\":\\\"VLbYq97wdvhTYW9oTzoVOWBpK0jGALl+EPfUvTtq3vun25qvdc1IBLVeMWc1Ib89uCd5skIMGcitdIjUM/3h7KjuuFRpgJVpJb/FPMmuwe7Ij4zj8ocpj7U7qy5IKQFaxAHt
-        OAcRAu0phTRQXrS9cIzEIyjcCgydCuY9fYDN+C95rQ+1QemchAotp4GUs08+dXcTFm+gSdb5zySHtq+Qd8sMnTghUjmBDmvpJltfhgV/6yg2yAwXbfOgmnaM/FvKr63nEwmOssZvdi4kIxfUNL1cJOtBdMwoPF
-        WoIwDeHNxPZ1Db3v9np96ljc9q3haELrosH8U6r+OivtZuRGAJYw==\\\"}\",\"bizUserId\":\"900013801\",\"bizOrderNo\":\"P20200408151314390\"}","status":"OK"}
-
-
-        {\"orderNo\":\"1247788418784595968\",
-        \"payInfo\":{\\\"appId\\\":\\\"wxd9b2267890ad0c2c\\\",
-                    \\\"timeStamp\\\":\\\"1586330905\\\",
-                    \\\"nonceStr\\\":\\\"78a2fe1092ea42919fd084d2219a40e1\\\",
-                    \\\"package\\\":\\\"prepay_id=wx081528252809422e50b5bf871236939600\\\",
-                    \\\"signType\\\":\\\"RSA\\\",
-                    \\\"paySign\\\":\\\"VLbYq97wdvhTYW9oTzoVOWBpK0jGALl+EPfUvTtq3vun25qvdc1IBLVeMWc1Ib89uCd5skIMGcitdIjUM/3h7KjuuFRpgJVpJb/FPMmuwe7Ij4zj8ocpj7U7qy5IKQFaxAHtOAcRAu0phTRQXrS9cIzEIyjcCgydCuY9fYDN+C95rQ+1QemchAotp4GUs08+dXcTFm+gSdb5zySHtq+Qd8sMnTghUjmBDmvpJltfhgV/6yg2yAwXbfOgmnaM/FvKr63nEwmOssZvdi4kIxfUNL1cJOtBdMwoPFWoIwDeHNxPZ1Db3v9np96ljc9q3haELrosH8U6r+OivtZuRGAJYw==\\\"}\",
-        \"bizUserId\":\"900013801\",
-        \"bizOrderNo\":\"P20200408151314390\"}
-
-
-        response:{"sysid":"1902271423530473681",
-        "sign":"g4s/E0Bo/wbE15LRyZYDfR3yb3gWamNCY3DX8GFNQOfzx1RieFPj2Ca7Pt8mV4rs775a6HMHq4As7lVlLrF8E67axMaClW3NgxumKIxtLlU+3X8uj0+kHXek67QZou5Od16ZHi0FERRZe33kVgQzUyeQ4HGW1Hbnzy9uC8nn8Vs=",
-        "signedValue":"{\"orderNo\":\"1248079192394862592\",
-                        \"payInfo\":\"{\\\"appId\\\":\\\"wxd9b2267890ad0c2c\\\",
-                                        \\\"timeStamp\\\":\\\"1586400230\\\",
-                                        \\\"nonceStr\\\":\\\"812c69734d564129bf198916261753c7\\\",
-                                        \\\"package\\\":\\\"prepay_id=wx09104350750980868426ce9b1724485100\\\",
-                                        \\\"signType\\\":\\\"RSA\\\",
-                                        \\\"paySign\\\":\\\"rMxpYxjDyiujorLUiaqK+0BWJJxkZTKGBEW1Cfet1eAy3gQ4Icgrsyy+A2amJP+B5dI8NZ75I/V1eHx9LEF9NHiBodaGAPnlpUhO0KinXXsW3IoNtkJBh+z39cVFjjPJlLtNYpOkorzYX4tv8tLtEEVnAaHHVixJNVeAwsW/FtmWo5EnNC8iQKzcPoIIL143UnZ9+aFcx77i7EyvB1KOYw/P3gofe4feqNb9tMNVHCuBjpdmD3FwV8K4ur/LPlXcb9JP33DkoA012w+vHEEWcjXxoisEoEDuYuEcH+yTFsa71s0CCl5JUronUb4ghpzIoYZYCVObz0sGyAD73xb/6A==\\\"}\",
-                        \"bizUserId\":\"900013801\",
-                        \"bizOrderNo\":\"P20200409104339751\"}",
-        "status":"OK"}
-
-        * */
-
-        /*
         response:{"sysid":"1908201117222883218",
                    "sign":"tgoTflSieEo5WPKacv0V3+jQHDtVtzub8H92D+5MK2MKNrZZxy5NikM5UqamA7Ic8/q5AQL/poyZSlMCQEY1VoJxrxyo3bn8KjqcfZtgoIVurl+uQs8xJYuRuZQd0HPDFpcuFFhVqJ/8Nww0lpfu2njK8K5c+zpwW8ZEI8JhLnc=",
                    "signedValue":"{\"orderNo\":\"1249642168751001600\",

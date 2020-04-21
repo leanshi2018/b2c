@@ -33,7 +33,7 @@ public class SelfWalletResult {
 	private BigDecimal freezeAmount;
 
 	/**
-	 * 钱包状态 0.正常 1.未签约 2.未激活 3.冻结
+	 * 钱包状态 0.正常 1.未签约 2.未激活 3.冻结 4锁定
 	 */
 	private Integer amountStatus;
 
@@ -49,7 +49,7 @@ public class SelfWalletResult {
 			if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()==0){
 				result.setAmountStatus(1);
 			}else {
-				if (basicInfo.getAllInContractStatus()==null || basicInfo.getAllInContractStatus()==1||basicInfo.getAllInContractStatus()==2){
+				if (basicInfo.getLockWalletStatus()==null || basicInfo.getLockWalletStatus()==0){
 					result.setAmountStatus(0);
 				}else {
 					result.setAmountStatus(3);

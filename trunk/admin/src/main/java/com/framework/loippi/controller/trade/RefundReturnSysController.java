@@ -472,7 +472,7 @@ public class RefundReturnSysController extends GenericController {
                         //weiRefund.setTotalfee(1);
                         backurl = toweichatrefund(weiRefund, id, adminMessage, "open_weichatpay", model, request);
                         //toweichatrefund();
-                    } else if (order.getPaymentCode().equals("weixinAppletsPaymentPlugin")) {//微信小程序支付  通联退款 退款申请 TODO ldq.2020.3.17
+                    } else if (order.getPaymentCode().equals("weixinAppletsPaymentPlugin")) {//微信小程序支付  通联退款 退款申请 TODO 2020.3.17
                         WeiRefund weiRefund = new WeiRefund();
                         String bathno = DateUtils.getDateStr(new Date(), "yyyyMMddHHmmssSSS") + NumberUtils.getRandomNumber();
                         ShopRefundReturn updateReturn = new ShopRefundReturn();
@@ -1308,83 +1308,87 @@ public class RefundReturnSysController extends GenericController {
                             String payFailMessage = okMap.get("payFailMessage").toString();//仅交易验证方式为“0”时返回 只有 payStatus 为 fail 时有效
                             map.put("result_code","FAIL");
                             map.put("err_code_des","退款失败"+","+payFailMessage);
-                        }
-                        //String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
-                        String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
-                        String orderNo = okMap.get("orderNo").toString();//商户订单号（支付订单）
+                        }else {//不是失败
+                            //String bizUserId = okMap.get("bizUserId").toString();//商户系统用户标识，商户 系统中唯一编号。
+                            String bizOrderNo = okMap.get("bizOrderNo").toString();//商户订单号（支付订单）
+                            String orderNo = okMap.get("orderNo").toString();//商户订单号（支付订单）
 
-                        updateReturn.setBatchNo(orderNo); //退款批次号
-                        refundReturnService.update(updateReturn);//将批次号存入退款表
-                        ShopOrder updateOrder = new ShopOrder();
-                        updateOrder.setId(shopOrder.getId()); //记录ID
-                        updateOrder.setBatchNo(orderNo); //退款批次号
-                        orderService.update(updateOrder);//将批次号存入退款表
+                            updateReturn.setBatchNo(orderNo); //退款批次号
+                            refundReturnService.update(updateReturn);//将批次号存入退款表
+                            ShopOrder updateOrder = new ShopOrder();
+                            updateOrder.setId(shopOrder.getId()); //记录ID
+                            updateOrder.setBatchNo(orderNo); //退款批次号
+                            updateOrder.setCutStatus(6);
+                            orderService.update(updateOrder);//将批次号存入退款表
 
+                            //返还分账人积分
+                            if (shopOrder.getCutStatus()==null){
+                                System.out.println("分账状态为null");
+                            }else {
+                                if (shopOrder.getCutStatus()==2||shopOrder.getCutStatus()==5){
+                                    System.out.println("**************售后返还积分");
+                                    String cutGetId = shopOrder.getCutGetId();//分账人编号
+                                    BigDecimal cutAcc = shopOrder.getCutAcc();//分账人扣的积分
+                                    if(!AllInPayBillCutConstant.COMPANY_CUT_B.equals(cutGetId)){
+                                        RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", cutGetId);
+                                        RdMmAccountInfo cutAccountInfo = rdMmAccountInfoService.find("mmCode", cutGetId);
+                                        BigDecimal bonusBlance = cutAccountInfo.getBonusBlance();
+                                        System.out.println("原始奖励积分="+ bonusBlance);
 
+                                        RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                                        rdMmAccountLog.setTransTypeCode("CF");
+                                        rdMmAccountLog.setAccType("SWB");
+                                        rdMmAccountLog.setTrSourceType("BNK");
+                                        rdMmAccountLog.setMmCode(shopMember.getMmCode());
+                                        rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
+                                        rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
+                                        rdMmAccountLog.setBlanceBefore(bonusBlance);
+                                        rdMmAccountLog.setAmount(cutAcc);
+                                        //无需审核直接成功
+                                        rdMmAccountLog.setStatus(3);
+                                        rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
+                                        rdMmAccountLog.setCreationTime(new Date());
+                                        rdMmAccountLog.setAutohrizeBy("后台管理员");
+                                        rdMmAccountLog.setAutohrizeTime(new Date());
+                                        rdMmAccountLog.setBlanceAfter(bonusBlance.add(cutAcc));
+                                        cutAccountInfo.setBonusBlance(bonusBlance.add(cutAcc));
+                                        rdMmAccountLog.setTransDate(new Date());
+                                        String period = rdSysPeriodService.getSysPeriodService(new Date());
+                                        if(period!=null){
+                                            rdMmAccountLog.setTransPeriod(period);
+                                        }
+                                        rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
+                                        rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+                                        rdMmAccountLogService.save(rdMmAccountLog);
+                                        rdMmAccountInfoService.update(cutAccountInfo);
+                                        System.out.println("**************售后提示");
+                                        ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
+                                        shopCommonMessage1.setSendUid(shopMember.getMmCode());
+                                        shopCommonMessage1.setType(1);
+                                        shopCommonMessage1.setOnLine(1);
+                                        shopCommonMessage1.setCreateTime(new Date());
+                                        shopCommonMessage1.setBizType(2);
+                                        shopCommonMessage1.setIsTop(1);
+                                        shopCommonMessage1.setCreateTime(new Date());
+                                        shopCommonMessage1.setTitle("自动提现失败积分退还通知");
+                                        shopCommonMessage1.setContent("提现订单创建失败，退还"+cutAcc+"奖励积分到积分账户");
+                                        Long msgId = twiterIdService.getTwiterId();
+                                        shopCommonMessage1.setId(msgId);
+                                        shopCommonMessageService.save(shopCommonMessage1);
+                                        ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                                        shopMemberMessage1.setBizType(2);
+                                        shopMemberMessage1.setCreateTime(new Date());
+                                        shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                                        shopMemberMessage1.setIsRead(0);
+                                        shopMemberMessage1.setMsgId(msgId);
+                                        shopMemberMessage1.setUid(Long.parseLong(shopMember.getMmCode()));
+                                        shopMemberMessageService.save(shopMemberMessage1);
+                                    }
 
-                        //返还分账人积分
-                        if (shopOrder.getCutStatus()==2||shopOrder.getCutStatus()==5){
-                            String cutGetId = shopOrder.getCutGetId();//分账人编号
-                            BigDecimal cutAcc = shopOrder.getCutAcc();//分账人扣的积分
-                            if(!AllInPayBillCutConstant.COMPANY_CUT_B.equals(cutGetId)){
-                                RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", cutGetId);
-                                RdMmAccountInfo cutAccountInfo = rdMmAccountInfoService.find("mmCode", cutGetId);
-
-                                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
-                                rdMmAccountLog.setTransTypeCode("CF");
-                                rdMmAccountLog.setAccType("SWB");
-                                rdMmAccountLog.setTrSourceType("BNK");
-                                rdMmAccountLog.setMmCode(shopMember.getMmCode());
-                                rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
-                                rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
-                                rdMmAccountLog.setBlanceBefore(cutAccountInfo.getBonusBlance());
-                                rdMmAccountLog.setAmount(cutAcc);
-                                //无需审核直接成功
-                                rdMmAccountLog.setStatus(3);
-                                rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
-                                rdMmAccountLog.setCreationTime(new Date());
-                                rdMmAccountLog.setAutohrizeBy("后台管理员");
-                                rdMmAccountLog.setAutohrizeTime(new Date());
-                                cutAccountInfo.setBonusBlance(cutAccountInfo.getBonusBlance().add(cutAcc));
-                                rdMmAccountLog.setBlanceAfter(cutAccountInfo.getBonusBlance().add(cutAcc));
-                                rdMmAccountLog.setTransDate(new Date());
-                                String period = rdSysPeriodService.getSysPeriodService(new Date());
-                                if(period!=null){
-                                    rdMmAccountLog.setTransPeriod(period);
                                 }
-                                rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
-                                rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
-                                rdMmAccountLogService.save(rdMmAccountLog);
-                                rdMmAccountInfoService.update(cutAccountInfo);
-
-                                ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
-                                shopCommonMessage1.setSendUid(shopMember.getMmCode());
-                                shopCommonMessage1.setType(1);
-                                shopCommonMessage1.setOnLine(1);
-                                shopCommonMessage1.setCreateTime(new Date());
-                                shopCommonMessage1.setBizType(2);
-                                shopCommonMessage1.setIsTop(1);
-                                shopCommonMessage1.setCreateTime(new Date());
-                                shopCommonMessage1.setTitle("自动提现失败积分退还通知");
-                                shopCommonMessage1.setContent("提现订单创建失败，退还"+cutAcc+"奖励积分到积分账户");
-                                Long msgId = twiterIdService.getTwiterId();
-                                shopCommonMessage1.setId(msgId);
-                                shopCommonMessageService.save(shopCommonMessage1);
-                                ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
-                                shopMemberMessage1.setBizType(2);
-                                shopMemberMessage1.setCreateTime(new Date());
-                                shopMemberMessage1.setId(twiterIdService.getTwiterId());
-                                shopMemberMessage1.setIsRead(0);
-                                shopMemberMessage1.setMsgId(msgId);
-                                shopMemberMessage1.setUid(Long.parseLong(shopMember.getMmCode()));
-                                shopMemberMessageService.save(shopMemberMessage1);
                             }
-
+                            map.put("result_code","SUCCESS");
                         }
-
-
-
-                        map.put("result_code","SUCCESS");
                     }else {
                         map.put("result_code","FAIL");
                         map.put("err_code_des","退款失败");
