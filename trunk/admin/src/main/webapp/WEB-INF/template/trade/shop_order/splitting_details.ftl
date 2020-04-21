@@ -45,8 +45,8 @@
                 <td>
                     <ul>
                         <li><strong>订单号：</strong>${detail.orderSn}</li>
-                        <li><strong>订单实付金额：</strong>${detail.firmSplitAmount}</li>
-                        <li><strong>公司分账后收入：</strong>${detail.orderAmount}</li>
+                        <li><strong>订单实付金额：</strong>${detail.orderAmount}</li>
+                        <li><strong>公司分账后收入：</strong>${detail.firmSplitAmount}</li>
                     </ul>
                 </td>
             </tr>
