@@ -36,6 +36,7 @@ import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
+import com.framework.loippi.dao.common.ShopAutoShipDao;
 import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
 import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.product.ShopGoodsSpecDao;
@@ -49,6 +50,7 @@ import com.framework.loippi.dao.user.RetailProfitDao;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.common.ShopAutoShip;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
@@ -134,6 +136,8 @@ public class ShopOrderJob {
     private ShopMemberMessageDao shopMemberMessageDao;
     @Resource
     private ShopOrderDao shopOrderDao;
+    @Resource
+    private ShopAutoShipDao shopAutoShipDao;
 
     @Resource
     private ShopOrderGoodsService shopOrderGoodsService;
@@ -771,64 +775,79 @@ public class ShopOrderJob {
     }
 
 
-    //@Scheduled(cron = "0 0 15,17 * * ?" )  //每天16点30分发货
+    //@Scheduled(cron = "0 0 15,17 * * ?" )  //每天15点和17点发货
     public void timingOrder(){
         System.out.println("###############################执行定时发货#####################################");
-        List<ShopOrder> orderList = orderService.findStatu20();//所有代发货订单
-        for (ShopOrder shopOrder : orderList) {
-            if (shopOrder.getLogisticType()==1){
-                Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
-                String resultS = (String)resMap.get("res");
-                if (!"".equals(resultS)){
-                    if(resultS.substring(0,1).equals("{")){
-                        Map maps = (Map) JSON.parse(resultS);
-                        String success = (String) maps.get("success");//是否成功
-                        String orderSn = (String) maps.get("CsRefNo");//订单编号
-                        if (success.equals("success")) {//发货成功
-                            String trackingNo = (String) maps.get("TrackingNo");//运单号
-                            if (!Character.isDigit(trackingNo.charAt(0))) {//不是数字，就是发货失败，有可能在草稿箱
+        Integer fStatus = 1;
+        List<ShopAutoShip> shipDaoAll = shopAutoShipDao.findAll();
+        Integer size = shipDaoAll.size();
+        if (size==1){
+            ShopAutoShip shopAutoShip = shipDaoAll.get(0);
+            Integer shipStatus = shopAutoShip.getShipStatus();
+            if (shipStatus==null){
+                fStatus =1;
+            }else {
+                fStatus = shipStatus;
+            }
+        }
+
+        if (fStatus==1){
+            List<ShopOrder> orderList = orderService.findStatu20();//所有代发货订单
+            for (ShopOrder shopOrder : orderList) {
+                if (shopOrder.getLogisticType()==1){
+                    Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
+                    String resultS = (String)resMap.get("res");
+                    if (!"".equals(resultS)){
+                        if(resultS.substring(0,1).equals("{")){
+                            Map maps = (Map) JSON.parse(resultS);
+                            String success = (String) maps.get("success");//是否成功
+                            String orderSn = (String) maps.get("CsRefNo");//订单编号
+                            if (success.equals("success")) {//发货成功
+                                String trackingNo = (String) maps.get("TrackingNo");//运单号
+                                if (!Character.isDigit(trackingNo.charAt(0))) {//不是数字，就是发货失败，有可能在草稿箱
+                                    String failInfo = (String) maps.get("Info");//失败信息
+                                    System.out.println("failInfo");
+                                    orderService.updateOrderStatus(orderSn, 20, 20, failInfo, "");
+                                } else {
+                                    //TrackingNo第一个字符是数字
+                                    if (!"".equals(trackingNo)) {// 订单状态：待收货 提交状态：已提交 失败原因："" +运单号
+                                        System.out.println("待收货");
+                                        Integer orderState = 30;
+                                        Integer submitStatus = 10;
+                                        String failInfo = "";
+                                        orderService.updateOrderStatus(orderSn, orderState, submitStatus, failInfo, trackingNo);
+                                    } else {//状订单态：仓库在备货 提交状态：已提交 失败原因：""
+                                        System.out.println("仓库在备货");
+                                        orderService.updateOrderStatus(orderSn, 25, 10, "", "");
+                                    }
+                                    List<Map<String, Object>> products = (List<Map<String, Object>>) resMap.get("Products");//发货的数据
+                                        /*for (Map<String, Object> product : products) {
+                                            String sku = (String) product.get("SKU");//发货商品规格编号
+                                            Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
+                                            ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
+                                            Long goodsSpecId = goodsSpec.getId();//商品规格id
+                                            inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", goodsSpecId, quantity);
+                                        }*/
+
+                                    List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
+                                    List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
+                                    List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo);//需要修改订单商品信息
+                                    shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
+                                }
+                            }
+                            if (success.equals("failure")) {//发货失败   提交状态：提交失败 失败原因：failInfo
                                 String failInfo = (String) maps.get("Info");//失败信息
                                 System.out.println("failInfo");
                                 orderService.updateOrderStatus(orderSn, 20, 20, failInfo, "");
-                            } else {
-                                //TrackingNo第一个字符是数字
-                                if (!"".equals(trackingNo)) {// 订单状态：待收货 提交状态：已提交 失败原因："" +运单号
-                                    System.out.println("待收货");
-                                    Integer orderState = 30;
-                                    Integer submitStatus = 10;
-                                    String failInfo = "";
-                                    orderService.updateOrderStatus(orderSn, orderState, submitStatus, failInfo, trackingNo);
-                                } else {//状订单态：仓库在备货 提交状态：已提交 失败原因：""
-                                    System.out.println("仓库在备货");
-                                    orderService.updateOrderStatus(orderSn, 25, 10, "", "");
-                                }
-                                List<Map<String, Object>> products = (List<Map<String, Object>>) resMap.get("Products");//发货的数据
-                                    /*for (Map<String, Object> product : products) {
-                                        String sku = (String) product.get("SKU");//发货商品规格编号
-                                        Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
-                                        ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
-                                        Long goodsSpecId = goodsSpec.getId();//商品规格id
-                                        inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", goodsSpecId, quantity);
-                                    }*/
-
-                                List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
-                                List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
-                                List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo);//需要修改订单商品信息
-                                shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
                             }
                         }
-                        if (success.equals("failure")) {//发货失败   提交状态：提交失败 失败原因：failInfo
-                            String failInfo = (String) maps.get("Info");//失败信息
-                            System.out.println("failInfo");
-                            orderService.updateOrderStatus(orderSn, 20, 20, failInfo, "");
-                        }
                     }
+                }else {//自提
+                    ShopOrder shopOrder1 = new ShopOrder();
+                    shopOrder1.setId(shopOrder.getId());
+                    shopOrder1.setOrderState(30);
+                    orderService.update(shopOrder1);
                 }
-            }else {//自提
-                ShopOrder shopOrder1 = new ShopOrder();
-                shopOrder1.setId(shopOrder.getId());
-                shopOrder1.setOrderState(30);
-                orderService.update(shopOrder1);
             }
         }
     }
