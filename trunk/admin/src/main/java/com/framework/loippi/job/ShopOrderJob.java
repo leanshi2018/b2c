@@ -681,7 +681,7 @@ public class ShopOrderJob {
                     //2.生成积分变更记录
                     String mmCode = shopOrder.getCutGetId();
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("transTypeCode","WD");
+                    map.put("transTypeCode","AWD");
                     map.put("accType","SBB");
                     map.put("trSourceType","BNK");
                     map.put("trOrderOid",shopOrder.getId());
