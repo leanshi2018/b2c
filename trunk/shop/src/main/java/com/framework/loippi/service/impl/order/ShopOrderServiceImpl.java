@@ -2571,7 +2571,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             if (order.getCutStatus()==null){
                 System.out.println("分账状态为null");
             }else {
-                if (order.getCutStatus()==2 || order.getCutStatus()==5){
+                //if (order.getCutStatus()==2 || order.getCutStatus()==5){
                     System.out.println("取消返还");
                     String cutGetId = order.getCutGetId();//分账人编号
                     BigDecimal cutAcc = order.getCutAcc();//分账人扣的积分
@@ -2629,7 +2629,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         shopMemberMessageDao.insert(shopMemberMessage1);
                     }
 
-                }
+                //}
             }
         }
 
