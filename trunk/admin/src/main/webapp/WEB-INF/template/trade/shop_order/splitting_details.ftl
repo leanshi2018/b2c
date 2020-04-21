@@ -19,6 +19,9 @@
             width: 100px;
             height: 26px;
         }
+        ul li{margin: 2%;
+            font-size: 13px;}
+        .goods{width: 70%}
     </style>
 </@layout.head>
 <@layout.body>
@@ -27,29 +30,29 @@
             <div class="item-title">
                 <h3>订单分账明细</h3>
                 <ul class="tab-base">
-                    <li><a href="JavaScript:void(0);" class="current"><span>管理</span></a></li>
+                    <li><a href="JavaScript:void(0);" class="current" style="width: 28px;"><span>管理</span></a></li>
                 </ul>
             </div>
         </div>
         <div class="fixed-empty"></div>
-        <form method="post" action="${base}/admin/order/getOrderSplitDetail.json" name="formSearch" id="formSearch">
+        <form method="post" action="${base}/admin/order/getOrderSplitDetail.jhtml" name="formSearch" id="formSearch" style="margin-top: 2%">
             <input type="hidden" name="pageNo" value="${1}">
             <tbody>
             <tr class="space">
-                <th colspan="15">订单信息</th>
+                <th colspan="15" style="font-size;15px;font-weight: bold">订单信息</th>
             </tr>
             <tr>
                 <td>
                     <ul>
                         <li><strong>订单号：</strong>${detail.orderSn}</li>
-                        <li><strong>订单实付金额：</strong>${detail.orderSn}</li>
-                        <li><strong>公司分账后收入：</strong>${detail.orderAmount}</li>
+                        <li><strong>订单实付金额：</strong>${detail.orderAmount}</li>
+                        <li><strong>公司分账后收入：</strong>${detail.firmSplitAmount}</li>
                     </ul>
                 </td>
             </tr>
             <tr class="space">
-                <th colspan="2">
-                    商城商品信息
+                <th colspan="2" style="font-size: 15px;font-weight: bold">
+                    会员分账信息
                 </th>
             </tr>
             <tr>
@@ -57,31 +60,30 @@
                     <table class="table tb-type2 goods ">
                         <tbody>
                         <tr>
-                            <th>序号</th>
+<#--                            <th>序号</th>-->
                             <th>会员ID</th>
                             <th class="align-center">会员名称</th>
                             <th class="align-center">分账金额（元）</th>
                             <th class="align-center">积分扣减</th>
                         </tr>
-                        <#list page.detail as details>
+<#--                        <#list detail.content as details>-->
                             <tr>
-                                <td class="w96 align-center"><p></p></td>
-                                <td class="w96 align-center">${details.cutGetId}</td>
-                                <td class="w96 align-center">${details.cutGetName}</td>
-                                <td class="w96 align-center">${details.cutAmount}</td>
-                                <td class="w96 align-center">${details.cutAcc}</td>
+<#--                                <td class="w96 align-center"><p></p></td>-->
+                                <td class="w96 align-center">${detail.cutGetId}</td>
+                                <td class="w96 align-center">${detail.cutGetName}</td>
+                                <td class="w96 align-center">${detail.cutAmount}</td>
+                                <td class="w96 align-center">${detail.cutAcc}</td>
                             </tr>
+<#--                        </#list>-->
 
-                        <#else >
-                        </#list>
-
-            </tbody>
+                </tbody>
+                    </table>
             <tfoot>
             <tr class="tfoot">
                 <td><a href="JavaScript:void(0);" class="btn" onclick="history.go(-1)"><span>返回</span></a>
             </tr>
             </tfoot>
-        </table>
+
     </div>
     <script>
 

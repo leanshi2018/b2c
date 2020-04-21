@@ -1555,6 +1555,7 @@ public class OrderSysController extends GenericController {
                 detail.setOrderSn(order.getOrderSn());
                 detail.setOrderAmount(orderAmount);
                 detail.setFirmSplitAmount(firmSplitAmount);
+                detail.setCutAmount(Optional.ofNullable(order.getCutAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP));
                 detail.setCutGetId(Optional.ofNullable(order.getCutGetId()).orElse(""));
 
                 RdMmBasicInfo rdMmBasicInfo=rdMmBasicInfoService.find("mmCode",order.getCutGetId());
