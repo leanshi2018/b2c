@@ -868,7 +868,9 @@ public class OrderSysController extends GenericController {
     @RequestMapping(value = "/admin/order/mentionAddressAll", method = RequestMethod.GET)
     @ResponseBody
     public String mentionAddressAll(@RequestParam(required = false, value = "pageNo", defaultValue = "1") Integer pageNo,
-                                    String provinceCode,String phone,ModelMap model) {
+                                    @RequestParam(required = false, value = "provinceCode") String provinceCode,
+                                    @RequestParam(required = false, value = "phone") String phone,
+                                    ModelMap model) {
         Pageable pageable = new Pageable(pageNo, 20);
         pageable.setParameter(Paramap.create().put("aid", 0l).put("addProvinceCode",provinceCode).put("phone",phone));
         pageable.setOrderProperty("create_time");
