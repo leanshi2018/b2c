@@ -24,10 +24,10 @@ public class TongLianUtils {
 	public static final String PWD = "111111";//商户私钥密码 TODO
 	//public static final String ALIAS = "1902271423530473681";//商户公钥证书
 	public static final String ALIAS = "1908201117222883218";//商户公钥证书 TODO
-	//public static final String PATH =  "F:\\sign\\1902271423530473681.pfx";//pfx证书路径
-	public static final String PATH =  "F:\\signtest\\1908201117222883218.pfx";//pfx证书路径 TODO
-	//public static final String TL_CERT_PATH = "F:\\sign\\TLCert-test.cer";//cer证书路径
-	public static final String TL_CERT_PATH = "F:\\signtest\\TLYunstCert_test.cer";//cer证书路径 TODO
+	//public static final String PATH =  "D:\\sign\\1902271423530473681.pfx";//pfx证书路径
+	public static final String PATH =  "D:\\signtest\\1908201117222883218.pfx";//pfx证书路径 TODO
+	//public static final String TL_CERT_PATH = "D:\\sign\\TLCert-test.cer";//cer证书路径
+	public static final String TL_CERT_PATH = "D:\\signtest\\TLYunstCert_test.cer";//cer证书路径 TODO
 	public static final String VERSION = "2.0";//接口版本
 	//public static final String ACCOUNT_SET_NO = "200126";//通商云分配的托管专用账户集的编号
 	public static final String ACCOUNT_SET_NO = "400142";//通商云分配的托管专用账户集的编号 TODO
