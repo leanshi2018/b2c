@@ -870,7 +870,7 @@ public class OrderSysController extends GenericController {
     public String mentionAddressAll(@RequestParam(required = false, value = "pageNo", defaultValue = "1") Integer pageNo,
                                     @RequestParam(required = false, value = "provinceCode") String provinceCode,
                                     @RequestParam(required = false, value = "phone") String phone,
-                                    ModelMap model) {
+                                    ModelMap model,HttpServletRequest request) {
         Pageable pageable = new Pageable(pageNo, 20);
         pageable.setParameter(Paramap.create().put("aid", 0l).put("addProvinceCode",provinceCode).put("phone",phone));
         pageable.setOrderDirection(Order.Direction.DESC);
@@ -878,9 +878,9 @@ public class OrderSysController extends GenericController {
         if (lists.size()==0){
             showErrorJson("自提地址为空");
         }*/
-        model.addAttribute("page", rdMmAddInfoService.findMentionAddrListByPage(pageable));
-        //showSuccessJson(rdMmAddInfoService.findMentionAddrListByPage(pageable));
-        return "trade/shop_order/address_search";
+        //model.addAttribute("page", rdMmAddInfoService.findMentionAddrListByPage(pageable));
+        showSuccessJson(rdMmAddInfoService.findMentionAddrListByPage(pageable));
+        return json;
     }
 
     /**
