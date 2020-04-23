@@ -1,6 +1,8 @@
 package com.framework.loippi.service.impl.user;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,5 +61,13 @@ public class RdMmAddInfoServiceImpl extends GenericServiceImpl<RdMmAddInfo, Long
 	public Object findMentionAddrListByPage(Pageable pageable) {
 		PageList<RdMmAddInfo> result = rdMmAddInfoDao.findMentionAddrListByPage(pageable.getParameter(), pageable.getPageBounds());
 		return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
+	}
+
+	@Override
+	public List<RdMmAddInfo> findMentionAddrListByPhoneAndCode(String provinceCode, String phone) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("provinceCode",provinceCode);
+		map.put("phone",phone);
+		return rdMmAddInfoDao.findMentionAddrListByPhoneAndCode(map);
 	}
 }

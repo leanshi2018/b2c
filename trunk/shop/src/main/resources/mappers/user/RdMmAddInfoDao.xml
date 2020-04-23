@@ -218,5 +218,16 @@
 			</if>
 	</select>
 
-
+	<select id="findMentionAddrListByPhoneAndCode" parameterType="map" resultMap="RdMmAddInfoResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM RD_MM_ADD_INFO
+		WHERE AID &lt; 0
+		<if test="phone != null and phone != ''">
+			AND PHONE = #{phone}
+		</if>
+		<if test="addProvinceCode != null and addProvinceCode != ''">
+			AND ADD_PROVINCE_CODE LIKE "%"#{addProvinceCode}"%"
+		</if>
+	</select>
 </mapper> 

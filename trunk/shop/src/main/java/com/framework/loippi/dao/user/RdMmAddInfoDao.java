@@ -2,6 +2,7 @@ package com.framework.loippi.dao.user;
 
 
 import java.util.List;
+import java.util.Map;
 
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.mybatis.dao.GenericDao;
@@ -22,4 +23,6 @@ public interface RdMmAddInfoDao  extends GenericDao<RdMmAddInfo, Long> {
 	List<RdMmAddInfo> findMentionAddrList();
 
 	PageList<RdMmAddInfo> findMentionAddrListByPage(Object parameter, PageBounds pageBounds);
+
+	List<RdMmAddInfo> findMentionAddrListByPhoneAndCode(Map<String, Object> map);
 }
