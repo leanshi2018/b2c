@@ -66,6 +66,7 @@ public class ArticleAPIController extends BaseController {
         Pageable pageable = new Pageable();
         pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNumber);
+        pageable.setParameter(Paramap.create().put("articleShow",1));
         pageable.setOrderProperty("is_top,page_views");
         pageable.setOrderDirection(Order.Direction.DESC);
         List<ShopCommonArticle> shopCommonArticleList = shopCommonArticleService.findByPage(pageable).getContent();
