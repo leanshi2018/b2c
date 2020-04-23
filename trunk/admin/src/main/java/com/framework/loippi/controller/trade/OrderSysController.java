@@ -878,10 +878,9 @@ public class OrderSysController extends GenericController {
         if (lists.size()==0){
             showErrorJson("自提地址为空");
         }*/
-        //model.addAttribute("page", rdMmAddInfoService.findMentionAddrListByPage(pageable));
-        System.out.println(rdMmAddInfoService.findMentionAddrListByPage(pageable));
-        showSuccessJson(rdMmAddInfoService.findMentionAddrListByPage(pageable));
-        return json;
+        model.addAttribute("page", rdMmAddInfoService.findMentionAddrListByPage(pageable));
+        //showSuccessJson(rdMmAddInfoService.findMentionAddrListByPage(pageable));
+        return "trade/shop_order/address_search";
     }
 
     /**
