@@ -321,6 +321,24 @@ public class IndexAPIController extends BaseController {
 		return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
     }
 
+    /**
+     * 新轮播图或广告位列表
+     * @return
+     */
+	@ResponseBody
+    @RequestMapping("/api/index/getHomePictureNew.json")
+    public String getHomePictureNew() {
+
+        //轮播图
+        List<ShopHomePicture> homePictures = shopHomePictureService.findListByTypeAndStutus( 0,1);
+
+        //广告位图
+        List<ShopHomePicture> adPictures = shopHomePictureService.findListByTypeAndStutus(2,1);
+
+		List<RdKeyword> keywordList = rdKeywordService.findByAll();
+		return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
+    }
+
     public static String appid = "wx6e94bb18bedf3c4c";//公众账号ID
     public static String appsecret = "c7af91f8b99593a2073f6e691f8ebfc4";//应用密钥
     @RequestMapping(value = {"/api/index/getOpenId.json"}, method = {RequestMethod.GET,
