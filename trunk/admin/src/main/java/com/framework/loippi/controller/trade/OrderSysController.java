@@ -873,14 +873,14 @@ public class OrderSysController extends GenericController {
                                     ModelMap model) {
         Pageable pageable = new Pageable(pageNo, 20);
         pageable.setParameter(Paramap.create().put("aid", 0l).put("addProvinceCode",provinceCode).put("phone",phone));
-        pageable.setOrderProperty("create_time");
         pageable.setOrderDirection(Order.Direction.DESC);
-        List<RdMmAddInfo> lists = rdMmAddInfoService.findMentionAddrList();
+        /*List<RdMmAddInfo> lists = rdMmAddInfoService.findMentionAddrList();
         if (lists.size()==0){
             showErrorJson("自提地址为空");
-        }
-        model.addAttribute("page", rdMmAddInfoService.findMentionAddrListByPage(pageable));
-        showSuccessJson(lists);
+        }*/
+        //model.addAttribute("page", rdMmAddInfoService.findMentionAddrListByPage(pageable));
+        System.out.println(rdMmAddInfoService.findMentionAddrListByPage(pageable));
+        showSuccessJson(rdMmAddInfoService.findMentionAddrListByPage(pageable));
         return json;
     }
 
