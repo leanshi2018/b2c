@@ -90,6 +90,23 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
+     * 广告位2列表
+     * @param request
+     * @param pageable
+     * @param model
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/findAD2PictureList")
+    public String findAD2PictureList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopHomePicture param) {
+        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",2));
+        pageable.setOrderProperty("p_sort");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", shopHomePictureService.findByPage(pageable));
+        return "";
+    }
+
+    /**
      * 轮播图
      * @param request
      * @param model
@@ -122,6 +139,22 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
+     * 广告位2图
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/findAD2Picture")
+    public String findAD2Picture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
+        /*if (pictureId==null){
+            model.addAttribute("msg", "id为空");
+            return Constants.MSG_URL;
+        }*/
+        model.addAttribute("picture", shopHomePictureService.find(pictureId));
+        return "";
+    }
+
+    /**
      * 删除轮播图
      * @param request
      * @param model
@@ -139,7 +172,7 @@ public class ActivityCommonController extends GenericController {
 
 
     /**
-     * 轮播图添加和修改
+         * 轮播图添加和修改
      * @param request
      * @param shopHomePicture
      * @param model
@@ -217,7 +250,7 @@ public class ActivityCommonController extends GenericController {
                 shopHomePictureService.save(shopHomePicture);
 
                 return "redirect:findHomePictureList.jhtml";
-            }else {//广告位图
+            }else if (shopHomePicture.getPictureType()==1){//广告位图
                 System.out.println("广告位图添加");
                 if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图排序只能是1-3");
@@ -226,6 +259,19 @@ public class ActivityCommonController extends GenericController {
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (pictureList.size()!=0){
                     model.addAttribute("msg", "广告位图排序"+shopHomePicture.getPSort()+"号已存在");
+                    return Constants.MSG_URL;
+                }
+                shopHomePictureService.save(shopHomePicture);
+                return "redirect:findADPictureList.jhtml";
+            }else {//首页广告图2
+                System.out.println("广告位图2添加");
+                if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
+                    model.addAttribute("msg", "广告位图2排序只能是1-3");
+                    return Constants.MSG_URL;
+                }
+                List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
+                if (pictureList.size()!=0){
+                    model.addAttribute("msg", "广告位图2排序"+shopHomePicture.getPSort()+"号已存在");
                     return Constants.MSG_URL;
                 }
                 shopHomePictureService.save(shopHomePicture);
@@ -249,7 +295,7 @@ public class ActivityCommonController extends GenericController {
                 }
                 shopHomePictureService.update(shopHomePicture);
                 return "redirect:findHomePictureList.jhtml";
-            }else {//广告位图
+            }else if (shopHomePicture.getPictureType()==1){//广告位图
                 System.out.println("广告位图修改");
                 if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图排序只能是1-3");
@@ -262,6 +308,27 @@ public class ActivityCommonController extends GenericController {
                             if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
                                 if (homePicture.getPSort()==shopHomePicture.getPSort()){
                                     model.addAttribute("msg", "广告位图排序"+shopHomePicture.getPSort()+"号已存在");
+                                    return Constants.MSG_URL;
+                                }
+                            }
+                        }
+                    }
+                }
+                shopHomePictureService.update(shopHomePicture);
+                return "redirect:findADPictureList.jhtml";
+            }else {
+                System.out.println("广告位图2修改");
+                if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
+                    model.addAttribute("msg", "广告位图2排序只能是1-3");
+                    return Constants.MSG_URL;
+                }
+                List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
+                if (pictureList.size()!=0){
+                    for (ShopHomePicture homePicture : pictureList) {
+                        if (homePicture.getPictureType()==2){
+                            if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
+                                if (homePicture.getPSort()==shopHomePicture.getPSort()){
+                                    model.addAttribute("msg", "广告位图2排序"+shopHomePicture.getPSort()+"号已存在");
                                     return Constants.MSG_URL;
                                 }
                             }

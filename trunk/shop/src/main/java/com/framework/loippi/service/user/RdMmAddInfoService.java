@@ -21,4 +21,6 @@ public interface RdMmAddInfoService  extends GenericService<RdMmAddInfo, Long> {
 	List<RdMmAddInfo> findMentionAddrList();
 
 	Object findMentionAddrListByPage(Pageable pageable);
+
+	List<RdMmAddInfo> findMentionAddrListByPhoneAndCode(String provinceCode, String phone);
 }
