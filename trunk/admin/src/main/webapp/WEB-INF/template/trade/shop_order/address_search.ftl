@@ -18,7 +18,7 @@
             <!-- 搜索栏 -->
             <form method="get" name="formSearch" id="formSearch"
                   action="${base}/admin/order/mentionAddressAll.jhtml">
-                <input type="hidden" name="pageNo" value="${1}">
+<#--                <input type="hidden" name="pageNo" value="${1}">-->
 <#--                <input type="hidden" name="id" value="${id}"/>-->
                 <table class="tb-type1 noborder search">
                     <tbody>
@@ -62,13 +62,13 @@
                     </tr>
                 </#list>
                 </tbody>
-                <tfoot>
-                <tr>
-                    <td colspan="20">
-                        <@layout.pager pager/>
-                    </td>
-                </tr>
-                </tfoot>
+<#--                <tfoot>-->
+<#--                <tr>-->
+<#--                    <td colspan="20">-->
+<#--                        <@layout.pager pager/>-->
+<#--                    </td>-->
+<#--                </tr>-->
+<#--                </tfoot>-->
             </table>
         </div>
     </div>
