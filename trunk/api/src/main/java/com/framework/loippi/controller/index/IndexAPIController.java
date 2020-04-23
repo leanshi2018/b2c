@@ -55,7 +55,6 @@ import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.wechat.applets.util.GetOpenIDUtil;
-import com.framework.loippi.utils.wechat.h5.config.WachatContent;
 
 
 @Controller
@@ -322,6 +321,8 @@ public class IndexAPIController extends BaseController {
 		return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
     }
 
+    public static String appid = "wx6e94bb18bedf3c4c";//公众账号ID
+    public static String appsecret = "c7af91f8b99593a2073f6e691f8ebfc4";//应用密钥
     @RequestMapping(value = {"/api/index/getOpenId.json"}, method = {RequestMethod.GET,
             RequestMethod.POST})
     public
@@ -330,7 +331,7 @@ public class IndexAPIController extends BaseController {
         if (code == null || code.length() == 0) {
             throw new NullPointerException("code不能为空!");
         }
-        return GetOpenIDUtil.oauth2GetOpenid(WachatContent.appid, code, WachatContent.appsecret);
+        return GetOpenIDUtil.oauth2GetOpenid(appid, code, appsecret);
     }
 
 
