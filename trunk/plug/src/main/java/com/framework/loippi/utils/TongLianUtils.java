@@ -18,19 +18,13 @@ import com.allinpay.yunst.sdk.bean.YunRequest;
 public class TongLianUtils {
 
 	public static final String SERVER_URL = "http://116.228.64.55:6900/service/soa";//测试环境请咨询对接人员(通商云门户测试环境地址)
-	//public static final String SYS_ID = "1902271423530473681";//商户私钥证书
-	public static final String SYS_ID = "1908201117222883218";//商户私钥证书 TODO
-	//public static final String PWD = "123456";//商户私钥密码
-	public static final String PWD = "111111";//商户私钥密码 TODO
-	//public static final String ALIAS = "1902271423530473681";//商户公钥证书
-	public static final String ALIAS = "1908201117222883218";//商户公钥证书 TODO
-	//public static final String PATH =  "D:\\sign\\1902271423530473681.pfx";//pfx证书路径
-	public static final String PATH =  "D:\\signtest\\1908201117222883218.pfx";//pfx证书路径 TODO
-	//public static final String TL_CERT_PATH = "D:\\sign\\TLCert-test.cer";//cer证书路径
-	public static final String TL_CERT_PATH = "D:\\signtest\\TLYunstCert_test.cer";//cer证书路径 TODO
+	public static final String SYS_ID = "2004261243386008175";//商户私钥证书 TODO 正式
+	public static final String PWD = "leanshi20180501";//商户私钥密码 TODO 正式
+	public static final String ALIAS = "2004261243386008175";//商户公钥证书 TODO 正式
+	public static final String PATH =  "D:\\sign\\2004261243386008175.pfx";//pfx证书路径 TODO 正式
+	public static final String TL_CERT_PATH = "D:\\sign\\TLCert-test.cer";//cer证书路径 TODO 正式
 	public static final String VERSION = "2.0";//接口版本
-	//public static final String ACCOUNT_SET_NO = "200126";//通商云分配的托管专用账户集的编号
-	public static final String ACCOUNT_SET_NO = "400142";//通商云分配的托管专用账户集的编号 TODO
+	public static final String ACCOUNT_SET_NO = "400435";//通商云分配的托管专用账户集的编号 TODO 正式
 
 	public static void getRequest() {
 		//final String serverUrl = "https://fintech.allinpay.com/service/soa"; //测试环境请咨询对接人员
