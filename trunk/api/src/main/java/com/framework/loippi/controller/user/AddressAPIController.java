@@ -206,6 +206,7 @@ public class AddressAPIController extends BaseController {
             orderAddress.setCityId(-1l);
             orderAddress.setAreaInfo("自提没有保存收货地址");
             orderAddress.setMobPhone(address.getMobile());
+            orderAddress.setAddress("");
             orderAddress.setIsDefault("0");
             orderAddress.setProvinceId(-1l);
             orderAddress.setMentionId(addId);
