@@ -209,7 +209,7 @@ public class AddressAPIController extends BaseController {
             orderAddress.setIsDefault("0");
             orderAddress.setProvinceId(-1l);
             orderAddress.setMentionId(addId);
-
+            shopOrderAddressService.save(orderAddress);
         }
 
         //3.修改订单表关联的订单地址id
