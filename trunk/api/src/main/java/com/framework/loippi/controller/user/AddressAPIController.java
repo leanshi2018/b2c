@@ -120,7 +120,7 @@ public class AddressAPIController extends BaseController {
         Long twiterId = twiterIdService.getTwiterId();
         ShopOrderAddress orderAddress = new ShopOrderAddress();
         orderAddress.setId(twiterId);
-        if (addId.longValue()>0){
+        if (shopOrder.getLogisticType()==1){
             orderAddress.setIsDefault(Optional.ofNullable(address.getDefaultadd()).orElse(0).toString());
             if (address.getMmCode()==null || "".equals(address.getMmCode())){
                 orderAddress.setMemberId(0l);
