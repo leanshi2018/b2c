@@ -17,7 +17,7 @@ import com.allinpay.yunst.sdk.bean.YunRequest;
  */
 public class TongLianUtils {
 
-	public static final String SERVER_URL = "http://116.228.64.55:6900/service/soa";//测试环境请咨询对接人员(通商云门户测试环境地址)
+	public static final String SERVER_URL = "https://fintech.allinpay.com/service/soa";//TODO 正式
 	public static final String SYS_ID = "2004261243386008175";//商户私钥证书 TODO 正式
 	public static final String PWD = "leanshi20180501";//商户私钥密码 TODO 正式
 	public static final String ALIAS = "2004261243386008175";//商户公钥证书 TODO 正式
