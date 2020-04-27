@@ -473,9 +473,13 @@ public class OrderAPIController extends BaseController {
             if (datainfo != null) {
                 Map<String, String> map=new HashMap<>();
                 //如果存在物流信息 则显示有信息的那一条
+                Integer num = 1;
                 for (Map<String, String> item :datainfo) {
                     if (item!=null){
-                        map=item;
+                        if (num==1){
+                            map=item;
+                            num++;
+                        }
                     }
                 }
                 return ApiUtils.success(

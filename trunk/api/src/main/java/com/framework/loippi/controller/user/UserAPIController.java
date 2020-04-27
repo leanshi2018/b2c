@@ -1625,6 +1625,35 @@ public class UserAPIController extends BaseController {
         return ApiUtils.success(SelfWalletResult.build1(basicInfo,allAmount,freezeAmount));
     }
 
+    /**
+     * 通联钱包和提现是否开启权限
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/allInPayAuth.json", method = RequestMethod.GET)
+    public String allInPayAuth(HttpServletRequest request) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+
+        if (StringUtils.isEmpty(member.getMmCode())){
+            return ApiUtils.error("该会员未登陆");
+        }
+
+        //会员基础信息
+        RdMmBasicInfo basicInfo = mmBasicInfoService.findByMCode(member.getMmCode());
+        if (basicInfo==null){
+            return ApiUtils.error("找不到该会员信息！");
+        }
+        Integer allInPayAuthority = 1;
+        if (basicInfo.getAllInPayAuthority()==null || basicInfo.getAllInPayAuthority()==1){
+            allInPayAuthority =1;
+        }else {
+            allInPayAuthority =0;
+        }
+
+        return ApiUtils.success(allInPayAuthority);
+    }
+
 
     /**
      * 钱包收支明细
