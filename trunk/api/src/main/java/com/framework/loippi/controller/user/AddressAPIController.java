@@ -121,7 +121,11 @@ public class AddressAPIController extends BaseController {
         ShopOrderAddress orderAddress = new ShopOrderAddress();
         orderAddress.setIsDefault(Optional.ofNullable(address.getDefaultadd()).orElse(0).toString());
         orderAddress.setId(twiterId);
-        orderAddress.setMemberId(Long.parseLong(address.getMmCode()));
+        if (address.getMmCode()==null || "".equals(address.getMmCode())){
+            orderAddress.setMemberId(0l);
+        }else {
+            orderAddress.setMemberId(Long.parseLong(address.getMmCode()));
+        }
         orderAddress.setTrueName(address.getConsigneeName());
         orderAddress.setAddress(address.getAddDetial());
         orderAddress.setMobPhone(address.getMobile());
