@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.framework.loippi.consts.NotifyConsts;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.PayCommon;
@@ -398,7 +399,11 @@ public class CouponController extends BaseController {
 		payCommon.setPayAmount(pay.getPayAmount());
 		payCommon.setTitle("订单支付");
 		payCommon.setBody(pay.getPaySn() + "订单支付");
-		payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
+		if (paymentCode.equals("alipayMobilePaymentPlugin")){
+			payCommon.setNotifyUrl(NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/alipayNotify/"+paysn+".jhtml");
+		}else {
+			payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
+		}
 		payCommon.setReturnUrl(server + "/payment/payfront");
 		String sHtmlText = "";
 		Map<String, Object> model = new HashMap<String, Object>();

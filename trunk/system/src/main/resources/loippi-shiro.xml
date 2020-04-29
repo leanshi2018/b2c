@@ -21,6 +21,8 @@
                 /admin/allinpayContract/cutBack.jhtml = anon
                 /admin/paynotify/withdrawBank.jhtml = anon
                 /admin/paynotify/refundBank.jhtml = anon
+                /admin/paynotify/notifyMobile.jhtml = anon
+                /admin/paynotify/alipayNotify/** = anon
                 /admin/api/** = anon
                 /resources/** = anon
                 /api/** = anon

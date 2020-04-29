@@ -9,6 +9,7 @@ import java.util.Date;
 
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 
 /**

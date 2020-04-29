@@ -9,8 +9,8 @@ public class NotifyConsts {
 	/**
 	 * admin回调路径
 	 */
-	//public final static String ADMIN_NOTIFY_FILE = "http://at5mbs.natappfree.cc/admin_war_exploded";
-	public final static String ADMIN_NOTIFY_FILE = "http://glht.rdnmall.cn:9999/admin_war_exploded";
+	//public final static String ADMIN_NOTIFY_FILE = "http://cv3yya.natappfree.cc/admin_war_exploded";
+	public final static String ADMIN_NOTIFY_FILE = "http://glht.rdnmall.cn/admin";
 
 	/**
 	 * app回调路径

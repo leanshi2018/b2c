@@ -5003,8 +5003,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             shopMemberMessage1.setMsgId(msgId);
             shopMemberMessage1.setUid(Long.parseLong(shopMember.getMmCode()));
             shopMemberMessageDao.insert(shopMemberMessage1);
-
-            orderDao.update(newShopOrder);
+            if (!order.getPaymentCode().equals("weixinAppletsPaymentPlugin")){
+                orderDao.update(newShopOrder);
+            }
             BigDecimal totalMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).
                     add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)).add(Optional.ofNullable(order.getShippingPreferentialFee()).orElse(BigDecimal.ZERO));
             Boolean flag=false;
