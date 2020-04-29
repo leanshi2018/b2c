@@ -6,7 +6,7 @@ public interface AllInPayBillCutConstant {
     //分账百分比
     int PERCENTAGE=30;
     //公司小B用户
-    String COMPANY_CUT_B="900013841";
+    String COMPANY_CUT_B="900000001";
     //accountSetNo
-    String ACCOUNT_SET_NO="400142";
+    String ACCOUNT_SET_NO="400435";
 }

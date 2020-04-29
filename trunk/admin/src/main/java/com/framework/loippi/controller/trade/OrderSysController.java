@@ -866,24 +866,23 @@ public class OrderSysController extends GenericController {
      */
     @RequiresPermissions("admin:order:main")
     @RequestMapping(value = "/admin/order/mentionAddressAll", method = RequestMethod.GET)
-    @ResponseBody
-    public String mentionAddressAll(//@RequestParam(required = false, value = "pageNo", defaultValue = "1") Integer pageNo,
+    public String mentionAddressAll(@RequestParam(required = false, value = "pageNo", defaultValue = "1") Integer pageNo,
                                     @RequestParam(required = false, value = "provinceCode") String provinceCode,
                                     @RequestParam(required = false, value = "phone") String phone,
                                     ModelMap model,HttpServletRequest request) {
-        /*Pageable pageable = new Pageable(pageNo, 20);
+        Pageable pageable = new Pageable(pageNo, 20);
         pageable.setParameter(Paramap.create().put("aid", 0l).put("addProvinceCode",provinceCode).put("phone",phone));
-        pageable.setOrderDirection(Order.Direction.DESC);*/
-        List<RdMmAddInfo> lists = rdMmAddInfoService.findMentionAddrListByPhoneAndCode(provinceCode,phone);
+        pageable.setOrderDirection(Order.Direction.DESC);
+        /*List<RdMmAddInfo> lists = rdMmAddInfoService.findMentionAddrListByPhoneAndCode(provinceCode,phone);
         if (lists.size()==0){
             showErrorJson("自提地址为空");
-        }
-        //model.addAttribute("page", rdMmAddInfoService.findMentionAddrListByPage(pageable));
+        }*/
+        model.addAttribute("page", rdMmAddInfoService.findMentionAddrListByPage(pageable));
         //showSuccessJson(rdMmAddInfoService.findMentionAddrListByPage(pageable));
+        //model.addAttribute("page", lists);
+        //showSuccessJson(lists);
 
-        showSuccessJson(lists);
-
-        return json;
+        return "/trade/shop_order/address_search";
     }
 
     /**

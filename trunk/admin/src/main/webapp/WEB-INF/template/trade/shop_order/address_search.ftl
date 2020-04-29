@@ -18,13 +18,13 @@
             <!-- 搜索栏 -->
             <form method="get" name="formSearch" id="formSearch"
                   action="${base}/admin/order/mentionAddressAll.jhtml">
-                <input type="hidden" name="pageNo" value="${1}">
+         <input type="hidden" name="pageNo" value="${1}">
 <#--                <input type="hidden" name="id" value="${id}"/>-->
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
                         <td>
-                            <input name="provinceCode" type="text" value="${provinceCode}" placeholder="自提点"/>
+                            <input name="provinceCode" type="text" value="${addProvinceCode}" placeholder="自提点"/>
                             <input name="phone" type="text" value="${phone}" placeholder="手机号"/>
                             <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
                             </a>
@@ -49,34 +49,36 @@
                     <tr>
                         <td><input type="checkbox" name="ids" value="${address.id}" class="checkitem"></td>
                         <td style="text-align: left">
+                            ${address.consigneeName}
+                        </td>
+                        <td style="text-align: left">
                             ${address.phone}
                         </td>
                         <td style="text-align: left">
-                            ${address.accountSetName}
+                            ${address.addDetial}
                         </td>
-
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="Specaddress('${address.phone}','${address.provinceCode}')">选择</a>
+                               onclick="Specaddress('${address.aid}','${address.consigneeName}','${address.addProvinceCode}${address.addCityCode}${address.addCountryCode}','${address.addDetial}')">选择</a>
                         </td>
                     </tr>
                 </#list>
                 </tbody>
-                <tfoot>
-                <tr>
-                    <td colspan="20">
-                        <@layout.pager pager/>
+              <tfoot>
+                     <tr>
+                     <td colspan="20">
+                     <@layout.pager pager/>
                     </td>
-                </tr>
+               </tr>
                 </tfoot>
             </table>
         </div>
     </div>
     <script>
-        function Specaddress(phone, provinceCode) {
+        function Specaddress(id,consigneeName,addProvinceCode,provinceCode) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendInfo(phone, provinceCode);
+            parent.appendInfo(id,consigneeName,addProvinceCode,provinceCode);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

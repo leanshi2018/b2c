@@ -196,6 +196,10 @@ public class RdMmBasicInfo implements GenericEntity {
 	@Column(name = "LOCK_WALLET_STATUS" )
 	private Integer LockWalletStatus;
 
+	/** 通联相关权限  0.开启 1.关闭*/
+	@Column(name = "ALL_IN_PAY_AUTHORITY" )
+	private Integer allInPayAuthority;
+
 	private String info;
 	private String verificationMobile;
 	private String verificationNickName;
