@@ -551,21 +551,36 @@ public class CartAPIController extends BaseController {
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date startTime = format.parse("2020-02-13 09:30:00");
-            Date endTime = format.parse("2020-04-01 00:00:00");
+            Date startTime = format.parse("2020-05-01 00:00:00");
+            Date endTime = format.parse("2020-05-10 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
             if(b){
                 if((rdMmRelation.getRank()==0&&(result.getNeedToPay().add(result.getUseCouponAmount())).compareTo(new BigDecimal("360"))!=-1)||
-                        (rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1)){
-                    //单笔订单满360或25mi，赠送酒精一瓶
-                    ShopGoods goods1 = goodsService.find(6638361764952018944L);//酒精
-                    //ShopGoods goods1 = goodsService.find(6636551029166968832L);//酒精 formal
+                        (rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))==-1)){
+                    //单笔订单满360或25mi，赠送护手霜一支
+                    ShopGoods goods1 = goodsService.find(6638361764952018944L);//护手霜
+                    //ShopGoods goods1 = goodsService.find(6659359562891530240L);//护手霜 formal
                     if (goods1!=null){
                         shopGoods.add(goods1);
                     }
                     flag=1;
                     giftsNum=1;
+                }
+                if(rdMmRelation.getRank()>0&&(result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1)){
+                    ShopGoods goods1 = goodsService.find(6638361764952018944L);//护手霜
+                    ShopGoods goods2 = goodsService.find(6638361764952018944L);//润肤乳
+                    //ShopGoods goods1 = goodsService.find(6659359562891530240L);//护手霜 formal
+                    //ShopGoods goods2 = goodsService.find(6651773432239230976L);//润肤乳 formal
+                    if (goods1!=null){
+                        giftsNum=giftsNum+1;
+                        shopGoods.add(goods1);
+                    }
+                    if (goods2!=null){
+                        shopGoods.add(goods2);
+                        giftsNum=giftsNum+1;
+                    }
+                    flag=1;
                 }
             }
             result=result.build3(result,shopGoods,flag,giftsNum);
