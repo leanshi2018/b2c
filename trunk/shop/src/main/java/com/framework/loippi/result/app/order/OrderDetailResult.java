@@ -263,7 +263,7 @@ public class OrderDetailResult {
                 // 可用积分抵扣金额
                 .setRewardPointAmount(optOrder.map(ShopOrderVo::getPointRmbNum).orElse(new BigDecimal("0")))
                 // 商品金额
-                .setGoodsTotalAmount(optOrder.map(ShopOrderVo::getGoodsAmount).orElse(new BigDecimal("0").subtract(optOrder.map(ShopOrderVo::getRankDiscount).orElse(BigDecimal.ZERO))))
+                .setGoodsTotalAmount(optOrder.map(ShopOrderVo::getGoodsAmount).orElse(new BigDecimal("0")).subtract(optOrder.map(ShopOrderVo::getRankDiscount).orElse(BigDecimal.ZERO)))
                 // 实付款
                 .setNeedToPay(optOrder.map(ShopOrderVo::getOrderAmount).orElse(new BigDecimal("0")))
                 //运费

@@ -387,7 +387,8 @@ public class CartCheckOutResult {
                 //优惠金额
                 .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponAmount")).orElse(new BigDecimal("0")).subtract(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0"))))
                 //等级优惠
-                .setRankAmount(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0")))
+                //.setRankAmount(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0")))
+                .setRankAmount(BigDecimal.ZERO)
                 //优惠券优惠
                 .setUseCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("useCouponAmount")).orElse(new BigDecimal("0")))
                 // 商品数据
