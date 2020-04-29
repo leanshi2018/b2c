@@ -596,6 +596,11 @@ public class OrderAPIController extends BaseController {
         @RequestParam(defaultValue = "0") String paypassword,
         @RequestParam(defaultValue = "1") Integer paymentType,
         HttpServletRequest request) {
+
+        /*if (paymentCode.equals("alipayMobilePaymentPlugin")){
+            return ApiUtils.error("支付宝功能升级中，请先选用其他支付方式");
+        }*/
+
         if(integration==null&&"".equals(integration)){
             return ApiUtils.error("请输入支付的积分金额");
         }
@@ -663,7 +668,11 @@ public class OrderAPIController extends BaseController {
         }
         payCommon.setTitle("订单支付");
         payCommon.setBody(pay.getPaySn() + "订单支付");
-        payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
+        if (paymentCode.equals("alipayMobilePaymentPlugin")){
+            payCommon.setNotifyUrl(NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/alipayNotify/"+paysn+".jhtml");
+        }else {
+            payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
+        }
         payCommon.setReturnUrl(server + "/payment/payfront");
         String sHtmlText = "";
         Map<String, Object> model = new HashMap<String, Object>();
@@ -1667,7 +1676,8 @@ public class OrderAPIController extends BaseController {
         payMethods.accumulate("WECHATPAY_MINIPROGRAM",object1);*/
 
         //String notifyUrl = server + "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
-        String notifyUrl = NotifyConsts.APP_NOTIFY_FILE+ "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
+        //String notifyUrl = NotifyConsts.APP_NOTIFY_FILE+ "/api/paynotify/notifyMobile/" + "weixinAppletsPaymentPlugin" + "/" + mmPaySn + ".json";
+        String notifyUrl = NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/notifyMobile.jhtml";
         //TODO 正式
         String s = TongLianUtils.agentCollectApply(paysn, shopOrder.getBuyerId().toString(), recieverList, 3l, "", "3001",
                 oAmount, oAmount-(Long)reciever.get("amount"), 0l, "", notifyUrl, "",
@@ -1825,7 +1835,7 @@ public class OrderAPIController extends BaseController {
         BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(0,BigDecimal.ROUND_UP);//当前订单需要分出去多少钱，单位为圆
         BigDecimal acc = amount;//奖励积分需要的积分数量 积分取整
         RdMmAccountInfo rdMmAccountInfo = cutGetPeople(shopOrder, acc);
-        if(rdMmAccountInfo!=null){
+        if(rdMmAccountInfo!=null&&rdMmAccountInfo.getMmCode()!=null){
             map.put("accountInfo",rdMmAccountInfo);
             map.put("acc",acc);
             rdMmAccountInfoService.reduceAcc(shopOrder,rdMmAccountInfo,acc);
@@ -1979,6 +1989,19 @@ public class OrderAPIController extends BaseController {
         if (verificationCode==null||verificationCode.trim().equals("")){
             return ApiUtils.error("请输入验证码");
         }
+
+        if(member.getAllInPayPhone()==null || "".equals(member.getAllInPayPhone())){
+            return ApiUtils.error("该用户通联账户未绑定手机号码");
+        }
+
+        if(phone.equals(member.getAllInPayPhone()) && member.getAllInPayPhoneStatus()==2){
+            return ApiUtils.error("该"+phone+"号码已为绑定状态");
+        }
+
+        if(member.getAllInPayPhone()!=null && !phone.equals(member.getAllInPayPhone())){
+            return ApiUtils.error("该"+phone+"号码不是该用户绑定的手机号码");
+        }
+
         String s = TongLianUtils.unbindPhone(member.getMmCode(), phone, verificationCode);
         if (!"".equals(s)){
             Map maps = (Map) JSON.parse(s);

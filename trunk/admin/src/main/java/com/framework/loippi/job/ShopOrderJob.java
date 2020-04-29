@@ -775,7 +775,7 @@ public class ShopOrderJob {
     }
 
 
-    //@Scheduled(cron = "0 0 15,17 * * ?" )  //每天15点和17点发货
+    @Scheduled(cron = "0 0 15,17 * * ?" )  //每天15点和17点发货
     public void timingOrder(){
         System.out.println("###############################执行定时发货#####################################");
         Integer fStatus = 1;

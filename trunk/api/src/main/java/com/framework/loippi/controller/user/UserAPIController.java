@@ -1913,6 +1913,19 @@ public class UserAPIController extends BaseController {
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
 
+        java.text.SimpleDateFormat form = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String dateS = form.format(new Date());
+
+        String starDate = dateS+" 08:00:00";
+        String entDate = dateS+" 19:00:00";
+        DateConverter dateConverter = new DateConverter();
+        Date aDate = dateConverter.convert(starDate);
+        Date bDate = dateConverter.convert(entDate);
+        if(aDate.before(new Date())==false || bDate.after(new Date())==false){
+            return ApiUtils.error("已过提现时间，请明日再试\n" +
+                    "可提现时间为早8:00~晚7:00");
+        }
+
         if (StringUtils.isEmpty(member.getMmCode())){
             return ApiUtils.error("该会员未登陆");
         }

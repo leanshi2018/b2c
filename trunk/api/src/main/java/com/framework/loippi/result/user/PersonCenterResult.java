@@ -132,6 +132,9 @@ public class PersonCenterResult {
     //0:未绑定通联支付手机号 1：已绑定 2：已解绑（解绑后未绑定新的手机号）  用户是否绑定了通联支付手机号码
     private Integer allInPayPhoneStatus;
 
+    //通联相关权限  0.开启 1.关闭
+    private Integer allInPayAuthority;
+
 
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
@@ -161,6 +164,7 @@ public class PersonCenterResult {
         result.setAllInPayContractStatus(optional.map(RdMmBasicInfo::getAllInContractStatus).orElse(0));
         result.setAllInPayPhoneStatus(optional.map(RdMmBasicInfo::getAllInPayPhoneStatus).orElse(0));
         result.setTrueNameFlag(optional.map(RdMmBasicInfo::getWhetherTrueName).orElse(0));
+        result.setAllInPayAuthority(optional.map(RdMmBasicInfo::getAllInPayAuthority).orElse(0));
         return result;
     }
 

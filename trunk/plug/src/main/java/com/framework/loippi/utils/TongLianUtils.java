@@ -21,9 +21,9 @@ public class TongLianUtils {
 	public static final String SYS_ID = "2004261243386008175";//商户私钥证书 TODO 正式
 	public static final String PWD = "leanshi20180501";//商户私钥密码 TODO 正式
 	public static final String ALIAS = "2004261243386008175";//商户公钥证书 TODO 正式
-	//public static final String PATH =  "D:\\sign\\2004261243386008175.pfx";//pfx证书路径 TODO 测试机
+	//public static final String PATH =  "D:\\formalSign\\2004261243386008175.pfx";//pfx证书路径 TODO 测试机
 	public static final String PATH =  "/home/womi/secret/2004261243386008175.pfx";//pfx证书路径 TODO 正式
-	//public static final String TL_CERT_PATH = "D:\\sign\\TLCert-test.cer";//cer证书路径 TODO 测试机
+	//public static final String TL_CERT_PATH = "D:\\formalSign\\TLCert(prod).cer";//cer证书路径 TODO 测试机
 	public static final String TL_CERT_PATH = "/home/womi/secret/TLCert(prod).cer";//cer证书路径 TODO 正式
 	public static final String VERSION = "2.0";//接口版本
 	public static final String ACCOUNT_SET_NO = "400435";//通商云分配的托管专用账户集的编号 TODO 正式

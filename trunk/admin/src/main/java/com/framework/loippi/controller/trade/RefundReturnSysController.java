@@ -1319,6 +1319,13 @@ public class RefundReturnSysController extends GenericController {
                             updateOrder.setId(shopOrder.getId()); //记录ID
                             updateOrder.setBatchNo(orderNo); //退款批次号
                             updateOrder.setCutStatus(7);
+
+                            BigDecimal money = Optional.ofNullable(shopOrder.getRefundAmount()).orElse(BigDecimal.valueOf(0));
+                            BigDecimal ppv = Optional.ofNullable(shopOrder.getRefundPpv()).orElse(BigDecimal.ZERO);
+                            BigDecimal point = Optional.ofNullable(shopOrder.getRefundPoint()).orElse(BigDecimal.valueOf(0));
+                            updateOrder.setRefundAmount(money.add(refundReturn.getRefundAmount()));
+                            updateOrder.setRefundPpv(ppv.add(refundReturn.getPpv()));
+                            updateOrder.setRefundPoint(refundReturn.getRewardPointAmount().add(point));
                             orderService.update(updateOrder);//将批次号存入退款表
 
                             //返还分账人积分

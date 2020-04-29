@@ -3,6 +3,7 @@ package com.framework.loippi.controller.allinpay;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,14 +12,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.fastjson.JSON;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
+import com.framework.loippi.service.PaymentService;
+import com.framework.loippi.service.alipay.AlipayMobileService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
+import com.framework.loippi.service.wechat.WechatAppletsService;
 import com.framework.loippi.utils.JacksonUtil;
 
 /**
@@ -39,6 +44,12 @@ public class TLNotifyController {
 	private ShopOrderService orderService;
 	@Resource
 	private RdBizPayService rdBizPayService;
+	@Resource
+	private WechatAppletsService wechatAppletsService;
+	@Resource
+	private PaymentService paymentService;
+	@Resource
+	private AlipayMobileService alipayMobileService;
 	/**
 	 * 提现回调
 	 * @param request
@@ -154,4 +165,68 @@ public class TLNotifyController {
 
 		}
 	}
+
+
+	/**
+	 * 支付回调
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "/notifyMobile.jhtml")
+	public void notifyMobile(HttpServletRequest request,HttpServletResponse response) throws IOException{
+
+		System.out.println("进来支付回调");
+
+		//request中的param
+		String rps = request.getParameter("rps");
+		System.out.println("************************");
+		System.out.println("支付回调："+rps);
+		System.out.println("************************");
+
+		Map map = (Map) JSON.parse(rps);
+		//Map<String, Object> map = JacksonUtil.convertMap(rps);
+		String status = map.get("status").toString();
+		System.out.println(status);
+		String returnValue = map.get("returnValue").toString();
+		Map returnMap = (Map) JSON.parse(returnValue);
+
+		String orderNo = returnMap.get("orderNo").toString();
+		String bizOrderNo = returnMap.get("bizOrderNo").toString();
+		String buyerBizUserId = returnMap.get("buyerBizUserId").toString();
+
+		String[] split = bizOrderNo.split("WOMI");
+		String paySn = split[0];
+
+		//支付失败
+		if(status.equals("error")) {
+			System.out.println("失败！");
+			paymentService.updatePayfailBack(paySn);
+		}
+
+		//支付成功
+		if(status.equals("OK")){
+			System.out.println("成功！");
+			Long amount = Long.valueOf(returnMap.get("amount").toString())*100; //订单金额  单位：分
+			paymentService.updatePayBack(paySn, orderNo, "applet_weichatpay",amount.toString());
+		}
+	}
+
+	/**
+	 * 支付宝回调
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping({"/alipayNotify/{sn}.jhtml"})
+	public void alipayNotify(HttpServletRequest request,
+							 @PathVariable String sn,//支付订单号paySn
+							 HttpServletResponse response) throws IOException{
+
+		System.out.println("进来了支付宝回调");
+		PrintWriter out = null;
+		String result = "failure";
+		result = alipayMobileService.notifyCheck(request, sn);
+		out.print(result);
+	}
+
+
 }

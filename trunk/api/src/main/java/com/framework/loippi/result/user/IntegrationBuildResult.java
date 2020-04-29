@@ -8,6 +8,7 @@ import java.util.Date;
 
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 
 /**
@@ -62,7 +63,7 @@ public class IntegrationBuildResult extends RdMmAccountLog {
         rdMmAccountLog.setTransDate(new Date());
         return rdMmAccountLog;
     }
-    public static RdMmAccountLog bonusWD(RdMmBasicInfo shopMember, RdMmAccountInfo rdMmAccountInfo, Double integration, BigDecimal bonusPointWd) {
+    public static RdMmAccountLog bonusWD(RdMmBasicInfo shopMember, RdMmAccountInfo rdMmAccountInfo, Double integration, BigDecimal bonusPointWd, RdMmBank rdMmBank) {
         RdMmAccountLog rdMmAccountLog=new RdMmAccountLog();
         rdMmAccountLog.setTransTypeCode("WD");
         rdMmAccountLog.setAccType("");
@@ -74,7 +75,7 @@ public class IntegrationBuildResult extends RdMmAccountLog {
         rdMmAccountLog.setAmount(BigDecimal.valueOf(integration));
         rdMmAccountLog.setPresentationFeeNow(bonusPointWd);
         rdMmAccountLog.setActualWithdrawals(BigDecimal.valueOf(integration).subtract(bonusPointWd.multiply(BigDecimal.valueOf(integration))));
-        //rdMmAccountLog.setTrBankOid(bankCardId);
+        rdMmAccountLog.setTrBankOid(rdMmBank.getOid());
         //提现需审核初始为申请状态
         rdMmAccountLog.setStatus(2);
         rdMmAccountLog.setCreationBy(shopMember.getMmNickName());

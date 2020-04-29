@@ -12,7 +12,6 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.framework.loippi.entity.user.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +24,14 @@ import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.user.MemberQualification;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBank;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.IntegrationBuildResult;
@@ -50,7 +57,6 @@ import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
-import com.framework.loippi.vo.order.OrderSumPpv;
 
 /**
  * 积分 Created by Administrator on 2017/11/23.
@@ -263,6 +269,7 @@ public class UserIntegrationAPIController extends BaseController {
         if(list!=null&&list.size()>0){
             return ApiUtils.error("您已有一笔提现申请待审核，如需要，取消后重新提交");
         }
+        List<RdMmBank> mmBanks = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("inValid",1).put("defaultbank",1));
         //银行卡信息
         /*RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(bankCardId+""));
         if (rdMmBank == null) {
@@ -286,8 +293,8 @@ public class UserIntegrationAPIController extends BaseController {
         }
         BigDecimal bonusPointWd =BigDecimal.valueOf(Optional.ofNullable(rdMmIntegralRule.getBonusPointWd()).orElse(0)* 0.01);
         List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
-        //RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd, bankCardId);
-        RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd);
+        RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd, mmBanks.get(0));
+        //RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd);
         rdMmAccountLogList.add(rdMmAccountLog);
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
         ArrayList<ShopCommonMessage> shopCommonMessages = new ArrayList<>();
