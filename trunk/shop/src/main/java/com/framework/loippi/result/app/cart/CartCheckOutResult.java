@@ -377,7 +377,7 @@ public class CartCheckOutResult {
                 // 商品金额
                 .setGoodsTotalAmount(Optional.ofNullable((BigDecimal) moneyMap.get("totalGoodsPrice")).orElse(new BigDecimal("0")).subtract(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0"))))
                 // 优惠总金额
-                .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponPrice")).orElse(new BigDecimal("0")).subtract(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0"))))
+/*                .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponPrice")).orElse(new BigDecimal("0")).subtract(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0"))))*/
                 // 实付款
                 .setNeedToPay(Optional.ofNullable((BigDecimal) moneyMap.get("totalPrice")).orElse(new BigDecimal("0")))
                 //运费
@@ -385,7 +385,7 @@ public class CartCheckOutResult {
                 //运费优惠
                 .setPreferentialFreightAmount(Optional.ofNullable((BigDecimal) moneyMap.get("preferentialFreightAmount")).orElse(new BigDecimal("0")))
                 //优惠金额
-                .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponAmount")).orElse(new BigDecimal("0")))
+                .setCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("couponAmount")).orElse(new BigDecimal("0")).subtract(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0"))))
                 //等级优惠
                 .setRankAmount(Optional.ofNullable((BigDecimal) moneyMap.get("rankDiscount")).orElse(new BigDecimal("0")))
                 //优惠券优惠

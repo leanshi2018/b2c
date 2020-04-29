@@ -1,5 +1,6 @@
 package com.framework.loippi.result.user;
 
+import com.framework.loippi.entity.user.RdMmBank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

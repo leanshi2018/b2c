@@ -434,6 +434,7 @@ public class AllInPayController extends BaseController {
         }
         return ApiUtils.error("网络异常，请稍后重试");
     }
+
     /**
      * 获取会员实名制认证信息
      * @param request
