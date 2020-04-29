@@ -295,7 +295,7 @@ public class AllInPayController extends BaseController {
     }
 
     /**
-     *  绑定银行卡
+     *  申请绑定银行卡
      * @param request
      * @param cardNo 卡号
      * @param name 姓名
@@ -303,7 +303,7 @@ public class AllInPayController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/bindingBankCard.json", method = RequestMethod.POST)
-    public String bindingBankCard(HttpServletRequest request,String cardNo,String name,String identityNo) {
+    public String bindingBankCard(HttpServletRequest request,String cardNo,String name,String identityNo,String mobile) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if(member==null){
             return ApiUtils.error(Xerror.USER_UNLOGIN_JSON_CODE);
@@ -325,14 +325,18 @@ public class AllInPayController extends BaseController {
         if (StringUtils.isEmpty(cardNo)) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
+        if (StringUtils.isEmpty(mobile)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
         try {
             String safeIdentityNo = RSAUtil.encrypt(identityNo.trim());
             String safeCardNo = RSAUtil.encrypt(cardNo.trim());
             final YunRequest allInRequest = new YunRequest("MemberService", "applyBindBankCard");
             allInRequest.put("bizUserId", mmCode);
             allInRequest.put("cardNo",safeCardNo);
+            allInRequest.put("phone",mobile.trim());//TODO
             allInRequest.put("name", name.trim());
-            allInRequest.put("cardCheck", 1L);
+            allInRequest.put("cardCheck", 7L);
             allInRequest.put("identityType", 1L);
             allInRequest.put("identityNo", safeIdentityNo);
             String s = YunClient.request(allInRequest);
@@ -353,18 +357,84 @@ public class AllInPayController extends BaseController {
                 System.out.println(bankCode);
                 Integer cardType = (Integer) resultMap.get("cardType");
                 System.out.println(cardType);
-                return ApiUtils.success("绑定银行卡成功");
+                HashMap<String, Object> map1 = new HashMap<>();
+                map1.put("mobile",mobile.trim());
+                map1.put("tranceNum",tranceNum);
+                return ApiUtils.success(map1);
             }else if(map.get("status").equals("error")){
                 String message = (String) map.get("message");
                 return ApiUtils.error(message);
             } else {
-                throw new RuntimeException("实名制认证失败，请稍后重试");
+                throw new RuntimeException("获取绑定银行卡验证码失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return ApiUtils.error("网络异常，请稍后重试");
     }
+
+    /**
+     *  确认绑定银行卡
+     * @param request
+     * @param mobile 手机号
+     * @param tranceNum 交易流水号
+     * @param verificationCode 验证码
+     * @return
+     */
+    @RequestMapping(value = "/makeSureBindingBankCard.json", method = RequestMethod.POST)
+    public String makeSureBindingBankCard(HttpServletRequest request,String mobile,String tranceNum,String verificationCode) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error(Xerror.USER_UNLOGIN_JSON_CODE);
+        }
+        String mmCode = member.getMmCode();
+        if(mmCode==null){
+            return ApiUtils.error("会员基础信息异常");
+        }
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", mmCode);
+        if(rdMmBasicInfo==null){
+            return ApiUtils.error("会员基础信息异常");
+        }
+        if (StringUtils.isEmpty(mobile)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        if (StringUtils.isEmpty(tranceNum)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        if (StringUtils.isEmpty(verificationCode)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        try {
+            final YunRequest allInRequest = new YunRequest("MemberService", "bindBankCard");
+            allInRequest.put("bizUserId", mmCode);
+            allInRequest.put("tranceNum",tranceNum);
+            allInRequest.put("phone",mobile.trim());//TODO
+            allInRequest.put("verificationCode",verificationCode.trim());
+            String s = YunClient.request(allInRequest);
+            Map<String, Object> map = JacksonUtil.convertMap(s);
+            if(map.get("status").equals("OK")){
+                String result = (String) map.get("signedValue");
+                System.out.println(result);
+                Map<String, Object> resultMap = JacksonUtil.convertMap(result);
+                String bizUserId = (String) resultMap.get("bizUserId");
+                System.out.println(bizUserId);
+                String tranceNum1 = (String) resultMap.get("tranceNum");
+                System.out.println(tranceNum1);
+                String transDate = (String) resultMap.get("transDate");
+                System.out.println(transDate);
+                return ApiUtils.success("绑定银行卡成功");
+            }else if(map.get("status").equals("error")){
+                String message = (String) map.get("message");
+                return ApiUtils.error(message);
+            } else {
+                throw new RuntimeException("绑定银行卡失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ApiUtils.error("网络异常，请稍后重试");
+    }
+
     /**
      * 获取会员实名制认证信息
      * @param request

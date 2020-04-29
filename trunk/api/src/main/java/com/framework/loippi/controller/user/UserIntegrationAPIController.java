@@ -263,6 +263,8 @@ public class UserIntegrationAPIController extends BaseController {
         if(list!=null&&list.size()>0){
             return ApiUtils.error("您已有一笔提现申请待审核，如需要，取消后重新提交");
         }
+
+        List<RdMmBank> mmBanks = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("inValid",1).put("defaultbank",1));
         //银行卡信息
         /*RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(bankCardId+""));
         if (rdMmBank == null) {
@@ -286,8 +288,8 @@ public class UserIntegrationAPIController extends BaseController {
         }
         BigDecimal bonusPointWd =BigDecimal.valueOf(Optional.ofNullable(rdMmIntegralRule.getBonusPointWd()).orElse(0)* 0.01);
         List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
-        //RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd, bankCardId);
-        RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd);
+        RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd, mmBanks.get(0));
+        //RdMmAccountLog rdMmAccountLog = IntegrationBuildResult.bonusWD(shopMember, rdMmAccountInfo, integration, bonusPointWd);
         rdMmAccountLogList.add(rdMmAccountLog);
         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
         ArrayList<ShopCommonMessage> shopCommonMessages = new ArrayList<>();

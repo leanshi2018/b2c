@@ -5110,12 +5110,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             newShopOrder.setRefundPpv(ppv.add(refundReturn.getPpv()));
             newShopOrder.setRefundPoint(point);
             orderDao.update(newShopOrder);
+            //支付的总金额
             BigDecimal totalMoney = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).
                     add(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)).subtract(Optional.ofNullable(order.getShippingFee()).orElse(BigDecimal.ZERO)).add(Optional.ofNullable(order.getShippingPreferentialFee()).orElse(BigDecimal.ZERO));
             Boolean flag=false;
-            if((Optional.ofNullable(newShopOrder.getRefundAmount()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(order.getRefundPoint()).orElse(BigDecimal.ZERO))).compareTo(totalMoney)!=-1){
+            if((Optional.ofNullable(newShopOrder.getRefundAmount()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(newShopOrder.getRefundPoint()).orElse(BigDecimal.ZERO))).compareTo(totalMoney)!=-1){
                 flag=true;
-            }
+            }//TODO
             //判断是否符合降级条件进行降级
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", order.getBuyerId());
             if (rdMmRelation != null) {

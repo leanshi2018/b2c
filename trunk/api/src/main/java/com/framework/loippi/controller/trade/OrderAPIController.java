@@ -1821,7 +1821,7 @@ public class OrderAPIController extends BaseController {
         BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(0,BigDecimal.ROUND_UP);//当前订单需要分出去多少钱，单位为圆
         BigDecimal acc = amount;//奖励积分需要的积分数量 积分取整
         RdMmAccountInfo rdMmAccountInfo = cutGetPeople(shopOrder, acc);
-        if(rdMmAccountInfo!=null){
+        if(rdMmAccountInfo!=null&&rdMmAccountInfo.getMmCode()!=null){
             map.put("accountInfo",rdMmAccountInfo);
             map.put("acc",acc);
             rdMmAccountInfoService.reduceAcc(shopOrder,rdMmAccountInfo,acc);
