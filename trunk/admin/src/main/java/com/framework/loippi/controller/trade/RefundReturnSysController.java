@@ -1326,6 +1326,12 @@ public class RefundReturnSysController extends GenericController {
                             updateOrder.setRefundAmount(money.add(refundReturn.getRefundAmount()));
                             updateOrder.setRefundPpv(ppv.add(refundReturn.getRewardPointAmount()));
                             updateOrder.setRefundPoint(refundReturn.getRewardPointAmount().add(point));
+                            if (money.add(refundReturn.getRefundAmount()).compareTo(shopOrder.getOrderAmount())==0
+                                    && refundReturn.getRewardPointAmount().add(point).compareTo(shopOrder.getPointRmbNum())==0){
+                                updateOrder.setRefundState(2);
+                            }else {
+                                updateOrder.setRefundState(1);
+                            }
                             orderService.update(updateOrder);//将批次号存入退款表
 
                             //返还分账人积分
