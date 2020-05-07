@@ -1324,8 +1324,27 @@ public class RefundReturnSysController extends GenericController {
                             BigDecimal ppv = Optional.ofNullable(shopOrder.getRefundPpv()).orElse(BigDecimal.ZERO);
                             BigDecimal point = Optional.ofNullable(shopOrder.getRefundPoint()).orElse(BigDecimal.valueOf(0));
                             updateOrder.setRefundAmount(money.add(refundReturn.getRefundAmount()));
-                            updateOrder.setRefundPpv(ppv.add(refundReturn.getPpv()));
+                            updateOrder.setRefundPpv(ppv.add(refundReturn.getRewardPointAmount()));
                             updateOrder.setRefundPoint(refundReturn.getRewardPointAmount().add(point));
+                            BigDecimal oAmountAll = new BigDecimal("0.00");
+                            if (shopOrder.getOrderAmount()==null){
+                                oAmountAll = new BigDecimal("0.00");
+                            }else {
+                                oAmountAll = shopOrder.getOrderAmount();
+                            }
+                            BigDecimal pointRmbNum = new BigDecimal("0.00");
+                            if (shopOrder.getPointRmbNum()==null){
+                                pointRmbNum = new BigDecimal("0.00");
+                            }else {
+                                pointRmbNum = shopOrder.getPointRmbNum();
+                            }
+
+                            if (money.add(refundReturn.getRefundAmount()).compareTo(shopOrder.getOrderAmount())==0
+                                    && refundReturn.getRewardPointAmount().add(point).compareTo(shopOrder.getPointRmbNum())==0){
+                                updateOrder.setRefundState(2);
+                            }else {
+                                updateOrder.setRefundState(1);
+                            }
                             orderService.update(updateOrder);//将批次号存入退款表
 
                             //返还分账人积分
