@@ -30,15 +30,17 @@
 		<result property="isVip" column="IS_VIP" />
 		<result property="nOFlag" column="N_O_FLAG" />
 		<result property="aTotal" column="A_TOTAL" />
+
+		<result property="popupFlag" column="popup_flag" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 MM_CODE ,RANK ,RANK_NOW  ,RANK_PERIOD ,A_RETAIL ,LOGIN_PWD ,PWD_INIT_YN ,MM_STATUS ,MM_POINT_STATUS ,STATUS_PERIOD ,SPONSOR_CODE ,SPONSOR_NAME ,PLACEMENT_CODE ,RA_SPONSOR_STATUS ,RA_STATUS ,RA_SHOP_YN ,RA_CODE ,RA_NICK_NAME ,RA_BINDING_DATE ,IS_VIP,A_PPV,N_O_FLAG,A_TOTAL
+		 MM_CODE ,RANK ,RANK_NOW  ,RANK_PERIOD ,A_RETAIL ,LOGIN_PWD ,PWD_INIT_YN ,MM_STATUS ,MM_POINT_STATUS ,STATUS_PERIOD ,SPONSOR_CODE ,SPONSOR_NAME ,PLACEMENT_CODE ,RA_SPONSOR_STATUS ,RA_STATUS ,RA_SHOP_YN ,RA_CODE ,RA_NICK_NAME ,RA_BINDING_DATE ,IS_VIP,A_PPV,N_O_FLAG,A_TOTAL,popup_flag
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{mmCode},#{rank},#{rankNow},#{rankPeriod},#{aRetail},#{loginPwd},#{pwdInitYn},#{mmStatus},#{mmPointStatus},#{statusPeriod},#{sponsorCode},#{sponsorName},#{placementCode},#{raSponsorStatus},#{raStatus},#{raShopYn},#{raCode},#{raNickName},#{raBindingDate},#{isVip},#{aPpv},#{nOFlag},#{aTotal}
+		 #{mmCode},#{rank},#{rankNow},#{rankPeriod},#{aRetail},#{loginPwd},#{pwdInitYn},#{mmStatus},#{mmPointStatus},#{statusPeriod},#{sponsorCode},#{sponsorName},#{placementCode},#{raSponsorStatus},#{raStatus},#{raShopYn},#{raCode},#{raNickName},#{raBindingDate},#{isVip},#{aPpv},#{nOFlag},#{aTotal},#{popupFlag}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -112,6 +114,9 @@
 		</if>
 		<if test="aTotal != null and aTotal != ''">
 			AND A_TOTAL = #{aTotal}
+		</if>
+		<if test="popupFlag != null and popupFlag != ''">
+			AND popup_flag = #{popupFlag}
 		</if>
 		<if test="mmCodes!=null and mmCodes!= ''">
 			and MM_CODE in
@@ -192,6 +197,9 @@
 		</if>
 		<if test="aTotal != null">
 			A_TOTAL = #{aTotal},
+		</if>
+		<if test="popupFlag != null and popupFlag != ''">
+			popup_flag = #{popupFlag},
 		</if>
 	</sql>
 

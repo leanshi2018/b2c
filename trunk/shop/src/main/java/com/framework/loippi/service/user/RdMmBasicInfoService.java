@@ -40,4 +40,5 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
 	void updatePhoneStatusAndPhoneByMCode(String phone, Integer allInPayPhoneStatus, String mmCode);
 
     void updatePhoneStatusByMCode(Integer allInPayPhoneStatus, String mmCode);
+
 }

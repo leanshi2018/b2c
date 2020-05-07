@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -135,6 +136,11 @@ public class PersonCenterResult {
     //通联相关权限  0.开启 1.关闭
     private Integer allInPayAuthority;
 
+    //*******************************************************
+    //等级弹窗信息
+    private String windowMessage;
+    //等级弹窗标识  0：弹窗 1：不弹窗
+    private Integer windowFlag;
 
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);

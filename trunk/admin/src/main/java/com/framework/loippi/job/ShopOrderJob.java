@@ -86,6 +86,7 @@ import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.user.RdGoodsAdjustmentService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
 import com.framework.loippi.service.ware.RdWareAdjustService;
@@ -169,6 +170,8 @@ public class ShopOrderJob {
     private ShopExpressSpecialGoodsService shopExpressSpecialGoodsService;
     @Resource
     private RdBizPayService rdBizPayService;
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
 
 
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
@@ -180,7 +183,7 @@ public class ShopOrderJob {
     /**
      * 订单12小时自动关闭取消功能
      */
-    @Scheduled(cron = "0 */30 * * * ?")  //每30分钟执行一次
+    //@Scheduled(cron = "0 */30 * * * ?")  //每30分钟执行一次
     public void cancelTimeOutPaymentOrder() {
         /*log.info("#################################################################");
         log.info("#####################  开始执行-订单24小时取消 ###################");
@@ -218,7 +221,7 @@ public class ShopOrderJob {
     }
 
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
     public void grant(){
         System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -376,15 +379,15 @@ public class ShopOrderJob {
      * 定时分账
      */
     //@Scheduled(cron = "0 30 08 * * ? " )  //每天上午八点三十分钟执行一次
-    //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
-    @Scheduled(cron = "0 0/3 * * * ?")  //每3分钟执行一次
+    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    //@Scheduled(cron = "0 0/3 * * * ?")  //每3分钟执行一次
     public void timingAccCut(){
         System.out.println("###############################执行定时分账任务#####################################");
         //查询当前系统时间向前的第二天的已完成支付且未取消的订单 （条件：1.已支付 2.未取消 3.已经发货 4.未进行过分账操作 5.支付时间区间在指定日期内）
-       /* Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE,-10);
-        Date time = calendar.getTime();*/
-        Date time = new Date();
+        Date time = calendar.getTime();
+        //Date time = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = format.format(time);
         String[] s = timeStr.split(" ");
@@ -392,7 +395,7 @@ public class ShopOrderJob {
         String startTime=s1+" 00:00:00";
         String endTime=s1+" 23:59:59";
         HashMap<String, Object> map = new HashMap<>();
-        map.put("startTime",startTime);
+        //map.put("startTime",startTime);
         map.put("endTime",endTime);
         map.put("paymentState",1);
         map.put("orderState",0);
@@ -1248,8 +1251,6 @@ public class ShopOrderJob {
         resultMap.put("res",res);
         resultMap.put("Products",productLists);
         resultMap.put("orderGoods",orderGoodsList);
-
         return resultMap;
     }
-
 }

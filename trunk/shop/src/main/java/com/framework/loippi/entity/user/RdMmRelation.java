@@ -122,4 +122,8 @@ public class RdMmRelation implements GenericEntity {
 	/** 用户累计购买额 */
 	@Column(name = "A_TOTAL" )
 	private BigDecimal aTotal;
+
+	/** 是否弹窗级别解释 */
+	@Column(name = "popup_flag" )
+	private Integer popupFlag;
 }
