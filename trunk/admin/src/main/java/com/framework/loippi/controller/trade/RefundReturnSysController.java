@@ -1326,6 +1326,19 @@ public class RefundReturnSysController extends GenericController {
                             updateOrder.setRefundAmount(money.add(refundReturn.getRefundAmount()));
                             updateOrder.setRefundPpv(ppv.add(refundReturn.getRewardPointAmount()));
                             updateOrder.setRefundPoint(refundReturn.getRewardPointAmount().add(point));
+                            BigDecimal oAmountAll = new BigDecimal("0.00");
+                            if (shopOrder.getOrderAmount()==null){
+                                oAmountAll = new BigDecimal("0.00");
+                            }else {
+                                oAmountAll = shopOrder.getOrderAmount();
+                            }
+                            BigDecimal pointRmbNum = new BigDecimal("0.00");
+                            if (shopOrder.getPointRmbNum()==null){
+                                pointRmbNum = new BigDecimal("0.00");
+                            }else {
+                                pointRmbNum = shopOrder.getPointRmbNum();
+                            }
+
                             if (money.add(refundReturn.getRefundAmount()).compareTo(shopOrder.getOrderAmount())==0
                                     && refundReturn.getRewardPointAmount().add(point).compareTo(shopOrder.getPointRmbNum())==0){
                                 updateOrder.setRefundState(2);
