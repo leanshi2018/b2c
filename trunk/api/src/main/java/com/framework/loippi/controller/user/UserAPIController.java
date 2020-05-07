@@ -209,6 +209,14 @@ public class UserAPIController extends BaseController {
             result.setWindowFlag(0);
             List<RankExplain> params = rankExplainDao.findByParams(Paramap.create().put("rank", 5));
             result.setWindowMessage(params.get(0).getMessage());
+        }else if(rdMmRelation.getRank()==4&&rdMmRelation.getPopupFlag()==1){
+            result.setWindowFlag(1);
+            List<RankExplain> params = rankExplainDao.findByParams(Paramap.create().put("rank", 4));
+            result.setWindowMessage(params.get(0).getMessage());
+        }else if(rdMmRelation.getRank()==5&&rdMmRelation.getPopupFlag()==1){
+            result.setWindowFlag(1);
+            List<RankExplain> params = rankExplainDao.findByParams(Paramap.create().put("rank", 5));
+            result.setWindowMessage(params.get(0).getMessage());
         }else {
             result.setWindowFlag(1);
             result.setWindowMessage("");
