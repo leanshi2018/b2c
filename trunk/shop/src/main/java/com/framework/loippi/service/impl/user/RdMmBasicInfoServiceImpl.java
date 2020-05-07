@@ -363,5 +363,4 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         rdMmBasicInfoDao.updatePhoneStatusByMCode(map);
     }
 
-
 }

@@ -32,4 +32,5 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
 	void updatePhoneStatusAndPhoneByMCode(Map<String, Object> map);
 
 	void updatePhoneStatusByMCode(Map<String, Object> map);
+
 }

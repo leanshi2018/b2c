@@ -14,6 +14,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.dao.common.RankExplainDao;
+import com.framework.loippi.entity.common.RankExplain;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -157,9 +159,28 @@ public class UserAPIController extends BaseController {
     private RdMmBankDiscernService rdMmBankDiscernService;
     @Resource
     private RdMmWithdrawLogService rdMmWithdrawLogService;
+    @Resource
+    private RankExplainDao rankExplainDao;
 
     @Value("#{properties['wap.server']}")
     private String wapServer;
+
+
+    @RequestMapping(value = "/window/close.json", method = RequestMethod.GET)
+    public String windowclose(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("会员尚未登录");
+        }
+        String mmCode = member.getMmCode();
+        RdMmRelation mmRelation = rdMmRelationService.find("mmCode", mmCode);
+        if(mmRelation==null){
+            return ApiUtils.error("当前登录用户信息异常");
+        }
+        mmRelation.setPopupFlag(1);
+        rdMmRelationService.update(mmRelation);
+        return ApiUtils.success();
+    }
 
     /**
      * 个人中心
@@ -180,6 +201,18 @@ public class UserAPIController extends BaseController {
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks,banks,rdMmAccountInfo);
+        if(rdMmRelation.getRank()==4&&rdMmRelation.getPopupFlag()==0){
+            result.setWindowFlag(0);
+            List<RankExplain> params = rankExplainDao.findByParams(Paramap.create().put("rank", 4));
+            result.setWindowMessage(params.get(0).getMessage());
+        }else if(rdMmRelation.getRank()==5&&rdMmRelation.getPopupFlag()==0){
+            result.setWindowFlag(0);
+            List<RankExplain> params = rankExplainDao.findByParams(Paramap.create().put("rank", 5));
+            result.setWindowMessage(params.get(0).getMessage());
+        }else {
+            result.setWindowFlag(1);
+            result.setWindowMessage("");
+        }
         //查询会员提醒消息数量
         Integer remindNum=shopMemberMessageService.findMessageRemindNum(Long.parseLong(member.getMmCode()));
         //查询会员订单消息数量
