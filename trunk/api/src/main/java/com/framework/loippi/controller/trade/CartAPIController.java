@@ -565,23 +565,16 @@ public class CartAPIController extends BaseController {
                         shopGoods.add(goods1);
                     }
                     flag=1;
-                    giftsNum=1;
                 }
                 if(rdMmRelation.getRank()>0&&(result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1)){
-                    ShopGoods goods1 = goodsService.find(6638361764952018944L);//护手霜
-                    ShopGoods goods2 = goodsService.find(6638361764952018944L);//润肤乳
-                    //ShopGoods goods1 = goodsService.find(6659359562891530240L);//护手霜 formal
-                    //ShopGoods goods2 = goodsService.find(6651773432239230976L);//润肤乳 formal
+                    ShopGoods goods1 = goodsService.find(6661516062787375104L);//护手霜+护手霜组合套装
+                    //ShopGoods goods1 = goodsService.find(6661525543797657600L);//护手霜+护手霜组合套装 formal
                     if (goods1!=null){
-                        giftsNum=giftsNum+1;
                         shopGoods.add(goods1);
-                    }
-                    if (goods2!=null){
-                        shopGoods.add(goods2);
-                        giftsNum=giftsNum+1;
                     }
                     flag=1;
                 }
+                giftsNum=1;
             }
             result=result.build3(result,shopGoods,flag,giftsNum);
         } catch (ParseException e) {
