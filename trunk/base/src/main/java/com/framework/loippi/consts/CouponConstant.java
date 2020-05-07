@@ -50,38 +50,38 @@ public class CouponConstant {
     /**
      * 二月优惠券ID
      */
-    //public static final Long FEB_COUPON_ID = 6555008628095455333L;
-    public static final Long FEB_COUPON_ID = 6555008628095455331L;
+    public static final Long FEB_COUPON_ID = 6555008628095455333L;
+    //public static final Long FEB_COUPON_ID = 6555008628095455331L;
     /**
      * 三月优惠券ID
      */
-    //public static final Long MAR_COUPON_ID = 6555008628095455334L;
-    public static final Long MAR_COUPON_ID = 6555008628095455332L;
+    public static final Long MAR_COUPON_ID = 6555008628095455334L;
+    //public static final Long MAR_COUPON_ID = 6555008628095455332L;
     /**
      * 四月优惠券ID
      */
-    //public static final Long APR_COUPON_ID = 6555008628095455335L;
-    public static final Long APR_COUPON_ID = 6555008628095455333L;
+    public static final Long APR_COUPON_ID = 6555008628095455335L;
+    //public static final Long APR_COUPON_ID = 6555008628095455333L;
     /**
      * 五月优惠券ID
      */
-    //public static final Long MAY_COUPON_ID = 6555008628095455336L;
-    public static final Long MAY_COUPON_ID = 6555008628095455334L;
+    public static final Long MAY_COUPON_ID = 6555008628095455336L;
+    //public static final Long MAY_COUPON_ID = 6555008628095455334L;
     /**
      * 六月优惠券ID
      */
-    //public static final Long JUN_COUPON_ID = 6555008628095455337L;
-    public static final Long JUN_COUPON_ID = 6555008628095455335L;
+    public static final Long JUN_COUPON_ID = 6555008628095455337L;
+    //public static final Long JUN_COUPON_ID = 6555008628095455335L;
     /**
      * 七月优惠券ID
      */
-    //public static final Long JUL_COUPON_ID = 6555008628095455338L;
-    public static final Long JUL_COUPON_ID = 6555008628095455336L;
+    public static final Long JUL_COUPON_ID = 6555008628095455338L;
+    //public static final Long JUL_COUPON_ID = 6555008628095455336L;
     /**
      * 八月优惠券ID
      */
-    //public static final Long AUG_COUPON_ID = 6555008628095455339L;
-    public static final Long AUG_COUPON_ID = 6555008628095455337L;
+    public static final Long AUG_COUPON_ID = 6555008628095455339L;
+    //public static final Long AUG_COUPON_ID = 6555008628095455337L;
 
 
 }
