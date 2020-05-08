@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.allinpay.yunst.sdk.YunClient;
-import com.allinpay.yunst.sdk.bean.YunRequest;
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmBasicInfoDao;
@@ -34,7 +32,6 @@ import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.OldSysRelationshipService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 
 
@@ -206,7 +203,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         //获取当前时间设置的业务周期
         //通联接口互通
         //进行通联进行会员数据交互存储
-        final YunRequest request = new YunRequest("MemberService", "createMember");
+        /*final YunRequest request = new YunRequest("MemberService", "createMember");
         request.put("bizUserId", rdMmBasicInfo.getMmCode());
         request.put("memberType", 3);
         request.put("source", 1);
@@ -227,7 +224,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("通联支付注册异常");
-        }
+        }*/
         //获取当前时间设置的业务周期
         String period = rdSysPeriodDao.getSysPeriodService(new Date());
         rdMmBasicInfo.setCreationPeriod(period);
