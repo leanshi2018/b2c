@@ -171,4 +171,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
 	List<ShopOrder> findNoCutOrder1(HashMap<String, Object> map);
 
 	ShopOrder findByBuyPaySn(String paySn);
+
+    BigDecimal getCutTotalByCutId(String mmCode);
 }

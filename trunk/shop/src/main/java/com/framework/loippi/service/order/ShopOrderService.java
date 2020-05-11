@@ -323,6 +323,8 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
 	ShopOrder findByBuyPaySn(String bizPaySn);
 
+    BigDecimal getCutTotalByCutId(String mmCode);
 
-	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
+
+    /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

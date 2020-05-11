@@ -576,6 +576,7 @@ public class AuthcAPIController extends BaseController {
         rdMmRelation.setIsVip(0);
         rdMmRelation.setMmPointStatus(2);
         rdMmRelation.setMmStatus(0);
+        rdMmRelation.setPopupFlag(0);
         BigDecimal zero = BigDecimal.ZERO;
         rdMmAccountInfo.setBonusStatus(2);
         rdMmAccountInfo.setBonusBlance(zero);

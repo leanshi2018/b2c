@@ -183,7 +183,7 @@ public class ShopOrderJob {
     /**
      * 订单12小时自动关闭取消功能
      */
-    //@Scheduled(cron = "0 */30 * * * ?")  //每30分钟执行一次
+    @Scheduled(cron = "0 */30 * * * ?")  //每30分钟执行一次
     public void cancelTimeOutPaymentOrder() {
         /*log.info("#################################################################");
         log.info("#####################  开始执行-订单24小时取消 ###################");
@@ -221,7 +221,7 @@ public class ShopOrderJob {
     }
 
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
     public void grant(){
         System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

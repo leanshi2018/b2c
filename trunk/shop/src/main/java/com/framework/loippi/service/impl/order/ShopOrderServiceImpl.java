@@ -2144,6 +2144,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         return orderDao.findByBuyPaySn(paySn);
     }
 
+    /**
+     * 查询指定会员自动提现预扣积分总和
+     * @param mmCode
+     * @return
+     */
+    @Override
+    public BigDecimal getCutTotalByCutId(String mmCode) {
+        return orderDao.getCutTotalByCutId(mmCode);
+    }
+
     @Override
     public ShopOrderPay addReplacementOrder(Long goodsId, Integer count, Long specId, Long memberId) {
         //商品信息

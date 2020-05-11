@@ -165,7 +165,31 @@ public class UserAPIController extends BaseController {
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
+    /**
+     * 获取当前登录用户使用自动提现预扣总金额
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/cuttotal.json", method = RequestMethod.GET)
+    public String cuttotal(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("会员尚未登录");
+        }
+        String mmCode = member.getMmCode();
+        BigDecimal cutTotal=BigDecimal.ZERO;
+        BigDecimal total=shopOrderService.getCutTotalByCutId(mmCode);
+        if(total!=null){
+            cutTotal=total;
+        }
+        return ApiUtils.success(cutTotal);
+    }
 
+    /**
+     * 关闭弹窗 修改弹窗记录
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/window/close.json", method = RequestMethod.GET)
     public String windowclose(HttpServletRequest request) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);

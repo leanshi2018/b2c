@@ -1622,5 +1622,7 @@
     <!--<result column="member_name" property="membername" jdbcType="VARCHAR"/>-->
     <!--</resultMap>-->
 
-
+    <select id="getCutTotalByCutId" parameterType="string" resultType="java.math.BigDecimal">
+        SELECT SUM(cut_acc) from shop_order where cut_get_id = #{mmCode} and cut_status = 5
+    </select>
 </mapper>
