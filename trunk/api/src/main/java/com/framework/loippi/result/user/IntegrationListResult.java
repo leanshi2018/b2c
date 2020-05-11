@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.framework.loippi.entity.user.RdMmAccountLog;
@@ -71,13 +72,58 @@ public class IntegrationListResult {
     public static List<IntegrationListResult> build(List<RdMmAccountLog> rdMmAccountLogList,Integer type) {
         List<IntegrationListResult> userIntegrationListResultList=new ArrayList<>();
          if (rdMmAccountLogList!=null && rdMmAccountLogList.size()>0){
+             HashMap<Long, RdMmAccountLog> mapAWD = new HashMap<>();
+             HashMap<Long, RdMmAccountLog> mapCF = new HashMap<>();
              for (RdMmAccountLog item:rdMmAccountLogList) {
+                 String transTypeCode=item.getTransTypeCode();
+                 Long orderOid = item.getTrOrderOid();
+                 if("AWD".equals(transTypeCode) && item.getStatus()==3){//如果自动提现相关的记录
+                     if(orderOid!=null){
+                         RdMmAccountLog rdMmAccountLog = mapAWD.get(orderOid);
+                         if(rdMmAccountLog!=null){//判断map集合中是否有关于该订单的AWD日志
+                            //比较两条记录的时间先后
+                             if(item.getTransDate().getTime()>rdMmAccountLog.getTransDate().getTime()){
+                                 mapAWD.put(orderOid,item);//替代之前的一条记录
+                                 //去除userIntegrationListResultList中根据rdMmAccountLog生成的一条记录
+                                 for (IntegrationListResult integrationListResult : userIntegrationListResultList) {
+                                     if(integrationListResult.getTransNumber().equals(rdMmAccountLog.getTransNumber())){
+                                         userIntegrationListResultList.remove(integrationListResult);
+                                     }
+                                 }
+                             }else {//使用之前有的记录
+                                 continue;
+                             }
+                         }else {
+                             mapAWD.put(orderOid,item);
+                         }
+                     }
+                 }
+                 if("CF".equals(transTypeCode) && item.getStatus()==3){//如果自动提现相关的记录
+                     if(orderOid!=null){
+                         RdMmAccountLog rdMmAccountLog = mapCF.get(orderOid);
+                         if(rdMmAccountLog!=null){//判断map集合中是否有关于该订单的AWD日志
+                             //比较两条记录的时间先后
+                             if(item.getTransDate().getTime()>rdMmAccountLog.getTransDate().getTime()){
+                                 mapCF.put(orderOid,item);//替代之前的一条记录
+                                 //去除userIntegrationListResultList中根据rdMmAccountLog生成的一条记录
+                                 for (IntegrationListResult integrationListResult : userIntegrationListResultList) {
+                                     if(integrationListResult.getTransNumber().equals(rdMmAccountLog.getTransNumber())){
+                                         userIntegrationListResultList.remove(integrationListResult);
+                                     }
+                                 }
+                             }else {//使用之前有的记录
+                                 continue;
+                             }
+                         }else {
+                             mapCF.put(orderOid,item);
+                         }
+                     }
+                 }
                  IntegrationListResult integrationListResult=new IntegrationListResult();
                  integrationListResult.setBlanceAfter(item.getBlanceAfter());
                  integrationListResult.setTransDate(item.getTransDate());
                  integrationListResult.setTransNumber(item.getTransNumber());
                  integrationListResult.setTransTypeCode(item.getTransTypeCode());
-                 String transTypeCode=item.getTransTypeCode();
                  String transTypeName="";
                  String symbol="-";
                  if (type==1){

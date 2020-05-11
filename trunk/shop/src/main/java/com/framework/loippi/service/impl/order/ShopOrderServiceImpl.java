@@ -717,6 +717,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             rdMmAccountLog.setTransTypeCode("CF");
                             rdMmAccountLog.setAccType("SWB");
                             rdMmAccountLog.setTrSourceType("BNK");
+                            rdMmAccountLog.setTrOrderOid(order.getId());
                             rdMmAccountLog.setMmCode(shopMember.getMmCode());
                             rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
                             rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
@@ -2595,6 +2596,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         rdMmAccountLog.setTransTypeCode("CF");
                         rdMmAccountLog.setAccType("SWB");
                         rdMmAccountLog.setTrSourceType("BNK");
+                        rdMmAccountLog.setTrOrderOid(order.getId());
                         rdMmAccountLog.setMmCode(shopMember.getMmCode());
                         rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
                         rdMmAccountLog.setTrMmCode(shopMember.getMmCode());

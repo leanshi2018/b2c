@@ -1365,6 +1365,7 @@ public class RefundReturnSysController extends GenericController {
                                         rdMmAccountLog.setTransTypeCode("CF");
                                         rdMmAccountLog.setAccType("SWB");
                                         rdMmAccountLog.setTrSourceType("BNK");
+                                        rdMmAccountLog.setTrOrderOid(shopOrder.getId());
                                         rdMmAccountLog.setMmCode(shopMember.getMmCode());
                                         rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
                                         rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
