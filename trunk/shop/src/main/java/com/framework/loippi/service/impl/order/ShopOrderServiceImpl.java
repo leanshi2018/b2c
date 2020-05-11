@@ -2246,7 +2246,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         // 商品总价格
         order.setGoodsAmount(goodsSpec.getSpecRetailPrice());
         //使用积分
-        order.setUsePointNum(goodsSpec.getSpecRetailPrice().intValue());
+        //order.setUsePointNum(goodsSpec.getSpecRetailPrice().intValue());
         //订单pv值
         order.setPpv(BigDecimal.ZERO);
         //订单运费优惠价格
@@ -2255,7 +2255,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         /**********支付统计************/
         // 现金支付
         order.setOrderAmount(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)));
-        order.setPointRmbNum(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)));
+        //order.setPointRmbNum(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)));
         orderDao.insertEntity(order);
         ShopOrderGoods orderGoods = new ShopOrderGoods();
         orderGoods.setId(twiterIdService.getTwiterId());

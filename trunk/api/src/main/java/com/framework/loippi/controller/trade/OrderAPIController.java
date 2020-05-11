@@ -1412,7 +1412,7 @@ public class OrderAPIController extends BaseController {
             .put("redemptionBlance",
                 Optional.ofNullable(rdMmAccountInfo.getRedemptionBlance()).orElse(BigDecimal.valueOf(0)))
             .put("contactName", contactName).put("contactPhone", contactPhone).put("contactAddrInfo", contactAddrInfo)
-            .put("paySn", shopOrder.getPaySn()).put("ismodify", 0)
+            .put("paySn", shopOrder.getPaySn()).put("ismodify", 1)
             .put("orderId", orderId).put("addr", addr));
     }
 
