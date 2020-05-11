@@ -1384,8 +1384,8 @@ public class RefundReturnSysController extends GenericController {
                                         if(period!=null){
                                             rdMmAccountLog.setTransPeriod(period);
                                         }
-                                        rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
-                                        rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+                                        rdMmAccountLog.setTransDesc("退款");
+                                        rdMmAccountLog.setAutohrizeDesc("退款");
                                         rdMmAccountLogService.save(rdMmAccountLog);
                                         rdMmAccountInfoService.update(cutAccountInfo);
                                         System.out.println("**************售后提示");

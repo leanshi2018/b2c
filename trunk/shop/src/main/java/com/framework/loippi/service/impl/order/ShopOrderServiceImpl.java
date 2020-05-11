@@ -736,8 +736,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             if(period!=null){
                                 rdMmAccountLog.setTransPeriod(period);
                             }
-                            rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
-                            rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+                            rdMmAccountLog.setTransDesc("取消订单退还用户奖励积分");
+                            rdMmAccountLog.setAutohrizeDesc("取消订单退还用户奖励积分");
                             rdMmAccountLogService.save(rdMmAccountLog);
                             rdMmAccountInfoService.update(cutAccountInfo);
 
@@ -2615,8 +2615,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         if(period!=null){
                             rdMmAccountLog.setTransPeriod(period);
                         }
-                        rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
-                        rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+                        rdMmAccountLog.setTransDesc("取消订单退还用户奖励积分");
+                        rdMmAccountLog.setAutohrizeDesc("取消订单退还用户奖励积分");
                         rdMmAccountLogService.save(rdMmAccountLog);
                         rdMmAccountInfoService.update(cutAccountInfo);
 

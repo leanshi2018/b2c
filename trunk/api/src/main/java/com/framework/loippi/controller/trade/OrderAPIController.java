@@ -1785,8 +1785,8 @@ public class OrderAPIController extends BaseController {
         if(period!=null){
             rdMmAccountLog.setTransPeriod(period);
         }
-        rdMmAccountLog.setTransDesc("订单分账失败退还用户奖励积分");
-        rdMmAccountLog.setAutohrizeDesc("订单分账失败退还用户奖励积分");
+        rdMmAccountLog.setTransDesc("多次跳转微信小程序退还用户奖励积分");
+        rdMmAccountLog.setAutohrizeDesc("多次跳转微信小程序退还用户奖励积分");
         rdMmAccountLog.setStatus(3);
         rdMmAccountLogService.save(rdMmAccountLog);
         accountInfo.setBonusBlance(accountInfo.getBonusBlance().add(order.getCutAcc()));

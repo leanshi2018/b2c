@@ -98,7 +98,7 @@ public class IntegrationListResult {
                          }
                      }
                  }
-                 if("CF".equals(transTypeCode) && item.getStatus()==3){//如果自动提现相关的记录
+                 if("CF".equals(transTypeCode) && item.getStatus()==3&&"多次跳转微信小程序退还用户奖励积分".equals(item.getAutohrizeDesc())){//如果自动提现相关的记录
                      if(orderOid!=null){
                          RdMmAccountLog rdMmAccountLog = mapCF.get(orderOid);
                          if(rdMmAccountLog!=null){//判断map集合中是否有关于该订单的AWD日志
