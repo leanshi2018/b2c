@@ -1360,7 +1360,7 @@ public class OrderAPIController extends BaseController {
         orderService.update(order);
         shopOrderAddressService.save(orderAddress);
         Map<String, Object> data = orderService
-            .updateOrderpay(payCommon, member.getMmCode(), "在线支付", paymentCode, paymentId);
+            .updateOrderpay(payCommon, member.getMmCode(), "在线支付-换购积分", paymentCode, paymentId);
         return ApiUtils.success(Paramap.create().put("orderSn", order.getOrderSn())
             .put("redemptionBlance", rdMmAccountInfo.getRedemptionBlance().subtract(BigDecimal.valueOf(integration))));
     }

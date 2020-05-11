@@ -61,7 +61,7 @@ public class ShopOrder implements GenericEntity {
     @Column(name = "create_time" )
     private java.util.Date createTime;
 
-    /** 订单类型  1.零售价 2.会员价 3.PV大单价 4.优惠额度 5 积分 */
+    /** 订单类型  1.零售价 2.会员价 3.PV大单价 4.优惠额度 5 换购积分 */
     @Column(name = "order_type" )
     private Integer orderType;
 
