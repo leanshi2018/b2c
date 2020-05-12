@@ -1115,10 +1115,17 @@ public class OrderSysController extends GenericController {
     public String cancel(@RequestParam long id, ModelMap model, HttpServletRequest request,String message) {
         Principal principal = userService.getPrincipal();
         User user = userService.find(principal.getId());
-        orderService.updateCancelOrder(id, Constants.OPERATOR_ADMINISTRATOR, principal.getId(), PaymentTallyState.PAYMENTTALLY_TREM_MB,message,user.getUsername());
-        addMessage(model, "取消成功");
-        model.addAttribute("noAuto", true);
-        model.addAttribute("referer", request.getHeader("Referer"));
+        ShopOrder order = orderService.find(id);
+        if (order.getOrderType()==5){
+            addMessage(model, "取消失败，换购订单不可取消");
+            model.addAttribute("noAuto", true);
+            model.addAttribute("referer", request.getHeader("Referer"));
+        }else {
+            orderService.updateCancelOrder(id, Constants.OPERATOR_ADMINISTRATOR, principal.getId(), PaymentTallyState.PAYMENTTALLY_TREM_MB,message,user.getUsername());
+            addMessage(model, "取消成功");
+            model.addAttribute("noAuto", true);
+            model.addAttribute("referer", request.getHeader("Referer"));
+        }
         return Constants.MSG_URL;
     }
 
