@@ -13,6 +13,8 @@ import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsRecommend;
@@ -34,6 +36,7 @@ public class GoodsListResult {
     private static final long serialVersionUID = 5081846432919091193L;
 
     //商品id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long itemId;
 
     //标题
@@ -57,6 +60,7 @@ public class GoodsListResult {
     private Integer salenum;
 
     //活动
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long activityId;
     private String activityType;
 
