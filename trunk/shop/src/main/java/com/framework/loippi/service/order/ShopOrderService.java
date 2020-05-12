@@ -325,6 +325,10 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     BigDecimal getCutTotalByCutId(String mmCode);
 
+    void autoReceipt1(List<ShopOrder> list1);
+
+    void autoReceipt2(List<ShopOrder> list2);
+
 
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

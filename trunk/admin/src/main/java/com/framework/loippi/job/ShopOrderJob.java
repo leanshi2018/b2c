@@ -1253,4 +1253,26 @@ public class ShopOrderJob {
         resultMap.put("orderGoods",orderGoodsList);
         return resultMap;
     }
+
+    /**
+     * 自动确认收货
+     */
+    //@Scheduled(cron = "0/20 * * * * ? ")  //每5秒执行一次
+    @Scheduled(cron = "0 33 * * * ? ")  //每隔一小时执行一次 每小时33分执行定时任务
+    public void autoReceipt(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE,-7);
+        Date time = calendar.getTime();//当前时间减去七天前时间，该时间大于待收货订单的快递发货时间或者自提订单支付时间，则表示已达到自动收货条件
+        //1.找出订单状态为待收货 发货时间和当前系统时间相差超过7天的普通快递订单
+        List<ShopOrder> list1=shopOrderDao.findAutoOrder1(time);
+        //2.找出订单状态为待收货 支付时间和当前系统时间相差超过7天的自提订单
+        List<ShopOrder> list2=shopOrderDao.findAutoOrder2(time);
+        //3.将两个订单进行遍历，依次修改订单状态，判断是否存在零售利润，如果存在零售利润，将自提订单对应产生零售利润设置预计发放时间
+        if(list1!=null&&list1.size()>0){
+            orderService.autoReceipt1(list1);
+        }
+        if(list2!=null&&list1.size()>0){
+            orderService.autoReceipt2(list2);
+        }
+    }
 }

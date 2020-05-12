@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.order;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,4 +174,8 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
 	ShopOrder findByBuyPaySn(String paySn);
 
     BigDecimal getCutTotalByCutId(String mmCode);
+
+    List<ShopOrder> findAutoOrder1(Date time);
+
+    List<ShopOrder> findAutoOrder2(Date time);
 }
