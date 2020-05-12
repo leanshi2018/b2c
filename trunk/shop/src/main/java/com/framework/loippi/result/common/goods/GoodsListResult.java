@@ -1,16 +1,22 @@
 package com.framework.loippi.result.common.goods;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.collections.CollectionUtils;
+
 import com.framework.loippi.entity.activity.ShopActivityGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsRecommend;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.commons.collections.CollectionUtils;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * Result - 商品列表
@@ -25,6 +31,7 @@ import java.util.*;
 @AllArgsConstructor
 public class GoodsListResult {
 
+    private static final long serialVersionUID = 5081846432919091193L;
 
     //商品id
     private Long itemId;
