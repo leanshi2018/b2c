@@ -1,10 +1,10 @@
 package com.framework.loippi.service.user;
 
 
+import java.util.HashMap;
+
 import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.service.GenericService;
-
-import java.util.HashMap;
 
 /**
  * SERVICE - RdMmAccountLog(会员账户交易日志表)
@@ -21,4 +21,6 @@ public interface RdMmAccountLogService  extends GenericService<RdMmAccountLog, L
     RdMmAccountLog findCutByOrderId(HashMap<String, Object> map);
 
 	void updateByCutOrderId(HashMap<String, Object> map);
+
+	void updateNickNameByMCode(String nickName, String mmCode);
 }

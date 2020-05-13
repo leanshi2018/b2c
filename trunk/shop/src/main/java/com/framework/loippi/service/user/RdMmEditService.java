@@ -12,4 +12,5 @@ import com.framework.loippi.service.GenericService;
  */
 public interface RdMmEditService  extends GenericService<RdMmEdit, Long> {
 
+	void updateByStatusAndMCode(String mmCode);
 }

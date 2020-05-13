@@ -376,4 +376,11 @@
         ACC_STATUS = 2
         WHERE TRANS_TYPE_CODE = #{transTypeCode} and ACC_TYPE = #{accType} and TR_SOURCE_TYPE = #{trSourceType} and TR_ORDER_OID = #{trOrderOid}
     </update>
+
+	<update id="updateNickNameByMCode" parameterType="java.util.Map" >
+        UPDATE RD_MM_ACCOUNT_LOG
+        SET
+        MM_NICK_NAME = #{mmNickName}
+        WHERE MM_CODE = #{mmCode}
+    </update>
 </mapper> 

@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdReceiveableDetailDao">
+
+    <resultMap id="RdReceiveableDetailMap" type="com.framework.loippi.entity.user.RdReceiveableDetail">
+
+        <result property="transNumber" column="TRANS_NUMBER" />
+        <result property="batchNumber" column="BATCH_NUMBER" />
+        <result property="mmCode" column="MM_CODE" />
+        <result property="mmNickName" column="MM_NICK_NAME" />
+        <result property="trTypeCode" column="TR_TYPE_CODE" />
+        <result property="trSourceType" column="TR_SOURCE_TYPE" />
+        <result property="trBankOId" column="TR_BANK_OID" />
+        <result property="currencyCode" column="CURRENCY_CODE" />
+        <result property="blanceBefore" column="BLANCE_BEFORE" />
+        <result property="amount" column="AMOUNT" />
+        <result property="blanceAfter" column="BLANCE_AFTER" />
+        <result property="bnsDeductPecent" column="BNS_DEDUCT_PECENT" />
+        <result property="transDate" column="TRANS_DATE" />
+        <result property="transPeriod" column="TRANS_PERIOD" />
+        <result property="transDesc" column="TRANS_DESC" />
+        <result property="status" column="STATUS" />
+        <result property="washedYn" column="WASHED_YN" />
+        <result property="orignTransNumber" column="ORIGN_TRANS_NUMBER" />
+        <result property="creationBy" column="CREATION_BY" />
+        <result property="creationTime" column="CREATION_TIME" />
+        <result property="updateBy" column="UPDATE_BY" />
+        <result property="updateTime" column="UPDATE_TIME" />
+        <result property="autohrizeBy" column="AUTOHRIZE_BY" />
+        <result property="autohrizeTime" column="AUTOHRIZE_TIME" />
+        <result property="autohrizeDesc" column="AUTOHRIZE_DESC" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 TRANS_NUMBER,BATCH_NUMBER,MM_CODE,MM_NICK_NAME,TR_TYPE_CODE,TR_SOURCE_TYPE,TR_BANK_OID,CURRENCY_CODE,BLANCE_BEFORE,AMOUNT,BLANCE_AFTER,BNS_DEDUCT_PECENT,
+		 TRANS_DATE,TRANS_PERIOD,TRANS_DESC,STATUS,WASHED_YN,ORIGN_TRANS_NUMBER,CREATION_BY,CREATION_TIME,UPDATE_BY,UPDATE_TIME,AUTOHRIZE_BY,AUTOHRIZE_TIME,AUTOHRIZE_DESC
+	</sql>
+
+    <sql id="base_value_column">
+		 #{transNumber},#{batchNumber},#{mmCode},#{mmNickName},#{trTypeCode},#{trSourceType},#{trBankOId},#{currencyCode},#{blanceBefore},#{amount},#{blanceAfter},
+		 #{bnsDeductPecent},#{transDate},#{transPeriod},#{transDesc},#{status},#{washedYn},#{orignTransNumber},#{creationBy},#{creationTime},#{updateBy},#{updateTime},
+		 #{autohrizeBy},#{autohrizeTime},#{autohrizeDesc}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="transNumber != null ">
+            AND TRANS_NUMBER = #{transNumber}
+        </if>
+        <if test="batchNumber != null">
+            AND BATCH_NUMBER = #{batchNumber}
+        </if>
+        <if test="mmCode != null">
+            AND MM_CODE = #{mmCode}
+        </if>
+        <if test="mmNickName != null">
+            AND MM_NICK_NAME = #{mmNickName}
+        </if>
+        <if test="trTypeCode != null">
+            AND TR_TYPE_CODE = #{trTypeCode}
+        </if>
+        <if test="trSourceType != null">
+            AND TR_SOURCE_TYPE = #{trSourceType}
+        </if>
+        <if test="trBankOId != null">
+            AND TR_BANK_OID = #{trBankOId}
+        </if>
+        <if test="currencyCode != null">
+            AND CURRENCY_CODE = #{currencyCode}
+        </if>
+        <if test="blanceBefore != null">
+            AND BLANCE_BEFORE = #{blanceBefore}
+        </if>
+        <if test="amount != null">
+            AND AMOUNT = #{amount}
+        </if>
+        <if test="blanceAfter != null">
+            AND BLANCE_AFTER = #{blanceAfter}
+        </if>
+        <if test="bnsDeductPecent != null">
+            AND BNS_DEDUCT_PECENT = #{bnsDeductPecent}
+        </if>
+        <if test="transDate != null">
+            AND TRANS_DATE = #{transDate}
+        </if>
+        <if test="transPeriod != null">
+            AND TRANS_PERIOD = #{transPeriod}
+        </if>
+        <if test="transDesc != null">
+            AND TRANS_DESC = #{transDesc}
+        </if>
+        <if test="status != null">
+            AND STATUS = #{status}
+        </if>
+        <if test="washedYn != null">
+            AND WASHED_YN = #{washedYn}
+        </if>
+        <if test="orignTransNumber != null">
+            AND ORIGN_TRANS_NUMBER = #{orignTransNumber}
+        </if>
+        <if test="creationBy != null">
+            AND CREATION_BY = #{creationBy}
+        </if>
+        <if test="creationTime != null">
+            AND CREATION_TIME = #{creationTime}
+        </if>
+        <if test="updateBy != null">
+            AND UPDATE_BY = #{updateBy}
+        </if>
+        <if test="updateTime != null">
+            AND UPDATE_TIME = #{updateTime}
+        </if>
+        <if test="autohrizeBy != null">
+            AND AUTOHRIZE_BY = #{autohrizeBy}
+        </if>
+        <if test="autohrizeTime != null">
+            AND AUTOHRIZE_TIME = #{autohrizeTime}
+        </if>
+        <if test="autohrizeDesc != null">
+            AND AUTOHRIZE_DESC = #{autohrizeDesc}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="transNumber != null">
+            TRANS_NUMBER = #{transNumber},
+        </if>
+        <if test="batchNumber != null">
+            BATCH_NUMBER = #{batchNumber},
+        </if>
+        <if test="mmCode != null">
+            MM_CODE = #{mmCode},
+        </if>
+        <if test="mmNickName != null">
+            MM_NICK_NAME = #{mmNickName},
+        </if>
+        <if test="trTypeCode != null">
+            TR_TYPE_CODE = #{trTypeCode},
+        </if>
+        <if test="trSourceType != null">
+            TR_SOURCE_TYPE = #{trSourceType},
+        </if>
+        <if test="trBankOId != null">
+            TR_BANK_OID = #{trBankOId},
+        </if>
+        <if test="currencyCode != null">
+            CURRENCY_CODE = #{currencyCode},
+        </if>
+        <if test="blanceBefore != null">
+            BLANCE_BEFORE = #{blanceBefore},
+        </if>
+        <if test="amount != null">
+            AMOUNT = #{amount},
+        </if>
+        <if test="blanceAfter != null">
+            BLANCE_AFTER = #{blanceAfter},
+        </if>
+        <if test="bnsDeductPecent != null">
+            BNS_DEDUCT_PECENT = #{bnsDeductPecent},
+        </if>
+        <if test="transDate != null">
+            TRANS_DATE = #{transDate},
+        </if>
+        <if test="transPeriod != null">
+            TRANS_PERIOD = #{transPeriod},
+        </if>
+        <if test="transDesc != null">
+            TRANS_DESC = #{transDesc},
+        </if>
+        <if test="status != null">
+            STATUS = #{status},
+        </if>
+        <if test="washedYn != null">
+            WASHED_YN = #{washedYn},
+        </if>
+        <if test="orignTransNumber != null">
+            ORIGN_TRANS_NUMBER = #{orignTransNumber},
+        </if>
+        <if test="creationBy != null">
+            CREATION_BY = #{creationBy},
+        </if>
+        <if test="creationTime != null">
+            CREATION_TIME = #{creationTime},
+        </if>
+        <if test="updateBy != null">
+            UPDATE_BY = #{updateBy},
+        </if>
+        <if test="updateTime != null">
+            UPDATE_TIME = #{updateTime},
+        </if>
+        <if test="autohrizeBy != null">
+            AUTOHRIZE_BY = #{autohrizeBy},
+        </if>
+        <if test="autohrizeTime != null">
+            AUTOHRIZE_TIME = #{autohrizeTime},
+        </if>
+        <if test="autohrizeDesc != null">
+            AUTOHRIZE_DESC = #{autohrizeDesc},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdReceiveableDetailMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_receiveable_detail
+        WHERE	ID=#{id}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdReceiveableDetailMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_receiveable_detail
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_receiveable_detail
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.RdReceiveableDetail">
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+        <!--SELECT LAST_INSERT_ID() AS ID    -->
+        <!--</selectKey>  -->
+        INSERT rd_receiveable_detail
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.RdReceiveableDetail">
+        UPDATE	rd_receiveable_detail
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	id = #{id}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_receiveable_detail
+		WHERE	id = #{id}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_receiveable_detail
+        WHERE	id	IN
+        <foreach item="RdReceiveableDetailId" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdReceiveableDetailMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_receiveable_detail
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdReceiveableDetailMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_receiveable_detail
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <update id="updateNickNameByMCode" parameterType="java.util.Map" >
+        UPDATE rd_receiveable_detail
+        SET
+        MM_NICK_NAME = #{mmNickName}
+        WHERE MM_CODE = #{mmCode}
+    </update>
+
+</mapper>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdReceivableMasterDao">
+
+    <resultMap id="RdReceivableMasterMap" type="com.framework.loippi.entity.user.RdReceivableMaster">
+        <result property="mmCode" column="MM_CODE" />
+        <result property="mmNickName" column="MM_NICK_NAME" />
+        <result property="receivableBlance" column="RECEIVABLE_BLANCE" />
+        <result property="currencyCode" column="CURRENCY_CODE" />
+        <result property="status" column="STATUS" />
+        <result property="bnsDeductPecent" column="BNS_DEDUCT_PECENT" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 MM_CODE,MM_NICK_NAME,RECEIVABLE_BLANCE,CURRENCY_CODE,STATUS,BNS_DEDUCT_PECENT
+    </sql>
+
+    <sql id="base_value_column">
+		 #{mmCode},#{mmNickName},#{receivableBlance},#{currencyCode},#{status},#{bnsDeductPecent}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="mmCode != null ">
+            AND MM_CODE = #{mmCode}
+        </if>
+        <if test="mmNickName != null">
+            AND MM_NICK_NAME = #{mmNickName}
+        </if>
+        <if test="receivableBlance != null">
+            AND RECEIVABLE_BLANCE = #{receivableBlance}
+        </if>
+        <if test="currencyCode != null">
+            AND CURRENCY_CODE = #{currencyCode}
+        </if>
+        <if test="status != null">
+            AND STATUS = #{status}
+        </if>
+        <if test="bnsDeductPecent != null">
+            AND BNS_DEDUCT_PECENT = #{bnsDeductPecent}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="mmCode != null">
+            MM_CODE = #{mmCode},
+        </if>
+        <if test="mmNickName != null">
+            MM_NICK_NAME = #{mmNickName},
+        </if>
+        <if test="receivableBlance != null">
+            RECEIVABLE_BLANCE = #{receivableBlance},
+        </if>
+        <if test="currencyCode != null">
+            CURRENCY_CODE = #{currencyCode},
+        </if>
+        <if test="status != null">
+            STATUS = #{status},
+        </if>
+        <if test="bnsDeductPecent != null">
+            BNS_DEDUCT_PECENT = #{bnsDeductPecent},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdReceivableMasterMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_receivable_master
+        WHERE	ID=#{id}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdReceivableMasterMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_receivable_master
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_receivable_master
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.RdReceivableMaster">
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+        <!--SELECT LAST_INSERT_ID() AS ID    -->
+        <!--</selectKey>  -->
+        INSERT rd_receivable_master
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.RdReceivableMaster">
+        UPDATE	rd_receivable_master
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	id = #{id}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_receivable_master
+		WHERE	id = #{id}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_receivable_master
+        WHERE	id	IN
+        <foreach item="RdReceiveableMasterId" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdReceivableMasterMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_receivable_master
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdReceivableMasterMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_receivable_master
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <update id="updateNickNameByMCode" parameterType="java.util.Map" >
+        UPDATE rd_receivable_master
+        SET
+        MM_NICK_NAME = #{mmNickName}
+        WHERE MM_CODE = #{mmCode}
+    </update>
+
+</mapper>

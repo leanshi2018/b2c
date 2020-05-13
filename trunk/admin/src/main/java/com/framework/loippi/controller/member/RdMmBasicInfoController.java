@@ -146,6 +146,19 @@ public class RdMmBasicInfoController extends GenericController {
         return modelAndView;
     }
 
+
+	/**
+	 * 后台个人业绩
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/admin/selfPerformance")
+	public String selfPerformance(Model model,@RequestParam(required = false, value = "periodCode") String periodCode,
+								  @RequestParam(required = false, value = "mCode") String mCode) {
+		
+		return "";
+	}
+
     /*******************************************************通联接口*********************************************************/
 	/**TODO
 	 * 会员钱包管理页面

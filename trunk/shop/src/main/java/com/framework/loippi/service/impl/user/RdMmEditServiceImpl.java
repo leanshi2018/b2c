@@ -1,11 +1,12 @@
 package com.framework.loippi.service.impl.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.dao.user.RdMmEditDao;
 import com.framework.loippi.entity.user.RdMmEdit;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmEditService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 
 /**
@@ -24,5 +25,10 @@ public class RdMmEditServiceImpl extends GenericServiceImpl<RdMmEdit, Long> impl
 	@Autowired
 	public void setGenericDao() {
 		super.setGenericDao(rdMmEditDao);
+	}
+
+	@Override
+	public void updateByStatusAndMCode(String mmCode) {
+		rdMmEditDao.updateByStatusAndMCode(mmCode);
 	}
 }

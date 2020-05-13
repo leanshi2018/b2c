@@ -1,10 +1,29 @@
 package com.framework.loippi.controller.user;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.framework.loippi.consts.DocumentConsts;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.common.ShopCommonDocument;
 import com.framework.loippi.entity.common.ShopCommonFeedback;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmEdit;
+import com.framework.loippi.entity.user.RdMmLogOutNum;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdMmStatusDetail;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.document.DocumentListResult;
@@ -15,24 +34,21 @@ import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.common.ShopAppService;
 import com.framework.loippi.service.common.ShopCommonDocumentService;
 import com.framework.loippi.service.common.ShopCommonFeedbackService;
+import com.framework.loippi.service.user.RdBonusPaymentService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmEditService;
+import com.framework.loippi.service.user.RdMmLogOutNumService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdMmStatusDetailService;
+import com.framework.loippi.service.user.RdReceivableMasterService;
+import com.framework.loippi.service.user.RdReceiveableDetailService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.SmsUtil;
 import com.framework.loippi.utils.Xerror;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 个人中心公共操作
@@ -53,6 +69,24 @@ public class UserCommonController extends BaseController {
     private RedisService redisService;
     @Resource
     private ShopAppService shopAppService;
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
+    @Resource
+    private RdMmRelationService rdMmRelationService;
+    @Resource
+    private RdMmEditService rdMmEditService;
+    @Resource
+    private RdMmLogOutNumService rdMmLogOutNumService;
+    @Resource
+    private RdMmAccountLogService rdMmAccountLogService;
+    @Resource
+    private RdReceiveableDetailService rdReceiveableDetailService;
+    @Resource
+    private RdReceivableMasterService rdReceivableMasterService;
+    @Resource
+    private RdMmStatusDetailService rdMmStatusDetailService;
+    @Resource
+    private RdBonusPaymentService rdBonusPaymentService;
 
     /**
      * 文章列表
@@ -203,6 +237,108 @@ public class UserCommonController extends BaseController {
     public String logout(Long id, HttpServletRequest request) {
         AuthsLoginResult userSession = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         redisService.delete(userSession.getSessionid());
+        return ApiUtils.success();
+    }
+
+    /**
+     * 注销用户(改手机号和昵称和状态)
+     */
+    @RequestMapping("/logoutMember.json")
+    public String logoutMember(String code,String mobile,HttpServletRequest request) {
+
+        if (mobile==null|| "".equals(mobile)){
+            return ApiUtils.error("请输入手机号");
+        }
+
+        if (code==null||"".equals(code)){
+            return ApiUtils.error("请输入短信验证码");
+        }
+
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmRelation mmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+
+        if (!mobile.equals(rdMmBasicInfo.getMobile())){
+            return ApiUtils.error("输入的手机号与该账号绑定的手机号不一致");
+        }
+
+        if (!SmsUtil.validMsg(rdMmBasicInfo.getMobile(), code, redisService)) {
+            return ApiUtils.error("验证码不正确或已过期");
+        }
+
+        //修改会员状态为注销
+        mmRelation.setMmStatus(2);
+        rdMmRelationService.update(mmRelation);
+
+        //修改该会员所有待审核的修改信息未驳回
+        rdMmEditService.updateByStatusAndMCode(member.getMmCode());
+
+
+        RdMmLogOutNum rdMmLogOutNum = rdMmLogOutNumService.find(1);
+        Integer logoutNum = rdMmLogOutNum.getLogoutNum()+1;
+        rdMmLogOutNum.setLogoutNum(logoutNum);
+        rdMmLogOutNumService.update(rdMmLogOutNum);
+        //手机号码 = 19900000001开始累加
+        StringBuilder phone = new StringBuilder(); //构建空的可变字符串
+        phone.append("199");
+
+        for (int i=0;i<8-(logoutNum+"").length();i++){
+            phone.append("0");
+        }
+        phone.append(logoutNum+"");
+
+        //昵称= 已注销1+手机号码开始累加
+        String nickName = "已注销"+logoutNum+"-"+phone;
+
+        //添加修改信息
+        RdMmEdit rdMmEdit = new RdMmEdit();
+        rdMmEdit.setMmCode(rdMmBasicInfo.getMmCode());
+        rdMmEdit.setMmNickNameBefore(rdMmBasicInfo.getMmNickName());
+        rdMmEdit.setMmNickNameAfter(nickName);
+        rdMmEdit.setMobileBefore(rdMmBasicInfo.getMobile());
+        rdMmEdit.setMobileAfter(phone.toString());
+        rdMmEdit.setUpdateBy("用户");
+        rdMmEdit.setUpdateMemo("用户注销");
+        rdMmEdit.setUpdateType(0);
+        rdMmEdit.setUpdateTime(new Date());
+        rdMmEdit.setReviewMemo("用户注销");
+        rdMmEdit.setReviewStatus(3);
+        rdMmEditService.save(rdMmEdit);
+
+        //修改基础表
+        rdMmBasicInfo.setMmNickName(nickName);
+        rdMmBasicInfo.setMobile(phone.toString());
+        rdMmBasicInfoService.update(rdMmBasicInfo);
+
+        //修改欠款明细 rd_receiveable_detail
+        rdReceiveableDetailService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+        //修改会员账户交易日志表
+        rdMmAccountLogService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+        //修改会员欠款主表 rd_receivable_master
+        rdReceivableMasterService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+        //修改会员状态变更明细 rd_mm_status_detail
+        rdMmStatusDetailService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+        //添加会员状态变更明细 rd_mm_status_detail
+        RdMmStatusDetail rdMmStatusDetail = new RdMmStatusDetail();
+        rdMmStatusDetail.setMmCode(rdMmBasicInfo.getMmCode());
+        rdMmStatusDetail.setMmNickName(nickName);
+        rdMmStatusDetail.setStatusType("MM");
+        rdMmStatusDetail.setStatusBefore(mmRelation.getMmStatus());
+        rdMmStatusDetail.setStatusAfter(2);
+        rdMmStatusDetail.setUpdateBy("用户");
+        rdMmStatusDetail.setUpdateTime(new Date());
+        rdMmStatusDetail.setUpdateDesc("用户主动注销");
+        rdMmStatusDetailService.save(rdMmStatusDetail);
+
+        //修改奖金发放表 rd_bonus_payment
+        rdBonusPaymentService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+        //删除redis记录
+        redisService.delete(member.getSessionid());
         return ApiUtils.success();
     }
 

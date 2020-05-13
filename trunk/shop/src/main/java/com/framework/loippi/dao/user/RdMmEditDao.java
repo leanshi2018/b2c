@@ -12,4 +12,5 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  */
 public interface RdMmEditDao  extends GenericDao<RdMmEdit, Long> {
 
+	void updateByStatusAndMCode(String mmCode);
 }

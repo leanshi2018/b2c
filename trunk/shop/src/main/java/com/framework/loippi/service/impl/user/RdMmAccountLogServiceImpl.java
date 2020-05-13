@@ -62,4 +62,12 @@ public class RdMmAccountLogServiceImpl extends GenericServiceImpl<RdMmAccountLog
 	public void updateByCutOrderId(HashMap<String, Object> map) {
 		rdMmAccountLogDao.updateByCutOrderId(map);
 	}
+
+	@Override
+	public void updateNickNameByMCode(String nickName, String mmCode) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("mmNickName",nickName);
+		map.put("mmCode",mmCode);
+		rdMmAccountLogDao.updateNickNameByMCode(map);
+	}
 }
