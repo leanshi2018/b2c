@@ -47,6 +47,7 @@ import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.SmsUtil;
 import com.framework.loippi.utils.Xerror;
 
 /**
@@ -243,10 +244,19 @@ public class UserCommonController extends BaseController {
      * 注销用户(改手机号和昵称和状态)
      */
     @RequestMapping("/logoutMember.json")
-    public String logoutMember(HttpServletRequest request) {
+    public String logoutMember(String code,HttpServletRequest request) {
+
+        if (code==null||"".equals(code)){
+            return ApiUtils.error("请输入短信验证码");
+        }
+
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmRelation mmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+
+        if (!SmsUtil.validMsg(rdMmBasicInfo.getMobile(), code, redisService)) {
+            return ApiUtils.error("验证码不正确或已过期");
+        }
 
         //修改会员状态为注销
         mmRelation.setMmStatus(2);
