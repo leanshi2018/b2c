@@ -177,7 +177,7 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error("会员尚未登录");
         }
         String mmCode = member.getMmCode();
-        BigDecimal cutTotal=BigDecimal.ZERO;
+        BigDecimal cutTotal=new BigDecimal("0.00");
         BigDecimal total=shopOrderService.getCutTotalByCutId(mmCode);
         if(total!=null){
             cutTotal=total;
