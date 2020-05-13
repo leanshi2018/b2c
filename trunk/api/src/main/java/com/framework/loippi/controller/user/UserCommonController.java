@@ -303,7 +303,7 @@ public class UserCommonController extends BaseController {
         rdMmEdit.setUpdateTime(new Date());
         rdMmEdit.setReviewMemo("用户注销");
         rdMmEdit.setReviewStatus(3);
-        rdMmEditService.update(rdMmEdit);
+        rdMmEditService.save(rdMmEdit);
 
         //修改基础表
         rdMmBasicInfo.setMmNickName(nickName);
