@@ -244,7 +244,11 @@ public class UserCommonController extends BaseController {
      * 注销用户(改手机号和昵称和状态)
      */
     @RequestMapping("/logoutMember.json")
-    public String logoutMember(String code,HttpServletRequest request) {
+    public String logoutMember(String code,String mobile,HttpServletRequest request) {
+
+        if (mobile==null|| "".equals(mobile)){
+            return ApiUtils.error("请输入手机号");
+        }
 
         if (code==null||"".equals(code)){
             return ApiUtils.error("请输入短信验证码");
@@ -253,6 +257,10 @@ public class UserCommonController extends BaseController {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmRelation mmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+
+        if (!mobile.equals(rdMmBasicInfo.getMobile())){
+            return ApiUtils.error("输入的手机号与该账号绑定的手机号不一致");
+        }
 
         if (!SmsUtil.validMsg(rdMmBasicInfo.getMobile(), code, redisService)) {
             return ApiUtils.error("验证码不正确或已过期");
