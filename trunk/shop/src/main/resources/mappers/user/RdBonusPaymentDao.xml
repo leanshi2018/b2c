@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdBonusPaymentDao">
+
+    <resultMap id="RdBonusPaymentMap" type="com.framework.loippi.entity.user.RdBonusPayment">
+        <result property="id" column="id" />
+        <result property="periodCode" column="PERIOD_CODE" />
+        <result property="mmCode" column="MM_CODE" />
+        <result property="bonusSum" column="BONUS_SUM" />
+        <result property="currencyCode" column="CURRENCY_CODE" />
+        <result property="bonusSumMoney" column="BONUS_SUM_MONEY" />
+        <result property="bonusReissue" column="BONUS_REISSUE" />
+        <result property="chargeSum" column="CHARGE_SUM" />
+        <result property="payableSum" column="PAYABLE_SUM" />
+        <result property="payStatus" column="PAY_STATUS" />
+        <result property="mmNickName" column="MM_NICK_NAME" />
+        <result property="batchNmu" column="BATCH_NUM" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,PERIOD_CODE,MM_CODE,BONUS_SUM,CURRENCY_CODE,BONUS_SUM_MONEY,BONUS_REISSUE,CHARGE_SUM,PAYABLE_SUM,PAY_STATUS,MM_NICK_NAME,BATCH_NUM
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{periodCode},#{mmCode},#{bonusSum},#{currencyCode},#{bonusSumMoney},#{bonusReissue},#{chargeSum},#{payableSum},#{payStatus},#{mmNickName},#{batchNmu}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null ">
+            AND id = #{id}
+        </if>
+        <if test="periodCode != null">
+            AND PERIOD_CODE = #{periodCode}
+        </if>
+        <if test="mmCode != null">
+            AND MM_CODE = #{mmCode}
+        </if>
+        <if test="bonusSum != null">
+            AND BONUS_SUM = #{bonusSum}
+        </if>
+        <if test="currencyCode != null">
+            AND CURRENCY_CODE = #{currencyCode}
+        </if>
+        <if test="bonusSumMoney != null">
+            AND BONUS_SUM_MONEY = #{bonusSumMoney}
+        </if>
+        <if test="bonusReissue != null">
+            AND BONUS_REISSUE = #{bonusReissue}
+        </if>
+        <if test="chargeSum != null">
+            AND CHARGE_SUM = #{chargeSum}
+        </if>
+        <if test="payableSum != null">
+            AND PAYABLE_SUM = #{payableSum}
+        </if>
+        <if test="payStatus != null">
+            AND PAY_STATUS = #{payStatus}
+        </if>
+        <if test="mmNickName != null">
+            AND MM_NICK_NAME = #{mmNickName}
+        </if>
+        <if test="batchNmu != null">
+            AND BATCH_NUM = #{batchNmu}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id},
+        </if>
+        <if test="periodCode != null">
+            PERIOD_CODE = #{periodCode},
+        </if>
+        <if test="mmCode != null">
+            MM_CODE = #{mmCode},
+        </if>
+        <if test="bonusSum != null">
+            BONUS_SUM = #{bonusSum},
+        </if>
+        <if test="currencyCode != null">
+            CURRENCY_CODE = #{currencyCode},
+        </if>
+        <if test="bonusSumMoney != null">
+            BONUS_SUM_MONEY = #{bonusSumMoney},
+        </if>
+        <if test="bonusReissue != null">
+            BONUS_REISSUE = #{bonusReissue},
+        </if>
+        <if test="chargeSum != null">
+            CHARGE_SUM = #{chargeSum},
+        </if>
+        <if test="payableSum != null">
+            PAYABLE_SUM = #{payableSum},
+        </if>
+        <if test="payStatus != null">
+            PAY_STATUS = #{payStatus},
+        </if>
+        <if test="mmNickName != null">
+            MM_NICK_NAME = #{mmNickName},
+        </if>
+        <if test="batchNmu != null">
+            BATCH_NUM = #{batchNmu},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdBonusPaymentMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_bonus_payment
+        WHERE	ID=#{id}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdBonusPaymentMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_bonus_payment
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_bonus_payment
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.RdBonusPayment">
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+        <!--SELECT LAST_INSERT_ID() AS ID    -->
+        <!--</selectKey>  -->
+        INSERT rd_bonus_payment
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.RdBonusPayment">
+        UPDATE	rd_bonus_payment
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	id = #{id}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_bonus_payment
+		WHERE	id = #{id}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_bonus_payment
+        WHERE	id	IN
+        <foreach item="RdBonusPaymentId" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdBonusPaymentMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_bonus_payment
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdBonusPaymentMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_bonus_payment
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <update id="updateNickNameByMCode" parameterType="java.util.Map" >
+        UPDATE rd_bonus_payment
+        SET
+        MM_NICK_NAME = #{mmNickName}
+        WHERE MM_CODE = #{mmCode}
+    </update>
+
+</mapper>

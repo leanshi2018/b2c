@@ -497,5 +497,9 @@
 			<include refid="where_column" />
 		</where>
 	</select>
+
+	<update id="updateByStatusAndMCode" parameterType="string">
+		UPDATE rd_mm_edit SET REVIEW_STATUS = 1 WHERE MM_CODE = #{mmCode} AND REVIEW_STATUS = 0
+	</update>
 	
 </mapper> 

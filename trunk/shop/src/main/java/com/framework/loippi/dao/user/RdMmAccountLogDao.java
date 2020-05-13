@@ -25,4 +25,6 @@ public interface RdMmAccountLogDao  extends GenericDao<RdMmAccountLog, Long> {
     RdMmAccountLog findCutByOrderId(HashMap<String, Object> map);
 
     void updateByCutOrderId(HashMap<String, Object> id);
+
+	void updateNickNameByMCode(Map<String, Object> map);
 }

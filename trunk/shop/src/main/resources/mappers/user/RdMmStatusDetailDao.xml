@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdMmStatusDetailDao">
+
+    <resultMap id="RdMmStatusDetailMap" type="com.framework.loippi.entity.user.RdMmStatusDetail">
+        <result property="sId" column="SID" />
+        <result property="mmCode" column="MM_CODE" />
+        <result property="mmNickName" column="MM_NICK_NAME" />
+        <result property="statusType" column="STATUS_TYPE" />
+        <result property="statusBefore" column="STATUS_BEFORE" />
+        <result property="statusAfter" column="STATUS_AFTER" />
+        <result property="updateBy" column="UPDATE_BY" />
+        <result property="updateTime" column="UPDATE_TIME" />
+        <result property="updateDesc" column="UPDATE_DESC" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 SID,MM_CODE,MM_NICK_NAME,STATUS_TYPE,STATUS_BEFORE,STATUS_AFTER,UPDATE_BY,UPDATE_TIME,UPDATE_DESC
+    </sql>
+
+    <sql id="base_value_column">
+		 #{sId},#{mmCode},#{mmNickName},#{statusType},#{statusBefore},#{statusAfter},#{updateBy},#{updateTime},#{updateDesc}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="sId != null ">
+            AND SID = #{sId}
+        </if>
+        <if test="mmCode != null ">
+            AND MM_CODE = #{mmCode}
+        </if>
+        <if test="mmNickName != null">
+            AND MM_NICK_NAME = #{mmNickName}
+        </if>
+        <if test="statusType != null">
+            AND STATUS_TYPE = #{statusType}
+        </if>
+        <if test="statusBefore != null">
+            AND STATUS_BEFORE = #{statusBefore}
+        </if>
+        <if test="statusAfter != null">
+            AND STATUS_AFTER = #{statusAfter}
+        </if>
+        <if test="updateBy != null">
+            AND UPDATE_BY = #{updateBy}
+        </if>
+        <if test="updateTime != null">
+            AND UPDATE_TIME = #{updateTime}
+        </if>
+        <if test="updateDesc != null">
+            AND UPDATE_DESC = #{updateDesc}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="sId != null">
+            SID = #{sId},
+        </if>
+        <if test="mmCode != null">
+            MM_CODE = #{mmCode},
+        </if>
+        <if test="mmNickName != null">
+            MM_NICK_NAME = #{mmNickName},
+        </if>
+        <if test="statusType != null">
+            STATUS_TYPE = #{statusType},
+        </if>
+        <if test="statusBefore != null">
+            STATUS_BEFORE = #{statusBefore},
+        </if>
+        <if test="statusAfter != null">
+            STATUS_AFTER = #{statusAfter},
+        </if>
+        <if test="updateBy != null">
+            UPDATE_BY = #{updateBy},
+        </if>
+        <if test="updateTime != null">
+            UPDATE_TIME = #{updateTime},
+        </if>
+        <if test="updateDesc != null">
+            UPDATE_DESC = #{updateDesc},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdMmStatusDetailMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_mm_status_detail
+        WHERE	ID=#{id}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdMmStatusDetailMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_mm_status_detail
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_mm_status_detail
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmStatusDetail">
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+        <!--SELECT LAST_INSERT_ID() AS ID    -->
+        <!--</selectKey>  -->
+        INSERT rd_mm_status_detail
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.RdMmStatusDetail">
+        UPDATE	rd_mm_status_detail
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	id = #{id}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_mm_status_detail
+		WHERE	id = #{id}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_mm_status_detail
+        WHERE	id	IN
+        <foreach item="RdReceiveableMasterId" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdMmStatusDetailMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_mm_status_detail
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdMmStatusDetailMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_mm_status_detail
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <update id="updateNickNameByMCode" parameterType="java.util.Map" >
+        UPDATE rd_mm_status_detail
+        SET
+        MM_NICK_NAME = #{mmNickName}
+        WHERE MM_CODE = #{mmCode}
+    </update>
+
+</mapper>
