@@ -1,22 +1,24 @@
 package com.framework.loippi.service.impl.user;
 
-import com.framework.loippi.dao.user.MemberRelationLogDao;
-import com.framework.loippi.entity.user.MemberRelationLog;
-import com.framework.loippi.service.TwiterIdService;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.framework.loippi.dao.user.MemberRelationLogDao;
 import com.framework.loippi.dao.user.OldSysRelationshipDao;
 import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.entity.user.MemberRelationLog;
 import com.framework.loippi.entity.user.OldSysRelationship;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmRelationService;
-
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -113,5 +115,14 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 	@Override
 	public List<RdMmRelation> findBySponsorCode(String mmCode) {
 		return rdMmRelationDao.findBySponsorCode(mmCode);
+	}
+
+	@Override
+	public void updateRelaSponsorBySponsorCode(String mmCode, String sponsorCode, String sponsorName) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("mmCode",mmCode);
+		map.put("sponsorCode",sponsorCode);
+		map.put("sponsorName",sponsorName);
+		rdMmRelationDao.updateRelaSponsorBySponsorCode(map);
 	}
 }
