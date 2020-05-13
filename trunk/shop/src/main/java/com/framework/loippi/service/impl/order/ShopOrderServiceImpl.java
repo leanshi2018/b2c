@@ -1486,7 +1486,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setPpv(orderVo.getPpv());
             //订单运费优惠价格
             order.setShippingPreferentialFee(orderVo.getPreferentialFreightAmount());
-            order.setOrderPlatform(2);
+            //order.setOrderPlatform(2);
             /**********支付统计************/
             // 现金支付
             order.setOrderAmount(orderVo.getOrderAmount());
