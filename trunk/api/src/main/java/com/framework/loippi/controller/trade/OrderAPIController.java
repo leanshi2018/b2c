@@ -328,7 +328,7 @@ public class OrderAPIController extends BaseController {
     @RequestMapping(value = "/api/order/submitNew1")
     @ResponseBody
     public String submitOrderNew1(@Valid OrderSubmitParam param, BindingResult vResult, HttpServletRequest request,
-                                  @RequestParam(required = false,value = "giftId")Long giftId,Integer giftNum,Long couponId) {
+                                  @RequestParam(required = false,value = "giftId")Long giftId,Integer giftNum,Long couponId,@RequestParam(required = false,value = "platform")String platform) {
         if (vResult.hasErrors()) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
@@ -384,11 +384,20 @@ public class OrderAPIController extends BaseController {
             }
         }
         //提交订单,返回订单支付实体
-        ShopOrderPay orderPay = orderService.addOrderReturnPaySnNew1(param.getCartIds(), member.getMmCode()
-                , orderMsgMap, param.getAddressId()
-                , couponId, param.getIsPp()
-                , OrderState.PLATFORM_APP, param.getGroupBuyActivityId()
-                , param.getGroupOrderId(), shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),giftId,giftNum);
+        ShopOrderPay orderPay = new ShopOrderPay();
+        if(platform!=null&&platform.equals("weixinAppletsPaymentPlugin")){
+            orderPay = orderService.addOrderReturnPaySnNew1(param.getCartIds(), member.getMmCode()
+                    , orderMsgMap, param.getAddressId()
+                    , couponId, param.getIsPp()
+                    , OrderState.PLATFORM_WECHAT, param.getGroupBuyActivityId()
+                    , param.getGroupOrderId(), shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),giftId,giftNum);
+        }else{
+            orderPay= orderService.addOrderReturnPaySnNew1(param.getCartIds(), member.getMmCode()
+                    , orderMsgMap, param.getAddressId()
+                    , couponId, param.getIsPp()
+                    , OrderState.PLATFORM_APP, param.getGroupBuyActivityId()
+                    , param.getGroupOrderId(), shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),giftId,giftNum);
+        }
         List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
                 .findList(Paramap.create().put("order", "RID desc"));
         RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();

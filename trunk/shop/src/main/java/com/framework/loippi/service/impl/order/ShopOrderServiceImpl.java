@@ -1486,7 +1486,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setPpv(orderVo.getPpv());
             //订单运费优惠价格
             order.setShippingPreferentialFee(orderVo.getPreferentialFreightAmount());
-            order.setOrderPlatform(2);
+            //order.setOrderPlatform(2);
             /**********支付统计************/
             // 现金支付
             order.setOrderAmount(orderVo.getOrderAmount());
@@ -1924,7 +1924,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setRankDiscount(orderVo.getRankAmount());
             //订单使用优惠券金额
             order.setCouponDiscount(orderVo.getUseCouponAmount());
-            order.setOrderPlatform(2);
+            //order.setOrderPlatform(2);
             /**********支付统计************/
             // 现金支付
             order.setOrderAmount(orderVo.getOrderAmount());
@@ -2158,6 +2158,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     public BigDecimal getCutTotalByCutId(String mmCode) {
         return orderDao.getCutTotalByCutId(mmCode);
     }
+
 
     @Override
     public ShopOrderPay addReplacementOrder(Long goodsId, Integer count, Long specId, Long memberId) {
@@ -5592,4 +5593,160 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             couponUser1.setHaveCouponNum(couponUser1.getHaveCouponNum()-1);
             couponUserService.update(couponUser1);
         }
+
+    /**
+     * 定时任务处理普通快递订单自动收货
+     * @param list1
+     */
+    @Override
+    public void autoReceipt1(List<ShopOrder> list1) {
+        for (ShopOrder order : list1) {
+            /*********************订单状态修改*********************/
+            ShopOrder updateOrder = new ShopOrder();
+            updateOrder.setId(order.getId());
+            updateOrder.setOrderState(OrderState.ORDER_STATE_FINISH); //订单状态
+            updateOrder.setFinnshedTime(new Date());
+            orderDao.update(updateOrder);
+            //###############################零售利润###################################################
+            if(order.getOrderType()==1&&order.getLogisticType()==2){//如果当前确认收货订单为零售订单且自提，查看零售订单，修改预期发放时间
+                RetailProfit retailProfit = retailProfitService.find("orderId", order.getId());
+                if(retailProfit==null){
+                    log.info(order.getOrderSn()+"订单支付未产生零售利润");
+                }else {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+                    calendar.add(Calendar.DATE, 8);
+                    retailProfit.setExpectTime(calendar.getTime());
+                    String periodCode = rdSysPeriodDao.getSysPeriodService(retailProfit.getExpectTime());
+                    if(periodCode!=null){
+                        retailProfit.setExpectPeriod(periodCode);
+                    }
+                    retailProfitService.update(retailProfit);
+                }
+            }
+            //##########################################################################################
+            /*********************订单日志*********************/
+            ShopOrderLog orderLog = new ShopOrderLog();
+            orderLog.setId(twiterIdService.getTwiterId());
+            orderLog.setOrderState(OrderState.ORDER_STATE_FINISH + "");
+            orderLog.setChangeState(OrderState.ORDER_STATE_FINISH + "");
+            orderLog.setStateInfo("订单已完成");
+            orderLog.setOrderId(order.getId());
+            orderLog.setCreateTime(new Date());
+            orderLog.setOperator("admin");
+            //保存订单日志
+            orderLogDao.insert(orderLog);
+            //进行用户订单通知
+            ShopCommonMessage message = new ShopCommonMessage();
+            message.setSendUid(order.getBuyerId() + "");
+            message.setType(1);
+            message.setOnLine(1);
+            message.setCreateTime(new Date());
+            message.setBizType(3);
+            message.setBizId(order.getBuyerId());
+            message.setIsTop(1);
+            message.setTitle(" 订单编号：" + order.getOrderSn());
+            StringBuffer shareUrl = new StringBuffer();
+            String shippingCode="";
+            if (order.getShippingCode()!=null){
+                shippingCode=order.getShippingCode();
+            }
+            shareUrl.append("<ol class='list-paddingleft-2' style='list-style-type: decimal;'>");
+            shareUrl.append("<li><p>已签收</p></li>");
+            shareUrl.append("<li><p>物流单号：" + shippingCode + "</p></li>");
+            shareUrl.append("<li><p>去评价可获得换购积分哦~</p></li>");
+            message.setContent(shareUrl.toString());
+            Long msgId = twiterIdService.getTwiterId();
+            message.setId(msgId);
+            shopCommonMessageDao.insert(message);
+            message.setId(msgId);
+            ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
+            shopMemberMessage.setBizType(3);
+            shopMemberMessage.setCreateTime(new Date());
+            shopMemberMessage.setId(twiterIdService.getTwiterId());
+            shopMemberMessage.setIsRead(0);//TODO 修改2019-08-26
+            shopMemberMessage.setMsgId(msgId);
+            shopMemberMessage.setUid(order.getBuyerId());
+            shopMemberMessageDao.insert(shopMemberMessage);
+        }
+        System.out.println("快递订单自动收货完成");
+    }
+
+    /**
+     * 定时任务处理自提订单自动收货
+     * @param list2
+     */
+    @Override
+    public void autoReceipt2(List<ShopOrder> list2) {
+        for (ShopOrder order : list2) {
+            /*********************订单状态修改*********************/
+            ShopOrder updateOrder = new ShopOrder();
+            updateOrder.setId(order.getId());
+            updateOrder.setOrderState(OrderState.ORDER_STATE_FINISH); //订单状态
+            updateOrder.setFinnshedTime(new Date());
+            orderDao.update(updateOrder);
+            //###############################零售利润###################################################
+            if(order.getOrderType()==1&&order.getLogisticType()==2){//如果当前确认收货订单为零售订单且自提，查看零售订单，修改预期发放时间
+                RetailProfit retailProfit = retailProfitService.find("orderId", order.getId());
+                if(retailProfit==null){
+                    log.info(order.getOrderSn()+"订单支付未产生零售利润");
+                }else {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+                    calendar.add(Calendar.DATE, 8);
+                    retailProfit.setExpectTime(calendar.getTime());
+                    String periodCode = rdSysPeriodDao.getSysPeriodService(retailProfit.getExpectTime());
+                    if(periodCode!=null){
+                        retailProfit.setExpectPeriod(periodCode);
+                    }
+                    retailProfitService.update(retailProfit);
+                }
+            }
+            //##########################################################################################
+            /*********************订单日志*********************/
+            ShopOrderLog orderLog = new ShopOrderLog();
+            orderLog.setId(twiterIdService.getTwiterId());
+            orderLog.setOrderState(OrderState.ORDER_STATE_FINISH + "");
+            orderLog.setChangeState(OrderState.ORDER_STATE_FINISH + "");
+            orderLog.setStateInfo("订单已完成");
+            orderLog.setOrderId(order.getId());
+            orderLog.setCreateTime(new Date());
+            orderLog.setOperator("admin");
+            //保存订单日志
+            orderLogDao.insert(orderLog);
+            //进行用户订单通知
+            ShopCommonMessage message = new ShopCommonMessage();
+            message.setSendUid(order.getBuyerId() + "");
+            message.setType(1);
+            message.setOnLine(1);
+            message.setCreateTime(new Date());
+            message.setBizType(3);
+            message.setBizId(order.getBuyerId());
+            message.setIsTop(1);
+            message.setTitle(" 订单编号：" + order.getOrderSn());
+            StringBuffer shareUrl = new StringBuffer();
+            String shippingCode="";
+            if (order.getShippingCode()!=null){
+                shippingCode=order.getShippingCode();
+            }
+            shareUrl.append("<ol class='list-paddingleft-2' style='list-style-type: decimal;'>");
+            shareUrl.append("<li><p>已签收</p></li>");
+            shareUrl.append("<li><p>物流单号：" + shippingCode + "</p></li>");
+            shareUrl.append("<li><p>去评价可获得换购积分哦~</p></li>");
+            message.setContent(shareUrl.toString());
+            Long msgId = twiterIdService.getTwiterId();
+            message.setId(msgId);
+            shopCommonMessageDao.insert(message);
+            message.setId(msgId);
+            ShopMemberMessage shopMemberMessage = new ShopMemberMessage();
+            shopMemberMessage.setBizType(3);
+            shopMemberMessage.setCreateTime(new Date());
+            shopMemberMessage.setId(twiterIdService.getTwiterId());
+            shopMemberMessage.setIsRead(0);//TODO 修改2019-08-26
+            shopMemberMessage.setMsgId(msgId);
+            shopMemberMessage.setUid(order.getBuyerId());
+            shopMemberMessageDao.insert(shopMemberMessage);
+        }
+        System.out.println("自提订单自动收货完成");
+    }
 }

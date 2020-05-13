@@ -1625,4 +1625,12 @@
     <select id="getCutTotalByCutId" parameterType="string" resultType="java.math.BigDecimal">
         SELECT SUM(cut_acc) from shop_order where cut_get_id = #{mmCode} and cut_status = 5
     </select>
+
+    <select id="findAutoOrder1" parameterType="java.util.Date" resultMap="ShopOrderResultMap">
+        select * from shop_order where shipping_time &lt; #{time} and order_state = 30 and logistic_type = 1
+    </select>
+
+    <select id="findAutoOrder2" parameterType="java.util.Date" resultMap="ShopOrderResultMap">
+        select * from shop_order where payment_time &lt; #{time} and order_state = 30 and logistic_type = 2
+    </select>
 </mapper>
