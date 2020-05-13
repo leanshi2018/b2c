@@ -1924,7 +1924,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setRankDiscount(orderVo.getRankAmount());
             //订单使用优惠券金额
             order.setCouponDiscount(orderVo.getUseCouponAmount());
-            order.setOrderPlatform(2);
+            //order.setOrderPlatform(2);
             /**********支付统计************/
             // 现金支付
             order.setOrderAmount(orderVo.getOrderAmount());
