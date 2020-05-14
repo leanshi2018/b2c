@@ -461,4 +461,58 @@
 	<select id="findByCodeAndPeriod" parameterType="com.framework.loippi.utils.Paramap" resultMap="MemberQualicationResultMap">
 		select * from rd_dis_qualification where PERIOD_CODE = #{periodCode} and MM_CODE = #{mCode}
 	</select>
+
+	<select id="findListView" resultType="com.framework.loippi.result.sys.SelfPerformanceJob"
+			parameterType="com.framework.loippi.result.sys.SelfPerformanceJob">
+		SELECT
+		q.PERIOD_CODE periodCode,
+		q.MM_CODE mmCode,
+		q.MM_NAME mName,
+		q.SPONSOR_CODE sponsorCode,
+		q.SPONSOR_NAME sponsorName,
+		q.MM_STATUS mStatus,
+		q.PPV_QUALIFIED ppvQualified,
+		r.RANK rankStr,
+		q.RANK_P0 rankP0Str,
+		q.RANK_RECORD_HIGH rankRecordHighStr,
+		r.A_TOTAL totalMoney,
+		q.A_RETAIL retail,
+		q.PPV bugMi,
+		q.APPV_FINAL bugMiFinal,
+		q.G7PV g7pvMi,
+		q.NPV npvMi,
+		IFNULL(q.DD_NEW_VIP_NUMBER,0) addVIPNumber,
+		IFNULL(q.DD_RANK1_NUMBER,0) ddRank1Number,
+		IFNULL(q.net_new_vip_number,0) netNewVipNumber,
+		IFNULL(q.DD_AC_NUMBER,0) ddAcNumber,
+		IFNULL(q.DD_RANK2_NUMBER,0) ddRank2Number,
+		IFNULL(q.net_ac_number,0) netAcNumber,
+		IFNULL(m.BONUS_NEW_VIP,'0.00') bonusNewVIP,
+		IFNULL(m.BONUS_DEVP_1,'0.00') bonusDevp1,
+		IFNULL(m.BONUS_DEVP_2,'0.00') bonusDevp2,
+		IFNULL(m.BONUS_DEVP_SHARE,'0.00') bonusDevpShare,
+		IFNULL(m.BONUS_LD_SUM,'0.00') bonusLdSum,
+		IFNULL(m.BONUS_SUM,'0.00') bonusSum
+		FROM
+		rd_dis_qualification q
+		LEFT JOIN rd_mm_relation r ON q.MM_CODE = r.MM_CODE
+		LEFT JOIN rd_bonus_master m ON  q.MM_CODE = m.MM_CODE AND q.PERIOD_CODE =m.PERIOD_CODE
+		where 1=1
+		<if test="periodCode != null and periodCode != ''">
+			and q.PERIOD_CODE = #{periodCode}
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			and q.MM_CODE = #{mmCode}
+		</if>
+		<if test="mName !=null and mName != ''">
+			and q.MM_NAME LIKE CONCAT('%', #{mName}, '%')
+		</if>
+		<if test="sponsorCode != null and sponsorCode != ''">
+			and q.SPONSOR_CODE = #{sponsorCode}
+		</if>
+		<if test="ppvQualified != null">
+			and q.PPV_QUALIFIED = #{ppvQualified}
+		</if>
+
+	</select>
 </mapper>
