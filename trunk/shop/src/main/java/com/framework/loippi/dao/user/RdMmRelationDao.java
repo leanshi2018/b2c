@@ -2,6 +2,7 @@ package com.framework.loippi.dao.user;
 
 
 import java.util.List;
+import java.util.Map;
 
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.mybatis.dao.GenericDao;
@@ -17,4 +18,6 @@ public interface RdMmRelationDao  extends GenericDao<RdMmRelation, Long> {
     List<RdMmRelation> findBySponsorCode(String mmCode);
 
     RdMmRelation findBySpoCode(String code);
+
+	void updateRelaSponsorBySponsorCode(Map<String, Object> map);
 }

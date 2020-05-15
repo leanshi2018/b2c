@@ -2,11 +2,14 @@ package com.framework.loippi.controller.member;
 
 import cn.jiguang.common.utils.StringUtils;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,8 +19,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.result.sys.SelfPerformanceJob;
+import com.framework.loippi.service.user.MemberQualificationService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.support.Message;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
@@ -37,6 +44,10 @@ public class RdMmBasicInfoController extends GenericController {
 	private RdMmBasicInfoService rdMmBasicInfoService;
 	@Resource
 	private RdRanksService rdRanksService;
+	@Resource
+	private MemberQualificationService memberQualificationService;
+	@Resource
+	private RdSysPeriodService rdSysPeriodService;
 
 	/**
 	 * 跳转添加页面
@@ -153,9 +164,15 @@ public class RdMmBasicInfoController extends GenericController {
 	 * @return
 	 */
 	@RequestMapping(value = "/admin/selfPerformance")
-	public String selfPerformance(Model model,@RequestParam(required = false, value = "periodCode") String periodCode,
-								  @RequestParam(required = false, value = "mCode") String mCode) {
-		
+	public String selfPerformance(Model model,Pageable pageable,@ModelAttribute SelfPerformanceJob param) {
+		if (param.getPeriodCode()==null || "".equals(param.getPeriodCode())){
+			String period = rdSysPeriodService.getSysPeriodService(new Date());
+			param.setPeriodCode(period);
+		}
+		pageable.setParameter(param);
+		pageable.setOrderProperty("create_time");
+		pageable.setOrderDirection(Order.Direction.DESC);
+		model.addAttribute("page", memberQualificationService.findListView(pageable));
 		return "";
 	}
 

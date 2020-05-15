@@ -270,6 +270,9 @@ public class UserCommonController extends BaseController {
         mmRelation.setMmStatus(2);
         rdMmRelationService.update(mmRelation);
 
+        //修改下线推荐人
+        rdMmRelationService.updateRelaSponsorBySponsorCode(rdMmBasicInfo.getMmCode(),mmRelation.getSponsorCode(),mmRelation.getSponsorName());
+
         //修改该会员所有待审核的修改信息未驳回
         rdMmEditService.updateByStatusAndMCode(member.getMmCode());
 

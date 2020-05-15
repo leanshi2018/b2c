@@ -3,20 +3,18 @@ package com.framework.loippi.service.impl.user;
 import java.util.HashMap;
 import java.util.List;
 
-import com.framework.loippi.dao.user.MemberQualificationDao;
-import com.framework.loippi.dao.user.OldSysRelationshipDao;
-import com.framework.loippi.entity.user.MemberQualification;
-import com.framework.loippi.service.impl.GenericServiceImpl;
-import com.framework.loippi.service.user.MemberQualificationService;
-import com.framework.loippi.utils.Paramap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.framework.loippi.dao.user.MemberQualificationDao;
 import com.framework.loippi.entity.user.MemberQualification;
+import com.framework.loippi.mybatis.paginator.domain.PageList;
+import com.framework.loippi.result.sys.SelfPerformanceJob;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.MemberQualificationService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
 
 /**
@@ -42,5 +40,11 @@ public class MemberQualificationServiceImpl extends GenericServiceImpl<MemberQua
     @Override
     public MemberQualification findByCodeAndPeriod(Paramap put) {
         return memberQualificationDao.findByCodeAndPeriod(put);
+    }
+
+    @Override
+    public Page findListView(Pageable pageable) {
+        PageList<SelfPerformanceJob> result = memberQualificationDao.findListView(pageable.getParameter(), pageable.getPageBounds());
+        return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
     }
 }
