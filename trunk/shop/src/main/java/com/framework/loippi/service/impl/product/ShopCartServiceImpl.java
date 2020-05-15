@@ -733,12 +733,15 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
                         pv=pv.add(cart.getBigPpv().multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //                        pv += cart.getBigPpv().multiply(BigDecimal.valueOf(cart.getGoodsNum())) ;
-                    } else if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL){
+                    }else {
+                        pv=pv.add(cart.getPpv().multiply(BigDecimal.valueOf(cart.getGoodsNum())));
+                    }
+                    /*else if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL){
                         pv=pv.add(cart.getPpv().multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //                        pv += Optional.ofNullable(cart.getPpv()).orElse(0) * cart.getGoodsNum();
                     }else {
                         pv = BigDecimal.ZERO;
-                    }
+                    }*/
 //                }
                     cartVo.setItemVoucherPrice(BigDecimal.valueOf(actualGoodsTotalPrice == 0 ? goodsTotalPrice : actualGoodsTotalPrice));
                     cartVo.setItemTotalPrice(cartVo.getActualPrice().multiply(new BigDecimal(cartVo.getGoodsNum())));

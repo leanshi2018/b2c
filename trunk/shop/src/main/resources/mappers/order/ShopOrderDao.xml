@@ -1661,7 +1661,7 @@
     </select>
 
     <!--查询前一日积分总收入-->
-    <select id="findYesIncomeTotal" parameterType="map" resultType="java.math.BigDecimal">
+    <select id="findYesPointTotal" parameterType="map" resultType="java.math.BigDecimal">
         SELECT SUM(IFNULL(point_rmb_num,0)) from shop_order where create_time >= #{start} and create_time &lt;= #{end}
         and payment_state = 1 and order_state != 0
     </select>
