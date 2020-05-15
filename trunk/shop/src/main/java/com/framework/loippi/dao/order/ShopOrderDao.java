@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.framework.loippi.pojo.common.CensusVo;
 import org.apache.ibatis.annotations.Param;
 
 import com.framework.loippi.entity.order.ShopOrder;
@@ -179,18 +178,4 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     List<ShopOrder> findAutoOrder1(Date time);
 
     List<ShopOrder> findAutoOrder2(Date time);
-
-    Integer findOrderYesterdayNum(HashMap<String, Object> map);
-
-    Integer findEffectiveOrderYesterdayNum(HashMap<String, Object> map);
-
-    Integer findInvalidOrderYesterdayNum(HashMap<String, Object> map);
-
-    Integer findPlatformOrderYesterdayNum(HashMap<String, Object> map);
-
-    BigDecimal findYesIncomeTotal(HashMap<String, Object> map);
-
-    BigDecimal findYesPointTotal(HashMap<String, Object> map);
-
-    CensusVo findCensusData(HashMap<String, Object> map);
 }

@@ -1633,42 +1633,4 @@
     <select id="findAutoOrder2" parameterType="java.util.Date" resultMap="ShopOrderResultMap">
         select * from shop_order where payment_time &lt; #{time} and order_state = 30 and logistic_type = 2
     </select>
-
-    <!--查询前一日订单生成总数，不考虑是否支付-->
-    <select id="findOrderYesterdayNum" parameterType="map" resultType="java.lang.Integer">
-        SELECT COUNT(1) from shop_order where create_time >= #{start} and create_time &lt;= #{end}
-    </select>
-
-    <!--查询前一日已支付订单-->
-    <select id="findEffectiveOrderYesterdayNum" parameterType="map" resultType="java.lang.Integer">
-        SELECT COUNT(1) from shop_order where create_time >= #{start} and create_time &lt;= #{end} and payment_state = 1 and order_state != 0
-    </select>
-
-    <!--查询前一日未支付订单-->
-    <select id="findInvalidOrderYesterdayNum" parameterType="map" resultType="java.lang.Integer">
-        SELECT COUNT(1) from shop_order where create_time >= #{start} and create_time &lt;= #{end} and payment_state = 0
-    </select>
-
-    <!--查询前一日对应平台支付订单数-->
-    <select id="findPlatformOrderYesterdayNum" parameterType="map" resultType="java.lang.Integer">
-        SELECT COUNT(1) from shop_order where create_time >= #{start} and create_time &lt;= #{end} and payment_state = 1 and order_platform = #{orderPlatform} and order_state != 0
-    </select>
-
-    <!--查询前一日订单总收入-->
-    <select id="findYesIncomeTotal" parameterType="map" resultType="java.math.BigDecimal">
-        SELECT SUM(order_amount+IFNULL(point_rmb_num,0)) from shop_order where create_time >= #{start} and create_time &lt;= #{end}
-        and payment_state = 1 and order_state != 0
-    </select>
-
-    <!--查询前一日积分总收入-->
-    <select id="findYesIncomeTotal" parameterType="map" resultType="java.math.BigDecimal">
-        SELECT SUM(IFNULL(point_rmb_num,0)) from shop_order where create_time >= #{start} and create_time &lt;= #{end}
-        and payment_state = 1 and order_state != 0
-    </select>
-
-    <!--根据订单类型统计订单参数-->
-    <select id="findCensusData" parameterType="map" resultType="com.framework.loippi.pojo.common.CensusVo">
-        SELECT SUM(order_amount+IFNULL(point_rmb_num,0)) as amountTotal,count(1) as orderNum from shop_order where create_time >= #{start} and create_time &lt;= #{end}
-        and payment_state = 1 and order_state != 0 and order_type = #{orderType}
-    </select>
 </mapper>
