@@ -1,6 +1,7 @@
 package com.framework.loippi.service.impl.order;
 
 
+import com.framework.loippi.pojo.common.CensusVo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -5748,5 +5749,70 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             shopMemberMessageDao.insert(shopMemberMessage);
         }
         System.out.println("自提订单自动收货完成");
+    }
+
+    /**
+     * 查询昨日订单总数，包括支付和未支付订单
+     * @return
+     * @param map
+     */
+    @Override
+    public Integer findOrderYesterdayNum(HashMap<String, Object> map) {
+        return orderDao.findOrderYesterdayNum(map);
+    }
+
+    /**
+     * 查询昨日已支付订单
+     * @param map
+     * @return
+     */
+    @Override
+    public Integer findEffectiveOrderYesterdayNum(HashMap<String, Object> map) {
+        return orderDao.findEffectiveOrderYesterdayNum(map);
+    }
+
+    /**
+     * 查询昨日未支付订单
+     * @param map
+     * @return
+     */
+    @Override
+    public Integer findInvalidOrderYesterdayNum(HashMap<String, Object> map) {
+        return orderDao.findInvalidOrderYesterdayNum(map);
+    }
+
+    /**
+     * 查询昨日对应平台订单数
+     * @param map
+     * @return
+     */
+    @Override
+    public Integer findPlatformOrderYesterdayNum(HashMap<String, Object> map) {
+        return orderDao.findPlatformOrderYesterdayNum(map);
+    }
+
+    /**
+     * 查询昨日订单总收入
+     * @param map
+     * @return
+     */
+    @Override
+    public BigDecimal findYesIncomeTotal(HashMap<String, Object> map) {
+        return orderDao.findYesIncomeTotal(map);
+    }
+
+    /**
+     * 昨日订单积分支付总额
+     * @param map
+     * @return
+     */
+    @Override
+    public BigDecimal findYesPointTotal(HashMap<String, Object> map) {
+        return orderDao.findYesPointTotal(map);
+    }
+
+    @Override
+    public CensusVo findCensusData(HashMap<String, Object> map) {
+        return orderDao.findCensusData(map);
     }
 }

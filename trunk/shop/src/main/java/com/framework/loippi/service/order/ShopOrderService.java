@@ -1,6 +1,7 @@
 package com.framework.loippi.service.order;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.pojo.common.CensusVo;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
@@ -328,6 +330,21 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
     void autoReceipt1(List<ShopOrder> list1);
 
     void autoReceipt2(List<ShopOrder> list2);
+
+    Integer findOrderYesterdayNum(HashMap<String, Object> map);
+
+    Integer findEffectiveOrderYesterdayNum(HashMap<String, Object> map);
+
+    Integer findInvalidOrderYesterdayNum(HashMap<String, Object> map);
+
+    Integer findPlatformOrderYesterdayNum(HashMap<String, Object> map);
+
+    BigDecimal findYesIncomeTotal(HashMap<String, Object> map);
+
+    BigDecimal findYesPointTotal(HashMap<String, Object> map);
+
+    CensusVo findCensusData(HashMap<String, Object> map);
+
 
 
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
