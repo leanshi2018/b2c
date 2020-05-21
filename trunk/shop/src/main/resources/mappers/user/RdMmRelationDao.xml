@@ -288,4 +288,9 @@
 	<update id="updateRelaSponsorBySponsorCode" parameterType="map">
         update RD_MM_RELATION  set SPONSOR_CODE=#{sponsorCode},SPONSOR_NAME = #{sponsorName} WHERE SPONSOR_CODE = #{mCode}
     </update>
+
+	<select id="findSponCountByMCode" parameterType="string" resultType="int">
+		SELECT COUNT(MM_CODE) FROM RD_MM_RELATION WHERE RA_SPONSOR_STATUS = 1 AND SPONSOR_CODE = #{sponsorCode}
+	</select>
+
 </mapper> 

@@ -20,4 +20,6 @@ public interface RdMmRelationDao  extends GenericDao<RdMmRelation, Long> {
     RdMmRelation findBySpoCode(String code);
 
 	void updateRelaSponsorBySponsorCode(Map<String, Object> map);
+
+	Integer findSponCountByMCode(String sponsorCode);
 }
