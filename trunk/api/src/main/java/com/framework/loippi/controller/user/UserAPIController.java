@@ -14,8 +14,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.framework.loippi.dao.common.RankExplainDao;
-import com.framework.loippi.entity.common.RankExplain;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -29,6 +27,8 @@ import com.allinpay.yunst.sdk.YunClient;
 import com.framework.loippi.consts.NotifyConsts;
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
 import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.dao.common.RankExplainDao;
+import com.framework.loippi.entity.common.RankExplain;
 import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrowse;
@@ -41,6 +41,7 @@ import com.framework.loippi.entity.user.RdMmBankDiscern;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RdRanksNextMessage;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
 import com.framework.loippi.entity.walet.RdMmWithdrawLog;
@@ -77,6 +78,7 @@ import com.framework.loippi.service.user.RdMmBankService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRaBindingService;
+import com.framework.loippi.service.user.RdRanksNextMessageService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
@@ -161,6 +163,8 @@ public class UserAPIController extends BaseController {
     private RdMmWithdrawLogService rdMmWithdrawLogService;
     @Resource
     private RankExplainDao rankExplainDao;
+    @Resource
+    private RdRanksNextMessageService rdRanksNextMessageService;
 
     @Value("#{properties['wap.server']}")
     private String wapServer;
@@ -293,6 +297,24 @@ public class UserAPIController extends BaseController {
         result.setPeriod(period);
         result.setEndDate(endDate);
         result.setPeriodMi(periodMi);
+
+        //会员升级下一级说明
+        List<RdRanksNextMessage> ranksNextMessages = rdRanksNextMessageService.findAll();
+        for (RdRanksNextMessage nextMessage : ranksNextMessages) {
+            if (nextMessage.getRank()== rdMmRelation.getRank()){
+                result.setNextRankMessage(nextMessage.getMessage());
+            }
+        }
+        if (result.getNextRankMessage()==null){
+            result.setNextRankMessage(ranksNextMessages.get(0).getMessage());
+        }
+        //直邀
+        Integer rank1Number = rdMmRelationService.findSponCountByMCode(shopMember.getMmCode());
+        if (rank1Number==null){
+            result.setRank1Number(0);//直邀
+        }else {
+            result.setRank1Number(rank1Number);//直邀
+        }
 
         result = PersonCenterResult.build2(result, countOrderStatusVoList);
         //是否设置登录密码
