@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.user;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,4 +34,5 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
 
 	void updatePhoneStatusByMCode(Map<String, Object> map);
 
+    Long findNewMem(HashMap<String, Object> map);
 }

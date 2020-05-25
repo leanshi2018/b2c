@@ -46,6 +46,7 @@ import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
@@ -86,6 +87,8 @@ public class CartAPIController extends BaseController {
     private RdMmAccountInfoService rdMmAccountInfoService;
     @Resource
     private ShopGoodsService goodsService;
+    @Resource
+    private ShopGoodsFreightService shopGoodsFreightService;
     /**
      * 购物车列表
      */
@@ -97,7 +100,14 @@ public class CartAPIController extends BaseController {
         pageable.setOrderDirection(Direction.DESC);
         pageable.setOrderProperty("id");
         List<ShopCartVo> shopCartVos = cartService.listWithGoodsAndSpec(pageable);
-        List<CartResult> cartResults = CartResult.buildList(shopCartVos);
+        Double totalWeight = 0d;
+        for (ShopCartVo shopCartVo : shopCartVos) {
+            Double weight = shopCartVo.getWeight();
+            Integer goodsNum = shopCartVo.getGoodsNum();
+            totalWeight =totalWeight+weight * goodsNum;
+        }
+        BigDecimal freightAmount = shopGoodsFreightService.CalculateFreight("广东省", totalWeight);
+        List<CartResult> cartResults = CartResult.buildList(shopCartVos,freightAmount);
         return ApiUtils.success(cartResults);
     }
 

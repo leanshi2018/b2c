@@ -24,5 +24,8 @@ public interface RdMmRelationService  extends GenericService<RdMmRelation, Long>
 
 	void updateRelaSponsorBySponsorCode(String mmCode, String sponsorCode, String sponsorName);
 
+    Long findNewVipRankMoreOne();
+
 	Integer findSponCountByMCode(String mmCode);
+
 }

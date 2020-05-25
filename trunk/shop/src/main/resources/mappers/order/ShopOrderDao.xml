@@ -1671,4 +1671,24 @@
         SELECT SUM(order_amount+IFNULL(point_rmb_num,0)) as amountTotal,count(1) as orderNum from shop_order where create_time >= #{start} and create_time &lt;= #{end}
         and payment_state = 1 and order_state != 0 and order_type = #{orderType}
     </select>
+
+    <select id="findMemIndicatorVo" parameterType="string" resultType="com.framework.loippi.pojo.common.MemIndicatorVo">
+        SELECT COUNT(1) as buyNum,buyer_id as mCode,SUM(order_amount+IFNULL(use_point_num,0)) as moneyTotal,SUM(ppv) as ppvTotal,creation_period as periodCode FROM shop_order
+        where payment_state = 1 and order_state != 0 and creation_period = #{periodCode} GROUP  BY buyer_id
+    </select>
+
+    <select id="findMemIndicatorVoByYear" parameterType="map" resultType="com.framework.loippi.pojo.common.MemIndicatorVo">
+        SELECT COUNT(1) as buyNum,buyer_id as mCode,SUM(order_amount+IFNULL(use_point_num,0)) as moneyTotal,SUM(ppv) as ppvTotal,creation_period as periodCode FROM shop_order
+        where payment_state = 1 and order_state != 0 and payment_time >= #{start} and  payment_time &lt;= #{end} GROUP  BY buyer_id
+    </select>
+
+    <select id="findNewShippingBehavior" resultType="com.framework.loippi.pojo.common.MemberShippingBehaviorVo">
+        SELECT a.buyer_id as mmCode,COUNT(1) as orderNum FROM shop_order a INNER JOIN rd_mm_relation b on a.buyer_id = b.MM_CODE
+        WHERE b.rank >0 and b.N_O_FLAG = 1 and a.order_type != 1 and a.payment_state = 1 and a.order_state != 0 GROUP BY a.buyer_id
+    </select>
+
+    <select id="findOldShippingBehavior" resultType="com.framework.loippi.pojo.common.MemberShippingBehaviorVo">
+        SELECT a.buyer_id as mmCode,COUNT(1) as orderNum FROM shop_order a INNER JOIN rd_mm_relation b on a.buyer_id = b.MM_CODE
+        WHERE  b.N_O_FLAG = 2  and a.payment_state = 1 and a.order_state != 0 GROUP BY a.buyer_id
+    </select>
 </mapper>

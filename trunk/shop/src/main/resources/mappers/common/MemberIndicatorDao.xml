@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.MemberIndicatorDao">
+
+    <resultMap id="MemberIndicatorResultMap" type="com.framework.loippi.entity.common.MemberIndicator">
+        <id property="id" column="id"  />
+        <result property="periodCode" column="period_code" />
+        <result property="statisticalTime" column="statistical_time" />
+        <result property="memberNumTotal" column="member_num_total" />
+        <result property="startNum" column="start_num" />
+        <result property="buyNum" column="buy_num" />
+        <result property="buyMore25" column="buy_more_25" />
+        <result property="buyMore50" column="buy_more_50" />
+        <result property="activeMore25" column="active_more_25" />
+        <result property="activeMore50" column="active_more_50" />
+        <result property="buyZero" column="buy_zero" />
+        <result property="buyOne" column="buy_one" />
+        <result property="buyTwo" column="buy_two" />
+        <result property="rePurchaseOne" column="re_purchase_one" />
+        <result property="buyMoreTwo" column="buy_more_two" />
+        <result property="rePurchaseTwo" column="re_purchase_two" />
+        <result property="buyBack" column="buy_back" />
+        <result property="periodBeforeNum" column="period_before_num" />
+        <result property="repurchaseRate" column="repurchase_rate" />
+        <result property="buyOnePeriod" column="buy_one_period" />
+        <result property="buyTwoPeriod" column="buy_two_period" />
+        <result property="buyMoreTwoPeriod" column="buy_more_two_period" />
+        <result property="month3NobuyNum" column="month3_nobuy_num" />
+        <result property="month3NobuyRate" column="month3_nobuy_rate" />
+        <result property="month6NobuyNum" column="month6_nobuy_num" />
+        <result property="month6NobuyRate" column="month6_nobuy_rate" />
+        <result property="status" column="status" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,period_code,statistical_time,member_num_total,start_num,buy_num,buy_more_25,buy_more_50,active_more_25,active_more_50,buy_zero,
+		 buy_one,buy_two,re_purchase_one,buy_more_two,re_purchase_two,buy_back,period_before_num,repurchase_rate,buy_one_period,buy_two_period,
+		 buy_more_two_period,month3_nobuy_num,month3_nobuy_rate,month6_nobuy_num,month6_nobuy_rate,status,update_time
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{periodCode},#{statisticalTime},#{memberNumTotal},#{startNum},#{buyNum},#{buyMore25},#{buyMore50},#{activeMore25},
+		 #{activeMore50},#{buyZero},#{buyOne},#{buyTwo},#{rePurchaseOne},#{buyMoreTwo},#{rePurchaseTwo},#{buyBack},#{periodBeforeNum},
+		 #{repurchaseRate},#{buyOnePeriod},#{buyTwoPeriod},#{buyMoreTwoPeriod},#{month3NobuyNum},#{month3NobuyRate},#{month6NobuyNum},#{month6NobuyRate},#{status},
+		 #{updateTime}
+	</sql>
+
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="periodCode != null and periodCode != ''">
+            AND period_code = #{periodCode,jdbcType=VARCHAR}
+        </if>
+        <if test="statisticalTime != null and statisticalTime != ''">
+            AND statistical_time = #{statisticalTime}
+        </if>
+        <if test="memberNumTotal != null and memberNumTotal != ''">
+            AND member_num_total = #{memberNumTotal,jdbcType=BIGINT}
+        </if>
+        <if test="startNum != null and startNum != ''">
+            AND start_num = #{startNum,jdbcType=BIGINT}
+        </if>
+        <if test="buyNum != null and buyNum != ''">
+            AND buy_num = #{buyNum,jdbcType=BIGINT}
+        </if>
+        <if test="buyMore25 != null and buyMore25 != ''">
+            AND buy_more_25 = #{buyMore25,jdbcType=BIGINT}
+        </if>
+        <if test="buyMore50 != null and buyMore50 != ''">
+            AND buy_more_50 = #{buyMore50,jdbcType=BIGINT}
+        </if>
+        <if test="activeMore25 != null and activeMore25 != ''">
+            AND active_more_25 = #{activeMore25}
+        </if>
+        <if test="activeMore50 != null and activeMore50 != ''">
+            AND active_more_50 = #{activeMore50}
+        </if>
+        <if test="buyZero != null and buyZero != ''">
+            AND buy_zero = #{buyZero,jdbcType=BIGINT}
+        </if>
+        <if test="buyOne != null and buyOne != ''">
+            AND buy_one = #{buyOne,jdbcType=BIGINT}
+        </if>
+        <if test="buyTwo != null and buyTwo != ''">
+            AND buy_two = #{buyTwo,jdbcType=BIGINT}
+        </if>
+        <if test="rePurchaseOne != null and rePurchaseOne != ''">
+            AND re_purchase_one = #{rePurchaseOne}
+        </if>
+        <if test="buyMoreTwo != null and buyMoreTwo != ''">
+            AND buy_more_two = #{buyMoreTwo,jdbcType=BIGINT}
+        </if>
+        <if test="rePurchaseTwo != null and rePurchaseTwo != ''">
+            AND re_purchase_two = #{rePurchaseTwo}
+        </if>
+        <if test="buyBack != null and buyBack != ''">
+            AND buy_back = #{buyBack,jdbcType=BIGINT}
+        </if>
+        <if test="periodBeforeNum != null and periodBeforeNum != ''">
+            AND period_before_num = #{periodBeforeNum,jdbcType=BIGINT}
+        </if>
+        <if test="repurchaseRate != null and repurchaseRate != ''">
+            AND repurchase_rate = #{repurchaseRate}
+        </if>
+        <if test="buyOnePeriod != null and buyOnePeriod != ''">
+            AND buy_one_period = #{buyOnePeriod,jdbcType=BIGINT}
+        </if>
+        <if test="buyTwoPeriod != null and buyTwoPeriod != ''">
+            AND buy_two_period = #{buyTwoPeriod,jdbcType=BIGINT}
+        </if>
+        <if test="buyMoreTwoPeriod != null and buyMoreTwoPeriod != ''">
+            AND buy_more_two_period = #{buyMoreTwoPeriod,jdbcType=BIGINT}
+        </if>
+        <if test="month3NobuyNum != null and month3NobuyNum != ''">
+            AND month3_nobuy_num = #{month3NobuyNum,jdbcType=BIGINT}
+        </if>
+        <if test="month3NobuyRate != null and month3NobuyRate != ''">
+            AND month3_nobuy_rate = #{month3NobuyRate}
+        </if>
+        <if test="month6NobuyNum != null and month6NobuyNum != ''">
+            AND month6_nobuy_num = #{month6NobuyNum,jdbcType=BIGINT}
+        </if>
+        <if test="month6NobuyRate != null and month6NobuyRate != ''">
+            AND month6_nobuy_rate = #{month6NobuyRate}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND update_time = #{updateTime}
+        </if>
+        <if test="periodList != null">
+            AND period_code in
+            <foreach collection="periodList" item="periodCode" index="index"
+                     open="(" close=")" separator=",">
+                #{periodCode}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+             id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="periodCode != null and periodCode != ''">
+             period_code = #{periodCode,jdbcType=VARCHAR},
+        </if>
+        <if test="statisticalTime != null and statisticalTime != ''">
+             statistical_time = #{statisticalTime},
+        </if>
+        <if test="memberNumTotal != null and memberNumTotal != ''">
+             member_num_total = #{memberNumTotal,jdbcType=BIGINT},
+        </if>
+        <if test="startNum != null and startNum != ''">
+             start_num = #{startNum,jdbcType=BIGINT},
+        </if>
+        <if test="buyNum != null and buyNum != ''">
+             buy_num = #{buyNum,jdbcType=BIGINT},
+        </if>
+        <if test="buyMore25 != null and buyMore25 != ''">
+             buy_more_25 = #{buyMore25,jdbcType=BIGINT},
+        </if>
+        <if test="buyMore50 != null and buyMore50 != ''">
+             buy_more_50 = #{buyMore50,jdbcType=BIGINT},
+        </if>
+        <if test="activeMore25 != null and activeMore25 != ''">
+             active_more_25 = #{activeMore25},
+        </if>
+        <if test="activeMore50 != null and activeMore50 != ''">
+             active_more_50 = #{activeMore50},
+        </if>
+        <if test="buyZero != null and buyZero != ''">
+             buy_zero = #{buyZero,jdbcType=BIGINT},
+        </if>
+        <if test="buyOne != null and buyOne != ''">
+             buy_one = #{buyOne,jdbcType=BIGINT},
+        </if>
+        <if test="buyTwo != null and buyTwo != ''">
+             buy_two = #{buyTwo,jdbcType=BIGINT},
+        </if>
+        <if test="rePurchaseOne != null and rePurchaseOne != ''">
+             re_purchase_one = #{rePurchaseOne},
+        </if>
+        <if test="buyMoreTwo != null and buyMoreTwo != ''">
+             buy_more_two = #{buyMoreTwo,jdbcType=BIGINT},
+        </if>
+        <if test="rePurchaseTwo != null and rePurchaseTwo != ''">
+             re_purchase_two = #{rePurchaseTwo},
+        </if>
+        <if test="buyBack != null and buyBack != ''">
+             buy_back = #{buyBack,jdbcType=BIGINT},
+        </if>
+        <if test="periodBeforeNum != null and periodBeforeNum != ''">
+             period_before_num = #{periodBeforeNum,jdbcType=BIGINT},
+        </if>
+        <if test="repurchaseRate != null and repurchaseRate != ''">
+             repurchase_rate = #{repurchaseRate},
+        </if>
+        <if test="buyOnePeriod != null and buyOnePeriod != ''">
+             buy_one_period = #{buyOnePeriod,jdbcType=BIGINT},
+        </if>
+        <if test="buyTwoPeriod != null and buyTwoPeriod != ''">
+             buy_two_period = #{buyTwoPeriod,jdbcType=BIGINT},
+        </if>
+        <if test="buyMoreTwoPeriod != null and buyMoreTwoPeriod != ''">
+             buy_more_two_period = #{buyMoreTwoPeriod,jdbcType=BIGINT},
+        </if>
+        <if test="month3NobuyNum != null and month3NobuyNum != ''">
+             month3_nobuy_num = #{month3NobuyNum,jdbcType=BIGINT},
+        </if>
+        <if test="month3NobuyRate != null and month3NobuyRate != ''">
+             month3_nobuy_rate = #{month3NobuyRate},
+        </if>
+        <if test="month6NobuyNum != null and month6NobuyNum != ''">
+             month6_nobuy_num = #{month6NobuyNum,jdbcType=BIGINT},
+        </if>
+        <if test="month6NobuyRate != null and month6NobuyRate != ''">
+             month6_nobuy_rate = #{month6NobuyRate},
+        </if>
+        <if test="status != null and status != ''">
+             status = #{status,jdbcType=INTEGER},
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+             update_time = #{updateTime},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="MemberIndicatorResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mem_indicator
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="MemberIndicatorResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mem_indicator
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_mem_indicator
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.common.MemberIndicator">
+        INSERT rd_mem_indicator
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.common.MemberIndicator">
+        UPDATE rd_mem_indicator
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_mem_indicator
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="MemberIndicatorResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mem_indicator
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="MemberIndicatorResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mem_indicator
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper>

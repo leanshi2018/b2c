@@ -590,7 +590,6 @@ public class IntegrationMemberListResult {
                     }
                 });
             }
-
             //按照加入时间升序
             if(sorting.equals(3)){
                 Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {

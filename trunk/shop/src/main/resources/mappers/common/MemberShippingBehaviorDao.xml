@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.MemberShippingBehaviorDao">
+
+    <resultMap id="MemberShippingBehaviorResultMap" type="com.framework.loippi.entity.common.MemberShippingBehavior">
+        <id property="id" column="id"  />
+        <result property="reportCode" column="report_code" />
+        <result property="statisticalTime" column="statistical_time" />
+        <result property="newVipBuyZero" column="new_vip_buy_zero" />
+        <result property="buyZeroRate" column="buy_zero_rate" />
+        <result property="newVipBuyOne" column="new_vip_buy_one" />
+        <result property="buyOneRate" column="buy_one_rate" />
+        <result property="newVipBuyTwomore" column="new_vip_buy_twomore" />
+        <result property="buyTwomoreRate" column="buy_twomore_rate" />
+        <result property="oldMemBuyZero" column="old_mem_buy_zero" />
+        <result property="oldBuyZeroRate" column="old_buy_zero_rate" />
+        <result property="oldMemBuyOne" column="old_mem_buy_one" />
+        <result property="oldBuyOneRate" column="old_buy_one_rate" />
+        <result property="oldMemBuyTwomore" column="old_mem_buy_twomore" />
+        <result property="oldBuyTwomoreRate" column="old_buy_twomore_rate" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,report_code,statistical_time,new_vip_buy_zero,buy_zero_rate,new_vip_buy_one,buy_one_rate,new_vip_buy_twomore,buy_twomore_rate,
+		 old_mem_buy_zero,old_buy_zero_rate,old_mem_buy_one,old_buy_one_rate,old_mem_buy_twomore,old_buy_twomore_rate
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{reportCode},#{statisticalTime},#{newVipBuyZero},#{buyZeroRate},#{newVipBuyOne},#{buyOneRate},#{newVipBuyTwomore},#{buyTwomoreRate},
+		 #{oldMemBuyZero},#{oldBuyZeroRate},#{oldMemBuyOne},#{oldBuyOneRate},#{oldMemBuyTwomore},#{oldBuyTwomoreRate}
+	</sql>
+
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="reportCode != null and reportCode != ''">
+            AND report_code = #{reportCode,jdbcType=VARCHAR}
+        </if>
+        <if test="statisticalTime != null and statisticalTime != ''">
+            AND statistical_time = #{statisticalTime}
+        </if>
+        <if test="newVipBuyZero != null and newVipBuyZero != ''">
+            AND new_vip_buy_zero = #{newVipBuyZero,jdbcType=INTEGER}
+        </if>
+        <if test="buyZeroRate != null and buyZeroRate != ''">
+            AND buy_zero_rate = #{buyZeroRate}
+        </if>
+        <if test="newVipBuyOne != null and newVipBuyOne != ''">
+            AND new_vip_buy_one = #{newVipBuyOne,jdbcType=INTEGER}
+        </if>
+        <if test="buyOneRate != null and buyOneRate != ''">
+            AND buy_one_rate = #{buyOneRate}
+        </if>
+        <if test="newVipBuyTwomore != null and newVipBuyTwomore != ''">
+            AND new_vip_buy_twomore = #{newVipBuyTwomore,jdbcType=INTEGER}
+        </if>
+        <if test="buyTwomoreRate != null and buyTwomoreRate != ''">
+            AND buy_twomore_rate = #{buyTwomoreRate}
+        </if>
+        <if test="oldMemBuyZero != null and oldMemBuyZero != ''">
+            AND old_mem_buy_zero = #{oldMemBuyZero,jdbcType=INTEGER}
+        </if>
+        <if test="oldBuyZeroRate != null and oldBuyZeroRate != ''">
+            AND old_buy_zero_rate = #{oldBuyZeroRate}
+        </if>
+        <if test="oldMemBuyOne != null and oldMemBuyOne != ''">
+            AND old_mem_buy_one = #{oldMemBuyOne,jdbcType=INTEGER}
+        </if>
+        <if test="oldBuyOneRate != null and oldBuyOneRate != ''">
+            AND old_buy_one_rate = #{oldBuyOneRate}
+        </if>
+        <if test="oldMemBuyTwomore != null and oldMemBuyTwomore != ''">
+            AND old_mem_buy_twomore = #{oldMemBuyTwomore,jdbcType=INTEGER}
+        </if>
+        <if test="oldBuyTwomoreRate != null and oldBuyTwomoreRate != ''">
+            AND old_buy_twomore_rate = #{oldBuyTwomoreRate}
+        </if>
+        <if test="timeLeft != null and timeLeft != ''">
+            AND statistical_time >= #{timeLeft}
+        </if>
+        <if test="timeRight != null and timeRight != ''">
+            AND statistical_time &lt;= #{timeRight}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+             id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="reportCode != null and reportCode != ''">
+             report_code = #{reportCode,jdbcType=VARCHAR},
+        </if>
+        <if test="statisticalTime != null and statisticalTime != ''">
+             statistical_time = #{statisticalTime},
+        </if>
+        <if test="newVipBuyZero != null and newVipBuyZero != ''">
+             new_vip_buy_zero = #{newVipBuyZero,jdbcType=INTEGER},
+        </if>
+        <if test="buyZeroRate != null and buyZeroRate != ''">
+             buy_zero_rate = #{buyZeroRate},
+        </if>
+        <if test="newVipBuyOne != null and newVipBuyOne != ''">
+             new_vip_buy_one = #{newVipBuyOne,jdbcType=INTEGER},
+        </if>
+        <if test="buyOneRate != null and buyOneRate != ''">
+             buy_one_rate = #{buyOneRate},
+        </if>
+        <if test="newVipBuyTwomore != null and newVipBuyTwomore != ''">
+             new_vip_buy_twomore = #{newVipBuyTwomore,jdbcType=INTEGER},
+        </if>
+        <if test="buyTwomoreRate != null and buyTwomoreRate != ''">
+             buy_twomore_rate = #{buyTwomoreRate},
+        </if>
+        <if test="oldMemBuyZero != null and oldMemBuyZero != ''">
+             old_mem_buy_zero = #{oldMemBuyZero,jdbcType=INTEGER},
+        </if>
+        <if test="oldBuyZeroRate != null and oldBuyZeroRate != ''">
+             old_buy_zero_rate = #{oldBuyZeroRate},
+        </if>
+        <if test="oldMemBuyOne != null and oldMemBuyOne != ''">
+             old_mem_buy_one = #{oldMemBuyOne,jdbcType=INTEGER},
+        </if>
+        <if test="oldBuyOneRate != null and oldBuyOneRate != ''">
+             old_buy_one_rate = #{oldBuyOneRate},
+        </if>
+        <if test="oldMemBuyTwomore != null and oldMemBuyTwomore != ''">
+             old_mem_buy_twomore = #{oldMemBuyTwomore,jdbcType=INTEGER},
+        </if>
+        <if test="oldBuyTwomoreRate != null and oldBuyTwomoreRate != ''">
+             old_buy_twomore_rate = #{oldBuyTwomoreRate},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="MemberShippingBehaviorResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mem_shipping_behavior
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="MemberShippingBehaviorResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mem_shipping_behavior
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_mem_shipping_behavior
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.common.MemberShippingBehavior">
+        INSERT rd_mem_shipping_behavior
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.common.MemberShippingBehavior">
+        UPDATE rd_mem_shipping_behavior
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_mem_shipping_behavior
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="MemberShippingBehaviorResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mem_shipping_behavior
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="MemberShippingBehaviorResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mem_shipping_behavior
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper>
