@@ -9,6 +9,7 @@
         <id property="id" column="id"/>
         <result property="gcName" column="gc_name"/>
         <result property="gcPic" column="gc_pic"/>
+        <result property="gcPicGray" column="gc_pic_gray"/>
         <result property="typeId" column="type_id"/>
         <result property="typeName" column="type_name"/>
         <result property="gcParentId" column="gc_parent_id"/>
@@ -34,6 +35,7 @@
         <id property="id" column="id"/>
         <result property="gcName" column="gc_name"/>
         <result property="gcPic" column="gc_pic"/>
+        <result property="gcPicGray" column="gc_pic_gray"/>
         <result property="typeId" column="type_id"/>
         <result property="typeName" column="type_name"/>
         <result property="gcParentId" column="gc_parent_id"/>
@@ -86,6 +88,7 @@
         <id property="id" column="id"/>
         <result property="gcName" column="gc_name"/>
         <result property="gcPic" column="gc_pic"/>
+        <result property="gcPicGray" column="gc_pic_gray"/>
         <result property="typeId" column="type_id"/>
         <result property="typeName" column="type_name"/>
         <result property="gcParentId" column="gc_parent_id"/>
@@ -112,13 +115,13 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,gc_name ,gc_pic ,type_id ,type_name ,gc_parent_id ,gc_sort ,gc_show ,gc_title ,gc_keywords ,gc_description ,gc_idpath ,expen_scale ,is_relate ,virtual_goods ,relation ,is_commend
+		 id ,gc_name ,gc_pic ,gc_pic_gray ,type_id ,type_name ,gc_parent_id ,gc_sort ,gc_show ,gc_title ,gc_keywords ,gc_description ,gc_idpath ,expen_scale ,is_relate ,virtual_goods ,relation ,is_commend
 
 		 ,deep,adv_id,picUrl
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{gcName},#{gcPic},#{typeId},#{typeName},#{gcParentId},#{gcSort},#{gcShow},#{gcTitle},#{gcKeywords},#{gcDescription},#{gcIdpath},#{expenScale},#{isRelate},#{virtualGoods},#{relation},#{isCommend}
+		 #{id},#{gcName},#{gcPic},#{gcPicGray},#{typeId},#{typeName},#{gcParentId},#{gcSort},#{gcShow},#{gcTitle},#{gcKeywords},#{gcDescription},#{gcIdpath},#{expenScale},#{isRelate},#{virtualGoods},#{relation},#{isCommend}
 
 		 ,#{deep} ,#{advId} ,#{picUrl}
 	</sql>
@@ -133,6 +136,9 @@
         </if>
         <if test="gcPic != null and gcPic != ''">
             AND gc_pic = #{gcPic,jdbcType=VARCHAR}
+        </if>
+        <if test="gcPicGray != null and gcPicGray != ''">
+            AND gc_pic_gray = #{gcPicGray,jdbcType=VARCHAR}
         </if>
         <if test="typeId != null and typeId != ''">
             AND type_id = #{typeId,jdbcType=BIGINT}
@@ -211,6 +217,9 @@
         </if>
         <if test="gcPic != null and gcPic != ''">
             gc_pic = #{gcPic,jdbcType=VARCHAR},
+        </if>
+        <if test="gcPicGray != null and gcPicGray != ''">
+            gc_pic_gray = #{gcPicGray,jdbcType=VARCHAR},
         </if>
         <if test="typeId != null">
             type_id = #{typeId,jdbcType=BIGINT},

@@ -151,7 +151,7 @@
 			AND BACK_WITHDRAWALS = #{backWithdrawals}
 		</if>
 		<if test="time != null and time != ''">
-			AND CREATION_TIME BETWEEN CONCAT( #{time},'-01 00:00:00') and CONCAT( #{time},'-31 23:59:59')
+			AND TRANS_DATE BETWEEN CONCAT( #{time},'-01 00:00:00') and CONCAT( #{time},'-31 23:59:59')
 		</if>
 		<if test="bop != null and bop != ''">
 			AND (TRANS_TYPE_CODE="SP" OR TRANS_TYPE_CODE="WD" OR TRANS_TYPE_CODE="BA" OR TRANS_TYPE_CODE="RB" OR TRANS_TYPE_CODE="RC" OR TRANS_TYPE_CODE="RR" OR TRANS_TYPE_CODE="MUB" OR TRANS_TYPE_CODE="MDB" OR TRANS_TYPE_CODE="AWD" OR TRANS_TYPE_CODE="CF")

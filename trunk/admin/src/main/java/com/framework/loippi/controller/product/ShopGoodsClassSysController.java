@@ -1,5 +1,25 @@
 package com.framework.loippi.controller.product;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.RequestContext;
+
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.ShopGoodsClassState;
 import com.framework.loippi.controller.GenericController;
@@ -15,25 +35,6 @@ import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
 import com.google.common.collect.Maps;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.RequestContext;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Controller - 商品分类表
@@ -94,6 +95,13 @@ public class ShopGoodsClassSysController extends GenericController {
                     goodsClass.setTypeName(goodsType.getTypeName());
                 } else {
                     goodsClass.setTypeName("");
+                }
+                if (goodsClass.getGcPicGray()==null || "".equals(goodsClass.getGcPicGray())){
+                    if (goodsClass.getGcPic()==null){
+                        goodsClass.setGcPicGray("");
+                    }else {
+                        goodsClass.setGcPicGray(goodsClass.getGcPic());
+                    }
                 }
                 shopGoodsClassService.save(goodsClass);
                 //查找父级id

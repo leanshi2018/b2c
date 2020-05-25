@@ -325,4 +325,7 @@
 	<select id="findNewVipRankMoreOne" resultType="long">
 		select count(1) from RD_MM_RELATION where rank > 0 and N_O_FLAG = 1
 	</select>
+	<select id="findSponCountByMCode" parameterType="string" resultType="int">
+		SELECT COUNT(MM_CODE) FROM RD_MM_RELATION WHERE RA_SPONSOR_STATUS = 1 AND SPONSOR_CODE = #{sponsorCode}
+	</select>
 </mapper> 

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.RdRanksNextMessageDao">
+
+    <resultMap id="RdRanksNextMessageResultMap" type="com.framework.loippi.entity.user.RdRanksNextMessage">
+        <result property="id" column="id" />
+        <result property="rank" column="rank" />
+        <result property="message" column="message" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,rank ,message
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{rank},#{message}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="rank != null">
+            AND rank = #{rank}
+        </if>
+        <if test="message != null and message != ''">
+            AND message = #{message,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id},
+        </if>
+        <if test="rank != null">
+            rank = #{rank},
+        </if>
+        <if test="message != null and message != ''">
+            message = #{message,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdRanksNextMessageResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_ranks_next_message
+        WHERE	ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdRanksNextMessageResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_ranks_next_message
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_ranks_next_message
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.RdRanksNextMessage">
+        <!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="RANK_ID">-->
+        <!--SELECT LAST_INSERT_ID() AS RANK_ID-->
+        <!--</selectKey>  -->
+        INSERT rd_ranks_next_message
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.RdRanksNextMessage">
+        UPDATE	rd_ranks_next_message
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_ranks_next_message
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_ranks_next_message
+        WHERE	ID	IN
+        <foreach item="ids" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdRanksNextMessageResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_ranks_next_message
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdRanksNextMessageResultMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_ranks_next_message
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+</mapper> 

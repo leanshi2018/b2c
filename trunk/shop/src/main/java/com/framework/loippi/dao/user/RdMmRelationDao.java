@@ -24,6 +24,7 @@ public interface RdMmRelationDao  extends GenericDao<RdMmRelation, Long> {
 
 	void updateRelaSponsorBySponsorCode(Map<String, Object> map);
 
+
     MemCensusVo getMemAtotal(HashMap<String, Object> map);
 
     Long getNoPayCommonMem();
@@ -35,4 +36,7 @@ public interface RdMmRelationDao  extends GenericDao<RdMmRelation, Long> {
     Long findNoBuyNum(String time);
 
     Long findNewVipRankMoreOne();
+
+	Integer findSponCountByMCode(String sponsorCode);
+
 }

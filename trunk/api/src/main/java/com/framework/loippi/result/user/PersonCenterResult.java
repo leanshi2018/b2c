@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -141,6 +140,10 @@ public class PersonCenterResult {
     private String windowMessage;
     //等级弹窗标识  0：弹窗 1：不弹窗
     private Integer windowFlag;
+    //会员升级下一级说明
+    private String nextRankMessage;
+    //直邀人数
+    private Integer rank1Number;
 
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);

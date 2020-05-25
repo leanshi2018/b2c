@@ -66,6 +66,8 @@ public class GoodsListResult {
 
     //图片
     private String image;
+    //新版本图片
+    private String imageNew;
     //默认规格ID
     private Long goodsSpecId;
     //好评率
@@ -130,6 +132,7 @@ public class GoodsListResult {
             result.setItemId(Optional.ofNullable(item.getId()).orElse(-1L));
             result.setTitle(Optional.ofNullable(item.getGoodsName()).orElse(""));
             result.setImage(Optional.ofNullable(prefix + item.getGoodsImage()).orElse(""));
+            result.setImageNew(Optional.ofNullable(prefix + item.getGoodsImageNew()).orElse(""));
             result.setSalenum(Optional.ofNullable(item.getSalenum()).orElse(0));
             result.setSpecName(Optional.ofNullable(item.getSpecName()).orElse(""));
             result.setGoodsSpecId(Optional.ofNullable(item.getSpecId()).orElse(-1L));
