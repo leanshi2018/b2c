@@ -2,6 +2,7 @@ package com.framework.loippi.service.impl.order;
 
 
 import com.framework.loippi.pojo.common.CensusVo;
+import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -3589,6 +3590,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     ////}
                     rdMmRelation.setAPpv(ppv.add(orderPpv));
                     rdMmRelation.setATotal(aTotal.add(orderMoney));
+                    rdMmRelation.setLastPayTime(new Date());
                     rdMmRelationService.update(rdMmRelation);
                 }
             }
@@ -4826,6 +4828,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         ////}
                         rdMmRelation.setAPpv(ppv.add(orderPpv));
                         rdMmRelation.setATotal(aTotal.add(orderMoney));
+                        rdMmRelation.setLastPayTime(new Date());
                         rdMmRelationService.update(rdMmRelation);
                     }
                 }
@@ -5814,5 +5817,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     @Override
     public CensusVo findCensusData(HashMap<String, Object> map) {
         return orderDao.findCensusData(map);
+    }
+
+    @Override
+    public List<MemberShippingBehaviorVo> findNewShippingBehavior() {
+        return orderDao.findNewShippingBehavior();
+    }
+
+    @Override
+    public List<MemberShippingBehaviorVo> findOldShippingBehavior() {
+        return orderDao.findOldShippingBehavior();
     }
 }

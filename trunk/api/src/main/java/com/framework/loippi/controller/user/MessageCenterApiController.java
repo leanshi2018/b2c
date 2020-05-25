@@ -146,6 +146,26 @@ public class MessageCenterApiController extends BaseController {
     }
 
     /**
+     * 修改指定会员的所有消息为已读
+     * @param request
+     * @return
+     */
+    @RequestMapping("/message/read.json")
+    public String updateRead(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("请登录后进行操作");
+        }
+        try {
+            shopMemberMessageService.updateMessageRead(member.getMmCode());
+            return ApiUtils.success("会员消息全部已读");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiUtils.error("全部已读失败");
+        }
+    }
+
+    /**
      * 消息列表
      *
      * @param request

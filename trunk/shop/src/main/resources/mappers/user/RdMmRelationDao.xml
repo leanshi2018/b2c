@@ -32,15 +32,16 @@
 		<result property="aTotal" column="A_TOTAL" />
 
 		<result property="popupFlag" column="popup_flag" />
+		<result property="lastPayTime" column="last_pay_time" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 MM_CODE ,RANK ,RANK_NOW  ,RANK_PERIOD ,A_RETAIL ,LOGIN_PWD ,PWD_INIT_YN ,MM_STATUS ,MM_POINT_STATUS ,STATUS_PERIOD ,SPONSOR_CODE ,SPONSOR_NAME ,PLACEMENT_CODE ,RA_SPONSOR_STATUS ,RA_STATUS ,RA_SHOP_YN ,RA_CODE ,RA_NICK_NAME ,RA_BINDING_DATE ,IS_VIP,A_PPV,N_O_FLAG,A_TOTAL,popup_flag
+		 MM_CODE ,RANK ,RANK_NOW  ,RANK_PERIOD ,A_RETAIL ,LOGIN_PWD ,PWD_INIT_YN ,MM_STATUS ,MM_POINT_STATUS ,STATUS_PERIOD ,SPONSOR_CODE ,SPONSOR_NAME ,PLACEMENT_CODE ,RA_SPONSOR_STATUS ,RA_STATUS ,RA_SHOP_YN ,RA_CODE ,RA_NICK_NAME ,RA_BINDING_DATE ,IS_VIP,A_PPV,N_O_FLAG,A_TOTAL,popup_flag,last_pay_time
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{mmCode},#{rank},#{rankNow},#{rankPeriod},#{aRetail},#{loginPwd},#{pwdInitYn},#{mmStatus},#{mmPointStatus},#{statusPeriod},#{sponsorCode},#{sponsorName},#{placementCode},#{raSponsorStatus},#{raStatus},#{raShopYn},#{raCode},#{raNickName},#{raBindingDate},#{isVip},#{aPpv},#{nOFlag},#{aTotal},#{popupFlag}
+		 #{mmCode},#{rank},#{rankNow},#{rankPeriod},#{aRetail},#{loginPwd},#{pwdInitYn},#{mmStatus},#{mmPointStatus},#{statusPeriod},#{sponsorCode},#{sponsorName},#{placementCode},#{raSponsorStatus},#{raStatus},#{raShopYn},#{raCode},#{raNickName},#{raBindingDate},#{isVip},#{aPpv},#{nOFlag},#{aTotal},#{popupFlag},#{lastPayTime}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -117,6 +118,9 @@
 		</if>
 		<if test="popupFlag != null and popupFlag != ''">
 			AND popup_flag = #{popupFlag}
+		</if>
+		<if test="lastPayTime != null and lastPayTime != ''">
+			AND last_pay_time = #{lastPayTime}
 		</if>
 		<if test="mmCodes!=null and mmCodes!= ''">
 			and MM_CODE in
@@ -200,6 +204,9 @@
 		</if>
 		<if test="popupFlag != null and popupFlag != ''">
 			popup_flag = #{popupFlag},
+		</if>
+		<if test="lastPayTime != null and lastPayTime != ''">
+			last_pay_time = #{lastPayTime},
 		</if>
 	</sql>
 
@@ -288,4 +295,34 @@
 	<update id="updateRelaSponsorBySponsorCode" parameterType="map">
         update RD_MM_RELATION  set SPONSOR_CODE=#{sponsorCode},SPONSOR_NAME = #{sponsorName} WHERE SPONSOR_CODE = #{mCode}
     </update>
+
+	<select id="getMemAtotal" parameterType="map" resultType="com.framework.loippi.pojo.common.MemCensusVo">
+		select count(1) as num,SUM(A_TOTAL) as amountTotal from RD_MM_RELATION
+		<where>
+			<if test="rank != null and rank != ''">
+				and rank = #{rank}
+			</if>
+			and A_TOTAL > 0
+		</where>
+	</select>
+
+	<select id="getNoPayCommonMem" resultType="long">
+		select count(1) from RD_MM_RELATION where rank = 0 and A_TOTAL = 0
+	</select>
+
+	<select id="findRankNum" resultType="com.framework.loippi.pojo.common.RankNumVo">
+		select COUNT(1) as num,rank as rank FROM rd_mm_relation GROUP BY rank
+	</select>
+
+	<select id="findMemEffective" resultType="long">
+		select count(1) from RD_MM_RELATION where MM_STATUS != 2
+	</select>
+
+	<select id="findNoBuyNum" parameterType="string" resultType="long">
+		select count(1) from RD_MM_RELATION where last_pay_time is null or last_pay_time &lt;= #{time}
+	</select>
+
+	<select id="findNewVipRankMoreOne" resultType="long">
+		select count(1) from RD_MM_RELATION where rank > 0 and N_O_FLAG = 1
+	</select>
 </mapper> 

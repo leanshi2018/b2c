@@ -1,11 +1,14 @@
 package com.framework.loippi.dao.user;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.mybatis.dao.GenericDao;
+import com.framework.loippi.pojo.common.MemCensusVo;
+import com.framework.loippi.pojo.common.RankNumVo;
 
 /**
  * DAO - RdMmRelation(会员关系状态表)
@@ -20,4 +23,16 @@ public interface RdMmRelationDao  extends GenericDao<RdMmRelation, Long> {
     RdMmRelation findBySpoCode(String code);
 
 	void updateRelaSponsorBySponsorCode(Map<String, Object> map);
+
+    MemCensusVo getMemAtotal(HashMap<String, Object> map);
+
+    Long getNoPayCommonMem();
+
+    List<RankNumVo> findRankNum();
+
+    Long findMemEffective();
+
+    Long findNoBuyNum(String time);
+
+    Long findNewVipRankMoreOne();
 }

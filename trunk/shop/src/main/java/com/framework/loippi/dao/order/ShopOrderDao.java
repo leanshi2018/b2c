@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.pojo.common.CensusVo;
+import com.framework.loippi.pojo.common.MemIndicatorVo;
+import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import org.apache.ibatis.annotations.Param;
 
 import com.framework.loippi.entity.order.ShopOrder;
@@ -193,4 +195,12 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     BigDecimal findYesPointTotal(HashMap<String, Object> map);
 
     CensusVo findCensusData(HashMap<String, Object> map);
+
+    List<MemIndicatorVo> findMemIndicatorVo(String periodCode);
+
+    List<MemIndicatorVo> findMemIndicatorVoByYear(HashMap<String, Object> map);
+
+    List<MemberShippingBehaviorVo> findNewShippingBehavior();
+
+    List<MemberShippingBehaviorVo> findOldShippingBehavior();
 }

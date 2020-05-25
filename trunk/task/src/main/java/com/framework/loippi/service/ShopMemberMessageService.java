@@ -58,4 +58,6 @@ public interface ShopMemberMessageService extends GenericService <ShopMemberMess
     Integer findMessageOrderNum(long parseLong);
 
     Integer findMessageLeaveNum(long parseLong);
+
+    void updateMessageRead(String mmCode) throws Exception;
 }

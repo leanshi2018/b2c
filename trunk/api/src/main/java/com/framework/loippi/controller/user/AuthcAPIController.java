@@ -240,7 +240,21 @@ public class AuthcAPIController extends BaseController {
         sceneActivityService.update(sceneActivity);
         return ApiUtils.success(sceneActivity);
     }
-
+    @RequestMapping(value = "/getNickName", method = RequestMethod.POST)
+    @ResponseBody
+    public String getNickName(HttpServletRequest request,String mmCode) {
+        if(mmCode==null||"".equals(mmCode.trim())){
+            return ApiUtils.error("请传入正确的会员编号");
+        }
+        RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode", mmCode);
+        if(basicInfo==null){
+            return ApiUtils.error("该会员不存在");
+        }
+        if(basicInfo.getMmNickName()==null){
+            return ApiUtils.error("会员信息异常");
+        }
+        return ApiUtils.success(basicInfo.getMmNickName());
+    }
     //    @Resource
 //    private HxService hxService;
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -577,6 +591,7 @@ public class AuthcAPIController extends BaseController {
         rdMmRelation.setMmPointStatus(2);
         rdMmRelation.setMmStatus(0);
         rdMmRelation.setPopupFlag(0);
+        rdMmRelation.setLastPayTime(new Date());
         BigDecimal zero = BigDecimal.ZERO;
         rdMmAccountInfo.setBonusStatus(2);
         rdMmAccountInfo.setBonusBlance(zero);

@@ -564,8 +564,32 @@ public class IntegrationMemberListResult {
             memberInfo.setRetailProfit(decimal);
             userIntegrationListResultList.add(memberInfo);
             //对集合进行排序
-
-
+            if(sorting.equals(1)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getPpv().compareTo(o2.getPpv())==1){
+                            return 1;
+                        }else if(o1.getPpv().compareTo(o2.getPpv())==0){
+                            return 0;
+                        }
+                        return -1;
+                    }
+                });
+            }
+            if(sorting.equals(2)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getPpv().compareTo(o2.getPpv())==1){
+                            return -1;
+                        }else if(o1.getPpv().compareTo(o2.getPpv())==0){
+                            return 0;
+                        }
+                        return 1;
+                    }
+                });
+            }
             //按照加入时间升序
             if(sorting.equals(3)){
                 Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {

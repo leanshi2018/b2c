@@ -1,5 +1,6 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.junit.Test;
 
@@ -50,7 +51,7 @@ public class Mytest {
      */
     @Test
     public void testCut() {
-        final YunRequest request = new YunRequest("OrderService", "signalAgentPay");
+        /*final YunRequest request = new YunRequest("OrderService", "signalAgentPay");
         try {
             request.put("bizOrderNo", "P20200416184106847WOMI399467");
             JSONArray collectPayList = new JSONArray();
@@ -76,6 +77,16 @@ public class Mytest {
             System.out.println(resp.getString("message"));
         } catch (final Exception e) {
             e.printStackTrace();
+        }*/
+        String year = "2020";
+        ArrayList<String> strings = new ArrayList<>();
+        for (int i=1;i < 13;i++){
+            if(i<10){
+                strings.add(year+"0"+i);
+            }else {
+                strings.add(year+i);
+            }
         }
+        System.out.println(strings);
     }
 }

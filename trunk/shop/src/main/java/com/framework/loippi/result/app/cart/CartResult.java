@@ -1,9 +1,10 @@
 package com.framework.loippi.result.app.cart;
 
 import com.framework.loippi.consts.GoodsState;
-import com.framework.loippi.support.Message;
 import com.framework.loippi.vo.cart.ShopCartVo;
 import com.google.common.collect.Lists;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import lombok.Data;
@@ -29,8 +30,18 @@ public class CartResult {
      */
     private List<CartItemResult> cartItems;
 
+    /**
+     * 商品种类数量
+     */
+    private Integer goodsTypeNum;
 
-    public static List<CartResult> buildList(List<ShopCartVo> shopCarts) {
+    /**
+     * 满足包邮的条件金额
+     */
+    private BigDecimal shippingCouponAmount;
+
+
+    public static List<CartResult> buildList(List<ShopCartVo> shopCarts, BigDecimal freightAmount) {
         if (CollectionUtils.isEmpty(shopCarts)) {
             return Lists.newArrayList();
         }
@@ -54,7 +65,7 @@ public class CartResult {
 
             // cartResultList首个添加
             if (cartResultList.size() == 0) {
-                cartResultList.add(CartResult.build(cart));
+                cartResultList.add(CartResult.build(cart,freightAmount));
             } else {
                 // 是否cart的商店id存在cartResultList中
                 boolean flag = false;
@@ -67,7 +78,7 @@ public class CartResult {
                     }
                 }
                 if (!flag) {
-                    cartResultList.add(CartResult.build(cart));
+                    cartResultList.add(CartResult.build(cart, freightAmount));
                 }
             }
         }
@@ -75,12 +86,14 @@ public class CartResult {
         return cartResultList;
     }
 
-    public static CartResult build(ShopCartVo cart) {
+    public static CartResult build(ShopCartVo cart, BigDecimal freightAmount) {
         Optional<ShopCartVo> optCart = Optional.ofNullable(cart);
         CartResult cartResult = new CartResult()
             .setBrandId(optCart.map(ShopCartVo::getBrandId).orElse(-1L))
             .setBrandName(optCart.map(ShopCartVo::getBrandName).orElse("失效品牌"))
             .setCartItems(Lists.newArrayList(CartItemResult.build(cart)));
+        cartResult.setShippingCouponAmount(freightAmount);
+        cartResult.setGoodsTypeNum(cartResult.getCartItems().size());
         return cartResult;
     }
 }

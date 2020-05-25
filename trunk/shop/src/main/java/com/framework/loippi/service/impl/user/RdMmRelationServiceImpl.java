@@ -125,4 +125,9 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 		map.put("sponsorName",sponsorName);
 		rdMmRelationDao.updateRelaSponsorBySponsorCode(map);
 	}
+
+	@Override
+	public Long findNewVipRankMoreOne() {
+		return rdMmRelationDao.findNewVipRankMoreOne();
+	}
 }

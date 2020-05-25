@@ -488,4 +488,19 @@
 	<update id="updatePhoneStatusByMCode" parameterType="map">
 		UPDATE	RD_MM_BASIC_INFO SET ALL_IN_PAY_PHONE_STATUS = #{allInPayPhoneStatus} WHERE	MM_CODE = #{mmCode}
 	</update>
+
+	<select id="findNewMem" parameterType="map" resultType="java.lang.Long">
+		SELECT COUNT(1) from rd_mm_basic_info a INNER JOIN rd_mm_relation b on a.mm_code = b.mm_code
+		<where>
+			<if test="start != null and start != ''">
+				and a.CREATION_DATE >= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				and a.CREATION_DATE &lt;= #{end}
+			</if>
+			<if test="NOFlag != null and NOFlag != ''">
+				and b.N_O_FLAG = #{NOFlag}
+			</if>
+		</where>
+	</select>
 </mapper> 
