@@ -227,8 +227,9 @@ public class UserAPIController extends BaseController {
         List<RdMmBank> banks = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("inValid",1));
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        RdRanks rdRankVip = rdRanksService.find("rankId", 1);
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
-        PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks,banks,rdMmAccountInfo);
+        PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks,banks,rdMmAccountInfo,rdRankVip);
         if(rdMmRelation.getRank()==4&&rdMmRelation.getPopupFlag()==0){
             result.setWindowFlag(0);
             List<RankExplain> params = rankExplainDao.findByParams(Paramap.create().put("rank", 4));
@@ -1380,7 +1381,15 @@ public class UserAPIController extends BaseController {
             return ApiUtils.success(Paramap.create().put("gradeName", "用户").put("monthlyPpv", monthlyPpv)
                 .put("AccumulatedPpv", AccumulatedPpv).put("url", "www.baidu.com").put("docType", "member_upgrade"));
         }
-        return ApiUtils.success(Paramap.create().put("gradeName", rdRanks.getRankName()).put("monthlyPpv", monthlyPpv)
+
+        String rankName="";
+        RdRanks rdRankVip = rdRanksService.find("rankId", 1);
+        if(rdRanks.getRankId()==2){
+            rankName=rdRankVip.getRankName();
+        }else {
+            rankName=rdRanks.getRankName();
+        }
+        return ApiUtils.success(Paramap.create().put("gradeName", rankName).put("monthlyPpv", monthlyPpv)
             .put("AccumulatedPpv", AccumulatedPpv).put("url", "www.baidu.com").put("docType", "member_upgrade"));
     }
 
