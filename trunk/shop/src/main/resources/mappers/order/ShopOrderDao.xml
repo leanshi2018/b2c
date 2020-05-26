@@ -1430,15 +1430,15 @@
         from shop_order so
         WHERE 1=1
         <if test="startTime !=null and startTime != ''">
-            <![CDATA[and so.payment_time >= #{startTime}]]>
+            and so.payment_time >= #{startTime}
         </if>
         <if test="endTime !=null and endTime != ''">
-            <![CDATA[and so.payment_time < LAST_DAY(CURDATE())]]>
+           and so.payment_time &lt;= #{endTime}
         </if>
         <if test="buyerId != null">
             and so.buyer_id =#{buyerId}
         </if>
-        AND payment_state = 1 and order_state != 0
+        AND so.payment_state = 1 and so.order_state != 0
     </select>
 
     <!--计算当前周期下会员的ppv-->

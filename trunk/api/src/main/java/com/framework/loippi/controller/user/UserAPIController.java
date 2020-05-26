@@ -1360,8 +1360,20 @@ public class UserAPIController extends BaseController {
             .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
-        String startTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 10, 1, "yyyy-MM");
-        String endTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 2, 1, "yyyy-MM");
+        java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String firstday, lastday;
+        // 获取前月的第一天
+        Calendar cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 0);
+        cale.set(Calendar.DAY_OF_MONTH, 1);
+        firstday = format.format(cale.getTime());
+        // 获取前月的最后一天
+        cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 1);
+        cale.set(Calendar.DAY_OF_MONTH, 0);
+        lastday = format.format(cale.getTime());
+        String startTime = firstday+" 00:00:00";
+        String endTime = lastday+" 23:59:59";
         OrderSumPpv orderSumMonthlyPpv = shopOrderService.sumPpv(
             Paramap.create().put("startTime", startTime).put("endTime", endTime).put("buyerId", member.getMmCode()));
         //OrderSumPpv orderSumAccumulatedPpv=shopOrderService.sumPpv(Paramap.create().put("buyerId",member.getMmCode()));
