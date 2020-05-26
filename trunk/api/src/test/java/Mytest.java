@@ -79,9 +79,20 @@ public class Mytest {
         } catch (final Exception e) {
             e.printStackTrace();
         }*/
-        String startTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 10, 1, "yyyy-MM");
-        String endTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 2, 1, "yyyy-MM");
-        System.out.println(startTime);
-        System.out.println(endTime);
+        // 获取当月第一天和最后一天
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String firstday, lastday;
+        // 获取前月的第一天
+        Calendar cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 0);
+        cale.set(Calendar.DAY_OF_MONTH, 1);
+        firstday = format.format(cale.getTime());
+        // 获取前月的最后一天
+        cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 1);
+        cale.set(Calendar.DAY_OF_MONTH, 0);
+        lastday = format.format(cale.getTime());
+        System.out.println(firstday);
+        System.out.println(lastday);
     }
 }
