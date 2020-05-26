@@ -1365,15 +1365,16 @@ public class UserAPIController extends BaseController {
         OrderSumPpv orderSumMonthlyPpv = shopOrderService.sumPpv(
             Paramap.create().put("startTime", startTime).put("endTime", endTime).put("buyerId", member.getMmCode()));
         //OrderSumPpv orderSumAccumulatedPpv=shopOrderService.sumPpv(Paramap.create().put("buyerId",member.getMmCode()));
+        System.out.println("***月购买记录***"+orderSumMonthlyPpv);
         BigDecimal monthlyPpv = BigDecimal.ZERO;
         BigDecimal AccumulatedPpv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
         if (orderSumMonthlyPpv != null) {
             monthlyPpv = Optional.ofNullable(orderSumMonthlyPpv.getTotalPpv()).orElse(BigDecimal.ZERO);
         }
-        if (rdRanks.getRankClass() == 0) {
+        /*if (rdRanks.getRankClass() == 0) {
             monthlyPpv = BigDecimal.ZERO;
             AccumulatedPpv = BigDecimal.ZERO;
-        }
+        }*/
         //if (orderSumAccumulatedPpv!=null){
         //    AccumulatedPpv=Optional.ofNullable(orderSumAccumulatedPpv.getTotalPpv()).orElse(BigDecimal.ZERO);
         //}
