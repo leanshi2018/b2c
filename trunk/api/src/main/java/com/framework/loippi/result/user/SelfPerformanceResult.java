@@ -103,6 +103,13 @@ public class SelfPerformanceResult {
 
 	private String rankRecordHigh;//历史最高级别
 
+	private BigDecimal serviceMi;//服务mi值
+	private BigDecimal serviceCoefficient;//服务系数
+	private BigDecimal coachMi;//辅导mi值
+	private BigDecimal coachCoefficient;//辅导系数
+	private BigDecimal shareMi;//分红mi值
+	private BigDecimal shareCoefficient;//分红系数
+
 	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, BigDecimal profits2, RdBonusMaster bonusMaster,List<String> periodCodeList, BigDecimal bugMi) {
 		Optional<RdMmBasicInfo> optionalBasicInfo = Optional.ofNullable(profile);
 		Optional<RdBonusMaster> optionalBonusMaster = Optional.ofNullable(bonusMaster);
@@ -243,6 +250,13 @@ public class SelfPerformanceResult {
 		}
 		result.setRankRecordHigh(rankRecordHighStr);
 		result.setPeriodCodeList(periodCodeList);
+		//TODO
+		result.setServiceMi(new BigDecimal("0.00"));
+		result.setServiceCoefficient(new BigDecimal("0"));
+		result.setCoachMi(new BigDecimal("0.00"));
+		result.setCoachCoefficient(new BigDecimal("0"));
+		result.setShareMi(new BigDecimal("0.00"));
+		result.setShareCoefficient(new BigDecimal("0"));
 		return result;
 	}
 
@@ -346,6 +360,13 @@ public class SelfPerformanceResult {
 		}else {
 			result.setDdRank1Number(qualification.getDdRank1Number());
 		}
+		//TODO
+		result.setServiceMi(new BigDecimal("0.00"));
+		result.setServiceCoefficient(new BigDecimal("0"));
+		result.setCoachMi(new BigDecimal("0.00"));
+		result.setCoachCoefficient(new BigDecimal("0"));
+		result.setShareMi(new BigDecimal("0.00"));
+		result.setShareCoefficient(new BigDecimal("0"));
 		return result;
 	}
 

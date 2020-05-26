@@ -111,7 +111,12 @@ public class SubordinateUserInformationResult {
     private Integer netAcNumber;//团队重复消费合格人数 ---- 整组重消活跃人数
     private String rankRecordHigh;//历史最高级别
 
-
+    private BigDecimal serviceMi;//服务mi值
+    private BigDecimal serviceCoefficient;//服务系数
+    private BigDecimal coachMi;//辅导mi值
+    private BigDecimal coachCoefficient;//辅导系数
+    private BigDecimal shareMi;//分红mi值
+    private BigDecimal shareCoefficient;//分红系数
 
 
     public static SubordinateUserInformationResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, OrderSumPpv orderSumMonthlyPpv, OrderSumPpv orderSumAccumulatedPpv) {
@@ -247,8 +252,13 @@ public class SubordinateUserInformationResult {
         }else {
             result.setRankRecordHigh("普通会员");
         }
-
-
+        //TODO
+        result.setServiceMi(new BigDecimal("0.00"));
+        result.setServiceCoefficient(new BigDecimal("0"));
+        result.setCoachMi(new BigDecimal("0.00"));
+        result.setCoachCoefficient(new BigDecimal("0"));
+        result.setShareMi(new BigDecimal("0.00"));
+        result.setShareCoefficient(new BigDecimal("0"));
         return result;
     }
 
@@ -287,6 +297,13 @@ public class SubordinateUserInformationResult {
         result.setRankRecordHigh("普通会员");
         result.setMonthPpv(BigDecimal.ZERO);//ppv
         result.setMonthMoney(BigDecimal.ZERO);//购买额
+        //TODO
+        result.setServiceMi(new BigDecimal("0.00"));
+        result.setServiceCoefficient(new BigDecimal("0"));
+        result.setCoachMi(new BigDecimal("0.00"));
+        result.setCoachCoefficient(new BigDecimal("0"));
+        result.setShareMi(new BigDecimal("0.00"));
+        result.setShareCoefficient(new BigDecimal("0"));
         return result;
     }
 }
