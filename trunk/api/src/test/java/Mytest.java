@@ -2,6 +2,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.framework.loippi.utils.Dateutil;
 import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
@@ -78,15 +79,9 @@ public class Mytest {
         } catch (final Exception e) {
             e.printStackTrace();
         }*/
-        String year = "2020";
-        ArrayList<String> strings = new ArrayList<>();
-        for (int i=1;i < 13;i++){
-            if(i<10){
-                strings.add(year+"0"+i);
-            }else {
-                strings.add(year+i);
-            }
-        }
-        System.out.println(strings);
+        String startTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 10, 1, "yyyy-MM");
+        String endTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 2, 1, "yyyy-MM");
+        System.out.println(startTime);
+        System.out.println(endTime);
     }
 }
