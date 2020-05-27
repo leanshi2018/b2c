@@ -1426,7 +1426,7 @@
     <!-- 统计某用户的ppv值 -->
     <select id="sumPpv" resultType="com.framework.loippi.vo.order.OrderSumPpv">
         SELECT SUM(so.ppv-ifnull( so.refund_ppv, 0 )) as totalPpv,
-        SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )-ifnull(so.refund_point, 0)) as totalmoney
+        SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )+ifnull( so.coupon_discount, 0 )-ifnull( so.refund_amount, 0 )-ifnull(so.refund_point, 0)) as totalmoney
         from shop_order so
         WHERE 1=1
         <if test="startTime !=null and startTime != ''">
@@ -1449,7 +1449,7 @@
     <!-- 统计某用户指定周期的ppv值 -->
     <select id="findByPeriod" resultType="com.framework.loippi.vo.order.OrderSumPpv" parameterType="java.util.Map">
         SELECT SUM(so.ppv-ifnull( so.refund_ppv, 0 )) as totalPpv,
-        SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )-ifnull( so.refund_amount, 0 )-ifnull(so.refund_point, 0)) as totalmoney
+        SUM(so.order_amount+ifnull( so.point_rmb_num, 0 )+ifnull( so.coupon_discount, 0 )-ifnull( so.refund_amount, 0 )-ifnull(so.refund_point, 0)) as totalmoney
         from shop_order so
         WHERE 1=1
         <if test="buyerId !=null and buyerId != ''">
