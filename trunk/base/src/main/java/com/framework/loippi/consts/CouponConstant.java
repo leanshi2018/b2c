@@ -83,5 +83,29 @@ public class CouponConstant {
     public static final Long AUG_COUPON_ID = 6555008628095455339L;
     //public static final Long AUG_COUPON_ID = 6555008628095455337L;
 
-
+    //*****************************************************************
+    /**
+     * 九月优惠券ID
+     */
+    public static final Long SEPT_COUPON_ID = 6555008628095455338L;
+    /**
+     * 十月优惠券ID
+     */
+    public static final Long OCT_COUPON_ID = 6555008628095455339L;
+    /**
+     * 十一月优惠券ID
+     */
+    public static final Long NOV_COUPON_ID = 6555008628095455340L;
+    /**
+     * 十二月优惠券ID
+     */
+    public static final Long DEC_COUPON_ID = 6555008628095455341L;
+    /**
+     * 21年一月优惠券ID
+     */
+    public static final Long JAN21_COUPON_ID = 6555008628095455342L;
+    /**
+     * 21年二月优惠券ID
+     */
+    public static final Long FEB21_COUPON_ID = 6555008628095455343L;
 }
