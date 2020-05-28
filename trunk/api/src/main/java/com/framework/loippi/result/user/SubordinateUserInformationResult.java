@@ -125,7 +125,11 @@ public class SubordinateUserInformationResult {
         result.setAvatar(optional.map(RdMmBasicInfo::getMmAvatar).orElse(""));
         result.setNickname(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
         if (shopMemberGrade!=null){
-            result.setMemberGradeName(shopMemberGrade.getRankName());
+            if(shopMemberGrade.getRankId()==2){
+                result.setMemberGradeName("VIP会员");
+            }else {
+                result.setMemberGradeName(shopMemberGrade.getRankName());
+            }
         }else{
             result.setMemberGradeName("用户");
         }
