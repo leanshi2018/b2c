@@ -56,19 +56,28 @@
 		<result column="net_new_vip_number" property="netNewVipNumber" />
 		<result column="net_ac_number" property="netAcNumber" />
 		<result column="compliance_status" property="complianceStatus" />
+
+		<result column="DEV1_PV_BASE" property="dev1PvBase" />
+		<result column="DEV1_RATE" property="dev1Rate" />
+		<result column="DEV2_PV_BASE" property="dev2PvBase" />
+		<result column="DEV2_RATE" property="dev2Rate" />
+		<result column="DEV_SHARE_PV_BASE" property="devSharePvBase" />
+		<result column="DEV_SHARE_RATE" property="devShareRate" />
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 id_rd_dis_qlf,PERIOD_CODE,MM_CODE,MM_NAME,SPONSOR_CODE,SPONSOR_NAME,MM_STATUS,RA_STATUS,RA_SHOP_YN,PPV,PPV_RETAIL,APPV_INIT,APPV_FINAL,A_RETAIL_INIT,A_RETAIL,A_RETAIL_FINAL,
 		 RANK_P2,RANK_P1,RANK_P0,RANK_AC,RANK_RECORD_HIGH,LEAF_YN,ORPHAN,LAYER,G7PV,NPV,GPV_FLAGSHIP,GROUP_RANK_MAX,DD_NEW_VIP_NUMBER,DD_RANK1_NUMBER,DD_RANK2_NUMBER,DD_AC_NUMBER,DL_RANK4_NUMBER,DL_RANK5_NUMBER,
-		 DL_RANK6_NUMBER,DL_RANK7_NUMBER,DL_RANK8_NUMBER,PPV_QUALIFIED,H_PPV_QUALIFIED,TOURISM_QUALIFIED,CAR_QUALIFIED,DIVIDEND_QUALIFIED,net_id,net_end,net_new_vip_number,net_ac_number,compliance_status
+		 DL_RANK6_NUMBER,DL_RANK7_NUMBER,DL_RANK8_NUMBER,PPV_QUALIFIED,H_PPV_QUALIFIED,TOURISM_QUALIFIED,CAR_QUALIFIED,DIVIDEND_QUALIFIED,net_id,net_end,net_new_vip_number,net_ac_number,compliance_status,
+		 DEV1_PV_BASE,DEV1_RATE,DEV2_PV_BASE,DEV2_RATE,DEV_SHARE_PV_BASE,DEV_SHARE_RATE
 	</sql>
 	
 	<sql id="base_value_column">
 		 #{idRdDisQlf},#{periodCode},#{mCode},#{mName},#{sponsorCode},#{sponsorName},#{mStatus},#{raStatus},#{raShopYn},#{ppv},#{ppvRetail},#{appvInit},#{appvFinal},#{retailInit},#{retail},#{retailFinal},#{rankP2},#{rankP1},#{rankP0},
 		 #{rankAc},#{rankRecordHigh},#{leafYn},#{orphan},#{layer},#{g7pv},#{npv},#{gpvFlagship},#{groupRankMax},#{ddNewVIPNumber},#{ddRank1Number},#{ddRank2Number},#{ddAcNumber},#{dlRank4Number},#{dlRank5Number},#{dlRank6Number},#{dlRank7Number},#{dlRank8Number},
-		 #{ppvqualified}, #{hPpvQualified},#{tourismQualified},#{carQualified},#{dividendQualified},#{netId},#{netEnd},#{netNewVipNumber},#{netAcNumber},#{complianceStatus}
+		 #{ppvqualified}, #{hPpvQualified},#{tourismQualified},#{carQualified},#{dividendQualified},#{netId},#{netEnd},#{netNewVipNumber},#{netAcNumber},#{complianceStatus},#{dev1PvBase},#{dev1Rate},#{dev2PvBase},
+		 #{dev2Rate},#{devSharePvBase},#{devShareRate}
 	</sql>
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
 	<sql id="where_column">
@@ -213,6 +222,24 @@
 		<if test="complianceStatus != null">
 			AND compliance_status = #{complianceStatus,jdbcType=INTEGER}
 		</if>
+		<if test="dev1PvBase != null">
+			AND DEV1_PV_BASE = #{dev1PvBase,jdbcType=DECIMAL}
+		</if>
+		<if test="dev1Rate != null">
+			AND DEV1_RATE = #{dev1Rate,jdbcType=DECIMAL}
+		</if>
+		<if test="dev2PvBase != null">
+			AND DEV2_PV_BASE = #{dev2PvBase,jdbcType=DECIMAL}
+		</if>
+		<if test="dev2Rate != null">
+			AND DEV2_RATE = #{dev2Rate,jdbcType=DECIMAL}
+		</if>
+		<if test="devSharePvBase != null">
+			AND DEV_SHARE_PV_BASE = #{devSharePvBase,jdbcType=DECIMAL}
+		</if>
+		<if test="devShareRate != null">
+			AND DEV_SHARE_RATE = #{devShareRate,jdbcType=DECIMAL}
+		</if>
 	</sql>
 	
 	<!-- 设置语句 -->
@@ -354,6 +381,24 @@
 		</if>
 		<if test="complianceStatus != null">
 			compliance_status = #{complianceStatus,jdbcType=INTEGER},
+		</if>
+		<if test="dev1PvBase != null">
+			 DEV1_PV_BASE = #{dev1PvBase,jdbcType=DECIMAL},
+		</if>
+		<if test="dev1Rate != null">
+			 DEV1_RATE = #{dev1Rate,jdbcType=DECIMAL},
+		</if>
+		<if test="dev2PvBase != null">
+			 DEV2_PV_BASE = #{dev2PvBase,jdbcType=DECIMAL},
+		</if>
+		<if test="dev2Rate != null">
+			 DEV2_RATE = #{dev2Rate,jdbcType=DECIMAL},
+		</if>
+		<if test="devSharePvBase != null">
+			 DEV_SHARE_PV_BASE = #{devSharePvBase,jdbcType=DECIMAL},
+		</if>
+		<if test="devShareRate != null">
+			 DEV_SHARE_RATE = #{devShareRate,jdbcType=DECIMAL},
 		</if>
 	</sql>
 

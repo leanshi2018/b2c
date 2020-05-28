@@ -113,4 +113,16 @@ public class MemberQualification implements GenericEntity {
     private Integer netAcNumber;//团队重复消费合格人数
     @Column(name = "compliance_status" )
     private Integer complianceStatus;//团队重复消费合格人数
+    @Column(name = "DEV1_PV_BASE" )
+    private BigDecimal dev1PvBase;//服务米值 - 计算服务奖的基数
+    @Column(name = "DEV1_RATE" )
+    private BigDecimal dev1Rate;//服务系数
+    @Column(name = "DEV2_PV_BASE" )
+    private BigDecimal dev2PvBase;//辅导米值
+    @Column(name = "DEV2_RATE" )
+    private BigDecimal dev2Rate;//辅导系数
+    @Column(name = "DEV_SHARE_PV_BASE" )
+    private BigDecimal devSharePvBase;//分红米值
+    @Column(name = "DEV_SHARE_RATE" )
+    private BigDecimal devShareRate;//分红系数
 }

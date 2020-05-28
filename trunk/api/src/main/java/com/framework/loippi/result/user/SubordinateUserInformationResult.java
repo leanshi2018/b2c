@@ -253,12 +253,12 @@ public class SubordinateUserInformationResult {
             result.setRankRecordHigh("普通会员");
         }
         //TODO
-        result.setServiceMi(new BigDecimal("0.00"));
-        result.setServiceCoefficient(new BigDecimal("0"));
-        result.setCoachMi(new BigDecimal("0.00"));
-        result.setCoachCoefficient(new BigDecimal("0"));
-        result.setShareMi(new BigDecimal("0.00"));
-        result.setShareCoefficient(new BigDecimal("0"));
+        result.setServiceMi(Optional.ofNullable(memberQualification.getDev1PvBase()).orElse(BigDecimal.ZERO));
+        result.setServiceCoefficient(Optional.ofNullable(memberQualification.getDev1Rate()).orElse(BigDecimal.ZERO));
+        result.setCoachMi(Optional.ofNullable(memberQualification.getDev2PvBase()).orElse(BigDecimal.ZERO));
+        result.setCoachCoefficient(Optional.ofNullable(memberQualification.getDev2Rate()).orElse(BigDecimal.ZERO));
+        result.setShareMi(Optional.ofNullable(memberQualification.getDevSharePvBase()).orElse(BigDecimal.ZERO));
+        result.setShareCoefficient(Optional.ofNullable(memberQualification.getDevShareRate()).orElse(BigDecimal.ZERO));
         return result;
     }
 
