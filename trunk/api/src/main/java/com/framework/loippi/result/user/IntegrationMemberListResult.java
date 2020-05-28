@@ -106,7 +106,11 @@ public class IntegrationMemberListResult {
                 String mmCode = item.getMmCode();
                 for (RdMmRelation rdMmRelation : rdMmRelationList) {
                     if(rdMmRelation.getMmCode().equals(mmCode)){
-                        integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        if(rdMmRelation.getRank()==2){
+                            integrationMemberListResult.setGradeName(map.get(1));
+                        }else {
+                            integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        }
                         integrationMemberListResult.setRaSpoStatus(rdMmRelation.getRaSponsorStatus());
                         break;
                     }
@@ -147,10 +151,15 @@ public class IntegrationMemberListResult {
                     RdMmRelation rdMmRelation=rdMmRelationList.get(flag);
                     flag++;
                     if (map.get(Optional.ofNullable(rdMmRelation.getRank()).orElse(-1))!=null && !"".equals(map.get(Optional.ofNullable(rdMmRelation.getRank()).orElse(-1)))){
-                        integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        if(rdMmRelation.getRank()==2){
+                            integrationMemberListResult.setGradeName(map.get(1));
+                        }else {
+                            integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        }
                     }else{
                         integrationMemberListResult.setGradeName("");
                     }
+                    integrationMemberListResult.setRaSpoStatus(Optional.ofNullable(rdMmRelation.getRaSponsorStatus()).orElse(0));
                     userIntegrationListResultList.add(integrationMemberListResult);
                 }
             }
@@ -185,7 +194,11 @@ public class IntegrationMemberListResult {
             if((memberQualification.getRankAc()+"")!=null){
                 memberInfo.setGradeId(memberQualification.getRankAc());
                 if(map.get(memberQualification.getRankAc())!=null){
-                    memberInfo.setGradeName(map.get(memberQualification.getRankAc()));
+                    if(memberQualification.getRankAc()==2){
+                        memberInfo.setGradeName(map.get(1));
+                    }else {
+                        memberInfo.setGradeName(map.get(memberQualification.getRankAc()));
+                    }
                 }else {
                     memberInfo.setGradeName("");
                 }

@@ -13,4 +13,5 @@ public class CouponTransHistory {
     private String gradeName;//会员等级名称
     private String image;//会员头像
     private String mobile;//会员手机号
+    private Integer raSpoStatus;//直邀 间接
 }
