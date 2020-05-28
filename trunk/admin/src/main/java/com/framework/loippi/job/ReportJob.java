@@ -1,20 +1,17 @@
 package com.framework.loippi.job;
 
-import com.framework.loippi.entity.common.DailyOrderCensus;
-import com.framework.loippi.entity.common.MemberIndicator;
-import com.framework.loippi.entity.common.MemberShippingBehavior;
-import com.framework.loippi.service.common.DailyMemCensusService;
-import com.framework.loippi.service.common.DailyOrderCensusService;
-import com.framework.loippi.service.common.MemberIndicatorService;
-import com.framework.loippi.service.common.MemberShippingBehaviorService;
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import com.framework.loippi.service.common.DailyMemCensusService;
+import com.framework.loippi.service.common.DailyOrderCensusService;
+import com.framework.loippi.service.common.MemberIndicatorService;
+import com.framework.loippi.service.common.MemberShippingBehaviorService;
 
 
 /**
@@ -76,7 +73,7 @@ public class ReportJob {
     /**
      * 每日进行新老会员购买行为统计
      */
-    @Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
+    //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
     //@Scheduled(cron = "23 55 0 * * ? " )  //每天0点5分执行一次
     public void getMemberShippingBehavior() {
         log.info("#################################################################");
