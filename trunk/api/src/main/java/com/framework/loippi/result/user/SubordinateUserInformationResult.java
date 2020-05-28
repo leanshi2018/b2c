@@ -246,7 +246,7 @@ public class SubordinateUserInformationResult {
         }else if (memberQualification.getRankRecordHigh()==1){
             result.setRankRecordHigh("VIP会员");
         }else if (memberQualification.getRankRecordHigh()==2){
-            result.setRankRecordHigh("代理会员");
+            result.setRankRecordHigh("VIP会员");
         }else if (memberQualification.getRankRecordHigh()==3){
             result.setRankRecordHigh("初级代理店");
         }else if (memberQualification.getRankRecordHigh()==4){
