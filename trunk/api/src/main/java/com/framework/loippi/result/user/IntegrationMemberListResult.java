@@ -494,7 +494,7 @@ public class IntegrationMemberListResult {
                             }else if (qualification.getRankP0()==1){
                                 memberInfo.setGradeName("VIP会员");
                             }else if (qualification.getRankP0()==2){
-                                memberInfo.setGradeName("代理会员");
+                                memberInfo.setGradeName("VIP会员");
                             }else if (qualification.getRankP0()==3){
                                 memberInfo.setGradeName("初级代理店");
                             }else if (qualification.getRankP0()==4){
