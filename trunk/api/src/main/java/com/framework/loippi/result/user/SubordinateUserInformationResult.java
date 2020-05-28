@@ -157,7 +157,11 @@ public class SubordinateUserInformationResult {
         result.setAvatar(optional.map(RdMmBasicInfo::getMmAvatar).orElse(""));
         result.setNickname(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
         if (shopMemberGrade!=null){
-            result.setMemberGradeName(shopMemberGrade.getRankName());
+            if(shopMemberGrade.getRankId()==2){
+                result.setMemberGradeName("VIP会员");
+            }else {
+                result.setMemberGradeName(shopMemberGrade.getRankName());
+            }
         }else{
             result.setMemberGradeName("用户");
         }
@@ -183,7 +187,11 @@ public class SubordinateUserInformationResult {
         SubordinateUserInformationResult result = new SubordinateUserInformationResult();
         result.setAvatar(Optional.ofNullable(rdMmBasicInfo.getMmAvatar()).orElse(""));//设置头像
         result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
-        result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
+        if(shopMemberGrade.getRankId()==2){
+            result.setMemberGradeName("VIP会员");//设置会员级别
+        }else {
+            result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
+        }
         result.setRaSpoStatus(Optional.ofNullable(rdMmRelation.getRaSponsorStatus()).orElse(null));//设置会员状态 永久 间接
         Date creationDate = rdMmBasicInfo.getCreationDate();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -270,7 +278,11 @@ public class SubordinateUserInformationResult {
         SubordinateUserInformationResult result = new SubordinateUserInformationResult();
         result.setAvatar(Optional.ofNullable(rdMmBasicInfo.getMmAvatar()).orElse(""));//设置头像
         result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
-        result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
+        if(shopMemberGrade.getRankId()==2){
+            result.setMemberGradeName("VIP会员");//设置会员级别
+        }else {
+            result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
+        }
         result.setRaSpoStatus(Optional.ofNullable(rdMmRelation.getRaSponsorStatus()).orElse(null));//设置会员状态 永久 间接
         Date creationDate = rdMmBasicInfo.getCreationDate();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
