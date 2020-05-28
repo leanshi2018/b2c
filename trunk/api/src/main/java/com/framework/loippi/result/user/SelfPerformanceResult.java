@@ -251,12 +251,12 @@ public class SelfPerformanceResult {
 		result.setRankRecordHigh(rankRecordHighStr);
 		result.setPeriodCodeList(periodCodeList);
 		//TODO
-		result.setServiceMi(new BigDecimal("0.00"));
-		result.setServiceCoefficient(new BigDecimal("0"));
-		result.setCoachMi(new BigDecimal("0.00"));
-		result.setCoachCoefficient(new BigDecimal("0"));
-		result.setShareMi(new BigDecimal("0.00"));
-		result.setShareCoefficient(new BigDecimal("0"));
+		result.setServiceMi(Optional.ofNullable(qualification.getDev1PvBase()).orElse(BigDecimal.ZERO));
+		result.setServiceCoefficient(Optional.ofNullable(qualification.getDev1Rate()).orElse(BigDecimal.ZERO));
+		result.setCoachMi(Optional.ofNullable(qualification.getDev2PvBase()).orElse(BigDecimal.ZERO));
+		result.setCoachCoefficient(Optional.ofNullable(qualification.getDev2Rate()).orElse(BigDecimal.ZERO));
+		result.setShareMi(Optional.ofNullable(qualification.getDevSharePvBase()).orElse(BigDecimal.ZERO));
+		result.setShareCoefficient(Optional.ofNullable(qualification.getDevShareRate()).orElse(BigDecimal.ZERO));
 		return result;
 	}
 
@@ -361,12 +361,12 @@ public class SelfPerformanceResult {
 			result.setDdRank1Number(qualification.getDdRank1Number());
 		}
 		//TODO
-		result.setServiceMi(new BigDecimal("0.00"));
-		result.setServiceCoefficient(new BigDecimal("0"));
-		result.setCoachMi(new BigDecimal("0.00"));
-		result.setCoachCoefficient(new BigDecimal("0"));
-		result.setShareMi(new BigDecimal("0.00"));
-		result.setShareCoefficient(new BigDecimal("0"));
+		result.setServiceMi(Optional.ofNullable(qualification.getDev1PvBase()).orElse(BigDecimal.ZERO));
+		result.setServiceCoefficient(Optional.ofNullable(qualification.getDev1Rate()).orElse(BigDecimal.ZERO));
+		result.setCoachMi(Optional.ofNullable(qualification.getDev2PvBase()).orElse(BigDecimal.ZERO));
+		result.setCoachCoefficient(Optional.ofNullable(qualification.getDev2Rate()).orElse(BigDecimal.ZERO));
+		result.setShareMi(Optional.ofNullable(qualification.getDevSharePvBase()).orElse(BigDecimal.ZERO));
+		result.setShareCoefficient(Optional.ofNullable(qualification.getDevShareRate()).orElse(BigDecimal.ZERO));
 		return result;
 	}
 
