@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.framework.loippi.service.common.DailyMemCensusService;
@@ -39,7 +40,7 @@ public class ReportJob {
      * 定时任务统计前一日会员订单信息数据
      */
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "0 5 0 * * ? " )  //每天0点5分执行一次
+    @Scheduled(cron = "0 5 0 * * ? " )  //每天0点5分执行一次
     public void getDailyOrderCensus() {
         log.info("#################################################################");
         log.info("##############  定时任务执行统计前一日会员订单信息 ################");
@@ -51,7 +52,7 @@ public class ReportJob {
      * 定时任务统计每日会员数据
      */
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "23 55 0 * * ? " )  //每天0点5分执行一次
+    @Scheduled(cron = "23 55 0 * * ? " )  //每天0点5分执行一次
     public void getDailyMemCensus() {
         log.info("#################################################################");
         log.info("##################  定时任务统计每日会员数据   ####################");
@@ -63,7 +64,7 @@ public class ReportJob {
      * 按周期统计会员指标
      */
     //@Scheduled(cron = "0/15 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "23 55 0 * * ? " )  //每天0点5分执行一次
+    @Scheduled(cron = "0 15 0 1 * ? " )  //每月1号凌晨0点15分执行
     public void getMemberIndicator() {
         log.info("#################################################################");
         log.info("##################  定时任务统计周期会员指标   ####################");
@@ -74,7 +75,7 @@ public class ReportJob {
      * 每日进行新老会员购买行为统计
      */
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "23 55 0 * * ? " )  //每天0点5分执行一次
+    @Scheduled(cron = "0 8 0 * * ? " )  //每天0点8分执行一次
     public void getMemberShippingBehavior() {
         log.info("#################################################################");
         log.info("###############  定时任务新老会员购买行为统计   ###################");
