@@ -22,19 +22,20 @@
         <result property="description" column="description"/>
         <result property="advertImage" column="advert_image"/>
         <result property="stars" column="stars"/>
+        <result property="brandIcon" column="brand_icon"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
 		 id ,brand_name ,brand_class ,brand_pic ,brand_sort ,brand_recommend ,store_id ,brand_apply ,class_id ,is_del ,create_time ,update_time
 
-		 ,pinyin,description,advert_image,stars
+		 ,pinyin,description,advert_image,stars,brand_icon
 	</sql>
 
     <sql id="base_value_column">
 		 #{id},#{brandName},#{brandClass},#{brandPic},#{brandSort},#{brandRecommend},#{storeId},#{brandApply},#{classId},#{isDel},#{createTime},#{updateTime}
 
-		 ,#{pinyin},#{description},#{advertImage},#{stars}
+		 ,#{pinyin},#{description},#{advertImage},#{stars},#{brandIcon}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -99,7 +100,9 @@
         <if test="combinationIndex != null and combinationIndex != ''">
             AND id != #{combinationIndex,jdbcType=BIGINT}
         </if>
-
+        <if test="brandIcon != null and brandIcon != ''">
+            AND brand_icon = #{brandIcon,jdbcType=VARCHAR}
+        </if>
         <if test="brandIds != null">
             AND id IN
             <foreach item="brandId" index="index" collection="brandIds" open="(" separator="," close=")">
@@ -159,6 +162,9 @@
 
         <if test="description != null and description != ''">
             description = #{description},
+        </if>
+        <if test="brandIcon != null and brandIcon != ''">
+             brand_icon = #{brandIcon,jdbcType=VARCHAR},
         </if>
     </sql>
 

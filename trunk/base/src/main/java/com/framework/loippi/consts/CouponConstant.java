@@ -108,4 +108,8 @@ public class CouponConstant {
      * 21年二月优惠券ID
      */
     public static final Long FEB21_COUPON_ID = 6555008628095455343L;
+    /**
+     * 21年三月优惠券ID
+     */
+    public static final Long MAR21_COUPON_ID = 6555008628095455345L;
 }
