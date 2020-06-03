@@ -64,6 +64,9 @@ public class AllInPayController extends BaseController {
         if(rdMmBasicInfo==null){
             return ApiUtils.error("会员基础信息异常");
         }
+        if(rdMmBasicInfo.getAllInPayPhoneStatus()!=null&&rdMmBasicInfo.getAllInPayPhoneStatus()==1){
+            return ApiUtils.error("该号码已绑定成功，无需验证");
+        }
         if (StringUtils.isEmpty(rdMmBasicInfo.getMobile())) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }

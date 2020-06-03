@@ -178,4 +178,9 @@ public class ShopMemberMessageServiceImpl extends GenericServiceImpl<ShopMemberM
     public Integer findMessageLeaveNum(long uid) {
         return shopMemberMessageDao.findMessageLeaveNum(uid);
     }
+
+    @Override
+    public void updateMessageRead(String mmCode) throws Exception {
+        shopMemberMessageDao.updateByUid(Long.parseLong(mmCode));
+    }
 }

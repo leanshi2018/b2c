@@ -227,8 +227,9 @@ public class UserAPIController extends BaseController {
         List<RdMmBank> banks = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("inValid",1));
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        RdRanks rdRankVip = rdRanksService.find("rankId", 1);
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
-        PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks,banks,rdMmAccountInfo);
+        PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks,banks,rdMmAccountInfo,rdRankVip);
         if(rdMmRelation.getRank()==4&&rdMmRelation.getPopupFlag()==0){
             result.setWindowFlag(0);
             List<RankExplain> params = rankExplainDao.findByParams(Paramap.create().put("rank", 4));
@@ -1359,20 +1360,33 @@ public class UserAPIController extends BaseController {
             .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
-        String startTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 10, 1, "yyyy-MM");
-        String endTime = Dateutil.getEalierOrLaterDate(new Date().getTime(), 2, 1, "yyyy-MM");
+        java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String firstday, lastday;
+        // 获取前月的第一天
+        Calendar cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 0);
+        cale.set(Calendar.DAY_OF_MONTH, 1);
+        firstday = format.format(cale.getTime());
+        // 获取前月的最后一天
+        cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 1);
+        cale.set(Calendar.DAY_OF_MONTH, 0);
+        lastday = format.format(cale.getTime());
+        String startTime = firstday+" 00:00:00";
+        String endTime = lastday+" 23:59:59";
         OrderSumPpv orderSumMonthlyPpv = shopOrderService.sumPpv(
             Paramap.create().put("startTime", startTime).put("endTime", endTime).put("buyerId", member.getMmCode()));
         //OrderSumPpv orderSumAccumulatedPpv=shopOrderService.sumPpv(Paramap.create().put("buyerId",member.getMmCode()));
+        System.out.println("***月购买记录***"+orderSumMonthlyPpv);
         BigDecimal monthlyPpv = BigDecimal.ZERO;
         BigDecimal AccumulatedPpv = Optional.ofNullable(rdMmRelation.getAPpv()).orElse(BigDecimal.ZERO);
         if (orderSumMonthlyPpv != null) {
             monthlyPpv = Optional.ofNullable(orderSumMonthlyPpv.getTotalPpv()).orElse(BigDecimal.ZERO);
         }
-        if (rdRanks.getRankClass() == 0) {
+        /*if (rdRanks.getRankClass() == 0) {
             monthlyPpv = BigDecimal.ZERO;
             AccumulatedPpv = BigDecimal.ZERO;
-        }
+        }*/
         //if (orderSumAccumulatedPpv!=null){
         //    AccumulatedPpv=Optional.ofNullable(orderSumAccumulatedPpv.getTotalPpv()).orElse(BigDecimal.ZERO);
         //}
@@ -1380,7 +1394,15 @@ public class UserAPIController extends BaseController {
             return ApiUtils.success(Paramap.create().put("gradeName", "用户").put("monthlyPpv", monthlyPpv)
                 .put("AccumulatedPpv", AccumulatedPpv).put("url", "www.baidu.com").put("docType", "member_upgrade"));
         }
-        return ApiUtils.success(Paramap.create().put("gradeName", rdRanks.getRankName()).put("monthlyPpv", monthlyPpv)
+
+        String rankName="";
+        RdRanks rdRankVip = rdRanksService.find("rankId", 1);
+        if(rdRanks.getRankId()==2){
+            rankName=rdRankVip.getRankName();
+        }else {
+            rankName=rdRanks.getRankName();
+        }
+        return ApiUtils.success(Paramap.create().put("gradeName", rankName).put("monthlyPpv", monthlyPpv)
             .put("AccumulatedPpv", AccumulatedPpv).put("url", "www.baidu.com").put("docType", "member_upgrade"));
     }
 

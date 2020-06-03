@@ -127,6 +127,10 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 	}
 
 	@Override
+	public Long findNewVipRankMoreOne() {
+		return rdMmRelationDao.findNewVipRankMoreOne();
+	}
+
 	public Integer findSponCountByMCode(String sponsorCode) {
 		return rdMmRelationDao.findSponCountByMCode(sponsorCode);
 	}

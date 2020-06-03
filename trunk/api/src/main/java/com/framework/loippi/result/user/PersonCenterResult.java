@@ -145,7 +145,7 @@ public class PersonCenterResult {
     //直邀人数
     private Integer rank1Number;
 
-    public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo) {
+    public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo, RdRanks rdRankVip) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
         Optional<RdMmAccountInfo> optional2 = Optional.ofNullable(rdMmAccountInfo);
         PersonCenterResult result = new PersonCenterResult();
@@ -153,7 +153,11 @@ public class PersonCenterResult {
         result.setNickname(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
         result.setSex(optional.map(RdMmBasicInfo::getGender).orElse(0));
         result.setGrade(shopMemberGrade.getRankId());
-        result.setGradeName(shopMemberGrade.getRankName());
+        if(shopMemberGrade.getRankId()==2){
+            result.setGradeName(rdRankVip.getRankName());
+        }else {
+            result.setGradeName(shopMemberGrade.getRankName());
+        }
         result.setUserId(profile.getMmId());
         result.setMessageNum(0);
         result.setLookPpv(0);

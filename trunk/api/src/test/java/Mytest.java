@@ -1,6 +1,8 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+import com.framework.loippi.utils.Dateutil;
 import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
@@ -50,7 +52,7 @@ public class Mytest {
      */
     @Test
     public void testCut() {
-        final YunRequest request = new YunRequest("OrderService", "signalAgentPay");
+        /*final YunRequest request = new YunRequest("OrderService", "signalAgentPay");
         try {
             request.put("bizOrderNo", "P20200416184106847WOMI399467");
             JSONArray collectPayList = new JSONArray();
@@ -76,6 +78,21 @@ public class Mytest {
             System.out.println(resp.getString("message"));
         } catch (final Exception e) {
             e.printStackTrace();
-        }
+        }*/
+        // 获取当月第一天和最后一天
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String firstday, lastday;
+        // 获取前月的第一天
+        Calendar cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 0);
+        cale.set(Calendar.DAY_OF_MONTH, 1);
+        firstday = format.format(cale.getTime());
+        // 获取前月的最后一天
+        cale = Calendar.getInstance();
+        cale.add(Calendar.MONTH, 1);
+        cale.set(Calendar.DAY_OF_MONTH, 0);
+        lastday = format.format(cale.getTime());
+        System.out.println(firstday);
+        System.out.println(lastday);
     }
 }

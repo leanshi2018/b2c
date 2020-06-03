@@ -92,7 +92,11 @@ public class DailyOrderCensusServiceImpl extends GenericServiceImpl<DailyOrderCe
             orderNumWechat=wechatYesNum;
         }
         orderCensus.setOrderNumWechat(orderNumWechat);
-        BigDecimal orderIncomeTotal=shopOrderService.findYesIncomeTotal(map);
+        BigDecimal orderIncomeTotal=BigDecimal.ZERO;
+        BigDecimal incomeTotal=shopOrderService.findYesIncomeTotal(map);
+        if(incomeTotal!=null){
+            orderIncomeTotal=orderIncomeTotal.add(incomeTotal);
+        }
         orderCensus.setOrderIncomeTotal(orderIncomeTotal);
         if(orderIncomeTotal.compareTo(BigDecimal.ZERO)==1){
             BigDecimal orderPointTotal=shopOrderService.findYesPointTotal(map);
@@ -101,33 +105,49 @@ public class DailyOrderCensusServiceImpl extends GenericServiceImpl<DailyOrderCe
         }else {
             orderCensus.setPointProportion(new BigDecimal("0.00"));
         }
-        orderCensus.setUnitPrice(orderCensus.getOrderIncomeTotal().divide(new BigDecimal(Integer.toString(orderCensus.getEffectiveOrderNum()))).setScale(2, BigDecimal.ROUND_HALF_UP));
+        if(orderCensus.getEffectiveOrderNum()==0){
+            orderCensus.setUnitPrice(new BigDecimal("0.00"));
+        }else {
+            orderCensus.setUnitPrice(orderCensus.getOrderIncomeTotal().divide(new BigDecimal(Integer.toString(orderCensus.getEffectiveOrderNum())),2,BigDecimal.ROUND_HALF_UP));
+        }
         map.put("orderType",1);
         CensusVo censusVoRetail=shopOrderService.findCensusData(map);
-        orderCensus.setRetailIncomeTotal(censusVoRetail.getAmountTotal());
+        if(censusVoRetail.getAmountTotal()!=null){
+            orderCensus.setRetailIncomeTotal(censusVoRetail.getAmountTotal());
+        }else {
+            orderCensus.setRetailIncomeTotal(new BigDecimal("0.00"));
+        }
         orderCensus.setRetailOrderNum(censusVoRetail.getOrderNum());
         if(censusVoRetail.getOrderNum()==null||censusVoRetail.getOrderNum()==0){
             orderCensus.setRetailUnitPrice(new BigDecimal("0.00"));
         }else {
-            orderCensus.setRetailUnitPrice(orderCensus.getRetailIncomeTotal().divide(new BigDecimal(Integer.toString(orderCensus.getRetailOrderNum()))).setScale(2, BigDecimal.ROUND_HALF_UP));
+            orderCensus.setRetailUnitPrice(orderCensus.getRetailIncomeTotal().divide(new BigDecimal(Integer.toString(orderCensus.getRetailOrderNum())),2,BigDecimal.ROUND_HALF_UP));
         }
         map.put("orderType",2);
         CensusVo censusVoVip=shopOrderService.findCensusData(map);
-        orderCensus.setVipIncomeTotal(censusVoVip.getAmountTotal());
+        if(censusVoVip.getAmountTotal()!=null){
+            orderCensus.setVipIncomeTotal(censusVoVip.getAmountTotal());
+        }else {
+            orderCensus.setVipIncomeTotal(new BigDecimal("0.00"));
+        }
         orderCensus.setVipOrderNum(censusVoVip.getOrderNum());
         if(censusVoVip.getOrderNum()==null||censusVoVip.getOrderNum()==0){
             orderCensus.setVipUnitPrice(new BigDecimal("0.00"));
         }else {
-            orderCensus.setVipUnitPrice(orderCensus.getVipIncomeTotal().divide(new BigDecimal(Integer.toString(orderCensus.getVipOrderNum()))).setScale(2, BigDecimal.ROUND_HALF_UP));
+            orderCensus.setVipUnitPrice(orderCensus.getVipIncomeTotal().divide(new BigDecimal(Integer.toString(orderCensus.getVipOrderNum())),2,BigDecimal.ROUND_HALF_UP));
         }
         map.put("orderType",3);
         CensusVo censusVoBig=shopOrderService.findCensusData(map);
-        orderCensus.setBigIncomeTotal(censusVoBig.getAmountTotal());
+        if(censusVoBig.getAmountTotal()!=null){
+            orderCensus.setBigIncomeTotal(censusVoBig.getAmountTotal());
+        }else {
+            orderCensus.setBigIncomeTotal(new BigDecimal("0.00"));
+        }
         orderCensus.setBigOrderNum(censusVoBig.getOrderNum());
         if(censusVoBig.getOrderNum()==null||censusVoBig.getOrderNum()==0){
             orderCensus.setBigUnitPrice(new BigDecimal("0.00"));
         }else {
-            orderCensus.setBigUnitPrice(orderCensus.getBigIncomeTotal().divide(new BigDecimal(Integer.toString(orderCensus.getBigOrderNum()))).setScale(2, BigDecimal.ROUND_HALF_UP));
+            orderCensus.setBigUnitPrice(orderCensus.getBigIncomeTotal().divide(new BigDecimal(Integer.toString(orderCensus.getBigOrderNum())),2,BigDecimal.ROUND_HALF_UP));
         }
         //4.将日订单列表统计数据插入数据库
         dailyOrderCensusDao.insert(orderCensus);

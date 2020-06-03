@@ -123,4 +123,13 @@ public class DailyOrderCensus implements GenericEntity {
      */
     @Column(name = "big_unit_price" )
     private BigDecimal bigUnitPrice;
+    /**
+     * 查询时间左边限
+     */
+    private String timeLeft;
+
+    /**
+     * 查询时间右边限
+     */
+    private String timeRight;
 }

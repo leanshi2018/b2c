@@ -121,6 +121,12 @@ public class ShopGoodsBrand implements GenericEntity {
     @Column(name = "description")
     private String description;
 
+    /**
+     * 品牌图标
+     */
+    @Column(name = "brand_icon")
+    private String brandIcon;
+
     /*********************添加*********************/
     /**
      * 品牌在售商品数量

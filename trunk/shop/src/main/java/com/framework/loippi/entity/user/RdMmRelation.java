@@ -126,4 +126,8 @@ public class RdMmRelation implements GenericEntity {
 	/** 是否弹窗级别解释 */
 	@Column(name = "popup_flag" )
 	private Integer popupFlag;
+
+	/** 最近下单时间 */
+	@Column(name = "last_pay_time" )
+	private Date lastPayTime;
 }

@@ -106,7 +106,11 @@ public class IntegrationMemberListResult {
                 String mmCode = item.getMmCode();
                 for (RdMmRelation rdMmRelation : rdMmRelationList) {
                     if(rdMmRelation.getMmCode().equals(mmCode)){
-                        integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        if(rdMmRelation.getRank()==2){
+                            integrationMemberListResult.setGradeName(map.get(1));
+                        }else {
+                            integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        }
                         integrationMemberListResult.setRaSpoStatus(rdMmRelation.getRaSponsorStatus());
                         break;
                     }
@@ -147,10 +151,15 @@ public class IntegrationMemberListResult {
                     RdMmRelation rdMmRelation=rdMmRelationList.get(flag);
                     flag++;
                     if (map.get(Optional.ofNullable(rdMmRelation.getRank()).orElse(-1))!=null && !"".equals(map.get(Optional.ofNullable(rdMmRelation.getRank()).orElse(-1)))){
-                        integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        if(rdMmRelation.getRank()==2){
+                            integrationMemberListResult.setGradeName(map.get(1));
+                        }else {
+                            integrationMemberListResult.setGradeName(map.get(rdMmRelation.getRank()));
+                        }
                     }else{
                         integrationMemberListResult.setGradeName("");
                     }
+                    integrationMemberListResult.setRaSpoStatus(Optional.ofNullable(rdMmRelation.getRaSponsorStatus()).orElse(0));
                     userIntegrationListResultList.add(integrationMemberListResult);
                 }
             }
@@ -185,7 +194,11 @@ public class IntegrationMemberListResult {
             if((memberQualification.getRankAc()+"")!=null){
                 memberInfo.setGradeId(memberQualification.getRankAc());
                 if(map.get(memberQualification.getRankAc())!=null){
-                    memberInfo.setGradeName(map.get(memberQualification.getRankAc()));
+                    if(memberQualification.getRankAc()==2){
+                        memberInfo.setGradeName(map.get(1));
+                    }else {
+                        memberInfo.setGradeName(map.get(memberQualification.getRankAc()));
+                    }
                 }else {
                     memberInfo.setGradeName("");
                 }
@@ -481,7 +494,7 @@ public class IntegrationMemberListResult {
                             }else if (qualification.getRankP0()==1){
                                 memberInfo.setGradeName("VIP会员");
                             }else if (qualification.getRankP0()==2){
-                                memberInfo.setGradeName("代理会员");
+                                memberInfo.setGradeName("VIP会员");
                             }else if (qualification.getRankP0()==3){
                                 memberInfo.setGradeName("初级代理店");
                             }else if (qualification.getRankP0()==4){
@@ -564,8 +577,32 @@ public class IntegrationMemberListResult {
             memberInfo.setRetailProfit(decimal);
             userIntegrationListResultList.add(memberInfo);
             //对集合进行排序
-
-
+            if(sorting.equals(1)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getPpv().compareTo(o2.getPpv())==1){
+                            return 1;
+                        }else if(o1.getPpv().compareTo(o2.getPpv())==0){
+                            return 0;
+                        }
+                        return -1;
+                    }
+                });
+            }
+            if(sorting.equals(2)){
+                Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {
+                    @Override
+                    public int compare(IntegrationMemberListResult o1, IntegrationMemberListResult o2) {
+                        if(o1.getPpv().compareTo(o2.getPpv())==1){
+                            return -1;
+                        }else if(o1.getPpv().compareTo(o2.getPpv())==0){
+                            return 0;
+                        }
+                        return 1;
+                    }
+                });
+            }
             //按照加入时间升序
             if(sorting.equals(3)){
                 Collections.sort(userIntegrationListResultList, new Comparator<IntegrationMemberListResult>() {

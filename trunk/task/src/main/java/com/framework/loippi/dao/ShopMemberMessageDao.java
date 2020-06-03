@@ -42,4 +42,6 @@ public interface ShopMemberMessageDao extends GenericDao<ShopMemberMessage, Long
     Integer findMessageOrderNum(long uid);
 
     Integer findMessageLeaveNum(long uid);
+
+    void updateByUid(long uid);
 }

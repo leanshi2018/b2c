@@ -103,6 +103,12 @@
         <if test="bigUnitPrice != null and bigUnitPrice != ''">
             AND big_unit_price = #{bigUnitPrice}
         </if>
+        <if test="timeLeft != null and timeLeft != ''">
+            AND statistical_time >= #{timeLeft}
+        </if>
+        <if test="timeRight != null and timeRight != ''">
+            AND statistical_time &lt;= #{timeRight}
+        </if>
     </sql>
 
     <!-- 设置语句 -->

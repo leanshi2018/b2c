@@ -111,7 +111,12 @@ public class SubordinateUserInformationResult {
     private Integer netAcNumber;//团队重复消费合格人数 ---- 整组重消活跃人数
     private String rankRecordHigh;//历史最高级别
 
-
+    private BigDecimal serviceMi;//服务mi值
+    private BigDecimal serviceCoefficient;//服务系数
+    private BigDecimal coachMi;//辅导mi值
+    private BigDecimal coachCoefficient;//辅导系数
+    private BigDecimal shareMi;//分红mi值
+    private BigDecimal shareCoefficient;//分红系数
 
 
     public static SubordinateUserInformationResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, OrderSumPpv orderSumMonthlyPpv, OrderSumPpv orderSumAccumulatedPpv) {
@@ -120,7 +125,11 @@ public class SubordinateUserInformationResult {
         result.setAvatar(optional.map(RdMmBasicInfo::getMmAvatar).orElse(""));
         result.setNickname(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
         if (shopMemberGrade!=null){
-            result.setMemberGradeName(shopMemberGrade.getRankName());
+            if(shopMemberGrade.getRankId()==2){
+                result.setMemberGradeName("VIP会员");
+            }else {
+                result.setMemberGradeName(shopMemberGrade.getRankName());
+            }
         }else{
             result.setMemberGradeName("用户");
         }
@@ -148,7 +157,11 @@ public class SubordinateUserInformationResult {
         result.setAvatar(optional.map(RdMmBasicInfo::getMmAvatar).orElse(""));
         result.setNickname(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
         if (shopMemberGrade!=null){
-            result.setMemberGradeName(shopMemberGrade.getRankName());
+            if(shopMemberGrade.getRankId()==2){
+                result.setMemberGradeName("VIP会员");
+            }else {
+                result.setMemberGradeName(shopMemberGrade.getRankName());
+            }
         }else{
             result.setMemberGradeName("用户");
         }
@@ -174,7 +187,11 @@ public class SubordinateUserInformationResult {
         SubordinateUserInformationResult result = new SubordinateUserInformationResult();
         result.setAvatar(Optional.ofNullable(rdMmBasicInfo.getMmAvatar()).orElse(""));//设置头像
         result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
-        result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
+        if(shopMemberGrade.getRankId()==2){
+            result.setMemberGradeName("VIP会员");//设置会员级别
+        }else {
+            result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
+        }
         result.setRaSpoStatus(Optional.ofNullable(rdMmRelation.getRaSponsorStatus()).orElse(null));//设置会员状态 永久 间接
         Date creationDate = rdMmBasicInfo.getCreationDate();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -229,7 +246,7 @@ public class SubordinateUserInformationResult {
         }else if (memberQualification.getRankRecordHigh()==1){
             result.setRankRecordHigh("VIP会员");
         }else if (memberQualification.getRankRecordHigh()==2){
-            result.setRankRecordHigh("代理会员");
+            result.setRankRecordHigh("VIP会员");
         }else if (memberQualification.getRankRecordHigh()==3){
             result.setRankRecordHigh("初级代理店");
         }else if (memberQualification.getRankRecordHigh()==4){
@@ -247,8 +264,13 @@ public class SubordinateUserInformationResult {
         }else {
             result.setRankRecordHigh("普通会员");
         }
-
-
+        //TODO
+        result.setServiceMi(Optional.ofNullable(memberQualification.getDev1PvBase()).orElse(BigDecimal.ZERO));
+        result.setServiceCoefficient(Optional.ofNullable(memberQualification.getDev1Rate()).orElse(BigDecimal.ZERO));
+        result.setCoachMi(Optional.ofNullable(memberQualification.getDev2PvBase()).orElse(BigDecimal.ZERO));
+        result.setCoachCoefficient(Optional.ofNullable(memberQualification.getDev2Rate()).orElse(BigDecimal.ZERO));
+        result.setShareMi(Optional.ofNullable(memberQualification.getDevSharePvBase()).orElse(BigDecimal.ZERO));
+        result.setShareCoefficient(Optional.ofNullable(memberQualification.getDevShareRate()).orElse(BigDecimal.ZERO));
         return result;
     }
 
@@ -256,7 +278,11 @@ public class SubordinateUserInformationResult {
         SubordinateUserInformationResult result = new SubordinateUserInformationResult();
         result.setAvatar(Optional.ofNullable(rdMmBasicInfo.getMmAvatar()).orElse(""));//设置头像
         result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
-        result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
+        if(shopMemberGrade.getRankId()==2){
+            result.setMemberGradeName("VIP会员");//设置会员级别
+        }else {
+            result.setMemberGradeName(Optional.ofNullable(shopMemberGrade.getRankName()).orElse(""));//设置会员级别
+        }
         result.setRaSpoStatus(Optional.ofNullable(rdMmRelation.getRaSponsorStatus()).orElse(null));//设置会员状态 永久 间接
         Date creationDate = rdMmBasicInfo.getCreationDate();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -287,6 +313,13 @@ public class SubordinateUserInformationResult {
         result.setRankRecordHigh("普通会员");
         result.setMonthPpv(BigDecimal.ZERO);//ppv
         result.setMonthMoney(BigDecimal.ZERO);//购买额
+        //TODO
+        result.setServiceMi(new BigDecimal("0.00"));
+        result.setServiceCoefficient(new BigDecimal("0"));
+        result.setCoachMi(new BigDecimal("0.00"));
+        result.setCoachCoefficient(new BigDecimal("0"));
+        result.setShareMi(new BigDecimal("0.00"));
+        result.setShareCoefficient(new BigDecimal("0"));
         return result;
     }
 }

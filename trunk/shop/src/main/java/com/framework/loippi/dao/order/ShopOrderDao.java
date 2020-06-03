@@ -13,6 +13,8 @@ import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.mybatis.paginator.domain.PageBounds;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.pojo.common.CensusVo;
+import com.framework.loippi.pojo.common.MemIndicatorVo;
+import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
@@ -195,4 +197,12 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     CensusVo findCensusData(HashMap<String, Object> map);
 
 	ShopOrder findByPaySn(String paySn);
+
+    List<MemIndicatorVo> findMemIndicatorVo(String periodCode);
+
+    List<MemIndicatorVo> findMemIndicatorVoByYear(HashMap<String, Object> map);
+
+    List<MemberShippingBehaviorVo> findNewShippingBehavior();
+
+    List<MemberShippingBehaviorVo> findOldShippingBehavior();
 }

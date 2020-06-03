@@ -15,6 +15,7 @@ import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.pojo.common.CensusVo;
+import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
@@ -346,6 +347,11 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
     CensusVo findCensusData(HashMap<String, Object> map);
 
 	ShopOrder findByPaySn(String paySn);
+
+    List<MemberShippingBehaviorVo> findNewShippingBehavior();
+
+    List<MemberShippingBehaviorVo> findOldShippingBehavior();
+
 
 
 

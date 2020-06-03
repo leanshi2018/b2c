@@ -49,8 +49,15 @@ public class CouponTransInfoResult {
                 history.setNickName(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));
                 for (RdMmRelation rdMmRelation : rdMmRelationList) {
                     if (rdMmRelation.getMmCode().equals(rdMmBasicInfo.getMmCode())){
-                        String gradeName = map.get(rdMmRelation.getRank());
-                        history.setGradeName(gradeName);
+                        String gradeName="";
+                        if(rdMmRelation.getRank()==2){
+                            gradeName=map.get(1);
+                            history.setGradeName(gradeName);
+                        }else {
+                            gradeName = map.get(rdMmRelation.getRank());
+                            history.setGradeName(gradeName);
+                        }
+                        history.setRaSpoStatus(Optional.ofNullable(rdMmRelation.getRaSponsorStatus()).orElse(0));
                         break;
                     }
                 }

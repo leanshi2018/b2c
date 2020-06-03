@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.common.DailyMemCensusDao">
+
+    <resultMap id="DailyMemCensusResultMap" type="com.framework.loippi.entity.common.DailyMemCensus">
+        <id property="id" column="id"  />
+        <result property="reportCode" column="report_code" />
+        <result property="statisticalTime" column="statistical_time" />
+        <result property="memTotal" column="mem_total" />
+        <result property="dailyMem" column="daily_mem" />
+        <result property="dailyNewMem" column="daily_new_mem" />
+        <result property="dailyOldMem" column="daily_old_mem" />
+        <result property="newMem" column="new_mem" />
+        <result property="oldMem" column="old_mem" />
+        <result property="payCommonMem" column="pay_common_mem" />
+        <result property="noPayCommonMem" column="no_pay_common_mem" />
+        <result property="payCommonUnitPrice" column="pay_common_unit_price" />
+        <result property="d0Num" column="d0_num" />
+        <result property="d1Num" column="d1_num" />
+        <result property="d2Num" column="d2_num" />
+        <result property="d3Num" column="d3_num" />
+        <result property="d4Num" column="d4_num" />
+        <result property="d5Num" column="d5_num" />
+        <result property="d6Num" column="d6_num" />
+        <result property="d7Num" column="d7_num" />
+        <result property="d8Num" column="d8_num" />
+        <result property="d9Num" column="d9_num" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,report_code,statistical_time,mem_total,daily_mem,daily_new_mem,daily_old_mem,new_mem,old_mem,pay_common_mem,no_pay_common_mem,
+		 pay_common_unit_price,d0_num,d1_num,d2_num,d3_num,d4_num,d5_num,d6_num,d7_num,d8_num,d9_num
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{reportCode},#{statisticalTime},#{memTotal},#{dailyMem},#{dailyNewMem},#{dailyOldMem},#{newMem},#{oldMem},
+		 #{payCommonMem},#{noPayCommonMem},#{payCommonUnitPrice},#{d0Num},#{d1Num},#{d2Num},#{d3Num},#{d4Num},#{d5Num},
+		 #{d6Num},#{d7Num},#{d8Num},#{d9Num}
+	</sql>
+
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="reportCode != null and reportCode != ''">
+            AND report_code = #{reportCode,jdbcType=VARCHAR}
+        </if>
+        <if test="statisticalTime != null and statisticalTime != ''">
+            AND statistical_time = #{statisticalTime}
+        </if>
+        <if test="memTotal != null and memTotal != ''">
+            AND mem_total = #{memTotal,jdbcType=BIGINT}
+        </if>
+        <if test="dailyMem != null and dailyMem != ''">
+            AND daily_mem = #{dailyMem,jdbcType=BIGINT}
+        </if>
+        <if test="dailyNewMem != null and dailyNewMem != ''">
+            AND daily_new_mem = #{dailyNewMem,jdbcType=BIGINT}
+        </if>
+        <if test="dailyOldMem != null and dailyOldMem != ''">
+            AND daily_old_mem = #{dailyOldMem,jdbcType=BIGINT}
+        </if>
+        <if test="newMem != null and newMem != ''">
+            AND new_mem = #{newMem,jdbcType=BIGINT}
+        </if>
+        <if test="oldMem != null and oldMem != ''">
+            AND old_mem = #{oldMem,jdbcType=BIGINT}
+        </if>
+        <if test="payCommonMem != null and payCommonMem != ''">
+            AND pay_common_mem = #{payCommonMem,jdbcType=BIGINT}
+        </if>
+        <if test="noPayCommonMem != null and noPayCommonMem != ''">
+            AND no_pay_common_mem = #{noPayCommonMem,jdbcType=BIGINT}
+        </if>
+        <if test="payCommonUnitPrice != null and payCommonUnitPrice != ''">
+            AND pay_common_unit_price = #{payCommonUnitPrice}
+        </if>
+        <if test="d0Num != null and d0Num != ''">
+            AND d0_num = #{d0Num,jdbcType=BIGINT}
+        </if>
+        <if test="d1Num != null and d1Num != ''">
+            AND d1_num = #{d1Num,jdbcType=BIGINT}
+        </if>
+        <if test="d2Num != null and d2Num != ''">
+            AND d2_num = #{d2Num,jdbcType=BIGINT}
+        </if>
+        <if test="d3Num != null and d3Num != ''">
+            AND d3_num = #{d3Num,jdbcType=BIGINT}
+        </if>
+        <if test="d4Num != null and d4Num != ''">
+            AND d4_num = #{d4Num,jdbcType=BIGINT}
+        </if>
+        <if test="d5Num != null and d5Num != ''">
+            AND d5_num = #{d5Num,jdbcType=BIGINT}
+        </if>
+        <if test="d6Num != null and d6Num != ''">
+            AND d6_num = #{d6Num,jdbcType=BIGINT}
+        </if>
+        <if test="d7Num != null and d7Num != ''">
+            AND d7_num = #{d7Num,jdbcType=BIGINT}
+        </if>
+        <if test="d8Num != null and d8Num != ''">
+            AND d8_num = #{d8Num,jdbcType=BIGINT}
+        </if>
+        <if test="d9Num != null and d9Num != ''">
+            AND d9_num = #{d9Num,jdbcType=BIGINT}
+        </if>
+        <if test="timeLeft != null and timeLeft != ''">
+            AND statistical_time >= #{timeLeft}
+        </if>
+        <if test="timeRight != null and timeRight != ''">
+            AND statistical_time &lt;= #{timeRight}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+             id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="reportCode != null and reportCode != ''">
+             report_code = #{reportCode,jdbcType=VARCHAR},
+        </if>
+        <if test="statisticalTime != null and statisticalTime != ''">
+             statistical_time = #{statisticalTime},
+        </if>
+        <if test="memTotal != null and memTotal != ''">
+             mem_total = #{memTotal,jdbcType=BIGINT},
+        </if>
+        <if test="dailyMem != null and dailyMem != ''">
+             daily_mem = #{dailyMem,jdbcType=BIGINT},
+        </if>
+        <if test="dailyNewMem != null and dailyNewMem != ''">
+             daily_new_mem = #{dailyNewMem,jdbcType=BIGINT},
+        </if>
+        <if test="dailyOldMem != null and dailyOldMem != ''">
+             daily_old_mem = #{dailyOldMem,jdbcType=BIGINT},
+        </if>
+        <if test="newMem != null and newMem != ''">
+             new_mem = #{newMem,jdbcType=BIGINT},
+        </if>
+        <if test="oldMem != null and oldMem != ''">
+             old_mem = #{oldMem,jdbcType=BIGINT},
+        </if>
+        <if test="payCommonMem != null and payCommonMem != ''">
+             pay_common_mem = #{payCommonMem,jdbcType=BIGINT},
+        </if>
+        <if test="noPayCommonMem != null and noPayCommonMem != ''">
+             no_pay_common_mem = #{noPayCommonMem,jdbcType=BIGINT},
+        </if>
+        <if test="payCommonUnitPrice != null and payCommonUnitPrice != ''">
+             pay_common_unit_price = #{payCommonUnitPrice},
+        </if>
+        <if test="d0Num != null and d0Num != ''">
+             d0_num = #{d0Num,jdbcType=BIGINT},
+        </if>
+        <if test="d1Num != null and d1Num != ''">
+             d1_num = #{d1Num,jdbcType=BIGINT},
+        </if>
+        <if test="d2Num != null and d2Num != ''">
+             d2_num = #{d2Num,jdbcType=BIGINT},
+        </if>
+        <if test="d3Num != null and d3Num != ''">
+             d3_num = #{d3Num,jdbcType=BIGINT},
+        </if>
+        <if test="d4Num != null and d4Num != ''">
+             d4_num = #{d4Num,jdbcType=BIGINT},
+        </if>
+        <if test="d5Num != null and d5Num != ''">
+             d5_num = #{d5Num,jdbcType=BIGINT},
+        </if>
+        <if test="d6Num != null and d6Num != ''">
+             d6_num = #{d6Num,jdbcType=BIGINT},
+        </if>
+        <if test="d7Num != null and d7Num != ''">
+             d7_num = #{d7Num,jdbcType=BIGINT},
+        </if>
+        <if test="d8Num != null and d8Num != ''">
+             d8_num = #{d8Num,jdbcType=BIGINT},
+        </if>
+        <if test="d9Num != null and d9Num != ''">
+             d9_num = #{d9Num,jdbcType=BIGINT},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="DailyMemCensusResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_daily_mem_census
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="DailyMemCensusResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_daily_mem_census
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_daily_mem_census
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.common.DailyMemCensus">
+        INSERT rd_daily_mem_census
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.common.DailyMemCensus">
+        UPDATE rd_daily_mem_census
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_daily_mem_census
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="DailyMemCensusResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_daily_mem_census
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="DailyMemCensusResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_daily_mem_census
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper>

@@ -303,4 +303,9 @@
     <select id="findMessageLeaveNum" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT COUNT(1) from shop_member_message where uid = #{uid} and is_read = 0 and biz_type=4
     </select>
+
+    <!--将指定会员消息状态修改为已读-->
+    <update id="updateByUid" parameterType="java.lang.Long">
+        update shop_member_message set is_read = 1 where uid = #{uid}
+    </update>
 </mapper> 
