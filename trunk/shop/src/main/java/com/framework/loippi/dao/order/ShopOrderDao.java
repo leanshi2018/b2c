@@ -6,15 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.framework.loippi.pojo.common.CensusVo;
-import com.framework.loippi.pojo.common.MemIndicatorVo;
-import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import org.apache.ibatis.annotations.Param;
 
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.mybatis.paginator.domain.PageBounds;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
+import com.framework.loippi.pojo.common.CensusVo;
+import com.framework.loippi.pojo.common.MemIndicatorVo;
+import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.vo.activity.ActivityStatisticsVo;
@@ -195,6 +195,8 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     BigDecimal findYesPointTotal(HashMap<String, Object> map);
 
     CensusVo findCensusData(HashMap<String, Object> map);
+
+	ShopOrder findByPaySn(String paySn);
 
     List<MemIndicatorVo> findMemIndicatorVo(String periodCode);
 
