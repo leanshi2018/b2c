@@ -93,6 +93,7 @@ import com.framework.loippi.service.ware.RdWareAdjustService;
 import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.TongLianUtils;
 
 /**   暂时屏蔽
  * 功能：根据设置定时更新订单
@@ -218,6 +219,39 @@ public class ShopOrderJob {
             pageNo++;
             pageSize = orderList.size();
         } while (pageSize == 500);
+    }
+
+
+    //@Scheduled(cron = "0 14 11 * * ?" )  //每30分钟执行一次
+    public void refundTL() {
+        String backUrl = "";//后台通知地址 TODO
+
+        String orderNo = "202006010850205555";
+        String bizPaySn = "P20200601183949470WOMI47932";
+        String paySn = "P20200601183949470";
+        ShopOrder order = orderService.findByPaySn(paySn);
+
+        BigDecimal cutAmount = new BigDecimal("0.00");
+        if (order.getCutAmount()==null){
+            cutAmount = new BigDecimal("0.00");
+        }else {
+            cutAmount = order.getCutAmount();//分账人金额
+        }
+
+
+        BigDecimal orderAmount = order.getOrderAmount();
+        double b = orderAmount.doubleValue()*100;
+        Long oAmount = new Double(b).longValue();
+
+        BigDecimal feeAmountBig = orderAmount.subtract(cutAmount);//公司的抽佣
+        double f = feeAmountBig.doubleValue()*100;
+        Long feeAmount = new Double(f).longValue();
+
+        List<Map<String, Object>> refundList = new ArrayList<Map<String, Object>>();
+        Map<String, Object> refundMember = new HashMap<String, Object>();
+        String s = TongLianUtils.refundOrder(orderNo,bizPaySn, order.getBuyerId().toString(), "D0", refundList,
+                backUrl,oAmount,0l,feeAmount,null);
+        System.out.println("跑完");
     }
 
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次

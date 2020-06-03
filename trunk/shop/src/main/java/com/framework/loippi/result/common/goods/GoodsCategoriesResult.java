@@ -11,6 +11,8 @@ import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.entity.product.ShopGoodsClass;
 
 /**
@@ -28,6 +30,7 @@ public class GoodsCategoriesResult {
     /**
      * 分类id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long categoryId;
     /**
      * 名称

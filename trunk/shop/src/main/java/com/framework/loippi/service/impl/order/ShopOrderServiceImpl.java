@@ -1,7 +1,6 @@
 package com.framework.loippi.service.impl.order;
 
 
-import com.framework.loippi.pojo.common.CensusVo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -106,6 +105,7 @@ import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.pojo.activity.ShopGoodSpec;
 import com.framework.loippi.pojo.cart.CartInfo;
 import com.framework.loippi.pojo.cart.CartVo;
+import com.framework.loippi.pojo.common.CensusVo;
 import com.framework.loippi.pojo.order.CartOrderVo;
 import com.framework.loippi.pojo.order.OrderSettlement;
 import com.framework.loippi.pojo.order.OrderVo;
@@ -5814,5 +5814,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     @Override
     public CensusVo findCensusData(HashMap<String, Object> map) {
         return orderDao.findCensusData(map);
+    }
+
+    @Override
+    public ShopOrder findByPaySn(String paySn) {
+        return orderDao.findByPaySn(paySn);
     }
 }

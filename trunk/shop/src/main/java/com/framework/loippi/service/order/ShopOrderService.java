@@ -345,7 +345,9 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     CensusVo findCensusData(HashMap<String, Object> map);
 
+	ShopOrder findByPaySn(String paySn);
 
 
-    /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
+
+	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }
