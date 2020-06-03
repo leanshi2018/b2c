@@ -1,15 +1,19 @@
 package com.framework.loippi.result.app.cart;
 
-import com.framework.loippi.consts.GoodsState;
-import com.framework.loippi.vo.cart.ShopCartVo;
-import com.google.common.collect.Lists;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import lombok.Data;
-import lombok.experimental.Accessors;
+
 import org.apache.commons.collections.CollectionUtils;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.framework.loippi.consts.GoodsState;
+import com.framework.loippi.vo.cart.ShopCartVo;
+import com.google.common.collect.Lists;
 
 @Data
 @Accessors(chain = true)
@@ -18,6 +22,7 @@ public class CartResult {
     /**
      * 品牌id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long brandId;
 
     /**
