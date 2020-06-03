@@ -1,30 +1,33 @@
 package com.framework.loippi.result.common.activity;
 
-import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.utils.GoodsUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.utils.GoodsUtils;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ActivityGoodsSkuInfo {
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long skuId;
 
     //活動商品id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long activityGoodsId;
 
     //零售价
@@ -46,6 +49,7 @@ public class ActivityGoodsSkuInfo {
     private String specValueIDS;
 
     //活动sku
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long activitySkuId;
 
     //图片
