@@ -10,6 +10,8 @@ import java.util.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.ss.formula.functions.T;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.result.app.order.ResultFunction;
 import com.framework.loippi.utils.NumberUtils;
@@ -30,6 +32,7 @@ public class BaseGoodsResult {
     /**
      * 商品id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long goodsId;
 
     /**
@@ -60,6 +63,7 @@ public class BaseGoodsResult {
     /**
      * 商品规格id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long specId;
     /**
      * 商品pv值
