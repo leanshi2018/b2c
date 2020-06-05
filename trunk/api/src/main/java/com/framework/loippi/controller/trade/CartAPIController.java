@@ -1,6 +1,5 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.service.product.ShopGoodsFreightService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -47,6 +46,7 @@ import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAddInfoService;

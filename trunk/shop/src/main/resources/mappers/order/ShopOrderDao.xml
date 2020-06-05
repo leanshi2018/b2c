@@ -1555,6 +1555,10 @@
         SELECT id FROM shop_order WHERE pay_sn=#{paySn}
     </select>
 
+    <select id="findByPaySn" parameterType="string" resultMap="ShopOrderResultMap">
+        SELECT * FROM shop_order WHERE pay_sn=#{paySn}
+    </select>
+
 
     <!--&lt;!&ndash; 根据不同的时间段查出相应的订单量 &ndash;&gt;-->
     <!--<select id="countorderbuy" resultType="com.framework.loippi.vo.order.OrderCountVo" parameterType="map">-->

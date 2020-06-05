@@ -8,13 +8,20 @@ import com.framework.loippi.utils.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.StringUtil;
 
 
 /*
@@ -33,13 +40,16 @@ public class ActivityGoodsDetailResult {
     /**
      * 商品id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long goodsIs;
 
     /**
      * 默认选中的规则id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long specId;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long classId;
 
     /**
@@ -118,6 +128,7 @@ public class ActivityGoodsDetailResult {
     /**
      * 品牌id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long brandId;
     /**
      * 图片

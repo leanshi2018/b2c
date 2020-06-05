@@ -1,15 +1,15 @@
 package com.framework.loippi.result.app.cart;
 
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.vo.cart.ShopCartVo;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.vo.cart.ShopCartVo;
 
 /**
  * 功能： 购物车项数据
@@ -38,11 +38,13 @@ public class CartItemResult extends BaseGoodsResult {
     /**
      * 购物车id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long cartId;
 
     /**
      * 活动id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long activityId;
 
     /**

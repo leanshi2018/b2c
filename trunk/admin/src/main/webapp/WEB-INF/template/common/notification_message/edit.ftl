@@ -493,7 +493,7 @@
                 area: ['800px', '600px']
             })
         }
-        function appendInfo(name,content,info) {
+        function appendInfo(name,content,infos) {
             $("#articleTitle").val(name);
             $("#contents").val(content);
             var articleContent=$("#contents").val();
