@@ -88,6 +88,15 @@ public class OrderResult {
 
     /**  1快递 2自提 */
     private Integer logisticType;
+
+    /**  订单mi值 */
+    private BigDecimal ppv;
+
+    /**
+     * 售后订单类型  1退款 2退款退货 3换货  0无售后
+     */
+    private Integer refundOrderType;
+
     /**
      * 商品信息列表
      */
@@ -184,6 +193,11 @@ public class OrderResult {
                     .setIsModify(optShopOrder.map(ShopOrderVo::getIsModify).orElse(0))
                     .setLogisticType(optShopOrder.map(ShopOrderVo::getLogisticType).orElse(1));
             result.setGoodsInfoList(goodsInfoList);
+            if(shopOrderVo.getPpv()!=null){
+                result.setPpv(shopOrderVo.getPpv());
+            }else {
+                result.setPpv(BigDecimal.ZERO);
+            }
               if (shopOrderVo.getOrderType()!=5){
                   result.setPayment(optShopOrder.map(ShopOrderVo::getOrderAmount).orElse(BigDecimal.ZERO).add(optShopOrder.map(ShopOrderVo::getPointRmbNum).orElse(BigDecimal.ZERO)));
               }else{
@@ -246,6 +260,7 @@ public class OrderResult {
                     .setOrderType(-1)
                     .setIsModify(0);
 
+            result.setRefundOrderType(optionalReturnGoodsVo.map(ReturnGoodsVo::getRefundType).orElse(0));
 //        卖家处理状态:0为待审核,1审核确认,2为同意,3为不同意,默认为0
             if (returnGoodsVo.getSellerState() == 0 || returnGoodsVo.getSellerState() == 1 || returnGoodsVo.getSellerState() == 3 || returnGoodsVo.getSellerState() == 4) {
                 result.setState(returnGoodsVo.getSellerState() + 80);

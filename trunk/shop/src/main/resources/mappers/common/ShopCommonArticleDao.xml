@@ -19,22 +19,26 @@
         <result property="articleTime" column="article_time"/>
         <result property="status" column="status"/>
         <result property="articleImage" column="article_image"/>
+        <result property="articleVideo" column="article_video"/>
         <result property="articleAuthor" column="article_author"/>
         <result property="isTop" column="is_top"/>
         <result property="pageViews" column="page_views"/>
+        <result property="likeNum" column="like_num"/>
+        <result property="pageType" column="page_type"/>
+        <result property="pagePath" column="page_path"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
 		 id ,ac_id ,article_url ,article_show ,article_sort ,article_title ,article_content ,is_del ,create_time ,update_time ,article_time,article_image,article_author,is_top,page_views
 
-		 ,status
+		 ,status,article_video,like_num,page_type,page_path
 	</sql>
 
     <sql id="base_value_column">
 		 #{id},#{acId},#{articleUrl},#{articleShow},#{articleSort},#{articleTitle},#{articleContent},#{isDel},#{createTime},#{updateTime},#{articleTime},#{articleImage},#{articleAuthor},#{isTop},#{pageViews}
 
-		 ,#{status}
+		 ,#{status},#{articleVideo},#{likeNum},#{pageType},#{pagePath}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -78,6 +82,9 @@
         <if test="articleImage != null and articleImage != ''">
             AND SHOP_COMMON_ARTICLE.article_image = #{articleImage}
         </if>
+        <if test="articleVideo != null and articleVideo != ''">
+            AND SHOP_COMMON_ARTICLE.article_video = #{articleVideo}
+        </if>
         <if test="articleAuthor != null and articleAuthor != ''">
             AND SHOP_COMMON_ARTICLE.article_author = #{articleAuthor}
         </if>
@@ -87,11 +94,23 @@
         <if test="pageViews != null">
             AND SHOP_COMMON_ARTICLE.page_views = #{pageViews}
         </if>
+        <if test="likeNum != null">
+            AND SHOP_COMMON_ARTICLE.like_num = #{likeNum}
+        </if>
+        <if test="pageType != null and pageType != ''">
+            AND SHOP_COMMON_ARTICLE.page_type = #{pageType}
+        </if>
+        <if test="pagePath != null and pagePath != ''">
+            AND SHOP_COMMON_ARTICLE.page_path = #{pagePath}
+        </if>
         <if test="key != null and key != ''">
             and (
             SHOP_COMMON_ARTICLE.article_title like CONCAT('%',#{key},'%' )
             or SHOP_COMMON_ARTICLE.article_content like CONCAT('%',#{key},'%' )
             )
+        </if>
+        <if test="articleId !=null and articleId != ''">
+            and SHOP_COMMON_ARTICLE.ac_id != #{articleId}
         </if>
     </sql>
 
@@ -136,6 +155,9 @@
         <if test="articleImage != null and articleImage != ''">
              SHOP_COMMON_ARTICLE.article_image = #{articleImage},
         </if>
+        <if test="articleVideo != null and articleVideo != ''">
+             SHOP_COMMON_ARTICLE.article_video = #{articleVideo},
+        </if>
         <if test="articleAuthor != null and articleAuthor != ''">
              SHOP_COMMON_ARTICLE.article_author = #{articleAuthor},
         </if>
@@ -144,6 +166,15 @@
         </if>
         <if test="pageViews != null">
              SHOP_COMMON_ARTICLE.page_views = #{pageViews},
+        </if>
+        <if test="likeNum != null">
+             SHOP_COMMON_ARTICLE.like_num = #{likeNum},
+        </if>
+        <if test="pageType != null and pageType != ''">
+             SHOP_COMMON_ARTICLE.page_type = #{pageType},
+        </if>
+        <if test="pagePath != null and pagePath != ''">
+             SHOP_COMMON_ARTICLE.page_path = #{pagePath},
         </if>
     </sql>
 

@@ -95,6 +95,12 @@ public class ShopCommonArticle implements GenericEntity {
      */
     @Column(name = "article_image")
     private String articleImage;
+
+    /**
+     * 文章视频
+     */
+    @Column(name = "article_video")
+    private String articleVideo;
     
     /**
      * 文章摘要
@@ -111,6 +117,24 @@ public class ShopCommonArticle implements GenericEntity {
      */
     @Column(name = "page_views")
     private Integer pageViews;
+
+    /**
+     * 喜欢数量
+     */
+    @Column(name = "like_num")
+    private Integer likeNum;
+
+    /**
+     * 跳转路径类型
+     */
+    @Column(name = "page_type")
+    private String pageType;
+
+    /**
+     * 跳转路径信息
+     */
+    @Column(name = "page_path")
+    private String pagePath;
 
     private String acName;
 

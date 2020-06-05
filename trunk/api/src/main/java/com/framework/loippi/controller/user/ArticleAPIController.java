@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -66,8 +67,8 @@ public class ArticleAPIController extends BaseController {
         Pageable pageable = new Pageable();
         pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNumber);
-        pageable.setParameter(Paramap.create().put("articleShow",1));
-        pageable.setOrderProperty("is_top,page_views");
+        pageable.setParameter(Paramap.create().put("articleShow",1).put("articleId",6548852933067280384L));//TODO 朋友圈素材不参与列表分类展示
+        pageable.setOrderProperty("is_top,article_sort,page_views");
         pageable.setOrderDirection(Order.Direction.DESC);
         List<ShopCommonArticle> shopCommonArticleList = shopCommonArticleService.findByPage(pageable).getContent();
         return ApiUtils.success(ArticleListResult.buildList(shopCommonArticleList, shopCommonArticleClassList, 1,wapServer));
@@ -121,7 +122,7 @@ public class ArticleAPIController extends BaseController {
         Pageable pageable = new Pageable();
         pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNumber);
-        pageable.setOrderProperty("is_top,page_views");
+        pageable.setOrderProperty("is_top,article_sort,page_views");
         pageable.setOrderDirection(Order.Direction.DESC);
         if (secondaryClassificationId != null) {
             pageable.setParameter(Paramap.create().put("acId", secondaryClassificationId));
@@ -130,5 +131,33 @@ public class ArticleAPIController extends BaseController {
         }
         List<ShopCommonArticle> shopCommonArticleList = shopCommonArticleService.findByPage(pageable).getContent();
         return ApiUtils.success(ArticleListResult.buildList2(shopCommonArticleList, shopCommonArticleClassList, shopCommonArticleClass,wapServer));
+    }
+
+    /**
+     *
+     * @param request
+     * @param id 文章id
+     * @param type 类型 0：收藏    1：取消收藏
+     * @return
+     */
+    @RequestMapping(value = "/addLike.json")
+    public String addLike(HttpServletRequest request,Long id,Integer type) {
+        if(id==null){
+            return ApiUtils.error("请选择需要收藏的学堂文章");
+        }
+        ShopCommonArticle article = shopCommonArticleService.find(id);
+        if(article==null){
+            return ApiUtils.error("学堂文章不存在");
+        }
+        Integer num = Optional.ofNullable(article.getLikeNum()).orElse(0);
+        if(type==null||type!=1){
+            article.setLikeNum(num+1);
+        }else {
+            if(num>0){
+                article.setLikeNum(num-1);
+            }
+        }
+        shopCommonArticleService.update(article);
+        return ApiUtils.success();
     }
 }

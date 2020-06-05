@@ -50,6 +50,11 @@ public class PersonCenterResult {
      */
     private Integer grade;
 
+    /**
+     * 等级图标
+     */
+    private String rankIcon;
+
     //等级名称
     private String gradeName;
 
@@ -167,6 +172,11 @@ public class PersonCenterResult {
             if (shopMemberGrade.getRankClass()>0){
                 result.setLookPpv(1);
                 result.setLookVip(1);
+            }
+            if(shopMemberGrade.getRankIcon()!=null){
+                result.setRankIcon(shopMemberGrade.getRankIcon());
+            }else {
+                result.setRankIcon("");
             }
         }
         if(banks!=null&&banks.size()>0){

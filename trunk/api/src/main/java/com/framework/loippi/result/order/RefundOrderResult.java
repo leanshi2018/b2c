@@ -90,6 +90,20 @@ public class RefundOrderResult {
      * 收货人地址
      */
     private String receiverAddress;
+
+    /**
+     * 退款金额
+     */
+    private BigDecimal refundAmount;
+
+    /**
+     * 退还积分
+     */
+    private BigDecimal rewardPointAmount;
+    /**
+     * 退款成功标识 0:未成功 1：已成功
+     */
+    private Integer refundFlag;
     /**
      * 商品信息列表
      */
@@ -169,6 +183,13 @@ public class RefundOrderResult {
             result.setReasonInfo(optionalReturnGoodsVo.map(ReturnGoodsVo::getReasonInfo).orElse(""));
             result.setRefundOrderType(optionalReturnGoodsVo.map(ReturnGoodsVo::getRefundType).orElse(0));
             result.setShippingCode(optionalReturnGoodsVo.map(ReturnGoodsVo::getInvoiceNo).orElse(""));
+            result.setRewardPointAmount(optionalReturnGoodsVo.map(ReturnGoodsVo::getRewardPointAmount).orElse(BigDecimal.ZERO));
+            result.setRefundAmount(optionalReturnGoodsVo.map(ReturnGoodsVo::getRefundAmount).orElse(BigDecimal.ZERO));
+            if(returnGoodsVo.getRefundState()==null||returnGoodsVo.getRefundState()!=3){
+                result.setRefundFlag(0);
+            }else {
+                result.setRefundFlag(1);
+            }
             if (shopMemberAddress!=null){
                 result.setReceiverName(Optional.ofNullable(shopMemberAddress.getConsigneeName()).orElse("后台还未设置"));
                 result.setReceiverMobile(Optional.ofNullable(shopMemberAddress.getMobile()).orElse("后台还未设置"));

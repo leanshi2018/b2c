@@ -15,15 +15,16 @@
 		<result property="rPreRank" column="R_PRE_RANK" />
 		<result property="activePv" column="ACTIVE_PV" />
 		<result property="rankKeepMonths" column="RANK_KEEP_MONTHS" />
+		<result property="rankIcon" column="RANK_ICON" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 RANK_ID ,RANK_NAME ,RANK_SHORT_NAME ,RANK_ORDER ,RANK_CLASS ,STATIC_YN ,R_PRE_RANK ,ACTIVE_PV ,RANK_KEEP_MONTHS 
+		 RANK_ID ,RANK_NAME ,RANK_SHORT_NAME ,RANK_ORDER ,RANK_CLASS ,STATIC_YN ,R_PRE_RANK ,ACTIVE_PV ,RANK_KEEP_MONTHS,RANK_ICON
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{rankId},#{rankName},#{rankShortName},#{rankOrder},#{rankClass},#{staticYn},#{rPreRank},#{activePv},#{rankKeepMonths}
+		 #{rankId},#{rankName},#{rankShortName},#{rankOrder},#{rankClass},#{staticYn},#{rPreRank},#{activePv},#{rankKeepMonths},#{rankIcon}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -55,6 +56,9 @@
 		<if test="rankKeepMonths != null and rankKeepMonths != ''">
 			AND RANK_KEEP_MONTHS = #{rankKeepMonths,jdbcType=INTEGER}
 		</if>
+		<if test="rankIcon != null and rankIcon != ''">
+			AND RANK_ICON = #{rankIcon,jdbcType=VARCHAR}
+		</if>
 	</sql>
 	
 	<!-- 设置语句 -->
@@ -85,6 +89,9 @@
 		</if>
 		<if test="rankKeepMonths != null">
 			RANK_KEEP_MONTHS = #{rankKeepMonths,jdbcType=INTEGER},
+		</if>
+		<if test="rankIcon != null and rankIcon != ''">
+			 RANK_ICON = #{rankIcon,jdbcType=VARCHAR},
 		</if>
 	</sql>
 

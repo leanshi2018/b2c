@@ -46,7 +46,7 @@ public class ArticleListResult {
         /**
          * 图片
          */
-        private String image;
+        private ArrayList<String> image;
         /**
          * url
          */
@@ -56,6 +56,26 @@ public class ArticleListResult {
          * 浏览量
          */
         private Integer pageViews;
+
+        /**
+         * 喜欢数
+         */
+        private Integer likeNum;
+
+        /**
+         * 跳转链接
+         */
+        private String articleUrl;
+
+        /**
+         * 跳转路径类型
+         */
+        private String pageType;
+
+        /**
+         * 跳转路径参数
+         */
+        private String pagePath;
 
         /**
          * 一级分类
@@ -106,8 +126,21 @@ public class ArticleListResult {
                  articleinfo.setContent(item.getArticleContent());
                  articleinfo.setCreateTime(item.getCreateTime());
                  articleinfo.setId(item.getId());
-                 articleinfo.setImage(Optional.ofNullable(item.getArticleImage()).orElse(""));
+                 if(item.getArticleImage()==null||item.getArticleImage().length()==0){
+                     articleinfo.setImage(new ArrayList<String>());
+                 }else {
+                     ArrayList<String> strings = new ArrayList<>();
+                     String[] split = item.getArticleImage().split(",");
+                     for (String s : split) {
+                         strings.add(s);
+                     }
+                     articleinfo.setImage(strings);
+                 }
                  articleinfo.setPageViews(Optional.ofNullable(item.getPageViews()).orElse(0));
+                 articleinfo.setLikeNum(Optional.ofNullable(item.getLikeNum()).orElse(0));
+                 articleinfo.setArticleUrl(Optional.ofNullable(item.getArticleUrl()).orElse(""));
+                 articleinfo.setPageType(Optional.ofNullable(item.getPageType()).orElse(""));
+                 articleinfo.setPagePath(Optional.ofNullable(item.getPagePath()).orElse(""));
                  articleinfo.setTitle(item.getArticleTitle());
                  // TODO: 2018/12/5  待h5补充url
                  StringBuffer shareUrl = new StringBuffer();
@@ -152,8 +185,21 @@ public class ArticleListResult {
                 articleinfo.setContent(item.getArticleContent());
                 articleinfo.setCreateTime(item.getCreateTime());
                 articleinfo.setId(item.getId());
-                articleinfo.setImage(Optional.ofNullable(item.getArticleImage()).orElse(""));
+                if(item.getArticleImage()==null||item.getArticleImage().length()==0){
+                    articleinfo.setImage(new ArrayList<String>());
+                }else {
+                    ArrayList<String> strings = new ArrayList<>();
+                    String[] split = item.getArticleImage().split(",");
+                    for (String s : split) {
+                        strings.add(s);
+                    }
+                    articleinfo.setImage(strings);
+                }
                 articleinfo.setPageViews(Optional.ofNullable(item.getPageViews()).orElse(0));
+                articleinfo.setLikeNum(Optional.ofNullable(item.getLikeNum()).orElse(0));
+                articleinfo.setArticleUrl(Optional.ofNullable(item.getArticleUrl()).orElse(""));
+                articleinfo.setPageType(Optional.ofNullable(item.getPageType()).orElse(""));
+                articleinfo.setPagePath(Optional.ofNullable(item.getPagePath()).orElse(""));
                 articleinfo.setTitle(item.getArticleTitle());
                 // TODO: 2018/12/5  待h5补充url
                     // TODO: 2018/12/5  待h5补充url

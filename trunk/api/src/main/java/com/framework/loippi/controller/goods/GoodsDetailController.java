@@ -62,6 +62,8 @@ public class GoodsDetailController extends BaseController {
     private ShopGoodsRecommendService shopGoodsRecommendService;
     @Resource
     private ShopGoodsBrowseService shopGoodsBrowseService;
+    @Resource
+    private ShopGoodsEvaluateKeywordsService shopGoodsEvaluateKeywordsService;
 
     /**
      * 商品详情,合并秒杀,促销,普通商品
@@ -93,6 +95,10 @@ public class GoodsDetailController extends BaseController {
         goodsDetailResult.setGoodsIs(goodsId);
         //加载品论
         loadEvaluate(goodsDetailResult);
+        //加载品牌标语
+        loadBrandDescription(goodsDetailResult,shopGoods);
+        //加载关键字集合
+        loadKeyWords(goodsDetailResult,shopGoods);
         //加载活动
         activityId = loadSpeckData(goodsDetailResult, activityId,shopGoods);
         Map<String, Object> resultMap = new HashMap<>();
@@ -102,6 +108,25 @@ public class GoodsDetailController extends BaseController {
             resultMap.put("activityInfo", ActivityDetailResult.build(shopActivity));
         }
         return ApiUtils.success(resultMap);
+    }
+
+    private void loadKeyWords(ActivityGoodsDetailResult goodsDetailResult, ShopGoods shopGoods) {
+        List<ShopGoodsEvaluateKeywords> shopGoodsEvaluateKeywordsList=shopGoodsEvaluateKeywordsService.findAll();
+        List<String> stringList=new ArrayList<>();
+        List<ShopGoodsEvaluateKeywords> shopGoodsEvaluateKeywordsList1=new ArrayList<>();
+        List<ShopGoodsEvaluateKeywords> shopGoodsEvaluateKeywordsResult=new ArrayList<>();
+        for (ShopGoodsEvaluateKeywords item:shopGoodsEvaluateKeywordsList) {
+            stringList.add(item.getKeywords());
+        }
+        if (stringList.size()>0){
+            shopGoodsEvaluateKeywordsList1=shopGoodsEvaluateService.countGevalContent(stringList,shopGoods.getId());
+            for (ShopGoodsEvaluateKeywords item:shopGoodsEvaluateKeywordsList1) {
+                if (item.getCountNum()!=0){
+                    shopGoodsEvaluateKeywordsResult.add(item);
+                }
+            }
+            goodsDetailResult.setShopGoodsEvaluateKeywordsList(shopGoodsEvaluateKeywordsResult);
+        }
     }
 
     //加载收藏信息
@@ -167,6 +192,17 @@ public class GoodsDetailController extends BaseController {
         Page<ShopGoodsEvaluate> withExtends = shopGoodsEvaluateService.findWithGoodsByPage(pageable, prefix);
         goodsDetailResult.setEvaluateList(ActivityEvaluateGoodsResult.build(withExtends.getContent()));
         goodsDetailResult.setEvaluateCount(withExtends.getTotal());
+    }
+
+    //商品评价
+    private void loadBrandDescription(ActivityGoodsDetailResult goodsDetailResult,ShopGoods shopGoods) {
+        Long brandId = shopGoods.getBrandId();
+        if(brandId!=null){
+            ShopGoodsBrand shopGoodsBrand = shopGoodsBrandService.find(brandId);
+            if(shopGoodsBrand!=null&&shopGoodsBrand.getDescription()!=null){
+                goodsDetailResult.setDescription(shopGoodsBrand.getDescription());
+            }
+        }
     }
 
     private Long loadSpeckData(ActivityGoodsDetailResult goodsDetailResult, Long activity,ShopGoods shopGoods) {

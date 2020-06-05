@@ -64,5 +64,9 @@ public class RdRanks implements GenericEntity {
 	/** 级别可保持的月数 */
 	@Column(name = "RANK_KEEP_MONTHS" )
 	private Integer rankKeepMonths;
+
+	/** 级别图标 */
+	@Column(name = "RANK_ICON" )
+	private String rankIcon;
 	
 }

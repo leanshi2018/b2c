@@ -2111,6 +2111,14 @@ public class OrderAPIController extends BaseController {
 
                 return ApiUtils.success("发送成功");
             }else {
+                if(Optional.ofNullable(maps.get("errorCode").toString()).orElse("").equals("30024")){//手机已绑定对应的错误代码
+                    //判断会员基础信息表中的手机绑定状态是否为已经绑定，如果未绑定，则修改绑定状态
+                    if (member.getAllInPayPhoneStatus()==0){
+                        member.setAllInPayPhoneStatus(1);
+                        member.setAllInPayPhone(member.getMobile());
+                        rdMmBasicInfoService.update(member);
+                    }
+                }
                 String message = Optional.ofNullable(maps.get("message").toString()).orElse("");
                 return ApiUtils.error("发送失败："+message);
             }

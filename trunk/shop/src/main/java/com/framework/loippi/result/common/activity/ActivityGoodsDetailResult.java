@@ -1,6 +1,7 @@
 package com.framework.loippi.result.common.activity;
 
 import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsEvaluateKeywords;
 import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.StringUtil;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -131,6 +133,25 @@ public class ActivityGoodsDetailResult {
     private String recommendImages;
 
     private Integer goodsType;
+    /**
+     * 好评率
+     */
+    private Double evaluateRate;
+
+    /**
+     * 品牌描述
+     */
+    private String description;
+
+    /**
+     * 满减运费金额
+     */
+    private BigDecimal shippingCouponAmount;
+
+    /**
+     * 关键字集合
+     */
+    List<ShopGoodsEvaluateKeywords> shopGoodsEvaluateKeywordsList=new ArrayList<ShopGoodsEvaluateKeywords>();
 
     public static ActivityGoodsDetailResult build(ShopGoods item, String prefix, String wapServer) {
         ActivityGoodsDetailResult result = new ActivityGoodsDetailResult();
@@ -147,6 +168,8 @@ public class ActivityGoodsDetailResult {
         result.setSpecId(Optional.ofNullable(item.getSpecId()).orElse(-1L));//规格id
         result.setListImage(Optional.ofNullable(prefix + item.getGoodsImageMore()).orElse(""));//轮播图
         result.setDefaultImage(Optional.ofNullable(prefix + item.getGoodsImage()).orElse(""));
+        result.setEvaluateRate(Optional.ofNullable(item.getEvaluaterate()).orElse(1D));//好评率
+        result.setShippingCouponAmount(new BigDecimal("199.00"));//TODO
         //手机端详情拼接
         String mobileBody = StringEscapeUtils.unescapeHtml4(item.getMobileBody());
         if (!StringUtil.isEmpty(mobileBody)) {

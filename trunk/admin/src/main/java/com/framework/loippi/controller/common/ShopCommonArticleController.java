@@ -3,11 +3,13 @@ package com.framework.loippi.controller.common;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.common.ShopCommonArticle;
+import com.framework.loippi.entity.common.ShopCommonArticleClass;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.common.ShopCommonArticleClassService;
 import com.framework.loippi.service.common.ShopCommonArticleService;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.ParameterUtils;
 import com.framework.loippi.utils.StringUtil;
 import org.springframework.stereotype.Controller;
@@ -23,6 +25,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -88,9 +91,13 @@ public class ShopCommonArticleController extends GenericController {
     }
 
     @RequestMapping("/saveOrUpdate")
-    public String saveOrUpdate(@ModelAttribute ShopCommonArticle article,
+    public String saveOrUpdate(@ModelAttribute ShopCommonArticle article,ModelMap model,
                                RedirectAttributes redirectAttributes) {
         try {
+            if(article.getArticleImage()==null||"".equals(article.getArticleImage().trim())){
+                model.addAttribute("msg", "请上传文章封面图片");
+                return Constants.MSG_URL;
+            }
             if (article.getId() == null) {
                 article.setCreateTime(new Date());
                 article.setUpdateTime(new Date());
@@ -117,12 +124,32 @@ public class ShopCommonArticleController extends GenericController {
     @RequestMapping(value = {"/add"}, method = {RequestMethod.GET})
     public String add(ModelMap model, Integer articleType) {
         if (articleType != null) {
-            model.addAttribute("articleList", shopCommonArticleClassService.findAll());
+            //model.addAttribute("articleList", shopCommonArticleClassService.findAll());
+            //添加学堂文章，查询出类型为学堂文章的一级分类列表 TODO
+            List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acParentId",0).put("acStatus",0).put("acCode","school-articles"));
+            model.addAttribute("articleList", list);
             if (articleType.intValue() != 1) {
                 return "/article/add_guding";
             }
         }
         return "/content/article/add";
+    }
+
+    /**
+     * 根据父类id查找父类id下面的所有启用状态的文章分类
+     * @param model
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = {"/findSonById"}, method = {RequestMethod.GET})
+    public String findSonById(ModelMap model, Long id) {
+        if (id == null) {
+            model.addAttribute("msg", "请传入正确的父类分类id");
+            return Constants.MSG_URL;
+        }
+        List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acParentId", id).put("acStatus", 0));
+        model.addAttribute("articleList",list);
+        return " ";//TODO
     }
 
     @RequestMapping(value = {"/edit"}, method = {RequestMethod.GET})
