@@ -4,6 +4,7 @@ import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 import com.framework.loippi.entity.product.ShopGoodsEvaluateKeywords;
 import com.framework.loippi.param.evaluate.EvaluateGoodsParam;
@@ -14,6 +15,7 @@ import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateKeywordsService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateLikeService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateService;
+import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
@@ -57,6 +59,8 @@ public class EvaluateAPIController extends BaseController {
     private ShopOrderService shopOrderService;
     @Resource
     private ShopGoodsEvaluateKeywordsService shopGoodsEvaluateKeywordsService;
+    @Resource
+    private ShopGoodsService shopGoodsService;
 
     /**
      * 商品详情评价列表
@@ -88,6 +92,16 @@ public class EvaluateAPIController extends BaseController {
         pager.setParameter(paramap);
         result = shopGoodsEvaluateService.findWithGoodsByPage(pager, request.getContextPath());
         Map<String, Object> build = new HashMap<>();
+        ShopGoods goods = shopGoodsService.find(goodsId);
+        if(goods==null||goods.getEvaluaterate()==null){
+            return ApiUtils.error("商品信息异常");
+        }
+        build.put("evaluateRate",goods.getEvaluaterate());
+        if(goods.getEvaluaterate()>=0.85){
+            build.put("starNum",5);
+        }else {
+            build.put("starNum",4);
+        }
         if (result != null) {
             build.put("evaluateList", EvaluateGoodsResult.build(result.getContent()));
 
