@@ -64,6 +64,8 @@ public class GoodsDetailController extends BaseController {
     private ShopGoodsBrowseService shopGoodsBrowseService;
     @Resource
     private ShopGoodsEvaluateKeywordsService shopGoodsEvaluateKeywordsService;
+    @Resource
+    private ShopGoodsFreightRuleService shopGoodsFreightRuleService;
 
     /**
      * 商品详情,合并秒杀,促销,普通商品
@@ -86,6 +88,9 @@ public class GoodsDetailController extends BaseController {
         }
         //评价标签
         ActivityGoodsDetailResult goodsDetailResult = ActivityGoodsDetailResult.build(shopGoods, prefix, wapServer);
+        ShopGoodsFreightRule shopGoodsFreightRule = shopGoodsFreightRuleService.find("memberGradeId",0);
+        //加载包邮金额
+        goodsDetailResult.setShippingCouponAmount(shopGoodsFreightRule.getMinimumOrderAmount());
         //品牌信息
         loadBrand(goodsDetailResult, shopGoods);
         //规格信息

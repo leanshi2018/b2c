@@ -180,7 +180,6 @@ public class ActivityGoodsDetailResult {
         result.setListImage(Optional.ofNullable(prefix + item.getGoodsImageMore()).orElse(""));//轮播图
         result.setDefaultImage(Optional.ofNullable(prefix + item.getGoodsImage()).orElse(""));
         result.setEvaluateRate(Optional.ofNullable(item.getEvaluaterate()).orElse(1D));//好评率
-        result.setShippingCouponAmount(new BigDecimal("199.00"));//TODO
         //手机端详情拼接
         String mobileBody = StringEscapeUtils.unescapeHtml4(item.getMobileBody());
         if (!StringUtil.isEmpty(mobileBody)) {
