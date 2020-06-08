@@ -4,9 +4,11 @@ import com.framework.loippi.entity.common.ShopCommonArticle;
 import com.framework.loippi.entity.common.ShopCommonArticleClass;
 import com.framework.loippi.entity.common.ShopCommonFeedback;
 import com.framework.loippi.support.Page;
+import com.framework.loippi.utils.JacksonUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.sf.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -78,6 +80,11 @@ public class ArticleListResult {
         private String pagePath;
 
         /**
+         * 组合跳转路径类型及参数
+         */
+        private String pageData;
+
+        /**
          * 一级分类
          */
         private String firstClassificationName;
@@ -141,6 +148,26 @@ public class ArticleListResult {
                  articleinfo.setArticleUrl(Optional.ofNullable(item.getArticleUrl()).orElse(""));
                  articleinfo.setPageType(Optional.ofNullable(item.getPageType()).orElse(""));
                  articleinfo.setPagePath(Optional.ofNullable(item.getPagePath()).orElse(""));
+                 Map<String,Object> map = new HashMap<String,Object>();
+                 if (item.getPageType()!=null){
+                     map.put("page",item.getPageType());
+                 }else {
+                     map.put("page","");
+                 }
+
+                 if (item.getPagePath()!=null){
+                     Map<String, String> jsonMap = JacksonUtil.readJsonToMap(item.getPagePath());
+                     Set<String> strings = jsonMap.keySet();
+                     Iterator<String> iterator = strings.iterator();
+                     while (iterator.hasNext()){
+                         String key = iterator.next();
+                         String value = jsonMap.get(key);
+                         map.put(key,value);
+                     }
+                 }
+
+                 JSONObject activityUrlJson = JSONObject.fromObject(map);
+                 articleinfo.setPageData(activityUrlJson.toString());
                  articleinfo.setTitle(item.getArticleTitle());
                  // TODO: 2018/12/5  待h5补充url
                  StringBuffer shareUrl = new StringBuffer();
@@ -200,6 +227,26 @@ public class ArticleListResult {
                 articleinfo.setArticleUrl(Optional.ofNullable(item.getArticleUrl()).orElse(""));
                 articleinfo.setPageType(Optional.ofNullable(item.getPageType()).orElse(""));
                 articleinfo.setPagePath(Optional.ofNullable(item.getPagePath()).orElse(""));
+                Map<String,Object> map = new HashMap<String,Object>();
+                if (item.getPageType()!=null){
+                    map.put("page",item.getPageType());
+                }else {
+                    map.put("page","");
+                }
+
+                if (item.getPagePath()!=null){
+                    Map<String, String> jsonMap = JacksonUtil.readJsonToMap(item.getPagePath());
+                    Set<String> strings = jsonMap.keySet();
+                    Iterator<String> iterator = strings.iterator();
+                    while (iterator.hasNext()){
+                        String key = iterator.next();
+                        String value = jsonMap.get(key);
+                        map.put(key,value);
+                    }
+                }
+
+                JSONObject activityUrlJson = JSONObject.fromObject(map);
+                articleinfo.setPageData(activityUrlJson.toString());
                 articleinfo.setTitle(item.getArticleTitle());
                 // TODO: 2018/12/5  待h5补充url
                     // TODO: 2018/12/5  待h5补充url

@@ -5,11 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
@@ -108,7 +104,15 @@ public class CartAPIController extends BaseController {
         }
         BigDecimal freightAmount = shopGoodsFreightService.CalculateFreight("广东省", totalWeight);
         List<CartResult> cartResults = CartResult.buildList(shopCartVos,freightAmount);
-        return ApiUtils.success(cartResults);
+        Integer a=0;
+        for (CartResult cartResult : cartResults) {
+            a=a+cartResult.getGoodsTypeNum();
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("goodsTypeNum",a);
+        map.put("cartInfo",cartResults);
+        map.put("shippingCouponAmount",freightAmount);
+        return ApiUtils.success(map);
     }
 
     /**

@@ -230,8 +230,13 @@ public class OrderResult {
         for (ReturnGoodsVo returnGoodsVo : shopRefundReturnVoList) {
             List<goodsInfo> goodsInfoList = new ArrayList<>();
             int quantity = 0;
+            BigDecimal ppvTotal=BigDecimal.ZERO;
             for (ShopReturnOrderGoods orderGoods : returnGoodsVo.getShopReturnOrderGoodsList()) {
                 quantity += Optional.of(orderGoods.getGoodsNum()).orElse(0);
+                Integer num = Optional.of(orderGoods.getGoodsNum()).orElse(0);
+                BigDecimal pv = Optional.ofNullable(orderGoods.getPpv()).orElse(BigDecimal.ZERO);
+                BigDecimal multiply = pv.multiply(new BigDecimal(Integer.toString(num)));
+                ppvTotal=ppvTotal.add(multiply);
                 goodsInfo goodsInfo = new goodsInfo();
                 goodsInfo.setGoodsImg(Optional.ofNullable(orderGoods.getGoodsImage()).orElse(""));
                 goodsInfo.setGoodsName(Optional.ofNullable(orderGoods.getGoodsName()).orElse(""));
@@ -259,7 +264,7 @@ public class OrderResult {
                     .setBrandName(optionalReturnGoodsVo.map(ReturnGoodsVo::getBrandName).orElse(""))
                     .setOrderType(-1)
                     .setIsModify(0);
-
+            result.setPpv(ppvTotal);
             result.setRefundOrderType(optionalReturnGoodsVo.map(ReturnGoodsVo::getRefundType).orElse(0));
 //        卖家处理状态:0为待审核,1审核确认,2为同意,3为不同意,默认为0
             if (returnGoodsVo.getSellerState() == 0 || returnGoodsVo.getSellerState() == 1 || returnGoodsVo.getSellerState() == 3 || returnGoodsVo.getSellerState() == 4) {
