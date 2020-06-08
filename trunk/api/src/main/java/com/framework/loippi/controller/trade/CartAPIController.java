@@ -104,15 +104,7 @@ public class CartAPIController extends BaseController {
         }
         BigDecimal freightAmount = shopGoodsFreightService.CalculateFreight("广东省", totalWeight);
         List<CartResult> cartResults = CartResult.buildList(shopCartVos,freightAmount);
-        Integer a=0;
-        for (CartResult cartResult : cartResults) {
-            a=a+cartResult.getGoodsTypeNum();
-        }
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("goodsTypeNum",a);
-        map.put("cartInfo",cartResults);
-        map.put("shippingCouponAmount",freightAmount);
-        return ApiUtils.success(map);
+        return ApiUtils.success(cartResults);
     }
 
     /**
