@@ -1,21 +1,25 @@
 package com.framework.loippi.result.app.order;
 
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.collections.CollectionUtils;
+
 import com.cloopen.rest.sdk.utils.DateUtil;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
-import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
-import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.vo.order.ShopOrderVo;
 import com.framework.loippi.vo.refund.ReturnGoodsVo;
 import com.google.common.collect.Lists;
-import java.math.BigDecimal;
-import java.util.*;
-
-import lombok.Data;
-import lombok.experimental.Accessors;
-import org.apache.commons.collections.CollectionUtils;
 
 /**
  * 订单列表返回APP数据
@@ -27,6 +31,7 @@ public class OrderResult {
     /**
      * 订单id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     public Long orderId;
 
     /**
@@ -141,10 +146,12 @@ public class OrderResult {
         /**
          * 商品id
          */
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long goodsId;
         /**
          * 规格id
          */
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long specId;
         /**
          * 商品价格()
