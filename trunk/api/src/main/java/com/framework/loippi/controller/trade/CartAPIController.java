@@ -102,7 +102,8 @@ public class CartAPIController extends BaseController {
             Integer goodsNum = shopCartVo.getGoodsNum();
             totalWeight =totalWeight+weight * goodsNum;
         }
-        BigDecimal freightAmount = shopGoodsFreightService.CalculateFreight("广东省", totalWeight);
+        BigDecimal freightAmount = shopGoodsFreightService.CalculateFreight("默认", totalWeight);
+        //BigDecimal freightAmount = new BigDecimal("199.00");//TODO
         List<CartResult> cartResults = CartResult.buildList(shopCartVos,freightAmount);
         return ApiUtils.success(cartResults);
     }
