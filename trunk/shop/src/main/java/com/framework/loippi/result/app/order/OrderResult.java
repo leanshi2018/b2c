@@ -287,6 +287,7 @@ public class OrderResult {
                 result.setRefundFlag(1);
             }
             result.setRefundAmount(optionalReturnGoodsVo.map(ReturnGoodsVo::getRefundAmount).orElse(BigDecimal.ZERO));
+            result.setShippingCode(optionalReturnGoodsVo.map(ReturnGoodsVo::getInvoiceNo).orElse(""));
 //        卖家处理状态:0为待审核,1审核确认,2为同意,3为不同意,默认为0
             if (returnGoodsVo.getSellerState() == 0 || returnGoodsVo.getSellerState() == 1 || returnGoodsVo.getSellerState() == 3 || returnGoodsVo.getSellerState() == 4) {
                 result.setState(returnGoodsVo.getSellerState() + 80);
