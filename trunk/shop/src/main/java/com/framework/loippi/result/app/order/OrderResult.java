@@ -98,6 +98,11 @@ public class OrderResult {
     private Integer refundOrderType;
 
     /**
+     * 退款成功标识 0:未成功 1：已成功
+     */
+    private Integer refundFlag;
+
+    /**
      * 商品信息列表
      */
     private List<goodsInfo> goodsInfoList;
@@ -266,6 +271,11 @@ public class OrderResult {
                     .setIsModify(0);
             result.setPpv(ppvTotal);
             result.setRefundOrderType(optionalReturnGoodsVo.map(ReturnGoodsVo::getRefundType).orElse(0));
+            if(returnGoodsVo.getRefundState()==null||returnGoodsVo.getRefundState()!=3){
+                result.setRefundFlag(0);
+            }else {
+                result.setRefundFlag(1);
+            }
 //        卖家处理状态:0为待审核,1审核确认,2为同意,3为不同意,默认为0
             if (returnGoodsVo.getSellerState() == 0 || returnGoodsVo.getSellerState() == 1 || returnGoodsVo.getSellerState() == 3 || returnGoodsVo.getSellerState() == 4) {
                 result.setState(returnGoodsVo.getSellerState() + 80);
