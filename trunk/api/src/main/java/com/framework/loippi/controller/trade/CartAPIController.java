@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.product.ShopGoodsFreightRule;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -85,6 +87,8 @@ public class CartAPIController extends BaseController {
     private ShopGoodsService goodsService;
     @Resource
     private ShopGoodsFreightService shopGoodsFreightService;
+    @Resource
+    private ShopGoodsFreightRuleService shopGoodsFreightRuleService;
     /**
      * 购物车列表
      */
@@ -96,15 +100,9 @@ public class CartAPIController extends BaseController {
         pageable.setOrderDirection(Direction.DESC);
         pageable.setOrderProperty("id");
         List<ShopCartVo> shopCartVos = cartService.listWithGoodsAndSpec(pageable);
-        Double totalWeight = 0d;
-        for (ShopCartVo shopCartVo : shopCartVos) {
-            Double weight = shopCartVo.getWeight();
-            Integer goodsNum = shopCartVo.getGoodsNum();
-            totalWeight =totalWeight+weight * goodsNum;
-        }
-        BigDecimal freightAmount = shopGoodsFreightService.CalculateFreight("默认", totalWeight);
-        //BigDecimal freightAmount = new BigDecimal("199.00");//TODO
-        List<CartResult> cartResults = CartResult.buildList(shopCartVos,freightAmount);
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode",member.getMmCode());
+        ShopGoodsFreightRule shopGoodsFreightRule = shopGoodsFreightRuleService.find("memberGradeId",rdMmRelation.getRank());
+        List<CartResult> cartResults = CartResult.buildList(shopCartVos,shopGoodsFreightRule.getMinimumOrderAmount());
         return ApiUtils.success(cartResults);
     }
 
