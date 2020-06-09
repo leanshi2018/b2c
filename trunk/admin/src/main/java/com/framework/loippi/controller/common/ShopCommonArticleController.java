@@ -144,11 +144,12 @@ public class ShopCommonArticleController extends GenericController {
     @RequestMapping(value = {"/findSonById"}, method = {RequestMethod.GET})
     public String findSonById(ModelMap model, Long id) {
         if (id == null) {
-            model.addAttribute("msg", "请传入正确的父类分类id");
-            return Constants.MSG_URL;
+            List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acParentId", 0).put("acStatus", 0).put("acCode","school-articles"));
+            model.addAttribute("articleClassList",list);
+        }else {
+            List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acParentId", id).put("acStatus", 0).put("acCode","school-articles"));
+            model.addAttribute("articleClassList",list);
         }
-        List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acParentId", id).put("acStatus", 0));
-        model.addAttribute("articleList",list);
         return " ";//TODO
     }
 
