@@ -1,12 +1,12 @@
 package com.framework.loippi.vo.order;
 
-import com.framework.loippi.mybatis.ext.annotation.Column;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javolution.util.Index;
-import lombok.Data;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 
 /**
@@ -21,9 +21,11 @@ import lombok.Data;
 public class OrderGoodsAdminVo {
 
     /** 订单商品表索引id */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /** 订单id */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long orderId;
 
     private String orderSn;
@@ -59,6 +61,7 @@ public class OrderGoodsAdminVo {
     private Date shippingTime;
 
     /** 配送公司id */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long shippingExpressId;
 
     /** 会员名*/
