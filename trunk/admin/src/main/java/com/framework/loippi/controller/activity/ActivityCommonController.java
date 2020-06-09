@@ -103,7 +103,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopHomePictureService.findByPage(pageable));
-        return "";
+        return "/common/ad_management/index";
     }
 
     /**
@@ -151,7 +151,7 @@ public class ActivityCommonController extends GenericController {
             return Constants.MSG_URL;
         }*/
         model.addAttribute("picture", shopHomePictureService.find(pictureId));
-        return "";
+        return "/common/ad_management/edit";
     }
 
     /**
