@@ -374,7 +374,13 @@ public class AuthcAPIController extends BaseController {
         if (param.getRegisterType() == 1 && (param.getInvitCode() == null || "".equals(param.getInvitCode()))) {
             return ApiUtils.error("邀请码不能为空");
         }
-
+        if(param.getRegisterType()==1&&param.getInvitCode()!=null&&!"".equals(param.getInvitCode())){
+            String invitCode = param.getInvitCode();
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", invitCode);
+            if(rdMmRelation==null||rdMmRelation.getMmStatus()==null||rdMmRelation.getMmStatus()==2){
+                return ApiUtils.error("邀请人不存在");
+            }
+        }
         if (!valicodeIstrue(param.getMobile(), param.getCode())) {
             return ApiUtils.error(Xerror.VALID_CODE_ERROR);
         }

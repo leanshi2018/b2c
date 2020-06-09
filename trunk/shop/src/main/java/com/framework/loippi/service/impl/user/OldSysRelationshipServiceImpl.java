@@ -2,8 +2,10 @@ package com.framework.loippi.service.impl.user;
 
 import com.framework.loippi.dao.user.OldSysRelationshipDao;
 import com.framework.loippi.entity.user.OldSysRelationship;
+import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.OldSysRelationshipService;
+import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.utils.Paramap;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,8 @@ public class OldSysRelationshipServiceImpl extends GenericServiceImpl<OldSysRela
 
     @Autowired
     private OldSysRelationshipDao oldSysRelationshipDao;
+    @Autowired
+    private RdMmRelationService rdMmRelationService;
 
 
     @Autowired
@@ -48,9 +52,20 @@ public class OldSysRelationshipServiceImpl extends GenericServiceImpl<OldSysRela
                     isSelect = false;
                 }
                 else if (oldSysRelationship.getNYnRegistered() == 1) {
-                    mmCode = oldSysRelationship.getNMcode();
-                    mmName =oldSysRelationship.getONickname();
-                    isSelect = false;
+                    RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", oldSysRelationship.getNMcode());
+                    if(rdMmRelation==null||rdMmRelation.getMmStatus()==null){
+                        mmCode = "101000158";
+                        mmName ="美国公司节点1";
+                        isSelect = false;
+                    }else {
+                        if(rdMmRelation.getMmStatus()==2){
+                            oSpcode=oldSysRelationship.getOSpcode();
+                        }else {
+                            mmCode = oldSysRelationship.getNMcode();
+                            mmName =oldSysRelationship.getONickname();
+                            isSelect = false;
+                        }
+                    }
                 }else {
                     oSpcode=oldSysRelationship.getOSpcode();
                 }
