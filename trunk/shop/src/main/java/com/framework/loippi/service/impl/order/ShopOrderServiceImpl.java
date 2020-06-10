@@ -1,8 +1,6 @@
 package com.framework.loippi.service.impl.order;
 
 
-import com.framework.loippi.pojo.common.CensusVo;
-import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -108,6 +106,7 @@ import com.framework.loippi.pojo.activity.ShopGoodSpec;
 import com.framework.loippi.pojo.cart.CartInfo;
 import com.framework.loippi.pojo.cart.CartVo;
 import com.framework.loippi.pojo.common.CensusVo;
+import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import com.framework.loippi.pojo.order.CartOrderVo;
 import com.framework.loippi.pojo.order.OrderSettlement;
 import com.framework.loippi.pojo.order.OrderVo;
@@ -4699,7 +4698,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers2.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4708,7 +4707,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers3.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
