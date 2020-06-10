@@ -3348,7 +3348,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers2.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3357,7 +3357,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers3.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3377,7 +3377,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers2.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3386,7 +3386,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers3.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3406,7 +3406,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers2.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3415,7 +3415,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers3.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3435,7 +3435,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers2.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3444,7 +3444,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers3.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3464,7 +3464,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers2.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3473,7 +3473,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers3.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3493,7 +3493,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers2.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3502,7 +3502,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers3.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3522,7 +3522,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers2.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3531,7 +3531,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers3.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3551,7 +3551,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers2.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -3560,7 +3560,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                     sendCoupon(CouponConstant.MAR21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                 }else {
-                                    CouponUser couponUser = couponUsers.get(0);
+                                    CouponUser couponUser = couponUsers3.get(0);
                                     if(couponUser.getHaveCouponNum()==0){
                                         sendCoupon(CouponConstant.MAR21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
                                     }
@@ -4669,7 +4669,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers2.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4678,7 +4678,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers3.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4727,7 +4727,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers2.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4736,7 +4736,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers3.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4756,7 +4756,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers2.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4765,7 +4765,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers3.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4785,7 +4785,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers2.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4794,7 +4794,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers3.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4814,7 +4814,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers2.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4823,7 +4823,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers3.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4843,7 +4843,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers2.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4852,7 +4852,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers3.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4872,7 +4872,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers2.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
@@ -4881,7 +4881,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
                                         sendCoupon(CouponConstant.MAR21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                     }else {
-                                        CouponUser couponUser = couponUsers.get(0);
+                                        CouponUser couponUser = couponUsers3.get(0);
                                         if(couponUser.getHaveCouponNum()==0){
                                             sendCoupon(CouponConstant.MAR21_COUPON_ID,rdMmRelation,mmBasicInfo,coupons,order.getId());
                                         }
