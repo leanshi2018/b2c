@@ -150,7 +150,7 @@ public class ShopCommonArticleController extends GenericController {
             List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acParentId", id).put("acStatus", 0).put("acCode","school-articles"));
             model.addAttribute("articleClassList",list);
         }
-        return " ";//TODO
+        return "/content/article/add";//TODO
     }
 
     @RequestMapping(value = {"/edit"}, method = {RequestMethod.GET})
