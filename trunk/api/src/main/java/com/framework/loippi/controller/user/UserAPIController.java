@@ -268,10 +268,22 @@ public class UserAPIController extends BaseController {
             .count(Paramap.create().put("memberId", Long.parseLong(shopMember.getMmCode())));
         result.setFavoritesNum(Integer.parseInt(favoritesNum + ""));
         //足迹数量
-        Long browseNum = shopGoodsBrowseService
+        /*Long browseNum = shopGoodsBrowseService
             .count(Paramap.create().put("browseMemberId", Long.parseLong(shopMember.getMmCode())));
-        result.setBrowseNum(Integer.parseInt(browseNum + ""));
+        result.setBrowseNum(Integer.parseInt(browseNum + ""));*/
 
+        List<ShopGoodsBrowse> shopGoodsBrowses = shopGoodsBrowseService.findList(Paramap.create().put("browseMemberId", Long.parseLong(shopMember.getMmCode())));
+        int num=0;
+        if(shopGoodsBrowses!=null&&shopGoodsBrowses.size()>0){
+            for (ShopGoodsBrowse shopGoodsBrows : shopGoodsBrowses) {
+                Long browseGoodsId = shopGoodsBrows.getBrowseGoodsId();
+                ShopGoods goods = shopGoodsService.find(browseGoodsId);
+                if(goods!=null&&goods.getGoodsType()!=2){
+                    num++;
+                }
+            }
+        }
+        result.setBrowseNum(num);
         //当周期
         RdSysPeriod sysPeriod = periodService.getPeriodService(new Date());
         String period = "";

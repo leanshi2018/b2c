@@ -52,11 +52,7 @@ public class Mytest {
      */
     @Test
     public void testCut() {
-        String s="http://rdnmall.com/FnoVRwfWR94Yxs7lRrsM4vMRtrh2,http://rdnmall.com/FsC9oilGVBIFCqpuoR_3WhEnIpfG,http://rdnmall.com/FjrqqLkwYzMJvMKtec3MaX0UMlG_,http://rdnmall.com/FgigT6qW6nX2vACcoBaIV1I9fsGh,";
-        String[] split = s.split(",");
-        System.out.println(split.length);
-        for (String s1 : split) {
-            System.out.println(s1);
-        }
+        Date date = Dateutil.parseStrFromToDate("2020-06-10", "yyyy-MM-dd");
+        System.out.println(date);
     }
 }
