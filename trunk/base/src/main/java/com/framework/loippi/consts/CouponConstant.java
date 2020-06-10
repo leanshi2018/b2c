@@ -87,29 +87,36 @@ public class CouponConstant {
     /**
      * 九月优惠券ID
      */
-    public static final Long SEPT_COUPON_ID = 6555008628095455338L;
+    public static final Long SEPT_COUPON_ID = 6555008628095455343L;
+    //public static final Long SEPT_COUPON_ID = 6555008628095455338L;//formal
     /**
      * 十月优惠券ID
      */
-    public static final Long OCT_COUPON_ID = 6555008628095455339L;
+    public static final Long OCT_COUPON_ID = 6555008628095455344L;
+    //public static final Long OCT_COUPON_ID = 6555008628095455339L;
     /**
      * 十一月优惠券ID
      */
-    public static final Long NOV_COUPON_ID = 6555008628095455340L;
+    public static final Long NOV_COUPON_ID = 6555008628095455345L;
+    //public static final Long NOV_COUPON_ID = 6555008628095455340L;
     /**
      * 十二月优惠券ID
      */
-    public static final Long DEC_COUPON_ID = 6555008628095455341L;
+    public static final Long DEC_COUPON_ID = 6555008628095455346L;
+    //public static final Long DEC_COUPON_ID = 6555008628095455341L;
     /**
      * 21年一月优惠券ID
      */
-    public static final Long JAN21_COUPON_ID = 6555008628095455342L;
+    public static final Long JAN21_COUPON_ID = 6555008628095455347L;
+    //public static final Long JAN21_COUPON_ID = 6555008628095455342L;
     /**
      * 21年二月优惠券ID
      */
-    public static final Long FEB21_COUPON_ID = 6555008628095455343L;
+    public static final Long FEB21_COUPON_ID = 6555008628095455348L;
+    //public static final Long FEB21_COUPON_ID = 6555008628095455343L;
     /**
      * 21年三月优惠券ID
      */
-    public static final Long MAR21_COUPON_ID = 6555008628095455345L;
+    public static final Long MAR21_COUPON_ID = 6555008628095455349L;
+    //public static final Long MAR21_COUPON_ID = 6555008628095455345L;
 }
