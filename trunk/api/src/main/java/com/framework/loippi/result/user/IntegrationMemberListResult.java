@@ -523,7 +523,7 @@ public class IntegrationMemberListResult {
                             memberInfo.setGradeName("普通会员");
                         }
                         //头像颜色
-                        if (rdMmRelation.getRank()!=0){
+                        //if (rdMmRelation.getRank()!=0){
                             if (qualification.getPpvqualified()==null || qualification.getHPpvQualified()==null){
                                 memberInfo.setMemberAvatarColour(0);
                             }else {
@@ -539,9 +539,9 @@ public class IntegrationMemberListResult {
                                     }
                                 }
                             }
-                        }else {
-                            memberInfo.setMemberAvatarColour(3);
-                        }
+                        //}else {
+                            //memberInfo.setMemberAvatarColour(3);
+                        //}
 
                         //当期ppv和累计ppv
                         if (qualification.getPpv()!=null){
