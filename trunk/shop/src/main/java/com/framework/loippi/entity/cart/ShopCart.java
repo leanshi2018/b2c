@@ -169,6 +169,12 @@ public class ShopCart implements GenericEntity {
     @Column(name = "weight")
     private Double weight;
 
+    /**
+     * 品牌图标
+     */
+    @Column(name = "brand_icon")
+    private String brandIcon;
+
     private List<Long> specIds;
 
 }

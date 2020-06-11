@@ -1,6 +1,8 @@
 package com.framework.loippi.service.impl.product;
 
 
+import com.framework.loippi.dao.product.ShopGoodsBrandDao;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -111,6 +113,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
     private ShopOrderGoodsDao shopOrderGoodsDao;
     @Autowired
     private ShopOrderDao shopOrderDao;
+    @Autowired
+    private ShopGoodsBrandDao shopGoodsBrandDao;
 
     @Autowired
     public void setGenericDao() {
@@ -162,6 +166,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         cart.setPpv(goodsSpec.getPpv());
         cart.setGoodsState(goods.getGoodsType());
         cart.setBrandId(goods.getBrandId());
+        ShopGoodsBrand shopGoodsBrand = shopGoodsBrandDao.find(goods.getBrandId());
+        cart.setBrandIcon(shopGoodsBrand.getBrandIcon());
         cart.setBrandName(goods.getBrandName());
         cart.setActivityId(activityId);
         cart.setActivityType(activitType);
