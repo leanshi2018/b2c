@@ -73,7 +73,7 @@ public class GoodsListResult {
     //好评率
     private Double evaluaterate;
     //评价数
-    private String commentnum;
+    private Integer commentnum;
     //收藏数
     private Integer favNumber = 0;
     //是否收藏
@@ -103,7 +103,7 @@ public class GoodsListResult {
             result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(new BigDecimal(0)));
             result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
             result.setEvaluaterate(Optional.ofNullable(item.getEvaluaterate()).orElse(0d)*100);
-            result.setCommentnum(Optional.ofNullable(item.getGoodsEvaluaterate()).orElse("0"));
+            result.setCommentnum(Optional.ofNullable(item.getCommentnum()).orElse(0));
             result.setFavNumber(Optional.ofNullable(item.getGoodsCollect()).orElse(0));
             StringBuffer shareUrl = new StringBuffer();
             shareUrl.append(wapServer);
@@ -142,7 +142,7 @@ public class GoodsListResult {
             result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(new BigDecimal(0)));
             result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
             result.setEvaluaterate(Optional.ofNullable(item.getEvaluaterate()).orElse(0d)*100);
-            result.setCommentnum(Optional.ofNullable(item.getGoodsEvaluaterate()).orElse("0"));
+            result.setCommentnum(Optional.ofNullable(item.getCommentnum()).orElse(0));
             //填充活动信息
             ShopActivityGoods nShopActivityGoods = goodsMap.get(item.getId());
             if (nShopActivityGoods != null) {
@@ -221,7 +221,7 @@ public class GoodsListResult {
         result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(new BigDecimal(0)));
         result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
         result.setEvaluaterate(Optional.ofNullable(item.getEvaluaterate()).orElse(0d)*100);
-        result.setCommentnum(Optional.ofNullable(item.getGoodsEvaluaterate()).orElse("0"));
+        result.setCommentnum(Optional.ofNullable(item.getCommentnum()).orElse(0));
         result.setFavNumber(Optional.ofNullable(item.getGoodsCollect()).orElse(0));
         StringBuffer shareUrl = new StringBuffer();
         shareUrl.append(wapServer);
