@@ -67,7 +67,7 @@
 
                     <#if message=="">
                         <tr class="noborder">
-                            <td class="required">
+                            <td class="required" width="80px">
                                 <em class="pngFix"></em>消息标题
                             </td>
                             <td>
@@ -493,7 +493,7 @@
                 area: ['800px', '600px']
             })
         }
-        function appendInfo(name,content,infos) {
+        function appendInfo(name,content,info) {
             $("#articleTitle").val(name);
             $("#contents").val(content);
             var articleContent=$("#contents").val();
