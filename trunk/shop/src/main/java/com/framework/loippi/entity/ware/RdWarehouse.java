@@ -1,12 +1,12 @@
 package com.framework.loippi.entity.ware;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 仓库记录表
@@ -29,7 +29,11 @@ public class RdWarehouse implements GenericEntity {
 	/** 仓库名称 */
 	@Column(name = "WARE_NAME" )
 	private String wareName;
-	
+
+	/** 仓库类型  0.自营仓库  1.外包仓库  2.自提店 */
+	@Column(name = "WARE_TYPE" )
+	private String wareType;
+
 	/** 省 */
 	@Column(name = "PROVINCE_CODE" )
 	private String provinceCode;
@@ -58,6 +62,22 @@ public class RdWarehouse implements GenericEntity {
 	@Column(name = "UPDATE_TIME_LAST" )
 	private java.util.Date updateTimeLast;
 	
+	/** 仓库状态  0.正常 1停用 */
+	@Column(name = "WARE_STATUS" )
+	private Integer wareStatus;
+
+	/** 负责人姓名（收件人姓名） */
+	@Column(name = "CONSIGNEE_NAME" )
+	private String consigneeName;
+
+	/** 会员编号(选择类型为自提店时显示且必填) */
+	@Column(name = "MM_CODE" )
+	private String mmCode;
+
+	/** 自提地址id */
+	@Column(name = "MENTION_ID" )
+	private Integer mentionId;
+
 	/** 备注 */
 	@Column(name = "WARE_DESC" )
 	private String wareDesc;

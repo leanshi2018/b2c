@@ -242,11 +242,11 @@ public class ActivityCommonController extends GenericController {
 
             if (shopHomePicture.getPictureType()==0){//轮播图
                 System.out.println("轮播图添加");
-                List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
+                /*List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (pictureList.size()!=0){
                     model.addAttribute("msg", "轮播图排序"+shopHomePicture.getPSort()+"号已存在");
                     return Constants.MSG_URL;
-                }
+                }*/
                 shopHomePictureService.save(shopHomePicture);
 
                 return "redirect:findHomePictureList.jhtml";
@@ -265,7 +265,7 @@ public class ActivityCommonController extends GenericController {
                 return "redirect:findAD2PictureList.jhtml";
             }else {//首页广告图2
                 System.out.println("广告位图2添加");
-                if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
+                /*if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图2排序只能是1-3");
                     return Constants.MSG_URL;
                 }
@@ -273,7 +273,7 @@ public class ActivityCommonController extends GenericController {
                 if (pictureList.size()!=0){
                     model.addAttribute("msg", "广告位图2排序"+shopHomePicture.getPSort()+"号已存在");
                     return Constants.MSG_URL;
-                }
+                }*/
                 shopHomePictureService.save(shopHomePicture);
                 return "redirect:findAD2PictureList.jhtml";
             }
@@ -281,7 +281,7 @@ public class ActivityCommonController extends GenericController {
             if (shopHomePicture.getPictureType()==0){//轮播图
                 System.out.println("轮播图修改");
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
-                if (pictureList.size()!=0){
+                /*if (pictureList.size()!=0){
                     for (ShopHomePicture homePicture : pictureList) {
                         if (homePicture.getPictureType()==0){
                             if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
@@ -292,7 +292,7 @@ public class ActivityCommonController extends GenericController {
                             }
                         }
                     }
-                }
+                }*/
                 shopHomePictureService.update(shopHomePicture);
                 return "redirect:findHomePictureList.jhtml";
             }else if (shopHomePicture.getPictureType()==1){//广告位图
@@ -323,7 +323,7 @@ public class ActivityCommonController extends GenericController {
                     return Constants.MSG_URL;
                 }
                 List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
-                if (pictureList.size()!=0){
+                /*if (pictureList.size()!=0){
                     for (ShopHomePicture homePicture : pictureList) {
                         if (homePicture.getPictureType()==2){
                             if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
@@ -334,7 +334,7 @@ public class ActivityCommonController extends GenericController {
                             }
                         }
                     }
-                }
+                }*/
                 shopHomePictureService.update(shopHomePicture);
                 return "redirect:findAD2PictureList.jhtml";
             }

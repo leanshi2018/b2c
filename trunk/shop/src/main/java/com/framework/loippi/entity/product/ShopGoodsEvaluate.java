@@ -1,10 +1,5 @@
 package com.framework.loippi.entity.product;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-import com.framework.loippi.utils.validator.DateUtils;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +7,13 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
+import com.framework.loippi.utils.validator.DateUtils;
 
 /**
  * Entity - 信誉商品评价表
@@ -30,12 +32,14 @@ public class ShopGoodsEvaluate implements GenericEntity {
     /**
      * 评价ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(id = true, name = "id", updatable = false)
     private Long id;
 
     /**
      * 订单表自增ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "geval_orderid")
     private Long gevalOrderid;
 
@@ -48,12 +52,14 @@ public class ShopGoodsEvaluate implements GenericEntity {
     /**
      * 订单商品表编号(回复则为空)
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "geval_ordergoodsid")
     private Long gevalOrdergoodsid;
 
     /**
      * 商品表编号
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "geval_goodsid")
     private Long gevalGoodsid;
 
