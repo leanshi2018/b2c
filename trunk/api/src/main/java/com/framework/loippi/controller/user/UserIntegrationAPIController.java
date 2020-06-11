@@ -792,15 +792,15 @@ public class UserIntegrationAPIController extends BaseController {
             } else {
                 map.put("transTypeCode", transTypeCode);
             }
-            if (!StringUtil.isEmpty(time)) {
-                map.put("time", time);
-            }
         } else if (type == 2) {//购物积分
             map.put("shp", "1");
         } else if (type == 3) {//换购积分
             map.put("pui", "1");
         } else {
             return ApiUtils.error("积分类型出错");
+        }
+        if (!StringUtil.isEmpty(time)) {
+            map.put("time", time);
         }
         pager.setParameter(map);
         pager.setOrderDirection(Order.Direction.DESC);

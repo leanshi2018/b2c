@@ -82,7 +82,7 @@
                             <p>
                             <span class="sign">
                             <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
-                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="1"/>
+                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="2"/>
                             <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
                               </span>
                             </p>
@@ -217,7 +217,7 @@
                             <p>
                             <span class="sign">
                             <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
-                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="1"/>
+                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="2"/>
                             <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
                               </span>
                             </p>
