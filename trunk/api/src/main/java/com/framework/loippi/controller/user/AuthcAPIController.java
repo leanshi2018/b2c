@@ -580,7 +580,7 @@ public class AuthcAPIController extends BaseController {
                                    RdMmAccountInfo rdMmAccountInfo, RdMmRelation rdMmRelation) {
         rdMmBasicInfo.setGender(0);//默认性别
         rdMmBasicInfo.setCreationDate(new Date());
-        rdMmBasicInfo.setMmAvatar(StringUtil.formatImg(prefix, "http://rdnmall.com/touxiang.jpg"));//会员头像
+        rdMmBasicInfo.setMmAvatar(StringUtil.formatImg(prefix, "http://rdnmall.com/FoUi8VoKhZJRUnFxhfyQ3Ib50ySa"));//会员头像
         rdMmBasicInfo.setCreationSource("1");
         rdMmBasicInfo.setIdCode(param.getMemberTrueId());
         rdMmBasicInfo.setIdType(param.getType());
