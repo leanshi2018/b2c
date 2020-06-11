@@ -132,6 +132,10 @@
             UPDATE rd_biz_pay SET invalid_status=0 WHERE pay_sn = #{paySn}
     </update>
 
+    <update id="updateStatusByBizPaySn" parameterType="string">
+            UPDATE rd_biz_pay SET invalid_status=1 WHERE biz_pay_sn = #{bizPaySn}
+    </update>
+
     <select id="findByPaysn" parameterType="string" resultMap="RdBizPayMap">
         SELECT
         <include refid="base_column" />
@@ -143,4 +147,5 @@
         <include refid="base_column" />
         FROM rd_biz_pay WHERE pay_sn = #{paySn} AND invalid_status = #{invalidStatus}
     </select>
+
 </mapper>

@@ -17,4 +17,6 @@ public interface RdBizPayDao extends GenericDao<RdBizPay, Long> {
 	List<RdBizPay> findByPaysn(String paySn);
 
 	List<RdBizPay> findByPaysnAndStatus(Map<String, Object> map);
+
+	void updateStatusByBizPaySn(String bizPaySn);
 }

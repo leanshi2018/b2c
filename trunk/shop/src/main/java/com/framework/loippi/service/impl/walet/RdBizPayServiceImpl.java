@@ -46,4 +46,9 @@ public class RdBizPayServiceImpl extends GenericServiceImpl<RdBizPay, Long> impl
 		map.put("invalidStatus",invalidStatus);
 		return rdBizPayDao.findByPaysnAndStatus(map);
 	}
+
+	@Override
+	public void updateStatusByBizPaySn(String bizPaySn) {
+		rdBizPayDao.updateStatusByBizPaySn(bizPaySn);
+	}
 }

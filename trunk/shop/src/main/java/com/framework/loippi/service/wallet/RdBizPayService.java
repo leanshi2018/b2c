@@ -16,4 +16,6 @@ public interface RdBizPayService extends GenericService<RdBizPay, Long> {
 	List<RdBizPay> findByPaysn(String mmPaySn);
 
 	List<RdBizPay> findByPaysnAndStatus(String paySn, Integer invalidStatus);
+
+	void updateStatusByBizPaySn(String bizOrderNo);
 }

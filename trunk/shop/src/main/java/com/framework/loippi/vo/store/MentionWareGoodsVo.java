@@ -62,4 +62,7 @@ public class MentionWareGoodsVo {
 	/** 库存 */
 	private Integer inventory;
 
+	/** 单品实际库存 */
+	private Integer productInventory;
+
 }
