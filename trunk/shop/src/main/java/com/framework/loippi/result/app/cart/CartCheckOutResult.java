@@ -193,13 +193,17 @@ public class CartCheckOutResult {
 
         private String brandName;
 
+        private String brandIcon;
+
         private List<BaseGoodsResult> goodsList;
 
         public static List<StoreGoodsContainer> buildList(List<ShopCart> cartList,ShopOrderDiscountType shopOrderDiscountType) {
             // 拆单,将购物车数据存入map,键为品牌id,值为品牌名称,得到所有品牌的信息(唯一,去重)
             Map<Long, String> storeMap = Maps.newHashMap();
+            Map<Long, String> storeMap2 = Maps.newHashMap();
             for (ShopCart cart : cartList) {
                 storeMap.put(cart.getBrandId(), cart.getBrandName());
+                storeMap2.put(cart.getBrandId(), cart.getBrandIcon());
             }
 
             // 去重后店铺id
@@ -209,6 +213,7 @@ public class CartCheckOutResult {
             for (Long brandId : brandIds) {
                 StoreGoodsContainer container = new StoreGoodsContainer()
                         .setBrandId(brandId)
+                        .setBrandIcon(Optional.ofNullable(storeMap2.get(brandId)).orElse(""))
                         .setBrandName(Optional.ofNullable(storeMap.get(brandId)).orElse("no name"));
                 container.setGoodsList(Lists.newArrayList());
                 for (ShopCart cart : cartList) {
