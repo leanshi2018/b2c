@@ -106,15 +106,14 @@ public class ShopFileuploadController extends GenericController {
                     putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
                     System.out.println(putRet.key);//key文件名
                     System.out.println(putRet.hash);//hash七牛返回的文件存储的地址，可以使用这个地址加七牛给你提供的前缀访问到这个视频。
-                    return "http://rdnmall.com/"+putRet.hash;
+                    map.put("result", "http://rdnmall.com/"+putRet.hash);
+                    map.put("success", true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            map.put("result", "");
-            map.put("success", true);
         }else{
             map.put("result", "");
             map.put("success", false);

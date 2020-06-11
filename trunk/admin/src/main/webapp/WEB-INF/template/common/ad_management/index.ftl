@@ -32,13 +32,13 @@
                 <ul class="tab-base">
                     <li><a href="JavaScript:void(0);" class="current"><@spring.message "manage"/></a></li>
                     <li>
-                        <a href="${base}/admin/shop_activity_common/findADPicture.jhtml?pictureId=${id}"><@spring.message "add"/></a>
+                        <a href="${base}/admin/shop_activity_common/findAD2Picture.jhtml?pictureId=${id}"><@spring.message "add"/></a>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="fixed-empty"></div>
-        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findADPictureList.jhtml">
+        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findAD2PictureList.jhtml">
             <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
@@ -55,7 +55,7 @@
             </table>
         </form>
 
-        <form method="post" id="couponlist">
+        <form method="post" id="couponlist" >
             <table class="table tb-type2">
                 <thead>
                 <tr class="thead">
@@ -100,7 +100,7 @@
                             ${list.PSort}
                         </td>
                         <td>
-                            <a class="look" href="${base}/admin/shop_activity_common/findADPicture.jhtml?pictureId=${list.id}">编 辑</a>
+                            <a class="look" href="${base}/admin/shop_activity_common/findAD2Picture.jhtml?pictureId=${list.id}">编 辑</a>
                         </td>
                     </tr>
                 </#list>
@@ -115,12 +115,16 @@
         </form>
     </div>
     <script type="text/javascript">
+        <#--window.onload = function(){-->
+        <#--    $("#couponlist").attr("action", "${base}/admin/shop_activity_common/findAD2PictureList.jhtml").submit();-->
+        <#--}-->
         $(".look").click(function(){
             var href = $(this).attr("href");
             $("#couponlist").attr("action", href).submit();
             return false;
         });
         $(function () {
+
             $("#idsAll").click(function () {
                 $('input[name="ids"]').attr("checked", this.checked);
             });

@@ -206,6 +206,8 @@ public class TLNotifyController {
 		//支付成功
 		if(status.equals("OK")){
 			System.out.println("成功！");
+			//修改这个通联订单号为有效
+			rdBizPayService.updateStatusByBizPaySn(bizOrderNo);
 			Long amount = Long.valueOf(returnMap.get("amount").toString())*100; //订单金额  单位：分
 			paymentService.updatePayBack(paySn, orderNo, "applet_weichatpay",amount.toString());
 		}

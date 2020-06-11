@@ -8,6 +8,7 @@
 	<resultMap id="RdWarehouseResultMap" type="com.framework.loippi.entity.ware.RdWarehouse">
 		<result property="wareCode" column="WARE_CODE" />
 		<result property="wareName" column="WARE_NAME" />
+		<result property="wareType" column="WARE_TYPE" />
 		<result property="provinceCode" column="PROVINCE_CODE" />
 		<result property="cityCode" column="CITY_CODE" />
 		<result property="countryCode" column="COUNTRY_CODE" />
@@ -15,16 +16,20 @@
 		<result property="createby" column="CREATEBY" />
 		<result property="createtime" column="CREATETIME" />
 		<result property="updateTimeLast" column="UPDATE_TIME_LAST" />
+		<result property="wareStatus" column="WARE_STATUS" />
+		<result property="consigneeName" column="CONSIGNEE_NAME" />
+		<result property="mmCode" column="MM_CODE" />
+		<result property="mentionId" column="MENTION_ID" />
 		<result property="wareDesc" column="WARE_DESC" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 WARE_CODE ,WARE_NAME ,PROVINCE_CODE ,CITY_CODE ,COUNTRY_CODE ,WARE_DETIAL ,CREATEBY ,CREATETIME ,UPDATE_TIME_LAST ,WARE_DESC 
+		 WARE_CODE ,WARE_NAME ,WARE_TYPE ,PROVINCE_CODE ,CITY_CODE ,COUNTRY_CODE ,WARE_DETIAL ,CREATEBY ,CREATETIME ,UPDATE_TIME_LAST ,WARE_STATUS ,CONSIGNEE_NAME ,MM_CODE ,MENTION_ID ,WARE_DESC
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{wareCode},#{wareName},#{provinceCode},#{cityCode},#{countryCode},#{wareDetial},#{createby},#{createtime},#{updateTimeLast},#{wareDesc}
+		 #{wareCode},#{wareName},#{wareType},#{provinceCode},#{cityCode},#{countryCode},#{wareDetial},#{createby},#{createtime},#{updateTimeLast},#{wareStatus},#{consigneeName},#{mmCode},#{mentionId},#{wareDesc}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -61,7 +66,18 @@
 		</if>
 		<if test="wareNameKey != null and wareNameKey != ''">
 			AND WARE_NAME like concat('%',#{wareNameKey},'%')
-
+		</if>
+		<if test="wareStatus != null">
+			AND WARE_STATUS = #{wareStatus}
+		</if>
+		<if test="consigneeName != null and consigneeName != ''">
+			AND CONSIGNEE_NAME = #{consigneeName,jdbcType=VARCHAR}
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="mentionId != null">
+			AND MENTION_ID = #{mentionId}
 		</if>
 		<if test="wareDetialKey != null and wareDetialKey != ''">
 			AND ( PROVINCE_CODE like concat('%',#{wareDetialKey},'%') OR CITY_CODE like concat('%',#{wareDetialKey},'%')
@@ -101,7 +117,18 @@
 		<if test="wareDesc != null and wareDesc != ''">
 			WARE_DESC = #{wareDesc,jdbcType=VARCHAR},
 		</if>
-
+		<if test="wareStatus != null">
+			WARE_STATUS = #{wareStatus},
+		</if>
+		<if test="consigneeName != null and consigneeName != ''">
+			CONSIGNEE_NAME = #{consigneeName,jdbcType=VARCHAR},
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			MM_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="mentionId != null">
+			MENTION_ID = #{mentionId},
+		</if>
 	</sql>
 
 	<!-- 根据ID查询 -->

@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
@@ -20,8 +22,10 @@ import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 @AllArgsConstructor
 public class EvaluateOrderGoodsResult {
       //订单商品表id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long gevalOrdergoodsid;
     //订单商品表id
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long gevalGoodsid;
     /**
      * 商品名称
