@@ -99,7 +99,7 @@ public class ArticleAPIController extends BaseController {
     public String articleDetail(String key, HttpServletRequest request) {
         //查找文章所有的分类
         List<ShopCommonArticleClass> shopCommonArticleClassList = shopCommonArticleClassService.findList(Paramap.create().put("acCode", DocumentConsts.DOCUMENT_TYPE_SCHOOL_ARTICLES).put("acStatus", 0));
-        List<ShopCommonArticle> shopCommonArticleList = shopCommonArticleService.findList(Paramap.create().put("key", key));
+        List<ShopCommonArticle> shopCommonArticleList = shopCommonArticleService.findList(Paramap.create().put("key", key).put("articleShow",1));
         return ApiUtils.success(ArticleListResult.buildList(shopCommonArticleList, shopCommonArticleClassList, 2,wapServer));
     }
 
