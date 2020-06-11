@@ -48,7 +48,12 @@ public class ArticleListResult {
         /**
          * 图片
          */
-        private ArrayList<String> image;
+        private String image;
+
+        /**
+         * 图片
+         */
+        private ArrayList<String> imageList;
         /**
          * url
          */
@@ -134,14 +139,16 @@ public class ArticleListResult {
                  articleinfo.setCreateTime(item.getCreateTime());
                  articleinfo.setId(item.getId());
                  if(item.getArticleImage()==null||item.getArticleImage().length()==0){
-                     articleinfo.setImage(new ArrayList<String>());
+                     articleinfo.setImage("");
+                     articleinfo.setImageList(new ArrayList<String>());
                  }else {
                      ArrayList<String> strings = new ArrayList<>();
                      String[] split = item.getArticleImage().split(",");
+                     articleinfo.setImage(split[0]);
                      for (String s : split) {
                          strings.add(s);
                      }
-                     articleinfo.setImage(strings);
+                     articleinfo.setImageList(strings);
                  }
                  articleinfo.setPageViews(Optional.ofNullable(item.getPageViews()).orElse(0));
                  articleinfo.setLikeNum(Optional.ofNullable(item.getLikeNum()).orElse(0));
@@ -213,14 +220,16 @@ public class ArticleListResult {
                 articleinfo.setCreateTime(item.getCreateTime());
                 articleinfo.setId(item.getId());
                 if(item.getArticleImage()==null||item.getArticleImage().length()==0){
-                    articleinfo.setImage(new ArrayList<String>());
+                    articleinfo.setImage("");
+                    articleinfo.setImageList(new ArrayList<String>());
                 }else {
                     ArrayList<String> strings = new ArrayList<>();
                     String[] split = item.getArticleImage().split(",");
                     for (String s : split) {
                         strings.add(s);
                     }
-                    articleinfo.setImage(strings);
+                    articleinfo.setImage(split[0]);
+                    articleinfo.setImageList(strings);
                 }
                 articleinfo.setPageViews(Optional.ofNullable(item.getPageViews()).orElse(0));
                 articleinfo.setLikeNum(Optional.ofNullable(item.getLikeNum()).orElse(0));
