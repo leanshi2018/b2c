@@ -35,12 +35,12 @@ public class MentionWareGoodsVo {
 	/**
 	 * 零售价（普通价）
 	 */
-	private BigDecimal specRetailPrice;
+	private BigDecimal goodsRetailPrice;
 
 	/**
 	 * 会员价（会员价）
 	 */
-	private BigDecimal specMemberPrice;
+	private BigDecimal goodsMemberPrice;
 
 	/**
 	 * ppv（mi值）
