@@ -1,5 +1,6 @@
 package com.framework.loippi.result.app.cart;
 
+import com.framework.loippi.entity.cart.ShopCart;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -29,7 +30,10 @@ public class CartResult {
      * 品牌名称
      */
     private String brandName;
-
+    /**
+     * 品牌图标
+     */
+    private String brandIcon;
     /**
      * 购物车商品项
      */
@@ -96,6 +100,7 @@ public class CartResult {
         CartResult cartResult = new CartResult()
             .setBrandId(optCart.map(ShopCartVo::getBrandId).orElse(-1L))
             .setBrandName(optCart.map(ShopCartVo::getBrandName).orElse("失效品牌"))
+            .setBrandIcon(optCart.map(ShopCart::getBrandIcon).orElse(""))
             .setCartItems(Lists.newArrayList(CartItemResult.build(cart)));
         cartResult.setShippingCouponAmount(freightAmount);
         cartResult.setGoodsTypeNum(cartResult.getCartItems().size());
