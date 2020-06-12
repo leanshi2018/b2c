@@ -138,7 +138,7 @@ public class SelfPerformanceResult {
 			}else if (rankAc==1){
 				rankStr = "VIP会员";
 			}else if (rankAc==2){
-				rankStr = "代理会员";
+				rankStr = "VIP会员";
 			}else if (rankAc==3){
 				rankStr = "初级代理店";
 			}else if (rankAc==4){
@@ -232,7 +232,7 @@ public class SelfPerformanceResult {
 		}else if (rankRecordHigh==1){
 			rankRecordHighStr = "VIP会员";
 		}else if (rankRecordHigh==2){
-			rankRecordHighStr = "代理会员";
+			rankRecordHighStr = "VIP会员";
 		}else if (rankRecordHigh==3){
 			rankRecordHighStr = "初级代理店";
 		}else if (rankRecordHigh==4){
@@ -287,7 +287,7 @@ public class SelfPerformanceResult {
 			}else if (rankAc==1){
 				rankStr = "VIP会员";
 			}else if (rankAc==2){
-				rankStr = "代理会员";
+				rankStr = "VIP会员";
 			}else if (rankAc==3){
 				rankStr = "初级代理店";
 			}else if (rankAc==4){
@@ -318,7 +318,7 @@ public class SelfPerformanceResult {
 		}else if (rankRecordHigh==1){
 			rankRecordHighStr = "VIP会员";
 		}else if (rankRecordHigh==2){
-			rankRecordHighStr = "代理会员";
+			rankRecordHighStr = "VIP会员";
 		}else if (rankRecordHigh==3){
 			rankRecordHighStr = "初级代理店";
 		}else if (rankRecordHigh==4){
