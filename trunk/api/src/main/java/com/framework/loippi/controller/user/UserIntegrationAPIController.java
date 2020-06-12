@@ -638,7 +638,9 @@ public class UserIntegrationAPIController extends BaseController {
             rdMmRelationList = rdMmRelationService.findList("sponsorCode", member.getMmCode());
             List<String> mmCodes = new ArrayList();
             for (RdMmRelation item : rdMmRelationList) {
-                mmCodes.add(item.getMmCode());
+                if (item.getMmStatus()!=2){
+                    mmCodes.add(item.getMmCode());
+                }
             }
             if (mmCodes != null && mmCodes.size() > 0) {
                 rdMmBasicInfoList = rdMmBasicInfoService
@@ -654,7 +656,14 @@ public class UserIntegrationAPIController extends BaseController {
                 mmCodes.add(item.getMmCode());
             }
             if (mmCodes != null && mmCodes.size() > 0) {
-                rdMmRelationList = rdMmRelationService.findList("mmCodes", mmCodes);
+                List<RdMmRelation> rdMmRelations = rdMmRelationService.findList("mmCodes", mmCodes);
+                if (rdMmRelations.size()>0){
+                    for (RdMmRelation relation : rdMmRelations) {
+                        if (relation.getMmStatus()!=2){
+                            rdMmRelationList.add(relation);
+                        }
+                    }
+                }
             }
 
         }
