@@ -129,6 +129,9 @@ public class ArticleAPIController extends BaseController {
         pageable.setPageNumber(pageNumber);
         pageable.setOrderProperty("is_top,article_sort,page_views");
         pageable.setOrderDirection(Order.Direction.DESC);
+        if(firstClassificationId.equals(6548852933067280384L)){
+            pageable.setOrderProperty("is_top,create_time,article_sort,page_views");
+        }
         if (secondaryClassificationId != null) {
             pageable.setParameter(Paramap.create().put("acId", secondaryClassificationId));
         } else {
