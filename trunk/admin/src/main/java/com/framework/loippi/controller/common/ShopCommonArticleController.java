@@ -108,6 +108,7 @@ public class ShopCommonArticleController extends GenericController {
                     article.setStatus(0);
                 }
                 article.setIsDel(0);
+                article.setArticleTime(new Date());
                 shopCommonArticleService.save(article);
             } else {
                 article.setUpdateTime(new Date());
