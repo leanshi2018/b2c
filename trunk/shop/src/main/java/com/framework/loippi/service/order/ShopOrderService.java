@@ -16,6 +16,7 @@ import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.pojo.common.CensusVo;
 import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
+import com.framework.loippi.pojo.selfMention.OrderInfo;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
@@ -352,8 +353,13 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     List<MemberShippingBehaviorVo> findOldShippingBehavior();
 
+    Integer findDailyCountByMentionId(Integer mentionId);
+
+    Integer findMonthCountByMentionId(Integer mentionId);
+
+    List<OrderInfo> findMonthOrderInfo(Integer mentionId);
 
 
 
-	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
+    /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

@@ -126,7 +126,7 @@ public class ShopCommonArticleController extends GenericController {
         if (articleType != null) {
             //model.addAttribute("articleList", shopCommonArticleClassService.findAll());
             //添加学堂文章，查询出类型为学堂文章的一级分类列表 TODO
-            List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acParentId",0).put("acStatus",0).put("acCode","school-articles"));
+            List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acStatus",0).put("acCode","school-articles"));
             model.addAttribute("articleList", list);
             if (articleType.intValue() != 1) {
                 return "/article/add_guding";

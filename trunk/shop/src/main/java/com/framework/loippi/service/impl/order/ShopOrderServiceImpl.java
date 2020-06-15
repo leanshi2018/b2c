@@ -1,6 +1,7 @@
 package com.framework.loippi.service.impl.order;
 
 
+import com.framework.loippi.pojo.selfMention.OrderInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -6003,5 +6004,35 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     @Override
     public List<MemberShippingBehaviorVo> findOldShippingBehavior() {
         return orderDao.findOldShippingBehavior();
+    }
+
+    /**
+     * 根据自提点地址id查询当日自提点订单数
+     * @param mentionId
+     * @return
+     */
+    @Override
+    public Integer findDailyCountByMentionId(Integer mentionId) {
+        return orderDao.findDailyCountByMentionId(mentionId);
+    }
+
+    /**
+     * 根据自提点地址id查询当月自提点订单数
+     * @param mentionId
+     * @return
+     */
+    @Override
+    public Integer findMonthCountByMentionId(Integer mentionId) {
+        return orderDao.findMonthCountByMentionId(mentionId);
+    }
+
+    /**
+     * 查询指定自提点当月的业绩信息
+     * @param mentionId
+     * @return
+     */
+    @Override
+    public List<OrderInfo> findMonthOrderInfo(Integer mentionId) {
+        return orderDao.findMonthOrderInfo(mentionId);
     }
 }
