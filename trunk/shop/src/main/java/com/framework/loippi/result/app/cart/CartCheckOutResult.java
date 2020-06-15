@@ -140,7 +140,6 @@ public class CartCheckOutResult {
     /**
      * 购物车id
      */
-    @JsonSerialize(using = ToStringSerializer.class)
     public List<Long> cartIds;
     /**
      * 自提用户信息

@@ -46,6 +46,11 @@ public class ArticleListResult {
         private String content;
 
         /**
+         * 无格式文章内容
+         */
+        private String info;
+
+        /**
          * 图片
          */
         private String image;
@@ -136,6 +141,7 @@ public class ArticleListResult {
                     }
 
                  articleinfo.setContent(item.getArticleContent());
+                 articleinfo.setInfo(item.getArticleInfo());
                  articleinfo.setCreateTime(item.getCreateTime());
                  articleinfo.setId(item.getId());
                  if(item.getArticleImage()==null||item.getArticleImage().length()==0){
@@ -217,6 +223,7 @@ public class ArticleListResult {
                  articleinfo.setSecondaryClassificationName( Optional.ofNullable(ArticleClassinfo.get(item.getAcId()+"")).orElse(""));
 
                 articleinfo.setContent(item.getArticleContent());
+                articleinfo.setInfo(item.getArticleInfo());
                 articleinfo.setCreateTime(item.getCreateTime());
                 articleinfo.setId(item.getId());
                 if(item.getArticleImage()==null||item.getArticleImage().length()==0){
