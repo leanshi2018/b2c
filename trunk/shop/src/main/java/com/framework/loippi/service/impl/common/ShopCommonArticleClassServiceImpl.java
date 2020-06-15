@@ -8,6 +8,9 @@ import com.framework.loippi.dao.common.ShopCommonArticleClassDao;
 import com.framework.loippi.entity.common.ShopCommonArticleClass;
 import com.framework.loippi.service.common.ShopCommonArticleClassService;
 
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * SERVICE - ShopCommonArticleClass(文章分类表)
  * 
@@ -24,5 +27,10 @@ public class ShopCommonArticleClassServiceImpl extends GenericServiceImpl<ShopCo
 	@Autowired
 	public void setGenericDao() {
 		super.setGenericDao(shopCommonArticleClassDao);
+	}
+
+	@Override
+	public List<ShopCommonArticleClass> findByAcSort(HashMap<String, Object> map) {
+		return shopCommonArticleClassDao.findByAcSort(map);
 	}
 }

@@ -194,4 +194,21 @@
         </if>
     </select>
 
+    <select id="findByAcSort" parameterType="map" resultMap="ShopCommonArticleClassResultMap">
+        select
+        <include refid="base_column"/>
+        FROM SHOP_COMMON_ARTICLE_CLASS
+        <where>1=1
+            <if test="acCode != null and acCode !=''">
+                and ac_code = #{acCode}
+            </if>
+            <if test="acStatus != null">
+                and ac_status = #{acStatus}
+            </if>
+            <if test="acParentId != null">
+                and ac_parent_id = #{acParentId}
+            </if>
+        </where>
+        order by ac_sort asc
+    </select>
 </mapper> 
