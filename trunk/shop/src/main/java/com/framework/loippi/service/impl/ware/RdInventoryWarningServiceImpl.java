@@ -1,8 +1,10 @@
 package com.framework.loippi.service.impl.ware;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.framework.loippi.pojo.selfMention.GoodsType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,5 +40,10 @@ public class RdInventoryWarningServiceImpl extends GenericServiceImpl<RdInventor
 		map.put("specificationId",goodsSpecId);
 		map.put("inventory",quantity);
 		rdInventoryWarningDao.updateInventoryByWareCodeAndSpecId(map);
+	}
+
+	@Override
+	public List<GoodsType> findGoodsTypeByWareCode(String wareCode) {
+		return rdInventoryWarningDao.findGoodsTypeByWareCode(wareCode);
 	}
 }

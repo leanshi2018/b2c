@@ -12,6 +12,7 @@
         <result property="articleShow" column="article_show"/>
         <result property="articleSort" column="article_sort"/>
         <result property="articleTitle" column="article_title"/>
+        <result property="articleInfo" column="article_info"/>
         <result property="articleContent" column="article_content"/>
         <result property="isDel" column="is_del"/>
         <result property="createTime" column="create_time"/>
@@ -30,13 +31,13 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,ac_id ,article_url ,article_show ,article_sort ,article_title ,article_content ,is_del ,create_time ,update_time ,article_time,article_image,article_author,is_top,page_views
+		 id ,ac_id ,article_url ,article_show ,article_sort ,article_title,article_info ,article_content ,is_del ,create_time ,update_time ,article_time,article_image,article_author,is_top,page_views
 
 		 ,status,article_video,like_num,page_type,page_path
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{acId},#{articleUrl},#{articleShow},#{articleSort},#{articleTitle},#{articleContent},#{isDel},#{createTime},#{updateTime},#{articleTime},#{articleImage},#{articleAuthor},#{isTop},#{pageViews}
+		 #{id},#{acId},#{articleUrl},#{articleShow},#{articleSort},#{articleTitle},#{articleInfo},#{articleContent},#{isDel},#{createTime},#{updateTime},#{articleTime},#{articleImage},#{articleAuthor},#{isTop},#{pageViews}
 
 		 ,#{status},#{articleVideo},#{likeNum},#{pageType},#{pagePath}
 	</sql>
@@ -60,6 +61,9 @@
         </if>
         <if test="articleTitle != null and articleTitle != ''">
             AND SHOP_COMMON_ARTICLE.article_title = #{articleTitle,jdbcType=VARCHAR}
+        </if>
+        <if test="articleInfo != null and articleInfo != ''">
+            AND SHOP_COMMON_ARTICLE.article_info = #{articleInfo,jdbcType=VARCHAR}
         </if>
         <if test="articleContent != null and articleContent != ''">
             AND SHOP_COMMON_ARTICLE.article_content = #{articleContent,jdbcType=VARCHAR}
@@ -133,6 +137,9 @@
         </if>
         <if test="articleTitle != null and articleTitle != ''">
             article_title = #{articleTitle,jdbcType=VARCHAR},
+        </if>
+        <if test="articleInfo != null and articleInfo != ''">
+            article_info = #{articleInfo,jdbcType=VARCHAR},
         </if>
         <if test="articleContent != null and articleContent != ''">
             article_content = #{articleContent,jdbcType=VARCHAR},

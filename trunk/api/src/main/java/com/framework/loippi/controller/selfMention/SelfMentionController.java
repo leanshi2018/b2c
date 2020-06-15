@@ -1,9 +1,16 @@
 package com.framework.loippi.controller.selfMention;
 
+import com.framework.loippi.entity.ware.RdWarehouse;
+import com.framework.loippi.pojo.selfMention.GoodsType;
+import com.framework.loippi.pojo.selfMention.OrderInfo;
+import com.framework.loippi.result.selfMention.SelfMentionShopResult;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.ware.RdWarehouseService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.consts.Constants;
@@ -40,6 +48,10 @@ public class SelfMentionController extends BaseController {
     private ShopGoodsService shopGoodsService;
     @Resource
     private ShopGoodsSpecService shopGoodsSpecService;
+    @Resource
+    private RdWarehouseService rdWarehouseService;
+    @Resource
+    private ShopOrderService shopOrderService;
     /**
      * 点击进入我的小店
      * @param request
@@ -53,7 +65,31 @@ public class SelfMentionController extends BaseController {
             return ApiUtils.error("当前用户尚未登录");
         }
         String mmCode = member.getMmCode();//店主会员编号
-        return "";
+        RdWarehouse rdWarehouse = rdWarehouseService.find("mmCode",mmCode);
+        if(rdWarehouse==null){
+            return ApiUtils.error("当前用户尚未开店");
+        }
+        String wareCode = rdWarehouse.getWareCode();//获取仓库号
+        List<GoodsType> list=rdInventoryWarningService.findGoodsTypeByWareCode(wareCode);
+        Integer goodsTypeNum=0;//商品种类数量
+        if(list!=null&&list.size()>0){
+            goodsTypeNum=list.size();
+        }
+        Integer mentionId = rdWarehouse.getMentionId();
+        if(mentionId==null){
+            return ApiUtils.error("自提店信息异常");
+        }
+        Integer dailyNum=shopOrderService.findDailyCountByMentionId(mentionId);
+        Integer monthNum=shopOrderService.findMonthCountByMentionId(mentionId);
+        List<OrderInfo> orderInfos=shopOrderService.findMonthOrderInfo(mentionId);
+        BigDecimal total=BigDecimal.ZERO;
+        if(orderInfos!=null&&orderInfos.size()>0){
+            for (OrderInfo orderInfo : orderInfos) {
+                total=total.add(orderInfo.getOrderAmount()).add(orderInfo.getUsePointNum()).subtract(orderInfo.getRefundAmount()).subtract(orderInfo.getRefundPoint());
+            }
+        }
+        SelfMentionShopResult result=SelfMentionShopResult.build(goodsTypeNum,dailyNum,monthNum,total);
+        return ApiUtils.success(result);
     }
 
     /**
@@ -100,4 +136,18 @@ public class SelfMentionController extends BaseController {
 
     }
 
+    @RequestMapping(value = "/api/mention/orders.json")
+    @ResponseBody
+    public String getOrders(HttpServletRequest request,Integer orderState) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("当前用户尚未登录");
+        }
+        String mmCode = member.getMmCode();//店主会员编号
+        RdWarehouse rdWarehouse = rdWarehouseService.find("mmCode",mmCode);
+        if(rdWarehouse==null){
+            return ApiUtils.error("当前用户尚未开店");
+        }
+        return ApiUtils.success();
+    }
 }

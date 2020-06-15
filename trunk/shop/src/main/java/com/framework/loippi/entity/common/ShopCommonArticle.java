@@ -61,6 +61,12 @@ public class ShopCommonArticle implements GenericEntity {
     private String articleTitle;
 
     /**
+     * 无格式文章内容
+     */
+    @Column(name = "article_info")
+    private String articleInfo;
+
+    /**
      * 内容
      */
     @Column(name = "article_content")

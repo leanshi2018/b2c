@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.framework.loippi.pojo.selfMention.OrderInfo;
 import org.apache.ibatis.annotations.Param;
 
 import com.framework.loippi.entity.order.ShopOrder;
@@ -205,4 +206,11 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     List<MemberShippingBehaviorVo> findNewShippingBehavior();
 
     List<MemberShippingBehaviorVo> findOldShippingBehavior();
+
+    Integer findDailyCountByMentionId(Integer mentionId);
+
+    Integer findMonthCountByMentionId(Integer mentionId);
+
+    List<OrderInfo> findMonthOrderInfo(Integer mentionId);
+
 }

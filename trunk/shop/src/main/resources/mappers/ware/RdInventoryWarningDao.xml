@@ -173,4 +173,8 @@
 		WHERE	WARE_CODE = #{wareCode}  and SPECIFICATION_ID=#{specificationId}
 	</update>
 
+	<select id="findGoodsTypeByWareCode" parameterType="string" resultType="com.framework.loippi.pojo.selfMention.GoodsType">
+		SELECT GOODS_CODE as goodsCode,WARE_CODE as wareCode,WARE_NAME as wareName,GOODS_NAME as goodsName,COUNT(1) AS specNum  from rd_inventory_warning
+		where WARE_CODE = #{wareCode} GROUP BY GOODS_CODE
+	</select>
 </mapper> 
