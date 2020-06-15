@@ -112,8 +112,13 @@ public class ArticleAPIController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         //查找改分类下文章所有二级的分类
-        List<ShopCommonArticleClass> shopCommonArticleClassList = shopCommonArticleClassService.findList(Paramap.create().put("acCode", DocumentConsts.DOCUMENT_TYPE_SCHOOL_ARTICLES).put("acStatus", 0)
-                .put("acParentId", firstClassificationId));
+        /*List<ShopCommonArticleClass> shopCommonArticleClassList = shopCommonArticleClassService.findList(Paramap.create().put("acCode", DocumentConsts.DOCUMENT_TYPE_SCHOOL_ARTICLES).put("acStatus", 0)
+                .put("acParentId", firstClassificationId));*/
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("acCode",DocumentConsts.DOCUMENT_TYPE_SCHOOL_ARTICLES);
+        map.put("acStatus", 0);
+        map.put("acParentId", firstClassificationId);
+        List<ShopCommonArticleClass> shopCommonArticleClassList =shopCommonArticleClassService.findByAcSort(map);
         ShopCommonArticleClass shopCommonArticleClass = shopCommonArticleClassService.find(firstClassificationId);
         if (shopCommonArticleClassList == null || shopCommonArticleClassList.size() <= 0) {
             return ApiUtils.error("该分类不存在二级分类");
