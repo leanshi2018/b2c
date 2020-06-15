@@ -104,8 +104,12 @@ public class IntegrationMemberListResult {
                 integrationMemberListResult.setMemberAvatar(Optional.ofNullable(item.getMmAvatar()).orElse(""));
                 integrationMemberListResult.setJoinTime(Optional.ofNullable(item.getCreationDate()).orElse(null));
                 String mmCode = item.getMmCode();
+                Integer mmStatus = 0;
                 for (RdMmRelation rdMmRelation : rdMmRelationList) {
                     if(rdMmRelation.getMmCode().equals(mmCode)){
+                        if (rdMmRelation.getMmStatus()!=null){
+                            mmStatus = rdMmRelation.getMmStatus();
+                        }
                         if(rdMmRelation.getRank()==2){
                             integrationMemberListResult.setGradeName(map.get(1));
                         }else {
@@ -123,7 +127,9 @@ public class IntegrationMemberListResult {
                 }else{
                     integrationMemberListResult.setGradeName("");
                 }*/
-                userIntegrationListResultList.add(integrationMemberListResult);
+                if (mmStatus!=2){
+                    userIntegrationListResultList.add(integrationMemberListResult);
+                }
             }
         }
 

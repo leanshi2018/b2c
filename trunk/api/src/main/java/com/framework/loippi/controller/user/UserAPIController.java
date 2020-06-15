@@ -1800,6 +1800,7 @@ public class UserAPIController extends BaseController {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MONTH,-1);
+        calendar.add(Calendar.DATE,1);
         String dateStart = form.format(calendar.getTime());//dateEnd 结束日期  yyyy-MM-dd，最多允许查 3 个月内，跨度建议不超过 7 天
 
 
