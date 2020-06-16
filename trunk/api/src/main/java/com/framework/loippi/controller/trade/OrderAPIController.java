@@ -1210,10 +1210,6 @@ public class OrderAPIController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
-        ShopOrderPay orderPay = orderService
-            .addReplacementOrder(param.getGoodsId(), param.getCount(), param.getSpecId(),
-                Long.parseLong(member.getMmCode()));
-        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         //  自提地址 自提地址 id为-1 表示平台地址
         RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", -1);
         String contactName = "";
@@ -1223,9 +1219,9 @@ public class OrderAPIController extends BaseController {
             contactName = (Optional.ofNullable(shopMemberAddress.getConsigneeName()).orElse("后台还未设置"));
             contactPhone = (Optional.ofNullable(shopMemberAddress.getMobile()).orElse("后台还未设置"));
             contactAddrInfo = (Optional.ofNullable(
-                shopMemberAddress.getAddProvinceCode() + shopMemberAddress.getAddCityCode() + shopMemberAddress
-                    .getAddCountryCode()).orElse("后台还未设置") + Optional.ofNullable(shopMemberAddress.getAddDetial())
-                .orElse(""));
+                    shopMemberAddress.getAddProvinceCode() + shopMemberAddress.getAddCityCode() + shopMemberAddress
+                            .getAddCountryCode()).orElse("后台还未设置") + Optional.ofNullable(shopMemberAddress.getAddDetial())
+                    .orElse(""));
         } else {
             contactName = ("后台还未设置");
             contactPhone = ("后台还未设置");
@@ -1235,12 +1231,16 @@ public class OrderAPIController extends BaseController {
         RdMmAddInfo addr = new RdMmAddInfo();
         if (CollectionUtils.isNotEmpty(addrList)) {
             addr = addrList.stream()
-                .filter(item -> item.getDefaultadd() != null && item.getDefaultadd() == 1)
-                .findFirst()
-                .orElse(addrList.get(0));
+                    .filter(item -> item.getDefaultadd() != null && item.getDefaultadd() == 1)
+                    .findFirst()
+                    .orElse(addrList.get(0));
         } else {
             addr.setAid(-1);
         }
+        ShopOrderPay orderPay = orderService
+            .addReplacementOrder(param.getGoodsId(), param.getCount(), param.getSpecId(),
+                Long.parseLong(member.getMmCode()),addr);
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         return ApiUtils.success(Paramap.create().put("goodsintegration", orderPay.getPayAmount())
             .put("redemptionBlance",
                 Optional.ofNullable(rdMmAccountInfo.getRedemptionBlance()).orElse(BigDecimal.valueOf(0)))

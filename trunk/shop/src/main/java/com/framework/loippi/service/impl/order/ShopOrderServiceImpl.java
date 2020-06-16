@@ -2164,7 +2164,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
 
     @Override
-    public ShopOrderPay addReplacementOrder(Long goodsId, Integer count, Long specId, Long memberId) {
+    public ShopOrderPay addReplacementOrder(Long goodsId, Integer count, Long specId, Long memberId, RdMmAddInfo addr) {
         //商品信息
         ShopGoods goods = goodsDao.find(goodsId);
         if (goods.getGoodsType() != 2) {
@@ -2241,24 +2241,39 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         /********************* 相关金额赋值 *********************/
         /**********应付统计************/
         // 无其他费用（运费等) 订单总价格=商品总价格
-        // 订单总价格
-        order.setOrderTotalPrice(goodsSpec.getSpecRetailPrice());
-        //运费
-        order.setShippingFee(BigDecimal.valueOf(0));
+        // 商品总价格
+        order.setGoodsAmount(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)));
+
+        //运费计算
+        if (addr != null) {
+            //运费
+            BigDecimal freightAmount = shopGoodsFreightService.CalculateFreight(addr.getAddProvinceCode(), goodsSpec.getWeight()*count);
+            //运费优惠
+            BigDecimal preferentialFreightAmount = shopGoodsFreightRuleService.CalculateFreightDiscount(Long.toString(memberId), order.getGoodsAmount());
+            //运费
+            order.setShippingFee(freightAmount);
+            //订单运费优惠价格
+            order.setShippingPreferentialFee(preferentialFreightAmount);
+        } else {
+            //运费
+            order.setShippingFee(BigDecimal.valueOf(0));
+            //订单运费优惠价格
+            order.setShippingPreferentialFee(BigDecimal.valueOf(0));
+        }
         //优惠金额
         order.setDiscount(BigDecimal.valueOf(0));
-        // 商品总价格
-        order.setGoodsAmount(goodsSpec.getSpecRetailPrice());
+
         //使用积分
         //order.setUsePointNum(goodsSpec.getSpecRetailPrice().intValue());
         //订单pv值
         order.setPpv(BigDecimal.ZERO);
-        //订单运费优惠价格
-        order.setShippingPreferentialFee(BigDecimal.valueOf(0));
+
         order.setOrderPlatform(2);
         /**********支付统计************/
+        // 订单总价格
+        order.setOrderTotalPrice(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)).add(order.getShippingFee()).subtract(order.getShippingPreferentialFee()));
         // 现金支付
-        order.setOrderAmount(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)));
+        order.setOrderAmount(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)).add(order.getShippingFee()).subtract(order.getShippingPreferentialFee()));
         //order.setPointRmbNum(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)));
         orderDao.insertEntity(order);
         ShopOrderGoods orderGoods = new ShopOrderGoods();
@@ -2325,8 +2340,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         orderLogDao.insert(orderLog);
         //根据payId查询订单列表
         orderPay.setOrderCreateTime(new Date());
-        orderPay.setPayAmount(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)));
-        orderPay.setOrderTotalPrice(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)));
+        orderPay.setPayAmount(order.getOrderAmount());
+        orderPay.setOrderTotalPrice(order.getOrderTotalPrice());
         orderPay.setOrderId(orderId);
         orderPay.setPaymentType(2);
         return orderPay;

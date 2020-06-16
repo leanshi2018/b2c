@@ -13,6 +13,7 @@ import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
+import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.pojo.common.CensusVo;
 import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
@@ -107,7 +108,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
                                         String couponIds, Integer isPp, Integer platformApp, Long groupBuyActivityId, Long groupOrderId,
                                         ShopOrderDiscountType shopOrderDiscountType, Integer logisticType, Integer paymentType, Long giftId, Integer giftNum);
 
-    ShopOrderPay addReplacementOrder(Long goodsId,Integer count,Long specId,Long memberId);
+    ShopOrderPay addReplacementOrder(Long goodsId, Integer count, Long specId, Long memberId, RdMmAddInfo addr);
     /**
      * 根据支付单号更改 订单支付方式id和支付方式名称
      *
