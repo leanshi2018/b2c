@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.mybatis.eitity.GenericEntity;
 import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.mybatis.ext.annotation.Table;
@@ -24,16 +26,19 @@ public class CouponDetail implements GenericEntity {
     /**
      * 主键id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "id")
     private Long id;
     /**
      * 关联rd_coupon_user表
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "rd_coupon_user_id")
     private Long rdCouponUserId;
     /**
      * 优惠券id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "coupon_id")
     private Long couponId;
     /**
@@ -119,6 +124,7 @@ public class CouponDetail implements GenericEntity {
     /**
      * 购买优惠券关联订单id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "buy_order_id")
     private Long buyOrderId;
     /**
@@ -144,6 +150,7 @@ public class CouponDetail implements GenericEntity {
     /**
      * 购买订单获取优惠券关联订单号id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "get_order_id")
     private Long getOrderId;
 }
