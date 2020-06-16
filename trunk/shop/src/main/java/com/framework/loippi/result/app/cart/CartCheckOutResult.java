@@ -140,6 +140,7 @@ public class CartCheckOutResult {
     /**
      * 购物车id
      */
+
     public List<Long> cartIds;
     /**
      * 自提用户信息
