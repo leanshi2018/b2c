@@ -43,9 +43,13 @@ public class DailyMemCensusServiceImpl extends GenericServiceImpl<DailyMemCensus
      */
     @Override
     public void getDailyMemCensus() {
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(new Date());
+        instance.add(Calendar.DATE,-1);
+        Date time = instance.getTime();
         //1获取时间确定reportCode
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String reportCode = format.format(new Date());
+        String reportCode = format.format(time);
         HashMap<String, Object> map = new HashMap<>();
         String start=reportCode+" 00:00:00";
         String end=reportCode+" 23:59:59";

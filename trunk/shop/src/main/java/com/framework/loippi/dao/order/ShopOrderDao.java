@@ -213,4 +213,5 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
 
     List<OrderInfo> findMonthOrderInfo(Integer mentionId);
 
+    List<ShopOrder> findSelfOrderByPage(HashMap<String, Object> map);
 }

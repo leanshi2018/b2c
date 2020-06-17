@@ -100,7 +100,7 @@ public class DailyOrderCensusServiceImpl extends GenericServiceImpl<DailyOrderCe
         orderCensus.setOrderIncomeTotal(orderIncomeTotal);
         if(orderIncomeTotal.compareTo(BigDecimal.ZERO)==1){
             BigDecimal orderPointTotal=shopOrderService.findYesPointTotal(map);
-            BigDecimal pointProportion = orderPointTotal.divide(orderIncomeTotal).multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal pointProportion = orderPointTotal.divide(orderIncomeTotal,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
             orderCensus.setPointProportion(pointProportion);
         }else {
             orderCensus.setPointProportion(new BigDecimal("0.00"));
