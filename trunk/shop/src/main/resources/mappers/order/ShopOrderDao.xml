@@ -1730,4 +1730,13 @@
         from shop_order a INNER JOIN shop_order_address b on a.address_id = b.id where a.payment_state = 1 and a.order_state != 0 and a.logistic_type = 2 and b.mention_id = #{mentionId}
         and DATE_FORMAT(a.payment_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
     </select>
+
+    <select id="findSelfOrderByPage" parameterType="map" resultMap="ShopOrderResultMap">
+        select a.* from shop_order a inner join shop_order_address b on a.address_id = b.id where a.payment_state = 1 and a.order_state != 0 and a.logistic_type = 2 and b.mention_id = #{mentionId}
+        <if test="orderState != null and orderState != ''">
+            and a.order_state = #{orderState}
+        </if>
+        order by a.payment_time desc
+        limit #{pageNumber},#{pageSize}
+    </select>
 </mapper>

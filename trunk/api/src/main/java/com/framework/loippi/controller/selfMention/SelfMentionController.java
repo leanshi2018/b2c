@@ -1,18 +1,18 @@
 package com.framework.loippi.controller.selfMention;
 
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.pojo.selfMention.GoodsType;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
 import com.framework.loippi.result.selfMention.SelfMentionShopResult;
+import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.ware.RdWarehouseService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +52,8 @@ public class SelfMentionController extends BaseController {
     private RdWarehouseService rdWarehouseService;
     @Resource
     private ShopOrderService shopOrderService;
+    @Resource
+    private ShopOrderGoodsService shopOrderGoodsService;
     /**
      * 点击进入我的小店
      * @param request
@@ -138,7 +140,7 @@ public class SelfMentionController extends BaseController {
 
     @RequestMapping(value = "/api/mention/orders.json")
     @ResponseBody
-    public String getOrders(HttpServletRequest request,Integer orderState) {
+    public String getOrders(HttpServletRequest request,Integer orderState,Pageable pager) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if(member==null){
             return ApiUtils.error("当前用户尚未登录");
@@ -147,6 +149,16 @@ public class SelfMentionController extends BaseController {
         RdWarehouse rdWarehouse = rdWarehouseService.find("mmCode",mmCode);
         if(rdWarehouse==null){
             return ApiUtils.error("当前用户尚未开店");
+        }
+        int pageNumber = pager.getPageNumber()-1;
+        int pageSize = pager.getPageSize();
+        List<ShopOrder> list=shopOrderService.findSelfOrderByPage(rdWarehouse,pageNumber,pageSize,orderState);
+        HashMap<Long, List<ShopOrderGoods>> hashMap = new HashMap<>();
+        if(list!=null&&list.size()>0){
+            for (ShopOrder shopOrder : list) {
+                List<ShopOrderGoods> orderGoods = shopOrderGoodsService.findList(Paramap.create().put("orderId",shopOrder.getId()));
+                hashMap.put(shopOrder.getId(),orderGoods);
+            }
         }
         return ApiUtils.success();
     }

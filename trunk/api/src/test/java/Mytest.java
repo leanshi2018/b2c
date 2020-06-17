@@ -52,7 +52,13 @@ public class Mytest {
      */
     @Test
     public void testCut() {
-        Date date = Dateutil.parseStrFromToDate("2020-06-10", "yyyy-MM-dd");
-        System.out.println(date);
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(new Date());
+        instance.add(Calendar.DATE,-1);
+        Date time = instance.getTime();
+        //1获取时间确定reportCode
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String format1 = format.format(time);
+        System.out.println(format1);
     }
 }

@@ -15,6 +15,7 @@ import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.pojo.common.CensusVo;
 import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
@@ -359,6 +360,8 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
     Integer findMonthCountByMentionId(Integer mentionId);
 
     List<OrderInfo> findMonthOrderInfo(Integer mentionId);
+
+    List<ShopOrder> findSelfOrderByPage(RdWarehouse rdWarehouse, Integer pageNumber, Integer pageSize, Integer orderState);
 
 
 
