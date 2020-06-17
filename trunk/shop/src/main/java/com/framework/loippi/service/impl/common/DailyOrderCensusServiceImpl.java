@@ -1,5 +1,19 @@
 package com.framework.loippi.service.impl.common;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.dao.common.DailyOrderCensusDao;
 import com.framework.loippi.entity.common.DailyOrderCensus;
@@ -8,20 +22,6 @@ import com.framework.loippi.service.common.DailyOrderCensusService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.utils.Paramap;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import javax.swing.plaf.basic.BasicIconFactory;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * 日会员订单信息统计
@@ -100,7 +100,7 @@ public class DailyOrderCensusServiceImpl extends GenericServiceImpl<DailyOrderCe
         orderCensus.setOrderIncomeTotal(orderIncomeTotal);
         if(orderIncomeTotal.compareTo(BigDecimal.ZERO)==1){
             BigDecimal orderPointTotal=shopOrderService.findYesPointTotal(map);
-            BigDecimal pointProportion = orderPointTotal.divide(orderIncomeTotal).multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal pointProportion = orderPointTotal.divide(orderIncomeTotal,2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
             orderCensus.setPointProportion(pointProportion);
         }else {
             orderCensus.setPointProportion(new BigDecimal("0.00"));
