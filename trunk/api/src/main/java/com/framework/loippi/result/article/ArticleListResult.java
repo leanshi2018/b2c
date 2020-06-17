@@ -1,17 +1,23 @@
 package com.framework.loippi.result.article;
 
-import com.framework.loippi.entity.common.ShopCommonArticle;
-import com.framework.loippi.entity.common.ShopCommonArticleClass;
-import com.framework.loippi.entity.common.ShopCommonFeedback;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.utils.JacksonUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.sf.json.JSONObject;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.framework.loippi.entity.common.ShopCommonArticle;
+import com.framework.loippi.entity.common.ShopCommonArticleClass;
+import com.framework.loippi.utils.JacksonUtil;
 
 /**
  * Created by neil on 2017/7/13.
@@ -28,6 +34,7 @@ public class ArticleListResult {
     @Data
     static  class Articleinfo {
         /**  */
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long id;
 
         /**
@@ -106,7 +113,9 @@ public class ArticleListResult {
     }
     @Data
     static  class ArticleClass{
+       @JsonSerialize(using = ToStringSerializer.class)
        Long  articleClassId;
+       
        String articleClassName;
     }
 
