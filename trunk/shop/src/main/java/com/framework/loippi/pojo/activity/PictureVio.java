@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 /**
  * @author :ldq
  * @date:2019/12/31
@@ -18,6 +21,7 @@ public class PictureVio {
 	/**
 	 * 活动id
 	 */
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 
 	/**

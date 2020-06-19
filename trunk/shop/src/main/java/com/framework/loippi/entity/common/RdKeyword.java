@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.mybatis.eitity.GenericEntity;
 import com.framework.loippi.mybatis.ext.annotation.Table;
 
@@ -22,6 +24,7 @@ public class RdKeyword implements GenericEntity {
 	private static final long serialVersionUID = 5081846432919091193L;
 
 	/** 索引ID */
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/** 关键词 */
 	private String keyword;
