@@ -19,6 +19,7 @@ import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.pojo.common.CensusVo;
 import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
+import com.framework.loippi.result.selfMention.SelfMentionOrderStatistics;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
@@ -362,6 +363,8 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
     List<OrderInfo> findMonthOrderInfo(Integer mentionId);
 
     List<ShopOrder> findSelfOrderByPage(RdWarehouse rdWarehouse, Integer pageNumber, Integer pageSize, Integer orderState);
+
+    SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map);
 
 
 

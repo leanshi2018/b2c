@@ -32,10 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 /**
@@ -67,7 +64,12 @@ public class ArticleAPIController extends BaseController {
         Pageable pageable = new Pageable();
         pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNumber);
-        pageable.setParameter(Paramap.create().put("articleShow",1).put("articleId",6548852933067280384L));//TODO 朋友圈素材不参与列表分类展示
+        ArrayList<Long> longs = new ArrayList<>();
+        longs.add(6548852933067280384L);
+        longs.add(6678225691906936832L);
+        longs.add(6678225763373682688L);
+        longs.add(6678225827387150336L);
+        pageable.setParameter(Paramap.create().put("articleShow",1).put("articleIds",longs));//TODO 朋友圈素材以及下级分类不参与列表分类展示
         pageable.setOrderProperty("is_top,article_sort,page_views");
         pageable.setOrderDirection(Order.Direction.DESC);
         List<ShopCommonArticle> shopCommonArticleList = shopCommonArticleService.findByPage(pageable).getContent();

@@ -606,6 +606,7 @@ public class AuthcAPIController extends BaseController {
         rdMmAccountInfo.setRedemptionStatus(2);
         rdMmAccountInfo.setRedemptionBlance(zero);
         rdMmAccountInfo.setLastWithdrawalTime(new Date());//注册时生成最后一次提现时间为当前注册时间
+        rdMmAccountInfo.setWithdrawalLine(new BigDecimal("1000"));
     }
 
     /**

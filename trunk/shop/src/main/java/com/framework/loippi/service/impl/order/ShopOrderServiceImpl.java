@@ -3,6 +3,7 @@ package com.framework.loippi.service.impl.order;
 
 import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
+import com.framework.loippi.result.selfMention.SelfMentionOrderStatistics;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -6148,5 +6149,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         map.put("orderState",orderState);
         map.put("mentionId",rdWarehouse.getMentionId());
         return orderDao.findSelfOrderByPage(map);
+    }
+
+    /**
+     * 查询指定自提小店指定时间内的订单数及销售额
+     * @param map
+     * @return
+     */
+    @Override
+    public SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map) {
+        return orderDao.statisticsSelfOrderByTime(map);
     }
 }

@@ -22,16 +22,17 @@
 		<result property="paymentPwd" column="PAYMENT_PWD" />
 		<result property="lastWithdrawalTime" column="LAST_WITHDRAWAL_TIME" />
 		<result property="automaticWithdrawal" column="AUTOMATIC_WITHDRAWAL" />
+		<result property="withdrawalLine" column="WITHDRAWAL_LINE" />
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 MM_CODE ,BONUS_STATUS ,BONUS_CURRENCY ,BONUS_BLANCE ,WALLET_STATUS ,WALLET_CURRENCY ,WALLET_BLANCE ,REDEMPTION_STATUS ,REDEMPTION_CURRENCY ,REDEMPTION_BLANCE ,WECHAT_ACC ,ALIPAY_ACC ,PAYMENT_PHONE ,PAYMENT_PWD,LAST_WITHDRAWAL_TIME,AUTOMATIC_WITHDRAWAL
+		 MM_CODE ,BONUS_STATUS ,BONUS_CURRENCY ,BONUS_BLANCE ,WALLET_STATUS ,WALLET_CURRENCY ,WALLET_BLANCE ,REDEMPTION_STATUS ,REDEMPTION_CURRENCY ,REDEMPTION_BLANCE ,WECHAT_ACC ,ALIPAY_ACC ,PAYMENT_PHONE ,PAYMENT_PWD,LAST_WITHDRAWAL_TIME,AUTOMATIC_WITHDRAWAL,WITHDRAWAL_LINE
 	</sql>
 
 	<sql id="base_value_column">
 		 #{mmCode},#{bonusStatus},#{bonusCurrency},#{bonusBlance},#{walletStatus},#{walletCurrency},#{walletBlance},#{redemptionStatus},#{redemptionCurrency},#{redemptionBlance},#{wechatAcc},#{alipayAcc},#{paymentPhone},#{paymentPwd},#{lastWithdrawalTime},
-		 #{automaticWithdrawal}
+		 #{automaticWithdrawal},#{withdrawalLine}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -84,6 +85,9 @@
 		<if test="automaticWithdrawal != null and automaticWithdrawal != ''">
 			AND AUTOMATIC_WITHDRAWAL = #{automaticWithdrawal,jdbcType=INTEGER}
 		</if>
+		<if test="withdrawalLine != null and withdrawalLine != ''">
+			AND WITHDRAWAL_LINE = #{withdrawalLine,jdbcType=VARCHAR}
+		</if>
 	</sql>
 	
 	<!-- 设置语句 -->
@@ -135,6 +139,9 @@
 		</if>
 		<if test="automaticWithdrawal != null">
 			AUTOMATIC_WITHDRAWAL = #{automaticWithdrawal,jdbcType=INTEGER},
+		</if>
+		<if test="withdrawalLine != null and withdrawalLine != ''">
+			 WITHDRAWAL_LINE = #{withdrawalLine,jdbcType=VARCHAR},
 		</if>
 	</sql>
 

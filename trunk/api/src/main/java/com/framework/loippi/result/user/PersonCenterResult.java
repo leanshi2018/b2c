@@ -150,6 +150,13 @@ public class PersonCenterResult {
     //直邀人数
     private Integer rank1Number;
 
+    //TODO 自提小店信息
+    private Integer whetherShop;//当前登录会员是否开自提小店 0：否 1：是
+    private Integer goodsTypeNum;//自提店拥有商品种类
+    private Integer dailyNum;//自提店当日订单数
+    private Integer monthNum;//自提店当月订单数
+    private BigDecimal monthSales;//自提店当月销售额
+
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo, RdRanks rdRankVip) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
         Optional<RdMmAccountInfo> optional2 = Optional.ofNullable(rdMmAccountInfo);

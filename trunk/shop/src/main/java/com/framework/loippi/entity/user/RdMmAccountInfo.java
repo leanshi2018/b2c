@@ -88,4 +88,8 @@ public class RdMmAccountInfo implements GenericEntity {
 	/** 是否开启自动提现  0:未开启 1：已开启*/
 	@Column(name = "AUTOMATIC_WITHDRAWAL" )
 	private Integer automaticWithdrawal;
+
+	/** 用户设置默认提现金额预留线*/
+	@Column(name = "WITHDRAWAL_LINE" )
+	private BigDecimal withdrawalLine;
 }

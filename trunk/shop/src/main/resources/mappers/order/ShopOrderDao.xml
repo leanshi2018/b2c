@@ -1739,4 +1739,10 @@
         order by a.payment_time desc
         limit #{pageNumber},#{pageSize}
     </select>
+
+    <select id="statisticsSelfOrderByTime" parameterType="map" resultType="com.framework.loippi.result.selfMention.SelfMentionOrderStatistics">
+        select COUNT(1) as orderNum ,SUM(IFNULL(a.order_amount,0)+IFNULL(a.use_point_num,0)-IFNULL(a.refund_amount,0)-IFNULL(a.refund_point,0)) as orderIncome from shop_order a inner join shop_order_address b on a.address_id = b.id
+        where a.payment_state = 1 and a.order_state != 0 and a.logistic_type = 2 and b.mention_id = #{mentionId}
+        and a.payment_time >= #{timeLeft} and a.payment_time &lt;= #{timeRight}
+    </select>
 </mapper>

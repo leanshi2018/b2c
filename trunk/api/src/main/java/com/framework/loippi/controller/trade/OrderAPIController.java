@@ -1889,7 +1889,7 @@ public class OrderAPIController extends BaseController {
             } else {
                 //获取推荐人的积分账户信息记录
                 RdMmAccountInfo rdMmAccountInfo=rdMmAccountInfoService.find("mmCode",rdMmRelation.getSponsorCode());
-                if(rdMmAccountInfo==null||rdMmAccountInfo.getBonusStatus()==null||rdMmAccountInfo.getBonusStatus()!=0||rdMmAccountInfo.getBonusBlance().compareTo(acc)==-1||rdMmAccountInfo.getAutomaticWithdrawal()==0){
+                if(rdMmAccountInfo==null||rdMmAccountInfo.getBonusStatus()==null||rdMmAccountInfo.getBonusStatus()!=0||(rdMmAccountInfo.getBonusBlance().subtract(rdMmAccountInfo.getWithdrawalLine())).compareTo(acc)==-1||rdMmAccountInfo.getAutomaticWithdrawal()==0){
                     code=rdMmRelation.getSponsorCode();
                 }else {
                     info=rdMmAccountInfo;
@@ -2109,7 +2109,7 @@ public class OrderAPIController extends BaseController {
                 //String bizUserId = okMap.get("bizUserId").toString();
                 //String phoneBack = okMap.get("phone").toString();
 
-                return ApiUtils.success("发送成功");
+                return ApiUtils.success(member.getMobile());
             }else {
                 if(Optional.ofNullable(maps.get("errorCode").toString()).orElse("").equals("30024")){//手机已绑定对应的错误代码
                     //判断会员基础信息表中的手机绑定状态是否为已经绑定，如果未绑定，则修改绑定状态

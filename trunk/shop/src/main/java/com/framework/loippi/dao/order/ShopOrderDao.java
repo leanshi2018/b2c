@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.pojo.selfMention.OrderInfo;
+import com.framework.loippi.result.selfMention.SelfMentionOrderStatistics;
 import org.apache.ibatis.annotations.Param;
 
 import com.framework.loippi.entity.order.ShopOrder;
@@ -214,4 +215,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     List<OrderInfo> findMonthOrderInfo(Integer mentionId);
 
     List<ShopOrder> findSelfOrderByPage(HashMap<String, Object> map);
+
+    SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map);
 }

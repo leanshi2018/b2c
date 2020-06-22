@@ -116,6 +116,13 @@
         <if test="articleId !=null and articleId != ''">
             and SHOP_COMMON_ARTICLE.ac_id != #{articleId}
         </if>
+        <if test="articleIds !=null">
+            AND SHOP_COMMON_ARTICLE.ac_id not in
+            <foreach collection="articleIds" item="acId" index="index"
+                     open="(" close=")" separator=",">
+                #{acId}
+            </foreach>
+        </if>
     </sql>
 
     <!-- 设置语句 -->

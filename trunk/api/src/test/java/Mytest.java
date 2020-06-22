@@ -52,13 +52,22 @@ public class Mytest {
      */
     @Test
     public void testCut() {
-        Calendar instance = Calendar.getInstance();
-        instance.setTime(new Date());
-        instance.add(Calendar.DATE,-1);
-        Date time = instance.getTime();
-        //1获取时间确定reportCode
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String format1 = format.format(time);
-        System.out.println(format1);
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+            Date monthDate = format.parse("2020-06");
+            Calendar instance = Calendar.getInstance();
+            instance.setTime(monthDate);
+            instance.set(Calendar.DAY_OF_MONTH,1);
+            Date firstDay = instance.getTime();
+            instance.set(Calendar.DATE, instance.getActualMaximum(instance.DATE));
+            Date lastDay = instance.getTime();
+            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+            String str1 = format1.format(firstDay);
+            String str2 = format1.format(lastDay);
+            System.out.println(str1);
+            System.out.println(str2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }
