@@ -1,30 +1,17 @@
 package com.framework.loippi.controller.selfMention;
 
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.ware.RdWareAllocation;
-import com.framework.loippi.entity.ware.RdWarehouse;
-import com.framework.loippi.pojo.selfMention.GoodsType;
-import com.framework.loippi.pojo.selfMention.OrderInfo;
-import com.framework.loippi.result.selfMention.SelfMentionOrderResult;
-import com.framework.loippi.result.selfMention.SelfMentionOrderStatistics;
-import com.framework.loippi.result.selfMention.SelfMentionShopResult;
-import com.framework.loippi.service.order.ShopOrderGoodsService;
-import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.ware.RdWareAllocationService;
-import com.framework.loippi.service.ware.RdWarehouseService;
-import com.framework.loippi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
@@ -44,7 +33,13 @@ import com.framework.loippi.entity.ware.RdWareAllocation;
 import com.framework.loippi.entity.ware.RdWareOrder;
 import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.pojo.selfMention.GoodsType;
+import com.framework.loippi.pojo.selfMention.OrderInfo;
 import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.selfMention.SelfMentionOrderResult;
+import com.framework.loippi.result.selfMention.SelfMentionOrderStatistics;
+import com.framework.loippi.result.selfMention.SelfMentionShopResult;
+import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
@@ -56,6 +51,7 @@ import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.store.MentionWareGoodsVo;
 
@@ -127,7 +123,7 @@ public class SelfMentionController extends BaseController {
     /**
      * 商品列表
      */
-    @RequestMapping(value = "/api/mention/goodsList", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/mention/goodsList", method = RequestMethod.GET)
     @ResponseBody
     public String goodsList(HttpServletRequest request, Pageable pager) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
@@ -190,11 +186,11 @@ public class SelfMentionController extends BaseController {
     }
 
     /**
-     * 欠款商品列表
+     * 欠货商品列表
      */
-    @RequestMapping(value = "/api/mention/oweGoodsList", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/mention/oweGoodsList", method = RequestMethod.GET)
     @ResponseBody
-    public String oweGoodsList(HttpServletRequest request, Pageable pager) {
+    public String oweGoodsList(HttpServletRequest request) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if(member==null){
             return ApiUtils.error("当前用户尚未登录");
@@ -237,7 +233,7 @@ public class SelfMentionController extends BaseController {
      */
     @RequestMapping(value = "/api/mention/createOrder", method = RequestMethod.POST)
     @ResponseBody
-    public String createOrder(@RequestParam String wareCode, @RequestParam Map<Long, Integer> specIdNumMap, HttpServletRequest request) throws Exception {
+    public String createOrder(@RequestParam Map<Long, Integer> specIdNumMap, HttpServletRequest request) throws Exception {
         // 检查不为空
         for (Map.Entry<Long, Integer> entry : specIdNumMap.entrySet()) {
             if (entry.getKey() == null || entry.getValue() == null) {
@@ -246,10 +242,13 @@ public class SelfMentionController extends BaseController {
         }
 
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
-        if (wareCode == null ) {
-            return ApiUtils.error("仓库代码为空");
+
+        String mmCode = member.getMmCode();
+        RdWarehouse warehouseIn = rdWarehouseService.findByMmCode(mmCode);
+        if (warehouseIn == null ) {
+            return ApiUtils.error("该会员没有自提仓库");
         }
-        RdWarehouse warehouseIn = rdWarehouseService.findByCode(wareCode);
+        String wareCode = warehouseIn.getWareCode();
 
         RdWareOrder rdWareOrder = new RdWareOrder();
         rdWareOrder.setId(twiterIdService.getTwiterId());

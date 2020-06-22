@@ -5,7 +5,7 @@
 <!-- namespace必须指向Dao接口 -->
 <mapper namespace="com.framework.loippi.dao.ware.RdWareOrderGoodsDao">
 
-    <resultMap id="WareOrderGoodsResultMap" type="com.framework.loippi.entity.ware.RdWareOrderGoodsGoods">
+    <resultMap id="WareOrderGoodsResultMap" type="com.framework.loippi.entity.ware.RdWareOrderGoods">
         <id property="id" column="id"  />
         <result column="order_id" property="orderId" />
         <result column="goods_id" property="goodsId" />
