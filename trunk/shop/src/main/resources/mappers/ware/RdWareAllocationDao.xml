@@ -165,8 +165,8 @@
     <delete id="deleteAll">
         DELETE	FROM rd_ware_allocation
         WHERE	ID	IN
-        <foreach item="RdWareAdjustId" index="index" collection="ids" open="(" separator="," close=")">
-            #{RdWareAdjustId}
+        <foreach item="RdWareAllocationIds" index="index" collection="ids" open="(" separator="," close=")">
+            #{RdWareAllocationId}
         </foreach>
     </delete>
 

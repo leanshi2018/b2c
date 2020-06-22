@@ -178,10 +178,6 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 				inMap1.put("inventory",num);
 				rdInventoryWarningDao.updateInventoryByWareCodeAndSpecId(inMap1);
 			}
-
-
 		}
-
-
 	}
 }
