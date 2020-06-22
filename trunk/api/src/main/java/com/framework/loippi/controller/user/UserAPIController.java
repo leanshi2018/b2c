@@ -14,6 +14,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.entity.ware.RdWarehouse;
+import com.framework.loippi.pojo.selfMention.GoodsType;
+import com.framework.loippi.pojo.selfMention.OrderInfo;
+import com.framework.loippi.service.ware.RdInventoryWarningService;
+import com.framework.loippi.service.ware.RdWarehouseService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -165,6 +170,10 @@ public class UserAPIController extends BaseController {
     private RankExplainDao rankExplainDao;
     @Resource
     private RdRanksNextMessageService rdRanksNextMessageService;
+    @Resource
+    private RdWarehouseService rdWarehouseService;
+    @Resource
+    private RdInventoryWarningService rdInventoryWarningService;
 
     @Value("#{properties['wap.server']}")
     private String wapServer;
@@ -337,6 +346,36 @@ public class UserAPIController extends BaseController {
             result.setIsPaymentPasswd(1);
         }
         result.setPwd(rdMmRelation.getLoginPwd());//TODO
+        //TODO 自提店信息
+        RdWarehouse rdWarehouse = rdWarehouseService.find("mmCode",member.getMmCode());
+        if(rdWarehouse==null){
+            result.setWhetherShop(0);
+        }else {
+            result.setWhetherShop(1);
+            String wareCode = rdWarehouse.getWareCode();//获取仓库号
+            List<GoodsType> list=rdInventoryWarningService.findGoodsTypeByWareCode(wareCode);
+            Integer goodsTypeNum=0;//商品种类数量
+            if(list!=null&&list.size()>0){
+                goodsTypeNum=list.size();
+            }
+            Integer mentionId = rdWarehouse.getMentionId();
+            if(mentionId==null){
+                return ApiUtils.error("自提店信息异常");
+            }
+            Integer dailyNum=shopOrderService.findDailyCountByMentionId(mentionId);
+            Integer monthNum=shopOrderService.findMonthCountByMentionId(mentionId);
+            List<OrderInfo> orderInfos=shopOrderService.findMonthOrderInfo(mentionId);
+            BigDecimal total=BigDecimal.ZERO;
+            if(orderInfos!=null&&orderInfos.size()>0){
+                for (OrderInfo orderInfo : orderInfos) {
+                    total=total.add(orderInfo.getOrderAmount()).add(orderInfo.getUsePointNum()).subtract(orderInfo.getRefundAmount()).subtract(orderInfo.getRefundPoint());
+                }
+            }
+            result.setGoodsTypeNum(goodsTypeNum);
+            result.setDailyNum(dailyNum);
+            result.setMonthNum(monthNum);
+            result.setMonthSales(total);
+        }
         return ApiUtils.success(result);
     }
 
@@ -1800,6 +1839,7 @@ public class UserAPIController extends BaseController {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MONTH,-1);
+        calendar.add(Calendar.DATE,1);
         String dateStart = form.format(calendar.getTime());//dateEnd 结束日期  yyyy-MM-dd，最多允许查 3 个月内，跨度建议不超过 7 天
 
 

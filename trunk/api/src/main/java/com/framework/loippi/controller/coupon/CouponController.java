@@ -625,6 +625,10 @@ public class CouponController extends BaseController {
 		if(recipientCode.equals(member.getMmCode())){
 			return ApiUtils.error("受赠人不可以是自己");
 		}
+		RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", recipientCode);
+		if(rdMmRelation.getMmStatus()==2){
+			return ApiUtils.error("受赠人已注销");
+		}
 		Coupon coupon = couponService.find(couponId);
 		if(coupon==null){
 			return ApiUtils.error("当前优惠券不存在");

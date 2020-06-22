@@ -26,11 +26,6 @@ import com.framework.loippi.entity.ware.RdWareOrder;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.ware.RdWareAllocationService;
 
-/**
- * @author :ldq
- * @date:2020/6/18
- * @description:dubbo com.framework.loippi.service.impl.ware
- */
 @Service
 public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAllocation, Long> implements RdWareAllocationService {
 

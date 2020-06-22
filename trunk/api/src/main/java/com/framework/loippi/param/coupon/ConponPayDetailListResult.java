@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 
@@ -28,6 +30,7 @@ public class ConponPayDetailListResult {
 	/**
 	 * 主键id索引
 	 */
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
 	 * 优惠券订单编号

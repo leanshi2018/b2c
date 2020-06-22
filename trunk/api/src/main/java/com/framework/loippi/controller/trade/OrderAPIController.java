@@ -1093,7 +1093,7 @@ public class OrderAPIController extends BaseController {
         Pageable pager = new Pageable();
         pager.setParameter(Paramap.create().put("id", orderId));
         Page<ReturnGoodsVo> refundReturnPage = refundReturnService.listWithGoods(pager);
-        RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", -1);
+        RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", 0);
         return ApiUtils.success(RefundOrderResult.buildList(refundReturnPage.getContent(), shopMemberAddress));
     }
 
@@ -1210,10 +1210,6 @@ public class OrderAPIController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
-        ShopOrderPay orderPay = orderService
-            .addReplacementOrder(param.getGoodsId(), param.getCount(), param.getSpecId(),
-                Long.parseLong(member.getMmCode()));
-        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         //  自提地址 自提地址 id为-1 表示平台地址
         RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", -1);
         String contactName = "";
@@ -1223,9 +1219,9 @@ public class OrderAPIController extends BaseController {
             contactName = (Optional.ofNullable(shopMemberAddress.getConsigneeName()).orElse("后台还未设置"));
             contactPhone = (Optional.ofNullable(shopMemberAddress.getMobile()).orElse("后台还未设置"));
             contactAddrInfo = (Optional.ofNullable(
-                shopMemberAddress.getAddProvinceCode() + shopMemberAddress.getAddCityCode() + shopMemberAddress
-                    .getAddCountryCode()).orElse("后台还未设置") + Optional.ofNullable(shopMemberAddress.getAddDetial())
-                .orElse(""));
+                    shopMemberAddress.getAddProvinceCode() + shopMemberAddress.getAddCityCode() + shopMemberAddress
+                            .getAddCountryCode()).orElse("后台还未设置") + Optional.ofNullable(shopMemberAddress.getAddDetial())
+                    .orElse(""));
         } else {
             contactName = ("后台还未设置");
             contactPhone = ("后台还未设置");
@@ -1235,12 +1231,16 @@ public class OrderAPIController extends BaseController {
         RdMmAddInfo addr = new RdMmAddInfo();
         if (CollectionUtils.isNotEmpty(addrList)) {
             addr = addrList.stream()
-                .filter(item -> item.getDefaultadd() != null && item.getDefaultadd() == 1)
-                .findFirst()
-                .orElse(addrList.get(0));
+                    .filter(item -> item.getDefaultadd() != null && item.getDefaultadd() == 1)
+                    .findFirst()
+                    .orElse(addrList.get(0));
         } else {
             addr.setAid(-1);
         }
+        ShopOrderPay orderPay = orderService
+            .addReplacementOrder(param.getGoodsId(), param.getCount(), param.getSpecId(),
+                Long.parseLong(member.getMmCode()),addr);
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         return ApiUtils.success(Paramap.create().put("goodsintegration", orderPay.getPayAmount())
             .put("redemptionBlance",
                 Optional.ofNullable(rdMmAccountInfo.getRedemptionBlance()).orElse(BigDecimal.valueOf(0)))
@@ -1889,7 +1889,7 @@ public class OrderAPIController extends BaseController {
             } else {
                 //获取推荐人的积分账户信息记录
                 RdMmAccountInfo rdMmAccountInfo=rdMmAccountInfoService.find("mmCode",rdMmRelation.getSponsorCode());
-                if(rdMmAccountInfo==null||rdMmAccountInfo.getBonusStatus()==null||rdMmAccountInfo.getBonusStatus()!=0||rdMmAccountInfo.getBonusBlance().compareTo(acc)==-1||rdMmAccountInfo.getAutomaticWithdrawal()==0){
+                if(rdMmAccountInfo==null||rdMmAccountInfo.getBonusStatus()==null||rdMmAccountInfo.getBonusStatus()!=0||(rdMmAccountInfo.getBonusBlance().subtract(rdMmAccountInfo.getWithdrawalLine())).compareTo(acc)==-1||rdMmAccountInfo.getAutomaticWithdrawal()==0){
                     code=rdMmRelation.getSponsorCode();
                 }else {
                     info=rdMmAccountInfo;
@@ -2109,7 +2109,7 @@ public class OrderAPIController extends BaseController {
                 //String bizUserId = okMap.get("bizUserId").toString();
                 //String phoneBack = okMap.get("phone").toString();
 
-                return ApiUtils.success("发送成功");
+                return ApiUtils.success(member.getMobile());
             }else {
                 if(Optional.ofNullable(maps.get("errorCode").toString()).orElse("").equals("30024")){//手机已绑定对应的错误代码
                     //判断会员基础信息表中的手机绑定状态是否为已经绑定，如果未绑定，则修改绑定状态

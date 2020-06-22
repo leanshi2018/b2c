@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.user;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.service.user.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +22,6 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.common.ShopCommonDocument;
 import com.framework.loippi.entity.common.ShopCommonFeedback;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmEdit;
-import com.framework.loippi.entity.user.RdMmLogOutNum;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdMmStatusDetail;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.document.DocumentListResult;
@@ -34,15 +32,6 @@ import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.common.ShopAppService;
 import com.framework.loippi.service.common.ShopCommonDocumentService;
 import com.framework.loippi.service.common.ShopCommonFeedbackService;
-import com.framework.loippi.service.user.RdBonusPaymentService;
-import com.framework.loippi.service.user.RdMmAccountLogService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmEditService;
-import com.framework.loippi.service.user.RdMmLogOutNumService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdMmStatusDetailService;
-import com.framework.loippi.service.user.RdReceivableMasterService;
-import com.framework.loippi.service.user.RdReceiveableDetailService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
@@ -87,6 +76,8 @@ public class UserCommonController extends BaseController {
     private RdMmStatusDetailService rdMmStatusDetailService;
     @Resource
     private RdBonusPaymentService rdBonusPaymentService;
+    @Resource
+    private RdMmAccountInfoService rdMmAccountInfoService;
 
     /**
      * 文章列表
@@ -344,5 +335,28 @@ public class UserCommonController extends BaseController {
         redisService.delete(member.getSessionid());
         return ApiUtils.success();
     }
-
+    /**
+     * 设置积分账户积分预留线
+     */
+    @RequestMapping("/update/withdrawalLine.json")
+    public String logoutMember(HttpServletRequest request, String withdrawalLine) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("当前用户尚未登录");
+        }
+        if(withdrawalLine==null){
+            return ApiUtils.error("请传入积分预留金额");
+        }
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        if(rdMmAccountInfo==null){
+            return ApiUtils.error("会员积分账户异常");
+        }
+        rdMmAccountInfo.setWithdrawalLine(new BigDecimal(withdrawalLine));
+        Long result = rdMmAccountInfoService.update(rdMmAccountInfo);
+        if(result>0){
+            return ApiUtils.success();
+        }else {
+            return ApiUtils.error("网络异常，请稍后重试");
+        }
+    }
 }

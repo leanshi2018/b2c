@@ -1,5 +1,21 @@
 package com.framework.loippi.controller.common;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.common.ShopCommonArticle;
@@ -12,21 +28,6 @@ import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.ParameterUtils;
 import com.framework.loippi.utils.StringUtil;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by longbh on 2017/8/19.
@@ -108,6 +109,7 @@ public class ShopCommonArticleController extends GenericController {
                     article.setStatus(0);
                 }
                 article.setIsDel(0);
+                article.setArticleTime(new Date());
                 shopCommonArticleService.save(article);
             } else {
                 article.setUpdateTime(new Date());
@@ -126,7 +128,7 @@ public class ShopCommonArticleController extends GenericController {
         if (articleType != null) {
             //model.addAttribute("articleList", shopCommonArticleClassService.findAll());
             //添加学堂文章，查询出类型为学堂文章的一级分类列表 TODO
-            List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acParentId",0).put("acStatus",0).put("acCode","school-articles"));
+            List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acStatus",0).put("acCode","school-articles"));
             model.addAttribute("articleList", list);
             if (articleType.intValue() != 1) {
                 return "/article/add_guding";
@@ -141,7 +143,7 @@ public class ShopCommonArticleController extends GenericController {
      * @param id
      * @return
      */
-    @RequestMapping(value = {"/findSonById"}, method = {RequestMethod.GET})
+    @RequestMapping(value = {"/findSonById"}, method = {RequestMethod.POST})
     public String findSonById(ModelMap model, Long id) {
         if (id == null) {
             List<ShopCommonArticleClass> list = shopCommonArticleClassService.findList(Paramap.create().put("acParentId", 0).put("acStatus", 0).put("acCode","school-articles"));

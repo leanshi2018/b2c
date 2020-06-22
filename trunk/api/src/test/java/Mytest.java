@@ -52,7 +52,22 @@ public class Mytest {
      */
     @Test
     public void testCut() {
-        Date date = Dateutil.parseStrFromToDate("2020-06-10", "yyyy-MM-dd");
-        System.out.println(date);
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+            Date monthDate = format.parse("2020-06");
+            Calendar instance = Calendar.getInstance();
+            instance.setTime(monthDate);
+            instance.set(Calendar.DAY_OF_MONTH,1);
+            Date firstDay = instance.getTime();
+            instance.set(Calendar.DATE, instance.getActualMaximum(instance.DATE));
+            Date lastDay = instance.getTime();
+            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+            String str1 = format1.format(firstDay);
+            String str2 = format1.format(lastDay);
+            System.out.println(str1);
+            System.out.println(str2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.framework.loippi.pojo.selfMention.GoodsType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -115,5 +116,10 @@ public class RdInventoryWarningServiceImpl extends GenericServiceImpl<RdInventor
 	@Override
 	public List<RdInventoryWarning> findByWareCodeAndOweInven(String wareCode) {
 		return rdInventoryWarningDao.findByWareCodeAndOweInven(wareCode);
+	}
+
+	@Override
+	public List<GoodsType> findGoodsTypeByWareCode(String wareCode) {
+		return rdInventoryWarningDao.findGoodsTypeByWareCode(wareCode);
 	}
 }

@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.coupon.Coupon;
@@ -68,6 +70,7 @@ public class CartCheckOutResult {
     /**
      * 收货地址id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Integer addressId;
 
     /**
@@ -137,6 +140,7 @@ public class CartCheckOutResult {
     /**
      * 购物车id
      */
+
     public List<Long> cartIds;
     /**
      * 自提用户信息
@@ -163,6 +167,7 @@ public class CartCheckOutResult {
     /**
      * 优惠券id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long couponId;
     /**
      * 优惠券使用说明

@@ -13,9 +13,13 @@ import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
+import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.pojo.common.CensusVo;
 import com.framework.loippi.pojo.common.MemberShippingBehaviorVo;
+import com.framework.loippi.pojo.selfMention.OrderInfo;
+import com.framework.loippi.result.selfMention.SelfMentionOrderStatistics;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
@@ -106,7 +110,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
                                         String couponIds, Integer isPp, Integer platformApp, Long groupBuyActivityId, Long groupOrderId,
                                         ShopOrderDiscountType shopOrderDiscountType, Integer logisticType, Integer paymentType, Long giftId, Integer giftNum);
 
-    ShopOrderPay addReplacementOrder(Long goodsId,Integer count,Long specId,Long memberId);
+    ShopOrderPay addReplacementOrder(Long goodsId, Integer count, Long specId, Long memberId, RdMmAddInfo addr);
     /**
      * 根据支付单号更改 订单支付方式id和支付方式名称
      *
@@ -354,8 +358,17 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
 	Integer countMentionSales(Integer mentionId, Long specId);
 
+    Integer findDailyCountByMentionId(Integer mentionId);
+
+    Integer findMonthCountByMentionId(Integer mentionId);
+
+    List<OrderInfo> findMonthOrderInfo(Integer mentionId);
+
+    List<ShopOrder> findSelfOrderByPage(RdWarehouse rdWarehouse, Integer pageNumber, Integer pageSize, Integer orderState);
+
+    SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map);
 
 
 
-	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
+    /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

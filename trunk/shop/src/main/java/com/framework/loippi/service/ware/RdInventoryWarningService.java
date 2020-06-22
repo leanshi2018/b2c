@@ -4,7 +4,10 @@ package com.framework.loippi.service.ware;
 import java.util.List;
 
 import com.framework.loippi.entity.ware.RdInventoryWarning;
+import com.framework.loippi.pojo.selfMention.GoodsType;
 import com.framework.loippi.service.GenericService;
+
+import java.util.List;
 
 /**
  * SERVICE - RdInventoryWarning(仓库库存表)
@@ -19,4 +22,6 @@ public interface RdInventoryWarningService  extends GenericService<RdInventoryWa
 	Integer findProductInventory(String ware, Long specId);
 
 	List<RdInventoryWarning> findByWareCodeAndOweInven(String wareCode);
+
+    List<GoodsType> findGoodsTypeByWareCode(String wareCode);
 }

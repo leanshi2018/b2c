@@ -39,7 +39,7 @@ public class ReportJob {
     /**
      * 定时任务统计前一日会员订单信息数据
      */
-    //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
+    //@Scheduled(cron = "0/30 * * * * ? ")  //每5秒执行一次
     @Scheduled(cron = "0 5 0 * * ? " )  //每天0点5分执行一次
     public void getDailyOrderCensus() {
         log.info("#################################################################");

@@ -30,77 +30,83 @@
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
     <sql id="where_column">
-        <if test="wid != null and wid != ''">
-            AND WID = #{wid,jdbcType=INTEGER}
-        </if>
-        <if test="wareCodeIn != null and wareCodeIn != ''">
-            AND WARE_CODE_IN = #{wareCodeIn,jdbcType=VARCHAR}
-        </if>
-        <if test="wareNameIn != null and wareNameIn != ''">
-            AND WARE_NAME_IN = #{wareNameIn,jdbcType=VARCHAR}
-        </if>
-        <if test="wareCodeOut != null and wareCodeOut != ''">
-            AND WARE_CODE_OUT = #{wareCodeOut,jdbcType=VARCHAR}
-        </if>
-        <if test="wareNameOut != null and wareNameOut != ''">
-            AND WARE_NAME_OUT = #{wareNameOut,jdbcType=VARCHAR}
-        </if>
-        <if test="attachAdd != null and attachAdd != ''">
-            AND ATTACH_ADD = #{attachAdd,jdbcType=VARCHAR}
-        </if>
-        <if test="status != null and status != ''">
-            AND STATUS = #{status,jdbcType=INTEGER}
-        </if>
-        <if test="wareOrderSn != null and wareOrderSn != ''">
-            AND WARE_ORDER_SN = #{wareOrderSn,jdbcType=VARCHAR}
-        </if>
-        <if test="autohrizeBy != null and autohrizeBy != ''">
-            AND AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR}
-        </if>
-        <if test="autohrizeTime != null and autohrizeTime != ''">
-            AND AUTOHRIZE_TIME = #{autohrizeTime,jdbcType=TIMESTAMP}
-        </if>
-        <if test="autohrizeDesc != null and autohrizeDesc != ''">
-            AND AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR}
-        </if>
+		<if test="wid != null and wid != ''">
+			AND WID = #{wid,jdbcType=INTEGER}
+		</if>
+		<if test="wareCodeIn != null and wareCodeIn != ''">
+			AND WARE_CODE_IN = #{wareCodeIn,jdbcType=VARCHAR}
+		</if>
+		<if test="wareNameIn != null and wareNameIn != ''">
+			AND WARE_NAME_IN = #{wareNameIn,jdbcType=VARCHAR}
+		</if>
+		<if test="wareCodeOut != null and wareCodeOut != ''">
+			AND WARE_CODE_OUT = #{wareCodeOut,jdbcType=VARCHAR}
+		</if>
+		<if test="wareNameOut != null and wareNameOut != ''">
+			AND WARE_NAME_OUT = #{wareNameOut,jdbcType=VARCHAR}
+		</if>
+		<if test="attachAdd != null and attachAdd != ''">
+			AND ATTACH_ADD = #{attachAdd,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null and status != ''">
+			AND STATUS = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="wareOrderSn != null and wareOrderSn != ''">
+			AND WARE_ORDER_SN = #{wareOrderSn,jdbcType=VARCHAR}
+		</if>
+		<if test="autohrizeBy != null and autohrizeBy != ''">
+			AND AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR}
+		</if>
+		<if test="autohrizeTime != null and autohrizeTime != ''">
+			AND AUTOHRIZE_TIME = #{autohrizeTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="autohrizeDesc != null and autohrizeDesc != ''">
+			AND AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR}
+		</if>
+		<if test="searchTimeLeft != null and searchTimeLeft != ''">
+			AND AUTOHRIZE_TIME >= #{searchTimeLeft}
+		</if>
+		<if test="searchTimeRight != null and searchTimeRight != ''">
+			AND AUTOHRIZE_TIME &lt;= #{searchTimeRight}
+		</if>
     </sql>
 
-    <!-- 设置语句 -->
-    <sql id="set_column">
-        <if test="wid != null">
-            WID = #{wid,jdbcType=INTEGER},
-        </if>
-        <if test="wareCodeIn != null and wareCodeIn != ''">
-            WARE_CODE_IN = #{wareCodeIn,jdbcType=VARCHAR},
-        </if>
-        <if test="wareNameIn != null and wareNameIn != ''">
-            WARE_NAME_IN = #{wareNameIn,jdbcType=VARCHAR},
-        </if>
-        <if test="wareCodeOut != null and wareCodeOut != ''">
-            WARE_CODE_OUT = #{wareCodeOut,jdbcType=VARCHAR},
-        </if>
-        <if test="wareNameOut != null and wareNameOut != ''">
-            WARE_NAME_OUT = #{wareNameOut,jdbcType=VARCHAR},
-        </if>
-        <if test="attachAdd != null and attachAdd != ''">
-            ATTACH_ADD = #{attachAdd,jdbcType=VARCHAR},
-        </if>
-        <if test="status != null">
-            STATUS = #{status,jdbcType=INTEGER},
-        </if>
-        <if test="wareOrderSn != null and wareOrderSn != ''">
-            WARE_ORDER_SN = #{wareOrderSn,jdbcType=VARCHAR},
-        </if>
-        <if test="autohrizeBy != null and autohrizeBy != ''">
-            AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR},
-        </if>
-        <if test="autohrizeTime != null">
-            AUTOHRIZE_TIME = #{autohrizeTime,jdbcType=TIMESTAMP},
-        </if>
-        <if test="autohrizeDesc != null and autohrizeDesc != ''">
-            AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR},
-        </if>
-    </sql>
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="wid != null and wid != ''">
+			WID = #{wid,jdbcType=INTEGER},
+		</if>
+		<if test="wareCodeIn != null and wareCodeIn != ''">
+			WARE_CODE_IN = #{wareCodeIn,jdbcType=VARCHAR},
+		</if>
+		<if test="wareNameIn != null and wareNameIn != ''">
+			WARE_NAME_IN = #{wareNameIn,jdbcType=VARCHAR},
+		</if>
+		<if test="wareCodeOut != null and wareCodeOut != ''">
+			WARE_CODE_OUT = #{wareCodeOut,jdbcType=VARCHAR},
+		</if>
+		<if test="wareNameOut != null and wareNameOut != ''">
+			WARE_NAME_OUT = #{wareNameOut,jdbcType=VARCHAR},
+		</if>
+		<if test="attachAdd != null and attachAdd != ''">
+			ATTACH_ADD = #{attachAdd,jdbcType=VARCHAR},
+		</if>
+		<if test="status != null and status != ''">
+			STATUS = #{status,jdbcType=INTEGER},
+		</if>
+		<if test="wareOrderSn != null and wareOrderSn != ''">
+			WARE_ORDER_SN = #{wareOrderSn,jdbcType=VARCHAR},
+		</if>
+		<if test="autohrizeBy != null and autohrizeBy != ''">
+			AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR},
+		</if>
+		<if test="autohrizeTime != null and autohrizeTime != ''">
+			AUTOHRIZE_TIME = #{autohrizeTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="autohrizeDesc != null and autohrizeDesc != ''">
+			AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR},
+		</if>
+	</sql>
 
     <!-- 根据ID查询 -->
     <select id="find" resultMap="RdWareAllocationResultMap">

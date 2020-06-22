@@ -13,4 +13,5 @@ import com.framework.loippi.service.GenericService;
  */
 public interface RdWareAllocationService extends GenericService<RdWareAllocation, Long> {
 	void addAllocation(RdWareOrder rdWareOrder, RdWareAllocation wareAllocation, Map<Long, Integer> specIdNumMap) throws Exception;
+
 }

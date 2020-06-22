@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.mybatis.eitity.GenericEntity;
 import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.mybatis.ext.annotation.Table;
@@ -24,6 +26,7 @@ public class Coupon implements GenericEntity {
     /**
      * 主键id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "id")
     private Long id;
     /**

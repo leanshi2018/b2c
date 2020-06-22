@@ -1,28 +1,29 @@
 package com.framework.loippi.service.impl.common;
 
 
-import com.framework.loippi.dao.common.DailyMemCensusDao;
-import com.framework.loippi.dao.user.RdMmBasicInfoDao;
-import com.framework.loippi.dao.user.RdMmRelationDao;
-import com.framework.loippi.entity.common.DailyMemCensus;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.pojo.common.MemCensusVo;
-import com.framework.loippi.pojo.common.RankNumVo;
-import com.framework.loippi.service.common.DailyMemCensusService;
-import com.framework.loippi.service.impl.GenericServiceImpl;
-import com.framework.loippi.utils.Paramap;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.framework.loippi.dao.common.DailyMemCensusDao;
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
+import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.entity.common.DailyMemCensus;
+import com.framework.loippi.pojo.common.MemCensusVo;
+import com.framework.loippi.pojo.common.RankNumVo;
+import com.framework.loippi.service.common.DailyMemCensusService;
+import com.framework.loippi.service.impl.GenericServiceImpl;
+import com.framework.loippi.utils.Paramap;
 
 
 /**
@@ -43,9 +44,16 @@ public class DailyMemCensusServiceImpl extends GenericServiceImpl<DailyMemCensus
      */
     @Override
     public void getDailyMemCensus() {
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(new Date());
+        instance.add(Calendar.DATE,-1);
+        Date time = instance.getTime();
         //1获取时间确定reportCode
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, -1);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String reportCode = format.format(new Date());
+        String reportCode = format.format(time);
         HashMap<String, Object> map = new HashMap<>();
         String start=reportCode+" 00:00:00";
         String end=reportCode+" 23:59:59";
