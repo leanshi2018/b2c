@@ -115,7 +115,7 @@ public class ArticleListResult {
     static  class ArticleClass{
        @JsonSerialize(using = ToStringSerializer.class)
        Long  articleClassId;
-       
+
        String articleClassName;
     }
 
