@@ -41,6 +41,8 @@ public class RdWareAllocation implements GenericEntity {
     private Date autohrizeTime;//授权时间
     @Column(name = "AUTOHRIZE_DESC" )
     private String autohrizeDesc;//授权说明（同意或不同意的理由）
+    @Column(name = "CREATE_TIME" )
+    private Date createTime;//创建时间
 
     //查询字段
     private String searchTimeLeft;//查询时间左边限

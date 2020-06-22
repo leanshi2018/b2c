@@ -17,15 +17,16 @@
         <result property="autohrizeBy" column="AUTOHRIZE_BY" />
         <result property="autohrizeTime" column="AUTOHRIZE_TIME" />
         <result property="autohrizeDesc" column="AUTOHRIZE_DESC" />
+        <result property="createTime" column="CREATE_TIME" />
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 WID ,WARE_CODE_IN ,WARE_NAME_IN ,WARE_CODE_OUT ,WARE_NAME_OUT ,ATTACH_ADD ,STATUS ,WARE_ORDER_SN ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC
+		 WID ,WARE_CODE_IN ,WARE_NAME_IN ,WARE_CODE_OUT ,WARE_NAME_OUT ,ATTACH_ADD ,STATUS ,WARE_ORDER_SN ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC,CREATE_TIME
 	</sql>
 
     <sql id="base_value_column">
-		 #{wid},#{wareCodeIn},#{wareNameIn},#{wareCodeOut},#{wareNameOut},#{attachAdd},#{status},#{wareOrderSn},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc}
+		 #{wid},#{wareCodeIn},#{wareNameIn},#{wareCodeOut},#{wareNameOut},#{attachAdd},#{status},#{wareOrderSn},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{createTime}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -64,10 +65,13 @@
 			AND AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR}
 		</if>
 		<if test="searchTimeLeft != null and searchTimeLeft != ''">
-			AND AUTOHRIZE_TIME >= #{searchTimeLeft}
+			AND CREATE_TIME >= #{searchTimeLeft}
 		</if>
 		<if test="searchTimeRight != null and searchTimeRight != ''">
-			AND AUTOHRIZE_TIME &lt;= #{searchTimeRight}
+			AND CREATE_TIME &lt;= #{searchTimeRight}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
 		</if>
     </sql>
 
@@ -105,6 +109,9 @@
 		</if>
 		<if test="autohrizeDesc != null and autohrizeDesc != ''">
 			AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR},
+		</if>
+		<if test="createTime != null and createTime != ''">
+			 CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
 		</if>
 	</sql>
 
@@ -170,6 +177,7 @@
         <where> 1=1
             <include refid="where_column" />
         </where>
+        order by CREATE_TIME desc
     </select>
 
     <!-- 分页查询-->
@@ -180,6 +188,7 @@
         <where> 1=1
             <include refid="where_column" />
         </where>
+		order by CREATE_TIME desc
     </select>
 
 </mapper>
