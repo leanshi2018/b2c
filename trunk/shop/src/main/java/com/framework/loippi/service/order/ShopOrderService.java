@@ -352,6 +352,8 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     List<MemberShippingBehaviorVo> findOldShippingBehavior();
 
+	Integer countMentionSales(Integer mentionId, Long specId);
+
 
 
 

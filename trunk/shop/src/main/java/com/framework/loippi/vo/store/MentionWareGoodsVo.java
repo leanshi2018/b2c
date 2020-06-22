@@ -5,6 +5,9 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 /**
  * @author :ldq
  * @date:2020/6/11
@@ -28,6 +31,12 @@ public class MentionWareGoodsVo {
 	private String goodsImage;
 
 	/**
+	 * 规格Id
+	 */
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long specId;
+
+	/**
 	 * 商品规格
 	 */
 	private String specGoodsSpec;
@@ -49,13 +58,13 @@ public class MentionWareGoodsVo {
 
 	/**
 	 * 销量
-	 SELECT vsfs.mention_id,sog.goods_type,sog.goods_id,sgs.spec_goods_serial,sog.goods_name,sog.spec_info,sum(sog.goods_num) as sum_goods_num FROM
-	 (select * from b2cshop.v_so_from_stores where payment_time>='2020-06-06 00:00:00' and payment_time<'2020-06-11 00:00:00' and mention_id='-5') as vsfs
-	 inner join shop_order_goods as sog
+	 SELECT sum(sog.goods_num) FROM
+	 (SELECT so.id id,soa.mention_id mention_id FROM shop_order as so LEFT JOIN shop_order_address as soa ON so.address_id = soa.id
+	 WHERE so.payment_state=1 AND so.order_state <> 0 AND ifnull(so.refund_state,0) = 0 AND so.logistic_type =2 ) vsfs
+	 LEFT JOIN shop_order_goods as sog
 	 on vsfs.id = sog.order_id
-	 inner join shop_goods_spec as sgs
-	 on sog.goods_id=sgs.goods_id
-	 group by vsfs.mention_id,sog.goods_type,sog.goods_id,sog.goods_name,sog.spec_info
+	 WHERE vsfs.mention_id = -5 AND sog.spec_id = '6592323279883603968'
+	 group by vsfs.mention_id,sog.spec_id
 	 */
 	private Integer sales;
 

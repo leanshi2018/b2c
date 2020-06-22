@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.ware;
 
 
+import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.entity.ware.RdInventoryWarning;
@@ -17,4 +18,10 @@ public interface RdInventoryWarningDao  extends GenericDao<RdInventoryWarning, L
     Long updateInventory(RdInventoryWarning rdInventoryWarning);
 
     void updateInventoryByWareCodeAndSpecId(Map<String, Object> map);
+
+	List<RdInventoryWarning> findByWareCode(String wareCode);
+
+	List<RdInventoryWarning> findByWareCodeAndOweInven(String wareCode);
+
+	RdInventoryWarning findInventoryWarningByWareAndSpecId(Map<String, Object> map);
 }

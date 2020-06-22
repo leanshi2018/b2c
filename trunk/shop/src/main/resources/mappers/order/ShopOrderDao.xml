@@ -1695,4 +1695,15 @@
         SELECT a.buyer_id as mmCode,COUNT(1) as orderNum FROM shop_order a INNER JOIN rd_mm_relation b on a.buyer_id = b.MM_CODE
         WHERE  b.N_O_FLAG = 2  and a.payment_state = 1 and a.order_state != 0 GROUP BY a.buyer_id
     </select>
+
+    <!--计算自提点销量-->
+    <select id="countMentionSales" parameterType="map" resultType="java.lang.Integer">
+        SELECT sum(sog.goods_num) FROM
+        (SELECT so.id id,soa.mention_id mention_id FROM shop_order as so LEFT JOIN shop_order_address as soa ON so.address_id = soa.id
+        WHERE so.payment_state=1 AND so.order_state <![CDATA[!= ]]> 0 AND ifnull(so.refund_state,0) = 0 AND so.logistic_type =2 ) vsfs
+        LEFT JOIN shop_order_goods as sog
+        on vsfs.id = sog.order_id
+        WHERE vsfs.mention_id = #{mentionId} AND sog.spec_id = #{specId}
+        group by vsfs.mention_id,sog.spec_id
+    </select>
 </mapper>

@@ -74,6 +74,10 @@ public class RdWarehouse implements GenericEntity {
 	@Column(name = "MM_CODE" )
 	private String mmCode;
 
+	/** 电话 */
+	@Column(name = "WARE_PHONE" )
+	private String warePhone;//电话
+
 	/** 自提地址id */
 	@Column(name = "MENTION_ID" )
 	private Integer mentionId;

@@ -22,15 +22,17 @@
 		<result property="sign" column="sign" />
 		<result property="autohrizeTime" column="autohrize_time" />
 		<result property="specificationId" column="specification_id" />
+		<result property="specGoodsSerial" column="spec_goods_serial" />
+		<result property="precautiousLine" column="precautious_line" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 id ,good_id ,goods_name ,spec_name ,goods_spec ,stock_now ,stock_into ,create_time ,quality_time ,shelf_life_time ,ware_code ,wId ,status ,sign,autohrize_time,specification_id
+		 id ,good_id ,goods_name ,spec_name ,goods_spec ,stock_now ,stock_into ,create_time ,quality_time ,shelf_life_time ,ware_code ,wId ,status ,sign,autohrize_time,specification_id,spec_goods_serial,precautious_line
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{id},#{goodId},#{goodsName},#{specName},#{goodsSpec},#{stockNow},#{stockInto},#{createTime},#{qualityTime},#{shelfLifeTime},#{wareCode},#{wid},#{status},#{sign},#{autohrizeTime},#{specificationId}
+		 #{id},#{goodId},#{goodsName},#{specName},#{goodsSpec},#{stockNow},#{stockInto},#{createTime},#{qualityTime},#{shelfLifeTime},#{wareCode},#{wid},#{status},#{sign},#{autohrizeTime},#{specificationId},#{specGoodsSerial},#{precautiousLine}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -82,6 +84,12 @@
 		</if>
 		<if test="specificationId != null and specificationId != ''">
 			AND specification_id = #{specificationId}
+		</if>
+		<if test="specGoodsSerial != null and specGoodsSerial != ''">
+			AND spec_goods_serial = #{specGoodsSerial}
+		</if>
+		<if test="precautiousLine != null">
+			AND precautious_line = #{precautiousLine}
 		</if>
 
 	</sql>
@@ -135,6 +143,12 @@
 		</if>
 		<if test="specificationId != null and specificationId != ''">
 			 specification_id = #{specificationId},
+		</if>
+		<if test="specGoodsSerial != null and specGoodsSerial != ''">
+			spec_goods_serial = #{specGoodsSerial},
+		</if>
+		<if test="precautiousLine != null">
+			precautious_line = #{precautiousLine},
 		</if>
 	</sql>
 

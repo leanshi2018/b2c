@@ -1,6 +1,8 @@
 package com.framework.loippi.service.ware;
 
 
+import java.util.List;
+
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.service.GenericService;
 
@@ -13,4 +15,8 @@ import com.framework.loippi.service.GenericService;
 public interface RdInventoryWarningService  extends GenericService<RdInventoryWarning, Long> {
 
 	void updateInventoryByWareCodeAndSpecId(String s, Long goodsSpecId,Integer quantity);
+
+	Integer findProductInventory(String ware, Long specId);
+
+	List<RdInventoryWarning> findByWareCodeAndOweInven(String wareCode);
 }

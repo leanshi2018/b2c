@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.ware.RdWareOrderDao">
+
+    <resultMap id="RdWareOrderResultMap" type="com.framework.loippi.entity.ware.RdWareOrder">
+        <id property="id" column="id"  />
+        <result column="order_sn" property="orderSn" />
+        <result column="store_id" property="storeId" />
+        <result column="store_name" property="storeName" />
+        <result column="mm_code" property="mCode" />
+        <result column="consigee_name" property="consigneeName" />
+        <result column="ware_phone" property="warePhone" />
+        <result column="order_type" property="orderType" />
+        <result column="order_state" property="orderState" />
+        <result column="creation_period" property="creationPeriod" />
+        <result column="create_time" property="createTime" />
+        <result column="express_time" property="expressTime" />
+        <result column="logistic_type" property="logisticType" />
+        <result column="express_id" property="expressId" />
+        <result column="shipping_code" property="shippingCode" />
+        <result column="order_desc" property="orderDesc" />
+        <result column="shop_order_sn" property="shopOrderSn" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,order_sn ,store_id ,store_name ,mm_code ,consigee_name ,ware_phone ,order_type ,order_state ,creation_period ,
+		 create_time ,express_time ,logistic_type ,express_id ,shipping_code ,order_desc ,shop_order_sn
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{orderSn},#{storeId},#{storeName},#{mCode},#{consigneeName},#{warePhone},#{orderType},#{orderState},#{creationPeriod},
+		 #{createTime},#{expressTime},#{logisticType},#{expressId},#{shippingCode},#{orderDesc},#{shopOrderSn}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="orderSn != null and orderSn != ''">
+            AND order_sn = #{orderSn,jdbcType=VARCHAR}
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND store_id = #{storeId,jdbcType=VARCHAR}
+        </if>
+        <if test="storeName != null and storeName != ''">
+            AND store_name = #{storeName,,jdbcType=VARCHAR}
+        </if>
+        <if test="mCode != null and mCode != ''">
+            and mm_code = #{mCode,jdbcType=VARCHAR}
+        </if>
+        <if test="consigneeName != null and consigneeName != ''">
+            AND consigee_name = #{consigneeName,jdbcType=VARCHAR}
+        </if>
+        <if test="warePhone != null and warePhone != ''">
+            AND ware_phone = #{warePhone,jdbcType=VARCHAR}
+        </if>
+        <if test="orderType != null">
+            AND order_type = #{orderType}
+        </if>
+        <if test="orderState != null">
+            AND order_state = #{orderState}
+        </if>
+        <if test="creationPeriod != null and creationPeriod != ''">
+            AND creation_period = #{creationPeriod,jdbcType=VARCHAR}
+        </if>
+        <if test="logisticType != null">
+            AND logistic_type = #{logisticType}
+        </if>
+        <if test="expressId != null">
+            AND express_id = #{expressId}
+        </if>
+        <if test="shippingCode != null and shippingCode != ''">
+            AND shipping_code = #{shippingCode,jdbcType=VARCHAR}
+        </if>
+        <if test="orderDesc != null and orderDesc != ''">
+            AND order_desc = #{orderDesc,jdbcType=VARCHAR}
+        </if>
+        <if test="shopOrderSn != null and shopOrderSn != ''">
+            AND shop_order_sn = #{shopOrderSn,jdbcType=VARCHAR}
+        </if>
+        <if test="createTimeEnd !=null and createTimeEnd != ''">
+            <![CDATA[and create_time <= #{createTimeEnd}]]>
+        </if>
+        <if test="createTimeStar !=null and createTimeStar != ''">
+            <![CDATA[and create_time >= #{createTimeStar}]]>
+        </if>
+        <if test="expressTimeEnd !=null and expressTimeEnd != ''">
+            <![CDATA[and express_time <= #{expressTimeEnd}]]>
+        </if>
+        <if test="expressTimeStar !=null and expressTimeStar != ''">
+            <![CDATA[and express_time >= #{expressTimeStar}]]>
+        </if>
+    </sql>
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="orderSn != null and orderSn != ''">
+            order_sn = #{orderSn,,jdbcType=VARCHAR},
+        </if>
+        <if test="storeId != null">
+            store_id = #{storeId,jdbcType=VARCHAR},
+        </if>
+        <if test="storeName != null and storeName != ''">
+            store_name = #{storeName,,jdbcType=VARCHAR},
+        </if>
+        <if test="mCode != null and mCode != ''">
+            mm_code = #{mCode,jdbcType=VARCHAR},
+        </if>
+        <if test="consigneeName != null and consigneeName != ''">
+            consigee_name = #{consigneeName,jdbcType=VARCHAR},
+        </if>
+        <if test="warePhone != null and warePhone != ''">
+            ware_phone = #{warePhone,jdbcType=VARCHAR},
+        </if>
+        <if test="orderType != null">
+            order_type = #{orderType},
+        </if>
+        <if test="orderState != null">
+            order_state = #{orderState},
+        </if>
+        <if test="creationPeriod != null and creationPeriod != ''">
+            creation_period = #{creationPeriod,jdbcType=VARCHAR},
+        </if>
+        <if test="logisticType != null">
+            logistic_type = #{logisticType},
+        </if>
+        <if test="expressId != null">
+            express_id = #{expressId},
+        </if>
+        <if test="shippingCode != null and shippingCode != ''">
+            shipping_code = #{shippingCode,jdbcType=VARCHAR},
+        </if>
+        <if test="createTime !=null and createTime != ''">
+            create_time = #{createTime},
+        </if>
+        <if test="expressTime !=null and expressTime != ''">
+            express_time = #{expressTime},
+        </if>
+        <if test="orderDesc !=null and orderDesc != ''">
+            order_desc = #{orderDesc},
+        </if>
+        <if test="shopOrderSn !=null and shopOrderSn != ''">
+            shop_order_sn = #{shopOrderSn},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdWareOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_ware_order
+        WHERE	ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdWareOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	rd_ware_order
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_ware_order
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.ware.RdWareOrder">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="wid">
+            SELECT LAST_INSERT_ID() AS WID
+        </selectKey>
+        INSERT rd_ware_order
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.ware.RdWareOrder">
+        UPDATE	rd_ware_order
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_ware_order
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM rd_ware_order
+        WHERE	ID	IN
+        <foreach item="rdWareOrderId" index="index" collection="ids" open="(" separator="," close=")">
+            #{RdWareAdjustId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdWareOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_ware_order
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdWareOrderResultMap">
+        SELECT
+        <include refid="base_column" />
+        FROM rd_ware_order
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+</mapper> 

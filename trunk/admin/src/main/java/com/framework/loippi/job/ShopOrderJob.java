@@ -222,13 +222,13 @@ public class ShopOrderJob {
     }
 
 
-    //@Scheduled(cron = "0 14 11 * * ?" )  //每30分钟执行一次
+    @Scheduled(cron = "0 34 17 * * ?" )  //每30分钟执行一次
     public void refundTL() {
         String backUrl = "";//后台通知地址 TODO
 
-        String orderNo = "202006010850205555";
-        String bizPaySn = "P20200601183949470WOMI47932";
-        String paySn = "P20200601183949470";
+        String orderNo = "202006010780207655";//随便写
+        String bizPaySn = "P20200617165654343WOMI25563";
+        String paySn = "P20200617165654343";
         ShopOrder order = orderService.findByPaySn(paySn);
 
         BigDecimal cutAmount = new BigDecimal("0.00");
@@ -240,12 +240,23 @@ public class ShopOrderJob {
 
 
         BigDecimal orderAmount = order.getOrderAmount();
-        double b = orderAmount.doubleValue()*100;
-        Long oAmount = new Double(b).longValue();
+        Double b = orderAmount.doubleValue()*100;
+        BigDecimal bd= new BigDecimal(b);
+        Double g = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        Long oAmount = new Double(g).longValue();
 
         BigDecimal feeAmountBig = orderAmount.subtract(cutAmount);//公司的抽佣
-        double f = feeAmountBig.doubleValue()*100;
-        Long feeAmount = new Double(f).longValue();
+        Double f = feeAmountBig.doubleValue()*100;
+        BigDecimal fd= new BigDecimal(f);
+        Double e = fd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        Long feeAmount = new Double(e).longValue();
+
+        System.out.println("*************************************");
+        System.out.println("oAmount="+oAmount);
+        System.out.println("feeAmountBig="+feeAmountBig);
+        System.out.println("f="+f);
+        System.out.println("feeAmount="+feeAmount);
+        System.out.println("*************************************");
 
         List<Map<String, Object>> refundList = new ArrayList<Map<String, Object>>();
         Map<String, Object> refundMember = new HashMap<String, Object>();

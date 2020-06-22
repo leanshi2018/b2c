@@ -19,17 +19,18 @@
 		<result property="wareStatus" column="WARE_STATUS" />
 		<result property="consigneeName" column="CONSIGNEE_NAME" />
 		<result property="mmCode" column="MM_CODE" />
+		<result property="warePhone" column="WARE_PHONE" />
 		<result property="mentionId" column="MENTION_ID" />
 		<result property="wareDesc" column="WARE_DESC" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 WARE_CODE ,WARE_NAME ,WARE_TYPE ,PROVINCE_CODE ,CITY_CODE ,COUNTRY_CODE ,WARE_DETIAL ,CREATEBY ,CREATETIME ,UPDATE_TIME_LAST ,WARE_STATUS ,CONSIGNEE_NAME ,MM_CODE ,MENTION_ID ,WARE_DESC
+		 WARE_CODE ,WARE_NAME ,WARE_TYPE ,PROVINCE_CODE ,CITY_CODE ,COUNTRY_CODE ,WARE_DETIAL ,CREATEBY ,CREATETIME ,UPDATE_TIME_LAST ,WARE_STATUS ,CONSIGNEE_NAME ,MM_CODE ,WARE_PHONE ,MENTION_ID ,WARE_DESC
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{wareCode},#{wareName},#{wareType},#{provinceCode},#{cityCode},#{countryCode},#{wareDetial},#{createby},#{createtime},#{updateTimeLast},#{wareStatus},#{consigneeName},#{mmCode},#{mentionId},#{wareDesc}
+		 #{wareCode},#{wareName},#{wareType},#{provinceCode},#{cityCode},#{countryCode},#{wareDetial},#{createby},#{createtime},#{updateTimeLast},#{wareStatus},#{consigneeName},#{mmCode},#{warePhone},#{mentionId},#{wareDesc}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -75,6 +76,9 @@
 		</if>
 		<if test="mmCode != null and mmCode != ''">
 			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="warePhone != null and warePhone != ''">
+			AND WARE_PHONE = #{warePhone,jdbcType=VARCHAR}
 		</if>
 		<if test="mentionId != null">
 			AND MENTION_ID = #{mentionId}
@@ -125,6 +129,9 @@
 		</if>
 		<if test="mmCode != null and mmCode != ''">
 			MM_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="warePhone != null and warePhone != ''">
+			WARE_PHONE = #{warePhone,jdbcType=VARCHAR},
 		</if>
 		<if test="mentionId != null">
 			MENTION_ID = #{mentionId},
@@ -217,6 +224,10 @@
 
 	<select id="findByCode" parameterType="java.lang.String" resultMap="RdWarehouseResultMap">
 		SELECT	* FROM 	RD_WAREHOUSE where WARE_CODE=#{wareCode}
+	</select>
+
+	<select id="findByMmCode" parameterType="java.lang.String" resultMap="RdWarehouseResultMap">
+		SELECT	* FROM 	RD_WAREHOUSE where MM_CODE=#{mmCode}
 	</select>
 
 

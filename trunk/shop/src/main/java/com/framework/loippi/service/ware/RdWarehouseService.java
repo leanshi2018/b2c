@@ -14,4 +14,5 @@ public interface RdWarehouseService  extends GenericService<RdWarehouse, Long> {
 
 	RdWarehouse findByCode(String wareCode);
 
+	RdWarehouse findByMmCode(String mmCode);
 }

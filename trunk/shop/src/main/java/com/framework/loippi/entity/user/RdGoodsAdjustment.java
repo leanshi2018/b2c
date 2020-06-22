@@ -1,13 +1,14 @@
 package com.framework.loippi.entity.user;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
-import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 入库记录表
@@ -86,6 +87,14 @@ public class RdGoodsAdjustment implements GenericEntity {
 	/** 规格id编号 */
 	@Column(name = "specification_id" )
 	private Long specificationId;
+
+	/** 规格商品编号 */
+	@Column(name = "spec_goods_serial" )
+	private String specGoodsSerial;
+
+	/** 预警线 */
+	@Column(name = "precautious_line" )
+	private Integer precautiousLine;//预警线
 
 	//模糊查询
 	private String goodsNameKey;

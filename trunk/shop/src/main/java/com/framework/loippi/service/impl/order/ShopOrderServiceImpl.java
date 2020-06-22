@@ -2729,17 +2729,33 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         System.out.println("order="+shopOrder);
         BigDecimal cutAmount = shopOrder.getCutAmount();//分账人金额
 
-        BigDecimal orderAmount = shopOrder.getOrderAmount();
+        /*BigDecimal orderAmount = shopOrder.getOrderAmount();
         double b = orderAmount.doubleValue()*100;
-        Long oAmount = new Double(b).longValue();
+        Long oAmount = new Double(b).longValue();*/
+
+        BigDecimal orderAmount = shopOrder.getOrderAmount();
+        Double b = orderAmount.doubleValue()*100;
+        BigDecimal bd= new BigDecimal(b);
+        Double g = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        Long oAmount = new Double(g).longValue();
+
         String paySn = shopOrder.getPaySn();
 
-        BigDecimal feeAmountBig = orderAmount.subtract(cutAmount);//公司的抽佣
+        /*BigDecimal feeAmountBig = orderAmount.subtract(cutAmount);//公司的抽佣
         double f = feeAmountBig.doubleValue()*100;
-        Long feeAmount = new Double(f).longValue();
+        Long feeAmount = new Double(f).longValue();*/
+
+
+        BigDecimal feeAmountBig = orderAmount.subtract(cutAmount);//公司的抽佣
+        Double f = feeAmountBig.doubleValue()*100;
+        BigDecimal fd= new BigDecimal(f);
+        Double e = fd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        Long feeAmount = new Double(e).longValue();
+
         System.out.println("cutAmount="+cutAmount);
         System.out.println("feeAmountBig="+feeAmountBig);
         System.out.println("feeAmount="+feeAmount);
+
         Map<String,Object> mapSn = new HashMap<String,Object>();
         mapSn.put("paySn",paySn);
         mapSn.put("invalidStatus",1);
@@ -6003,5 +6019,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     @Override
     public List<MemberShippingBehaviorVo> findOldShippingBehavior() {
         return orderDao.findOldShippingBehavior();
+    }
+
+    @Override
+    public Integer countMentionSales(Integer mentionId, Long specId) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("mentionId",mentionId);
+        map.put("specId",specId);
+        return orderDao.countMentionSales(map);
     }
 }

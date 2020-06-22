@@ -173,4 +173,23 @@
 		WHERE	WARE_CODE = #{wareCode}  and SPECIFICATION_ID=#{specificationId}
 	</update>
 
+	<select id="findByWareCode" parameterType="string" resultMap="RdInventoryWarningResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_INVENTORY_WARNING
+		WHERE WARE_CODE = #{wareCode}
+	</select>
+
+	<select id="findByWareCodeAndOweInven" parameterType="string" resultMap="RdInventoryWarningResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_INVENTORY_WARNING
+		WHERE WARE_CODE = #{wareCode} AND INVENTORY &lt; 0
+	</select>
+
+	<select id="findInventoryWarningByWareAndSpecId" parameterType="map" resultMap="RdInventoryWarningResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_INVENTORY_WARNING
+		WHERE WARE_CODE = #{wareCode} and SPECIFICATION_ID=#{specificationId}
+	</select>
+
+
 </mapper> 

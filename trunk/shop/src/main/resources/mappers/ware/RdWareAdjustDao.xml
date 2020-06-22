@@ -13,6 +13,7 @@
 		<result property="attachAdd" column="ATTACH_ADD" />
 		<result property="status" column="STATUS" />
 		<result property="wareAmount" column="WARE_AMOUNT" />
+		<result property="wareOrderSn" column="WARE_ORDER_SN" />
 		<result property="autohrizeBy" column="AUTOHRIZE_BY" />
 		<result property="autohrizeTime" column="AUTOHRIZE_TIME" />
 		<result property="autohrizeDesc" column="AUTOHRIZE_DESC" />
@@ -20,11 +21,11 @@
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 WID ,WARE_CODE ,WARE_NAME ,ADJUST_TYPE ,ATTACH_ADD ,STATUS ,WARE_AMOUNT ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC 
+		 WID ,WARE_CODE ,WARE_NAME ,ADJUST_TYPE ,ATTACH_ADD ,STATUS ,WARE_AMOUNT ,WARE_ORDER_SN ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{wid},#{wareCode},#{wareName},#{adjustType},#{attachAdd},#{status},#{wareAmount},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc}
+		 #{wid},#{wareCode},#{wareName},#{adjustType},#{attachAdd},#{status},#{wareAmount},#{wareOrderSn},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -49,6 +50,9 @@
 		</if>
 		<if test="wareAmount != null and wareAmount != ''">
 			AND WARE_AMOUNT = #{wareAmount,jdbcType=DECIMAL}
+		</if>
+		<if test="wareOrderSn != null and wareOrderSn != ''">
+			AND WARE_ORDER_SN = #{wareOrderSn,jdbcType=VARCHAR}
 		</if>
 		<if test="autohrizeBy != null and autohrizeBy != ''">
 			AND AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR}
@@ -83,6 +87,9 @@
 		</if>
 		<if test="wareAmount != null">
 			WARE_AMOUNT = #{wareAmount,jdbcType=DECIMAL},
+		</if>
+		<if test="wareOrderSn != null and wareOrderSn != ''">
+			WARE_ORDER_SN = #{wareOrderSn,jdbcType=VARCHAR},
 		</if>
 		<if test="autohrizeBy != null and autohrizeBy != ''">
 			AUTOHRIZE_BY = #{autohrizeBy,jdbcType=VARCHAR},

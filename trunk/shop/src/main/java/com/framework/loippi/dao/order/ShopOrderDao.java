@@ -205,4 +205,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     List<MemberShippingBehaviorVo> findNewShippingBehavior();
 
     List<MemberShippingBehaviorVo> findOldShippingBehavior();
+
+	Integer countMentionSales(Map<String, Object> map);
 }

@@ -1,12 +1,12 @@
 package com.framework.loippi.entity.ware;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 发货单表
@@ -50,10 +50,14 @@ public class RdWareAdjust implements GenericEntity {
 	@Column(name = "WARE_AMOUNT" )
 	private java.math.BigDecimal wareAmount;
 	
+	/** 发货订单编号（为空的时候没有发货单） */
+	@Column(name = "WARE_ORDER_SN" )
+	private String wareOrderSn;
+
 	/** 授权人 */
 	@Column(name = "AUTOHRIZE_BY" )
 	private String autohrizeBy;
-	
+
 	/** 授权时间 */
 	@Column(name = "AUTOHRIZE_TIME" )
 	private java.util.Date autohrizeTime;

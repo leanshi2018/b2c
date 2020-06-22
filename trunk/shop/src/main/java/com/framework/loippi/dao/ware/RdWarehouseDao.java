@@ -13,4 +13,6 @@ import com.framework.loippi.mybatis.dao.GenericDao;
 public interface RdWarehouseDao  extends GenericDao<RdWarehouse, Long> {
 
 	RdWarehouse findByCode(String wareCode);
+
+	RdWarehouse findByMmCode(String mmCode);
 }

@@ -30,4 +30,9 @@ public class RdWarehouseServiceImpl extends GenericServiceImpl<RdWarehouse, Long
 	public RdWarehouse findByCode(String wareCode) {
 		return rdWarehouseDao.findByCode(wareCode);
 	}
+
+	@Override
+	public RdWarehouse findByMmCode(String mmCode) {
+		return rdWarehouseDao.findByMmCode(mmCode);
+	}
 }
