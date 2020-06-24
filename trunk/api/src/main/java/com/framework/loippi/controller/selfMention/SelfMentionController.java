@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.selfMention;
 
+import com.framework.loippi.entity.ware.*;
+import com.framework.loippi.service.ware.RdWareAdjustService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -32,10 +34,6 @@ import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdSysPeriod;
-import com.framework.loippi.entity.ware.RdInventoryWarning;
-import com.framework.loippi.entity.ware.RdWareAllocation;
-import com.framework.loippi.entity.ware.RdWareOrder;
-import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.pojo.selfMention.GoodsType;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
@@ -80,6 +78,8 @@ public class SelfMentionController extends BaseController {
     private RdWarehouseService rdWarehouseService;
     @Resource
     private RdWareAllocationService rdWareAllocationService;
+    @Resource
+    private RdWareAdjustService rdWareAdjustService;
     @Resource
     private RdSysPeriodService rdSysPeriodService;
     @Resource
@@ -544,6 +544,48 @@ public class SelfMentionController extends BaseController {
             String timeLeft=str1+" 00:00:00";
             String timeRight=str2+" 23:59:59";
             List<RdWareAllocation> list = rdWareAllocationService.findList(Paramap.create().put("searchTimeLeft",timeLeft).put("searchTimeRight",timeRight).put("wareCodeIn",rdWarehouse.getWareCode()));
+            return ApiUtils.success(list);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return ApiUtils.error("请传入正确的月份");
+        }
+    }
+    /**
+     * 按照月份查询自提店调整单
+     * @param request
+     * @param month
+     * @return
+     */
+    @RequestMapping(value = "/api/mention/month/wareAdjust.json")
+    @ResponseBody
+    public String getRdWareAdjustMonth(HttpServletRequest request,String month) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("当前用户尚未登录");
+        }
+        String mmCode = member.getMmCode();//店主会员编号
+        RdWarehouse rdWarehouse = rdWarehouseService.find("mmCode",mmCode);
+        if(rdWarehouse==null){
+            return ApiUtils.error("当前用户尚未开店");
+        }
+        if(StringUtil.isEmpty(month)){
+            return ApiUtils.error("请选择需要查询的月份");
+        }
+        try {
+            java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM");
+            Date monthDate = format.parse(month);
+            Calendar instance = Calendar.getInstance();
+            instance.setTime(monthDate);
+            instance.set(Calendar.DAY_OF_MONTH,1);
+            Date firstDay = instance.getTime();
+            instance.set(Calendar.DATE, instance.getActualMaximum(instance.DATE));
+            Date lastDay = instance.getTime();
+            java.text.SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+            String str1 = format1.format(firstDay);
+            String str2 = format1.format(lastDay);
+            String timeLeft=str1+" 00:00:00";
+            String timeRight=str2+" 23:59:59";
+            List<RdWareAdjust> list = rdWareAdjustService.findList(Paramap.create().put("searchTimeLeft",timeLeft).put("searchTimeRight",timeRight).put("wareCode",rdWarehouse.getWareCode()));
             return ApiUtils.success(list);
         } catch (ParseException e) {
             e.printStackTrace();

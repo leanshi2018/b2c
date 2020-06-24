@@ -65,5 +65,9 @@ public class RdWareAdjust implements GenericEntity {
 	/** 授权说明（同意或不同意的理由） */
 	@Column(name = "AUTOHRIZE_DESC" )
 	private String autohrizeDesc;
+
+	//查询字段
+	private String searchTimeLeft;//查询时间左边限
+	private String searchTimeRight;//查询时间右边限
 	
 }

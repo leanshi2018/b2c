@@ -63,6 +63,12 @@
 		<if test="autohrizeDesc != null and autohrizeDesc != ''">
 			AND AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR}
 		</if>
+		<if test="searchTimeLeft != null and searchTimeLeft != ''">
+			AND AUTOHRIZE_TIME >= #{searchTimeLeft,jdbcType=TIMESTAMP}
+		</if>
+		<if test="searchTimeRight != null and searchTimeRight != ''">
+			AND AUTOHRIZE_TIME &lt;= #{searchTimeRight,jdbcType=TIMESTAMP}
+		</if>
 	</sql>
 	
 	<!-- 设置语句 -->
@@ -164,6 +170,7 @@
 		<where> 1=1
 			<include refid="where_column" />
 		</where>
+		order by AUTOHRIZE_TIME desc
 	</select>
 	
 	<!-- 分页查询-->
@@ -174,6 +181,7 @@
 		<where> 1=1
 			<include refid="where_column" />
 		</where>
+		order by AUTOHRIZE_TIME desc
 	</select>
 	
 </mapper> 
