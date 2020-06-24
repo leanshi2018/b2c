@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.user;
 
+import com.framework.loippi.utils.*;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.awt.image.BufferedImage;
@@ -54,13 +55,6 @@ import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Digests;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.PostUtil;
-import com.framework.loippi.utils.SmsUtil;
-import com.framework.loippi.utils.StringUtil;
-import com.framework.loippi.utils.Xerror;
 import com.google.code.kaptcha.Producer;
 
 /**
@@ -727,6 +721,25 @@ public class AuthcAPIController extends BaseController {
             return true;
         } else {
             return false;
+        }
+    }
+    /**
+     * 加法验证码
+     */
+    @RequestMapping("/mobile/useFlag.json")
+    public String mobileUseFlag(HttpServletRequest request ,HttpServletResponse response ,String mobile) throws Exception {
+        if(mobile==null||"".equals(mobile)){
+            return ApiUtils.error("请传入手机号码");
+        }
+        boolean b = MobileEmailUtil.checkMobileNumber(mobile);
+        if(!b){
+            return ApiUtils.error("手机号码格式不正确");
+        }
+        List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("mobile",mobile));
+        if(verificationMobile!=null&&verificationMobile.size()>0){
+            return ApiUtils.success(true);
+        }else {
+            return ApiUtils.success(false);
         }
     }
 }
