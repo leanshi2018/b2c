@@ -1,16 +1,20 @@
 package com.framework.loippi.service.impl.common;
 
+import com.framework.loippi.entity.common.DailyMemCensus;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +39,8 @@ public class DailyOrderCensusServiceImpl extends GenericServiceImpl<DailyOrderCe
     private DailyOrderCensusDao dailyOrderCensusDao;
     @Resource
     private ShopOrderService shopOrderService;
+
+    private static Logger logger = Logger.getLogger(DailyOrderCensusServiceImpl.class.getName());
 
     @Override
     public void getDailyOrderCensus() {
@@ -151,5 +157,160 @@ public class DailyOrderCensusServiceImpl extends GenericServiceImpl<DailyOrderCe
         }
         //4.将日订单列表统计数据插入数据库
         dailyOrderCensusDao.insert(orderCensus);
+    }
+
+    @Override
+    public void getExcelByTime(String s, String s1) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("timeLeft",s);
+        map.put("timeRight",s1);
+        List<DailyOrderCensus> list=dailyOrderCensusDao.findByTime(map);
+        System.out.println(list.size());
+        Workbook workbook = new SXSSFWorkbook();
+        Sheet sheet = buildDataSheet(workbook);
+        //构建每行的数据内容
+        int rowNum = 1;
+        for (Iterator<DailyOrderCensus> it = list.iterator(); it.hasNext(); ) {
+            DailyOrderCensus data = it.next();
+            if (data == null) {
+                continue;
+            }
+            //输出行数据
+            Row row = sheet.createRow(rowNum++);
+            convertDataToRow(data, row);
+        }
+        FileOutputStream fileOut = null;
+        try {
+            String exportFilePath = "E:\\DailyOrderCensus.xlsx";
+            File exportFile = new File(exportFilePath);
+            if (!exportFile.exists()) {
+                exportFile.createNewFile();
+            }
+
+            fileOut = new FileOutputStream(exportFilePath);
+            workbook.write(fileOut);
+            fileOut.flush();
+        } catch (Exception e) {
+            logger.warning("输出Excel时发生错误，错误原因：" + e.getMessage());
+        } finally {
+            try {
+                if (null != fileOut) {
+                    fileOut.close();
+                }
+                /*if (null != workbook) {
+                    workbook.close();
+                }*/
+            } catch (IOException e) {
+                logger.warning("关闭输出流时发生错误，错误原因：" + e.getMessage());
+            }
+        }
+    }
+    private static void convertDataToRow(DailyOrderCensus data, Row row){
+        int cellNum = 0;
+        Cell cell;
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getReportCode()).orElse(""));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getOrderNum()).orElse(0));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getEffectiveOrderNum()).orElse(0));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getInvalidOrderNum()).orElse(0));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getOrderNumApp()).orElse(0));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getOrderNumWechat()).orElse(0));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getOrderIncomeTotal().toString()).orElse("0.00"));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getPointProportion().toString()).orElse("0.00"));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getUnitPrice().toString()).orElse("0.00"));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getRetailOrderNum()).orElse(0));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getRetailIncomeTotal().toString()).orElse("0.00"));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getRetailUnitPrice().toString()).orElse("0.00"));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getVipOrderNum()).orElse(0));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getVipIncomeTotal().toString()).orElse("0.00"));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getVipUnitPrice().toString()).orElse("0.00"));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getBigOrderNum()).orElse(0));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getBigIncomeTotal().toString()).orElse("0.00"));
+        cell = row.createCell(cellNum++);
+        cell.setCellValue(Optional.ofNullable(data.getBigUnitPrice().toString()).orElse("0.00"));
+    }
+
+    private static List<String> CELL_HEADS; //列头
+
+    static{
+        // 类装载时就载入指定好的列头信息，如有需要，可以考虑做成动态生成的列头
+        CELL_HEADS = new ArrayList<>();
+        CELL_HEADS.add("时间");
+        CELL_HEADS.add("总订单数量");
+        CELL_HEADS.add("有效订单数");
+        CELL_HEADS.add("无效订单数");
+        CELL_HEADS.add("app订单数");
+        CELL_HEADS.add("微信小程序订单数");
+        CELL_HEADS.add("订单总收入");
+        CELL_HEADS.add("积分占比");
+        CELL_HEADS.add("平均客单价");
+        CELL_HEADS.add("零售订单数");
+        CELL_HEADS.add("零售订单总额");
+        CELL_HEADS.add("零售订单客单价");
+        CELL_HEADS.add("会员订单数");
+        CELL_HEADS.add("会员订单总额");
+        CELL_HEADS.add("会员订单客单价");
+        CELL_HEADS.add("大单数");
+        CELL_HEADS.add("大单总额");
+        CELL_HEADS.add("大单客单价");
+    }
+    private static Sheet buildDataSheet(Workbook workbook) {
+        Sheet sheet = workbook.createSheet();
+        // 设置列头宽度
+        for (int i=0; i<CELL_HEADS.size(); i++) {
+            sheet.setColumnWidth(i, 4000);
+        }
+        // 设置默认行高
+        sheet.setDefaultRowHeight((short) 400);
+        // 构建头单元格样式
+        CellStyle cellStyle = buildHeadCellStyle(sheet.getWorkbook());
+        // 写入第一行各列的数据
+        Row head = sheet.createRow(0);
+        for (int i = 0; i < CELL_HEADS.size(); i++) {
+            Cell cell = head.createCell(i);
+            cell.setCellValue(CELL_HEADS.get(i));
+            cell.setCellStyle(cellStyle);
+        }
+        return sheet;
+    }
+
+
+    private static CellStyle buildHeadCellStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        //对齐方式设置
+        /*style.setAlignment(HorizontalAlignment.CENTER);
+        //边框颜色和宽度设置
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBottomBorderColor(IndexedColors.BLACK.getIndex()); // 下边框
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setLeftBorderColor(IndexedColors.BLACK.getIndex()); // 左边框
+        style.setBorderRight(BorderStyle.THIN);
+        style.setRightBorderColor(IndexedColors.BLACK.getIndex()); // 右边框
+        style.setBorderTop(BorderStyle.THIN);
+        style.setTopBorderColor(IndexedColors.BLACK.getIndex()); // 上边框
+        //设置背景颜色
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        //粗体字设置
+        Font font = workbook.createFont();
+        font.setBold(true);
+        style.setFont(font);*/
+        return style;
     }
 }

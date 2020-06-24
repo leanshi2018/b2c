@@ -8,4 +8,6 @@ import com.framework.loippi.service.GenericService;
  */
 public interface DailyMemCensusService extends GenericService<DailyMemCensus, Long> {
     void getDailyMemCensus();
+
+    void getExcelByTime(String s, String s1);
 }

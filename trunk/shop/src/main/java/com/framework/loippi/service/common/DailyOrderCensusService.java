@@ -8,4 +8,6 @@ import com.framework.loippi.service.GenericService;
  */
 public interface DailyOrderCensusService extends GenericService<DailyOrderCensus, Long> {
     void getDailyOrderCensus();
+
+    void getExcelByTime(String s, String s1);
 }

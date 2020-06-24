@@ -259,4 +259,10 @@
         </where>
     </select>
 
+    <select id="findByTime" parameterType="map" resultMap="DailyMemCensusResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_daily_mem_census
+        where statistical_time >= #{timeLeft} and statistical_time &lt; #{timeRight}
+    </select>
 </mapper>
