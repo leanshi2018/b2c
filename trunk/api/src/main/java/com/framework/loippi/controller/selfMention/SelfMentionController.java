@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +29,8 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsGoods;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAllocation;
@@ -41,6 +45,7 @@ import com.framework.loippi.result.selfMention.SelfMentionOrderStatistics;
 import com.framework.loippi.result.selfMention.SelfMentionShopResult;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.user.RdSysPeriodService;
@@ -50,9 +55,11 @@ import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.vo.store.MentionProductVo;
 import com.framework.loippi.vo.store.MentionWareGoodsVo;
 
 @Controller("selfMentionController")
@@ -65,6 +72,8 @@ public class SelfMentionController extends BaseController {
     private ShopGoodsService shopGoodsService;
     @Resource
     private ShopGoodsSpecService shopGoodsSpecService;
+    @Resource
+    private ShopGoodsGoodsService shopGoodsGoodsService;
     @Resource
     private ShopOrderService orderService;
     @Resource
@@ -183,6 +192,127 @@ public class SelfMentionController extends BaseController {
             list.add(wareGoodsVo);
         }
         return ApiUtils.success(list);
+    }
+
+    /**
+     * 单品商品列表
+     */
+    @RequestMapping(value = "/api/mention/productGoodsList", method = RequestMethod.GET)
+    @ResponseBody
+    public String productGoodsList(HttpServletRequest request, @RequestParam(required = false,defaultValue = "1",value = "currentPage")Integer currentPage) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("当前用户尚未登录");
+        }
+
+        String mmCode = member.getMmCode();
+        RdWarehouse warehouse = rdWarehouseService.findByMmCode(mmCode);
+        if (warehouse == null ) {
+            return ApiUtils.error("该会员没有自提仓库");
+        }
+        String wareCode = warehouse.getWareCode();
+
+
+        //该仓库所有单品的库存数
+        List<RdInventoryWarning> inventoryWarningList = rdInventoryWarningService.findByWareCode(wareCode);
+        Map<Long,Integer> inventoryMap = new HashMap<>();
+        for (RdInventoryWarning inventoryWarning : inventoryWarningList) {
+            Long goodsCode = Long.valueOf(inventoryWarning.getGoodsCode());//商品id
+            ShopGoods goods = shopGoodsService.find(goodsCode);
+            if (goods.getGoodsType()==3){//组合商品
+                ShopGoodsSpec spec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());
+                Map<String, String> specMap = JacksonUtil.readJsonToMap(spec.getSpecGoodsSpec());
+                Map<String, String> goodsMap = JacksonUtil.readJsonToMap(spec.getSpecName());
+                Set<String> keySpec = specMap.keySet();
+                Set<String> keyGoods = goodsMap.keySet();
+                Iterator<String> itSpec = keySpec.iterator();
+                Iterator<String> itGoods = keyGoods.iterator();
+                while (itSpec.hasNext() && itGoods.hasNext()) {
+                    String specId = itSpec.next();//单品的规格id
+                    String goodsId = itGoods.next();//单品的商品id
+                    //拿到组合的具体数量情况
+                    int joinNum=1;
+                    Map<String,Object> mapGGs= new HashMap<>();
+                    mapGGs.put("goodId",inventoryWarning.getGoodsCode());
+                    mapGGs.put("combineGoodsId",goodsId);
+                    ShopGoodsGoods shopGoodsGoodsList = shopGoodsGoodsService.findGoodsGoods(mapGGs);
+                    if (shopGoodsGoodsList!=null){
+                        joinNum= Optional.ofNullable(shopGoodsGoodsList.getJoinNum()).orElse(1);
+                    }
+
+                    Integer inventory = inventoryWarning.getInventory()*joinNum;
+
+                    if (inventoryMap.containsKey(new Long(specId))){//存在
+                        Integer num = inventoryMap.get(new Long(specId));
+                        Integer total = num + inventory;
+                        inventoryMap.put(new Long(specId),total);
+                    }else {//不存在
+                        inventoryMap.put(new Long(specId),inventory);
+                    }
+
+                }
+            }else {//普通商品和换购商品(单品)
+                if (inventoryMap.containsKey(inventoryWarning.getSpecificationId())){//存在
+                    Integer num = inventoryMap.get(inventoryWarning.getSpecificationId());
+                    inventoryMap.put(inventoryWarning.getSpecificationId(),num+inventoryWarning.getInventory());
+                }else {//不存在
+                    inventoryMap.put(inventoryWarning.getSpecificationId(),inventoryWarning.getInventory());
+                }
+            }
+
+        }
+
+        List<MentionWareGoodsVo> productResults = new ArrayList<MentionWareGoodsVo>();
+            
+        for(Long specId:inventoryMap.keySet()){//遍历map的键
+            Integer num = inventoryMap.get(specId);
+            RdInventoryWarning warning = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(wareCode,specId);
+            ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(warning.getGoodsCode()));
+            ShopGoodsSpec spec = shopGoodsSpecService.find(specId);
+            MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
+            wareGoodsVo.setWareCode(Optional.ofNullable(wareCode).orElse(""));
+            wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
+            wareGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
+            wareGoodsVo.setSpecId(Optional.ofNullable(specId).orElse(0l));
+            wareGoodsVo.setSpecGoodsSpec(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
+            wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
+            wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
+            wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
+            wareGoodsVo.setInventory(Optional.ofNullable(warning.getInventory()).orElse(0));
+
+            wareGoodsVo.setProductInventory(num);//单品库存
+            productResults.add(wareGoodsVo);
+        }
+
+        List<MentionWareGoodsVo> productResultList = new ArrayList<MentionWareGoodsVo>();
+
+        int size = productResults.size();
+        if (size==0){
+            return ApiUtils.success(productResultList);
+        }else if (size<=10){
+            currentPage = 1;
+            productResultList = productResults;
+        }else {
+            int totalPage = (int) Math.ceil((double) size/10);
+            if (currentPage>totalPage){
+                currentPage = totalPage;
+            }
+            int startNum = (currentPage - 1) * 10;
+            int endNum = ((currentPage - 1) * 10)+10;
+            if (endNum>=size){
+                endNum = size;
+            }
+            productResultList = productResults.subList(startNum, endNum);
+        }
+
+        MentionProductVo resultPage = new MentionProductVo();
+        resultPage.setPageNum(currentPage);
+        resultPage.setPageSize(10);
+        resultPage.setPages((int) Math.ceil((double) size/10));
+        resultPage.setTotal(size);
+        resultPage.setProductResults(productResultList);
+
+        return ApiUtils.success(resultPage);
     }
 
     /**

@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.framework.loippi.pojo.selfMention.GoodsType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +18,7 @@ import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
+import com.framework.loippi.pojo.selfMention.GoodsType;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
 import com.framework.loippi.utils.JacksonUtil;
@@ -121,5 +121,18 @@ public class RdInventoryWarningServiceImpl extends GenericServiceImpl<RdInventor
 	@Override
 	public List<GoodsType> findGoodsTypeByWareCode(String wareCode) {
 		return rdInventoryWarningDao.findGoodsTypeByWareCode(wareCode);
+	}
+
+	@Override
+	public List<RdInventoryWarning> findByWareCode(String wareCode) {
+		return rdInventoryWarningDao.findByWareCode(wareCode);
+	}
+
+	@Override
+	public RdInventoryWarning findInventoryWarningByWareAndSpecId(String wareCode, Long specId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("wareCode",wareCode);
+		map.put("specificationId",specId);
+		return rdInventoryWarningDao.findInventoryWarningByWareAndSpecId(map);
 	}
 }
