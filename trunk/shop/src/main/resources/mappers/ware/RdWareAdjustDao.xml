@@ -145,19 +145,19 @@
 		<set>
 			<include refid="set_column" />
 		</set>
-		WHERE	ID = #{id,jdbcType=BIGINT}
+		WHERE	WID = #{id,jdbcType=BIGINT}
 	</update>
 	
 	<!-- 删除单条记录 -->
 	<delete id="delete">
 		DELETE	FROM RD_WARE_ADJUST
-		WHERE	ID = #{id,jdbcType=BIGINT}
+		WHERE	WID = #{id,jdbcType=BIGINT}
 	</delete>
 	
 	<!-- 删除多条记录-->
 	<delete id="deleteAll">
 		DELETE	FROM RD_WARE_ADJUST
-		WHERE	ID	IN
+		WHERE	WID	IN
     	<foreach item="RdWareAdjustId" index="index" collection="ids" open="(" separator="," close=")">
 	  		#{RdWareAdjustId} 
 		</foreach>
