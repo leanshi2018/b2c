@@ -20,6 +20,9 @@ public class OrderGoodsVo {
 	/** 商品名称 */
 	private String goodsName;
 
+	/** 商品默认封面图片*/
+	private String goodsImage;
+
 	/** 规格名称 */
 	private String specName;
 

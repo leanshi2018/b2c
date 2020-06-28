@@ -392,15 +392,24 @@ public class SelfMentionController extends BaseController {
 
         if (wareOrder.getOrderType()==8){//8调拨订单
             RdWareAllocation allocation = rdWareAllocationService.findBySn(orderSn);
+
+            RdWarehouse rdWarehouse = rdWarehouseService.findByCode(allocation.getWareCodeIn());
+            wareOrder.setProvinceCode(rdWarehouse.getProvinceCode());
+            wareOrder.setCityCode(rdWarehouse.getCityCode());
+            wareOrder.setCountryCode(rdWarehouse.getCountryCode());
+            wareOrder.setWareDetial(rdWarehouse.getWareDetial());
+
             List<RdGoodsAdjustment> rdGoodsAdjustmentList = rdGoodsAdjustmentService.findByWidAndSign(allocation.getWId(),2);
             List<OrderGoodsVo> orderGoodsVos = new ArrayList<OrderGoodsVo>();
             for (RdGoodsAdjustment rdGoodsAdjustment : rdGoodsAdjustmentList) {
 
                 ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(rdGoodsAdjustment.getSpecificationId());
+                ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(rdGoodsAdjustment.getGoodId()));
 
                 OrderGoodsVo orderGoodsVo = new OrderGoodsVo();
                 orderGoodsVo.setGoodId(Optional.ofNullable(rdGoodsAdjustment.getGoodId()).orElse(0l));
                 orderGoodsVo.setGoodsName(Optional.ofNullable(rdGoodsAdjustment.getGoodsName()).orElse(""));
+                orderGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
                 orderGoodsVo.setGoodsSpec(Optional.ofNullable(rdGoodsAdjustment.getGoodsSpec()).orElse(""));
                 orderGoodsVo.setStockInto(Optional.ofNullable(rdGoodsAdjustment.getStockInto()).orElse(0l));
                 if (goodsSpec==null){
