@@ -8,6 +8,6 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  * @author zijing
  * @version 2.0
  */
-public interface RdWareAdjustDao  extends GenericDao<RdWareAdjust, Long> {
+public interface RdWareAdjustDao  extends GenericDao<RdWareAdjust, Integer> {
 
 }

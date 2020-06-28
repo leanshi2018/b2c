@@ -5,9 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.mybatis.eitity.GenericEntity;
 import com.framework.loippi.mybatis.ext.annotation.Table;
+import com.framework.loippi.vo.store.OrderGoodsVo;
 
 /**
  * @author :ldq
@@ -21,6 +25,7 @@ import com.framework.loippi.mybatis.ext.annotation.Table;
 public class RdWareOrder implements GenericEntity {
 	private static final long serialVersionUID = 5081846432919091193L;
 
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;//id
 	private String orderSn;//订单编号
 	private String storeId;//自提店铺id(仓库编号)
@@ -38,5 +43,8 @@ public class RdWareOrder implements GenericEntity {
 	private String shippingCode;//物流单号
 	private String orderDesc;//订单信息
 	private String shopOrderSn;//关联商品订单编号（补发货）
+
+	//app查询新添
+	private List<OrderGoodsVo> orderGoodsVoList;
 
 }

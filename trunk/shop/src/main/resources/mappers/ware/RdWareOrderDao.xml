@@ -174,8 +174,8 @@
 
     <!-- 插入 -->
     <insert id="insert" parameterType="com.framework.loippi.entity.ware.RdWareOrder">
-        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="wid">
-            SELECT LAST_INSERT_ID() AS WID
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
         </selectKey>
         INSERT rd_ware_order
         (<include refid="base_column" /> )
@@ -223,6 +223,12 @@
         <where> 1=1
             <include refid="where_column" />
         </where>
+    </select>
+
+    <select id="findBySn" parameterType="string" resultMap="RdWareOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_ware_order
+        WHERE order_sn = #{orderSn}
     </select>
 
 </mapper> 

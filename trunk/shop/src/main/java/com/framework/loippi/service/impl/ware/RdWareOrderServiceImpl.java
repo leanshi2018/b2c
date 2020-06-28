@@ -23,4 +23,9 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 	public void setGenericDao() {
 		super.setGenericDao(rdWareOrderDao);
 	}
+
+	@Override
+	public RdWareOrder findBySn(String orderSn) {
+		return rdWareOrderDao.findBySn(orderSn);
+	}
 }

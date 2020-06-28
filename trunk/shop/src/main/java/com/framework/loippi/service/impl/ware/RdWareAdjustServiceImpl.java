@@ -16,7 +16,7 @@ import com.framework.loippi.service.ware.RdWareAdjustService;
  * @version 2.0
  */
 @Service
-public class RdWareAdjustServiceImpl extends GenericServiceImpl<RdWareAdjust, Long> implements RdWareAdjustService {
+public class RdWareAdjustServiceImpl extends GenericServiceImpl<RdWareAdjust, Integer> implements RdWareAdjustService {
 	
 	@Autowired
 	private RdWareAdjustDao rdWareAdjustDao;

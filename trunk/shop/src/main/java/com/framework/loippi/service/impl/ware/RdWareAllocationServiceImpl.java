@@ -309,4 +309,17 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			}
 		}
 	}
+
+	@Override
+	public RdWareAllocation findBySn(String orderSn) {
+		return rdWareAllocationDao.findBySn(orderSn);
+	}
+
+	@Override
+	public List<RdWareAllocation> haveAllocation(String wareCode, int status) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("wareCodeIn",wareCode);
+		map.put("status",status);
+		return rdWareAllocationDao.haveAllocation(map);
+	}
 }

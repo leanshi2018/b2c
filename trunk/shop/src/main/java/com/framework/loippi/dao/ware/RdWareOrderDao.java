@@ -9,4 +9,5 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  * @description:dubbo com.framework.loippi.dao.ware
  */
 public interface RdWareOrderDao extends GenericDao<RdWareOrder, Long> {
+	RdWareOrder findBySn(String orderSn);
 }

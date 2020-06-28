@@ -1,6 +1,8 @@
 package com.framework.loippi.service.user;
 
 
+import java.util.List;
+
 import com.framework.loippi.entity.user.RdGoodsAdjustment;
 import com.framework.loippi.service.GenericService;
 
@@ -13,4 +15,6 @@ import com.framework.loippi.service.GenericService;
 public interface RdGoodsAdjustmentService  extends GenericService<RdGoodsAdjustment, Long> {
 
 	void insert(RdGoodsAdjustment rdGoodsAdjustment);
+
+	List<RdGoodsAdjustment> findByWidAndSign(int wId, int sign);
 }
