@@ -599,6 +599,7 @@ public class SelfMentionController extends BaseController {
         wareAllocation.setStatus(2);
         wareAllocation.setAutohrizeBy("");
         wareAllocation.setAutohrizeDesc("");
+        wareAllocation.setCreateTime(new Date());
 
         //查找入库仓库为负数的商品
         List<RdInventoryWarning> inventoryWarningList = rdInventoryWarningService.findByWareCodeAndOweInven(wareAllocation.getWareCodeIn());
