@@ -1,8 +1,14 @@
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.sms.AldayuUtil;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
@@ -52,22 +58,22 @@ public class Mytest {
      */
     @Test
     public void testCut() {
+        //boolean flag = StringUtil.isMobilePhone("12269859659");
+       /* boolean flag = StringUtil.isMobilePhone("18567506779");
+        System.out.println(flag);
+        Pattern p = Pattern.compile("^(852|853|886)\\d*$");
+        Matcher m = p.matcher("85269968659");
+        System.out.println(m.matches());
+
+        String code = RandomStringUtils.random(6, "0123456789");
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
-            Date monthDate = format.parse("2020-06");
-            Calendar instance = Calendar.getInstance();
-            instance.setTime(monthDate);
-            instance.set(Calendar.DAY_OF_MONTH,1);
-            Date firstDay = instance.getTime();
-            instance.set(Calendar.DATE, instance.getActualMaximum(instance.DATE));
-            Date lastDay = instance.getTime();
-            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-            String str1 = format1.format(firstDay);
-            String str2 = format1.format(lastDay);
-            System.out.println(str1);
-            System.out.println(str2);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+            String codeJson = "{\"code\":\"" + code + "\"}";
+            AldayuUtil.sendSms("85269968659", codeJson, "SMS_165115421", "蜗米商城");
+            //redisService.save(mobile,code);
+            //return ApiUtils.success();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            //return ApiUtils.error("发送验证码出错");
+        }*/
     }
 }

@@ -35,6 +35,11 @@ public class SelfMentionOrderResult {
     private Integer orderState;
 
     /**
+     * 订单类型 1 零售订单 2 会员订单 3 pv订单 4 优惠订单 5 换购订单 6换货订单 7新会员启动包订单
+     */
+    private Integer orderType;
+
+    /**
      * 订单总价格
      */
     private BigDecimal orderTotalPrice;
@@ -88,6 +93,7 @@ public class SelfMentionOrderResult {
                 result.setBuyerId(Long.toString(shopOrder.getBuyerId()));
                 result.setBuyerName(shopOrder.getBuyerName());
                 result.setBuyerPhone(shopOrder.getBuyerPhone());
+                result.setOrderType(shopOrder.getOrderType());
                 List<ShopOrderGoods> shopOrderGoods = map.get(shopOrder.getId());
                 Integer num=0;
                 if(shopOrderGoods!=null&&shopOrderGoods.size()>0){

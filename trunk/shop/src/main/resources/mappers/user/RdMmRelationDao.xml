@@ -299,7 +299,7 @@
 	<select id="getMemAtotal" parameterType="map" resultType="com.framework.loippi.pojo.common.MemCensusVo">
 		select count(1) as num,SUM(A_TOTAL) as amountTotal from RD_MM_RELATION
 		<where>
-			<if test="rank != null and rank != ''">
+			<if test="rank != null">
 				and rank = #{rank}
 			</if>
 			and A_TOTAL > 0
