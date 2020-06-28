@@ -562,6 +562,11 @@ public class SelfMentionController extends BaseController {
         }
         String wareCode = warehouseIn.getWareCode();
 
+        List<RdWareAllocation> list = rdWareAllocationService.haveAllocation(wareCode,2);
+        if (list.size()>0){
+            return ApiUtils.error("该会员自提仓库还有待审调拨单，请等待审核后再进行创建新的调拨单");
+        }
+
         RdWareOrder rdWareOrder = new RdWareOrder();
         rdWareOrder.setId(twiterIdService.getTwiterId());
         String orderSn = "DH"+twiterIdService.getTwiterId();

@@ -19,4 +19,6 @@ public interface RdWareAllocationService extends GenericService<RdWareAllocation
 	void addAllocationOwe(RdWareOrder rdWareOrder, RdWareAllocation wareAllocation, List<RdInventoryWarning> inventoryWarningList) throws Exception;
 
 	RdWareAllocation findBySn(String orderSn);
+
+	List<RdWareAllocation> haveAllocation(String wareCode, int status);
 }
