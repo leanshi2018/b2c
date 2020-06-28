@@ -637,7 +637,7 @@ public class SelfMentionController extends BaseController {
             }
             return ApiUtils.success(SelfMentionOrderResult.buildList(list,hashMap));
         }
-        return ApiUtils.success();
+        return ApiUtils.success(new ArrayList<SelfMentionOrderResult>());
     }
 
     /**

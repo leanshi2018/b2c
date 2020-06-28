@@ -6,7 +6,7 @@
 <mapper namespace="com.framework.loippi.dao.ware.RdWareAllocationDao">
 
     <resultMap id="RdWareAllocationResultMap" type="com.framework.loippi.entity.ware.RdWareAllocation">
-        <id property="wid" column="WID"  />
+        <id property="wId" column="WID"  />
         <result property="wareCodeIn" column="WARE_CODE_IN" />
         <result property="wareNameIn" column="WARE_NAME_IN" />
         <result property="wareCodeOut" column="WARE_CODE_OUT" />
@@ -26,13 +26,13 @@
 	</sql>
 
     <sql id="base_value_column">
-		 #{wid},#{wareCodeIn},#{wareNameIn},#{wareCodeOut},#{wareNameOut},#{attachAdd},#{status},#{wareOrderSn},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{createTime}
+		 #{wId},#{wareCodeIn},#{wareNameIn},#{wareCodeOut},#{wareNameOut},#{attachAdd},#{status},#{wareOrderSn},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{createTime}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
     <sql id="where_column">
-		<if test="wid != null and wid != ''">
-			AND WID = #{wid,jdbcType=INTEGER}
+		<if test="wId != null and wId != ''">
+			AND WId = #{wId,jdbcType=INTEGER}
 		</if>
 		<if test="wareCodeIn != null and wareCodeIn != ''">
 			AND WARE_CODE_IN = #{wareCodeIn,jdbcType=VARCHAR}
@@ -77,8 +77,8 @@
 
 	<!-- 设置语句 -->
 	<sql id="set_column">
-		<if test="wid != null and wid != ''">
-			WID = #{wid,jdbcType=INTEGER},
+		<if test="wId != null and wId != ''">
+			WID = #{wId,jdbcType=INTEGER},
 		</if>
 		<if test="wareCodeIn != null and wareCodeIn != ''">
 			WARE_CODE_IN = #{wareCodeIn,jdbcType=VARCHAR},
@@ -119,7 +119,7 @@
     <select id="find" resultMap="RdWareAllocationResultMap">
         SELECT	<include refid="base_column" />
         FROM	rd_ware_allocation
-        WHERE	ID=#{id,jdbcType=BIGINT}
+        WHERE	WID=#{id,jdbcType=BIGINT}
     </select>
 
     <!-- 查询所有 -->
@@ -138,7 +138,7 @@
 
     <!-- 插入 -->
     <insert id="insert" parameterType="com.framework.loippi.entity.ware.RdWareAllocation">
-        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="wid">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="wId">
             SELECT LAST_INSERT_ID() AS WID
         </selectKey>
         INSERT rd_ware_allocation
@@ -152,19 +152,19 @@
         <set>
             <include refid="set_column" />
         </set>
-        WHERE	ID = #{id,jdbcType=BIGINT}
+        WHERE	WID = #{id,jdbcType=BIGINT}
     </update>
 
     <!-- 删除单条记录 -->
     <delete id="delete">
 		DELETE	FROM rd_ware_allocation
-		WHERE	ID = #{id,jdbcType=BIGINT}
+		WHERE	WID = #{id,jdbcType=BIGINT}
 	</delete>
 
     <!-- 删除多条记录-->
     <delete id="deleteAll">
         DELETE	FROM rd_ware_allocation
-        WHERE	ID	IN
+        WHERE	WID	IN
         <foreach item="RdWareAllocationIds" index="index" collection="ids" open="(" separator="," close=")">
             #{RdWareAllocationId}
         </foreach>
