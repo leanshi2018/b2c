@@ -9,4 +9,5 @@ import com.framework.loippi.service.GenericService;
  * @description:dubbo com.framework.loippi.service.ware
  */
 public interface RdWareOrderService extends GenericService<RdWareOrder, Long> {
+	RdWareOrder findBySn(String orderSn);
 }

@@ -10,7 +10,7 @@ import com.framework.loippi.service.GenericService;
  * @author zijing
  * @version 2.0
  */
-public interface RdWareAdjustService  extends GenericService<RdWareAdjust, Long> {
+public interface RdWareAdjustService  extends GenericService<RdWareAdjust, Integer> {
 
 	void insert(RdWareAdjust rdWareAdjust);
 }

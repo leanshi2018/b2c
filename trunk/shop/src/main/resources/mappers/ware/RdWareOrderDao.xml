@@ -225,4 +225,10 @@
         </where>
     </select>
 
+    <select id="findBySn" parameterType="string" resultMap="RdWareOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_ware_order
+        WHERE order_sn = #{orderSn}
+    </select>
+
 </mapper> 

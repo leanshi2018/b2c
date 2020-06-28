@@ -1,5 +1,9 @@
 package com.framework.loippi.service.impl.user;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +34,13 @@ public class RdGoodsAdjustmentServiceImpl extends GenericServiceImpl<RdGoodsAdju
 	@Override
 	public void insert(RdGoodsAdjustment rdGoodsAdjustment) {
 		rdGoodsAdjustmentDao.insert(rdGoodsAdjustment);
+	}
+
+	@Override
+	public List<RdGoodsAdjustment> findByWidAndSign(int wId, int sign) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("wid",wId);
+		map.put("sign",sign);
+		return rdGoodsAdjustmentDao.findByWidAndSign(map);
 	}
 }

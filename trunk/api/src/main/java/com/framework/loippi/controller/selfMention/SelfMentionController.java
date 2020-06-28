@@ -1,7 +1,5 @@
 package com.framework.loippi.controller.selfMention;
 
-import com.framework.loippi.entity.ware.*;
-import com.framework.loippi.service.ware.RdWareAdjustService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -33,7 +31,13 @@ import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.entity.user.RdGoodsAdjustment;
 import com.framework.loippi.entity.user.RdSysPeriod;
+import com.framework.loippi.entity.ware.RdInventoryWarning;
+import com.framework.loippi.entity.ware.RdWareAdjust;
+import com.framework.loippi.entity.ware.RdWareAllocation;
+import com.framework.loippi.entity.ware.RdWareOrder;
+import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.pojo.selfMention.GoodsType;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
@@ -46,9 +50,12 @@ import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.service.user.RdGoodsAdjustmentService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
+import com.framework.loippi.service.ware.RdWareAdjustService;
 import com.framework.loippi.service.ware.RdWareAllocationService;
+import com.framework.loippi.service.ware.RdWareOrderService;
 import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
@@ -59,6 +66,7 @@ import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.store.MentionProductVo;
 import com.framework.loippi.vo.store.MentionWareGoodsVo;
+import com.framework.loippi.vo.store.OrderGoodsVo;
 
 @Controller("selfMentionController")
 @Slf4j
@@ -77,6 +85,8 @@ public class SelfMentionController extends BaseController {
     @Resource
     private RdWarehouseService rdWarehouseService;
     @Resource
+    private RdWareOrderService rdWareOrderService;
+    @Resource
     private RdWareAllocationService rdWareAllocationService;
     @Resource
     private RdWareAdjustService rdWareAdjustService;
@@ -86,6 +96,8 @@ public class SelfMentionController extends BaseController {
     private ShopOrderService shopOrderService;
     @Resource
     private ShopOrderGoodsService shopOrderGoodsService;
+    @Resource
+    private RdGoodsAdjustmentService rdGoodsAdjustmentService;
     /**
      * 点击进入我的小店
      * @param request
@@ -155,7 +167,7 @@ public class SelfMentionController extends BaseController {
             return ApiUtils.error("仓库代码为空");
         }
         pager.setOrderDirection(Order.Direction.DESC);
-        pager.setOrderProperty("create_time");
+        //pager.setOrderProperty("create_time");
         pager.setParameter(paramap);
         List<MentionWareGoodsVo> list = new ArrayList<MentionWareGoodsVo>();
         Page<RdInventoryWarning> goodsPage = rdInventoryWarningService.findByPage(pager);
@@ -357,6 +369,115 @@ public class SelfMentionController extends BaseController {
         }
         return ApiUtils.success(list);
     }
+
+    /**
+     * 进货订单详情
+     */
+    @RequestMapping(value = "/api/mention/allocationOrderInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public String allocationOrderInfo(@RequestParam String orderSn,HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("当前用户尚未登录");
+        }
+
+        if(orderSn==null || "".equals(orderSn)){
+            return ApiUtils.error("订单号为空");
+        }
+
+        RdWareOrder wareOrder = rdWareOrderService.findBySn(orderSn);
+        if (wareOrder==null){
+            return ApiUtils.error("未找到该订单");
+        }
+
+        if (wareOrder.getOrderType()==8){//8调拨订单
+            RdWareAllocation allocation = rdWareAllocationService.findBySn(orderSn);
+            List<RdGoodsAdjustment> rdGoodsAdjustmentList = rdGoodsAdjustmentService.findByWidAndSign(allocation.getWId(),2);
+            List<OrderGoodsVo> orderGoodsVos = new ArrayList<OrderGoodsVo>();
+            for (RdGoodsAdjustment rdGoodsAdjustment : rdGoodsAdjustmentList) {
+
+                ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(rdGoodsAdjustment.getSpecificationId());
+
+                OrderGoodsVo orderGoodsVo = new OrderGoodsVo();
+                orderGoodsVo.setGoodId(Optional.ofNullable(rdGoodsAdjustment.getGoodId()).orElse(0l));
+                orderGoodsVo.setGoodsName(Optional.ofNullable(rdGoodsAdjustment.getGoodsName()).orElse(""));
+                orderGoodsVo.setGoodsSpec(Optional.ofNullable(rdGoodsAdjustment.getGoodsSpec()).orElse(""));
+                orderGoodsVo.setStockInto(Optional.ofNullable(rdGoodsAdjustment.getStockInto()).orElse(0l));
+                if (goodsSpec==null){
+                    orderGoodsVo.setPpv(BigDecimal.ZERO);
+                    orderGoodsVo.setGoodsRetailPrice(BigDecimal.ZERO);
+                    orderGoodsVo.setGoodsMemberPrice(BigDecimal.ZERO);
+                }else {
+                    orderGoodsVo.setPpv(Optional.ofNullable(goodsSpec.getPpv()).orElse(BigDecimal.ZERO));
+                    orderGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goodsSpec.getSpecRetailPrice()).orElse(BigDecimal.ZERO));
+                    orderGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goodsSpec.getSpecMemberPrice()).orElse(BigDecimal.ZERO));
+                }
+                orderGoodsVos.add(orderGoodsVo);
+            }
+            if (orderGoodsVos.size()==0){
+                return ApiUtils.error("该订单无调拨商品");
+            }
+            wareOrder.setOrderGoodsVoList(orderGoodsVos);
+        }
+
+        if (wareOrder.getOrderType()==9){//9后台发货
+            return ApiUtils.error("该订单是调整单，请联系客服");
+        }
+
+        return ApiUtils.success(wareOrder);
+    }
+
+    /**
+     * 调整单详情
+     */
+    @RequestMapping(value = "/api/mention/adjustInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public String adjustInfo(@RequestParam Integer wid,HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("当前用户尚未登录");
+        }
+
+        if(wid==null){
+            return ApiUtils.error("调整编号为空");
+        }
+
+        RdWareAdjust rdWareAdjust = rdWareAdjustService.find(wid);
+        if (rdWareAdjust==null){
+            return ApiUtils.error("未找到该调整单");
+        }
+
+        List<RdGoodsAdjustment> rdGoodsAdjustmentList = rdGoodsAdjustmentService.findByWidAndSign(wid,1);
+        List<OrderGoodsVo> orderGoodsVos = new ArrayList<OrderGoodsVo>();
+        for (RdGoodsAdjustment rdGoodsAdjustment : rdGoodsAdjustmentList) {
+
+            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(rdGoodsAdjustment.getSpecificationId());
+
+            OrderGoodsVo orderGoodsVo = new OrderGoodsVo();
+            orderGoodsVo.setGoodId(Optional.ofNullable(rdGoodsAdjustment.getGoodId()).orElse(0l));
+            orderGoodsVo.setGoodsName(Optional.ofNullable(rdGoodsAdjustment.getGoodsName()).orElse(""));
+            orderGoodsVo.setGoodsSpec(Optional.ofNullable(rdGoodsAdjustment.getGoodsSpec()).orElse(""));
+            orderGoodsVo.setStockInto(Optional.ofNullable(rdGoodsAdjustment.getStockInto()).orElse(0l));
+            if (goodsSpec==null){
+                orderGoodsVo.setPpv(BigDecimal.ZERO);
+                orderGoodsVo.setGoodsRetailPrice(BigDecimal.ZERO);
+                orderGoodsVo.setGoodsMemberPrice(BigDecimal.ZERO);
+            }else {
+                orderGoodsVo.setPpv(Optional.ofNullable(goodsSpec.getPpv()).orElse(BigDecimal.ZERO));
+                orderGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goodsSpec.getSpecRetailPrice()).orElse(BigDecimal.ZERO));
+                orderGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goodsSpec.getSpecMemberPrice()).orElse(BigDecimal.ZERO));
+            }
+            orderGoodsVos.add(orderGoodsVo);
+        }
+        if (orderGoodsVos.size()==0){
+            return ApiUtils.error("该订单无调拨商品");
+        }
+        rdWareAdjust.setOrderGoodsVoList(orderGoodsVos);
+
+
+        return ApiUtils.success(rdWareAdjust);
+    }
+
 
     /**
      * 按自由创建发货单

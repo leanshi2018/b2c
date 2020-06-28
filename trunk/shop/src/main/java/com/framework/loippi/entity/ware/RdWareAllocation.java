@@ -20,7 +20,7 @@ import com.framework.loippi.mybatis.ext.annotation.Table;
 public class RdWareAllocation implements GenericEntity {
     private static final long serialVersionUID = 5081846432919091193L;
     @Column(name = "WID" )
-    private int wId;//id
+    private Integer wId;//id
     @Column(name = "WARE_CODE_IN" )
     private String wareCodeIn;//入库代码  yyyyxxxx
     @Column(name = "WARE_NAME_IN" )

@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 import com.framework.loippi.mybatis.eitity.GenericEntity;
 import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.mybatis.ext.annotation.Table;
+import com.framework.loippi.vo.store.OrderGoodsVo;
 
 /**
  * Entity - 发货单表
@@ -69,5 +72,7 @@ public class RdWareAdjust implements GenericEntity {
 	//查询字段
 	private String searchTimeLeft;//查询时间左边限
 	private String searchTimeRight;//查询时间右边限
-	
+
+	//app查询新添
+	private List<OrderGoodsVo> orderGoodsVoList;
 }

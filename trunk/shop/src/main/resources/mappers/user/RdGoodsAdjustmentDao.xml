@@ -231,5 +231,11 @@
 			</if>
 		</where>
 	</select>
-	
+
+	<select id="findByWidAndSign" parameterType="map" resultMap="RdGoodsAdjustmentResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_GOODS_ADJUSTMENT
+		WHERE wId = #{wid} AND sign = #{sign}
+	</select>
+
 </mapper> 

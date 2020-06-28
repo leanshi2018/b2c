@@ -191,4 +191,10 @@
         order by CREATE_TIME desc
     </select>
 
+	<select id="findBySn" parameterType="string" resultMap="RdWareAllocationResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	rd_ware_allocation
+		WHERE WARE_ORDER_SN = #{wareOrderSn}
+	</select>
+
 </mapper>

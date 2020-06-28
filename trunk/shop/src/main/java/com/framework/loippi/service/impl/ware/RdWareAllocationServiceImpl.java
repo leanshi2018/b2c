@@ -309,4 +309,9 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			}
 		}
 	}
+
+	@Override
+	public RdWareAllocation findBySn(String orderSn) {
+		return rdWareAllocationDao.findBySn(orderSn);
+	}
 }
