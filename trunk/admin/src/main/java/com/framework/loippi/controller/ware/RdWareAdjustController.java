@@ -2,16 +2,16 @@ package com.framework.loippi.controller.ware;
 
 import javax.annotation.Resource;
 
-import com.framework.loippi.controller.GenericController;
-import com.framework.loippi.entity.ware.RdWareAdjust;
-import com.framework.loippi.service.ware.RdWareAdjustService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.entity.ware.RdWareAdjust;
+import com.framework.loippi.service.ware.RdWareAdjustService;
 import com.framework.loippi.support.Message;
 import com.framework.loippi.support.Pageable;
 
@@ -31,7 +31,6 @@ public class RdWareAdjustController extends GenericController {
 	/**
 	 * 跳转添加页面
 	 * 
-	 * @param id
 	 * @param model
 	 * @return
 	 */
@@ -55,7 +54,7 @@ public class RdWareAdjustController extends GenericController {
 	 */
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
 	public String edit(Long id, ModelMap model) {
-		RdWareAdjust rdWareAdjust = rdWareAdjustService.find(id);
+		RdWareAdjust rdWareAdjust = rdWareAdjustService.find(id.intValue());
 		model.addAttribute("rdWareAdjust", rdWareAdjust);
 		return "/ware/rd_ware_adjust/edit";
 	}
@@ -66,7 +65,7 @@ public class RdWareAdjustController extends GenericController {
 	 */
 	@RequestMapping(value = "/view", method = RequestMethod.GET)
 	public String view(Long id, ModelMap model) {
-		RdWareAdjust rdWareAdjust = rdWareAdjustService.find(id);
+		RdWareAdjust rdWareAdjust = rdWareAdjustService.find(id.intValue());
 		model.addAttribute("rdWareAdjust", rdWareAdjust);
 		return "/ware/rd_ware_adjust/view";
 	}

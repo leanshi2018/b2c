@@ -46,5 +46,16 @@ public class RdWareOrder implements GenericEntity {
 
 	//app查询新添
 	private List<OrderGoodsVo> orderGoodsVoList;
+	/** 省 */
+	private String provinceCode;
+
+	/** 市 */
+	private String cityCode;
+
+	/** 区 */
+	private String countryCode;
+
+	/** 详细地址 */
+	private String wareDetial;
 
 }

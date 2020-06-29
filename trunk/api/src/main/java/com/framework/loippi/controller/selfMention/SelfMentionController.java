@@ -60,6 +60,7 @@ import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
@@ -180,13 +181,30 @@ public class SelfMentionController extends BaseController {
         }*/
         for (RdInventoryWarning inventoryWarning : goodsPage.getContent()) {
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(inventoryWarning.getGoodsCode()));
-
+            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
             MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
             wareGoodsVo.setWareCode(Optional.ofNullable(inventoryWarning.getWareCode()).orElse(""));
             wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
             wareGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
             wareGoodsVo.setSpecId(Optional.ofNullable(inventoryWarning.getSpecificationId()).orElse(0l));
-            wareGoodsVo.setSpecGoodsSpec(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
+
+            if (shopGoods.getGoodsType()==3){
+                wareGoodsVo.setSpecGoodsSpec(goodsSpec.getSpecGoodsSerial());
+            }else{
+                String specInfo = "";
+                Map<String, String> map = goodsSpec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                wareGoodsVo.setSpecGoodsSpec(specInfo);
+            }
+
             wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
@@ -281,12 +299,28 @@ public class SelfMentionController extends BaseController {
             RdInventoryWarning warning = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(wareCode,specId);
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(warning.getGoodsCode()));
             ShopGoodsSpec spec = shopGoodsSpecService.find(specId);
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, spec);
             MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
             wareGoodsVo.setWareCode(Optional.ofNullable(wareCode).orElse(""));
             wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
             wareGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
             wareGoodsVo.setSpecId(Optional.ofNullable(specId).orElse(0l));
-            wareGoodsVo.setSpecGoodsSpec(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
+
+            if (shopGoods.getGoodsType()==3){
+                wareGoodsVo.setSpecGoodsSpec(spec.getSpecGoodsSerial());
+            }else{
+                String specInfo = "";
+                Map<String, String> map = spec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                wareGoodsVo.setSpecGoodsSpec(specInfo);
+            }
             wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
@@ -352,13 +386,28 @@ public class SelfMentionController extends BaseController {
         List<MentionWareGoodsVo> list = new ArrayList<MentionWareGoodsVo>();
         for (RdInventoryWarning inventoryWarning : inventoryWarningList) {
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(inventoryWarning.getGoodsCode()));
-
+            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
             MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
             wareGoodsVo.setWareCode(Optional.ofNullable(inventoryWarning.getWareCode()).orElse(""));
             wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
             wareGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
             wareGoodsVo.setSpecId(Optional.ofNullable(inventoryWarning.getSpecificationId()).orElse(0l));
-            wareGoodsVo.setSpecGoodsSpec(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
+            if (shopGoods.getGoodsType()==3){
+                wareGoodsVo.setSpecGoodsSpec(goodsSpec.getSpecGoodsSerial());
+            }else{
+                String specInfo = "";
+                Map<String, String> map = goodsSpec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                wareGoodsVo.setSpecGoodsSpec(specInfo);
+            }
             wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
@@ -392,16 +441,39 @@ public class SelfMentionController extends BaseController {
 
         if (wareOrder.getOrderType()==8){//8调拨订单
             RdWareAllocation allocation = rdWareAllocationService.findBySn(orderSn);
+
+            RdWarehouse rdWarehouse = rdWarehouseService.findByCode(allocation.getWareCodeIn());
+            wareOrder.setProvinceCode(rdWarehouse.getProvinceCode());
+            wareOrder.setCityCode(rdWarehouse.getCityCode());
+            wareOrder.setCountryCode(rdWarehouse.getCountryCode());
+            wareOrder.setWareDetial(rdWarehouse.getWareDetial());
+
             List<RdGoodsAdjustment> rdGoodsAdjustmentList = rdGoodsAdjustmentService.findByWidAndSign(allocation.getWId(),2);
             List<OrderGoodsVo> orderGoodsVos = new ArrayList<OrderGoodsVo>();
             for (RdGoodsAdjustment rdGoodsAdjustment : rdGoodsAdjustmentList) {
 
                 ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(rdGoodsAdjustment.getSpecificationId());
-
+                ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(rdGoodsAdjustment.getGoodId()));
+                GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
                 OrderGoodsVo orderGoodsVo = new OrderGoodsVo();
                 orderGoodsVo.setGoodId(Optional.ofNullable(rdGoodsAdjustment.getGoodId()).orElse(0l));
                 orderGoodsVo.setGoodsName(Optional.ofNullable(rdGoodsAdjustment.getGoodsName()).orElse(""));
-                orderGoodsVo.setGoodsSpec(Optional.ofNullable(rdGoodsAdjustment.getGoodsSpec()).orElse(""));
+                orderGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
+                if (shopGoods.getGoodsType()==3){
+                    orderGoodsVo.setGoodsSpec(goodsSpec.getSpecGoodsSerial());
+                }else{
+                    String specInfo = "";
+                    Map<String, String> map = goodsSpec.getSepcMap();
+                    //遍历规格map,取出键值对,拼接specInfo
+                    if (map != null) {
+                        Set<String> set = map.keySet();
+                        for (String str : set) {
+                            specInfo += str + ":" + map.get(str) + "、";
+                        }
+                        specInfo = specInfo.substring(0, specInfo.length() - 1);
+                    }
+                    orderGoodsVo.setGoodsSpec(specInfo);
+                }
                 orderGoodsVo.setStockInto(Optional.ofNullable(rdGoodsAdjustment.getStockInto()).orElse(0l));
                 if (goodsSpec==null){
                     orderGoodsVo.setPpv(BigDecimal.ZERO);
@@ -452,11 +524,28 @@ public class SelfMentionController extends BaseController {
         for (RdGoodsAdjustment rdGoodsAdjustment : rdGoodsAdjustmentList) {
 
             ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(rdGoodsAdjustment.getSpecificationId());
+            ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(rdGoodsAdjustment.getGoodId()));
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
 
             OrderGoodsVo orderGoodsVo = new OrderGoodsVo();
             orderGoodsVo.setGoodId(Optional.ofNullable(rdGoodsAdjustment.getGoodId()).orElse(0l));
             orderGoodsVo.setGoodsName(Optional.ofNullable(rdGoodsAdjustment.getGoodsName()).orElse(""));
-            orderGoodsVo.setGoodsSpec(Optional.ofNullable(rdGoodsAdjustment.getGoodsSpec()).orElse(""));
+            orderGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
+            if (shopGoods.getGoodsType()==3){
+                orderGoodsVo.setGoodsSpec(goodsSpec.getSpecGoodsSerial());
+            }else{
+                String specInfo = "";
+                Map<String, String> map = goodsSpec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                orderGoodsVo.setGoodsSpec(specInfo);
+            }
             orderGoodsVo.setStockInto(Optional.ofNullable(rdGoodsAdjustment.getStockInto()).orElse(0l));
             if (goodsSpec==null){
                 orderGoodsVo.setPpv(BigDecimal.ZERO);
@@ -597,6 +686,7 @@ public class SelfMentionController extends BaseController {
         wareAllocation.setWareNameOut(warehouseOut.getWareName());
         wareAllocation.setAttachAdd("");
         wareAllocation.setStatus(2);
+        wareAllocation.setWareOrderSn(orderSn);
         wareAllocation.setAutohrizeBy("");
         wareAllocation.setAutohrizeDesc("");
         wareAllocation.setCreateTime(new Date());
