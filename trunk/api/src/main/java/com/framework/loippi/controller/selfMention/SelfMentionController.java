@@ -530,6 +530,7 @@ public class SelfMentionController extends BaseController {
             OrderGoodsVo orderGoodsVo = new OrderGoodsVo();
             orderGoodsVo.setGoodId(Optional.ofNullable(rdGoodsAdjustment.getGoodId()).orElse(0l));
             orderGoodsVo.setGoodsName(Optional.ofNullable(rdGoodsAdjustment.getGoodsName()).orElse(""));
+            orderGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
             if (shopGoods.getGoodsType()==3){
                 orderGoodsVo.setGoodsSpec(goodsSpec.getSpecGoodsSerial());
             }else{
