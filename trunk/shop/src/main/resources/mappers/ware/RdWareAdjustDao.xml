@@ -112,7 +112,7 @@
 	<select id="find" resultMap="RdWareAdjustResultMap">
 		SELECT	<include refid="base_column" />
 		FROM	RD_WARE_ADJUST
-		WHERE	ID=#{id,jdbcType=BIGINT}
+		WHERE	WID=#{wid,jdbcType=BIGINT}
 	</select>
 	
 	<!-- 查询所有 -->
