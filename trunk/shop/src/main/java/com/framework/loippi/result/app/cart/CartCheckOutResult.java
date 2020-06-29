@@ -140,8 +140,14 @@ public class CartCheckOutResult {
     /**
      * 购物车id
      */
-    @JsonSerialize(using = ToStringSerializer.class)
     public List<Long> cartIds;
+
+    /**
+     * 购物车id json字符串
+     */
+    @JsonSerialize(using = ToStringSerializer.class)
+    public List<Long> cartIdsStr;
+
     /**
      * 自提用户信息
      */
@@ -294,6 +300,7 @@ public class CartCheckOutResult {
 //            imgs.append(cart.getGoodsImages()).append(",");
             if (cartCheckOutResult.getCartIds() == null) {
                 cartCheckOutResult.setCartIds(new ArrayList<Long>());
+                cartCheckOutResult.setCartIdsStr(new ArrayList<Long>());
             }
             totalPpv=totalPpv.add(Optional.ofNullable(cart.getPpv()).orElse(BigDecimal.ZERO).multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //            totalPpv += Optional.ofNullable(cart.getPpv()).orElse(0) * cart.getGoodsNum();
@@ -306,6 +313,7 @@ public class CartCheckOutResult {
 //                actualTotalPpv += Optional.ofNullable(cart.getPpv()).orElse(0) * cart.getGoodsNum();
             }
             cartCheckOutResult.getCartIds().add(cart.getId());
+            cartCheckOutResult.getCartIdsStr().add(cart.getId());
         }
 
         cartCheckOutResult
@@ -361,6 +369,7 @@ public class CartCheckOutResult {
 //            imgs.append(cart.getGoodsImages()).append(",");
             if (cartCheckOutResult.getCartIds() == null) {
                 cartCheckOutResult.setCartIds(new ArrayList<Long>());
+                cartCheckOutResult.setCartIdsStr(new ArrayList<Long>());
             }
             totalPpv=totalPpv.add(Optional.ofNullable(cart.getPpv()).orElse(BigDecimal.ZERO).multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //            totalPpv += Optional.ofNullable(cart.getPpv()).orElse(0) * cart.getGoodsNum();
@@ -373,6 +382,7 @@ public class CartCheckOutResult {
 //                actualTotalPpv += Optional.ofNullable(cart.getPpv()).orElse(0) * cart.getGoodsNum();
             }
             cartCheckOutResult.getCartIds().add(cart.getId());
+            cartCheckOutResult.getCartIdsStr().add(cart.getId());
         }
 
         cartCheckOutResult

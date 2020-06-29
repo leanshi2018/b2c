@@ -45,6 +45,11 @@ public class UserIntegrationListResult {
      */
     private String docType;
 
+    /**
+     *积分留存线
+     */
+    private BigDecimal withdrawalLine;
+
     public static List<UserIntegrationListResult> build(RdMmAccountInfo rdMmAccountInfo) {
         List<UserIntegrationListResult> userIntegrationListResultList=new ArrayList<>();
         if (rdMmAccountInfo!=null){
@@ -74,6 +79,11 @@ public class UserIntegrationListResult {
                 }
             }
             userIntegrationListResult.setIntegration(num);
+            if(rdMmAccountInfo.getWithdrawalLine()!=null){
+                userIntegrationListResult.setWithdrawalLine(rdMmAccountInfo.getWithdrawalLine());
+            }else {
+                userIntegrationListResult.setWithdrawalLine(BigDecimal.ZERO);
+            }
             userIntegrationListResultList.add(userIntegrationListResult);
         }
         }
