@@ -1350,12 +1350,79 @@ public class OrderAPIController extends BaseController {
                 orderAddress.setMobPhone(address.getMobile());
                 orderAddress
                     .setAreaInfo(address.getAddProvinceCode() + address.getAddCityCode() + address.getAddCountryCode());
-                ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCountryCode());
+
+                /*ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCountryCode());
                 orderAddress.setAreaId(shopCommonArea.getId());
                 orderAddress.setCityId(shopCommonArea.getAreaParentId());
                 ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
-                orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
+                orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());*/
+
+            if ("".equals(address.getAddCountryCode())){
+                ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCityCode());
+                if (shopCommonArea==null) {
+                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                }
+                if (shopCommonArea.getExpressState()==1){//不配送
+                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址暂不配送");
+                }
+                orderAddress.setAreaId(shopCommonArea.getId());
+                orderAddress.setCityId(shopCommonArea.getId());
+                orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
+            }else{
+                List<ShopCommonArea> shopCommonAreas = areaService.findByAreaName(address.getAddCountryCode());//区
+                if (CollectionUtils.isEmpty(shopCommonAreas)) {
+                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                }
+                if (shopCommonAreas.size()>1){
+                    List<ShopCommonArea> shopCommonCitys = areaService.findByAreaName(address.getAddCityCode());//市
+                    if (shopCommonCitys==null) {
+                        throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                    }
+                    if (shopCommonCitys.size()==1){
+                        ShopCommonArea shopCommonCity = shopCommonCitys.get(0);
+                        orderAddress.setCityId(shopCommonCity.getId());
+                        orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                        for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                            if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
+                                orderAddress.setAreaId(shopCommonArea.getId());
+                                if (shopCommonArea.getExpressState()==1){//不配送
+                                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                                }
+                            }
+                        }
+                    }else {
+                        ShopCommonArea shopCommonProvice = areaService.find("areaName", address.getAddProvinceCode());//省
+                        for (ShopCommonArea shopCommonCity : shopCommonCitys) {
+                            if (shopCommonCity.getAreaParentId().longValue()==shopCommonProvice.getId().longValue()){
+                                orderAddress.setCityId(shopCommonCity.getId());
+                                orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                                for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                                    if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
+                                        orderAddress.setAreaId(shopCommonArea.getId());
+                                        if (shopCommonArea.getExpressState()==1){//不配送
+                                            throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
+                    if (shopCommonArea.getExpressState()==1){//不配送
+                        throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                    }
+                    orderAddress.setAreaId(shopCommonArea.getId());
+                    //if ()
+                    orderAddress.setCityId(shopCommonArea.getAreaParentId());
+                    ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
+                    if (shopCommonArea2==null) {
+                        throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                    }
+                    orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
+                }
             }
+        }
             if (logisticType == 2) {
                 /*********************保存发货地址*********************/
                 orderAddress.setMemberId(Long.parseLong(member.getMmCode()));
