@@ -266,7 +266,8 @@ public class ShopOrderJob {
     }
 
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    @Scheduled(cron = "0 50 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
     public void grant(){
         System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -274,10 +275,14 @@ public class ShopOrderJob {
         List<RetailProfit> list=retailProfitDao.findTimeMature(expectTime);
         System.out.println(list.size());
         if(list!=null&&list.size()>0){
+            int a=0;
+            int b=0;
+            ArrayList<RdMmAccountLog> rdMmAccountLogs = new ArrayList<>();
             for (RetailProfit retailProfit : list) {
                 if(retailProfit.getProfits()!=null&&retailProfit.getProfits().compareTo(BigDecimal.ZERO)!=1){
                     continue;
                 }
+                a++;
                 //根据retailProfit对应记录进行零售利润发放
                 List<RdMmRelation> rdMmRelations = rdMmRelationDao.findByParams(Paramap.create().put("mmCode",retailProfit.getBuyerId()));
                 if(rdMmRelations!=null&&rdMmRelations.size()>0){
@@ -290,6 +295,7 @@ public class ShopOrderJob {
                             retailProfit.setState(2);
                             retailProfitDao.update(retailProfit);
                         }else {//推荐人是vip及以上级别，发放
+                            b++;
                             List<RdMmAccountInfo> accountInfos = rdMmAccountInfoDao.findByParams(Paramap.create().put("mmCode",rdMmRelation1.getMmCode()));
                             if(accountInfos!=null&&accountInfos.size()>0){
                                 RdMmAccountInfo rdMmAccountInfo = accountInfos.get(0);
@@ -317,6 +323,7 @@ public class ShopOrderJob {
                                 rdMmAccountLog.setAutohrizeDesc("零售利润奖励发放");
                                 rdMmAccountLog.setStatus(3);
                                 rdMmAccountLogDao.insert(rdMmAccountLog);
+                                rdMmAccountLogs.add(rdMmAccountLog);
                                 //修改积分账户
                                 rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().add(amount));
                                 rdMmAccountInfoDao.update(rdMmAccountInfo);
@@ -355,6 +362,10 @@ public class ShopOrderJob {
                     }
                 }
             }
+            System.out.println(a+"***零售利润数量");
+            System.out.println(b+"***发放零售利润数量");
+            System.out.println(rdMmAccountLogs);
+            System.out.println(rdMmAccountLogs.size()+"***日志表个数");
         }
     }
     //@Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
