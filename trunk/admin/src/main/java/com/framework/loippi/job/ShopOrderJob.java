@@ -266,8 +266,8 @@ public class ShopOrderJob {
     }
 
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
-    @Scheduled(cron = "0 50 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    //@Scheduled(cron = "0 50 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
     public void grant(){
         System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -435,7 +435,7 @@ public class ShopOrderJob {
      * 定时分账
      */
     //@Scheduled(cron = "0 30 08 * * ? " )  //每天上午八点三十分钟执行一次
-    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    @Scheduled(cron = "0 18 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
     //@Scheduled(cron = "0 0/3 * * * ?")  //每3分钟执行一次
     public void timingAccCut(){
         System.out.println("###############################执行定时分账任务#####################################");
