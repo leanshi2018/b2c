@@ -654,7 +654,10 @@ public class OrderAPIController extends BaseController {
         if (CollectionUtils.isEmpty(orderList)) {
             return ApiUtils.error("订单不存在");
         }
-
+        ShopOrder shopOrder = orderList.get(0);
+        if(shopOrder.getOrderState()==0){//避免系统定时任务取消订单 订单可以继续支付
+            return ApiUtils.error("订单已超时");
+        }
         System.out.println("##########################################");
         System.out
             .println("###  订单支付编号：" + paysn + "  |  支付方式名称：" + paymentCode + " |  支付方式索引id：" + paymentId + "#########");
