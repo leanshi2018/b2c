@@ -606,6 +606,7 @@ public class SelfMentionController extends BaseController {
         wareAllocation.setWareNameOut(warehouseOut.getWareName());
         wareAllocation.setAttachAdd("");
         wareAllocation.setStatus(2);
+        wareAllocation.setWareOrderSn(orderSn);
         wareAllocation.setAutohrizeBy("");
         wareAllocation.setAutohrizeDesc("");
         wareAllocation.setCreateTime(new Date());
