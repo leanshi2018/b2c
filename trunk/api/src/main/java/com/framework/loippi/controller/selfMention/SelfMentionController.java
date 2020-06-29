@@ -60,6 +60,7 @@ import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
@@ -181,6 +182,7 @@ public class SelfMentionController extends BaseController {
         for (RdInventoryWarning inventoryWarning : goodsPage.getContent()) {
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(inventoryWarning.getGoodsCode()));
             ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
             MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
             wareGoodsVo.setWareCode(Optional.ofNullable(inventoryWarning.getWareCode()).orElse(""));
             wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
@@ -297,6 +299,7 @@ public class SelfMentionController extends BaseController {
             RdInventoryWarning warning = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(wareCode,specId);
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(warning.getGoodsCode()));
             ShopGoodsSpec spec = shopGoodsSpecService.find(specId);
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, spec);
             MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
             wareGoodsVo.setWareCode(Optional.ofNullable(wareCode).orElse(""));
             wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
@@ -384,7 +387,7 @@ public class SelfMentionController extends BaseController {
         for (RdInventoryWarning inventoryWarning : inventoryWarningList) {
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(inventoryWarning.getGoodsCode()));
             ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());
-
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
             MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
             wareGoodsVo.setWareCode(Optional.ofNullable(inventoryWarning.getWareCode()).orElse(""));
             wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
@@ -451,7 +454,7 @@ public class SelfMentionController extends BaseController {
 
                 ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(rdGoodsAdjustment.getSpecificationId());
                 ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(rdGoodsAdjustment.getGoodId()));
-
+                GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
                 OrderGoodsVo orderGoodsVo = new OrderGoodsVo();
                 orderGoodsVo.setGoodId(Optional.ofNullable(rdGoodsAdjustment.getGoodId()).orElse(0l));
                 orderGoodsVo.setGoodsName(Optional.ofNullable(rdGoodsAdjustment.getGoodsName()).orElse(""));
@@ -522,6 +525,7 @@ public class SelfMentionController extends BaseController {
 
             ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(rdGoodsAdjustment.getSpecificationId());
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(rdGoodsAdjustment.getGoodId()));
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
 
             OrderGoodsVo orderGoodsVo = new OrderGoodsVo();
             orderGoodsVo.setGoodId(Optional.ofNullable(rdGoodsAdjustment.getGoodId()).orElse(0l));
