@@ -31,4 +31,6 @@ public interface RetailProfitService extends GenericService<RetailProfit, Long> 
     BigDecimal findPeriodPay(Paramap put);
 
     BigDecimal findPeriodNoPay(Paramap put);
+
+    void grantRetail();
 }

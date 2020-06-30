@@ -13,6 +13,8 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.xml.namespace.QName;
+
+import com.framework.loippi.service.user.RetailProfitService;
 import org.apache.axis.client.Call;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -113,6 +115,8 @@ public class ShopOrderJob {
     private ShopRefundReturnService shopRefundReturnService;
     @Resource
     private RetailProfitDao retailProfitDao;
+    @Resource
+    private RetailProfitService retailProfitService;
     @Resource
     private RdMmRelationDao rdMmRelationDao;
     @Resource
@@ -265,10 +269,11 @@ public class ShopOrderJob {
     }
 
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
+    //@Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
     public void grant(){
         System.out.println("###############################执行定时任务#####################################");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        retailProfitService.grantRetail();
+        /*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expectTime = format.format(new Date());
         List<RetailProfit> list=retailProfitDao.findTimeMature(expectTime);
         System.out.println(list.size());
@@ -364,7 +369,7 @@ public class ShopOrderJob {
             System.out.println(b+"***发放零售利润数量");
             System.out.println(rdMmAccountLogs);
             System.out.println(rdMmAccountLogs.size()+"***日志表个数");
-        }
+        }*/
     }
 
     /**

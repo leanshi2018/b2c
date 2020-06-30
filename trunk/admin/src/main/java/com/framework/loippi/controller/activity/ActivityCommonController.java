@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.service.user.RetailProfitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,6 +40,13 @@ public class ActivityCommonController extends GenericController {
     private ShopHomePictureService shopHomePictureService;
     @Resource
     private TwiterIdService twiterIdService;
+    @Resource
+    private RetailProfitService retailProfitService;
+
+    @RequestMapping(value = "/grant", method = RequestMethod.GET)
+    public void grant() {
+        retailProfitService.grantRetail();
+    }
 
     /**
      * 活动反馈
