@@ -201,7 +201,7 @@
 		select
 		<include refid="base_column" />
 		FROM retail_profit
-		where expect_time &lt;= #{expectTime} and state = 0
+		where expect_time &lt;= #{expectTime} and state = 0 and profits > 0
 	</select>
 
 	<select id="findNoGrantByCode" parameterType="string" resultMap="RetailProfitResultMap">
