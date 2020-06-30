@@ -13,7 +13,6 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.xml.namespace.QName;
-
 import org.apache.axis.client.Call;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -266,8 +265,7 @@ public class ShopOrderJob {
     }
 
     //@Scheduled(cron = "0/5 * * * * ? ")  //每5秒执行一次
-    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
-    //@Scheduled(cron = "0 50 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
+    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
     public void grant(){
         System.out.println("###############################执行定时任务#####################################");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -368,75 +366,12 @@ public class ShopOrderJob {
             System.out.println(rdMmAccountLogs.size()+"***日志表个数");
         }
     }
-    //@Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
- /*   @Scheduled(cron = "0 35 15 * * ? " )  //每天上午十点执行一次
-=======
-/*
-    @Scheduled(cron = "0 53 18 * * ? " )  //每天上午十点执行一次
->>>>>>> 1635638c2fa1292e31c1f8c3ff987b085cc9c756
-    public void test(){
-        List<RetailProfit> retailProfits = retailProfitDao.findAll();
-        System.out.println(retailProfits.size());
-        int num=0;
-        if(retailProfits!=null&&retailProfits.size()>0){
-            for (RetailProfit retailProfit : retailProfits) {
-                long orderId = retailProfit.getOrderId();
-                ShopOrder shopOrder = orderService.find(orderId);
-                if(shopOrder.getShippingTime()!=null){
-                    Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
-                    ca.setTime(shopOrder.getShippingTime()); //设置时间为当前时间
-                    ca.add(Calendar.DATE, 10);//
-                    retailProfit.setExpectTime(ca.getTime());
-                    String period = rdSysPeriodDao.getSysPeriodService(ca.getTime());
-                    if(period!=null){
-                        retailProfit.setExpectPeriod(period);
-                    }
-                    retailProfitDao.update(retailProfit);
-                    num++;
-                }
-            }
-        }
-        System.out.println(num);*/
 
-/*        System.out.println(retailProfits.size());
-        int a =0;
-        //ArrayList<Long> longs = new ArrayList<>();
-        HashMap<Long, BigDecimal> hashMap = new HashMap<>();
-        for (RetailProfit retailProfit : retailProfits) {
-            BigDecimal profits = retailProfit.getProfits();
-            BigDecimal cut=BigDecimal.ZERO;
-            List<ShopRefundReturn> list=shopRefundReturnService.findByOrderId(retailProfit.getOrderId());
-            if(list!=null&&list.size()>0){
-                for (ShopRefundReturn shopRefundReturn : list) {
-                    List<ShopReturnOrderGoods> shopReturnOrderGoods = shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",shopRefundReturn.getId()));
-                    if(shopReturnOrderGoods!=null&&shopReturnOrderGoods.size()>0){
-                        for (ShopReturnOrderGoods shopReturnOrderGood : shopReturnOrderGoods) {
-                            ShopGoodsSpec shopGoodsSpec = shopGoodsSpecDao.find(shopReturnOrderGood.getSpecId());
-                            cut=cut.add(shopGoodsSpec.getSpecRetailProfit().multiply(new BigDecimal(shopReturnOrderGood.getGoodsNum())));
-                        }
-                    }
-                }
-                profits=profits.subtract(cut);
-                retailProfit.setProfits(profits);
-                //longs.add(retailProfit.getId());
-                hashMap.put(retailProfit.getId(),profits);
-                retailProfitDao.update(retailProfit);
-            }else {
-                a++;
-            }
-        }
-        System.out.println(a);
-        System.out.println(hashMap.size());
-        System.out.println("#######################################");
-        System.out.println(hashMap);
-        System.out.println("#######################################");*/
-    //}
     /**
      * 定时分账
      */
     //@Scheduled(cron = "0 30 08 * * ? " )  //每天上午八点三十分钟执行一次
-    @Scheduled(cron = "0 18 * * * ? ")  //每隔一小时执行一次 每小时25分执行定时任务
-    //@Scheduled(cron = "0 0/3 * * * ?")  //每3分钟执行一次
+    @Scheduled(cron = "0 18 * * * ? ")  //每隔一小时执行一次 每小时18分执行定时任务
     public void timingAccCut(){
         System.out.println("###############################执行定时分账任务#####################################");
         //查询当前系统时间向前的第二天的已完成支付且未取消的订单 （条件：1.已支付 2.未取消 3.已经发货 4.未进行过分账操作 5.支付时间区间在指定日期内）
@@ -484,121 +419,6 @@ public class ShopOrderJob {
                 }
             }
         }
-
-        //对筛选出的订单做进一步的判断，判断是否满足分账条件 1.判断订单现金支付部分是否满足分账标准（暂时定义为100） 2.查询一个积分账户满足分账分佣条件的用户，进行分账
-/*        if(list!=null&&list.size()>0){
-            for (ShopOrder shopOrder : list) {
-                //逐个订单进行处理 判断是否满足分账的条件
-                //1.判断支付金额是否满足
-                BigDecimal orderAmount = shopOrder.getOrderAmount();
-                if(orderAmount.compareTo(new BigDecimal(Integer.toString(AllInPayBillCutConstant.CUT_MINIMUM)))==-1){
-                    //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
-                    RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(AllInPayBillCutConstant.COMPANY_CUT_B);
-                    try {
-                        cutDispose(shopOrder,accountInfo,BigDecimal.ZERO,BigDecimal.ZERO);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    continue;
-                }
-                Boolean flag=false;
-                //2.为当前订单找到一个合适的分账对象
-                //2.1 获取当前订单需要分账出去的金额
-                BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(0,BigDecimal.ROUND_UP);//当前订单需要分出去多少钱，单位为圆
-                //BigDecimal acc = amount.divide(new BigDecimal("0.95"),0,BigDecimal.ROUND_UP);//奖励积分需要的积分数量 积分取整
-                BigDecimal acc = amount;//奖励积分需要的积分数量 积分取整
-                RdMmAccountInfo rdMmAccountInfo = cutGetPeople(shopOrder, acc);
-                if(rdMmAccountInfo==null||rdMmAccountInfo.getMmCode()==null){//说明通过推荐人思路未找到合适的分账对象
-                    //从积分账户提现记录中筛选出合适条件的进行匹配
-                    //按照上次提现时间进行排序，时间越靠前的，放在前面，分页查询第一页，前一百条记录
-                    List<RdMmAccountInfo> accountInfos=rdMmAccountInfoDao.findLastWithdrawalOneHundred();
-                    if(accountInfos!=null&&accountInfos.size()>0){
-                        for (RdMmAccountInfo accountInfo : accountInfos) {
-                            if(accountInfo.getBonusBlance().compareTo(acc)!=-1){
-                                //调用分账处理方法
-                                try {
-                                    cutDispose(shopOrder,accountInfo,amount,acc);
-                                    flag=true;
-                                    break;//分账结束，跳出查询适用分账用户信息循环
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-                }else {//根据rdMmAccountInfo 进行分账处理
-                    try {
-                        cutDispose(shopOrder,rdMmAccountInfo,amount,acc);
-                        flag=true;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                //如果根据推荐人已经提现记录都未找到合适的推荐人，则flag的值依旧为定义时的false，则不进行分账，只修改订单中关联分账信息的记录
-                if(flag==false){
-                    //如果订单支付金额不满足分账条件，由于需要从中间账户提款，设置一个虚拟公司账户，分账
-                    RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(AllInPayBillCutConstant.COMPANY_CUT_B);
-                    try {
-                        cutDispose(shopOrder,accountInfo,BigDecimal.ZERO,BigDecimal.ZERO);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    continue;
-                }
-            }
-        }
-        if(list1!=null&&list1.size()>0){
-            for (ShopOrder shopOrder : list1) {
-                //逐个订单进行处理 判断是否满足分账的条件
-                //1.判断支付金额是否满足
-                BigDecimal orderAmount = shopOrder.getOrderAmount();
-                if(orderAmount.compareTo(new BigDecimal(Integer.toString(AllInPayBillCutConstant.CUT_MINIMUM)))==-1){
-                    shopOrder.setCutStatus(1);
-                    shopOrder.setCutFailInfo("金额不满足分账条件");
-                    shopOrderDao.update(shopOrder);
-                    continue;
-                }
-                Boolean flag=false;
-                //2.为当前订单找到一个合适的分账对象
-                //2.1 获取当前订单需要分账出去的金额
-                BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(2,BigDecimal.ROUND_DOWN);//当前订单需要分出去多少钱，单位为圆
-                BigDecimal acc = amount.divide(new BigDecimal("0.95"),0,BigDecimal.ROUND_UP);//奖励积分需要的积分数量 积分取整
-                RdMmAccountInfo rdMmAccountInfo = cutGetPeople(shopOrder, acc);
-                if(rdMmAccountInfo==null||rdMmAccountInfo.getMmCode()==null){//说明通过推荐人思路未找到合适的分账对象
-                    //从积分账户提现记录中筛选出合适条件的进行匹配
-                    //按照上次提现时间进行排序，时间越靠前的，放在前面，分页查询第一页，前一百条记录
-                    List<RdMmAccountInfo> accountInfos=rdMmAccountInfoDao.findLastWithdrawalOneHundred();
-                    if(accountInfos!=null&&accountInfos.size()>0){
-                        for (RdMmAccountInfo accountInfo : accountInfos) {
-                            if(accountInfo.getBonusBlance().compareTo(acc)!=-1){
-                                //调用分账处理方法
-                                try {
-                                    cutDispose(shopOrder,accountInfo,amount,acc);
-                                    flag=true;
-                                    break;//分账结束，跳出查询适用分账用户信息循环
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-                }else {//根据rdMmAccountInfo 进行分账处理
-                    try {
-                        cutDispose(shopOrder,rdMmAccountInfo,amount,acc);
-                        flag=true;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                //如果根据推荐人已经提现记录都未找到合适的推荐人，则flag的值依旧为定义时的false，则不进行分账，只修改订单中关联分账信息的记录
-                if(flag==false){
-                    shopOrder.setCutStatus(1);
-                    shopOrder.setCutFailInfo("未查询到满足条件的用户进行分账");
-                    shopOrderDao.update(shopOrder);
-                    continue;
-                }
-            }
-        }*/
     }
 
     /**
