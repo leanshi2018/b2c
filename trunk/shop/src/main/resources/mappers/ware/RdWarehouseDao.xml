@@ -230,5 +230,8 @@
 		SELECT	* FROM 	RD_WAREHOUSE where MM_CODE=#{mmCode}
 	</select>
 
+	<select id="findByMemberId" parameterType="java.lang.Long" resultMap="RdWarehouseResultMap">
+		SELECT	* FROM 	RD_WAREHOUSE where MENTION_ID = #{mentionId}
+	</select>
 
 </mapper> 

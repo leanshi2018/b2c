@@ -1,6 +1,8 @@
 package com.framework.loippi.dao.ware;
 
 
+import java.util.List;
+
 import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.mybatis.dao.GenericDao;
 
@@ -15,4 +17,6 @@ public interface RdWarehouseDao  extends GenericDao<RdWarehouse, Long> {
 	RdWarehouse findByCode(String wareCode);
 
 	RdWarehouse findByMmCode(String mmCode);
+
+	List<RdWarehouse> findByMemberId(Long mentionId);
 }

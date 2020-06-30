@@ -70,4 +70,26 @@ public class ProductServiceImpl implements ProductService {
             }*/
         }
     }
+
+    @Override
+    public void updateStorageNew(ShopGoodsSpec goodsSpec, ShopGoods goods, Integer logisticType) {
+        if (goodsSpec.getGoodsId() != null && goodsSpec.getSpecSalenum() != null && goods.getId() != null) {
+
+            if (logisticType==1){
+                shopGoodsSpecService.updateGoodsSpecStorage(goodsSpec);
+            }else {//自提
+                //shopGoodsSpecService.updateSpecSaleNum(goodsSpec);//只改售出数量
+            }
+
+
+
+            ShopGoods newGoods = new ShopGoods();
+            newGoods.setId(goods.getId());
+            newGoods.setGoodsImageMore("");
+            newGoods.setStock(goods.getStock() - goodsSpec.getSpecSalenum());
+            int salenum = goods.getSalenum() + goodsSpec.getSpecSalenum();
+            newGoods.setSalenum(salenum < 0 ? 0 : salenum);
+            shopGoodsDao.update(newGoods);
+        }
+    }
 }

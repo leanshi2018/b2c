@@ -54,6 +54,7 @@ import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
 import com.framework.loippi.dao.user.RdGoodsAdjustmentDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmAccountLogDao;
+import com.framework.loippi.dao.user.RdMmAddInfoDao;
 import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
@@ -61,6 +62,7 @@ import com.framework.loippi.dao.user.ShopMemberPaymentTallyDao;
 import com.framework.loippi.dao.walet.RdBizPayDao;
 import com.framework.loippi.dao.ware.RdInventoryWarningDao;
 import com.framework.loippi.dao.ware.RdWareAdjustDao;
+import com.framework.loippi.dao.ware.RdWarehouseDao;
 import com.framework.loippi.entity.AliPayRefund;
 import com.framework.loippi.entity.PayCommon;
 import com.framework.loippi.entity.ShopCommonMessage;
@@ -299,6 +301,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private WechatRefundService wechatRefundService;
     @Resource
     private RdBizPayDao rdBizPaydao;
+    @Resource
+    private RdMmAddInfoDao rdMmAddInfoDao;
+    @Resource
+    private RdWarehouseDao rdWarehouseDao;
     @Autowired
     public void setGenericDao() {
         super.setGenericDao(orderDao);
@@ -2023,6 +2029,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     throw new RuntimeException("购买数量大于库存");
                 }
                 productService.updateStorage(goodsSpec, goods);
+                //productService.updateStorageNew(goodsSpec, goods,logisticType);// TODO 上线改
                 if (cartOrderVo.getActivityId() != null) {
                     List<ShopActivityGoodsSpec> shopActivityGoodsSpecList = shopActivityGoodsSpecService.findList(
                             Paramap.create().put("activityId", cartOrderVo.getActivityId())
@@ -3342,6 +3349,61 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 */
                 if (order.getLogisticType()==2){ //TODO 自提
                     order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+
+                    RdWarehouse warehouse = null;
+                    //自提地址
+                    ShopOrderAddress orderAddress = shopOrderAddressDao.find(order.getAddressId());
+                    if (orderAddress==null){
+                        System.out.println("自提地址不存在");
+                    }else {
+                        Long addId = orderAddress.getMemberId();
+                        if (addId!=null){
+                            RdMmAddInfo rdMmAddInfo = rdMmAddInfoDao.find(addId);
+                            List<RdWarehouse> rdWarehouseList = rdWarehouseDao.findByMemberId(addId);
+                            if (rdWarehouseList.size()>0){
+                                //warehouse = rdWarehouseList.get(0);//TODO 上线开
+                            }
+                        }
+
+                    }
+
+                    if (warehouse==null){
+                        System.out.println("自提仓库不存在");
+                    }else {
+                        // 改自提点库存以及商品规格售出数量
+                        List<ShopOrderGoods> orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
+                        for (ShopOrderGoods orderGoods : orderGoodsList) {
+
+                            int goodsNum = orderGoods.getGoodsNum();//商品数量
+                            Long specId = orderGoods.getSpecId();//商品规格索引id
+                            //查看该自提店是否有该规格商品数据
+                            Map<String,Object> haveMap = new HashMap<String,Object>();
+                            haveMap.put("wareCode",warehouse.getWareCode());
+                            haveMap.put("specificationId",specId);
+                            RdInventoryWarning rdInventoryWarning = rdInventoryWarningDao.haveInventoryByWareCodeAndSpecId(haveMap);
+                            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(orderGoods.getSpecId());
+                            if (rdInventoryWarning==null){//不存在 生成条新的数据
+                                RdInventoryWarning inventoryWarning = new RdInventoryWarning();
+                                inventoryWarning.setWareCode(warehouse.getWareCode());
+                                inventoryWarning.setWareName(warehouse.getWareName());
+                                inventoryWarning.setGoodsCode(orderGoods.getGoodsId().toString());
+                                inventoryWarning.setGoodsName(orderGoods.getGoodsName());
+                                inventoryWarning.setSpecificationId(orderGoods.getSpecId());
+                                inventoryWarning.setSpecifications(goodsSpec.getSpecGoodsSpec());
+                                inventoryWarning.setInventory(-goodsNum);
+                                inventoryWarning.setPrecautiousLine(0);
+                            }else {//存在
+                                haveMap.put("inventory",goodsNum);
+                                rdInventoryWarningDao.updateInventoryByWareCodeAndSpecId(haveMap);
+                            }
+                            //修改规格表中的售出数量
+                            goodsSpec.setSpecSalenum(goodsNum);
+                            shopGoodsSpecService.updateSpecSaleNum(goodsSpec);
+                        }
+                    }
+
+
+
                 }else {
                     order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
                 }
