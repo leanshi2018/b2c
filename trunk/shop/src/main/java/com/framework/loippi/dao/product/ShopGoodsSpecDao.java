@@ -36,4 +36,6 @@ public interface ShopGoodsSpecDao extends GenericDao<ShopGoodsSpec, Long> {
     PageList<GoodsStocksListView> findGoodsStocksInfo(Object var1, PageBounds var2);
 
 	ShopGoodsSpec findByspecGoodsSerial(String specGoodsSerial);
+
+	void updateSpecSaleNum(ShopGoodsSpec goodsSpec);
 }
