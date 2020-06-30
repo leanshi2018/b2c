@@ -295,6 +295,14 @@
         where id = #{id}
     </update>
 
+    <update id="updateSpecSaleNum" parameterType="com.framework.loippi.entity.product.ShopGoodsSpec">
+        update shop_goods_spec
+        <set>
+            spec_salenum = spec_salenum + #{specSalenum}
+        </set>
+        where id = #{id}
+    </update>
+
     <!-- 通过goodsId查找 -->
     <select id="findListByGoodsId" resultMap="ShopGoodsSpecResultMap">
         select

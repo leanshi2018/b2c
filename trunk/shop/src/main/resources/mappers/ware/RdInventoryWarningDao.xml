@@ -196,4 +196,10 @@
 		where WARE_CODE = #{wareCode} GROUP BY GOODS_CODE
 	</select>
 
+	<select id="haveInventoryByWareCodeAndSpecId" parameterType="map" resultMap="RdInventoryWarningResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	RD_INVENTORY_WARNING
+		WHERE WARE_CODE = #{wareCode} AND SPECIFICATION_ID = #{specificationId}
+	</select>
+
 </mapper>

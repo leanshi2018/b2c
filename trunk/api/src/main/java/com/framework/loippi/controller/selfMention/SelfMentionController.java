@@ -379,11 +379,11 @@ public class SelfMentionController extends BaseController {
         }
         String wareCode = warehouse.getWareCode();
 
+        List<MentionWareGoodsVo> list = new ArrayList<MentionWareGoodsVo>();
         List<RdInventoryWarning> inventoryWarningList = rdInventoryWarningService.findByWareCodeAndOweInven(wareCode);
         if (inventoryWarningList.size()==0){
-            return ApiUtils.error("无欠货商品");
+            return ApiUtils.success(list);
         }
-        List<MentionWareGoodsVo> list = new ArrayList<MentionWareGoodsVo>();
         for (RdInventoryWarning inventoryWarning : inventoryWarningList) {
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(inventoryWarning.getGoodsCode()));
             ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());

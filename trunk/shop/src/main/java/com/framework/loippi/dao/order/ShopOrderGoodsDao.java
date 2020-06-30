@@ -36,7 +36,7 @@ public interface ShopOrderGoodsDao extends GenericDao<ShopOrderGoods, Long> {
 
     void updateBatchForShipmentNum(List<ShopOrderGoods> shopOrderGoodsList);
 
-	List<ShopOrderGoods> listByOrderId(Long id);
+	List<ShopOrderGoods> listByOrderId(Long orderId);
 
 	List<ShopOrderGoods> findByGoodsIdAndSpecIdAndCode(Map<String, Object> gsMap);
 }
