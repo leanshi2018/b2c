@@ -14,7 +14,6 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.xml.namespace.QName;
 
-import com.framework.loippi.service.user.RetailProfitService;
 import org.apache.axis.client.Call;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -54,7 +53,6 @@ import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.common.ShopAutoShip;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
-import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderGoods;
@@ -69,7 +67,6 @@ import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RetailProfit;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.entity.ware.RdWareAdjust;
 import com.framework.loippi.entity.ware.RdWarehouse;
@@ -88,6 +85,7 @@ import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.user.RdGoodsAdjustmentService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
 import com.framework.loippi.service.ware.RdWareAdjustService;
@@ -225,13 +223,13 @@ public class ShopOrderJob {
     }
 
 
-    @Scheduled(cron = "0 34 17 * * ?" )  //每30分钟执行一次
+    @Scheduled(cron = "0 32 12 * * ?" )  //每30分钟执行一次
     public void refundTL() {
         String backUrl = "";//后台通知地址 TODO
 
-        String orderNo = "202006010780207655";//随便写
-        String bizPaySn = "P20200617165654343WOMI25563";
-        String paySn = "P20200617165654343";
+        String orderNo = "202006014456207655";//随便写
+        String bizPaySn = "P20200701115005092WOMI92525";
+        String paySn = "P20200701115005092";
         ShopOrder order = orderService.findByPaySn(paySn);
 
         BigDecimal cutAmount = new BigDecimal("0.00");

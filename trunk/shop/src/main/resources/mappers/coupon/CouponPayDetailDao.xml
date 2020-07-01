@@ -204,7 +204,7 @@
         <if test="refundCouponNum != null">
             refund_coupon_num = #{refundCouponNum,jdbcType=INTEGER},
         </if>
-        <if test="refundAmount != null and pointAmount != ''">
+        <if test="refundAmount != null and refundAmount != ''">
             refund_amount = #{refundAmount,jdbcType=DECIMAL},
         </if>
         <if test="batchNo != null and batchNo != ''">
