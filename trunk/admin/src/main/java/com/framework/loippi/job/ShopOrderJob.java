@@ -223,7 +223,7 @@ public class ShopOrderJob {
     }
 
 
-    @Scheduled(cron = "0 32 12 * * ?" )  //每30分钟执行一次
+    //@Scheduled(cron = "0 32 12 * * ?" )  //每30分钟执行一次
     public void refundTL() {
         String backUrl = "";//后台通知地址 TODO
 
