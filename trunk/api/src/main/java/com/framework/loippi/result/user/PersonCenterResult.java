@@ -223,20 +223,31 @@ public class PersonCenterResult {
         return result;
     }
 
-    public static PersonCenterResult build3(PersonCenterResult result, RdRanks rdRankHigh, RdRanks rdRankVip) {
-        result.setGrade(rdRankHigh.getRankId());
-        if(rdRankHigh.getRankId()==2){
-            result.setGradeName(rdRankVip.getRankName());
-        }else {
-            result.setGradeName(rdRankHigh.getRankName());
-        }
-        if (rdRankHigh!=null) {
+    public static PersonCenterResult build3(PersonCenterResult result, RdRanks rdRankHigh, RdRanks rdRankVip, RdRanks rdRanks) {
+        //如果前一周期会员资格表不为null 取历史最高级别和当前级别中较大的级别展示
+        int rank=0;
+        String gradeName="";
+        String rankIcon="";
+        if(rdRankHigh.getRankId()>rdRanks.getRankId()){
+            rank = rdRankHigh.getRankId();
+            gradeName=rdRankHigh.getRankName();
             if(rdRankHigh.getRankIcon()!=null){
-                result.setRankIcon(rdRankHigh.getRankIcon());
-            }else {
-                result.setRankIcon("");
+                rankIcon=rdRankHigh.getRankIcon();
+            }
+        }else {
+            rank=rdRanks.getRankId();
+            gradeName=rdRanks.getRankName();
+            if(rdRanks.getRankIcon()!=null){
+                rankIcon=rdRanks.getRankIcon();
             }
         }
+        result.setGrade(rank);
+        if(rank==2){
+            result.setGradeName(rdRankVip.getRankName());
+        }else {
+            result.setGradeName(gradeName);
+        }
+        result.setRankIcon(rankIcon);
         return result;
     }
 }
