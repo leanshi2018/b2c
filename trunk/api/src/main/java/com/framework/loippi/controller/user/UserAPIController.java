@@ -14,11 +14,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.framework.loippi.entity.ware.RdWarehouse;
-import com.framework.loippi.pojo.selfMention.GoodsType;
-import com.framework.loippi.pojo.selfMention.OrderInfo;
-import com.framework.loippi.service.ware.RdInventoryWarningService;
-import com.framework.loippi.service.ware.RdWarehouseService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -50,11 +45,14 @@ import com.framework.loippi.entity.user.RdRanksNextMessage;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
 import com.framework.loippi.entity.walet.RdMmWithdrawLog;
+import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.enus.SocialType;
 import com.framework.loippi.enus.UserLoginType;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.param.user.UserAddBankCardsParam;
 import com.framework.loippi.param.wallet.BindCardDto;
+import com.framework.loippi.pojo.selfMention.GoodsType;
+import com.framework.loippi.pojo.selfMention.OrderInfo;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.user.BankCardsListResult;
 import com.framework.loippi.result.user.PersonCenterResult;
@@ -89,6 +87,8 @@ import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
+import com.framework.loippi.service.ware.RdInventoryWarningService;
+import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.BankCardUtils;
@@ -1928,32 +1928,34 @@ public class UserAPIController extends BaseController {
                 List<Map<String, Object>> inExpDetail = (List<Map<String, Object>>)okMap.get("inExpDetail");//收支明细
 
                 for (Map<String, Object> detailMap : inExpDetail) {
-                    Map<String, Object> detail = new HashMap<String, Object>();
-                    detail.put("changeTime",detailMap.get("changeTime").toString());// 变更时间
-                    detail.put("oriAmount",Long.valueOf(detailMap.get("oriAmount").toString()));//原始金额
-                    detail.put("tradeNo",detailMap.get("tradeNo").toString());//收支明细流水号
-                    detail.put("curFreezenAmount",Long.valueOf(detailMap.get("curFreezenAmount").toString()));//变更金额
-                    detail.put("accountSetName",detailMap.get("accountSetName").toString());//账户集名称
-                    detail.put("chgAmount",Long.valueOf(detailMap.get("chgAmount").toString()));//变更金额
                     if ("代付".equals(detailMap.get("type").toString())){
-                        detail.put("type","自动提现积分到账");// 类型
-                    }else {
-                        detail.put("type",detailMap.get("type").toString());// 类型
+                        Map<String, Object> detail = new HashMap<String, Object>();
+                        detail.put("changeTime",detailMap.get("changeTime").toString());// 变更时间
+                        detail.put("oriAmount",Long.valueOf(detailMap.get("oriAmount").toString()));//原始金额
+                        detail.put("tradeNo",detailMap.get("tradeNo").toString());//收支明细流水号
+                        detail.put("curFreezenAmount",Long.valueOf(detailMap.get("curFreezenAmount").toString()));//变更金额
+                        detail.put("accountSetName",detailMap.get("accountSetName").toString());//账户集名称
+                        detail.put("chgAmount",Long.valueOf(detailMap.get("chgAmount").toString()));//变更金额
+                        if ("代付".equals(detailMap.get("type").toString())){
+                            detail.put("type","自动提现积分到账");// 类型
+                        }else {
+                            detail.put("type",detailMap.get("type").toString());// 类型
+                        }
+                        detail.put("curAmount",Long.valueOf(detailMap.get("curAmount").toString()));//现有金额
+                        detail.put("bizOrderNo",detailMap.get("bizOrderNo").toString());// 商户订单号（支付订单）
+                        inExpDetailList.add(detail);
+                        /*String changeTime = detailMap.get("changeTime").toString();// 变更时间
+                        Long oriAmount = Long.valueOf(detailMap.get("oriAmount").toString());//原始金额
+                        String tradeNo = detailMap.get("tradeNo").toString();//收支明细流水号
+                        Long curFreezenAmount = Long.valueOf(detailMap.get("curFreezenAmount").toString());//变更金额
+                        String accountSetName = detailMap.get("accountSetName").toString();//账户集名称
+                        Long chgAmount = Long.valueOf(detailMap.get("chgAmount").toString());//变更金额
+                        String type = detailMap.get("type").toString();//类型
+                        Long curAmount = Long.valueOf(detailMap.get("curAmount").toString());//现有金额
+                        String bizOrderNo = detailMap.get("bizOrderNo").toString();// 商户订单号（支付订单）
+                        //String extendInfo = detailMap.get("extendInfo").toString();//备注
+                        */
                     }
-                    detail.put("curAmount",Long.valueOf(detailMap.get("curAmount").toString()));//现有金额
-                    detail.put("bizOrderNo",detailMap.get("bizOrderNo").toString());// 商户订单号（支付订单）
-                    inExpDetailList.add(detail);
-                    /*String changeTime = detailMap.get("changeTime").toString();// 变更时间
-                    Long oriAmount = Long.valueOf(detailMap.get("oriAmount").toString());//原始金额
-                    String tradeNo = detailMap.get("tradeNo").toString();//收支明细流水号
-                    Long curFreezenAmount = Long.valueOf(detailMap.get("curFreezenAmount").toString());//变更金额
-                    String accountSetName = detailMap.get("accountSetName").toString();//账户集名称
-                    Long chgAmount = Long.valueOf(detailMap.get("chgAmount").toString());//变更金额
-                    String type = detailMap.get("type").toString();//类型
-                    Long curAmount = Long.valueOf(detailMap.get("curAmount").toString());//现有金额
-                    String bizOrderNo = detailMap.get("bizOrderNo").toString();// 商户订单号（支付订单）
-                    //String extendInfo = detailMap.get("extendInfo").toString();//备注
-                    */
                 }
 
 

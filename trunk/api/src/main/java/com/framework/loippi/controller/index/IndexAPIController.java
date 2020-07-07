@@ -352,5 +352,14 @@ public class IndexAPIController extends BaseController {
         return GetOpenIDUtil.oauth2GetOpenid(appid, code, appsecret);
     }
 
+    @RequestMapping(value = {"/api/index/getPhone.json"}, method = {RequestMethod.GET,
+            RequestMethod.POST})
+    public
+    @ResponseBody
+    Object getPhone(String encrypted,String sessionKey,String iv) throws Exception {
+        return GetOpenIDUtil.wxDecrypt(encrypted, sessionKey, iv);
+    }
+
+
 
 }

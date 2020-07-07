@@ -116,7 +116,7 @@ public class ShopGoodsSpecServiceImpl extends GenericServiceImpl<ShopGoodsSpec, 
 
     @Override
     public void updateSpecSaleNum(ShopGoodsSpec goodsSpec) {
-
+        shopGoodsSpecDao.updateSpecSaleNum(goodsSpec);
     }
 
 }
