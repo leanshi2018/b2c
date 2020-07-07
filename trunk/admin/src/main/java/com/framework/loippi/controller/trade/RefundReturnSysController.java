@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.order.OrderFundFlow;
+import com.framework.loippi.service.order.OrderFundFlowService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -142,7 +144,8 @@ public class RefundReturnSysController extends GenericController {
     private ShopCommonMessageService shopCommonMessageService;
     @Resource
     private ShopMemberMessageService shopMemberMessageService;
-
+    @Resource
+    private OrderFundFlowService orderFundFlowService;
 
 
     /**
@@ -763,7 +766,12 @@ public class RefundReturnSysController extends GenericController {
                     couponPayDetail.setRefundTime(date);
                     couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(pricePoint));
                     couponPayDetailService.update(couponPayDetail);
-
+                    OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",couponPayDetail.getId());
+                    if(orderFundFlow!=null){
+                        BigDecimal pointRefund=Optional.ofNullable(orderFundFlow.getPointRefund()).orElse(BigDecimal.ZERO).add(pricePoint);
+                        orderFundFlow.setPointRefund(pointRefund);
+                        orderFundFlowService.update(orderFundFlow);
+                    }
                     //改rd_coupon_user
                     List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(couponDetail.getHoldId(), couponDetail.getCouponId());
                     CouponUser couponUser = couponUsers.get(0);
@@ -821,7 +829,11 @@ public class RefundReturnSysController extends GenericController {
         couponDetail.setBatchNo(bathno); //退款批次号
         couponDetail.setRefundTime(date);
         couponDetailService.update(couponDetail);//将批次号存入优惠券表
-
+        OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",couponPayDetail.getId());
+        if(orderFundFlow!=null){
+            orderFundFlow.setCashRefund(Optional.ofNullable(orderFundFlow.getCashRefund()).orElse(BigDecimal.ZERO).add(coupon.getCouponPrice()));
+            orderFundFlowService.update(orderFundFlow);
+        }
         if (couponPayDetail.getRefundCouponNum()+1==couponPayDetail.getCouponNumber()){
             couponPayDetail.setRefundState(2);
         }else{
@@ -1074,7 +1086,12 @@ public class RefundReturnSysController extends GenericController {
                     rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
                     rdMmAccountInfoService.update(rdMmAccountInfo);
                     rdMmAccountLogService.save(rdMmAccountLog);
-
+                    OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",couponPayDetail.getId());
+                    if(orderFundFlow!=null){
+                        BigDecimal pointRefund=Optional.ofNullable(orderFundFlow.getPointRefund()).orElse(BigDecimal.ZERO).add(pricePoint);
+                        orderFundFlow.setPointRefund(pointRefund);
+                        orderFundFlowService.update(orderFundFlow);
+                    }
                     //保存批次号和修改订单数据
                     //updateCouponDetailList(couponDetailId,bathno,coupon,couponPayDetail);
                     for (CouponDetail couponDetail : couponDetailList) {
@@ -1165,7 +1182,12 @@ public class RefundReturnSysController extends GenericController {
         couponPayDetail.setRefundTime(date);
         couponPayDetail.setRefundAmount(couponPayDetail.getRefundAmount().add(coupon.getCouponPrice().multiply(new BigDecimal(refundNum))));
         couponPayDetailService.update(couponPayDetail);
-
+        OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",couponPayDetail.getId());
+        if(orderFundFlow!=null){
+            BigDecimal cashRefund=Optional.ofNullable(orderFundFlow.getCashRefund()).orElse(BigDecimal.ZERO).add(couponPayDetail.getRefundAmount().add(coupon.getCouponPrice().multiply(new BigDecimal(refundNum))));
+            orderFundFlow.setCashRefund(cashRefund);
+            orderFundFlowService.update(orderFundFlow);
+        }
         for (CouponDetail couponDetail : couponDetailList) {
             if (couponDetail.getUseState()==2 && couponDetail.getRefundState()==1){
                 //未使用且未退款

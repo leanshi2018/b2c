@@ -376,6 +376,17 @@ public class UserAPIController extends BaseController {
             result.setMonthNum(monthNum);
             result.setMonthSales(total);
         }
+        if(sysPeriod!=null){
+            String prePeriod = sysPeriod.getPrePeriod();
+            List<MemberQualification> qualifications = qualificationService.findList(Paramap.create().put("mmCode", member.getMmCode()).put("periodCode",prePeriod));
+            if(qualifications!=null&&qualifications.size()>0){
+                MemberQualification memberQualification = qualifications.get(0);
+                if(memberQualification.getRankRecordHigh()!=null){
+                    RdRanks rdRankHigh = rdRanksService.find("rankId",memberQualification.getRankRecordHigh());
+                    result=PersonCenterResult.build3(result,rdRankHigh,rdRankVip);
+                }
+            }
+        }
         return ApiUtils.success(result);
     }
 

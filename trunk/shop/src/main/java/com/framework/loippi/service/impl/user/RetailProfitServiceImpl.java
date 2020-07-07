@@ -2,10 +2,7 @@ package com.framework.loippi.service.impl.user;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
@@ -14,8 +11,10 @@ import com.framework.loippi.dao.user.*;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.order.OrderFundFlow;
 import com.framework.loippi.entity.user.*;
 import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.order.OrderFundFlowService;
 import com.framework.loippi.utils.Paramap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +46,8 @@ public class RetailProfitServiceImpl extends GenericServiceImpl<RetailProfit, Lo
     private ShopCommonMessageDao shopCommonMessageDao;
     @Autowired
     private ShopMemberMessageDao shopMemberMessageDao;
+    @Autowired
+    private OrderFundFlowService orderFundFlowService;
 
     @Override
     public List<RetailProfit> findNoGrantByCode(String mmCode) {
@@ -132,6 +133,14 @@ public class RetailProfitServiceImpl extends GenericServiceImpl<RetailProfit, Lo
                                 rdMmAccountLog.setStatus(3);
                                 rdMmAccountLogDao.insert(rdMmAccountLog);
                                 rdMmAccountLogs.add(rdMmAccountLog);
+                                OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",retailProfit.getOrderId());
+                                if(orderFundFlow!=null){
+                                    orderFundFlow.setRetailFlag(1);
+                                    orderFundFlow.setRetailProfit(amount);
+                                    orderFundFlow.setRetailGetId(rdMmRelation1.getMmCode());
+                                    orderFundFlow.setRetailTime(new Date());
+                                    orderFundFlowService.update(orderFundFlow);
+                                }
                                 //修改积分账户
                                 rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().add(amount));
                                 rdMmAccountInfoDao.update(rdMmAccountInfo);
@@ -174,6 +183,18 @@ public class RetailProfitServiceImpl extends GenericServiceImpl<RetailProfit, Lo
             System.out.println(b+"***发放零售利润数量");
             System.out.println(rdMmAccountLogs);
             System.out.println(rdMmAccountLogs.size()+"***日志表个数");
+            if(b!=rdMmAccountLogs.size()){
+                ShopCommonMessage retailErrMessage = new ShopCommonMessage();
+                retailErrMessage.setId(twiterIdService.getTwiterId());
+                retailErrMessage.setType(1);
+                retailErrMessage.setOnLine(1);
+                retailErrMessage.setCreateTime(new Date());
+                retailErrMessage.setBizType(5);
+                retailErrMessage.setIsTop(1);
+                retailErrMessage.setTitle("零售利润发放预警");
+                retailErrMessage.setContent("零售利润记录与发放日志信息不等价");
+                shopCommonMessageDao.insert(retailErrMessage);
+            }
             System.out.println("grant retail over");
         }
     }

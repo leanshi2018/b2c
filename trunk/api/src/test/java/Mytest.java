@@ -58,22 +58,10 @@ public class Mytest {
      */
     @Test
     public void testCut() {
-        //boolean flag = StringUtil.isMobilePhone("12269859659");
-       /* boolean flag = StringUtil.isMobilePhone("18567506779");
-        System.out.println(flag);
-        Pattern p = Pattern.compile("^(852|853|886)\\d*$");
-        Matcher m = p.matcher("85269968659");
-        System.out.println(m.matches());
-
-        String code = RandomStringUtils.random(6, "0123456789");
-        try {
-            String codeJson = "{\"code\":\"" + code + "\"}";
-            AldayuUtil.sendSms("85269968659", codeJson, "SMS_165115421", "蜗米商城");
-            //redisService.save(mobile,code);
-            //return ApiUtils.success();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            //return ApiUtils.error("发送验证码出错");
-        }*/
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) - 1);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String str = format.format(calendar.getTime());
+        System.out.println(str);
     }
 }
