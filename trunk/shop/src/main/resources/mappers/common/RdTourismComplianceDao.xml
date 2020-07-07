@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.common.RdTourismComplianceDao">
+
+    <resultMap id="RdTourismComplianceMap" type="com.framework.loippi.entity.common.RdTourismCompliance">
+        <id property="id" column="id"/>
+        <result property="mmCode" column="mm_code"/>
+        <result property="oneQualify" column="one_qualify"/>
+        <result property="twoQualify" column="two_qualify"/>
+        <result property="threeQualify" column="three_qualify"/>
+        <result property="keepQualify" column="keep_qualify"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,mm_code ,one_qualify ,two_qualify ,three_qualify ,keep_qualify
+    </sql>
+
+    <sql id="base_value_column">
+        #{id},#{mmCode},#{oneQualify},#{twoQualify},#{threeQualify},#{keepQualify}
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+            AND mm_code = #{mmCode,jdbcType=VARCHAR}
+        </if>
+        <if test="oneQualify != null">
+            AND one_qualify = #{oneQualify,jdbcType=INTEGER}
+        </if>
+        <if test="twoQualify != null">
+            AND two_qualify = #{twoQualify,jdbcType=INTEGER}
+        </if>
+        <if test="threeQualify != null">
+            AND three_qualify = #{threeQualify,jdbcType=INTEGER}
+        </if>
+        <if test="keepQualify != null">
+            AND keep_qualify = #{keepQualify,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+            mm_code = #{mmCode,jdbcType=VARCHAR},
+        </if>
+        <if test="oneQualify != null">
+            one_qualify = #{oneQualify,jdbcType=INTEGER},
+        </if>
+        <if test="twoQualify != null">
+            two_qualify = #{twoQualify,jdbcType=INTEGER},
+        </if>
+        <if test="threeQualify != null">
+            three_qualify = #{threeQualify,jdbcType=INTEGER},
+        </if>
+        <if test="keepQualify != null">
+            keep_qualify = #{keepQualify,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdTourismComplianceMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_tourism_compliance
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdTourismComplianceMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_tourism_compliance
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_tourism_compliance
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.common.RdTourismCompliance">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT rd_tourism_compliance
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.common.RdTourismCompliance">
+        UPDATE rd_tourism_compliance
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE FROM rd_tourism_compliance
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_tourism_compliance
+        WHERE ID IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdTourismComplianceMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_tourism_compliance
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdTourismComplianceMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_tourism_compliance
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+
+</mapper>
