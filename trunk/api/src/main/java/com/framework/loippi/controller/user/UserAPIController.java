@@ -383,7 +383,7 @@ public class UserAPIController extends BaseController {
                 MemberQualification memberQualification = qualifications.get(0);
                 if(memberQualification.getRankRecordHigh()!=null){
                     RdRanks rdRankHigh = rdRanksService.find("rankId",memberQualification.getRankRecordHigh());
-                    result=PersonCenterResult.build3(result,rdRankHigh,rdRankVip);
+                    result=PersonCenterResult.build3(result,rdRankHigh,rdRankVip,rdRanks);
                 }
             }
         }
