@@ -1,5 +1,7 @@
 package com.framework.loippi.service.impl.coupon;
 
+import com.framework.loippi.entity.order.OrderFundFlow;
+import com.framework.loippi.service.order.OrderFundFlowService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -92,6 +94,8 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 	private ShopCommonMessageDao shopCommonMessageDao;
 	@Resource
 	private ShopMemberMessageDao shopMemberMessageDao;
+	@Resource
+	private OrderFundFlowService orderFundFlowService;
 
 	@Override
 	public ShopOrderPay addOrderReturnPaySn(String memberId, Long couponId, Integer couponNumber) {
@@ -350,6 +354,31 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 					newcouponPay.setPrevOrderState(OrderState.ORDER_STATE_NO_PATMENT);
 					updateByIdOrderStateLockState(newcouponPay, OrderState.ORDER_OPERATE_PAY);
 				}
+				//优惠券订单支付后产生订单资金及积分流向记录 TODO
+				CouponPayDetail couponPayDetail1 = couponPayDetailDao.find(couponPayDetail.getId());
+				OrderFundFlow fundFlow = new OrderFundFlow();
+				fundFlow.setId(twiterIdService.getTwiterId());
+				fundFlow.setOrderId(couponPayDetail1.getId());
+				fundFlow.setOrderType(1);//优惠券订单
+				fundFlow.setBuyerId(couponPayDetail1.getReceiveId());
+				fundFlow.setPayTime(couponPayDetail1.getPaymentTime());
+				fundFlow.setState(1);
+				fundFlow.setCashAmount(couponPayDetail1.getOrderAmount());
+				if(couponPayDetail1.getPaymentId()==6){
+					fundFlow.setCashPayType(0);
+				}else if(couponPayDetail1.getPaymentId()==16){
+					fundFlow.setCashPayType(1);
+				}else if(couponPayDetail1.getPaymentId()==7){
+					fundFlow.setCashPayType(2);
+				}
+				if(couponPayDetail1.getPointAmount()!=null){
+					fundFlow.setPointAmount(couponPayDetail1.getPointAmount());
+				}else {
+					fundFlow.setPointAmount(BigDecimal.ZERO);
+				}
+				fundFlow.setCashRefund(BigDecimal.ZERO);
+				fundFlow.setPointRefund(BigDecimal.ZERO);
+				orderFundFlowService.save(fundFlow);
 			}
 			Map<String, Object> result = Maps.newConcurrentMap();
 			result.put("status", 1);
@@ -466,6 +495,31 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 				couponPayDetail.setCouponOrderState(40);
 				//couponPayDetail.setPaymentBranch(paymentBranch);
 				couponPayDetailDao.update(couponPayDetail);
+				//优惠券订单支付后产生订单资金及积分流向记录 TODO
+				CouponPayDetail couponPayDetail1 = couponPayDetailDao.find(couponPayDetail.getId());
+				OrderFundFlow fundFlow = new OrderFundFlow();
+				fundFlow.setId(twiterIdService.getTwiterId());
+				fundFlow.setOrderId(couponPayDetail1.getId());
+				fundFlow.setOrderType(1);//优惠券订单
+				fundFlow.setBuyerId(couponPayDetail1.getReceiveId());
+				fundFlow.setPayTime(couponPayDetail1.getPaymentTime());
+				fundFlow.setState(1);
+				fundFlow.setCashAmount(couponPayDetail1.getOrderAmount());
+				if(couponPayDetail1.getPaymentId()==6){
+					fundFlow.setCashPayType(0);
+				}else if(couponPayDetail1.getPaymentId()==16){
+					fundFlow.setCashPayType(1);
+				}else if(couponPayDetail1.getPaymentId()==7){
+					fundFlow.setCashPayType(2);
+				}
+				if(couponPayDetail1.getPointAmount()!=null){
+					fundFlow.setPointAmount(couponPayDetail1.getPointAmount());
+				}else {
+					fundFlow.setPointAmount(BigDecimal.ZERO);
+				}
+				fundFlow.setCashRefund(BigDecimal.ZERO);
+				fundFlow.setPointRefund(BigDecimal.ZERO);
+				orderFundFlowService.save(fundFlow);
 				if(couponPayDetail.getUsePointNum()!=null&&couponPayDetail.getUsePointNum().compareTo(new BigDecimal(0.00))==1){//如果订单支付使用了积分，则创建使用积分消息
 
 					ShopCommonMessage message=new ShopCommonMessage();

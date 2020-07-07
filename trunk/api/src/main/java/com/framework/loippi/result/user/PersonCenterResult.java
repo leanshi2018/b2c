@@ -1,5 +1,6 @@
 package com.framework.loippi.result.user;
 
+import com.framework.loippi.entity.user.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,10 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.framework.loippi.consts.OrderState;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmBank;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
 
 /**
@@ -221,6 +218,23 @@ public class PersonCenterResult {
                     result.setEvaluationNum(item.getTotal());
                     continue;
                 }
+            }
+        }
+        return result;
+    }
+
+    public static PersonCenterResult build3(PersonCenterResult result, RdRanks rdRankHigh, RdRanks rdRankVip) {
+        result.setGrade(rdRankHigh.getRankId());
+        if(rdRankHigh.getRankId()==2){
+            result.setGradeName(rdRankVip.getRankName());
+        }else {
+            result.setGradeName(rdRankHigh.getRankName());
+        }
+        if (rdRankHigh!=null) {
+            if(rdRankHigh.getRankIcon()!=null){
+                result.setRankIcon(rdRankHigh.getRankIcon());
+            }else {
+                result.setRankIcon("");
             }
         }
         return result;

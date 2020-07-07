@@ -132,7 +132,7 @@ public class SelfPerformanceResult {
 				npvMi = new BigDecimal("0.00");
 			}
 			addVIPNumber = qualification.getDdNewVIPNumber();
-			int rankAc = qualification.getRankAc();
+			int rankAc = qualification.getRankP0();//TODO 预估级别修改为取rank_P0
 			if (rankAc==0){
 				rankStr = "普通会员";
 			}else if (rankAc==1){
@@ -226,7 +226,7 @@ public class SelfPerformanceResult {
 		}
 
 		String rankRecordHighStr = "";
-		int rankRecordHigh = qualification.getRankRecordHigh();
+		int rankRecordHigh = qualification.getRankAc();//TODO 历史最高级别不要了 修改为有效级别
 		if (rankRecordHigh==0){
 			rankRecordHighStr = "普通会员";
 		}else if (rankRecordHigh==1){

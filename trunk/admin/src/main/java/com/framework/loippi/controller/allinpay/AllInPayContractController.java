@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.allinpay;
 
+import com.framework.loippi.entity.order.OrderFundFlow;
+import com.framework.loippi.service.order.OrderFundFlowService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -57,6 +59,8 @@ public class AllInPayContractController {
     private ShopMemberMessageDao shopMemberMessageDao;
     @Resource
     private ShopOrderDao shopOrderDao;
+    @Resource
+    private OrderFundFlowService orderFundFlowService;
 
     /**
      *  会员网络签约回调
@@ -130,6 +134,15 @@ public class AllInPayContractController {
                 if(rdMmAccountLog!=null){
                     rdMmAccountLog.setAccStatus(2);
                     rdMmAccountLogDao.updateByCutOrderId(map);
+                }
+                //3.修改OrderFundFlow
+                OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",shopOrder.getId());
+                if(orderFundFlow!=null){
+                    orderFundFlow.setCutFlag(1);
+                    orderFundFlow.setCutPoint(shopOrder.getCutAmount());
+                    orderFundFlow.setCutGetId(shopOrder.getCutGetId());
+                    orderFundFlow.setCutTime(new Date());
+                    orderFundFlowService.update(orderFundFlow);
                 }
                 /*RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(mmCode);*/
                 //2.生成积分变更记录

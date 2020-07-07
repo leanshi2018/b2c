@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.order.OrderFundFlowDao">
+	
+	<resultMap id="OrderFundFlowResultMap" type="com.framework.loippi.entity.order.OrderFundFlow">
+		<id property="id" column="id"  />
+		<result property="orderId" column="order_id" />
+		<result property="orderType" column="order_type" />
+		<result property="buyerId" column="buyer_id" />
+		<result property="payTime" column="pay_time" />
+		<result property="state" column="state" />
+		<result property="cashAmount" column="cash_amount" />
+		<result property="cashPayType" column="cash_pay_type" />
+		<result property="pointAmount" column="point_amount" />
+		<result property="cashRefund" column="cash_refund" />
+		<result property="pointRefund" column="point_refund" />
+		<result property="retailFlag" column="retail_flag" />
+		<result property="retailProfit" column="retail_profit" />
+		<result property="retailGetId" column="retail_get_id" />
+		<result property="retailTime" column="retail_time" />
+		<result property="cutFlag" column="cut_flag" />
+		<result property="cutPoint" column="cut_point" />
+		<result property="cutGetId" column="cut_get_id" />
+		<result property="cutTime" column="cut_time" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 id ,order_id ,order_type ,buyer_id ,pay_time ,state ,cash_amount,cash_pay_type,point_amount,cash_refund,point_refund,retail_flag,retail_profit,retail_get_id,
+		 retail_time,cut_flag,cut_point,cut_get_id,cut_time
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{id},#{orderId},#{orderType},#{buyerId},#{payTime},#{state},#{cashAmount},#{cash_pay_type},#{point_amount},#{cash_refund},#{point_refund},#{retail_flag},#{retail_profit},
+		 #{retail_get_id},#{retail_time},#{cut_flag},#{cut_point},#{cut_get_id},#{cut_time}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null and id != ''">
+			AND id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="orderId != null and orderId != ''">
+			AND order_id = #{orderId,jdbcType=BIGINT}
+		</if>
+		<if test="orderType != null and orderType != ''">
+			AND order_type = #{orderType,jdbcType=INTEGER}
+		</if>
+		<if test="buyerId != null and buyerId != ''">
+			AND buyer_id = #{buyerId,jdbcType=VARCHAR}
+		</if>
+		<if test="payTime != null and payTime != ''">
+			AND pay_time = #{payTime}
+		</if>
+		<if test="state != null and state != ''">
+			AND state = #{state,jdbcType=INTEGER}
+		</if>
+		<if test="cashAmount != null and cashAmount != ''">
+			AND cash_amount = #{cashAmount}
+		</if>
+		<if test="cashPayType != null and cashPayType != ''">
+			AND cash_pay_type = #{cashPayType,jdbcType=INTEGER}
+		</if>
+		<if test="pointAmount != null and pointAmount != ''">
+			AND point_amount = #{pointAmount}
+		</if>
+		<if test="cashRefund != null and cashRefund != ''">
+			AND cash_refund = #{cashRefund}
+		</if>
+		<if test="pointRefund != null and pointRefund != ''">
+			AND point_refund = #{pointRefund}
+		</if>
+		<if test="retailFlag != null and retailFlag != ''">
+			AND retail_flag = #{retailFlag,jdbcType=INTEGER}
+		</if>
+		<if test="retailProfit != null and retailProfit != ''">
+			AND retail_profit = #{retailProfit}
+		</if>
+		<if test="retailGetId != null and retailGetId != ''">
+			AND retail_get_id = #{retailGetId,jdbcType=VARCHAR}
+		</if>
+		<if test="retailTime != null and retailTime != ''">
+			AND retail_time = #{retailTime}
+		</if>
+		<if test="cutFlag != null and cutFlag != ''">
+			AND cut_flag = #{cutFlag,jdbcType=INTEGER}
+		</if>
+		<if test="cutPoint != null and cutPoint != ''">
+			AND cut_point = #{cutPoint}
+		</if>
+		<if test="cutGetId != null and cutGetId != ''">
+			AND cut_get_id = #{cutGetId,jdbcType=VARCHAR}
+		</if>
+		<if test="cutTime != null and cutTime != ''">
+			AND cut_time = #{cutTime}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="id != null and id != ''">
+			 id = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="orderId != null and orderId != ''">
+			 order_id = #{orderId,jdbcType=BIGINT},
+		</if>
+		<if test="orderType != null and orderType != ''">
+		 	 order_type = #{orderType,jdbcType=INTEGER},
+		</if>
+		<if test="buyerId != null and buyerId != ''">
+			 buyer_id = #{buyerId,jdbcType=VARCHAR},
+		</if>
+		<if test="payTime != null and payTime != ''">
+			 pay_time = #{payTime},
+		</if>
+		<if test="state != null and state != ''">
+			 state = #{state,jdbcType=INTEGER},
+		</if>
+		<if test="cashAmount != null and cashAmount != ''">
+			 cash_amount = #{cashAmount},
+		</if>
+		<if test="cashPayType != null and cashPayType != ''">
+			 cash_pay_type = #{cashPayType,jdbcType=INTEGER},
+		</if>
+		<if test="pointAmount != null and pointAmount != ''">
+			 point_amount = #{pointAmount},
+		</if>
+		<if test="cashRefund != null and cashRefund != ''">
+			 cash_refund = #{cashRefund},
+		</if>
+		<if test="pointRefund != null and pointRefund != ''">
+			 point_refund = #{pointRefund},
+		</if>
+		<if test="retailFlag != null and retailFlag != ''">
+			 retail_flag = #{retailFlag,jdbcType=INTEGER},
+		</if>
+		<if test="retailProfit != null and retailProfit != ''">
+			 retail_profit = #{retailProfit},
+		</if>
+		<if test="retailGetId != null and retailGetId != ''">
+			 retail_get_id = #{retailGetId,jdbcType=VARCHAR},
+		</if>
+		<if test="retailTime != null and retailTime != ''">
+			 retail_time = #{retailTime},
+		</if>
+		<if test="cutFlag != null and cutFlag != ''">
+			 cut_flag = #{cutFlag,jdbcType=INTEGER},
+		</if>
+		<if test="cutPoint != null and cutPoint != ''">
+			 cut_point = #{cutPoint},
+		</if>
+		<if test="cutGetId != null and cutGetId != ''">
+			 cut_get_id = #{cutGetId,jdbcType=VARCHAR},
+		</if>
+		<if test="cutTime != null and cutTime != ''">
+			 cut_time = #{cutTime},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="OrderFundFlowResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	order_fund_flow
+		WHERE	ID=#{id,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="OrderFundFlowResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	order_fund_flow
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM order_fund_flow
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.order.OrderFundFlow">
+		INSERT order_fund_flow
+		(
+		<include refid="base_column"/>
+		)
+		VALUES (<include refid="base_value_column"/>)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.order.OrderFundFlow">
+		UPDATE	order_fund_flow
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM order_fund_flow
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM order_fund_flow
+		WHERE	ID	IN
+    	<foreach item="OrderFundFlowId" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{OrderFundFlowId}
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="OrderFundFlowResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	order_fund_flow
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="OrderFundFlowResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM order_fund_flow
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+</mapper> 

@@ -1,6 +1,9 @@
 package com.framework.loippi.service.impl.order;
 
 
+import com.framework.loippi.entity.common.MorePoint;
+import com.framework.loippi.entity.order.*;
+import com.framework.loippi.service.order.OrderFundFlowService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -77,13 +80,6 @@ import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.order.ShopOrderAddress;
-import com.framework.loippi.entity.order.ShopOrderDiscountType;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.order.ShopOrderLog;
-import com.framework.loippi.entity.order.ShopOrderLogistics;
-import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
@@ -305,6 +301,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private RdMmAddInfoDao rdMmAddInfoDao;
     @Resource
     private RdWarehouseDao rdWarehouseDao;
+    @Resource
+    private OrderFundFlowService orderFundFlowService;
     @Autowired
     public void setGenericDao() {
         super.setGenericDao(orderDao);
@@ -660,6 +658,14 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         // 前端取消订单不需要依据订单锁定状态
         // 后台取消订单需要依据订单锁定状态
         orderDao.update(order);
+        //订单资金流向记录修改 TODO
+        OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId", order.getId());
+        if(orderFundFlow!=null){
+            orderFundFlow.setPointRefund(orderFundFlow.getPointAmount());
+            orderFundFlow.setCashRefund(orderFundFlow.getCashAmount());
+            orderFundFlow.setState(0);
+            orderFundFlowService.update(orderFundFlow);
+        }
 //        if (opType == Constants.OPERATOR_MEMBER) {
 //
 //        } else {
@@ -3456,6 +3462,37 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 order.setTradeSn(tradeSn);
                 order.setPaymentBranch(paymentBranch);
                 orderDao.update(order);
+                //订单完成支付 生成订单 订单金额及关联积分流向记录 TODO
+                OrderFundFlow fundFlow = new OrderFundFlow();
+                fundFlow.setId(twiterIdService.getTwiterId());
+                fundFlow.setOrderId(order.getId());
+                fundFlow.setOrderType(0);//商品订单
+                fundFlow.setBuyerId(order.getBuyerId().toString());
+                fundFlow.setPayTime(order.getPaymentTime());
+                fundFlow.setState(1);
+                fundFlow.setCashAmount(order.getOrderAmount());
+                if(order.getPaymentCode()!=null&&order.getPaymentCode().equals("pointsPaymentPlugin")){
+                    fundFlow.setCashPayType(0);
+                }else if(order.getPaymentCode()!=null&&order.getPaymentCode().equals("alipayMobilePaymentPlugin")){
+                    fundFlow.setCashPayType(2);
+                }else if(order.getPaymentCode()!=null&&order.getPaymentCode().equals("weixinAppletsPaymentPlugin")){
+                    fundFlow.setCashPayType(3);
+                } else if(order.getPaymentCode()!=null&&order.getPaymentCode().equals("weixinMobilePaymentPlugin")){
+                    fundFlow.setCashPayType(1);
+                }
+                if(order.getPointRmbNum()!=null){
+                    fundFlow.setPointAmount(order.getPointRmbNum());
+                }else {
+                    fundFlow.setPointAmount(BigDecimal.ZERO);
+                }
+                fundFlow.setCashRefund(BigDecimal.ZERO);
+                fundFlow.setPointRefund(BigDecimal.ZERO);
+                if(order.getOrderType()==1){
+                    fundFlow.setRetailFlag(1);
+                }else {
+                    fundFlow.setRetailFlag(0);
+                }
+                orderFundFlowService.save(fundFlow);
                 /*if(order.getUsePointNum()!=null&&order.getUsePointNum()>0){//如果订单支付使用了积分，则创建使用积分消息
                     ShopCommonMessage message=new ShopCommonMessage();
                     message.setSendUid(order.getBuyerId()+"");
@@ -3799,6 +3836,14 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                     rdMmAccountLog.setAutohrizeDesc("零售利润奖励发放");
                                     rdMmAccountLog.setStatus(3);
                                     rdMmAccountLogService.save(rdMmAccountLog);
+                                    OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",retailProfit.getOrderId());
+                                    if(orderFundFlow!=null){
+                                        orderFundFlow.setRetailFlag(1);
+                                        orderFundFlow.setRetailProfit(amount);
+                                        orderFundFlow.setRetailGetId(retailProfit.getReceiptorId());
+                                        orderFundFlow.setRetailTime(new Date());
+                                        orderFundFlowService.update(orderFundFlow);
+                                    }
                                     //修改积分账户
                                     rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().add(amount));
                                     rdMmAccountInfoService.update(rdMmAccountInfo);
@@ -4800,7 +4845,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     newOrder.setPrevOrderState(OrderState.ORDER_STATE_NO_PATMENT);
                     newOrder.setPrevLockState(OrderState.ORDER_LOCK_STATE_NO);
                     updateByIdOrderStateLockState(newOrder, OrderState.ORDER_OPERATE_PAY);
-
                     //判断会员等级，并根据升级条件升级 TODO
                     RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
                     if (rdMmRelation != null) {//新会员判断累计购买额并影响等级
@@ -5120,6 +5164,14 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                         rdMmAccountLog.setAutohrizeDesc("零售利润奖励发放");
                                         rdMmAccountLog.setStatus(3);
                                         rdMmAccountLogService.save(rdMmAccountLog);
+                                        OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",retailProfit.getOrderId());
+                                        if(orderFundFlow!=null){
+                                            orderFundFlow.setRetailFlag(1);
+                                            orderFundFlow.setRetailProfit(amount);
+                                            orderFundFlow.setRetailGetId(retailProfit.getReceiptorId());
+                                            orderFundFlow.setRetailTime(new Date());
+                                            orderFundFlowService.update(orderFundFlow);
+                                        }
                                         //修改积分账户
                                         rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().add(amount));
                                         rdMmAccountInfoService.update(rdMmAccountInfo);
@@ -5158,6 +5210,38 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 }
                             }
                         }
+                        //订单完成支付 生成订单 订单金额及关联积分流向记录 TODO
+                        ShopOrder order1 = orderDao.find(order.getId());
+                        OrderFundFlow fundFlow = new OrderFundFlow();
+                        fundFlow.setId(twiterIdService.getTwiterId());
+                        fundFlow.setOrderId(order1.getId());
+                        fundFlow.setOrderType(0);//商品订单
+                        fundFlow.setBuyerId(order1.getBuyerId().toString());
+                        fundFlow.setPayTime(order1.getPaymentTime());
+                        fundFlow.setState(1);
+                        fundFlow.setCashAmount(order1.getOrderAmount());
+                        if(order1.getPaymentCode()!=null&&order1.getPaymentCode().equals("pointsPaymentPlugin")){
+                            fundFlow.setCashPayType(0);
+                        }else if(order1.getPaymentCode()!=null&&order1.getPaymentCode().equals("alipayMobilePaymentPlugin")){
+                            fundFlow.setCashPayType(2);
+                        }else if(order1.getPaymentCode()!=null&&order1.getPaymentCode().equals("weixinAppletsPaymentPlugin")){
+                            fundFlow.setCashPayType(3);
+                        } else if(order1.getPaymentCode()!=null&&order1.getPaymentCode().equals("weixinMobilePaymentPlugin")){
+                            fundFlow.setCashPayType(1);
+                        }
+                        if(order1.getPointRmbNum()!=null){
+                            fundFlow.setPointAmount(order1.getPointRmbNum());
+                        }else {
+                            fundFlow.setPointAmount(BigDecimal.ZERO);
+                        }
+                        fundFlow.setCashRefund(BigDecimal.ZERO);
+                        fundFlow.setPointRefund(BigDecimal.ZERO);
+                        if(order1.getOrderType()==1){
+                            fundFlow.setRetailFlag(1);
+                        }else {
+                            fundFlow.setRetailFlag(0);
+                        }
+                        orderFundFlowService.save(fundFlow);
                         /*if (ppv.compareTo(agencyPpv) == -1 && (ppv.add(orderPpv)).compareTo(agencyPpv) != -1) {
                             RdRanks rdRanks = rdRanksService.find("rankClass", 2);
                             rdMmRelation.setRank(rdRanks.getRankId());
@@ -5472,7 +5556,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }*/
                 rdMmRelationService.update(rdMmRelation);
             }
-
+            //查询自己流向记录表 修改退款金额等
+            OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",refundReturn.getOrderId());
+            if(orderFundFlow!=null){
+                BigDecimal cashRefund=Optional.ofNullable(orderFundFlow.getCashRefund()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(refundReturn.getRefundAmount()).orElse(BigDecimal.ZERO));
+                BigDecimal pointRefund=Optional.ofNullable(orderFundFlow.getPointRefund()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(refundReturn.getRewardPointAmount()).orElse(BigDecimal.ZERO));
+                orderFundFlow.setCashRefund(cashRefund);
+                orderFundFlow.setPointRefund(pointRefund);
+                orderFundFlowService.update(orderFundFlow);
+            }
         }else{
             ShopOrder order = orderDao.find(refundReturn.getOrderId());
             BigDecimal money = Optional.ofNullable(order.getRefundAmount()).orElse(BigDecimal.valueOf(0));
@@ -5551,6 +5643,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 rdMmRelation.setATotal(orderMoneyTotal);
                 rdMmRelation.setAPpv(aPpv.subtract(refundReturn.getPpv()));
                 rdMmRelationService.update(rdMmRelation);
+            }
+            //查询自己流向记录表 修改退款金额等
+            OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",refundReturn.getOrderId());
+            if(orderFundFlow!=null){
+                BigDecimal cashRefund=Optional.ofNullable(orderFundFlow.getCashRefund()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(refundReturn.getRefundAmount()).orElse(BigDecimal.ZERO));
+                BigDecimal pointRefund=Optional.ofNullable(orderFundFlow.getPointRefund()).orElse(BigDecimal.ZERO).add(Optional.ofNullable(refundReturn.getRewardPointAmount()).orElse(BigDecimal.ZERO));
+                orderFundFlow.setCashRefund(cashRefund);
+                orderFundFlow.setPointRefund(pointRefund);
+                orderFundFlowService.update(orderFundFlow);
             }
         }
     }
@@ -6245,5 +6346,4 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     public SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map) {
         return orderDao.statisticsSelfOrderByTime(map);
     }
-
 }
