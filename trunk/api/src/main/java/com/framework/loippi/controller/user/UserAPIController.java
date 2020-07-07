@@ -425,6 +425,10 @@ public class UserAPIController extends BaseController {
         if(oldSysRelationship.getNYnRegistered()==1){
             return ApiUtils.error("提供的老系统会员编号已经在新系统进行注册，不能进行绑定");
         }
+        Date creationTime = oldSysRelationship.getCreationTime();
+        if((new Date().getTime()/1000-creationTime.getTime()/1000)>31622400){
+            throw new RuntimeException("您的老会员注册已超一年期限，无法与新系统会员进行绑定");
+        }
         //2.如果提供老系统会员在中间表存在且未注册，验证需要绑定会员的二级密码(确认是会员本人进行绑定)
         String resultString="";
         try {
