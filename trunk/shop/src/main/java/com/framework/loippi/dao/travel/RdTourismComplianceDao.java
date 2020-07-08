@@ -1,6 +1,6 @@
-package com.framework.loippi.dao.common;
+package com.framework.loippi.dao.travel;
 
-import com.framework.loippi.entity.common.RdTourismCompliance;
+import com.framework.loippi.entity.travel.RdTourismCompliance;
 import com.framework.loippi.mybatis.dao.GenericDao;
 
 /**

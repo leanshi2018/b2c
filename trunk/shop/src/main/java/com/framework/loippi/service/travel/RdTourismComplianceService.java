@@ -1,6 +1,6 @@
-package com.framework.loippi.service.common;
+package com.framework.loippi.service.travel;
 
-import com.framework.loippi.entity.common.RdTourismCompliance;
+import com.framework.loippi.entity.travel.RdTourismCompliance;
 import com.framework.loippi.service.GenericService;
 
 /**
