@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.travel.RdTravelTicketDao">
+
+    <resultMap id="rdTravelTicketResultMap" type="com.framework.loippi.entity.travel.RdTravelTicket">
+        <id property="id" column="id"  />
+        <result property="travelName" column="travel_name" />
+        <result property="ticketPrice" column="ticket_price" />
+        <result property="image" column="image" />
+        <result property="remark" column="remark" />
+        <result property="useStartTime" column="use_start_time" />
+        <result property="useEndTime" column="use_end_time" />
+        <result property="createCode" column="create_code" />
+        <result property="createName" column="create_name" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,travel_name ,ticket_price ,image ,remark ,use_start_time ,use_end_time ,create_code ,create_name ,create_time
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{travelName},#{ticketPrice},#{image},#{remark},#{useStartTime},#{useEndTime},#{createCode},#{createName},#{createTime}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id}
+        </if>
+        <if test="travelName != null and travelName != ''">
+            AND travel_name = #{travelName,jdbcType=VARCHAR}
+        </if>
+        <if test="ticketPrice != null and ticketPrice != ''">
+            AND ticket_price = #{ticketPrice}
+        </if>
+        <if test="image != null and image != ''">
+            AND image = #{image,jdbcType=VARCHAR}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+        <if test="useStartTime != null and useStartTime != ''">
+            AND use_start_time = #{useStartTime}
+        </if>
+        <if test="useEndTime != null and useEndTime != ''">
+            AND use_end_time = #{useEndTime}
+        </if>
+        <if test="createCode != null and createCode != ''">
+            AND create_code = #{createCode,jdbcType=VARCHAR}
+        </if>
+        <if test="createName != null and createName != ''">
+            AND create_name = #{createName,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+             id = #{id},
+        </if>
+        <if test="travelName != null and travelName != ''">
+             travel_name = #{travelName,jdbcType=VARCHAR},
+        </if>
+        <if test="ticketPrice != null and ticketPrice != ''">
+             ticket_price = #{ticketPrice},
+        </if>
+        <if test="image != null and image != ''">
+             image = #{image,jdbcType=VARCHAR},
+        </if>
+        <if test="remark != null and remark != ''">
+             remark = #{remark,jdbcType=VARCHAR},
+        </if>
+        <if test="useStartTime != null and useStartTime != ''">
+             use_start_time = #{useStartTime},
+        </if>
+        <if test="useEndTime != null and useEndTime != ''">
+             use_end_time = #{useEndTime},
+        </if>
+        <if test="createCode != null and createCode != ''">
+             create_code = #{createCode,jdbcType=VARCHAR},
+        </if>
+        <if test="createName != null and createName != ''">
+             create_name = #{createName,jdbcType=VARCHAR},
+        </if>
+        <if test="createTime != null and createTime != ''">
+             create_time = #{createTime},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="rdTravelTicketResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_ticket
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="rdTravelTicketResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_ticket
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_travel_ticket
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.travel.RdTravelTicket">
+        set names utf8mb4;
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT rd_travel_ticket
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.travel.RdTravelTicket">
+        UPDATE rd_travel_ticket
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_travel_ticket
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_travel_ticket
+        WHERE ID IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="rdTravelTicketResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_ticket
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="rdTravelTicketResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_ticket
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+</mapper> 
