@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.travel.RdTravelActivityDao">
+
+    <resultMap id="rdTravelActivityResultMap" type="com.framework.loippi.entity.travel.RdTravelActivity">
+        <id property="id" column="id"  />
+        <result property="activityName" column="activity_name" />
+        <result property="image" column="image" />
+        <result property="startTime" column="start_time" />
+        <result property="endTime" column="end_time" />
+        <result property="createCode" column="create_code" />
+        <result property="createTime" column="create_time" />
+        <result property="activityCost" column="activity_cost" />
+        <result property="remark" column="remark" />
+        <result property="detailLink" column="detail_link" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,activity_name ,image ,start_time ,end_time ,create_code ,create_time ,activity_cost ,remark ,detail_link
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{activityName},#{image},#{startTime},#{endTime},#{createCode},#{createTime},#{activityCost},#{remark},#{detailLink}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id}
+        </if>
+        <if test="activityName != null and activityName != ''">
+            AND activity_name = #{activityName,jdbcType=VARCHAR}
+        </if>
+        <if test="image != null and image != ''">
+            AND image = #{image,jdbcType=VARCHAR}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND start_time = #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND end_time = #{endTime}
+        </if>
+        <if test="createCode != null and createCode != ''">
+            AND create_code = #{createCode}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND create_time = #{createTime}
+        </if>
+        <if test="activityCost != null and activityCost != ''">
+            AND activity_cost = #{activityCost}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+        <if test="detailLink != null and detailLink != ''">
+            AND detail_link = #{detailLink}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+             id = #{id},
+        </if>
+        <if test="activityName != null and activityName != ''">
+             activity_name = #{activityName,jdbcType=VARCHAR},
+        </if>
+        <if test="image != null and image != ''">
+             image = #{image,jdbcType=VARCHAR},
+        </if>
+        <if test="startTime != null and startTime != ''">
+             start_time = #{startTime},
+        </if>
+        <if test="endTime != null and endTime != ''">
+             end_time = #{endTime},
+        </if>
+        <if test="createCode != null and createCode != ''">
+             create_code = #{createCode},
+        </if>
+        <if test="createTime != null and createTime != ''">
+             create_time = #{createTime},
+        </if>
+        <if test="activityCost != null and activityCost != ''">
+             activity_cost = #{activityCost},
+        </if>
+        <if test="remark != null and remark != ''">
+             remark = #{remark},
+        </if>
+        <if test="detailLink != null and detailLink != ''">
+             detail_link = #{detailLink},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="rdTravelActivityResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_activity
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="rdTravelActivityResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_activity
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_travel_activity
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.travel.RdTravelActivity">
+        INSERT rd_travel_activity
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.travel.RdTravelActivity">
+        UPDATE rd_travel_activity
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_travel_activity
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_travel_activity
+        WHERE ID IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="rdTravelActivityResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_activity
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="rdTravelActivityResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_activity
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+</mapper> 

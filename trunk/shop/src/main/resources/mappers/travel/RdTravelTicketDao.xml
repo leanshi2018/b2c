@@ -120,10 +120,6 @@
 
     <!-- 插入 -->
     <insert id="insert" parameterType="com.framework.loippi.entity.travel.RdTravelTicket">
-        set names utf8mb4;
-        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
-            SELECT LAST_INSERT_ID() AS ID
-        </selectKey>
         INSERT rd_travel_ticket
         (
         <include refid="base_column"/>
