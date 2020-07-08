@@ -34,8 +34,8 @@
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{id},#{orderId},#{orderType},#{buyerId},#{payTime},#{state},#{cashAmount},#{cash_pay_type},#{point_amount},#{cash_refund},#{point_refund},#{retail_flag},#{retail_profit},
-		 #{retail_get_id},#{retail_time},#{cut_flag},#{cut_point},#{cut_get_id},#{cut_time}
+		 #{id},#{orderId},#{orderType},#{buyerId},#{payTime},#{state},#{cashAmount},#{cashPayType},#{pointAmount},#{cashRefund},#{pointRefund},#{retailFlag},#{retailProfit},
+		 #{retailGetId},#{retailTime},#{cutFlag},#{cutPoint},#{cutGetId},#{cutTime}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
