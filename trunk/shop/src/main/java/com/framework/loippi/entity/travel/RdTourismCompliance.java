@@ -1,4 +1,4 @@
-package com.framework.loippi.entity.common;
+package com.framework.loippi.entity.travel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
