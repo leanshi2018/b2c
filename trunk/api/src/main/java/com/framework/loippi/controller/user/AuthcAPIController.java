@@ -368,7 +368,7 @@ public class AuthcAPIController extends BaseController {
      * 用户注册
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public String register(@Valid AuthsRegisterParam param, BindingResult vResult, HttpServletRequest request) throws Exception {
+    public String register(@Valid AuthsRegisterParam param, BindingResult vResult, HttpServletRequest request) {
         if (vResult.hasErrors()) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
@@ -417,7 +417,7 @@ public class AuthcAPIController extends BaseController {
         RdMmAccountInfo rdMmAccountInfo = new RdMmAccountInfo();
         RdMmRelation rdMmRelation = new RdMmRelation();
         initRdMmBasicInfo(rdMmBasicInfo, param, rdMmAccountInfo, rdMmRelation);//TODO
-        /*try {*/
+        try {
             rdMmBasicInfoService.addUser(rdMmBasicInfo, rdMmAccountInfo, rdMmRelation, param.getRegisterType());
             redisService.delete(param.getMobile());
             /*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -430,11 +430,11 @@ public class AuthcAPIController extends BaseController {
                 couponService.givingCoupon(param.getMobile());
             }*/
             return ApiUtils.success(handlerLoginNew(rdMmBasicInfo, request, rdMmRelation,0));//TODO
-        /*} catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             redisService.delete(param.getMobile());
             return ApiUtils.error("网络异常，请稍后重试");
-        }*/
+        }
     }
 
     /**
