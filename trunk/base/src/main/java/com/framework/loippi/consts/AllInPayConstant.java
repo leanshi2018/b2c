@@ -22,4 +22,9 @@ public interface AllInPayConstant {
      * 通联网络签约app回调地址
      */
     public static final String SIGN_BACK_URL_APP="http://www.rdnmall.com/signing.html";
+    /**
+     * 通联用户转账回调地址
+     */
+    //public static final String CUT_BILL_BACKURL="http://cnczhg.natappfree.cc/admin_war_exploded/admin/allinpayContract/transferBack.jhtml";
+    public static final String TRANSFER_BACKURL="http://glht.rdnmall.cn/admin/admin/allinpayContract/transferBack.jhtml";
 }

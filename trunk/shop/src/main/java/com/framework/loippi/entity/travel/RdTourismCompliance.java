@@ -1,4 +1,4 @@
-package com.framework.loippi.entity.common;
+package com.framework.loippi.entity.travel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,11 +27,11 @@ public class RdTourismCompliance implements GenericEntity {
 	private Long id;
 	/** 会员编号 */
 	private String mmCode;
-	/** 一级奖励考核： 0不合格 ，1合格 */
+	/** 一级奖励考核： 0不合格 ，1合格，2已发放 */
 	private Integer oneQualify;
-	/** 二级奖励考核： 0不合格 ，1合格 */
+	/** 二级奖励考核： 0不合格 ，1合格，2已发放 */
 	private Integer twoQualify;
-	/** 三级奖励考核： 0不合格 ，1合格 */
+	/** 三级奖励考核： 0不合格 ，1合格，2已发放 */
 	private Integer threeQualify;
 	/** 保留资格： 0无 ，1保留一级奖励 ，2保留二级奖励，3保留三级奖励 */
 	private Integer keepQualify;

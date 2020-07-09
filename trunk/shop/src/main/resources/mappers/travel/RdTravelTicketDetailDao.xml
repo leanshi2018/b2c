@@ -16,6 +16,7 @@
         <result property="ownNickName" column="own_nick_name" />
         <result property="ownTime" column="own_time" />
         <result property="useTime" column="use_time" />
+        <result property="useActivityId" column="use_activity_id" />
         <result property="useActivityCode" column="use_activity_code" />
         <result property="confirmTime" column="confirm_time" />
         <result property="confirmCode" column="confirm_code" />
@@ -24,11 +25,12 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,travel_id ,travel_name ,ticket_price ,ticket_sn ,status ,own_code ,own_nick_name ,own_time ,use_time,use_activity_code,confirm_time,confirm_code,image
+		 id ,travel_id ,travel_name ,ticket_price ,ticket_sn ,status ,own_code ,own_nick_name ,own_time ,use_time,use_activity_id,use_activity_code,
+		 confirm_time,confirm_code,image
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{travelId},#{travelName},#{ticketPrice},#{ticketSn},#{status},#{ownCode},#{ownNickName},#{ownTime},#{useTime},#{useActivityCode},
+		 #{id},#{travelId},#{travelName},#{ticketPrice},#{ticketSn},#{status},#{ownCode},#{ownNickName},#{ownTime},#{useTime},#{useActivityId},#{useActivityCode},
 		 #{confirmTime},#{confirmCode},#{image}
 	</sql>
 
@@ -63,6 +65,9 @@
         </if>
         <if test="useTime != null and useTime != ''">
             AND use_time = #{useTime}
+        </if>
+        <if test="useActivityId != null and useActivityId != ''">
+            AND use_activity_id = #{useActivityId}
         </if>
         <if test="useActivityCode != null and useActivityCode != ''">
             AND use_activity_code = #{useActivityCode,jdbcType=VARCHAR}
@@ -109,6 +114,9 @@
         </if>
         <if test="useTime != null and useTime != ''">
              use_time = #{useTime},
+        </if>
+        <if test="useActivityId != null and useActivityId != ''">
+             use_activity_id = #{useActivityId},
         </if>
         <if test="useActivityCode != null and useActivityCode != ''">
              use_activity_code = #{useActivityCode,jdbcType=VARCHAR},
