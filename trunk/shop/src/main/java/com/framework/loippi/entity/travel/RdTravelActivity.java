@@ -82,4 +82,6 @@ public class RdTravelActivity implements GenericEntity {
      */
     @Column(name = "detail_link" )
     private String detailLink;
+
+    //活动状态 报名参团人数上限  已经报名参团人数
 }

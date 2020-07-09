@@ -135,9 +135,9 @@ public class ArticleAPIController extends BaseController {
             pageable.setOrderProperty("is_top,create_time,article_sort,page_views");
         }
         if (secondaryClassificationId != null) {
-            pageable.setParameter(Paramap.create().put("acId", secondaryClassificationId));
+            pageable.setParameter(Paramap.create().put("acId", secondaryClassificationId).put("articleShow",1));
         } else {
-            pageable.setParameter(Paramap.create().put("acId", shopCommonArticleClassList.get(0).getId()));
+            pageable.setParameter(Paramap.create().put("acId", shopCommonArticleClassList.get(0).getId()).put("articleShow",1));
         }
         List<ShopCommonArticle> shopCommonArticleList = shopCommonArticleService.findByPage(pageable).getContent();
         return ApiUtils.success(ArticleListResult.buildList2(shopCommonArticleList, shopCommonArticleClassList, shopCommonArticleClass,wapServer));

@@ -264,4 +264,36 @@ public class AllInPayContractController {
             }
          }
     }
+
+    /**
+     * 通联用户转账回调地址
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @RequestMapping(value = "/transferBack.jhtml")
+    public void transferBack(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        System.out.println("通联用户之间余额转账");
+        String rps = request.getParameter("rps");
+        System.out.println(rps);
+        /*JSONObject jsonObject = JSONObject.parseObject(rps);
+        String status = jsonObject.getString("status");
+        if(status.equals("OK")){
+            String contractNo = jsonObject.getString("contractNo");//如果成功，获取会员签约点子协议编号
+            System.out.println(contractNo);
+            String returnValue =jsonObject.getString("returnValue");
+            JSONObject jsonObject1 = JSONObject.parseObject(returnValue);
+            String bizUserId = jsonObject1.getString("bizUserId");
+            //获取用户的会员编号以及签约成功点子协议编号
+            RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", bizUserId);
+            RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoDao.findAccByMCode(bizUserId);
+            if(rdMmBasicInfo!=null&&rdMmAccountInfo!=null){
+                rdMmBasicInfo.setContractNo(contractNo);
+                rdMmBasicInfo.setAllInContractStatus(1);
+                rdMmAccountInfo.setAutomaticWithdrawal(1);
+                rdMmBasicInfoService.update(rdMmBasicInfo);
+                rdMmAccountInfoDao.update(rdMmAccountInfo);
+            }
+        }*/
+    }
 }
