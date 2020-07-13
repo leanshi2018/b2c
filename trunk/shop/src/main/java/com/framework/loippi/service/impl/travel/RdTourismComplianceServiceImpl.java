@@ -28,4 +28,9 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 	public void setGenericDao() {
 		super.setGenericDao(rdTourismComplianceDao);
 	}
+
+	@Override
+	public RdTourismCompliance findByMmCode(String mmCode) {
+		return rdTourismComplianceDao.findByMmCode(mmCode);
+	}
 }

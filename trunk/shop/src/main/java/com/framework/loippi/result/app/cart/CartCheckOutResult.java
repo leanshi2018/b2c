@@ -41,6 +41,12 @@ public class CartCheckOutResult {
      * 赠品集合
      */
     public List<Gifts> gifts;
+
+    /**
+     * 赠品集合(小程序)
+     */
+    @JsonSerialize(using = ToStringSerializer.class)
+    public List<Gifts> giftsApplet;
     /*************************************2019双11用********************************************/
     /**
      * 有没有收货地址
@@ -504,6 +510,7 @@ public class CartCheckOutResult {
     public static CartCheckOutResult build3(CartCheckOutResult result, List<ShopGoods> shopGoods, Integer flag,Integer giftsNum) {
         result.setShowFlag(flag);
         ArrayList<Gifts> gifts = new ArrayList<>();
+        ArrayList<Gifts> giftsApplet = new ArrayList<>();
         for (ShopGoods goods : shopGoods) {
             Gifts gift = new Gifts();
             gift.setGoodsId(goods.getId());
@@ -512,8 +519,10 @@ public class CartCheckOutResult {
             gift.setStock(goods.getStock());
             gift.setGiftsNum(giftsNum);
             gifts.add(gift);
+            giftsApplet.add(gift);
         }
         result.setGifts(gifts);
+        result.setGiftsApplet(giftsApplet);
         return result;
     }
 }
