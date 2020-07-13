@@ -573,6 +573,10 @@ public class CartAPIController extends BaseController {
                     if (goods1!=null){
                         shopGoods.add(goods1);
                     }
+                    ShopGoods goods2 = goodsService.find(6552746788883795968L);//护手霜
+                    if (goods2!=null){
+                        shopGoods.add(goods2);
+                    }
                     flag=1;
                 }
                 if(rdMmRelation.getRank()>0&&(result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1)){
