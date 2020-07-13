@@ -116,6 +116,8 @@ public class CommonController extends BaseController {
                 if (!session.getMobile().equals(mobile)) {
                     return ApiUtils.error("手机号不正确");
                 }
+            }else {
+                return ApiUtils.error("该手机号还未注册");
             }
         } else if (msgType == VerifyCodeType.RESET_MOBILE.code) {
             if (account.size() > 0) {

@@ -17,4 +17,10 @@ public interface MemberQualificationService extends GenericService<MemberQualifi
     MemberQualification findByCodeAndPeriod(Paramap put);
 
 	Page findListView(Pageable pageable);
+
+	List<MemberQualification> findByHighRank4(String periodCode);
+
+	Integer findVipNumByMCode(String mCode);
+
+	Integer countByMCode(String mmCode);
 }

@@ -560,4 +560,18 @@
 		</if>
 
 	</select>
+
+
+	<select id="findByHighRank4" parameterType="string" resultMap="MemberQualicationResultMap">
+		select * from rd_dis_qualification where PERIOD_CODE = #{periodCode} AND RANK_RECORD_HIGH &gt;= 4
+	</select>
+
+	<select id="findVipNumByMCode" parameterType="string" resultType="java.lang.Integer">
+		SELECT SUM(DD_NEW_VIP_NUMBER) FROM rd_dis_qualification WHERE MM_CODE = #{mCode} AND PERIOD_CODE IN ('202006','202007','202008','202010','202011','202012')
+	</select>
+
+	<select id="countByMCode" parameterType="string" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM rd_dis_qualification WHERE MM_CODE = #{mCode} AND PPV >= 25 AND PERIOD_CODE IN ('202006','202007','202008','202010','202011','202012')
+	</select>
+
 </mapper>
