@@ -162,14 +162,32 @@ public class TravelController {
 							}
 						}else {
 							//已达到二级
+							oneQualify = rdTourismCompliance.getOneQualify();//1
+							twoQualify = rdTourismCompliance.getTwoQualify();//2
 							if (rdTourismCompliance.getKeepQualify()==3){
 								//有保留三级
 								if (vipNum>=6){//合格
 									threeQualify = 1;
 									keepQualify = 0;
+								}else {
+									threeQualify = rdTourismCompliance.getThreeQualify();//3
+									keepQualify = rdTourismCompliance.getKeepQualify();//保留资格
 								}
 							}else {
 								//未有保留3级
+								if (qualification.getRankP0()>=6 && qualification.getRankP1()>=6) {//两个月达到三级代理店及以上
+									if (vipNum>=6){
+										//这个月合格
+										threeQualify = 1;//3
+										keepQualify = 0;
+									}else {
+										threeQualify = 0;//3
+										keepQualify = 3;
+									}
+								}else {
+									threeQualify = rdTourismCompliance.getThreeQualify();//3
+									keepQualify = rdTourismCompliance.getKeepQualify();//保留资格
+								}
 							}
 						}
 

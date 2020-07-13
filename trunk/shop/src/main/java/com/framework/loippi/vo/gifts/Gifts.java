@@ -1,9 +1,12 @@
 package com.framework.loippi.vo.gifts;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.framework.loippi.mybatis.eitity.GenericEntity;
 
 /**
  * 赠品
@@ -15,6 +18,7 @@ public class Gifts implements GenericEntity {
     /**
      * 商品id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long goodsId;
     /**
      * 商品名称
