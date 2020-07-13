@@ -25,6 +25,6 @@ public interface AllInPayConstant {
     /**
      * 通联用户转账回调地址
      */
-    //public static final String TRANSFER_BACKURL="http://qa7kbb.natappfree.cc/admin_war_exploded/admin/allinpayContract/transferBack.jhtml";
-    public static final String TRANSFER_BACKURL="http://glht.rdnmall.cn/admin/admin/allinpayContract/transferBack.jhtml";
+    public static final String TRANSFER_BACKURL="http://qa7kbb.natappfree.cc/admin_war_exploded/admin/allinpayContract/transferBack.jhtml";
+    //public static final String TRANSFER_BACKURL="http://glht.rdnmall.cn/admin/admin/allinpayContract/transferBack.jhtml";
 }

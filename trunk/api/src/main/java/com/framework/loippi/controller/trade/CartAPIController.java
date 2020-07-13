@@ -1,13 +1,15 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.entity.product.ShopGoodsFreightRule;
-import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
@@ -32,6 +34,7 @@ import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsFreightRule;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
@@ -44,6 +47,7 @@ import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
@@ -557,7 +561,7 @@ public class CartAPIController extends BaseController {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Date startTime = format.parse("2020-05-01 00:00:00");
-            Date endTime = format.parse("2020-05-10 23:59:59");
+            Date endTime = format.parse("2020-08-10 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
             if(b){
