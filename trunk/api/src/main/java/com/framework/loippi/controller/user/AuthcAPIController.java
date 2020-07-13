@@ -1,6 +1,5 @@
 package com.framework.loippi.controller.user;
 
-import com.framework.loippi.utils.*;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.awt.image.BufferedImage;
@@ -55,6 +54,14 @@ import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.user.RetailProfitService;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.MobileEmailUtil;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.PostUtil;
+import com.framework.loippi.utils.SmsUtil;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
 import com.google.code.kaptcha.Producer;
 
 /**

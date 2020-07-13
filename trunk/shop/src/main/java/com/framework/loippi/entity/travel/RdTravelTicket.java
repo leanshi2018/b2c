@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
+ * 旅游券
  * @author :zc
  * @date:2020/7/7
  * @description:dubbo com.framework.loippi.entity.travel

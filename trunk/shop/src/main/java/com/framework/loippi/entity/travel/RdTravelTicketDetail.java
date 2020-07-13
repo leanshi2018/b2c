@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
+ * 旅游券单券信息
  * @author :zc
  * @date:2020/7/7
  * @description:dubbo com.framework.loippi.entity.travel
@@ -81,6 +82,12 @@ public class RdTravelTicketDetail implements GenericEntity {
      */
     @Column(name = "use_time" )
     private Date useTime;
+
+    /**
+     * 关联旅游活动id
+     */
+    @Column(name = "use_activity_id" )
+    private String useActivityId;
 
     /**
      * 使用于旅游活动编号
