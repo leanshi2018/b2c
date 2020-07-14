@@ -144,21 +144,185 @@ public class TravelController {
 						}
 					}
 				}else{
-					/*oneQualify = rdTourismCompliance.getOneQualify();//1
-					twoQualify = rdTourismCompliance.getTwoQualify();//2
-					threeQualify = rdTourismCompliance.getThreeQualify();//3
-					keepQualify = rdTourismCompliance.getKeepQualify();//保留资格
-*/
 					//已生成记录
 					if (rdTourismCompliance.getThreeQualify()==0){//三级未达标
 
 						if (rdTourismCompliance.getTwoQualify()==0){//未达二级
-
 							if (rdTourismCompliance.getOneQualify()==0){//未达一级
+								if (rdTourismCompliance.getKeepQualify()==1){
+									//有保留1级
+									if (qualification.getRankP0()>=5 && qualification.getRankP1()>=5) {//两个月达到二级代理店及以上
+										if (qualification.getRankP0()>=6 && qualification.getRankP1()>=6) {//两个月达到三级代理店及以上
+											if (vipNum>=6){
+												oneQualify = 1;
+												twoQualify = 1;
+												threeQualify = 1;
+												keepQualify = 0;
+											}else if (vipNum>=4&&vipNum<6){
+												oneQualify = 1;
+												twoQualify = 1;
+												threeQualify = 0;
+												keepQualify =3;
+											}else if (vipNum>=2&&vipNum<4){
+												oneQualify = 1;
+												twoQualify = 0;
+												threeQualify = 0;
+												keepQualify =3;
+											}else {
+												oneQualify = 0;
+												twoQualify = 0;
+												threeQualify = 0;
+												keepQualify =3;
+											}
+										}else {
+											threeQualify = 0;
+											if (vipNum>=4){
+												oneQualify = 1;
+												twoQualify = 1;
+												keepQualify = 0;
+											}else if (vipNum>=2&&vipNum<4){
+												oneQualify = 1;
+												twoQualify = 0;
+												keepQualify = 2;
+											}else {
+												oneQualify = 0;
+												twoQualify = 0;
+												keepQualify = 2;
+											}
+										}
+									}else {
+										if (vipNum>=2){
+											oneQualify = 1;
+											twoQualify = 0;
+											threeQualify = 0;
+											keepQualify =0;
+										}else {
+											oneQualify = rdTourismCompliance.getOneQualify();
+											twoQualify = rdTourismCompliance.getTwoQualify();
+											threeQualify = rdTourismCompliance.getThreeQualify();
+											keepQualify = rdTourismCompliance.getKeepQualify();
+										}
+									}
+								}else {
+									//未有保留1级
+									if (rdTourismCompliance.getKeepQualify()==2){
+										//有保留2级
+										if (qualification.getRankP0()>=6 && qualification.getRankP1()>=6) {//两个月达到三级代理店及以上
+											if (vipNum>=6){
+												//都达成
+												oneQualify = 1;
+												twoQualify = 1;
+												threeQualify = 1;
+												keepQualify =0;
+											}else if (vipNum>=4&&vipNum<6){
+												oneQualify = 1;
+												twoQualify = 1;
+												threeQualify = 0;
+												keepQualify =0;
+											}else if (vipNum>=2&&vipNum<4){
+												oneQualify = 1;
+												twoQualify = 1;
+												threeQualify = 0;
+												keepQualify =0;
+											}
+										}else {
 
+										}
+									}else {
+										//未有保留2级
+										if (rdTourismCompliance.getKeepQualify()==3){
+											//有保留3级
+
+										}else {
+											//未有保留3级
+
+										}
+									}
+								}
 							}else {
 								//已达到一级
-
+								oneQualify = rdTourismCompliance.getOneQualify();//1
+								if (rdTourismCompliance.getKeepQualify()==2){
+									//有保留2级
+									if (vipNum>=6){
+										twoQualify = 1;
+										if (qualification.getRankP0()>=6 && qualification.getRankP1()>=6) {//两个月达到三级代理店及以上
+											threeQualify = 1;
+											keepQualify = 0;
+										}else {
+											threeQualify = rdTourismCompliance.getThreeQualify();
+											keepQualify = 0;
+										}
+									}else if (vipNum>=4&&vipNum<6){
+										twoQualify = 1;
+										if (qualification.getRankP0()>=6 && qualification.getRankP1()>=6) {//两个月达到三级代理店及以上
+											threeQualify = rdTourismCompliance.getThreeQualify();
+											keepQualify = 3;
+										}else {
+											threeQualify = rdTourismCompliance.getThreeQualify();
+											keepQualify = 0;
+										}
+									}else {
+										twoQualify =0;
+										if (qualification.getRankP0()>=6 && qualification.getRankP1()>=6) {//两个月达到三级代理店及以上
+											threeQualify = rdTourismCompliance.getThreeQualify();
+											keepQualify = 3;
+										}else {
+											threeQualify = rdTourismCompliance.getThreeQualify();
+											keepQualify = rdTourismCompliance.getKeepQualify();
+										}
+									}
+								}else {
+									//未有保留2级
+									if (rdTourismCompliance.getKeepQualify()==3){
+										//未有保留2级 保留3级
+										if (vipNum>=6){
+											twoQualify = 1;
+											threeQualify = 1;
+											keepQualify = 0;
+										}else if (vipNum>=4&&vipNum<6){
+											twoQualify = 1;
+											threeQualify = 0;
+											keepQualify =rdTourismCompliance.getKeepQualify();
+										}else {
+											twoQualify = 0;
+											threeQualify = 0;
+											keepQualify =rdTourismCompliance.getKeepQualify();
+										}
+									}else {
+										//未有保留2级 未有保留3级
+										if (qualification.getRankP0()>=5 && qualification.getRankP1()>=5) {//两个月达到二级代理店及以上
+											if (qualification.getRankP0()>=6 && qualification.getRankP1()>=6) {//两个月达到三级代理店及以上
+												if (vipNum>=6){
+													twoQualify = 1;
+													threeQualify = 1;
+													keepQualify = 0;
+												}else if (vipNum>=4&&vipNum<6){
+													twoQualify = 1;
+													threeQualify = 0;
+													keepQualify =3;
+												}else {
+													twoQualify = 0;
+													threeQualify = 0;
+													keepQualify =3;
+												}
+											}else {
+												threeQualify = 0;
+												if (vipNum>=4){
+													twoQualify = 1;
+													keepQualify = 0;
+												}else {
+													twoQualify = 0;
+													keepQualify = 2;
+												}
+											}
+										}else {
+											twoQualify = rdTourismCompliance.getTwoQualify();
+											threeQualify = rdTourismCompliance.getThreeQualify();
+											keepQualify = rdTourismCompliance.getKeepQualify();
+										}
+									}
+								}
 							}
 						}else {
 							//已达到二级
@@ -191,18 +355,13 @@ public class TravelController {
 							}
 						}
 
-
-						/*if (vipNum>=6){//都合格了
-
-						}else if (vipNum>=4&&vipNum<6){//二级达标
-
-						}else if (vipNum>=4&&vipNum<6){
-
-						}*/
-
-
+					}else {
+						//全部达到过了
+						oneQualify = rdTourismCompliance.getOneQualify();//1
+						twoQualify = rdTourismCompliance.getTwoQualify();//2
+						threeQualify = rdTourismCompliance.getThreeQualify();//3
+						keepQualify = rdTourismCompliance.getKeepQualify();//保留资格
 					}
-					//全部达到过了
 				}
 
 			}

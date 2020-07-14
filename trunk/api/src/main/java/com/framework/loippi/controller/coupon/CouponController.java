@@ -350,6 +350,7 @@ public class CouponController extends BaseController {
 								 @RequestParam(defaultValue = "0") String paymentId,
 								 @RequestParam(defaultValue = "0") Integer integration,
 								 @RequestParam(defaultValue = "0") String paypassword,
+								 @RequestParam(defaultValue = "0") Integer type,
 								 HttpServletRequest request) {
 
 		AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
@@ -405,6 +406,7 @@ public class CouponController extends BaseController {
 			payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
 		}
 		payCommon.setReturnUrl(server + "/payment/payfront");
+		payCommon.setType(type);
 		String sHtmlText = "";
 		Map<String, Object> model = new HashMap<String, Object>();
 		if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("alipayMobilePaymentPlugin")) {
