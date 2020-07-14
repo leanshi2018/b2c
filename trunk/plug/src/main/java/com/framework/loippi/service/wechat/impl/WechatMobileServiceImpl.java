@@ -84,7 +84,6 @@ public class WechatMobileServiceImpl implements WechatMobileService {
     public Map<String, String> getParameterMap(PayCommon payCommon) {
         // 这里notify_url是 支付完成后微信发给该链接信息，可以判断会员是否支付成功，改变订单状态等。
         HashMap<String, String> parameterMap = new HashMap<String, String>();
-        parameterMap.put("appid", WXpayConfig.APP_ID);
         parameterMap.put("body", payCommon.getBody());
         parameterMap.put("mch_id", WXpayConfig.MCH_ID);
         parameterMap.put("out_trade_no", payCommon.getOutTradeNo());
@@ -95,10 +94,12 @@ public class WechatMobileServiceImpl implements WechatMobileService {
         parameterMap.put("spbill_create_ip", "123.23.11.11");             //request.getRemoteAddr()
         parameterMap.put("nonce_str", WeixinUtils.createNoncestr());
         if (payCommon.getType()==1){
+            parameterMap.put("appid", "wx6e94bb18bedf3c4c");
             parameterMap.put("trade_type", "JSAPI");
             parameterMap.put("openid",payCommon.getOpenId());
         }else {
             parameterMap.put("trade_type", "APP");
+            parameterMap.put("appid", WXpayConfig.APP_ID);
         }
         parameterMap.put("sign", WeixinUtils.sign(
             WeixinUtils.FormatBizQueryParaMap(parameterMap, false),
