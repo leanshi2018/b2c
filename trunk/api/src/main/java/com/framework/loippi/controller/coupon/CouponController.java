@@ -350,6 +350,7 @@ public class CouponController extends BaseController {
 								 @RequestParam(defaultValue = "0") String paymentId,
 								 @RequestParam(defaultValue = "0") Integer integration,
 								 @RequestParam(defaultValue = "0") String paypassword,
+								 @RequestParam(defaultValue = "0") String openId,
 								 @RequestParam(defaultValue = "0") Integer type,
 								 HttpServletRequest request) {
 
@@ -431,6 +432,9 @@ public class CouponController extends BaseController {
 			couponPayDetailService.updateByPaySn(paysn, Long.valueOf(paymentId));
 			//保存支付流水记录
 			paymentTallyService.savePaymentTallyCoupon(paymentCode, "微信支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+			if (type==1){
+				payCommon.setOpenId(openId);
+			}
 			String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
 			model.put("tocodeurl", tocodeurl);
 			model.put("orderSn", pay.getOrderSn());

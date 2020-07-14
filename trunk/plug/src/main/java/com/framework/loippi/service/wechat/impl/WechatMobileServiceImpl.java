@@ -94,7 +94,12 @@ public class WechatMobileServiceImpl implements WechatMobileService {
         parameterMap.put("notify_url", payCommon.getNotifyUrl());
         parameterMap.put("spbill_create_ip", "123.23.11.11");             //request.getRemoteAddr()
         parameterMap.put("nonce_str", WeixinUtils.createNoncestr());
-        parameterMap.put("trade_type", payCommon.getType()==0? "APP":"JSAPI");
+        if (payCommon.getType()==1){
+            parameterMap.put("trade_type", "JSAPI");
+            parameterMap.put("openid",payCommon.getOpenId());
+        }else {
+            parameterMap.put("trade_type", "APP");
+        }
         parameterMap.put("sign", WeixinUtils.sign(
             WeixinUtils.FormatBizQueryParaMap(parameterMap, false),
             WXpayConfig.API_KEY));

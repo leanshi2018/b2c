@@ -20,6 +20,7 @@ import com.framework.loippi.entity.travel.RdTourismCompliance;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.travel.RdTourismComplianceService;
 import com.framework.loippi.service.user.MemberQualificationService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
@@ -39,7 +40,16 @@ public class TravelController {
 	private RdTourismComplianceService rdTourismComplianceService;
 	@Resource
 	private MemberQualificationService memberQualificationService;
+	@Resource
+	private TwiterIdService twiterIdService;
 
+	/**
+	 * 周期计算达标送券
+	 * @param request
+	 * @param model
+	 * @param periodCode
+	 * @return
+	 */
 	@RequestMapping(value = "/compliance",method = RequestMethod.POST)
 	public String compliance(HttpServletRequest request, ModelMap model,@RequestParam(required = true, value = "periodCode") String periodCode) {
 
@@ -143,10 +153,18 @@ public class TravelController {
 							}
 						}
 					}
+					RdTourismCompliance rdTourismComplianceSave = new RdTourismCompliance();
+					rdTourismComplianceSave.setId(twiterIdService.getTwiterId());
+					rdTourismComplianceSave.setMmCode(qualification.getMCode());
+					rdTourismComplianceSave.setOneQualify(oneQualify);
+					rdTourismComplianceSave.setTwoQualify(twoQualify);
+					rdTourismComplianceSave.setThreeQualify(threeQualify);
+					rdTourismComplianceSave.setKeepQualify(keepQualify);
+
+					rdTourismComplianceService.save(rdTourismComplianceSave);
 				}else{
 					//已生成记录
 					if (rdTourismCompliance.getThreeQualify()==0){//三级未达标
-
 						if (rdTourismCompliance.getTwoQualify()==0){//未达二级
 							if (rdTourismCompliance.getOneQualify()==0){//未达一级
 								if (rdTourismCompliance.getKeepQualify()==1){
@@ -221,21 +239,120 @@ public class TravelController {
 												keepQualify =0;
 											}else if (vipNum>=2&&vipNum<4){
 												oneQualify = 1;
+												twoQualify = rdTourismCompliance.getTwoQualify();
+												threeQualify = rdTourismCompliance.getThreeQualify();
+												keepQualify =rdTourismCompliance.getKeepQualify();
+											}else {
+												oneQualify = rdTourismCompliance.getOneQualify();
+												twoQualify = rdTourismCompliance.getTwoQualify();
+												threeQualify = rdTourismCompliance.getThreeQualify();
+												keepQualify = rdTourismCompliance.getKeepQualify();
+											}
+										}else {
+											if (vipNum>=4){
+												oneQualify = 1;
 												twoQualify = 1;
 												threeQualify = 0;
 												keepQualify =0;
+											}else if (vipNum>=2&&vipNum<4){
+												oneQualify = 1;
+												twoQualify = rdTourismCompliance.getTwoQualify();
+												threeQualify = rdTourismCompliance.getThreeQualify();
+												keepQualify =rdTourismCompliance.getKeepQualify();
+											}else {
+												oneQualify = rdTourismCompliance.getOneQualify();
+												twoQualify = rdTourismCompliance.getTwoQualify();
+												threeQualify = rdTourismCompliance.getThreeQualify();
+												keepQualify = rdTourismCompliance.getKeepQualify();
 											}
-										}else {
-
 										}
 									}else {
 										//未有保留2级
 										if (rdTourismCompliance.getKeepQualify()==3){
 											//有保留3级
-
+											if (vipNum>=6){
+												//都达成
+												oneQualify = 1;
+												twoQualify = 1;
+												threeQualify = 1;
+												keepQualify =0;
+											}else if (vipNum>=4&&vipNum<6){
+												oneQualify = 1;
+												twoQualify = 1;
+												threeQualify = rdTourismCompliance.getThreeQualify();
+												keepQualify = rdTourismCompliance.getKeepQualify();
+											}else if (vipNum>=2&&vipNum<4){
+												oneQualify = 1;
+												twoQualify = rdTourismCompliance.getTwoQualify();
+												threeQualify = rdTourismCompliance.getThreeQualify();
+												keepQualify =rdTourismCompliance.getKeepQualify();
+											}else {
+												oneQualify = rdTourismCompliance.getOneQualify();
+												twoQualify = rdTourismCompliance.getTwoQualify();
+												threeQualify = rdTourismCompliance.getThreeQualify();
+												keepQualify = rdTourismCompliance.getKeepQualify();
+											}
 										}else {
-											//未有保留3级
-
+											// 未有保留1级 未有保留2级 未有保留3级 未达标三级 未达标二级 未达标一级
+											if (qualification.getRankP0()>=4 && qualification.getRankP1()>=4){//当前周期和上一周期都是一级代理店及以上
+												if (qualification.getRankP0()>=5 && qualification.getRankP1()>=5){//两个月达到二级代理店及以上
+													if (qualification.getRankP0()>=6 && qualification.getRankP1()>=6){//两个月达到三级代理店及以上
+														//达到3级
+														if (vipNum>=6){
+															oneQualify = 1;
+															twoQualify = 1;
+															threeQualify = 1;
+															keepQualify = 0;
+														}else if (vipNum>=4&&vipNum<6){
+															oneQualify = 1;
+															twoQualify = 1;
+															threeQualify = 0;
+															keepQualify = 3;
+														}else if (vipNum>=2&&vipNum<4){
+															oneQualify = 1;
+															twoQualify = 0;
+															threeQualify = 0;
+															keepQualify = 3;
+														}else {
+															oneQualify = 0;
+															twoQualify = 0;
+															threeQualify = 0;
+															keepQualify = 3;
+														}
+													}else {
+														//达到2级
+														if (vipNum>=4){
+															oneQualify = 1;
+															twoQualify = 1;
+															threeQualify = 0;
+															keepQualify = 0;
+														}else if (vipNum>=2&&vipNum<4){
+															oneQualify = 1;
+															twoQualify = 0;
+															threeQualify = 0;
+															keepQualify = 2;
+														}else {
+															oneQualify = 0;
+															twoQualify = 0;
+															threeQualify = 0;
+															keepQualify = 2;
+														}
+													}
+												}else {
+													//达到1级
+													if (vipNum>=2){
+														oneQualify = 1;
+														twoQualify = 0;
+														threeQualify = 0;
+														keepQualify = 0;
+													}else {
+														oneQualify = 0;
+														twoQualify = 0;
+														threeQualify = 0;
+														keepQualify = 1;
+													}
+												}
+											}
 										}
 									}
 								}
@@ -362,14 +479,36 @@ public class TravelController {
 						threeQualify = rdTourismCompliance.getThreeQualify();//3
 						keepQualify = rdTourismCompliance.getKeepQualify();//保留资格
 					}
+
+					rdTourismCompliance.setOneQualify(oneQualify);
+					rdTourismCompliance.setTwoQualify(twoQualify);
+					rdTourismCompliance.setThreeQualify(threeQualify);
+					rdTourismCompliance.setKeepQualify(keepQualify);
+					rdTourismComplianceService.update(rdTourismCompliance);
 				}
-
 			}
-
+			//model.addAttribute("referer", "");
 			return Constants.MSG_URL;
 		}else {
 			model.addAttribute("msg", "传入的周期代码不在活动范围");
 			return Constants.MSG_URL;
 		}
 	}
+
+
+	/**
+	 * 发放旅游券
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/grantTicket",method = RequestMethod.POST)
+	public String grantTicket(HttpServletRequest request, ModelMap model) {
+
+
+
+		model.addAttribute("msg", "发券成功");
+		return Constants.MSG_URL;
+	}
+
 }
