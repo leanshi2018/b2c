@@ -1,5 +1,8 @@
 package com.framework.loippi.service.wechat.impl;
 
+import jodd.util.StringUtil;
+import lombok.extern.slf4j.Slf4j;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +24,6 @@ import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.wechat.mobile.config.WXpayConfig;
 import com.framework.loippi.utils.wechat.mobile.util.WeixinUtils;
 import com.framework.loippi.utils.wechat.mobile.util.component.ResponseHandler;
-
-import jodd.util.StringUtil;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by neil on 2017/6/22.
@@ -94,7 +94,7 @@ public class WechatMobileServiceImpl implements WechatMobileService {
         parameterMap.put("notify_url", payCommon.getNotifyUrl());
         parameterMap.put("spbill_create_ip", "123.23.11.11");             //request.getRemoteAddr()
         parameterMap.put("nonce_str", WeixinUtils.createNoncestr());
-        parameterMap.put("trade_type", "APP");
+        parameterMap.put("trade_type", payCommon.getType()==0? "APP":"JSAPI");
         parameterMap.put("sign", WeixinUtils.sign(
             WeixinUtils.FormatBizQueryParaMap(parameterMap, false),
             WXpayConfig.API_KEY));
