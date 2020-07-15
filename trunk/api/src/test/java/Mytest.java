@@ -1,23 +1,16 @@
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import com.framework.loippi.consts.AllInPayBillCutConstant;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Dateutil;
-import com.framework.loippi.utils.StringUtil;
-import com.framework.loippi.utils.sms.AldayuUtil;
-import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.allinpay.yunst.sdk.YunClient;
 import com.allinpay.yunst.sdk.bean.YunConfig;
 import com.allinpay.yunst.sdk.bean.YunRequest;
+import com.framework.loippi.consts.AllInPayBillCutConstant;
 import com.framework.loippi.consts.AllInPayConstant;
 
 public class Mytest {
@@ -45,9 +38,9 @@ public class Mytest {
         Map<String, Object> object1 = new LinkedHashMap<>();
         object1.put("amount",100L);
         object1.put("accountSetNo", AllInPayBillCutConstant.ACCOUNT_SET_NO);
-        Map<String, Object> payMethods = new LinkedHashMap<>();
         ArrayList<Object> objects = new ArrayList<>();
         objects.add(object1);
+        Map<String, Object> payMethods = new LinkedHashMap<>();
         payMethods.put("BALANCE",objects);
         request.put("payMethod", payMethods);
         try {

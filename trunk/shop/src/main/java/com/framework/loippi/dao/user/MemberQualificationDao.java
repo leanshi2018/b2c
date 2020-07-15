@@ -18,4 +18,10 @@ public interface MemberQualificationDao extends GenericDao<MemberQualification, 
     MemberQualification findByCodeAndPeriod(Paramap put);
 
 	PageList<SelfPerformanceJob> findListView(Object parameter, PageBounds pageBounds);
+
+	List<MemberQualification> findByHighRank4(String periodCode);
+
+	Integer findVipNumByMCode(String mCode);
+
+	Integer countByMCode(String mCode);
 }

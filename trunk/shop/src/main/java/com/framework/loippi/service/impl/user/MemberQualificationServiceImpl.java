@@ -47,4 +47,19 @@ public class MemberQualificationServiceImpl extends GenericServiceImpl<MemberQua
         PageList<SelfPerformanceJob> result = memberQualificationDao.findListView(pageable.getParameter(), pageable.getPageBounds());
         return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
     }
+
+    @Override
+    public List<MemberQualification> findByHighRank4(String periodCode) {
+        return memberQualificationDao.findByHighRank4(periodCode);
+    }
+
+    @Override
+    public Integer findVipNumByMCode(String mCode) {
+        return memberQualificationDao.findVipNumByMCode(mCode);
+    }
+
+    @Override
+    public Integer countByMCode(String mCode) {
+        return memberQualificationDao.countByMCode(mCode);
+    }
 }

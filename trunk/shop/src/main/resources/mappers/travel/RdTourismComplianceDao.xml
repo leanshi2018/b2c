@@ -143,5 +143,13 @@
         </where>
     </select>
 
+    <select id="findByMmCode" parameterType="string" resultMap="RdTourismComplianceMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_tourism_compliance
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
 
 </mapper>

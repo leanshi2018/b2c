@@ -1,38 +1,33 @@
 package com.framework.loippi.controller.user;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.framework.loippi.consts.DocumentConsts;
 import com.framework.loippi.controller.BaseController;
-
-
 import com.framework.loippi.entity.common.ShopCommonArticle;
 import com.framework.loippi.entity.common.ShopCommonArticleClass;
-import com.framework.loippi.entity.walet.ShopWalletLog;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.article.ArticleDetailResult;
 import com.framework.loippi.result.article.ArticleListResult;
-import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.result.user.UserAddrsListResult;
 import com.framework.loippi.service.common.ShopCommonArticleClassService;
 import com.framework.loippi.service.common.ShopCommonArticleService;
-import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.Xerror;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 
 /**

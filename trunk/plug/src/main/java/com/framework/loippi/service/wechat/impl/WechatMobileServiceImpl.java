@@ -1,5 +1,8 @@
 package com.framework.loippi.service.wechat.impl;
 
+import jodd.util.StringUtil;
+import lombok.extern.slf4j.Slf4j;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +24,6 @@ import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.wechat.mobile.config.WXpayConfig;
 import com.framework.loippi.utils.wechat.mobile.util.WeixinUtils;
 import com.framework.loippi.utils.wechat.mobile.util.component.ResponseHandler;
-
-import jodd.util.StringUtil;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by neil on 2017/6/22.
@@ -84,7 +84,6 @@ public class WechatMobileServiceImpl implements WechatMobileService {
     public Map<String, String> getParameterMap(PayCommon payCommon) {
         // 这里notify_url是 支付完成后微信发给该链接信息，可以判断会员是否支付成功，改变订单状态等。
         HashMap<String, String> parameterMap = new HashMap<String, String>();
-        parameterMap.put("appid", WXpayConfig.APP_ID);
         parameterMap.put("body", payCommon.getBody());
         parameterMap.put("mch_id", WXpayConfig.MCH_ID);
         parameterMap.put("out_trade_no", payCommon.getOutTradeNo());
@@ -94,7 +93,14 @@ public class WechatMobileServiceImpl implements WechatMobileService {
         parameterMap.put("notify_url", payCommon.getNotifyUrl());
         parameterMap.put("spbill_create_ip", "123.23.11.11");             //request.getRemoteAddr()
         parameterMap.put("nonce_str", WeixinUtils.createNoncestr());
-        parameterMap.put("trade_type", "APP");
+        if (payCommon.getType()==null || payCommon.getType()!=1){
+            parameterMap.put("trade_type", "APP");
+            parameterMap.put("appid", WXpayConfig.APP_ID);
+        }else {
+            parameterMap.put("appid", "wx6e94bb18bedf3c4c");
+            parameterMap.put("trade_type", "JSAPI");
+            parameterMap.put("openid",payCommon.getOpenId());
+        }
         parameterMap.put("sign", WeixinUtils.sign(
             WeixinUtils.FormatBizQueryParaMap(parameterMap, false),
             WXpayConfig.API_KEY));

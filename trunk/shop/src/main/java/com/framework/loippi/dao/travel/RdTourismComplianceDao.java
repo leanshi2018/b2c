@@ -9,4 +9,5 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  * @description:dubbo com.framework.loippi.dao.common
  */
 public interface RdTourismComplianceDao extends GenericDao<RdTourismCompliance, Long> {
+	RdTourismCompliance findByMmCode(String mmCode);
 }
