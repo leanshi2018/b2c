@@ -142,4 +142,15 @@
             <include refid="where_column"/>
         </where>
     </select>
+
+    <insert id="addList" parameterType="java.util.List">
+        INSERT rd_travel_mem_info
+        (
+        <include refid="base_column"/>
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.mmCode},#{item.activityId},#{item.name},#{item.idCard},#{item.mobile})
+        </foreach>
+    </insert>
 </mapper> 

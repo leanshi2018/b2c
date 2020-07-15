@@ -39,7 +39,13 @@ public class TravelMemSubmitParam {
     /**
      * 使用几张旅游券参团
      */
-    @Min(0)
+    @Min(1)
     @NotNull
     private Integer useTicketNum;
+
+    /**
+     * 旅游券id
+     */
+    @NotNull
+    private Long travelId;
 }

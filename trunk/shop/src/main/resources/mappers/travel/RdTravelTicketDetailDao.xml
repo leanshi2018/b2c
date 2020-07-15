@@ -81,6 +81,9 @@
         <if test="image != null and image != ''">
             AND image = #{image,jdbcType=VARCHAR}
         </if>
+        <if test="elseState != null">
+            AND status != 0
+        </if>
     </sql>
 
     <!-- 设置语句 -->

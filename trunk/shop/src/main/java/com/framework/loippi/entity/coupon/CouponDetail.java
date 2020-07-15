@@ -153,4 +153,7 @@ public class CouponDetail implements GenericEntity {
     @JsonSerialize(using = ToStringSerializer.class)
     @Column(name = "get_order_id")
     private Long getOrderId;
+
+    //查询字段
+    private Integer elseState;
 }

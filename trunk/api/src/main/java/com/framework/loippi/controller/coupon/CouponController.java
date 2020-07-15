@@ -670,7 +670,7 @@ public class CouponController extends BaseController {
 	/**
 	 * 个人优惠券列表
 	 * @param request
-	 * @param stateType 优惠券状态 1.已使用 2.未使用 3.已过期
+	 * @param stateType 优惠券状态 1.已使用 2.未使用 3.已过期  9：查询除未使用以为其他类型状态
 	 * @return
 	 */
 	@RequestMapping(value = "/couponList", method = RequestMethod.POST)
@@ -690,7 +690,11 @@ public class CouponController extends BaseController {
 		pageable.setPageNumber(pageNum);
 		pageable.setOrderDirection(Order.Direction.ASC);
 		pageable.setOrderProperty("use_end_time");
-		pageable.setParameter(Paramap.create().put("holdId",member.getMmCode()).put("useState",stateType));
+		if(stateType==9){
+			pageable.setParameter(Paramap.create().put("holdId",member.getMmCode()).put("elseState",9));
+		}else {
+			pageable.setParameter(Paramap.create().put("holdId",member.getMmCode()).put("useState",stateType));
+		}
 		Page<CouponDetail> page = couponDetailService.findByPage(pageable);
 		List<CouponDetail> couponDetails = page.getContent();
 		if(couponDetails!=null&&couponDetails.size()>0){

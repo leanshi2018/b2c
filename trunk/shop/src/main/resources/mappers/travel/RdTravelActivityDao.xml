@@ -7,30 +7,39 @@
 
     <resultMap id="rdTravelActivityResultMap" type="com.framework.loippi.entity.travel.RdTravelActivity">
         <id property="id" column="id"  />
+        <result property="activityCode" column="activity_code" />
         <result property="activityName" column="activity_name" />
         <result property="image" column="image" />
         <result property="startTime" column="start_time" />
         <result property="endTime" column="end_time" />
         <result property="createCode" column="create_code" />
+        <result property="createName" column="create_name" />
         <result property="createTime" column="create_time" />
         <result property="activityCost" column="activity_cost" />
         <result property="remark" column="remark" />
         <result property="detailLink" column="detail_link" />
+        <result property="status" column="status" />
+        <result property="numCeiling" column="num_ceiling" />
+        <result property="numTuxedo" column="num_tuxedo" />
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,activity_name ,image ,start_time ,end_time ,create_code ,create_time ,activity_cost ,remark ,detail_link
+		 id ,activity_code,activity_name ,image ,start_time ,end_time ,create_code ,create_name,create_time ,activity_cost ,remark ,detail_link,status,num_ceiling,num_tuxedo
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{activityName},#{image},#{startTime},#{endTime},#{createCode},#{createTime},#{activityCost},#{remark},#{detailLink}
+		 #{id},#{activityCode},#{activityName},#{image},#{startTime},#{endTime},#{createCode},#{createName},#{createTime},#{activityCost},#{remark},#{detailLink},#{status},
+		 #{numCeiling},#{numTuxedo}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
     <sql id="where_column">
         <if test="id != null and id != ''">
             AND id = #{id}
+        </if>
+        <if test="activityCode != null and activityCode != ''">
+            AND activity_code = #{activityCode,jdbcType=VARCHAR}
         </if>
         <if test="activityName != null and activityName != ''">
             AND activity_name = #{activityName,jdbcType=VARCHAR}
@@ -47,6 +56,9 @@
         <if test="createCode != null and createCode != ''">
             AND create_code = #{createCode}
         </if>
+        <if test="createName != null and createName != ''">
+            AND create_name = #{createName}
+        </if>
         <if test="createTime != null and createTime != ''">
             AND create_time = #{createTime}
         </if>
@@ -59,12 +71,27 @@
         <if test="detailLink != null and detailLink != ''">
             AND detail_link = #{detailLink}
         </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="numCeiling != null and numCeiling != ''">
+            AND num_ceiling = #{numCeiling}
+        </if>
+        <if test="numTuxedo != null and numTuxedo != ''">
+            AND num_tuxedo = #{numTuxedo}
+        </if>
+        <if test="searchTime != null and searchTime != ''">
+            and start_time &lt;= #{searchTime} and end_time >= #{searchTime}
+        </if>
     </sql>
 
     <!-- 设置语句 -->
     <sql id="set_column">
         <if test="id != null and id != ''">
              id = #{id},
+        </if>
+        <if test="activityCode != null and activityCode != ''">
+             activity_code = #{activityCode,jdbcType=VARCHAR},
         </if>
         <if test="activityName != null and activityName != ''">
              activity_name = #{activityName,jdbcType=VARCHAR},
@@ -81,6 +108,9 @@
         <if test="createCode != null and createCode != ''">
              create_code = #{createCode},
         </if>
+        <if test="createName != null and createName != ''">
+             create_name = #{createName},
+        </if>
         <if test="createTime != null and createTime != ''">
              create_time = #{createTime},
         </if>
@@ -92,6 +122,15 @@
         </if>
         <if test="detailLink != null and detailLink != ''">
              detail_link = #{detailLink},
+        </if>
+        <if test="status != null and status != ''">
+             status = #{status},
+        </if>
+        <if test="numCeiling != null and numCeiling != ''">
+             num_ceiling = #{numCeiling},
+        </if>
+        <if test="numTuxedo != null and numTuxedo != ''">
+             num_tuxedo = #{numTuxedo},
         </if>
     </sql>
 

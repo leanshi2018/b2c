@@ -138,6 +138,9 @@
         <if test="getOrderId != null">
             AND get_order_id = #{getOrderId,jdbcType=BIGINT}
         </if>
+        <if test="elseState != null">
+            AND use_state != 2
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
