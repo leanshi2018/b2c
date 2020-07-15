@@ -526,4 +526,25 @@ public class TravelController {
 		return Constants.MSG_URL;
 	}
 
+	/**
+	 * 旅游券列表
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/findTicketAll",method = RequestMethod.GET)
+	public String ticketALl(HttpServletRequest request, ModelMap model) {
+
+
+		List<RdTravelTicket> ticketServiceAll = rdTravelTicketService.findAll();
+		if (ticketServiceAll.size()>0){
+			model.addAttribute("travelTicketList", ticketServiceAll);
+			return "";
+		}else {
+			model.addAttribute("msg", "没有旅游券可选择");
+			return "";
+		}
+
+	}
+
 }
