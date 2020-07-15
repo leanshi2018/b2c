@@ -26,7 +26,7 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
     int sumShare();
 
 
-	RdMmBasicInfo findByMCode(String mCode);
+	RdMmBasicInfo findByMCode(String mmCode);
 
     List<RdMmBasicInfo> findByKeyWord(Paramap put);
 

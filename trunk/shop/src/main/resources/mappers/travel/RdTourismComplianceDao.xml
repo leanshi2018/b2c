@@ -6,18 +6,21 @@
         <id property="id" column="id"/>
         <result property="mmCode" column="mm_code"/>
         <result property="oneQualify" column="one_qualify"/>
+        <result property="oneGrantTime" column="one_grant_time"/>
         <result property="twoQualify" column="two_qualify"/>
+        <result property="twoGrantTime" column="two_grant_time"/>
         <result property="threeQualify" column="three_qualify"/>
+        <result property="threeGrantTime" column="three_grant_time"/>
         <result property="keepQualify" column="keep_qualify"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,mm_code ,one_qualify ,two_qualify ,three_qualify ,keep_qualify
+        id ,mm_code ,one_qualify ,one_grant_time ,two_qualify ,two_grant_time ,three_qualify ,three_grant_time ,keep_qualify
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{mmCode},#{oneQualify},#{twoQualify},#{threeQualify},#{keepQualify}
+        #{id},#{mmCode},#{oneQualify},#{oneGrantTime},#{twoQualify},#{twoGrantTime},#{threeQualify},#{threeGrantTime},#{keepQualify}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -31,11 +34,20 @@
         <if test="oneQualify != null">
             AND one_qualify = #{oneQualify,jdbcType=INTEGER}
         </if>
+        <if test="oneGrantTime != null">
+            AND one_grant_time = #{oneGrantTime}
+        </if>
         <if test="twoQualify != null">
             AND two_qualify = #{twoQualify,jdbcType=INTEGER}
         </if>
+        <if test="twoGrantTime != null">
+            AND two_grant_time = #{twoGrantTime}
+        </if>
         <if test="threeQualify != null">
             AND three_qualify = #{threeQualify,jdbcType=INTEGER}
+        </if>
+        <if test="threeGrantTime != null">
+            AND three_grant_time = #{threeGrantTime}
         </if>
         <if test="keepQualify != null">
             AND keep_qualify = #{keepQualify,jdbcType=INTEGER}
@@ -53,11 +65,20 @@
         <if test="oneQualify != null">
             one_qualify = #{oneQualify,jdbcType=INTEGER},
         </if>
+        <if test="oneGrantTime != null">
+            one_grant_time = #{oneGrantTime},
+        </if>
         <if test="twoQualify != null">
             two_qualify = #{twoQualify,jdbcType=INTEGER},
         </if>
+        <if test="twoGrantTime != null">
+            two_grant_time = #{twoGrantTime},
+        </if>
         <if test="threeQualify != null">
             three_qualify = #{threeQualify,jdbcType=INTEGER},
+        </if>
+        <if test="threeGrantTime != null">
+            three_grant_time = #{threeGrantTime},
         </if>
         <if test="keepQualify != null">
             keep_qualify = #{keepQualify,jdbcType=INTEGER},
@@ -150,6 +171,27 @@
         <where>1=1
             <include refid="where_column"/>
         </where>
+    </select>
+
+    <select id="findOneQualifyList" resultMap="RdTourismComplianceMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_tourism_compliance
+        WHERE one_qualify = 1
+    </select>
+
+    <select id="findTwoQualifyList" resultMap="RdTourismComplianceMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_tourism_compliance
+        WHERE two_qualify = 1
+    </select>
+
+    <select id="findThreeQualifyList" resultMap="RdTourismComplianceMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_tourism_compliance
+        WHERE three_qualify = 1
     </select>
 
 </mapper>

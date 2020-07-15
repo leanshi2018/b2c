@@ -1,6 +1,7 @@
 package com.framework.loippi.service.travel;
 
 import com.framework.loippi.entity.travel.RdTourismCompliance;
+import com.framework.loippi.entity.travel.RdTravelTicket;
 import com.framework.loippi.service.GenericService;
 
 /**
@@ -10,4 +11,6 @@ import com.framework.loippi.service.GenericService;
  */
 public interface RdTourismComplianceService extends GenericService<RdTourismCompliance, Long> {
 	RdTourismCompliance findByMmCode(String mmCode);
+
+	void grantTicket(RdTravelTicket rdTravelTicket);
 }
