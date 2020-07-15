@@ -87,7 +87,7 @@ public class RdTravelTicketDetail implements GenericEntity {
      * 关联旅游活动id
      */
     @Column(name = "use_activity_id" )
-    private String useActivityId;
+    private Long useActivityId;
 
     /**
      * 使用于旅游活动编号
@@ -112,4 +112,7 @@ public class RdTravelTicketDetail implements GenericEntity {
      */
     @Column(name = "image" )
     private String image;
+
+    //查询字段
+    private Integer elseState;
 }

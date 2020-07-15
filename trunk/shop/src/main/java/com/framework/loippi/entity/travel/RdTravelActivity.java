@@ -28,6 +28,11 @@ public class RdTravelActivity implements GenericEntity {
      */
     @Column(id = true, name = "id", updatable = false)
     private Long id;
+    /**
+     * 旅游活动编号
+     */
+    @Column(name = "activity_code" )
+    private String activityCode;
 
     /**
      * 旅游活动名称
@@ -60,6 +65,12 @@ public class RdTravelActivity implements GenericEntity {
     private String createCode;
 
     /**
+     * 创建人姓名
+     */
+    @Column(name = "create_name" )
+    private String createName;
+
+    /**
      * 创建时间
      */
     @Column(name = "create_time" )
@@ -83,5 +94,25 @@ public class RdTravelActivity implements GenericEntity {
     @Column(name = "detail_link" )
     private String detailLink;
 
-    //活动状态 报名参团人数上限  已经报名参团人数
+    /**
+     * 旅游活动状态 0：未开始 1：报名中 2：已成团等待开团 3：进行中 -1：已作废
+     */
+    @Column(name = "status" )
+    private Integer status;
+
+    /**
+     * 参团人数上限 0：不限制
+     */
+    @Column(name = "num_ceiling")
+    private Integer numCeiling;
+
+    /**
+     * 已参团人数 如果为不限制参团，也要记录参团人数
+     */
+    @Column(name = "num_tuxedo")
+    private Integer numTuxedo;
+
+
+    //查询字段
+    private Date searchTime;
 }
