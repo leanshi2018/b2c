@@ -503,9 +503,14 @@ public class TravelController {
 	 * @return
 	 */
 	@RequestMapping(value = "/grantTicket",method = RequestMethod.POST)
-	public String grantTicket(HttpServletRequest request, ModelMap model) {
+	public String grantTicket(HttpServletRequest request, ModelMap model,@RequestParam(required = true, value = "ticketId") Long ticketId) {
 
+		if (ticketId==null){
+			model.addAttribute("msg", "请选择需要发放的券");
+			return Constants.MSG_URL;
+		}
 
+		
 
 		model.addAttribute("msg", "发券成功");
 		return Constants.MSG_URL;
