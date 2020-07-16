@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.entity.travel.RdTourismCompliance;
+import com.framework.loippi.entity.travel.RdTravelTicket;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.travel.RdTourismComplianceService;
+import com.framework.loippi.service.travel.RdTravelTicketService;
 import com.framework.loippi.service.user.MemberQualificationService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
@@ -42,6 +44,8 @@ public class TravelController {
 	private MemberQualificationService memberQualificationService;
 	@Resource
 	private TwiterIdService twiterIdService;
+	@Resource
+	private RdTravelTicketService rdTravelTicketService;
 
 	/**
 	 * 周期计算达标送券
@@ -503,12 +507,44 @@ public class TravelController {
 	 * @return
 	 */
 	@RequestMapping(value = "/grantTicket",method = RequestMethod.POST)
-	public String grantTicket(HttpServletRequest request, ModelMap model) {
+	public String grantTicket(HttpServletRequest request, ModelMap model,@RequestParam(required = true, value = "ticketId") Long ticketId) {
 
+		if (ticketId==null){
+			model.addAttribute("msg", "请选择需要发放的券");
+			return Constants.MSG_URL;
+		}
 
+		RdTravelTicket rdTravelTicket = rdTravelTicketService.find(ticketId);
+		if (rdTravelTicket==null){
+			model.addAttribute("msg", "未找到该券");
+			return Constants.MSG_URL;
+		}
+
+		rdTourismComplianceService.grantTicket(rdTravelTicket);
 
 		model.addAttribute("msg", "发券成功");
 		return Constants.MSG_URL;
+	}
+
+	/**
+	 * 旅游券列表
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = "/findTicketAll",method = RequestMethod.GET)
+	public String ticketALl(HttpServletRequest request, ModelMap model) {
+
+
+		List<RdTravelTicket> ticketServiceAll = rdTravelTicketService.findAll();
+		if (ticketServiceAll.size()>0){
+			model.addAttribute("travelTicketList", ticketServiceAll);
+			return "";
+		}else {
+			model.addAttribute("msg", "没有旅游券可选择");
+			return "";
+		}
+
 	}
 
 }

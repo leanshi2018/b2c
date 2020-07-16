@@ -458,7 +458,7 @@
 	<select id="findByMCode" parameterType="string" resultMap="RdMmBasicInfoResultMap">
 		SELECT	<include refid="base_column" />
 		FROM	RD_MM_BASIC_INFO
-		WHERE	MM_CODE=#{id,jdbcType=BIGINT}
+		WHERE	MM_CODE=#{mmCode}
 	</select>
 
 	<select id="findByKeyWord" parameterType="map" resultMap="RdMmBasicInfoResultMap">

@@ -362,7 +362,18 @@ public class AddressAPIController extends BaseController {
             addr.setConsigneeName(param.getName());
             addr.setMmCode(member.getMmCode());
             addr.setDefaultadd(param.getIsDefault());
-            addr.setAddDetial(param.getAddr());
+            String addDetial = "";
+            String addDetial1 = "";
+            String[] split = param.getAddr().split(":");
+            for (String s : split) {
+                addDetial = addDetial+s;
+            }
+            String[] split1 = addDetial.split("：");
+            for (String s : split1) {
+                addDetial1 = addDetial1+s;
+            }
+            addr.setAddDetial(addDetial1);
+            //addr.setAddDetial(param.getAddr());
             addr.setAddProvinceCode(param.getAddProvinceCode());
             addr.setAddCityCode(param.getAddCityCode());
             addr.setAddCountryCode(param.getAddCountryCode());
@@ -409,7 +420,18 @@ public class AddressAPIController extends BaseController {
         int oldIsDefault = addr.getDefaultadd();
         addr.setMobile(param.getMobile());
         addr.setConsigneeName(param.getName());
-        addr.setAddDetial(param.getAddr());
+        String addDetial = "";
+        String addDetial1 = "";
+        String[] split = param.getAddr().split(":");
+        for (String s : split) {
+            addDetial = addDetial+s;
+        }
+        String[] split1 = addDetial.split("：");
+        for (String s : split1) {
+            addDetial1 = addDetial1+s;
+        }
+        addr.setAddDetial(addDetial1);
+        //addr.setAddDetial(param.getAddr());
         addr.setDefaultadd(param.getIsDefault());
         addr.setAddProvinceCode(param.getAddProvinceCode());
         addr.setAddCityCode(param.getAddCityCode());
