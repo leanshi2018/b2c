@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 旅游活动详情
@@ -23,13 +24,29 @@ public class TravelActivityResult extends RdTravelActivity implements Serializab
      */
     private Integer signUpFlag;
 
-    public static List<TravelActivityResult> build(List<RdTravelActivity> list, HashMap<Long, Integer> map) {
+    /**
+     * 旅游活动详情
+     */
+    private String travelImage;
+
+    public static List<TravelActivityResult> build(List<RdTravelActivity> list, HashMap<Long, Integer> map, String prefix) {
         ArrayList<TravelActivityResult> results = new ArrayList<>();
         for (RdTravelActivity rdTravelActivity : list) {
             TravelActivityResult result = new TravelActivityResult();
             BeanUtils.copyProperties(rdTravelActivity,result);
             Integer flag = map.get(rdTravelActivity.getId());
             result.setSignUpFlag(flag);
+            String image = rdTravelActivity.getImage();
+            if(image==null){
+                result.setTravelImage("");
+            }else {
+                String[] strings = image.split(",");
+                StringBuilder strBuilder = new StringBuilder("");
+                for (String string : strings) {
+                    strBuilder.append("<img src='" + prefix + string + "' width='100%'>");
+                }
+                result.setTravelImage(Optional.ofNullable(prefix + strBuilder.toString()).orElse(""));
+            }
             results.add(result);
         }
         return results;

@@ -1756,4 +1756,8 @@
         where a.payment_state = 1 and a.order_state != 0 and a.logistic_type = 2 and b.mention_id = #{mentionId}
         and a.payment_time >= #{timeLeft} and a.payment_time &lt;= #{timeRight}
     </select>
+
+    <select id="findByTime" resultMap="ShopOrderResultMap">
+        SELECT * FROM shop_order where payment_state = 1 and order_state != 0 and payment_time >= '2020-06-01 00:00:00' and payment_time &lt; '2020-07-01 00:00:00' and order_type != 5
+    </select>
 </mapper>

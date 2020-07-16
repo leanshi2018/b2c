@@ -368,5 +368,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map);
 
+    void getExcel();
+
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

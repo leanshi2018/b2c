@@ -226,7 +226,7 @@ public class TravelController extends BaseController {
                     map.put(rdTravelActivity.getId(),0);
                 }
             }
-            return ApiUtils.success(TravelActivityResult.build(list,map));
+            return ApiUtils.success(TravelActivityResult.build(list,map,prefix));
         }else {
             return ApiUtils.success(new ArrayList<TravelActivityResult>());
         }

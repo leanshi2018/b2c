@@ -2,22 +2,20 @@ package com.framework.loippi.service.impl.order;
 
 
 
+import com.framework.loippi.entity.common.MemberShippingBehavior;
 import com.framework.loippi.entity.order.*;
 import com.framework.loippi.service.order.OrderFundFlowService;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Resource;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -6350,5 +6348,206 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     @Override
     public SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map) {
         return orderDao.statisticsSelfOrderByTime(map);
+    }
+
+    @Override
+    public void getExcel() {
+        List<ShopOrder> list=orderDao.findByTime();
+        System.out.println(list.size());
+        Workbook workbook = new SXSSFWorkbook();
+        Sheet sheet = buildDataSheet(workbook);
+        //构建每行的数据内容
+        int rowNum = 1;
+        for (Iterator<ShopOrder> it = list.iterator(); it.hasNext(); ) {
+            ShopOrder data = it.next();
+            if (data == null) {
+                continue;
+            }
+            //输出行数据
+            Row row = sheet.createRow(rowNum++);
+            convertDataToRow(data, row);
+        }
+        FileOutputStream fileOut = null;
+        try {
+            String exportFilePath = "E:\\shopOrder.xlsx";
+            File exportFile = new File(exportFilePath);
+            if (!exportFile.exists()) {
+                exportFile.createNewFile();
+            }
+
+            fileOut = new FileOutputStream(exportFilePath);
+            workbook.write(fileOut);
+            fileOut.flush();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (null != fileOut) {
+                    fileOut.close();
+                }
+                /*if (null != workbook) {
+                    workbook.close();
+                }*/
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+    private static void convertDataToRow(ShopOrder data, Row row){
+        int cellNum = 0;
+        Cell cell;
+        cell = row.createCell(cellNum++);
+        //1.设置订单编号
+        cell.setCellValue(data.getOrderSn());
+        cell = row.createCell(cellNum++);
+        //2.设置购买人会员编号
+        cell.setCellValue(data.getBuyerId());
+        cell = row.createCell(cellNum++);
+        //3.设置订单总金额
+        cell.setCellValue(data.getGoodsAmount().toString());
+        cell = row.createCell(cellNum++);
+        //4.设置折扣金额
+        cell.setCellValue(data.getDiscount().toString());
+        cell = row.createCell(cellNum++);
+        //5.订单实付总金额
+        cell.setCellValue(data.getOrderTotalPrice().toString());
+        cell = row.createCell(cellNum++);
+        //6.积分支付金额
+        if(data.getPointRmbNum()!=null){
+            cell.setCellValue(data.getPointRmbNum().toString());
+        }else {
+            cell.setCellValue("0.00");
+        }
+        if(data.getPaymentCode().equals("pointsPaymentPlugin")){//积分支付
+            //7.微信支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //8.支付宝支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //9.通联支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //10.通联支付公司入账
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //11.通联支付会员自动提现金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+        }else if(data.getPaymentCode().equals("weixinAppletsPaymentPlugin")){//通联支付
+            //7.微信支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //8.支付宝支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //9.通联支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(data.getOrderAmount().toString());
+            if(data.getCutStatus()!=null&&data.getCutStatus()==2){
+                //10.通联支付公司入账
+                cell = row.createCell(cellNum++);
+                cell.setCellValue((data.getOrderAmount().subtract(data.getCutAmount())).toString());
+                //11.通联支付会员自动提现金额
+                cell = row.createCell(cellNum++);
+                cell.setCellValue(data.getCutAmount().toString());
+            }else {
+                //10.通联支付公司入账
+                cell = row.createCell(cellNum++);
+                cell.setCellValue(data.getOrderAmount().toString());
+                //11.通联支付会员自动提现金额
+                cell = row.createCell(cellNum++);
+                cell.setCellValue("0.00");
+            }
+        }else if(data.getPaymentCode().equals("alipayMobilePaymentPlugin")){//支付宝支付
+            //7.微信支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //8.支付宝支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(data.getOrderAmount().toString());
+            //9.通联支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //10.通联支付公司入账
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //11.通联支付会员自动提现金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+        }else if(data.getPaymentCode().equals("weixinMobilePaymentPlugin")){//微信支付
+            //7.微信支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(data.getOrderAmount().toString());
+            //8.支付宝支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(data.getOrderAmount().toString());
+            //9.通联支付金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //10.通联支付公司入账
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+            //11.通联支付会员自动提现金额
+            cell = row.createCell(cellNum++);
+            cell.setCellValue("0.00");
+        }
+    }
+    private static Sheet buildDataSheet(Workbook workbook) {
+        Sheet sheet = workbook.createSheet();
+        // 设置列头宽度
+        for (int i=0; i<CELL_HEADS.size(); i++) {
+            sheet.setColumnWidth(i, 4000);
+        }
+        // 设置默认行高
+        sheet.setDefaultRowHeight((short) 400);
+        // 构建头单元格样式
+        CellStyle cellStyle = buildHeadCellStyle(sheet.getWorkbook());
+        // 写入第一行各列的数据
+        Row head = sheet.createRow(0);
+        for (int i = 0; i < CELL_HEADS.size(); i++) {
+            Cell cell = head.createCell(i);
+            cell.setCellValue(CELL_HEADS.get(i));
+            cell.setCellStyle(cellStyle);
+        }
+        return sheet;
+    }
+    private static List<String> CELL_HEADS; //列头
+    static{
+        // 类装载时就载入指定好的列头信息，如有需要，可以考虑做成动态生成的列头
+        CELL_HEADS = new ArrayList<>();
+        CELL_HEADS.add("订单编号");
+        CELL_HEADS.add("会员编号");
+        CELL_HEADS.add("订单总金额");
+        CELL_HEADS.add("折扣金额");
+        CELL_HEADS.add("订单实付总金额");
+        CELL_HEADS.add("积分支付金额");
+        CELL_HEADS.add("微信支付");
+        CELL_HEADS.add("支付宝支付");
+        CELL_HEADS.add("通联支付");
+        CELL_HEADS.add("通联支付公司入账");
+        CELL_HEADS.add("通联支付会员自动提现金额");
+    }
+    private static CellStyle buildHeadCellStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        //对齐方式设置
+        /*style.setAlignment(HorizontalAlignment.CENTER);
+        //边框颜色和宽度设置
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBottomBorderColor(IndexedColors.BLACK.getIndex()); // 下边框
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setLeftBorderColor(IndexedColors.BLACK.getIndex()); // 左边框
+        style.setBorderRight(BorderStyle.THIN);
+        style.setRightBorderColor(IndexedColors.BLACK.getIndex()); // 右边框
+        style.setBorderTop(BorderStyle.THIN);
+        style.setTopBorderColor(IndexedColors.BLACK.getIndex()); // 上边框
+        //设置背景颜色
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        //粗体字设置
+        Font font = workbook.createFont();
+        font.setBold(true);
+        style.setFont(font);*/
+        return style;
     }
 }

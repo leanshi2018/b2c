@@ -10,6 +10,7 @@
         <result property="activityCode" column="activity_code" />
         <result property="activityName" column="activity_name" />
         <result property="image" column="image" />
+        <result property="coverImage" column="cover_image" />
         <result property="startTime" column="start_time" />
         <result property="endTime" column="end_time" />
         <result property="createCode" column="create_code" />
@@ -25,11 +26,11 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,activity_code,activity_name ,image ,start_time ,end_time ,create_code ,create_name,create_time ,activity_cost ,remark ,detail_link,status,num_ceiling,num_tuxedo
+		 id ,activity_code,activity_name ,image ,cover_image,start_time ,end_time ,create_code ,create_name,create_time ,activity_cost ,remark ,detail_link,status,num_ceiling,num_tuxedo
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{activityCode},#{activityName},#{image},#{startTime},#{endTime},#{createCode},#{createName},#{createTime},#{activityCost},#{remark},#{detailLink},#{status},
+		 #{id},#{activityCode},#{activityName},#{image},#{coverImage},#{startTime},#{endTime},#{createCode},#{createName},#{createTime},#{activityCost},#{remark},#{detailLink},#{status},
 		 #{numCeiling},#{numTuxedo}
 	</sql>
 
@@ -46,6 +47,9 @@
         </if>
         <if test="image != null and image != ''">
             AND image = #{image,jdbcType=VARCHAR}
+        </if>
+        <if test="coverImage != null and coverImage != ''">
+            AND cover_image = #{coverImage,jdbcType=VARCHAR}
         </if>
         <if test="startTime != null and startTime != ''">
             AND start_time = #{startTime}
@@ -98,6 +102,9 @@
         </if>
         <if test="image != null and image != ''">
              image = #{image,jdbcType=VARCHAR},
+        </if>
+        <if test="coverImage != null and coverImage != ''">
+             cover_image = #{coverImage,jdbcType=VARCHAR},
         </if>
         <if test="startTime != null and startTime != ''">
              start_time = #{startTime},

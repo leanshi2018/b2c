@@ -47,6 +47,12 @@ public class RdTravelActivity implements GenericEntity {
     private String image;
 
     /**
+     * 封面图片
+     */
+    @Column(name = "cover_image" )
+    private String coverImage;
+
+    /**
      * 报名开始时间
      */
     @Column(name = "start_time" )

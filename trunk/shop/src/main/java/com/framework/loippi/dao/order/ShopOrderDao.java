@@ -219,4 +219,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     List<ShopOrder> findSelfOrderByPage(HashMap<String, Object> map);
 
     SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map);
+
+    List<ShopOrder> findByTime();
 }
