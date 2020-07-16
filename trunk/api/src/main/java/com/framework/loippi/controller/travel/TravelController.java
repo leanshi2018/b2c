@@ -63,16 +63,21 @@ public class TravelController extends BaseController {
 
     /**
      *
-     * @param param 旅游活动参团报名人信息
+     * @param memInfoJson 旅游活动参团报名人信息
      * @param request
      * @return
      */
     @RequestMapping(value = "/tuxedo.json", method = RequestMethod.POST)
-    public String tuxedo(@Valid List< TravelMemSubmitParam> param, HttpServletRequest request) {
+    public String tuxedo(String memInfoJson, HttpServletRequest request) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if(member==null){
             return ApiUtils.error(Xerror.USER_UNLOGIN_JSON_CODE);
         }
+        if(StringUtil.isEmpty(memInfoJson)){
+            return ApiUtils.error("请传入参团游客身份信息");
+        }
+        List<TravelMemSubmitParam> param = com.alibaba.fastjson.JSONArray
+                .parseArray(memInfoJson, TravelMemSubmitParam.class);
         if(param==null||param.size()==0){
             return ApiUtils.error("请填入参团游客身份信息");
         }
