@@ -247,8 +247,10 @@ public class TravelController extends BaseController {
         HashMap<String, Object> map = new HashMap<>();
         if(list!=null&&list.size()>0){
             map.put("num",list.size());
+            map.put("travelId",list.get(0).getTravelId());
         }else {
             map.put("num",0);
+            map.put("travelId",-1L);
         }
         map.put("price",500);
         return ApiUtils.success(map);
