@@ -53,8 +53,10 @@ public class RdTravelActivityServiceImpl extends GenericServiceImpl<RdTravelActi
         }
         //修改旅游活动信息
         rdTravelActivity.setNumTuxedo(Optional.ofNullable(rdTravelActivity.getNumTuxedo()).orElse(0) +memInfos.size());
-        if(Optional.ofNullable(rdTravelActivity.getNumTuxedo()).orElse(0)+memInfos.size()>=Optional.ofNullable(rdTravelActivity.getNumCeiling()).orElse(0)){
-            rdTravelActivity.setStatus(2);
+        if(rdTravelActivity.getNumCeiling()!=null&&rdTravelActivity.getNumCeiling()!=0){
+            if(Optional.ofNullable(rdTravelActivity.getNumTuxedo()).orElse(0)+memInfos.size()>=Optional.ofNullable(rdTravelActivity.getNumCeiling()).orElse(0)){
+                rdTravelActivity.setStatus(2);
+            }
         }
         rdTravelActivityDao.update(rdTravelActivity);
     }
