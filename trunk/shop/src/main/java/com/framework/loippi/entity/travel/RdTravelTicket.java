@@ -81,4 +81,10 @@ public class RdTravelTicket implements GenericEntity {
      */
     @Column(name = "create_time" )
     private Date createTime;
+
+    /**
+     * 旅游券发放总张数
+     */
+    @Column(name = "issue_num" )
+    private Long issueNum;
 }

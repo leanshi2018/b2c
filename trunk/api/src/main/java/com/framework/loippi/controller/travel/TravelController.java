@@ -101,7 +101,7 @@ public class TravelController extends BaseController {
         if(rdTravelActivity.getStatus()==null||rdTravelActivity.getStatus()!=1){
             return ApiUtils.error("当前旅游活动无法进行报名");
         }
-        if(rdTravelActivity.getNumCeiling()!=null&&rdTravelActivity.getNumTuxedo()!=null&&(rdTravelActivity.getNumTuxedo()+param.size())>rdTravelActivity.getNumCeiling()){
+        if(rdTravelActivity.getNumCeiling()!=null&&rdTravelActivity.getNumCeiling()!=0&&rdTravelActivity.getNumTuxedo()!=null&&(rdTravelActivity.getNumTuxedo()+param.size())>rdTravelActivity.getNumCeiling()){
             return ApiUtils.error("此团报名已满，请关注下次旅游活动");
         }
         //2.校验会员是否已经报名过该旅游活动
