@@ -16,15 +16,16 @@
         <result property="createCode" column="create_code" />
         <result property="createName" column="create_name" />
         <result property="createTime" column="create_time" />
+        <result property="issueNum" column="issue_num" />
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,travel_name ,ticket_price ,image ,remark ,use_start_time ,use_end_time ,create_code ,create_name ,create_time
+		 id ,travel_name ,ticket_price ,image ,remark ,use_start_time ,use_end_time ,create_code ,create_name ,create_time,issue_num
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{travelName},#{ticketPrice},#{image},#{remark},#{useStartTime},#{useEndTime},#{createCode},#{createName},#{createTime}
+		 #{id},#{travelName},#{ticketPrice},#{image},#{remark},#{useStartTime},#{useEndTime},#{createCode},#{createName},#{createTime},#{issueNum}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -59,6 +60,9 @@
         <if test="createTime != null and createTime != ''">
             AND create_time = #{createTime}
         </if>
+        <if test="issueNum != null and issueNum != ''">
+            AND issue_num = #{issueNum}
+        </if>
     </sql>
 
     <!-- 设置语句 -->
@@ -92,6 +96,9 @@
         </if>
         <if test="createTime != null and createTime != ''">
              create_time = #{createTime},
+        </if>
+        <if test="issueNum != null and issueNum != ''">
+             issue_num = #{issueNum},
         </if>
     </sql>
 

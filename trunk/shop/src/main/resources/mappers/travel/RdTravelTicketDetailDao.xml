@@ -51,7 +51,7 @@
         <if test="ticketSn != null and ticketSn != ''">
             AND ticket_sn = #{ticketSn,jdbcType=VARCHAR}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status}
         </if>
         <if test="ownCode != null and ownCode != ''">
@@ -103,7 +103,7 @@
         <if test="ticketSn != null and ticketSn != ''">
              ticket_sn = #{ticketSn,jdbcType=VARCHAR},
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
              status = #{status},
         </if>
         <if test="ownCode != null and ownCode != ''">
