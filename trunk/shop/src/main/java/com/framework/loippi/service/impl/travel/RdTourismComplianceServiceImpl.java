@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.dao.travel.RdTourismComplianceDao;
+import com.framework.loippi.dao.travel.RdTravelTicketDao;
 import com.framework.loippi.dao.travel.RdTravelTicketDetailDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmAccountLogDao;
@@ -49,6 +50,8 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 	@Resource
 	private RdTravelTicketDetailDao rdTravelTicketDetailDao;
 	@Resource
+	private RdTravelTicketDao rdTravelTicketDao;
+	@Resource
 	private TwiterIdService twiterIdService;
 	@Resource
 	private RdMmBasicInfoDao rdMmBasicInfoDao;
@@ -77,6 +80,14 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 
 	@Override
 	public void grantTicket(RdTravelTicket rdTravelTicket) {
+
+		Long issueNum = rdTravelTicket.getIssueNum();
+		if (issueNum==null){
+			issueNum = 0l;
+		}
+
+		Long total = 0l;
+
 		//一级奖励达标会员
 		List<RdTourismCompliance> oneQualifyList = rdTourismComplianceDao.findOneQualifyList();
 		for (RdTourismCompliance rdTourismCompliance : oneQualifyList) {
@@ -98,6 +109,7 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 			rdTourismCompliance.setOneQualify(2);
 			rdTourismCompliance.setOneGrantTime(new Date());
 			rdTourismComplianceDao.update(rdTourismCompliance);
+			total = total+1;
 		}
 
 		//二级奖励达标会员
@@ -118,6 +130,7 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 				rdTravelTicketDetail.setImage(Optional.ofNullable(rdTravelTicket.getImage()).orElse(""));
 
 				rdTravelTicketDetailDao.insert(rdTravelTicketDetail);
+				total = total+1;
 			}
 			rdTourismCompliance.setTwoQualify(2);
 			rdTourismCompliance.setTwoGrantTime(new Date());
@@ -180,6 +193,9 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 			rdTourismCompliance.setThreeGrantTime(new Date());
 			rdTourismComplianceDao.update(rdTourismCompliance);
 		}
+
+		rdTravelTicket.setIssueNum(issueNum+total);
+		rdTravelTicketDao.update(rdTravelTicket);
 	}
 
 }
