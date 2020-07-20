@@ -47,6 +47,13 @@
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>1.45</version>
+        </dependency>
+
         <!--通商云-->
         <!--<dependency>
             <groupId>com.allinpay</groupId>
