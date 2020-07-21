@@ -2,6 +2,7 @@ package com.framework.loippi.utils.wechat.applets.util;
 
 import net.sf.json.JSONObject;
 
+import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +69,8 @@ public class GetOpenIDUtil {
 
 	public static String decrypt(byte[] key, byte[] iv, byte[] encData) throws Exception {
 		AlgorithmParameterSpec ivSpec = new IvParameterSpec(iv);
-		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding","BC");
 		SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
 		cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
 		//解析解密后的字符串
