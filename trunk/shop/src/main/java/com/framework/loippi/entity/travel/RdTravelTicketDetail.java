@@ -115,4 +115,10 @@ public class RdTravelTicketDetail implements GenericEntity {
 
     //查询字段
     private Integer elseState;
+
+    //获取时间范围左边限
+    private String ownTimeLeft;
+
+    //获取时间范围右边限
+    private String ownTimeRight;
 }

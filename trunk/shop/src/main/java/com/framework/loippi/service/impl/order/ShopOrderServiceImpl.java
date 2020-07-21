@@ -6481,7 +6481,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             cell.setCellValue(data.getOrderAmount().toString());
             //8.支付宝支付金额
             cell = row.createCell(cellNum++);
-            cell.setCellValue(data.getOrderAmount().toString());
+            cell.setCellValue("0.00");
             //9.通联支付金额
             cell = row.createCell(cellNum++);
             cell.setCellValue("0.00");

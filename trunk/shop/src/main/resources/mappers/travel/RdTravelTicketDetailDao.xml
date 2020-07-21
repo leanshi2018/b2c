@@ -84,6 +84,12 @@
         <if test="elseState != null">
             AND status != 0
         </if>
+        <if test="ownTimeLeft != null and ownTimeLeft != ''">
+            AND own_time >= #{ownTimeLeft}
+        </if>
+        <if test="ownTimeRight != null and ownTimeRight != ''">
+            AND own_time &lt;= #{ownTimeRight}
+        </if>
     </sql>
 
     <!-- 设置语句 -->
