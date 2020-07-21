@@ -561,7 +561,7 @@ public class CartAPIController extends BaseController {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Date startTime = format.parse("2020-05-01 00:00:00");
-            Date endTime = format.parse("2020-08-10 23:59:59");
+            Date endTime = format.parse("2020-06-10 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
             if(b){
