@@ -8,7 +8,6 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.exceptions.ServerException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
-import com.framework.loippi.consts.AldayuConsts;
 import lombok.extern.slf4j.Slf4j;
 
 /**

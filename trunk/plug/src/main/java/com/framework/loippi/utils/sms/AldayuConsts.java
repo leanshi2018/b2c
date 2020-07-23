@@ -1,4 +1,4 @@
-package com.framework.loippi.consts;
+package com.framework.loippi.utils.sms;
 
 public interface AldayuConsts {
     //public static final String ACCESS_KEY_Id="LTAIGcf6P6DcKY6e";
