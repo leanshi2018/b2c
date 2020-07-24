@@ -297,10 +297,10 @@ public class OrderSysController extends GenericController {
                             }
                         }
                     }else {
-                        ShopOrder shopOrder1 = new ShopOrder();
+                        /*ShopOrder shopOrder1 = new ShopOrder();
                         shopOrder1.setId(shopOrder.getId());
                         shopOrder1.setOrderState(30);
-                        orderService.update(shopOrder1);
+                        orderService.update(shopOrder1);*/
                     }
                 }
             }
@@ -359,10 +359,10 @@ public class OrderSysController extends GenericController {
                         }
                     }
                 }else {//自提
-                    ShopOrder shopOrder1 = new ShopOrder();
+                    /*ShopOrder shopOrder1 = new ShopOrder();
                     shopOrder1.setId(shopOrder.getId());
                     shopOrder1.setOrderState(30);
-                    orderService.update(shopOrder1);
+                    orderService.update(shopOrder1);*/
                 }
             }
         }
@@ -901,7 +901,7 @@ public class OrderSysController extends GenericController {
             return json;
         }
 
-        if (shopOrder.getOrderState().longValue()==10||shopOrder.getOrderState().longValue()==20||shopOrder.getOrderState().longValue()==30){
+        if (shopOrder.getOrderState().longValue()==10||shopOrder.getOrderState().longValue()==20){
             Long addressId = shopOrder.getAddressId();
             ShopOrderAddress orderAddress = new ShopOrderAddress();
             orderAddress.setId(addressId);
@@ -1067,7 +1067,7 @@ public class OrderSysController extends GenericController {
                 orderAddressService.update(orderAddress);
 
                 //修改订单状态为待收货
-                shopOrder.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                shopOrder.setOrderState(OrderState.ORDER_STATE_UNFILLED);
             }else if (logisticType==2){
                 logisticType=1;
             }
