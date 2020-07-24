@@ -1717,7 +1717,37 @@
         and DATE_FORMAT(a.payment_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
     </select>
 
+    <select id="findLastMonthCountByMentionId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT COUNT(1) from shop_order a INNER JOIN shop_order_address b on a.address_id = b.id where a.payment_state = 1 and a.order_state != 0 and a.logistic_type = 2 and b.mention_id = #{mentionId}
+        and PERIOD_DIFF(date_format(now( ), '%Y%m') , date_format(a.payment_time, '%Y%m')) = 1
+    </select>
+
     <select id="findMonthOrderInfo" parameterType="java.lang.Integer" resultType="com.framework.loippi.pojo.selfMention.OrderInfo">
+        select a.id as orderId,
+        a.payment_time as paymentTime,
+        a.buyer_id as buyerId,
+        a.order_sn as orderSn,
+        a.buyer_phone as buyerPhone,
+        a.buyer_name as buyerName,
+        a.order_type as orderType,
+        a.creation_period as creationPeriod,
+        a.create_time as createTime,
+        a.order_amount as orderAmount,
+        ifnull(a.use_point_num, 0 ) as usePointNum,
+        ifnull(a.discount, 0 ) as discount,
+        ifnull(a.coupon_discount, 0 ) as couponDiscount,
+        ifnull(a.rank_discount, 0 ) as rankDiscount,
+        ifnull(a.goods_amount, 0 ) as goodsAmount,
+        ifnull(a.shipping_fee, 0 ) as shippingFee,
+        ifnull(a.shipping_preferential_fee, 0 ) as shippingPreferentialFee,
+        ifnull(a.refund_amount, 0 ) as refundAmount,
+        ifnull(a.refund_point, 0 ) as refundPoint,
+        a.order_state as orderState
+        from shop_order a INNER JOIN shop_order_address b on a.address_id = b.id where a.payment_state = 1 and a.order_state != 0 and a.logistic_type = 2 and b.mention_id = #{mentionId}
+        and PERIOD_DIFF(date_format(now( ), '%Y%m') , date_format(a.payment_time, '%Y%m')) = 1
+    </select>
+
+    <select id="findLastMonthOrderInfo" parameterType="java.lang.Integer" resultType="com.framework.loippi.pojo.selfMention.OrderInfo">
         select a.id as orderId,
         a.payment_time as paymentTime,
         a.buyer_id as buyerId,
@@ -1746,6 +1776,9 @@
         select a.* from shop_order a inner join shop_order_address b on a.address_id = b.id where a.payment_state = 1 and a.order_state != 0 and a.logistic_type = 2 and b.mention_id = #{mentionId}
         <if test="orderState != null and orderState != ''">
             and a.order_state = #{orderState}
+        </if>
+        <if test="searchState != null and searchState != ''">
+            and (a.order_state =30 or a.order_state = 40)
         </if>
         order by a.payment_time desc
         limit #{pageNumber},#{pageSize}

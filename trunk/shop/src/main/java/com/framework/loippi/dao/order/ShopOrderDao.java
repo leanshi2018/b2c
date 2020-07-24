@@ -221,4 +221,8 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map);
 
     List<ShopOrder> findByTime();
+
+    Integer findLastMonthCountByMentionId(Integer mentionId);
+
+    List<OrderInfo> findLastMonthOrderInfo(Integer mentionId);
 }
