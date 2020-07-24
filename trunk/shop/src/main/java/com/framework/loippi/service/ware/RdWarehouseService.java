@@ -6,6 +6,8 @@ import java.util.List;
 import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.service.GenericService;
 
+import java.util.List;
+
 /**
  * SERVICE - RdWarehouse(仓库记录表)
  * 
@@ -18,5 +20,6 @@ public interface RdWarehouseService  extends GenericService<RdWarehouse, Long> {
 
 	RdWarehouse findByMmCode(String mmCode);
 
+    List<RdWarehouse> findMentionWare();
 	List<RdWarehouse> findByMemberId(Long addId);
 }

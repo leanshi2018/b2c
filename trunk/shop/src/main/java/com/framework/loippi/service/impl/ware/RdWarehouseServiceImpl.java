@@ -10,6 +10,8 @@ import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.ware.RdWarehouseService;
 
+import java.util.List;
+
 /**
  * SERVICE - RdWarehouse(仓库记录表)
  * 
@@ -39,6 +41,9 @@ public class RdWarehouseServiceImpl extends GenericServiceImpl<RdWarehouse, Long
 	}
 
 	@Override
+	public List<RdWarehouse> findMentionWare() {
+		return rdWarehouseDao.findMentionWare();
+	}
 	public List<RdWarehouse> findByMemberId(Long addId) {
 		return rdWarehouseDao.findByMemberId(addId);
 	}

@@ -711,7 +711,7 @@ public class SelfMentionController extends BaseController {
     /**
      * 获取当前登录用户自提订单信息
      * @param request
-     * @param orderState 30:待收货 40：已完成
+     * @param orderState 20:待发货 30:待收货 40：已完成  100：查询其他状态订单
      * @param pager
      * @return
      */
