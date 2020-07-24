@@ -6420,10 +6420,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         cell.setCellValue(data.getBuyerId());
         cell = row.createCell(cellNum++);
         //3.设置订单总金额
-        cell.setCellValue(data.getGoodsAmount().toString());
+        BigDecimal amount = data.getGoodsAmount().add(data.getShippingFee());
+        cell.setCellValue(amount.toString());
         cell = row.createCell(cellNum++);
         //4.设置折扣金额
-        cell.setCellValue(data.getDiscount().toString());
+        BigDecimal discount = data.getDiscount().add(data.getShippingPreferentialFee());
+        cell.setCellValue(discount.toString());
         cell = row.createCell(cellNum++);
         //5.订单实付总金额
         cell.setCellValue(data.getOrderTotalPrice().toString());
@@ -6497,7 +6499,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             cell.setCellValue(data.getOrderAmount().toString());
             //8.支付宝支付金额
             cell = row.createCell(cellNum++);
-            cell.setCellValue(data.getOrderAmount().toString());
+            cell.setCellValue("0.00");
             //9.通联支付金额
             cell = row.createCell(cellNum++);
             cell.setCellValue("0.00");
@@ -6534,8 +6536,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         CELL_HEADS = new ArrayList<>();
         CELL_HEADS.add("订单编号");
         CELL_HEADS.add("会员编号");
-        CELL_HEADS.add("订单总金额");
-        CELL_HEADS.add("折扣金额");
+        CELL_HEADS.add("订单总金额");//+8
+        CELL_HEADS.add("折扣金额");//+8 huozhe +0
         CELL_HEADS.add("订单实付总金额");
         CELL_HEADS.add("积分支付金额");
         CELL_HEADS.add("微信支付");

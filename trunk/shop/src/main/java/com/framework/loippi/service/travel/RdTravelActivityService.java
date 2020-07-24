@@ -9,5 +9,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface RdTravelActivityService extends GenericService<RdTravelActivity, Long> {
-    void tuxedo(ArrayList<RdTravelMemInfo> memInfos, Integer useTicketNum, List<RdTravelTicketDetail> list, RdTravelActivity rdTravelActivity) throws Exception;
+    void tuxedo(ArrayList<RdTravelMemInfo> memInfos, Integer useTicketNum, List<RdTravelTicketDetail> list, RdTravelActivity rdTravelActivity, String mmCode, String nickname) throws Exception;
 }

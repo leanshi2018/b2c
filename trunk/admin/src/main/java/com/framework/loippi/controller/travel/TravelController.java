@@ -1,16 +1,28 @@
 package com.framework.loippi.controller.travel;
 
+import com.framework.loippi.entity.Principal;
+import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.travel.RdTravelTicketDetail;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.service.travel.RdTravelTicketDetailService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,6 +58,8 @@ public class TravelController {
 	private TwiterIdService twiterIdService;
 	@Resource
 	private RdTravelTicketService rdTravelTicketService;
+	@Resource
+	private RdTravelTicketDetailService ticketDetailService;
 
 	/**
 	 * 周期计算达标送券
@@ -547,4 +561,153 @@ public class TravelController {
 
 	}
 
+	/**
+	 * 保存或者编辑修改旅游券信息
+	 * @param request
+	 * @param model
+	 * @param travelTicket 旅游券信息
+	 * @return
+	 */
+	@RequestMapping(value = "/addOrUpdate",method = RequestMethod.POST)
+	public String addOrUpdate(HttpServletRequest request, ModelMap model,@ModelAttribute RdTravelTicket travelTicket) {
+		if(StringUtil.isEmpty(travelTicket.getTravelName())){
+			model.addAttribute("msg", "旅游券名称不可以为空");
+			return Constants.MSG_URL;
+		}
+		if(travelTicket.getUseStartTime()==null){
+			model.addAttribute("msg", "旅游券使用开始时间为空");
+			return Constants.MSG_URL;
+		}
+		if(travelTicket.getUseEndTime()==null){
+			model.addAttribute("msg", "旅游券使用结束时间为空");
+			return Constants.MSG_URL;
+		}
+		if(travelTicket.getTicketPrice()==null){
+			model.addAttribute("msg", "旅游券面值为空");
+			return Constants.MSG_URL;
+		}
+		if(travelTicket.getImage()==null){
+			model.addAttribute("msg", "旅游券图片为空");
+			return Constants.MSG_URL;
+		}
+		if(StringUtil.isEmpty(travelTicket.getRemark())){
+			model.addAttribute("msg", "旅游券使用说明为空");
+			return Constants.MSG_URL;
+		}
+		travelTicket.setIssueNum(0L);
+		Subject subject = SecurityUtils.getSubject();
+		if(subject!=null){
+			Principal principal = (Principal) subject.getPrincipal();
+			if (principal != null && principal.getId() != null) {
+				Long id = principal.getId();
+				String username = principal.getUsername();
+				Map<String, String> map =rdTravelTicketService.saveOrEditCoupon(travelTicket,id,username);
+				if (map == null || StringUtil.isEmpty(map.get("code"))) {
+					model.addAttribute("msg", "保存旅游券失败！");
+					return Constants.MSG_URL;
+				}
+
+				String code = map.get("code");
+				if (StringUtil.isEmpty(code) || code.equals("0")) {
+					String errorMsg = map.get("msg");
+					model.addAttribute("msg", errorMsg);
+					return Constants.MSG_URL;
+				}
+				//model.addAttribute("msg", "成功");
+				return "";//TODO
+			}
+		}
+		model.addAttribute("msg", "请登录后再进行旅游券相关操作");
+		return Constants.MSG_URL;
+	}
+
+	/**
+	 * 旅游券基本信息列表
+	 *
+	 */
+	@RequestMapping("/travelTicket/list")
+	public String list(ModelMap model,
+					   @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+					   @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
+					   @ModelAttribute RdTravelTicket travelTicket) {
+		//参数整理
+		Pageable pager = new Pageable();
+		pager.setPageNumber(pageNo);
+		pager.setPageSize(pageSize);
+		pager.setOrderProperty("create_time");
+		pager.setOrderDirection(Order.Direction.DESC);
+		pager.setParameter(travelTicket);
+		Page<RdTravelTicket> page = rdTravelTicketService.findByPage(pager);
+		model.addAttribute("travelTicketList", page);
+		return "";//TODO
+	}
+
+	/**
+	 * 旅游券详情基本信息列表
+	 *
+	 */
+	@RequestMapping("/travelTicketDetail/list")
+	public String detailList(ModelMap model,
+					   @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+					   @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
+					   @ModelAttribute RdTravelTicketDetail detail) {
+		//参数整理
+		Pageable pager = new Pageable();
+		pager.setPageNumber(pageNo);
+		pager.setPageSize(pageSize);
+		pager.setOrderProperty("create_time");
+		pager.setOrderDirection(Order.Direction.DESC);
+		pager.setParameter(detail);
+		Page<RdTravelTicketDetail> page = ticketDetailService.findByPage(pager);
+		model.addAttribute("travelTicketDetailList", page);
+		return "";//TODO
+	}
+
+	/**
+	 * 核销或者恢复单张旅游券
+	 * @param model
+	 * @param ticketSn
+	 * @param species 1:恢复 2：核销
+	 * @return
+	 */
+	@RequestMapping("/travelTicketDetail/restoreOrDestroy")
+	public String restoreOrDestroy(ModelMap model,@RequestParam(required = true, value = "ticketSn") String ticketSn,
+								   @RequestParam(required = true, value = "species") Integer species) {
+		if(StringUtil.isEmpty(ticketSn)){
+			model.addAttribute("msg", "请选择需要操作的旅游券");
+			return Constants.MSG_URL;
+		}
+		if(species==null||(species!=1&&species!=2)){
+			model.addAttribute("msg", "请选择正确的处理方式");
+			return Constants.MSG_URL;
+		}
+		RdTravelTicketDetail ticketDetail = ticketDetailService.find("ticketSn",ticketSn);
+		if(ticketDetail==null){
+			model.addAttribute("msg", "需要操作的旅游券不存在");
+			return Constants.MSG_URL;
+		}
+		if(ticketDetail.getStatus()==null){
+			model.addAttribute("msg", "旅游券状态异常");
+			return Constants.MSG_URL;
+		}
+		Subject subject = SecurityUtils.getSubject();
+		if(subject!=null){
+			Principal principal = (Principal) subject.getPrincipal();
+			if (principal != null && principal.getId() != null) {
+				Long id = principal.getId();
+				String username = principal.getUsername();
+				//对旅游券进行核销或者恢复操作
+				try {
+					ticketDetailService.restoreOrDestroy(ticketDetail,species,id,username);
+					return "";//TODO
+				} catch (Exception e) {
+					e.printStackTrace();
+					model.addAttribute("msg", e.getMessage());
+					return Constants.MSG_URL;
+				}
+			}
+		}
+		model.addAttribute("msg", "请登录后再进行旅游券相关操作");
+		return Constants.MSG_URL;
+	}
 }

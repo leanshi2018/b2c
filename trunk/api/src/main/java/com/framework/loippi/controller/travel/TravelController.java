@@ -132,7 +132,7 @@ public class TravelController extends BaseController {
                 memInfo.setMobile(travelMemSubmitParam.getMobile());
                 memInfos.add(memInfo);
             }
-            rdTravelActivityService.tuxedo(memInfos,useTicketNum,list,rdTravelActivity);
+            rdTravelActivityService.tuxedo(memInfos,useTicketNum,list,rdTravelActivity,member.getMmCode(),member.getNickname());
             return ApiUtils.success("旅游参团报名成功");
         } catch (Exception e) {
             e.printStackTrace();

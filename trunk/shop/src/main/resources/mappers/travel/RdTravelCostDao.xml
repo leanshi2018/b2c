@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.travel.RdTravelCostDao">
+
+    <resultMap id="rdTravelCostResultMap" type="com.framework.loippi.entity.travel.RdTravelCost">
+        <id property="id" column="id"  />
+        <result property="activityId" column="activity_id" />
+        <result property="activityName" column="activity_name" />
+        <result property="mmCode" column="m_code" />
+        <result property="mNickName" column="m_nick_name" />
+        <result property="joinNum" column="join_num" />
+        <result property="ticketId" column="ticket_id" />
+        <result property="ticketPrice" column="ticket_price" />
+        <result property="useNum" column="use_num" />
+        <result property="moneyTotal" column="money_total" />
+        <result property="moneyTicket" column="money_ticket" />
+        <result property="moenyFill" column="moeny_fill" />
+        <result property="moenyYet" column="moeny_yet" />
+        <result property="moneyResidue" column="money_residue" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,activity_id,activity_name ,m_code ,m_nick_name,join_num ,ticket_id ,ticket_price ,use_num,money_total ,money_ticket ,moeny_fill ,moeny_yet,money_residue
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{activityId},#{activityName},#{mmCode},#{mNickName},#{joinNum},#{ticketId},#{ticketPrice},#{useNum},#{moneyTotal},#{moneyTicket},#{moenyFill},#{moenyYet},#{moneyResidue}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id}
+        </if>
+        <if test="activityId != null and activityId != ''">
+            AND activity_id = #{activityId}
+        </if>
+        <if test="activityName != null and activityName != ''">
+            AND activity_name = #{activityName,jdbcType=VARCHAR}
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+            AND m_code = #{mmCode,jdbcType=VARCHAR}
+        </if>
+        <if test="mNickName != null and mNickName != ''">
+            AND m_nick_name = #{mNickName,jdbcType=VARCHAR}
+        </if>
+        <if test="joinNum != null and joinNum != ''">
+            AND join_num = #{joinNum}
+        </if>
+        <if test="ticketId != null and ticketId != ''">
+            AND ticket_id = #{ticketId}
+        </if>
+        <if test="ticketPrice != null and ticketPrice != ''">
+            AND ticket_price = #{ticketPrice}
+        </if>
+        <if test="useNum != null and useNum != ''">
+            AND use_num = #{useNum}
+        </if>
+        <if test="moneyTotal != null and moneyTotal != ''">
+            AND money_total = #{moneyTotal}
+        </if>
+        <if test="moneyTicket != null and moneyTicket != ''">
+            AND money_ticket = #{moneyTicket}
+        </if>
+        <if test="moenyFill != null and moenyFill != ''">
+            AND moeny_fill = #{moenyFill}
+        </if>
+        <if test="moenyYet != null and moenyYet != ''">
+            AND moeny_yet = #{moenyYet}
+        </if>
+        <if test="moneyResidue != null and moneyResidue != ''">
+            AND money_residue = #{moneyResidue}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+             id = #{id},
+        </if>
+        <if test="activityId != null and activityId != ''">
+             activity_id = #{activityId},
+        </if>
+        <if test="activityName != null and activityName != ''">
+             activity_name = #{activityName,jdbcType=VARCHAR},
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+             m_code = #{mmCode,jdbcType=VARCHAR},
+        </if>
+        <if test="mNickName != null and mNickName != ''">
+             m_nick_name = #{mNickName,jdbcType=VARCHAR},
+        </if>
+        <if test="joinNum != null and joinNum != ''">
+             join_num = #{joinNum},
+        </if>
+        <if test="ticketId != null and ticketId != ''">
+             ticket_id = #{ticketId},
+        </if>
+        <if test="ticketPrice != null and ticketPrice != ''">
+             ticket_price = #{ticketPrice},
+        </if>
+        <if test="useNum != null and useNum != ''">
+             use_num = #{useNum},
+        </if>
+        <if test="moneyTotal != null and moneyTotal != ''">
+             money_total = #{moneyTotal},
+        </if>
+        <if test="moneyTicket != null and moneyTicket != ''">
+             money_ticket = #{moneyTicket},
+        </if>
+        <if test="moenyFill != null and moenyFill != ''">
+             moeny_fill = #{moenyFill},
+        </if>
+        <if test="moenyYet != null and moenyYet != ''">
+             moeny_yet = #{moenyYet},
+        </if>
+        <if test="moneyResidue != null and moneyResidue != ''">
+             money_residue = #{moneyResidue},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="rdTravelCostResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_cost
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="rdTravelCostResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_cost
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_travel_cost
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.travel.RdTravelCost">
+        INSERT rd_travel_cost
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.travel.RdTravelCost">
+        UPDATE rd_travel_cost
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_travel_cost
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_travel_cost
+        WHERE ID IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="rdTravelCostResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_cost
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="rdTravelCostResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_cost
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+</mapper> 

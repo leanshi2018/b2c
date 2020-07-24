@@ -30,16 +30,10 @@ public class AldayuUtil {
     static final String domain = "dysmsapi.aliyuncs.com";
 
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
-//    static final String accessKeyId = "LTAIegFSQ2TN5IW0";
-//    static final String accessKeySecret = "5nieUL0bRCwWb0w1f06GuasIABfxTR";
-
-    static final String accessKeyId = "LTAIGcf6P6DcKY6e";
-    static final String accessKeySecret = "EWjk34z36uIpxY1bbPQWguuVDwd55l";
-
 
     public static void sendSms(String phone, String code, String codeType, String signName)
             throws Exception {
-        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", AldayuConsts.ACCESS_KEY_Id, AldayuConsts.ACCESS_KEY_SECRET);
 
         IAcsClient client = new DefaultAcsClient(profile);
 

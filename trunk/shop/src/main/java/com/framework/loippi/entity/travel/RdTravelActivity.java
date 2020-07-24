@@ -101,7 +101,7 @@ public class RdTravelActivity implements GenericEntity {
     private String detailLink;
 
     /**
-     * 旅游活动状态 0：未开始 1：报名中 2：已成团等待开团 3：进行中 -1：已作废
+     * 旅游活动状态 0：未开始 1：报名中 2：已成团等待开团 3：已完成 -1：已作废
      */
     @Column(name = "status" )
     private Integer status;
