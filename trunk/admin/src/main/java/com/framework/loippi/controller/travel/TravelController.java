@@ -1,13 +1,5 @@
 package com.framework.loippi.controller.travel;
 
-import com.framework.loippi.entity.Principal;
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.entity.travel.RdTravelTicketDetail;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.service.travel.RdTravelTicketDetailService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Calendar;
@@ -28,18 +20,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.framework.loippi.consts.Constants;
+import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.travel.RdTourismCompliance;
 import com.framework.loippi.entity.travel.RdTravelTicket;
+import com.framework.loippi.entity.travel.RdTravelTicketDetail;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.travel.RdTourismComplianceService;
+import com.framework.loippi.service.travel.RdTravelTicketDetailService;
 import com.framework.loippi.service.travel.RdTravelTicketService;
 import com.framework.loippi.service.user.MemberQualificationService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.DateConverter;
+import com.framework.loippi.utils.StringUtil;
 
 @Slf4j
 @Controller
@@ -76,7 +75,8 @@ public class TravelController {
 			return Constants.MSG_URL;
 		}
 		Integer sign = 0;
-		String periods = "202007,202008,202009,202010,202011,202012";
+		//String periods = "202007,202008,202009,202010,202011,202012";
+		String periods = "202004,202008,202009,202010,202011,202012";
 		String[] periodList = periods.split(",");
 		for (String period : periodList) {
 			if (period.equals(periodCode)){
