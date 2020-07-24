@@ -6335,7 +6335,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         HashMap<String, Object> map = new HashMap<>();
         map.put("pageNumber",pageNumber);
         map.put("pageSize",pageSize);
-        map.put("orderState",orderState);
+        if(orderState!=null&&orderState==100){
+            map.put("searchState",100);
+            map.put("orderState",null);
+        }else {
+            map.put("searchState",null);
+            map.put("orderState",orderState);
+        }
         map.put("mentionId",rdWarehouse.getMentionId());
         return orderDao.findSelfOrderByPage(map);
     }
@@ -6393,6 +6399,27 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             }
         }
     }
+
+    /**
+     * 查询上个月指定自提店订单数
+     * @param mentionId
+     * @return
+     */
+    @Override
+    public Integer findLastMonthCountByMentionId(Integer mentionId) {
+        return orderDao.findLastMonthCountByMentionId(mentionId);
+    }
+
+    /**
+     * 查询上个月指定自提店订单信息
+     * @param mentionId
+     * @return
+     */
+    @Override
+    public List<OrderInfo> findLastMonthOrderInfo(Integer mentionId) {
+        return orderDao.findLastMonthOrderInfo(mentionId);
+    }
+
     private static void convertDataToRow(ShopOrder data, Row row){
         int cellNum = 0;
         Cell cell;

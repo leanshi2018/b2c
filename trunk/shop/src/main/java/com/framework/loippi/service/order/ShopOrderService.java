@@ -370,5 +370,9 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     void getExcel();
 
+    Integer findLastMonthCountByMentionId(Integer mentionId);
+
+    List<OrderInfo> findLastMonthOrderInfo(Integer mentionId);
+
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

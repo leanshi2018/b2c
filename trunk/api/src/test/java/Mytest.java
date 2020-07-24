@@ -86,6 +86,10 @@ public class Mytest {
 
     @Test
     public void test() {
-
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH,-1);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        String time = format.format(calendar.getTime());
+        System.out.println(time);
     }
 }
