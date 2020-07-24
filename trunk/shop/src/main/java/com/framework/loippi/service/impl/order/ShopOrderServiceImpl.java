@@ -2,24 +2,38 @@ package com.framework.loippi.service.impl.order;
 
 
 
-import com.framework.loippi.entity.common.MemberShippingBehavior;
-import com.framework.loippi.entity.order.*;
-import com.framework.loippi.service.order.OrderFundFlowService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import javax.annotation.Resource;
+
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSON;
 import com.framework.loippi.consts.AllInPayBillCutConstant;
 import com.framework.loippi.consts.Constants;
@@ -1880,7 +1894,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             //若支付完成
             if (orderSettlement.getOrderAmount().doubleValue() == 0) {//购物车集合计算所需支付金额为0 视为已经支付订单
                 if (logisticType==2){
-                    order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                    //order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                    order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
                 }else {
                     order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
                 }
@@ -3357,9 +3372,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 orderDao.update(newOrder);
                 */
                 if (order.getLogisticType()==2){ //TODO 自提
-                    order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                    //order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                    order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
 
-                    RdWarehouse warehouse = null;
+                    /*RdWarehouse warehouse = null;
                     //自提地址
                     ShopOrderAddress orderAddress = shopOrderAddressDao.find(order.getAddressId());
                     if (orderAddress==null){
@@ -3375,8 +3391,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         }
 
                     }
-
-                    if (warehouse==null){
+*/
+                    /*if (warehouse==null){
                         System.out.println("自提仓库不存在");
                     }else {
                         // 改自提点库存以及商品规格售出数量
@@ -3409,7 +3425,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             goodsSpec.setSpecSalenum(goodsNum);
                             shopGoodsSpecService.updateSpecSaleNum(goodsSpec);
                         }
-                    }
+                    }*/
 
 
 

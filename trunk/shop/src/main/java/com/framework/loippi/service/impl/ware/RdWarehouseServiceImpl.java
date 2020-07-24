@@ -1,5 +1,7 @@
 package com.framework.loippi.service.impl.ware;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +43,8 @@ public class RdWarehouseServiceImpl extends GenericServiceImpl<RdWarehouse, Long
 	@Override
 	public List<RdWarehouse> findMentionWare() {
 		return rdWarehouseDao.findMentionWare();
+	}
+	public List<RdWarehouse> findByMemberId(Long addId) {
+		return rdWarehouseDao.findByMemberId(addId);
 	}
 }
