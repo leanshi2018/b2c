@@ -1,6 +1,8 @@
 package com.framework.loippi.service.ware;
 
 
+import java.util.List;
+
 import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.service.GenericService;
 
@@ -15,4 +17,6 @@ public interface RdWarehouseService  extends GenericService<RdWarehouse, Long> {
 	RdWarehouse findByCode(String wareCode);
 
 	RdWarehouse findByMmCode(String mmCode);
+
+	List<RdWarehouse> findByMemberId(Long addId);
 }

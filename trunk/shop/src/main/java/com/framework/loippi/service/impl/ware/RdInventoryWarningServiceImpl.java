@@ -135,4 +135,9 @@ public class RdInventoryWarningServiceImpl extends GenericServiceImpl<RdInventor
 		map.put("specificationId",specId);
 		return rdInventoryWarningDao.findInventoryWarningByWareAndSpecId(map);
 	}
+
+	@Override
+	public RdInventoryWarning haveInventoryByWareCodeAndSpecId(Map<String, Object> haveMap) {
+		return rdInventoryWarningDao.haveInventoryByWareCodeAndSpecId(haveMap);
+	}
 }

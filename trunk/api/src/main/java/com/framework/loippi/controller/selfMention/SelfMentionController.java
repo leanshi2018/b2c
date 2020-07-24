@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
@@ -45,12 +46,14 @@ import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.selfMention.SelfMentionOrderResult;
 import com.framework.loippi.result.selfMention.SelfMentionOrderStatistics;
 import com.framework.loippi.result.selfMention.SelfMentionShopResult;
+import com.framework.loippi.service.order.ShopOrderAddressService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.user.RdGoodsAdjustmentService;
+import com.framework.loippi.service.user.RdMmAddInfoService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
 import com.framework.loippi.service.ware.RdWareAdjustService;
@@ -82,8 +85,6 @@ public class SelfMentionController extends BaseController {
     @Resource
     private ShopGoodsGoodsService shopGoodsGoodsService;
     @Resource
-    private ShopOrderService orderService;
-    @Resource
     private RdWarehouseService rdWarehouseService;
     @Resource
     private RdWareOrderService rdWareOrderService;
@@ -99,6 +100,10 @@ public class SelfMentionController extends BaseController {
     private ShopOrderGoodsService shopOrderGoodsService;
     @Resource
     private RdGoodsAdjustmentService rdGoodsAdjustmentService;
+    @Resource
+    private ShopOrderAddressService shopOrderAddressService;
+    @Resource
+    private RdMmAddInfoService rdMmAddInfoService;
     /**
      * 点击进入我的小店
      * @param request
@@ -209,7 +214,7 @@ public class SelfMentionController extends BaseController {
             wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setInventory(Optional.ofNullable(inventoryWarning.getInventory()).orElse(0));
-            Integer salesNum = orderService.countMentionSales(warehouse.getMentionId(),inventoryWarning.getSpecificationId());//销量
+            Integer salesNum = shopOrderService.countMentionSales(warehouse.getMentionId(),inventoryWarning.getSpecificationId());//销量
             if (salesNum==null){
                 wareGoodsVo.setSales(0);
             }else {
@@ -735,6 +740,125 @@ public class SelfMentionController extends BaseController {
         }
         return ApiUtils.success(new ArrayList<SelfMentionOrderResult>());
     }
+
+
+    /**
+     * 确认提货
+     * @param request
+     * @param orderId
+     * @return
+     */
+    @RequestMapping(value = "/api/mention/confirmOrder", method = RequestMethod.POST)
+    public String transactionCoupon(HttpServletRequest request, Long orderId) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.utils.Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("请登录后进行此操作");
+        }
+
+        ShopOrder order = shopOrderService.find(orderId);
+        if(order==null){
+            return ApiUtils.error("该订单不存在，请联系客服");
+        }
+
+        if (order.getOrderState()!= OrderState.ORDER_STATE_UNFILLED){
+            if(order==null){
+                return ApiUtils.error("该订单不是待提货状态，不可点击操作");
+            }
+        }
+
+        order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+
+
+        RdWarehouse warehouse = rdWarehouseService.findByMmCode(member.getMmCode());
+        /*RdWarehouse warehouse = null;
+        //自提地址
+        ShopOrderAddress orderAddress = shopOrderAddressService.find(order.getAddressId());
+        if (orderAddress==null){
+            return ApiUtils.error("该订单自提地址不存在");
+        }else {
+            Long addId = orderAddress.getMemberId();
+            if (addId!=null){
+                RdMmAddInfo rdMmAddInfo = rdMmAddInfoService.find(addId);
+                List<RdWarehouse> rdWarehouseList = rdWarehouseService.findByMemberId(addId);
+                if (rdWarehouseList.size()>0){
+                    warehouse = rdWarehouseList.get(0);
+                }
+            }
+
+        }*/
+
+        if (warehouse==null){
+            return ApiUtils.error("自提仓库不存在");
+        }else {
+            // 改自提点库存以及商品规格售出数量
+            List<ShopOrderGoods> orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
+            for (ShopOrderGoods orderGoods : orderGoodsList) {
+
+                int goodsNum = orderGoods.getGoodsNum();//商品数量
+                Long specId = orderGoods.getSpecId();//商品规格索引id
+
+                ShopGoodsSpec shopGoodsSpec = shopGoodsSpecService.find(specId);
+                ShopGoods shopGoods = shopGoodsService.find(orderGoods.getGoodsId());
+
+                //新增发货单
+                RdWareAdjust rdWareAdjust = new RdWareAdjust();
+                rdWareAdjust.setWareCode(warehouse.getWareCode());
+                rdWareAdjust.setWareName(warehouse.getWareName());
+                rdWareAdjust.setAdjustType("SOT");
+                rdWareAdjust.setStatus(3);
+                rdWareAdjust.setAutohrizeBy("自提店"+member.getMmCode());
+                rdWareAdjust.setAutohrizeTime(new Date());
+                rdWareAdjust.setAutohrizeDesc("订单发货");
+                rdWareAdjustService.insert(rdWareAdjust);
+
+                //新增的发货商品详情
+                RdGoodsAdjustment rdGoodsAdjustment = new RdGoodsAdjustment();
+                rdGoodsAdjustment.setWid(rdWareAdjust.getWid());
+                rdGoodsAdjustment.setSpecificationId(shopGoodsSpec.getId());
+                rdGoodsAdjustment.setGoodId(shopGoodsSpec.getGoodsId());
+                rdGoodsAdjustment.setGoodsName(shopGoods.getGoodsName());
+                rdGoodsAdjustment.setSpecName(shopGoodsSpec.getSpecName());
+                rdGoodsAdjustment.setGoodsSpec(shopGoodsSpec.getSpecGoodsSpec());
+                rdGoodsAdjustment.setStockNow(shopGoodsSpec.getSpecGoodsStorage().longValue());
+                rdGoodsAdjustment.setStockInto(Long.valueOf(orderGoods.getGoodsNum()));
+                rdGoodsAdjustment.setCreateTime(shopGoods.getCreateTime());
+                rdGoodsAdjustment.setWareCode(warehouse.getWareCode());
+                rdGoodsAdjustment.setSign(1);
+                rdGoodsAdjustment.setAutohrizeTime(new Date());
+                rdGoodsAdjustment.setStatus(1L);
+                rdGoodsAdjustmentService.insert(rdGoodsAdjustment);
+
+                //查看该自提店是否有该规格商品数据
+                Map<String,Object> haveMap = new HashMap<String,Object>();
+                haveMap.put("wareCode",warehouse.getWareCode());
+                haveMap.put("specificationId",specId);
+                RdInventoryWarning rdInventoryWarning = rdInventoryWarningService.haveInventoryByWareCodeAndSpecId(haveMap);
+                ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(orderGoods.getSpecId());
+                if (rdInventoryWarning==null){//不存在 生成条新的数据
+                    RdInventoryWarning inventoryWarning = new RdInventoryWarning();
+                    inventoryWarning.setWareCode(warehouse.getWareCode());
+                    inventoryWarning.setWareName(warehouse.getWareName());
+                    inventoryWarning.setGoodsCode(orderGoods.getGoodsId().toString());
+                    inventoryWarning.setGoodsName(orderGoods.getGoodsName());
+                    inventoryWarning.setSpecificationId(orderGoods.getSpecId());
+                    inventoryWarning.setSpecifications(goodsSpec.getSpecGoodsSpec());
+                    inventoryWarning.setInventory(-goodsNum);
+                    inventoryWarning.setPrecautiousLine(0);
+                    rdInventoryWarningService.save(inventoryWarning);
+                }else {//存在
+                    rdInventoryWarningService.updateInventoryByWareCodeAndSpecId(warehouse.getWareCode(),specId,goodsNum);
+                }
+                //修改规格表中的售出数量
+                /*goodsSpec.setSpecSalenum(goodsNum);
+                shopGoodsSpecService.updateSpecSaleNum(goodsSpec);*/
+            }
+        }
+
+        shopOrderService.update(order);
+
+        return ApiUtils.success();
+    }
+
 
     /**
      * 按照月份统计自提店订单数及销售额

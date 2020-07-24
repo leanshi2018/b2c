@@ -14,9 +14,6 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.xml.namespace.QName;
 
-import com.framework.loippi.entity.order.*;
-import com.framework.loippi.service.order.*;
-import com.framework.loippi.service.user.RetailProfitService;
 import org.apache.axis.client.Call;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -56,6 +53,7 @@ import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.common.ShopAutoShip;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
+import com.framework.loippi.entity.order.OrderFundFlow;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderGoods;
@@ -76,6 +74,11 @@ import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressService;
+import com.framework.loippi.service.order.OrderFundFlowService;
+import com.framework.loippi.service.order.ShopOrderAddressService;
+import com.framework.loippi.service.order.ShopOrderGoodsService;
+import com.framework.loippi.service.order.ShopOrderLogisticsService;
+import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopExpressSpecialGoodsService;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsPresaleService;
@@ -636,10 +639,10 @@ public class ShopOrderJob {
                         }
                     }
                 }else {//自提
-                    ShopOrder shopOrder1 = new ShopOrder();
+                    /*ShopOrder shopOrder1 = new ShopOrder();
                     shopOrder1.setId(shopOrder.getId());
                     shopOrder1.setOrderState(30);
-                    orderService.update(shopOrder1);
+                    orderService.update(shopOrder1);*/
                 }
             }
         }
