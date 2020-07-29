@@ -201,7 +201,7 @@
 
 	<insert id="insertList" parameterType="java.util.List">
 		insert into rd_mention_calculate
-		<include refid="base_column" />
+		(<include refid="base_column" />)
 		values
 		<foreach collection="list" item="item" index="index" separator=",">
 			(#{item.id},#{item.reportCode},#{item.statisticalTime},#{item.mentionId},#{item.mentionName},#{item.mCode},#{item.mNickName},#{item.orderNum},#{item.income},#{item.subsidiesCoefficient},
