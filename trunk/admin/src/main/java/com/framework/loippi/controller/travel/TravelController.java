@@ -70,6 +70,8 @@ public class TravelController {
 	@RequestMapping(value = "/compliance",method = RequestMethod.POST)
 	public String compliance(HttpServletRequest request, ModelMap model,@RequestParam(required = true, value = "periodCode") String periodCode) {
 
+		System.out.println("进来计算");
+
 		if(periodCode==null || "".equals(periodCode)){
 			model.addAttribute("msg", "请传入周期代码");
 			return Constants.MSG_URL;
@@ -120,7 +122,7 @@ public class TravelController {
 								//'202006','202007','202008','202010','202011','202012'中任何个周期买足25mi
 								Integer countMi = memberQualificationService.countByMCode(rdMmRelation.getMmCode());
 								if (countMi>0){
-									oldNum++;
+									oldNum = oldNum+1;
 								}
 							}
 						}
@@ -506,7 +508,8 @@ public class TravelController {
 				}
 			}
 			//model.addAttribute("referer", "");
-			return Constants.MSG_URL;
+			System.out.println("跑完");
+			return "";
 		}else {
 			model.addAttribute("msg", "传入的周期代码不在活动范围");
 			return Constants.MSG_URL;
@@ -522,7 +525,7 @@ public class TravelController {
 	 */
 	@RequestMapping(value = "/grantTicket",method = RequestMethod.POST)
 	public String grantTicket(HttpServletRequest request, ModelMap model,@RequestParam(required = true, value = "ticketId") Long ticketId) {
-
+		System.out.println("进来发放");
 		if (ticketId==null){
 			model.addAttribute("msg", "请选择需要发放的券");
 			return Constants.MSG_URL;
@@ -535,7 +538,7 @@ public class TravelController {
 		}
 
 		rdTourismComplianceService.grantTicket(rdTravelTicket);
-
+		System.out.println("跑完");
 		model.addAttribute("msg", "发券成功");
 		return Constants.MSG_URL;
 	}
