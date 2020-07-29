@@ -25,6 +25,7 @@ import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.param.user.UserAddrsAddParam;
 import com.framework.loippi.param.user.UserAddrsUpdateParam;
 import com.framework.loippi.result.auths.AuthsLoginResult;
@@ -34,6 +35,7 @@ import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.order.ShopOrderAddressService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
@@ -59,6 +61,8 @@ public class AddressAPIController extends BaseController {
     private ShopCommonAreaService areaService;
     @Resource
     private ShopOrderAddressService shopOrderAddressService;
+    @Resource
+    private RdWarehouseService rdWarehouseService;
 
     //列表
     @RequestMapping(value = "/list.json")
@@ -82,7 +86,10 @@ public class AddressAPIController extends BaseController {
         if (lists.size()==0){
             return ApiUtils.error("自提地址为空");
         }
-        return ApiUtils.success(UserAddrsListResult.build(lists));
+
+        List<RdWarehouse> houseList = rdWarehouseService.findWareStatu0();
+
+        return ApiUtils.success(UserAddrsListResult.build1(lists,houseList));
     }
 
     /**

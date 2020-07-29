@@ -1,15 +1,18 @@
 package com.framework.loippi.result.user;
 
-import com.framework.loippi.entity.user.RdMmAddInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.commons.collections.CollectionUtils;
+
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.ware.RdWarehouse;
 
 /**
  * Result - 收货地址-列表
@@ -72,6 +75,33 @@ public class UserAddrsListResult {
             result.setIsDefAddr(optional.map(RdMmAddInfo::getDefaultadd).orElse(0));
             result.setArea(optional.map(RdMmAddInfo::getAddProvinceCode).orElse("")+optional.map(RdMmAddInfo::getAddCityCode).orElse("")+optional.map(RdMmAddInfo::getAddCountryCode).orElse(""));
             results.add(result);
+        }
+        return results;
+    }
+
+    public static List<UserAddrsListResult> build1(List<RdMmAddInfo> addrList,List<RdWarehouse> houseList) {
+        if (CollectionUtils.isEmpty(addrList)) {
+            return Collections.emptyList();
+        }
+        List<UserAddrsListResult> results = new ArrayList<UserAddrsListResult>();
+        for (RdMmAddInfo addr : addrList) {
+
+            if (houseList.size()>0){
+                for (RdWarehouse warehouse : houseList) {
+                    if (addr.getAid()==warehouse.getMentionId()){
+                        Optional<RdMmAddInfo> optional = Optional.ofNullable(addr);
+                        UserAddrsListResult result = new UserAddrsListResult();
+                        result.setName(optional.map(RdMmAddInfo::getConsigneeName).orElse(""));
+                        result.setAddr(optional.map(RdMmAddInfo::getAddDetial).orElse(""));
+                        result.setMobile(optional.map(RdMmAddInfo::getMobile).orElse(""));
+                        result.setAddrId(optional.map(RdMmAddInfo::getAid).orElse(-1));
+                        result.setIsDefAddr(optional.map(RdMmAddInfo::getDefaultadd).orElse(0));
+                        result.setArea(optional.map(RdMmAddInfo::getAddProvinceCode).orElse("")+optional.map(RdMmAddInfo::getAddCityCode).orElse("")+optional.map(RdMmAddInfo::getAddCountryCode).orElse(""));
+                        results.add(result);
+                    }
+                }
+            }
+
         }
         return results;
     }

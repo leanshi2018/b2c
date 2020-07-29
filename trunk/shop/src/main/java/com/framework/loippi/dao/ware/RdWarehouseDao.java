@@ -21,4 +21,6 @@ public interface RdWarehouseDao  extends GenericDao<RdWarehouse, Long> {
 	List<RdWarehouse> findByMemberId(Long mentionId);
 
     List<RdWarehouse> findMentionWare();
+
+	List<RdWarehouse> findWareStatu0();
 }

@@ -203,7 +203,7 @@
 	</select>
 
 	<insert id="saveIn" parameterType="com.framework.loippi.entity.ware.RdInventoryWarning">
-		INSERT RD_INVENTORY_WARNING
+		INSERT INTO RD_INVENTORY_WARNING
 		(<include refid="base_column" /> )
 		VALUES	(<include refid="base_value_column" />)
 	</insert>
