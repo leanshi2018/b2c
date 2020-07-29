@@ -297,7 +297,7 @@ public class ShopOrderJob {
         map.put("orderState",0);
         map.put("cutStatus",5);//查询符合时间范围内预扣积分的订单
         List<ShopOrder> list=shopOrderDao.findNoCutOrder(map);
-        List<ShopOrder> list1=shopOrderDao.findNoCutOrder1(map);
+        //List<ShopOrder> list1=shopOrderDao.findNoCutOrder1(map);
         if(list!=null&&list.size()>0){
             for (ShopOrder shopOrder : list) {
                 //1.根据订单内预扣积分信息，进行分账
@@ -311,7 +311,7 @@ public class ShopOrderJob {
                 }
             }
         }
-        if(list1!=null&&list1.size()>0){
+/*        if(list1!=null&&list1.size()>0){
             for (ShopOrder shopOrder : list1) {
                 //1.根据订单内预扣积分信息，进行分账
                 RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(shopOrder.getCutGetId());
@@ -323,7 +323,7 @@ public class ShopOrderJob {
                     }
                 }
             }
-        }
+        }*/
     }
 
     /**
@@ -1059,13 +1059,13 @@ public class ShopOrderJob {
         //1.找出订单状态为待收货 发货时间和当前系统时间相差超过7天的普通快递订单
         List<ShopOrder> list1=shopOrderDao.findAutoOrder1(time);
         //2.找出订单状态为待收货 支付时间和当前系统时间相差超过7天的自提订单
-        List<ShopOrder> list2=shopOrderDao.findAutoOrder2(time);
+        //List<ShopOrder> list2=shopOrderDao.findAutoOrder2(time);
         //3.将两个订单进行遍历，依次修改订单状态，判断是否存在零售利润，如果存在零售利润，将自提订单对应产生零售利润设置预计发放时间
         if(list1!=null&&list1.size()>0){
             orderService.autoReceipt1(list1);
         }
-        if(list2!=null&&list1.size()>0){
+        /*if(list2!=null&&list1.size()>0){
             orderService.autoReceipt2(list2);
-        }
+        }*/
     }
 }
