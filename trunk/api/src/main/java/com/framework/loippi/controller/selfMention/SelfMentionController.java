@@ -850,7 +850,7 @@ public class SelfMentionController extends BaseController {
                     inventoryWarning.setSpecifications(goodsSpec.getSpecGoodsSpec());
                     inventoryWarning.setInventory(-goodsNum);
                     inventoryWarning.setPrecautiousLine(0);
-                    rdInventoryWarningService.save(inventoryWarning);
+                    rdInventoryWarningService.saveIn(inventoryWarning);
                 }else {//存在
                     rdInventoryWarningService.updateInventoryByWareCodeAndSpecId(warehouse.getWareCode(),specId,goodsNum);
                 }
