@@ -340,6 +340,11 @@ public class SelfMentionController extends BaseController {
         int size = productResults.size();
         if (size==0){
             MentionProductVo resultPage = new MentionProductVo();
+            resultPage.setPageNum(0);
+            resultPage.setPageSize(10);
+            resultPage.setPages(1);
+            resultPage.setTotal(size);
+            resultPage.setProductResults(productResultList);
             return ApiUtils.success(resultPage);
         }else if (size<=10){
             currentPage = 1;
