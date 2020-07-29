@@ -755,6 +755,7 @@ public class SelfMentionController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/api/mention/confirmOrder", method = RequestMethod.POST)
+    @ResponseBody
     public String transactionCoupon(HttpServletRequest request, Long orderId) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.utils.Constants.CURRENT_USER);
         if(member==null){
