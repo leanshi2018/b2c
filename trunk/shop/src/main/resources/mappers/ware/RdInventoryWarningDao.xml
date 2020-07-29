@@ -85,7 +85,7 @@
 	<select id="find" resultMap="RdInventoryWarningResultMap">
 		SELECT	<include refid="base_column" />
 		FROM	RD_INVENTORY_WARNING
-		WHERE	ID=#{id,jdbcType=BIGINT}
+		WHERE	WARE_CODE=#{wareCode}
 	</select>
 	
 	<!-- 查询所有 -->
@@ -133,7 +133,7 @@
 	<!-- 删除单条记录 -->
 	<delete id="delete">
 		DELETE	FROM RD_INVENTORY_WARNING
-		WHERE	ID = #{id,jdbcType=BIGINT}
+		WHERE	WARE_CODE = #{wareCode}
 	</delete>
 	
 	<!-- 删除多条记录-->
