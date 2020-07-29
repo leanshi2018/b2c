@@ -11,7 +11,6 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.framework.loippi.dao.ShopCommonMessageDao;
 import com.framework.loippi.dao.ShopMemberMessageDao;
@@ -42,7 +41,6 @@ import com.framework.loippi.service.travel.RdTourismComplianceService;
  */
 @Service
 @Slf4j
-@Transactional
 public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourismCompliance, Long> implements RdTourismComplianceService {
 
 	@Resource
@@ -139,7 +137,7 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 
 		//三级奖励达标会员
 		List<RdTourismCompliance> threeQualifyList = rdTourismComplianceDao.findThreeQualifyList();
-		for (RdTourismCompliance rdTourismCompliance : twoQualifyList) {
+		for (RdTourismCompliance rdTourismCompliance : threeQualifyList) {
 			RdMmBasicInfo mmBasicInfo = rdMmBasicInfoDao.findByMCode(rdTourismCompliance.getMmCode());
 			RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(rdTourismCompliance.getMmCode());
 			BigDecimal bonusBlance = accountInfo.getBonusBlance();
