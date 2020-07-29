@@ -29,4 +29,6 @@ public interface RdInventoryWarningService  extends GenericService<RdInventoryWa
 	RdInventoryWarning findInventoryWarningByWareAndSpecId(String wareCode, Long specId);
 
 	RdInventoryWarning haveInventoryByWareCodeAndSpecId(Map<String, Object> haveMap);
+
+	void saveIn(RdInventoryWarning inventoryWarning);
 }

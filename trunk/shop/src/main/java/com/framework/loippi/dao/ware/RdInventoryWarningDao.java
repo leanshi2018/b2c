@@ -29,4 +29,6 @@ public interface RdInventoryWarningDao  extends GenericDao<RdInventoryWarning, L
     List<GoodsType> findGoodsTypeByWareCode(String wareCode);
 
 	RdInventoryWarning haveInventoryByWareCodeAndSpecId(Map<String, Object> map);
+
+	void saveIn(RdInventoryWarning inventoryWarning);
 }

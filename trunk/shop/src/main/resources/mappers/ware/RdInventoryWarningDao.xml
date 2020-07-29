@@ -202,4 +202,10 @@
 		WHERE WARE_CODE = #{wareCode} AND SPECIFICATION_ID = #{specificationId}
 	</select>
 
+	<insert id="saveIn" parameterType="com.framework.loippi.entity.ware.RdInventoryWarning">
+		INSERT RD_INVENTORY_WARNING
+		(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+
 </mapper>
