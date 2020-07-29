@@ -768,7 +768,7 @@ public class SelfMentionController extends BaseController {
         }
 
         order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
-
+        order.setShippingTime(new Date());
 
         RdWarehouse warehouse = rdWarehouseService.findByMmCode(member.getMmCode());
         /*RdWarehouse warehouse = null;

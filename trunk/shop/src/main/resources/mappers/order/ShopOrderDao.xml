@@ -1522,12 +1522,11 @@
             <if test="cutStatus != null">
                 and cut_status = #{cutStatus}
             </if>
-            and logistic_type = 1
         </where>
     </select>
 
     <!--自提订单分账查询-->
-    <select id="findNoCutOrder1" parameterType="java.util.Map" resultMap="ShopOrderResultMap">
+<!--    <select id="findNoCutOrder1" parameterType="java.util.Map" resultMap="ShopOrderResultMap">
         select
         <include refid="base_column"/>
         FROM SHOP_ORDER
@@ -1549,7 +1548,7 @@
             </if>
             and logistic_type = 2
         </where>
-    </select>
+    </select>-->
 
     <select id="findByBuyPaySn" parameterType="string" resultMap="ShopOrderResultMap">
         SELECT id FROM shop_order WHERE pay_sn=#{paySn}
@@ -1631,12 +1630,12 @@
     </select>
 
     <select id="findAutoOrder1" parameterType="java.util.Date" resultMap="ShopOrderResultMap">
-        select * from shop_order where shipping_time &lt; #{time} and order_state = 30 and logistic_type = 1
+        select * from shop_order where shipping_time &lt; #{time} and order_state = 30
     </select>
 
-    <select id="findAutoOrder2" parameterType="java.util.Date" resultMap="ShopOrderResultMap">
+<!--    <select id="findAutoOrder2" parameterType="java.util.Date" resultMap="ShopOrderResultMap">
         select * from shop_order where payment_time &lt; #{time} and order_state = 30 and logistic_type = 2
-    </select>
+    </select>-->
 
     <!--查询前一日订单生成总数，不考虑是否支付-->
     <select id="findOrderYesterdayNum" parameterType="map" resultType="java.lang.Integer">
