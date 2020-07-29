@@ -4803,7 +4803,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     //修改订单状态
                     ShopOrder newOrder = new ShopOrder();
                     if (order.getLogisticType()==2){//TODO 自提
-                        newOrder.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                        newOrder.setOrderState(OrderState.ORDER_STATE_UNFILLED);
                     }else {
                         newOrder.setOrderState(OrderState.ORDER_STATE_UNFILLED);
                     }
