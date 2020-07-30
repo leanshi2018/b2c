@@ -47,7 +47,7 @@ public class RdWarehouseServiceImpl extends GenericServiceImpl<RdWarehouse, Long
 	}
 
 	@Override
-	public List<RdWarehouse> findWareStatu0() {
-		return rdWarehouseDao.findWareStatu0();
+	public List<RdWarehouse> findWareStatu1() {
+		return rdWarehouseDao.findWareStatu1();
 	}
 }

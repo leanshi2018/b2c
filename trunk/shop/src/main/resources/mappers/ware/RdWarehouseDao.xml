@@ -238,8 +238,8 @@
 		SELECT	* FROM 	RD_WAREHOUSE where MENTION_ID is not null
 	</select>
 
-	<select id="findWareStatu0" resultMap="RdWarehouseResultMap">
-		SELECT	* FROM 	RD_WAREHOUSE where WARE_STATUS = 0 AND MENTION_ID is not null
+	<select id="findWareStatu1" resultMap="RdWarehouseResultMap">
+		SELECT	* FROM 	RD_WAREHOUSE where WARE_STATUS = 1 AND MENTION_ID is not null
 	</select>
 
 </mapper> 

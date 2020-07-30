@@ -87,7 +87,7 @@ public class AddressAPIController extends BaseController {
             return ApiUtils.error("自提地址为空");
         }
 
-        List<RdWarehouse> houseList = rdWarehouseService.findWareStatu0();
+        List<RdWarehouse> houseList = rdWarehouseService.findWareStatu1();
 
         return ApiUtils.success(UserAddrsListResult.build1(lists,houseList));
     }

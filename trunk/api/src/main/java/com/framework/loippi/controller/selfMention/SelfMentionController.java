@@ -302,8 +302,9 @@ public class SelfMentionController extends BaseController {
         for(Long specId:inventoryMap.keySet()){//遍历map的键
             Integer num = inventoryMap.get(specId);
             RdInventoryWarning warning = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(wareCode,specId);
-            ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(warning.getGoodsCode()));
             ShopGoodsSpec spec = shopGoodsSpecService.find(specId);
+            ShopGoods shopGoods = shopGoodsService.find(spec.getGoodsId());
+
             GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, spec);
             MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
             wareGoodsVo.setWareCode(Optional.ofNullable(wareCode).orElse(""));
@@ -329,7 +330,11 @@ public class SelfMentionController extends BaseController {
             wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
-            wareGoodsVo.setInventory(Optional.ofNullable(warning.getInventory()).orElse(0));
+            if (warning==null){
+                wareGoodsVo.setInventory(0);
+            }else {
+                wareGoodsVo.setInventory(Optional.ofNullable(warning.getInventory()).orElse(0));
+            }
 
             wareGoodsVo.setProductInventory(num);//单品库存
             productResults.add(wareGoodsVo);

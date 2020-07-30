@@ -6,8 +6,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -83,26 +85,42 @@ public class UserAddrsListResult {
         if (CollectionUtils.isEmpty(addrList)) {
             return Collections.emptyList();
         }
-        List<UserAddrsListResult> results = new ArrayList<UserAddrsListResult>();
-        for (RdMmAddInfo addr : addrList) {
 
-            if (houseList.size()>0){
-                for (RdWarehouse warehouse : houseList) {
-                    if (addr.getAid()==warehouse.getMentionId()){
-                        Optional<RdMmAddInfo> optional = Optional.ofNullable(addr);
-                        UserAddrsListResult result = new UserAddrsListResult();
-                        result.setName(optional.map(RdMmAddInfo::getConsigneeName).orElse(""));
-                        result.setAddr(optional.map(RdMmAddInfo::getAddDetial).orElse(""));
-                        result.setMobile(optional.map(RdMmAddInfo::getMobile).orElse(""));
-                        result.setAddrId(optional.map(RdMmAddInfo::getAid).orElse(-1));
-                        result.setIsDefAddr(optional.map(RdMmAddInfo::getDefaultadd).orElse(0));
-                        result.setArea(optional.map(RdMmAddInfo::getAddProvinceCode).orElse("")+optional.map(RdMmAddInfo::getAddCityCode).orElse("")+optional.map(RdMmAddInfo::getAddCountryCode).orElse(""));
-                        results.add(result);
-                    }
+        List<UserAddrsListResult> results = new ArrayList<UserAddrsListResult>();
+        if (houseList.size()>0){//有停用的
+            Set<Integer> setList = new HashSet<Integer>();
+            for (RdWarehouse warehouse : houseList) {
+                setList.add(warehouse.getMentionId());
+            }
+
+            for (RdMmAddInfo addr : addrList) {
+                if (setList.contains(addr.getAid())==false){
+                    Optional<RdMmAddInfo> optional = Optional.ofNullable(addr);
+                    UserAddrsListResult result = new UserAddrsListResult();
+                    result.setName(optional.map(RdMmAddInfo::getConsigneeName).orElse(""));
+                    result.setAddr(optional.map(RdMmAddInfo::getAddDetial).orElse(""));
+                    result.setMobile(optional.map(RdMmAddInfo::getMobile).orElse(""));
+                    result.setAddrId(optional.map(RdMmAddInfo::getAid).orElse(-1));
+                    result.setIsDefAddr(optional.map(RdMmAddInfo::getDefaultadd).orElse(0));
+                    result.setArea(optional.map(RdMmAddInfo::getAddProvinceCode).orElse("")+optional.map(RdMmAddInfo::getAddCityCode).orElse("")+optional.map(RdMmAddInfo::getAddCountryCode).orElse(""));
+                    results.add(result);
                 }
             }
 
+        }else {
+            for (RdMmAddInfo addr : addrList) {
+                Optional<RdMmAddInfo> optional = Optional.ofNullable(addr);
+                UserAddrsListResult result = new UserAddrsListResult();
+                result.setName(optional.map(RdMmAddInfo::getConsigneeName).orElse(""));
+                result.setAddr(optional.map(RdMmAddInfo::getAddDetial).orElse(""));
+                result.setMobile(optional.map(RdMmAddInfo::getMobile).orElse(""));
+                result.setAddrId(optional.map(RdMmAddInfo::getAid).orElse(-1));
+                result.setIsDefAddr(optional.map(RdMmAddInfo::getDefaultadd).orElse(0));
+                result.setArea(optional.map(RdMmAddInfo::getAddProvinceCode).orElse("")+optional.map(RdMmAddInfo::getAddCityCode).orElse("")+optional.map(RdMmAddInfo::getAddCountryCode).orElse(""));
+                results.add(result);
+            }
         }
+
         return results;
     }
 }

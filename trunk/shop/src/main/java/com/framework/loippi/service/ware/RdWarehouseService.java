@@ -21,5 +21,5 @@ public interface RdWarehouseService  extends GenericService<RdWarehouse, Long> {
     List<RdWarehouse> findMentionWare();
 	List<RdWarehouse> findByMemberId(Long addId);
 
-	List<RdWarehouse> findWareStatu0();
+	List<RdWarehouse> findWareStatu1();
 }
