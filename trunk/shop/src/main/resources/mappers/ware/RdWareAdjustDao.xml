@@ -69,6 +69,9 @@
 		<if test="searchTimeRight != null and searchTimeRight != ''">
 			AND AUTOHRIZE_TIME &lt;= #{searchTimeRight,jdbcType=TIMESTAMP}
 		</if>
+		<if test="adjustTypeS != null and adjustTypeS != ''">
+			AND ADJUST_TYPE IN ('OAW','OOT')
+		</if>
 	</sql>
 	
 	<!-- 设置语句 -->

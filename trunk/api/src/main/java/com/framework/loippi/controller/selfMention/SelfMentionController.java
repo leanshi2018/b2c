@@ -999,7 +999,7 @@ public class SelfMentionController extends BaseController {
             String str2 = format1.format(lastDay);
             String timeLeft=str1+" 00:00:00";
             String timeRight=str2+" 23:59:59";
-            List<RdWareAdjust> list = rdWareAdjustService.findList(Paramap.create().put("searchTimeLeft",timeLeft).put("searchTimeRight",timeRight).put("wareCode",rdWarehouse.getWareCode()));
+            List<RdWareAdjust> list = rdWareAdjustService.findList(Paramap.create().put("searchTimeLeft",timeLeft).put("searchTimeRight",timeRight).put("wareCode",rdWarehouse.getWareCode()).put("adjustTypeS","其他入库出库"));
             return ApiUtils.success(list);
         } catch (ParseException e) {
             e.printStackTrace();
