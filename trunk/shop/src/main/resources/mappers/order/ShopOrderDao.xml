@@ -1743,7 +1743,7 @@
         ifnull(a.refund_point, 0 ) as refundPoint,
         a.order_state as orderState
         from shop_order a INNER JOIN shop_order_address b on a.address_id = b.id where a.payment_state = 1 and a.order_state != 0 and a.logistic_type = 2 and b.mention_id = #{mentionId}
-        and PERIOD_DIFF(date_format(now( ), '%Y%m') , date_format(a.payment_time, '%Y%m')) = 1
+        and DATE_FORMAT(a.payment_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
     </select>
 
     <select id="findLastMonthOrderInfo" parameterType="java.lang.Integer" resultType="com.framework.loippi.pojo.selfMention.OrderInfo">
@@ -1768,7 +1768,7 @@
         ifnull(a.refund_point, 0 ) as refundPoint,
         a.order_state as orderState
         from shop_order a INNER JOIN shop_order_address b on a.address_id = b.id where a.payment_state = 1 and a.order_state != 0 and a.logistic_type = 2 and b.mention_id = #{mentionId}
-        and DATE_FORMAT(a.payment_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+        and PERIOD_DIFF(date_format(now( ), '%Y%m') , date_format(a.payment_time, '%Y%m')) = 1
     </select>
 
     <select id="findSelfOrderByPage" parameterType="map" resultMap="ShopOrderResultMap">
