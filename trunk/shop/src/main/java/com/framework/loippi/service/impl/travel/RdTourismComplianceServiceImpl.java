@@ -107,6 +107,30 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 			rdTourismCompliance.setOneQualify(2);
 			rdTourismCompliance.setOneGrantTime(new Date());
 			rdTourismComplianceDao.update(rdTourismCompliance);
+
+			//4.生成通知消息
+			ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+			shopCommonMessage.setSendUid(mmBasicInfo.getMmCode());
+			shopCommonMessage.setType(1);
+			shopCommonMessage.setOnLine(1);
+			shopCommonMessage.setCreateTime(new Date());
+			shopCommonMessage.setBizType(2);
+			shopCommonMessage.setIsTop(1);
+			shopCommonMessage.setCreateTime(new Date());
+			shopCommonMessage.setTitle("旅游计划达标一级店奖励");
+			shopCommonMessage.setContent("恭喜旅游计划达标一级店奖励，送您一张旅游券");
+			Long msgId = twiterIdService.getTwiterId();
+			shopCommonMessage.setId(msgId);
+			shopCommonMessageDao.insert(shopCommonMessage);
+			ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+			shopMemberMessage.setBizType(2);
+			shopMemberMessage.setCreateTime(new Date());
+			shopMemberMessage.setId(twiterIdService.getTwiterId());
+			shopMemberMessage.setIsRead(0);
+			shopMemberMessage.setMsgId(msgId);
+			shopMemberMessage.setUid(Long.parseLong(mmBasicInfo.getMmCode()));
+			shopMemberMessageDao.insert(shopMemberMessage);
+
 			total = total+1;
 		}
 
@@ -133,6 +157,31 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 			rdTourismCompliance.setTwoQualify(2);
 			rdTourismCompliance.setTwoGrantTime(new Date());
 			rdTourismComplianceDao.update(rdTourismCompliance);
+
+			//4.生成通知消息
+			ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+			shopCommonMessage.setSendUid(mmBasicInfo.getMmCode());
+			shopCommonMessage.setType(1);
+			shopCommonMessage.setOnLine(1);
+			shopCommonMessage.setCreateTime(new Date());
+			shopCommonMessage.setBizType(2);
+			shopCommonMessage.setIsTop(1);
+			shopCommonMessage.setCreateTime(new Date());
+			shopCommonMessage.setTitle("旅游计划达标二级店奖励");
+			shopCommonMessage.setContent("恭喜旅游计划达标二级店奖励，送您三张旅游券");
+			Long msgId = twiterIdService.getTwiterId();
+			shopCommonMessage.setId(msgId);
+			shopCommonMessageDao.insert(shopCommonMessage);
+			ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+			shopMemberMessage.setBizType(2);
+			shopMemberMessage.setCreateTime(new Date());
+			shopMemberMessage.setId(twiterIdService.getTwiterId());
+			shopMemberMessage.setIsRead(0);
+			shopMemberMessage.setMsgId(msgId);
+			shopMemberMessage.setUid(Long.parseLong(mmBasicInfo.getMmCode()));
+			shopMemberMessageDao.insert(shopMemberMessage);
+
+
 		}
 
 		//三级奖励达标会员
@@ -174,7 +223,7 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 			shopCommonMessage.setIsTop(1);
 			shopCommonMessage.setCreateTime(new Date());
 			shopCommonMessage.setTitle("旅游计划达标三级店奖励");
-			shopCommonMessage.setContent("旅游计划达标三级店奖励，"+new BigDecimal("10000").setScale(2,BigDecimal.ROUND_HALF_UP)+"奖励积分到积分账户");
+			shopCommonMessage.setContent("恭喜旅游计划达标三级店奖励，"+new BigDecimal("10000").setScale(2,BigDecimal.ROUND_HALF_UP)+"奖励积分到积分账户");
 			Long msgId = twiterIdService.getTwiterId();
 			shopCommonMessage.setId(msgId);
 			shopCommonMessageDao.insert(shopCommonMessage);

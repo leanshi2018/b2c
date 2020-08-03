@@ -28,6 +28,7 @@ import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
@@ -742,12 +743,19 @@ public class SelfMentionController extends BaseController {
         int pageSize = pager.getPageSize();
         List<ShopOrder> list=shopOrderService.findSelfOrderByPage(rdWarehouse,pageNumber,pageSize,orderState);
         HashMap<Long, List<ShopOrderGoods>> hashMap = new HashMap<>();
+        Map<Long, String> addressMap = new HashMap<>();
         if(list!=null&&list.size()>0){
             for (ShopOrder shopOrder : list) {
                 List<ShopOrderGoods> orderGoods = shopOrderGoodsService.findList(Paramap.create().put("orderId",shopOrder.getId()));
+                ShopOrderAddress address = shopOrderAddressService.find(shopOrder.getAddressId());
+                if (address==null){
+                    addressMap.put(shopOrder.getId(),"用户未填写#WOMI#用户未填写");
+                }else {
+                    addressMap.put(shopOrder.getId(),address.getTrueName()+"#WOMI#"+address.getMobPhone());
+                }
                 hashMap.put(shopOrder.getId(),orderGoods);
             }
-            return ApiUtils.success(SelfMentionOrderResult.buildList(list,hashMap));
+            return ApiUtils.success(SelfMentionOrderResult.buildList(list,hashMap,addressMap));
         }
         return ApiUtils.success(new ArrayList<SelfMentionOrderResult>());
     }

@@ -77,8 +77,8 @@ public class TravelController {
 			return Constants.MSG_URL;
 		}
 		Integer sign = 0;
-		//String periods = "202007,202008,202009,202010,202011,202012";
-		String periods = "202004,202008,202009,202010,202011,202012";
+		String periods = "202007,202008,202009,202010,202011,202012";
+		//String periods = "202004,202008,202009,202010,202011,202012";
 		String[] periodList = periods.split(",");
 		for (String period : periodList) {
 			if (period.equals(periodCode)){
