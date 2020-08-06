@@ -1,7 +1,5 @@
 package com.framework.loippi.result.selfMention;
 
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.order.ShopOrderGoods;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderGoods;
 
 /**
  * 自提订单信息实体类
@@ -79,7 +81,7 @@ public class SelfMentionOrderResult {
      */
     private List<ShopOrderGoods> orderGoods;
 
-    public static List<SelfMentionOrderResult> buildList(List<ShopOrder> shopOrders, HashMap<Long,List<ShopOrderGoods>> map) {
+    public static List<SelfMentionOrderResult> buildList(List<ShopOrder> shopOrders, HashMap<Long,List<ShopOrderGoods>> map, Map<Long, String> addressMap) {
         ArrayList<SelfMentionOrderResult> results = new ArrayList<>();
         if(shopOrders!=null&&shopOrders.size()>0){
             for (ShopOrder shopOrder : shopOrders) {
@@ -91,8 +93,13 @@ public class SelfMentionOrderResult {
                 result.setPpv(shopOrder.getPpv());
                 result.setPaymentTime(shopOrder.getPaymentTime());
                 result.setBuyerId(Long.toString(shopOrder.getBuyerId()));
-                result.setBuyerName(shopOrder.getBuyerName());
-                result.setBuyerPhone(shopOrder.getBuyerPhone());
+
+                String s = addressMap.get(shopOrder.getId());
+                String[] split = s.split("#WOMI#");
+
+                result.setBuyerName(split[0]);
+                result.setBuyerPhone(split[1]);
+
                 result.setOrderType(shopOrder.getOrderType());
                 List<ShopOrderGoods> shopOrderGoods = map.get(shopOrder.getId());
                 Integer num=0;

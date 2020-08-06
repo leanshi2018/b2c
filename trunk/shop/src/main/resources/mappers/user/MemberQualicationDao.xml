@@ -567,11 +567,11 @@
 	</select>
 
 	<select id="findVipNumByMCode" parameterType="string" resultType="java.lang.Integer">
-		SELECT SUM(DD_NEW_VIP_NUMBER) FROM rd_dis_qualification WHERE MM_CODE = #{mCode} AND PERIOD_CODE IN ('202003','202004','202008','202010','202011','202012')
+		SELECT SUM(DD_NEW_VIP_NUMBER) FROM rd_dis_qualification WHERE MM_CODE = #{mCode} AND PERIOD_CODE IN ('202006','202007','202008','202010','202011','202012')
 	</select>
 
 	<select id="countByMCode" parameterType="string" resultType="java.lang.Integer">
-		SELECT COUNT(*) FROM rd_dis_qualification WHERE MM_CODE = #{mCode} AND PPV &gt;= 25 AND PERIOD_CODE IN ('202003','202004','202008','202010','202011','202012')
+		SELECT COUNT(*) FROM rd_dis_qualification WHERE MM_CODE = #{mCode} AND PPV &gt;= 25 AND PERIOD_CODE IN ('202006','202007','202008','202010','202011','202012')
 	</select>
 
 </mapper>
