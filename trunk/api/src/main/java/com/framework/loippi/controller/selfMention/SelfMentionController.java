@@ -187,45 +187,47 @@ public class SelfMentionController extends BaseController {
         }*/
         for (RdInventoryWarning inventoryWarning : goodsPage.getContent()) {
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(inventoryWarning.getGoodsCode()));
-            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());
-            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
-            MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
-            wareGoodsVo.setWareCode(Optional.ofNullable(inventoryWarning.getWareCode()).orElse(""));
-            wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
-            wareGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
-            wareGoodsVo.setSpecId(Optional.ofNullable(inventoryWarning.getSpecificationId()).orElse(0l));
+            if (shopGoods.getGoodsShow()==1){
+                ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());
+                GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
+                MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
+                wareGoodsVo.setWareCode(Optional.ofNullable(inventoryWarning.getWareCode()).orElse(""));
+                wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
+                wareGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
+                wareGoodsVo.setSpecId(Optional.ofNullable(inventoryWarning.getSpecificationId()).orElse(0l));
 
-            if (shopGoods.getGoodsType()==3){
-                wareGoodsVo.setSpecGoodsSpec(goodsSpec.getSpecGoodsSerial());
-            }else{
-                String specInfo = "";
-                Map<String, String> map = goodsSpec.getSepcMap();
-                //遍历规格map,取出键值对,拼接specInfo
-                if (map != null) {
-                    Set<String> set = map.keySet();
-                    for (String str : set) {
-                        specInfo += str + ":" + map.get(str) + "、";
+                if (shopGoods.getGoodsType()==3){
+                    wareGoodsVo.setSpecGoodsSpec(goodsSpec.getSpecGoodsSerial());
+                }else{
+                    String specInfo = "";
+                    Map<String, String> map = goodsSpec.getSepcMap();
+                    //遍历规格map,取出键值对,拼接specInfo
+                    if (map != null) {
+                        Set<String> set = map.keySet();
+                        for (String str : set) {
+                            specInfo += str + ":" + map.get(str) + "、";
+                        }
+                        specInfo = specInfo.substring(0, specInfo.length() - 1);
                     }
-                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                    wareGoodsVo.setSpecGoodsSpec(specInfo);
                 }
-                wareGoodsVo.setSpecGoodsSpec(specInfo);
-            }
 
-            wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
-            wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
-            wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
-            wareGoodsVo.setInventory(Optional.ofNullable(inventoryWarning.getInventory()).orElse(0));
-            Integer salesNum = shopOrderService.countMentionSales(warehouse.getMentionId(),inventoryWarning.getSpecificationId());//销量
-            if (salesNum==null){
-                wareGoodsVo.setSales(0);
-            }else {
-                wareGoodsVo.setSales(salesNum);
+                wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
+                wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
+                wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
+                wareGoodsVo.setInventory(Optional.ofNullable(inventoryWarning.getInventory()).orElse(0));
+                Integer salesNum = shopOrderService.countMentionSales(warehouse.getMentionId(),inventoryWarning.getSpecificationId());//销量
+                if (salesNum==null){
+                    wareGoodsVo.setSales(0);
+                }else {
+                    wareGoodsVo.setSales(salesNum);
+                }
+                String ware = inventoryWarning.getWareCode();
+                Long specId = inventoryWarning.getSpecificationId();
+                Integer pNum = rdInventoryWarningService.findProductInventory(ware,specId);
+                wareGoodsVo.setProductInventory(pNum);//单品库存
+                list.add(wareGoodsVo);
             }
-            String ware = inventoryWarning.getWareCode();
-            Long specId = inventoryWarning.getSpecificationId();
-            Integer pNum = rdInventoryWarningService.findProductInventory(ware,specId);
-            wareGoodsVo.setProductInventory(pNum);//单品库存
-            list.add(wareGoodsVo);
         }
         return ApiUtils.success(list);
     }
