@@ -738,8 +738,8 @@ public class SelfMentionController extends BaseController {
         if(rdWarehouse==null){
             return ApiUtils.error("当前用户尚未开店");
         }
-        int pageNumber = pager.getPageNumber()-1;
         int pageSize = pager.getPageSize();
+        int pageNumber = (pager.getPageNumber()-1)*pageSize;
         List<ShopOrder> list=shopOrderService.findSelfOrderByPage(rdWarehouse,pageNumber,pageSize,orderState);
         HashMap<Long, List<ShopOrderGoods>> hashMap = new HashMap<>();
         if(list!=null&&list.size()>0){
