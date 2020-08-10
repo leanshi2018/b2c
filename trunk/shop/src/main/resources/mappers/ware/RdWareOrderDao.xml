@@ -23,17 +23,23 @@
         <result column="shipping_code" property="shippingCode" />
         <result column="order_desc" property="orderDesc" />
         <result column="shop_order_sn" property="shopOrderSn" />
+        <result column="province_code" property="provinceCode" />
+        <result column="city_code" property="cityCode" />
+        <result column="country_code" property="countryCode" />
+        <result column="ware_detial" property="wareDetial" />
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
 		 id ,order_sn ,store_id ,store_name ,mm_code ,consigee_name ,ware_phone ,order_type ,order_state ,creation_period ,
-		 create_time ,express_time ,logistic_type ,express_id ,shipping_code ,order_desc ,shop_order_sn
+		 create_time ,express_time ,logistic_type ,express_id ,shipping_code ,order_desc ,shop_order_sn,province_code ,
+		 city_code ,country_code ,ware_detial
 	</sql>
 
     <sql id="base_value_column">
 		 #{id},#{orderSn},#{storeId},#{storeName},#{mCode},#{consigneeName},#{warePhone},#{orderType},#{orderState},#{creationPeriod},
-		 #{createTime},#{expressTime},#{logisticType},#{expressId},#{shippingCode},#{orderDesc},#{shopOrderSn}
+		 #{createTime},#{expressTime},#{logisticType},#{expressId},#{shippingCode},#{orderDesc},#{shopOrderSn},#{provinceCode},
+		 #{cityCode},#{countryCode},#{wareDetial}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -82,6 +88,18 @@
         </if>
         <if test="shopOrderSn != null and shopOrderSn != ''">
             AND shop_order_sn = #{shopOrderSn,jdbcType=VARCHAR}
+        </if>
+        <if test="provinceCode != null and provinceCode != ''">
+            AND province_code = #{provinceCode,jdbcType=VARCHAR}
+        </if>
+        <if test="cityCode != null and cityCode != ''">
+            AND city_code = #{cityCode,jdbcType=VARCHAR}
+        </if>
+        <if test="countryCode != null and countryCode != ''">
+            AND country_code = #{countryCode,jdbcType=VARCHAR}
+        </if>
+        <if test="wareDetial != null and wareDetial != ''">
+            AND ware_detial = #{wareDetial,jdbcType=VARCHAR}
         </if>
         <if test="createTimeEnd !=null and createTimeEnd != ''">
             <![CDATA[and create_time <= #{createTimeEnd}]]>
@@ -148,6 +166,18 @@
         </if>
         <if test="shopOrderSn !=null and shopOrderSn != ''">
             shop_order_sn = #{shopOrderSn},
+        </if>
+        <if test="provinceCode !=null and provinceCode != ''">
+            province_code = #{provinceCode},
+        </if>
+        <if test="cityCode !=null and cityCode != ''">
+            city_code = #{cityCode},
+        </if>
+        <if test="countryCode !=null and countryCode != ''">
+            country_code = #{countryCode},
+        </if>
+        <if test="wareDetial !=null and wareDetial != ''">
+            ware_detial = #{wareDetial},
         </if>
     </sql>
 
