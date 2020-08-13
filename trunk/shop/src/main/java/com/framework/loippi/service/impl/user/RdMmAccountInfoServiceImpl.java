@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.framework.loippi.utils.Digests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -220,5 +221,26 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 	@Override
 	public Long updateStatus(RdMmAccountInfo rdMmAccountInfo) {
 		return rdMmAccountInfoDao.updateStatus(rdMmAccountInfo);
+	}
+
+	/**
+	 * 修改主店相关所有次店积分支付密码
+	 * @param mmBasicInfo
+	 * @param newpassword
+	 */
+	@Override
+	public void updatePayPassword(RdMmBasicInfo mmBasicInfo, String newpassword) {
+		String mobile = mmBasicInfo.getMobile();
+		List<RdMmBasicInfo> list = rdMmBasicInfoDao.findByParams(Paramap.create().put("mobile", mobile));
+		if(list!=null&&list.size()>0){
+			for (RdMmBasicInfo basicInfo : list) {
+				String mmCode = basicInfo.getMmCode();
+				RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(mmCode);
+				if(accountInfo!=null){
+					accountInfo.setPaymentPwd(Digests.entryptPassword(newpassword));
+					rdMmAccountInfoDao.update(accountInfo);
+				}
+			}
+		}
 	}
 }

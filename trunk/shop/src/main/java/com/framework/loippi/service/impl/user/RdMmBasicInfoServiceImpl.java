@@ -1,14 +1,14 @@
 package com.framework.loippi.service.impl.user;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.allinpay.yunst.sdk.YunClient;
+import com.allinpay.yunst.sdk.bean.YunRequest;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.JacksonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -272,6 +272,19 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             rdMmAccountInfo.setMmCode(member.getMmCode());
             rdMmAccountInfo.setPaymentPhone(member.getMobile());
             rdMmAccountInfoDao.update(rdMmAccountInfo);
+            //修改当前会员所有次店手机号
+            List<RdMmBasicInfo> members = rdMmBasicInfoDao.findByParams(Paramap.create().put("mobile", rdMmBasicInfo.getMobile()));
+            if(members!=null&&members.size()>0){
+                for (RdMmBasicInfo basicInfo : members) {
+                    basicInfo.setMobile(member.getMobile());
+                    rdMmBasicInfoDao.update(basicInfo);
+                    RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(basicInfo.getMmCode());
+                    if(accountInfo!=null){
+                        accountInfo.setPaymentPhone(member.getMobile());
+                        rdMmAccountInfoDao.update(accountInfo);
+                    }
+                }
+            }
         } else if (type == UpdateMemberInfoStatus.UPDATE_AREAINFO) {
             rdMmEdit.setAddProvinceIdBefore(rdMmBasicInfo.getAddProvinceId());
             rdMmEdit.setAddProvinceIdAfter(member.getAddProvinceId());
@@ -294,19 +307,24 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             rdMmEdit.setAddDetialAfter(member.getAddDetial());
             rdMmEdit.setUpdateType(0);
             rdMmEditDao.insert(rdMmEdit);
-        } else if (type == UpdateMemberInfoStatus.SET_PAYMENTPASSWD) {
-            RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoDao
-                .findByParams(Paramap.create().put("mmCode", member.getMmCode())).get(0);
-            rdMmAccountInfo.setBonusStatus(0);
-            rdMmAccountInfo.setRedemptionStatus(0);
-            rdMmAccountInfo.setWalletStatus(0);
-            rdMmAccountInfo.setPaymentPwd(member.getMobile());
-            member.setMobile(rdMmBasicInfo.getMobile());
-            rdMmAccountInfoDao.update(rdMmAccountInfo);
-            RdMmRelation rdMmRelation = new RdMmRelation();
-            rdMmRelation.setMmCode(member.getMmCode());
-            rdMmRelation.setMmPointStatus(1);
-            rdMmRelationDao.update(rdMmRelation);
+        } else if (type == UpdateMemberInfoStatus.SET_PAYMENTPASSWD) {//设置支付密码
+
+            List<RdMmBasicInfo> members = rdMmBasicInfoDao.findByParams(Paramap.create().put("mobile", member.getMobile()));
+            if(members!=null&&members.size()>0){
+                for (RdMmBasicInfo basicInfo : members) {
+                    RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoDao
+                            .findByParams(Paramap.create().put("mmCode", basicInfo.getMmCode())).get(0);
+                    rdMmAccountInfo.setBonusStatus(0);
+                    rdMmAccountInfo.setRedemptionStatus(0);
+                    rdMmAccountInfo.setWalletStatus(0);
+                    rdMmAccountInfo.setPaymentPwd(member.getPhone());
+                    rdMmAccountInfoDao.update(rdMmAccountInfo);
+                    RdMmRelation rdMmRelation = new RdMmRelation();
+                    rdMmRelation.setMmCode(basicInfo.getMmCode());
+                    rdMmRelation.setMmPointStatus(1);
+                    rdMmRelationDao.update(rdMmRelation);
+                }
+            }
 
         }else if(type == UpdateMemberInfoStatus.UPDATE_NAME){
             rdMmEdit.setMmNameBefore(rdMmBasicInfo.getMmName());
@@ -358,6 +376,119 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         map.put("mmCode", mmCode);
         map.put("allInPayPhoneStatus", allInPayPhoneStatus);
         rdMmBasicInfoDao.updatePhoneStatusByMCode(map);
+    }
+
+    /**
+     * 注册次店会员
+     * @param mmBasicInfo 主店会员基础信息
+     * @param mNickName 次店会员昵称
+     * @param mmAvatar
+     */
+    @Override
+    public void addSecondaryUser(RdMmBasicInfo mmBasicInfo, String mNickName, String mmAvatar) {
+        //初始化次店会员信息
+        List<RdMmRelation> params = rdMmRelationDao.findByParams(Paramap.create().put("mmCode",mmBasicInfo.getMmCode()));
+        if(params==null||params.size()==0){
+            throw new RuntimeException("主店会员关系表信息异常");
+        }
+        RdMmRelation relation = params.get(0);
+        RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(mmBasicInfo.getMmCode());
+        if(accountInfo==null){
+            throw new RuntimeException("主店会员积分表信息异常");
+        }
+        //1.初始化次店会员基础表信息
+        Optional<RdMmBasicInfo> optional = Optional.ofNullable(mmBasicInfo);
+        RdMmBasicInfo secondaryUser = new RdMmBasicInfo();
+        String oldMmCode = rdMmBasicInfoDao.getMaxMmCode();
+        String newMmCode = (Long.parseLong(oldMmCode) + 1) + "";
+        if (newMmCode.endsWith("4")) {
+            newMmCode = (Long.parseLong(newMmCode) + 1) + "";
+        }
+        secondaryUser.setMmCode(newMmCode);
+        secondaryUser.setMmName(newMmCode);
+        secondaryUser.setMmNickName(mNickName);
+        secondaryUser.setMmAvatar(mmAvatar);
+        secondaryUser.setMobile(mmBasicInfo.getMobile());
+        secondaryUser.setIdType(optional.map(RdMmBasicInfo::getIdType).orElse(1));
+        secondaryUser.setIdCode(optional.map(RdMmBasicInfo::getIdCode).orElse(""));
+        secondaryUser.setGender(optional.map(RdMmBasicInfo::getGender).orElse(0));
+        secondaryUser.setCreationDate(new Date());
+        String periodCode = rdSysPeriodDao.getSysPeriodService(new Date());
+        if(periodCode!=null){
+            secondaryUser.setCreationPeriod(periodCode);
+        }else {
+            secondaryUser.setCreationPeriod(null);
+        }
+        secondaryUser.setPushStatus(1);
+        secondaryUser.setAllInPayPhoneStatus(0);
+        secondaryUser.setAllInContractStatus(0);
+        secondaryUser.setMainFlag(2);//设置次店
+        //进行通联进行会员数据交互存储
+/*        final YunRequest request = new YunRequest("MemberService", "createMember");
+        request.put("bizUserId", secondaryUser.getMmCode());
+        request.put("memberType", 3);
+        request.put("source", 1);
+        try {
+            String s = YunClient.request(request);
+            Map<String, Object> map = JacksonUtil.convertMap(s);
+            if(map.get("status").equals("OK")){
+                String jsonStr = (String) map.get("signedValue");
+                Map<String, Object> stringObjectMap = JacksonUtil.convertMap(jsonStr);
+                String userId = (String) stringObjectMap.get("userId");
+                secondaryUser.setTongLianId(userId);
+            }else if(map.get("status").equals("error")){
+                String message = (String) map.get("message");
+                throw new RuntimeException(message);
+            } else {
+                throw new RuntimeException("通联支付注册异常");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("通联支付注册异常");
+        }*/
+        rdMmBasicInfoDao.insert(secondaryUser);
+        //2.初始化关系表
+        RdMmRelation rdMmRelation = new RdMmRelation();
+        rdMmRelation.setMmCode(secondaryUser.getMmCode());
+        rdMmRelation.setRank(0);
+        rdMmRelation.setARetail(BigDecimal.ZERO);
+        rdMmRelation.setAPpv(BigDecimal.ZERO);
+        rdMmRelation.setLoginPwd(relation.getLoginPwd());
+        rdMmRelation.setMmStatus(0);
+        rdMmRelation.setMmPointStatus(relation.getMmPointStatus());
+        rdMmRelation.setSponsorCode(mmBasicInfo.getMmCode());
+        rdMmRelation.setSponsorName(mmBasicInfo.getMmName());
+        rdMmRelation.setRaSponsorStatus(1);
+        rdMmRelation.setRaStatus(0);
+        rdMmRelation.setRaShopYn(0);
+        rdMmRelation.setRaBindingDate(new Date());
+        rdMmRelation.setIsVip(0);
+        rdMmRelation.setNOFlag(1);
+        rdMmRelation.setATotal(BigDecimal.ZERO);
+        rdMmRelation.setPopupFlag(0);
+        rdMmRelation.setLastPayTime(secondaryUser.getCreationDate());
+        rdMmRelationDao.insert(rdMmRelation);
+        //3.初始化积分表
+        RdMmAccountInfo rdMmAccountInfo = new RdMmAccountInfo();
+        rdMmAccountInfo.setMmCode(secondaryUser.getMmCode());
+        rdMmAccountInfo.setBonusStatus(accountInfo.getBonusStatus());
+        rdMmAccountInfo.setBonusBlance(BigDecimal.ZERO);
+        rdMmAccountInfo.setWalletStatus(accountInfo.getWalletStatus());
+        rdMmAccountInfo.setWalletBlance(BigDecimal.ZERO);
+        rdMmAccountInfo.setRedemptionStatus(accountInfo.getRedemptionStatus());
+        rdMmAccountInfo.setRedemptionBlance(BigDecimal.ZERO);
+        rdMmAccountInfo.setPaymentPhone(secondaryUser.getMobile());
+        if(accountInfo.getPaymentPwd()!=null){
+            rdMmAccountInfo.setPaymentPwd(accountInfo.getPaymentPwd());
+        }
+        rdMmAccountInfo.setLastWithdrawalTime(secondaryUser.getCreationDate());
+        rdMmAccountInfo.setAutomaticWithdrawal(0);
+        rdMmAccountInfo.setWithdrawalLine(new BigDecimal("500"));
+        rdMmAccountInfoDao.insert(rdMmAccountInfo);
+        //4.会员修改记录表初始化
+        RdMmEdit rdMmEdit = new RdMmEdit();
+        rdMmEdit.setMmCode(newMmCode);
+        rdMmEditDao.insert(rdMmEdit);
     }
 
 }

@@ -154,6 +154,9 @@ public class PersonCenterResult {
     private Integer monthNum;//自提店当月订单数
     private BigDecimal monthSales;//自提店当月销售额
 
+    //TODO 主店次店标识
+    private Integer mainFlag;//会员主店次店标识 1：主店 2：次店
+
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo, RdRanks rdRankVip) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
         Optional<RdMmAccountInfo> optional2 = Optional.ofNullable(rdMmAccountInfo);
@@ -192,6 +195,7 @@ public class PersonCenterResult {
         result.setAllInPayPhoneStatus(optional.map(RdMmBasicInfo::getAllInPayPhoneStatus).orElse(0));
         result.setTrueNameFlag(optional.map(RdMmBasicInfo::getWhetherTrueName).orElse(0));
         result.setAllInPayAuthority(optional.map(RdMmBasicInfo::getAllInPayAuthority).orElse(0));
+        result.setMainFlag(optional.map(RdMmBasicInfo::getMainFlag).orElse(2));//会员个人中心设置主次店标识
         return result;
     }
 

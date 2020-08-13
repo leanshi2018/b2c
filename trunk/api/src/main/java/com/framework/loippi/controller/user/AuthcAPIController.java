@@ -297,6 +297,46 @@ public class AuthcAPIController extends BaseController {
     }
 
     /**
+     * 切换主次店用户
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/switchover", method = RequestMethod.POST)
+    @ResponseBody
+    public String switchover(HttpServletRequest request) {
+        String mmCode = request.getParameter("mmCode");
+        String password = request.getParameter("password");
+        if (mmCode == null || "".equals(mmCode) || password == null || "".equals(password)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID, "参数错误");
+        }
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode",mmCode);
+        RdMmRelation rdMmRelation = new RdMmRelation();
+        if (member == null) {
+            return ApiUtils.error(Xerror.OBJECT_IS_NOT_EXIST, "用户不存在");
+        } else {
+//            // 检查用户是否被禁用
+//            if (member.getMemberState() != null && MEMBER_LOCK_STATE == member.getMemberState().intValue()) {
+//                return ApiUtils.error(Xerror.LOGIN_ACCOUNT_DISABLED, MEMBER_LOCK_MESSAGE);
+//            }
+            rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+            //用户是否被冻结或者未激活
+            //1冻结2注销
+            if (Optional.ofNullable(rdMmRelation.getMmStatus()).orElse(0) == 1) {
+                return ApiUtils.error(Xerror.LOGIN_ACCOUNT_DISABLED, "你的账号已被冻结");
+            }
+            //1冻结2注销
+            if (Optional.ofNullable(rdMmRelation.getMmStatus()).orElse(0) == 2) {
+                return ApiUtils.error(Xerror.LOGIN_ACCOUNT_DISABLED, "你的账号已被注销");
+            }
+            // 验证密码是否正确
+            if (!password.equals(rdMmRelation.getLoginPwd())) {
+                return ApiUtils.error(Xerror.LOGIN_PASSWORD_ERROR, "密码错误");
+            }
+        }
+        return ApiUtils.success(handlerLoginNew1(member, request, rdMmRelation));
+    }
+
+    /**
      * 注册和忘记密码时验证验证码
      */
     @RequestMapping(value = "/validMsg", method = RequestMethod.POST)
@@ -590,6 +630,7 @@ public class AuthcAPIController extends BaseController {
         rdMmBasicInfo.setPushStatus(1);
         rdMmBasicInfo.setAllInPayPhoneStatus(0);
         rdMmBasicInfo.setAllInContractStatus(0);
+        rdMmBasicInfo.setMainFlag(1);//设置主店
         rdMmRelation.setARetail(BigDecimal.ZERO);
         rdMmRelation.setLoginPwd(Digests.entryptPassword(param.getPassword()));
         rdMmRelation.setSponsorCode(param.getInvitCode());

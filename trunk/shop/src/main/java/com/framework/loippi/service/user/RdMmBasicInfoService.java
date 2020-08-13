@@ -41,4 +41,11 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
 
     void updatePhoneStatusByMCode(Integer allInPayPhoneStatus, String mmCode);
 
+    /**
+     * 注册次店会员
+     * @param mmBasicInfo 主店会员基础信息
+     * @param mNickName 次店会员昵称
+     * @param mmAvatar 默认会员头像
+     */
+    void addSecondaryUser(RdMmBasicInfo mmBasicInfo, String mNickName, String mmAvatar);
 }

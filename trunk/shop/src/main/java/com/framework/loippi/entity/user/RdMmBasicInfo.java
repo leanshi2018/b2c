@@ -200,6 +200,10 @@ public class RdMmBasicInfo implements GenericEntity {
 	@Column(name = "ALL_IN_PAY_AUTHORITY" )
 	private Integer allInPayAuthority;
 
+	/** 会员主店次店标识 1：主店 2：次店*/
+	@Column(name = "MAIN_FLAG" )
+	private Integer mainFlag;
+
 	private String info;
 	private String verificationMobile;
 	private String verificationNickName;

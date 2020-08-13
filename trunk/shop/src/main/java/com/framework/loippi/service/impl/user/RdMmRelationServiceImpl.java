@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +41,8 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 	private MemberRelationLogDao memberRelationLogDao;
 	@Autowired
 	private  OldSysRelationshipDao oldSysRelationshipDao;
-	
+	@Autowired
+	private RdMmBasicInfoService rdMmBasicInfoService;
 	
 	@Autowired
 	public void setGenericDao() {
@@ -133,5 +137,25 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 
 	public Integer findSponCountByMCode(String sponsorCode) {
 		return rdMmRelationDao.findSponCountByMCode(sponsorCode);
+	}
+
+	/**
+	 * 修改某一手机下下关联所有会员登录密码
+	 * @param mobile
+	 * @param newpassword
+	 */
+	@Override
+	public void updatePassword(String mobile, String newpassword) {
+		List<RdMmBasicInfo> list = rdMmBasicInfoService.findList("mobile",mobile );
+		if (list!=null&&list.size()>0){
+			for (RdMmBasicInfo basicInfo : list) {
+				List<RdMmRelation> relations = rdMmRelationDao.findByParams(Paramap.create().put("mmCode",basicInfo.getMmCode()));
+				if(relations!=null&&relations.size()>0){
+					RdMmRelation rdMmRelation = relations.get(0);
+					rdMmRelation.setLoginPwd(Digests.entryptPassword(newpassword));
+					rdMmRelationDao.update(rdMmRelation);
+				}
+			}
+		}
 	}
 }
