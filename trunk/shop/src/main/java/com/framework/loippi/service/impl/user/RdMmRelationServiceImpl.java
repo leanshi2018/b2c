@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.Paramap;
@@ -42,7 +43,7 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 	@Autowired
 	private  OldSysRelationshipDao oldSysRelationshipDao;
 	@Autowired
-	private RdMmBasicInfoService rdMmBasicInfoService;
+	private RdMmBasicInfoDao rdMmBasicInfoDao;
 	
 	@Autowired
 	public void setGenericDao() {
@@ -146,7 +147,7 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 	 */
 	@Override
 	public void updatePassword(String mobile, String newpassword) {
-		List<RdMmBasicInfo> list = rdMmBasicInfoService.findList("mobile",mobile );
+		List<RdMmBasicInfo> list = rdMmBasicInfoDao.findByParams(Paramap.create().put("mobile",mobile) );
 		if (list!=null&&list.size()>0){
 			for (RdMmBasicInfo basicInfo : list) {
 				List<RdMmRelation> relations = rdMmRelationDao.findByParams(Paramap.create().put("mmCode",basicInfo.getMmCode()));
