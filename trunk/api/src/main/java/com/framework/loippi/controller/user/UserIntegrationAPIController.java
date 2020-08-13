@@ -12,7 +12,6 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -241,7 +240,10 @@ public class UserIntegrationAPIController extends BaseController {
     //奖励积分提现确认
     @RequestMapping(value = "/bop/cashWithdrawal/finish.json")
     public String bopCashWithdrawal(HttpServletRequest request,  Double integration, String paypassword) {
-        if ("".equals(paypassword)) {
+        //TODO
+        return ApiUtils.error("抱歉，手动提现暂停使用，请先使用自动提现");
+
+        /*if ("".equals(paypassword)) {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
 
@@ -269,7 +271,7 @@ public class UserIntegrationAPIController extends BaseController {
         if(list!=null&&list.size()>0){
             return ApiUtils.error("您已有一笔提现申请待审核，如需要，取消后重新提交");
         }
-        List<RdMmBank> mmBanks = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("inValid",1).put("defaultbank",1));
+        List<RdMmBank> mmBanks = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("inValid",1).put("defaultbank",1));*/
         //银行卡信息
         /*RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(bankCardId+""));
         if (rdMmBank == null) {
@@ -282,7 +284,7 @@ public class UserIntegrationAPIController extends BaseController {
             return ApiUtils.error("该银行卡还未签约或签约失败");
         }*/
 
-        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+        /*List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
                 .findList(Paramap.create().put("order", "RID desc"));
         RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
         if (CollectionUtils.isNotEmpty(rdMmIntegralRuleList)) {
@@ -320,17 +322,17 @@ public class UserIntegrationAPIController extends BaseController {
         shopMemberMessage.setCreateTime(new Date());
         shopMemberMessage.setUid(Long.parseLong(member.getMmCode()));
         shopMemberMessages.add(shopMemberMessage);
-        Integer transNumber = rdMmAccountInfoService.saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null, shopCommonMessages, shopMemberMessages);
+        Integer transNumber = rdMmAccountInfoService.saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.BOP, rdMmAccountLogList, null, shopCommonMessages, shopMemberMessages);*/
         // TODO: 2018/12/28 待处理
         /*return ApiUtils.success(Paramap.create().put("bankCardCode",
             "****     ****     ****     " + rdMmBank.getAccCode().substring(rdMmBank.getAccCode().length() - 4))
             .put("transferOutMoney", integration)
             .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));*/
-        return ApiUtils.success(Paramap.create()
+        /*return ApiUtils.success(Paramap.create()
                 .put("presentationFeeNow", rdMmAccountLog.getPresentationFeeNow())
                 .put("actualWithdrawals", rdMmAccountLog.getActualWithdrawals())
                 .put("transferOutMoney", integration)
-                .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));
+                .put("bopIntegration", rdMmAccountInfo.getBonusBlance()));*/
         /*return ApiUtils.error("该功能在升级，请耐心等待！");*/
     }
 

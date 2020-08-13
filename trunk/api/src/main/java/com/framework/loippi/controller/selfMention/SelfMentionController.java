@@ -628,6 +628,10 @@ public class SelfMentionController extends BaseController {
         }
         rdWareOrder.setCreateTime(new Date());
         rdWareOrder.setOrderDesc("欠货创建");
+        rdWareOrder.setProvinceCode(Optional.ofNullable(warehouseIn.getProvinceCode()).orElse(""));
+        rdWareOrder.setCityCode(Optional.ofNullable(warehouseIn.getCityCode()).orElse(""));
+        rdWareOrder.setCountryCode(Optional.ofNullable(warehouseIn.getCountryCode()).orElse(""));
+        rdWareOrder.setWareDetial(Optional.ofNullable(warehouseIn.getWareDetial()).orElse(""));
 
 
         RdWarehouse warehouseOut = rdWarehouseService.findByCode("20192514");//仓库
@@ -694,6 +698,10 @@ public class SelfMentionController extends BaseController {
         }
         rdWareOrder.setCreateTime(new Date());
         rdWareOrder.setOrderDesc("欠货创建");
+        rdWareOrder.setProvinceCode(Optional.ofNullable(warehouseIn.getProvinceCode()).orElse(""));
+        rdWareOrder.setCityCode(Optional.ofNullable(warehouseIn.getCityCode()).orElse(""));
+        rdWareOrder.setCountryCode(Optional.ofNullable(warehouseIn.getCountryCode()).orElse(""));
+        rdWareOrder.setWareDetial(Optional.ofNullable(warehouseIn.getWareDetial()).orElse(""));
 
 
         RdWarehouse warehouseOut = rdWarehouseService.findByCode("20192514");//仓库
