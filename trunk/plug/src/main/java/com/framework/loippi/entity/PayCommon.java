@@ -46,6 +46,8 @@ public class PayCommon implements Serializable {
 
     private String openId;
 
+    private String callback;
+
     private Integer type;
 
 }

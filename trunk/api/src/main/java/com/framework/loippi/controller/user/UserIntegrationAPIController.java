@@ -1,6 +1,7 @@
 package com.framework.loippi.controller.user;
 
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,12 +12,16 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.framework.loippi.consts.IntegrationNameConsts;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
@@ -56,6 +61,13 @@ import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.utils.wechat.mobile.util.CollectionUtil;
+import com.framework.loippi.utils.wechat.mobile.util.HttpUtils;
+import com.framework.loippi.utils.wechat.mobile.util.JsonResult;
+import com.framework.loippi.utils.wechat.mobile.util.ResponseData;
+import com.framework.loippi.utils.wechat.mobile.util.SerializerFeatureUtil;
+import com.framework.loippi.utils.wechat.mobile.util.WeixinUtils;
+import com.framework.loippi.utils.wechat.mobile.util.XmlUtil;
 
 /**
  * 积分 Created by Administrator on 2017/11/23.
@@ -849,5 +861,81 @@ public class UserIntegrationAPIController extends BaseController {
         }
         return ApiUtils.error("该用户没有设置默认提现银行卡");
     }
+
+    private static final Logger log = Logger.getLogger(UserIntegrationAPIController.class);
+
+    /**
+     * 微信企业向个人支付转账
+     * @param request
+     * @param response
+     * @param openid
+     * @param amount
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    @RequestMapping(value = "/bop/transferPay.json",method = RequestMethod.POST)
+    public String transferPay(HttpServletRequest request, HttpServletResponse response, String openid,Integer amount) throws UnsupportedEncodingException {
+
+        if (openid==null || "".equals(openid)){
+            return ApiUtils.error("微信授权失败");
+        }
+
+        if (amount==null){
+            return ApiUtils.error("提现金额有误，请输入正确的提现金额");
+        }
+
+        Integer Qb = amount*100;
+
+        Map<String, String> restmap = null;
+        try {
+            Map<String, String> parm = new HashMap<String, String>();
+            parm.put("mch_appid", WeixinUtils.APP_ID); //公众账号appid
+            parm.put("mchid", WeixinUtils.MCH_ID); //商户号
+            parm.put("nonce_str", WeixinUtils.createNoncestr()); //随机字符串
+            parm.put("partner_trade_no", WeixinUtils.getTransferNo()); //商户订单号
+            parm.put("openid", openid); //用户openid
+            parm.put("check_name", "NO_CHECK"); //校验用户姓名选项 OPTION_CHECK
+            //parm.put("re_user_name", "安迪"); //check_name设置为FORCE_CHECK或OPTION_CHECK，则必填
+            parm.put("amount", Qb.toString()); //转账金额  单位分
+            parm.put("desc", "测试转账到个人"); //企业付款描述信息
+            parm.put("spbill_create_ip", WeixinUtils.getLocalIp(request)); //服务器Ip地址
+            parm.put("sign", WeixinUtils.getSign(parm, WeixinUtils.API_SECRET));
+
+            String restxml = HttpUtils.posts(WeixinUtils.TRANSFERS_PAY, XmlUtil.xmlFormat(parm, false));
+            restmap = XmlUtil.xmlParse(restxml);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+
+        System.out.println("-------------------------------------------------------");
+        System.out.println("-------------------" + restmap + "------------------------------------");
+        System.out.println("-------------------------------------------------------");
+
+        if (CollectionUtil.isNotEmpty(restmap) && "SUCCESS".equals(restmap.get("result_code"))) {
+            log.info("转账成功：" + restmap.get("err_code") + ":" + restmap.get("err_code_des"));
+            Map<String, String> transferMap = new HashMap<>();
+            transferMap.put("partner_trade_no", restmap.get("partner_trade_no"));//商户转账订单号
+            transferMap.put("payment_no", restmap.get("payment_no")); //微信订单号
+            transferMap.put("payment_time", restmap.get("payment_time")); //微信支付成功时间
+
+            return ApiUtils.success(JSON.toJSONString(new JsonResult(1, "转账成功", new ResponseData(null, transferMap)),
+                    SerializerFeatureUtil.FEATURES));
+            /*WebUtil.response(response,
+                    WebUtil.packJsonp(callback,
+                            JSON.toJSONString(new JsonResult(1, "转账成功", new ResponseData(null, transferMap)),
+                                    SerializerFeatureUtil.FEATURES)));*/
+        }else {
+            if (CollectionUtil.isNotEmpty(restmap)) {
+                log.info("转账失败：" + restmap.get("err_code") + ":" + restmap.get("err_code_des"));
+            }
+            return ApiUtils.error(JSON
+                    .toJSONString(new JsonResult(-1, "转账失败", new ResponseData()), SerializerFeatureUtil.FEATURES));
+            /*WebUtil.response(response, WebUtil.packJsonp(callback, JSON
+                    .toJSONString(new JsonResult(-1, "转账失败", new ResponseData()), SerializerFeatureUtil.FEATURES)));*/
+        }
+
+    }
+
 }
 

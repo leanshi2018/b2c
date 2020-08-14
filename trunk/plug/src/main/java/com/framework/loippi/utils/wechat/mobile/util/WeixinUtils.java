@@ -1,24 +1,58 @@
 package com.framework.loippi.utils.wechat.mobile.util;
 
-import com.framework.loippi.utils.wechat.h5.util.MyX509TrustManager;
 import net.sf.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-import javax.net.ssl.*;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.net.ConnectException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.KeyStore;
-import java.util.*;
-import java.util.Map.Entry;
+import com.framework.loippi.utils.wechat.h5.util.MyX509TrustManager;
 
 public class WeixinUtils {
+
+    public static final String TRANSFERS_PAY = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers"; // 企业付款
+
+    public static final String APP_ID = ConfigUtil.getProperty("wx.appid");
+
+    public static final String MCH_ID = ConfigUtil.getProperty("wx.mchid");
+
+    public static final String API_SECRET = ConfigUtil.getProperty("wx.api.secret");
 
     /**
      * 发起https请求并获取结果
@@ -356,4 +390,66 @@ public class WeixinUtils {
         }
         return buffer.toString();
     }
+
+    /**
+     * 退款单号
+     *
+     * @return
+     */
+    public static String getTransferNo() {
+        // 自增8位数 00000001
+        return "TNO" + DatetimeUtil.formatDate(new Date(), DatetimeUtil.TIME_STAMP_PATTERN) + "00000001";
+    }
+
+    /**
+     * 获取服务器的ip地址
+     *
+     * @param request
+     * @return
+     */
+    public static String getLocalIp(HttpServletRequest request) {
+        return request.getLocalAddr();
+    }
+
+	public static String getSign(Map<String, String> params, String paternerKey) throws UnsupportedEncodingException {
+		return MD5Util.getMD5(createSign(params, false) + "&key=" + paternerKey).toUpperCase();
+	}
+
+	/**
+	 * 构造签名
+	 *
+	 * @param params
+	 * @param encode
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	public static String createSign(Map<String, String> params, boolean encode) throws UnsupportedEncodingException {
+		Set<String> keysSet = params.keySet();
+		Object[] keys = keysSet.toArray();
+		Arrays.sort(keys);
+		StringBuffer temp = new StringBuffer();
+		boolean first = true;
+		for (Object key : keys) {
+			if (key == null || StringUtil.isEmpty(params.get(key))) // 参数为空不参与签名
+				continue;
+			if (first) {
+				first = false;
+			} else {
+				temp.append("&");
+			}
+			temp.append(key).append("=");
+			Object value = params.get(key);
+			String valueStr = "";
+			if (null != value) {
+				valueStr = value.toString();
+			}
+			if (encode) {
+				temp.append(URLEncoder.encode(valueStr, "UTF-8"));
+			} else {
+				temp.append(valueStr);
+			}
+		}
+		return temp.toString();
+	}
+
 }
