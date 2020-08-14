@@ -2,18 +2,13 @@ package com.framework.loippi.controller.user;
 
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.result.user.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -54,15 +49,6 @@ import com.framework.loippi.param.wallet.BindCardDto;
 import com.framework.loippi.pojo.selfMention.GoodsType;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
 import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.result.user.BankCardsListResult;
-import com.framework.loippi.result.user.PersonCenterResult;
-import com.framework.loippi.result.user.SelfPerformanceResult;
-import com.framework.loippi.result.user.SelfWalletResult;
-import com.framework.loippi.result.user.SubordinateUserInformationResult;
-import com.framework.loippi.result.user.UserCollectResult;
-import com.framework.loippi.result.user.UserFootprintsResult;
-import com.framework.loippi.result.user.UserProfileResult;
-import com.framework.loippi.result.user.WithdrawBalanceResult;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.ShopMemberMessageService;
 import com.framework.loippi.service.common.ShopAppService;
@@ -762,6 +748,12 @@ public class UserAPIController extends BaseController {
         }
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        if(member==null||member.getMainFlag()==null){
+            return ApiUtils.error("会员信息异常");
+        }
+        if(member.getMainFlag()!=1){
+            return ApiUtils.error("只有主店会员才可进行手机号修改");
+        }
         if (!oldMobile.equals(member.getMobile())) {
             return ApiUtils.error("不是预留手机号码");
         }
@@ -830,12 +822,25 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        String mmCode = session.getMmCode();
+        RdMmBasicInfo basicInfo = rdMmBasicInfoService.findByMCode(mmCode);
+        if(basicInfo==null){
+            return ApiUtils.error("当前会员不存在");
+        }
+        if(basicInfo.getMainFlag()==null||basicInfo.getMainFlag()!=1){
+            return ApiUtils.error("只有主店会员可以修改登录密码");
+        }
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", session.getMmCode());
         if (!Digests.validatePassword(oldpassword, rdMmRelation.getLoginPwd())) {
             return ApiUtils.error("原密码输入错误");
         }
+        rdMmRelationService.updatePassword(basicInfo.getMobile(),newpassword);
+        /*RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", session.getMmCode());
+        if (!Digests.validatePassword(oldpassword, rdMmRelation.getLoginPwd())) {
+            return ApiUtils.error("原密码输入错误");
+        }
         rdMmRelation.setLoginPwd(Digests.entryptPassword(newpassword));
-        rdMmRelationService.update(rdMmRelation);
+        rdMmRelationService.update(rdMmRelation);*/
         return ApiUtils.success();
     }
 
@@ -861,11 +866,17 @@ public class UserAPIController extends BaseController {
         /**判断是不是预留手机号码*/
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+        if(member==null||member.getMainFlag()==null){
+            return ApiUtils.error("会员信息异常");
+        }
+        if(member.getMainFlag()!=1){
+            return ApiUtils.error("只有主店会员才可以进行支付密码设置");
+        }
         if (!member.getMobile().equals(mobile)) {
             return ApiUtils.error("10004", "不是预留手机号码");
         }
         //为保存密码 故意处理
-        member.setMobile(Digests.entryptPassword(paypassword));
+        member.setPhone(Digests.entryptPassword(paypassword));
         rdMmBasicInfoService.updateMember(member, UpdateMemberInfoStatus.SET_PAYMENTPASSWD);
         return ApiUtils.success();
     }
@@ -883,12 +894,20 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID, "参数无效");
         }
         AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo mmBasicInfo = rdMmBasicInfoService.findByMCode(session.getMmCode());
+        if(mmBasicInfo==null||mmBasicInfo.getMainFlag()==null){
+            return ApiUtils.error("会员信息异常");
+        }
+        if(mmBasicInfo.getMainFlag()!=1){
+            return ApiUtils.error("非主店会员不可以修改支付密码");
+        }
         RdMmAccountInfo member = rdMmAccountInfoService.find("mmCode", session.getMmCode());
         if (!Digests.validatePassword(oldpassword, member.getPaymentPwd())) {
             return ApiUtils.error("原密码输入错误");
         }
-        member.setPaymentPwd(Digests.entryptPassword(newpassword));
-        rdMmAccountInfoService.update(member);
+        rdMmAccountInfoService.updatePayPassword(mmBasicInfo,newpassword);
+        /*member.setPaymentPwd(Digests.entryptPassword(newpassword));
+        rdMmAccountInfoService.update(member);*/
         return ApiUtils.success();
     }
 
@@ -2181,4 +2200,105 @@ public class UserAPIController extends BaseController {
         }
     }
 
+    /**
+     * 会员多店管理 获取用户主店次店在内的列表集合
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/account/management.json", method = RequestMethod.GET)
+    public String accountManagement(HttpServletRequest request) {
+        // 获取缓存实体
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        //用户未登录或者登录失效
+        if (member == null) {
+            return ApiUtils.error("当前用户尚未登录");
+        }
+        String mobile = member.getMobile();
+        List<RdRanks> ranks = rdRanksService.findAll();
+        HashMap<Integer, String> map = new HashMap<>();
+        if(ranks!=null&&ranks.size()>0){
+            for (RdRanks rank : ranks) {
+                map.put(rank.getRankId(),rank.getRankName());
+            }
+        }
+        //根据手机号查询出当前登录用户关联的其他会员集合
+        List<RdMmBasicInfo> list = mmBasicInfoService.findList(Paramap.create().put("mobile",mobile));
+        if(list!=null&&list.size()>0){
+            ArrayList<MemberBasicResult> results = new ArrayList<>();
+            for (RdMmBasicInfo basicInfo : list) {
+                String mmCode = basicInfo.getMmCode();
+                //查询关系表及当前周期资格表
+                RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode",mmCode);
+                String periodCode = periodService.getSysPeriodService(new Date());
+                MemberBasicResult result=new MemberBasicResult();
+                if(periodCode!=null){
+                    List<MemberQualification> qualifications = memberQualificationService.findList(Paramap.create().put("periodCode",periodCode).put("mCode",mmCode));
+                    if(qualifications!=null&&qualifications.size()>0){
+                         result = MemberBasicResult.build(basicInfo, rdMmRelation, qualifications.get(0),map,member.getMmCode());
+                    }else {
+                         result = MemberBasicResult.build(basicInfo, rdMmRelation, null,map,member.getMmCode());
+                    }
+                }else {
+                     result = MemberBasicResult.build(basicInfo, rdMmRelation, null,map,member.getMmCode());
+                }
+                results.add(result);
+            }
+            Collections.sort(results, new Comparator<MemberBasicResult>() {
+                @Override
+                public int compare(MemberBasicResult o1, MemberBasicResult o2) {
+                    if(o1.getMainFlag()<o2.getMainFlag()){
+                        return -1;
+                    }else if(o1.getMainFlag()>o2.getMainFlag()){
+                        return 1;
+                    }
+                    return 0;
+                }
+            });
+            return ApiUtils.success(results);
+        }else {
+            return ApiUtils.success(new ArrayList<MemberBasicResult>());
+        }
+    }
+
+    /**
+     * 次店会员注册
+     * @param request
+     * @param mNickName 昵称
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/minor/register.json", method = RequestMethod.POST)
+    public String minorRegister(HttpServletRequest request,String mNickName) throws Exception {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        //用户未登录或者登录失效
+        if (member == null) {
+            return ApiUtils.error("当前用户尚未登录");
+        }
+        String mmCode = member.getMmCode();
+        RdMmBasicInfo mmBasicInfo = rdMmBasicInfoService.findByMCode(mmCode);
+        if(mmBasicInfo==null||mmBasicInfo.getMainFlag()==null){
+            return ApiUtils.error("当前用户信息异常");
+        }
+        if(mmBasicInfo.getMainFlag()!=1){
+            return ApiUtils.error("当前用户非主店会员，请切换至主店会员后进行次店会员注册");
+        }
+        List<RdMmBasicInfo> list = rdMmBasicInfoService.findList("mobile", mmBasicInfo.getMobile());
+        if(list!=null&&list.size()>4){//主店和次店会员公注册数量
+            return ApiUtils.error("当前用户不可注册更多次店会员");
+        }
+        if(StringUtil.isEmpty(mNickName)){
+            return ApiUtils.error("次店会员昵称不可为空");
+        }
+        //昵称过滤敏感字
+        if(mNickName!=null){
+            evaluateSensitivityService.filterWords(mNickName);
+        }
+        RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmNickName",mNickName);
+        if(basicInfo!=null){
+            return ApiUtils.error("当前注册昵称已被使用");
+        }
+        String mmAvatar=StringUtil.formatImg(prefix, "http://rdnmall.com/FoUi8VoKhZJRUnFxhfyQ3Ib50ySa");
+        rdMmBasicInfoService.addSecondaryUser(mmBasicInfo,mNickName,mmAvatar);
+        return ApiUtils.success("注册次店成功");
+    }
 }

@@ -10,6 +10,7 @@ import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.service.GenericService;
 
 /**
@@ -39,4 +40,6 @@ public interface RdMmAccountInfoService  extends GenericService<RdMmAccountInfo,
     void reduceAcc(ShopOrder shopOrder, RdMmAccountInfo accountInfo, BigDecimal acc);
 
 	Long updateStatus(RdMmAccountInfo rdMmAccountInfo);
+
+    void updatePayPassword(RdMmBasicInfo mmBasicInfo, String newpassword);
 }
