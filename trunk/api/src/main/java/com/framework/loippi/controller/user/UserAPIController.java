@@ -2247,9 +2247,9 @@ public class UserAPIController extends BaseController {
                 @Override
                 public int compare(MemberBasicResult o1, MemberBasicResult o2) {
                     if(o1.getMainFlag()<o2.getMainFlag()){
-                        return 1;
-                    }else if(o1.getMainFlag()>o2.getMainFlag()){
                         return -1;
+                    }else if(o1.getMainFlag()>o2.getMainFlag()){
+                        return 1;
                     }
                     return 0;
                 }
