@@ -67,7 +67,7 @@ import com.framework.loippi.utils.wechat.mobile.util.JsonResult;
 import com.framework.loippi.utils.wechat.mobile.util.ResponseData;
 import com.framework.loippi.utils.wechat.mobile.util.SerializerFeatureUtil;
 import com.framework.loippi.utils.wechat.mobile.util.WeixinUtils;
-import com.framework.loippi.utils.wechat.mobile.util.XmlUtil;
+import com.framework.loippi.utils.wechat.mobile.util.XmlUtils;
 
 /**
  * 积分 Created by Administrator on 2017/11/23.
@@ -901,8 +901,8 @@ public class UserIntegrationAPIController extends BaseController {
             parm.put("spbill_create_ip", WeixinUtils.getLocalIp(request)); //服务器Ip地址
             parm.put("sign", WeixinUtils.getSign(parm, WeixinUtils.API_SECRET));
 
-            String restxml = HttpUtils.posts(WeixinUtils.TRANSFERS_PAY, XmlUtil.xmlFormat(parm, false));
-            restmap = XmlUtil.xmlParse(restxml);
+            String restxml = HttpUtils.posts(WeixinUtils.TRANSFERS_PAY, XmlUtils.xmlFormat(parm, false));
+            restmap = XmlUtils.xmlParse(restxml);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

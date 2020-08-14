@@ -18,7 +18,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
  * @version 2.2
  */
 
-public class XmlUtil {
+public class XmlUtils {
 
 	private static final String PREFIX_XML = "<xml>";
 
