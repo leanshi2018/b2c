@@ -2233,7 +2233,10 @@ public class UserAPIController extends BaseController {
                 MemberBasicResult result=new MemberBasicResult();
                 BigDecimal periodMi=BigDecimal.ZERO;
                 if(periodCode!=null){
-                    periodMi = shopOrderService.countOrderPPVByMCodeAndPeriod(mmCode, periodCode);
+                    BigDecimal mi = shopOrderService.countOrderPPVByMCodeAndPeriod(mmCode, periodCode);
+                    if(mi!=null){
+                        periodMi=mi;
+                    }
                 }
                 result = MemberBasicResult.build(basicInfo, rdMmRelation, periodMi,map,member.getMmCode());
                 results.add(result);
