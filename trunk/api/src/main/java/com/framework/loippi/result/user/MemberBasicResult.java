@@ -29,7 +29,7 @@ public class MemberBasicResult {
     private Integer mainFlag;//是否为主店 1：主店 2：次店
     private String loginPwd;//加密后的密码
 
-    public static MemberBasicResult build(RdMmBasicInfo basicInfo, RdMmRelation rdMmRelation, MemberQualification qualification,HashMap<Integer,String> rankMap,String onLineCode){
+    public static MemberBasicResult build(RdMmBasicInfo basicInfo, RdMmRelation rdMmRelation, BigDecimal periodMi, HashMap<Integer,String> rankMap, String onLineCode){
         MemberBasicResult result = new MemberBasicResult();
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(basicInfo);
         Optional<RdMmRelation> optional2 = Optional.ofNullable(rdMmRelation);
@@ -38,15 +38,7 @@ public class MemberBasicResult {
         result.setRank(optional2.map(RdMmRelation::getRank).orElse(0));
         String rankName = rankMap.get(result.getRank());
         result.setRankName(rankName);
-        if(qualification==null){
-            result.setMonthMi(BigDecimal.ZERO);
-        }else {
-            if(qualification.getPpv()!=null){
-                result.setMonthMi(qualification.getPpv());
-            }else {
-                result.setMonthMi(BigDecimal.ZERO);
-            }
-        }
+        result.setMonthMi(periodMi);
         result.setMmCode(optional.map(RdMmBasicInfo::getMmCode).orElse(""));
         if(result.getMmCode().equals(onLineCode)){
             result.setOnLineFlag(1);
