@@ -49,13 +49,10 @@ public class WeixinUtils {
     public static final String TRANSFERS_PAY = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers"; // 企业付款
 
     //public static final String APP_ID = ConfigUtil.getProperty("wx.appid");
-    public static final String APP_ID = ConfigUtil.getProperty("wx.appid");
 
     //public static final String MCH_ID = ConfigUtil.getProperty("wx.mchid");
-    public static final String MCH_ID = ConfigUtil.getProperty("wx.mchid");
 
     //public static final String API_SECRET = ConfigUtil.getProperty("wx.api.secret");
-    public static final String API_SECRET = ConfigUtil.getProperty("wx.api.secret");
 
     /**
      * 发起https请求并获取结果
