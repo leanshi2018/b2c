@@ -335,6 +335,8 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         }
         if(rdMmBasicInfo.getPhone()!=null){
             member.setPhone(rdMmBasicInfo.getPhone());
+        }else {
+            member.setPhone(null);
         }
         rdMmBasicInfoDao.update(member);
     }
