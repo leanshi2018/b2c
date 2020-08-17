@@ -1,4 +1,4 @@
-package com.framework.loippi.utils.wechat.mobile.util;
+package com.framework.loippi.utils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -44,7 +44,7 @@ public class HttpUtils {
 	private static SSLContext wx_ssl_context = null; //微信支付ssl证书
 	
 	static{
-		Resource resource = new ClassPathResource("wx_apiclient_cert.p12");
+		Resource resource = new ClassPathResource("apiclient_cert.p12");
 		try {
 			KeyStore keystore = KeyStore.getInstance("PKCS12");
 			char[] keyPassword = ConfigUtil.getProperty("wx.mchid").toCharArray(); //证书密码
