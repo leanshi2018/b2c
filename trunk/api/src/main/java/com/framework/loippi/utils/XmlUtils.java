@@ -1,4 +1,4 @@
-package com.framework.loippi.utils.wechat.mobile.util;
+package com.framework.loippi.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
+
+import com.framework.loippi.utils.wechat.mobile.util.CollectionUtil;
+import com.framework.loippi.utils.wechat.mobile.util.StringUtil;
 
 /**
  * 创建时间：2016年11月3日 上午11:40:17

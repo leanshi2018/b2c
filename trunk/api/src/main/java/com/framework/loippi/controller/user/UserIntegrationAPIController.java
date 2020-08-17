@@ -58,17 +58,17 @@ import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
 import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.HttpUtils;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.utils.XmlUtils;
 import com.framework.loippi.utils.wechat.mobile.config.WXpayConfig;
 import com.framework.loippi.utils.wechat.mobile.util.CollectionUtil;
-import com.framework.loippi.utils.wechat.mobile.util.HttpUtils;
 import com.framework.loippi.utils.wechat.mobile.util.JsonResult;
 import com.framework.loippi.utils.wechat.mobile.util.ResponseData;
 import com.framework.loippi.utils.wechat.mobile.util.SerializerFeatureUtil;
 import com.framework.loippi.utils.wechat.mobile.util.WeixinUtils;
-import com.framework.loippi.utils.wechat.mobile.util.XmlUtils;
 
 /**
  * 积分 Created by Administrator on 2017/11/23.

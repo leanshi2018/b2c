@@ -1,4 +1,4 @@
-package com.framework.loippi.utils.wechat.mobile.util;
+package com.framework.loippi.utils;
 
 import java.io.IOException;
 import java.util.Properties;
