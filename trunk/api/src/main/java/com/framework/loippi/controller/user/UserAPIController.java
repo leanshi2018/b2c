@@ -2213,7 +2213,11 @@ public class UserAPIController extends BaseController {
         if (member == null) {
             return ApiUtils.error("当前用户尚未登录");
         }
-        String mobile = member.getMobile();
+        String mobile = member.getMobile();//缓存手机号
+        RdMmBasicInfo info = mmBasicInfoService.findByMCode(member.getMmCode());//数据库最新手机号
+        if(!info.getMobile().equals(mobile)){//修改敏感信息后，缓存数据和数据库信息不对等，强制退出
+            return ApiUtils.error(-100,"会员信息发生变动，强制退出重新登录");
+        }
         List<RdRanks> ranks = rdRanksService.findAll();
         HashMap<Integer, String> map = new HashMap<>();
         if(ranks!=null&&ranks.size()>0){
