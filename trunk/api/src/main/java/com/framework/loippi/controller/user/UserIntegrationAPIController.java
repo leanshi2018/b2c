@@ -61,6 +61,7 @@ import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.utils.wechat.mobile.config.WXpayConfig;
 import com.framework.loippi.utils.wechat.mobile.util.CollectionUtil;
 import com.framework.loippi.utils.wechat.mobile.util.HttpUtils;
 import com.framework.loippi.utils.wechat.mobile.util.JsonResult;
@@ -889,8 +890,8 @@ public class UserIntegrationAPIController extends BaseController {
         Map<String, String> restmap = null;
         try {
             Map<String, String> parm = new HashMap<String, String>();
-            parm.put("mch_appid", WeixinUtils.APP_ID); //公众账号appid
-            parm.put("mchid", WeixinUtils.MCH_ID); //商户号
+            parm.put("mch_appid", WXpayConfig.APP_ID); //公众账号appid
+            parm.put("mchid", WXpayConfig.MCH_ID); //商户号
             parm.put("nonce_str", WeixinUtils.createNoncestr()); //随机字符串
             parm.put("partner_trade_no", WeixinUtils.getTransferNo()); //商户订单号
             parm.put("openid", openid); //用户openid
@@ -899,7 +900,7 @@ public class UserIntegrationAPIController extends BaseController {
             parm.put("amount", Qb.toString()); //转账金额  单位分
             parm.put("desc", "测试转账到个人"); //企业付款描述信息
             parm.put("spbill_create_ip", WeixinUtils.getLocalIp(request)); //服务器Ip地址
-            parm.put("sign", WeixinUtils.getSign(parm, WeixinUtils.API_SECRET));
+            parm.put("sign", WeixinUtils.getSign(parm, WXpayConfig.APP_SECRET));
 
             String restxml = HttpUtils.posts(WeixinUtils.TRANSFERS_PAY, XmlUtils.xmlFormat(parm, false));
             restmap = XmlUtils.xmlParse(restxml);
