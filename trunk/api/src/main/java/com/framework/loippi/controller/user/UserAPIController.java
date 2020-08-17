@@ -2231,16 +2231,14 @@ public class UserAPIController extends BaseController {
                 RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode",mmCode);
                 String periodCode = periodService.getSysPeriodService(new Date());
                 MemberBasicResult result=new MemberBasicResult();
+                BigDecimal periodMi=BigDecimal.ZERO;
                 if(periodCode!=null){
-                    List<MemberQualification> qualifications = memberQualificationService.findList(Paramap.create().put("periodCode",periodCode).put("mCode",mmCode));
-                    if(qualifications!=null&&qualifications.size()>0){
-                         result = MemberBasicResult.build(basicInfo, rdMmRelation, qualifications.get(0),map,member.getMmCode());
-                    }else {
-                         result = MemberBasicResult.build(basicInfo, rdMmRelation, null,map,member.getMmCode());
+                    BigDecimal mi = shopOrderService.countOrderPPVByMCodeAndPeriod(mmCode, periodCode);
+                    if(mi!=null){
+                        periodMi=mi;
                     }
-                }else {
-                     result = MemberBasicResult.build(basicInfo, rdMmRelation, null,map,member.getMmCode());
                 }
+                result = MemberBasicResult.build(basicInfo, rdMmRelation, periodMi,map,member.getMmCode());
                 results.add(result);
             }
             Collections.sort(results, new Comparator<MemberBasicResult>() {

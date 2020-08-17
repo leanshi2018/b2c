@@ -1,14 +1,15 @@
 package com.framework.loippi.service.impl.user;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.allinpay.yunst.sdk.YunClient;
-import com.allinpay.yunst.sdk.bean.YunRequest;
-import com.framework.loippi.utils.Digests;
-import com.framework.loippi.utils.JacksonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -331,6 +332,11 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             rdMmEdit.setMmNameAfter(member.getMmName());
             rdMmEdit.setUpdateType(2);
             rdMmEditDao.insert(rdMmEdit);
+        }
+        if(rdMmBasicInfo.getPhone()!=null){
+            member.setPhone(rdMmBasicInfo.getPhone());
+        }else {
+            member.setPhone(null);
         }
         rdMmBasicInfoDao.update(member);
     }
