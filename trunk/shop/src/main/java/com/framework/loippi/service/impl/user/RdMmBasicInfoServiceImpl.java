@@ -229,7 +229,16 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         //获取当前时间设置的业务周期
         String period = rdSysPeriodDao.getSysPeriodService(new Date());
         rdMmBasicInfo.setCreationPeriod(period);
+        RdMmEdit memberEditReview = new RdMmEdit();
+        memberEditReview.setMmCode(rdMmBasicInfo.getMmCode());
+        memberEditReview.setMmNameAfter(rdMmBasicInfo.getMmName());
+        memberEditReview.setMmNickNameAfter(rdMmBasicInfo.getMmNickName());
+        memberEditReview.setMobileAfter(rdMmBasicInfo.getMobile());
+        memberEditReview.setUpdateType(0);
+        memberEditReview.setUpdateTime(new Date());
+        memberEditReview.setReviewStatus(3);
         rdMmBasicInfoDao.insert(rdMmBasicInfo);
+        rdMmEditDao.insert(memberEditReview);
         rdMmBasicInfo.setMmCode(newMmCode);
         rdMmRelationDao.insert(rdMmRelation);
         rdMmAccountInfoDao.insert(rdMmAccountInfo);
