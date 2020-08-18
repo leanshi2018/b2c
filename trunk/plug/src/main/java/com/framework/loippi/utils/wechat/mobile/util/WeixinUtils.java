@@ -449,6 +449,7 @@ public class WeixinUtils {
 				temp.append(valueStr);
 			}
 		}
+        System.out.println("temp="+temp.toString());
 		return temp.toString();
 	}
 

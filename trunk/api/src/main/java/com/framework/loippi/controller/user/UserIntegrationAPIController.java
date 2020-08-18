@@ -902,13 +902,44 @@ public class UserIntegrationAPIController extends BaseController {
             parm.put("spbill_create_ip", WeixinUtils.getLocalIp(request)); //服务器Ip地址
             parm.put("sign", WeixinUtils.getSign(parm, WXpayConfig.APP_SECRET));
 
+            /*
+            * <xml>
+
+                <mch_appid>wxe062425f740c30d8</mch_appid>
+
+                <mchid>10000098</mchid>
+
+                <nonce_str>3PG2J4ILTKCH16CQ2502SI8ZNMTM67VS</nonce_str>
+
+                <partner_trade_no>100000982014120919616</partner_trade_no>
+
+                <openid>ohO4Gt7wVPxIT1A9GjFaMYMiZY1s</openid>
+
+                <check_name>FORCE_CHECK</check_name>
+
+                <re_user_name>张三</re_user_name>
+
+                <amount>100</amount>
+
+                <desc>节日快乐!</desc>
+
+                <spbill_create_ip>10.2.3.10</spbill_create_ip>
+
+                <sign>C97BDBACF37622775366F38B629F45E3</sign>
+
+                </xml>
+            * */
+
+
             String restxml = HttpUtils.posts(WeixinUtils.TRANSFERS_PAY, XmlUtils.xmlFormat(parm, false));
             restmap = XmlUtils.xmlParse(restxml);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
 
-
+/*
+* {mchid=1539827141, mch_appid=wxb9149ca7f0636c23, err_code=SIGN_ERROR, return_msg=SIGN_ERROR, result_code=FAIL, err_code_des=???????, return_code=SUCCESS}
+* */
         System.out.println("-------------------------------------------------------");
         System.out.println("-------------------" + restmap + "------------------------------------");
         System.out.println("-------------------------------------------------------");
