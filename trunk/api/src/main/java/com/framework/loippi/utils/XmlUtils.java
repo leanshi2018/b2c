@@ -57,7 +57,6 @@ public class XmlUtils {
 				strbuff.append("</").append(entry.getKey()).append(">");
 			}
 		}
-		System.out.println("buff="+strbuff);
 		return strbuff.append(SUFFIX_XML).toString();
 	}
 
