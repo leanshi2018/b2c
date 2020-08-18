@@ -10,6 +10,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.framework.loippi.dao.product.ShopGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsSpecDao;
 import com.framework.loippi.dao.user.RdGoodsAdjustmentDao;
@@ -207,6 +210,148 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			Integer num = Math.abs(inventory);
 
 			ShopGoodsSpec goodsSpec = shopGoodsSpecDao.find(inventoryWarningIn.getSpecificationId());
+			ShopGoods shopGoods = shopGoodsDao.find(goodsSpec.getGoodsId());
+			Map<String, Object> map1 = new HashMap<>();
+			map1.put("wareCode",wareAllocation.getWareCodeOut());
+			map1.put("specificationId",goodsSpec.getId());
+			RdInventoryWarning inventoryWarningOut = rdInventoryWarningDao.findInventoryWarningByWareAndSpecId(map1);
+
+			Long stockNow = 0l;
+			Integer precautiousLine = 0;
+			if (inventoryWarningOut==null){
+				throw new NullPointerException("蜗米仓库商品"+goodsSpec.getId()+"数量不足");
+			}else {
+				if (inventoryWarningOut.getInventory()==null){
+					stockNow = 0l;
+				}else {
+					stockNow = inventoryWarningOut.getInventory().longValue();
+				}
+				if (inventoryWarningOut.getPrecautiousLine()==null){
+					precautiousLine = 0;
+				}else {
+					precautiousLine = inventoryWarningOut.getPrecautiousLine();
+				}
+			}
+
+			//添加商品调整单
+			RdGoodsAdjustment adjustment = new RdGoodsAdjustment();
+			adjustment.setGoodId(goodsSpec.getGoodsId());
+			adjustment.setGoodsName(shopGoods.getGoodsName());
+			adjustment.setSpecificationId(goodsSpec.getId());
+			adjustment.setSpecName(goodsSpec.getSpecName());
+			adjustment.setGoodsSpec(goodsSpec.getSpecGoodsSpec());
+			adjustment.setSpecGoodsSerial(goodsSpec.getSpecGoodsSerial());
+			adjustment.setStockNow(stockNow);
+			adjustment.setStockInto(Long.valueOf(num));
+			if(stockNow-Long.valueOf(num)<0){
+				throw new Exception("蜗米仓库商品库存数量不足");
+			}
+			adjustment.setCreateTime(shopGoods.getCreateTime());
+			if (shopGoods.getShelfLife()==null){
+				adjustment.setQualityTime(0l);
+				adjustment.setShelfLifeTime(shopGoods.getCreateTime());
+			}else {
+				adjustment.setQualityTime(shopGoods.getShelfLife().longValue());
+				Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
+				ca.setTime(new Date()); //设置时间为当前时间
+				ca.add(Calendar.DATE, shopGoods.getShelfLife());//保质天数
+				Date date = ca.getTime(); //结果
+				adjustment.setShelfLifeTime(date);
+			}
+			adjustment.setPrecautiousLine(precautiousLine);
+			adjustment.setWid(wareAllocation.getWId());
+			adjustment.setSign(2);
+			adjustment.setWareCode(wareAllocation.getWareCodeOut());//出库仓库
+			adjustment.setStatus(0l);
+
+			rdGoodsAdjustmentDao.insert(adjustment);
+
+			//添加出库商品
+			RdGoodsAdjustment adjustmentOUT = new RdGoodsAdjustment();
+			adjustmentOUT.setGoodId(goodsSpec.getGoodsId());
+			adjustmentOUT.setGoodsName(shopGoods.getGoodsName());
+			adjustmentOUT.setSpecificationId(goodsSpec.getId());
+			adjustmentOUT.setSpecName(goodsSpec.getSpecName());
+			adjustmentOUT.setGoodsSpec(goodsSpec.getSpecGoodsSpec());
+			adjustmentOUT.setSpecGoodsSerial(goodsSpec.getSpecGoodsSerial());
+			adjustmentOUT.setStockNow(stockNow);
+			adjustmentOUT.setStockInto(Long.valueOf(num));
+			/*if(stockNow-Long.valueOf(entry.getValue())<0){
+				throw new Exception("出库商品库存数量小于出库数量");
+			}*/
+			adjustmentOUT.setCreateTime(shopGoods.getCreateTime());
+			if (shopGoods.getShelfLife()==null){
+				adjustmentOUT.setQualityTime(0l);
+				adjustmentOUT.setShelfLifeTime(shopGoods.getCreateTime());
+			}else {
+				adjustmentOUT.setQualityTime(shopGoods.getShelfLife().longValue());
+				Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
+				ca.setTime(new Date()); //设置时间为当前时间
+				ca.add(Calendar.DATE, shopGoods.getShelfLife());//保质天数
+				Date date = ca.getTime(); //结果
+				adjustmentOUT.setShelfLifeTime(date);
+			}
+			adjustmentOUT.setPrecautiousLine(precautiousLine);
+			adjustmentOUT.setWid(wareAdjustOut.getWid());
+			adjustmentOUT.setSign(1);
+			adjustmentOUT.setWareCode(wareAllocation.getWareCodeOut());
+			adjustmentOUT.setAutohrizeTime(new Date());
+			adjustmentOUT.setStatus(1l);
+			rdGoodsAdjustmentDao.insert(adjustmentOUT);
+
+			//调整仓库
+			//出库库存
+			if (inventoryWarningOut==null){
+				throw new NullPointerException("出库商品"+goodsSpec.getId()+"为空");
+			}else{
+				Map<String,Object> inMap1 = new HashMap<>();
+				inMap1.put("wareCode",wareAllocation.getWareCodeOut());
+				inMap1.put("specificationId",goodsSpec.getId());
+				inMap1.put("inventory",num);
+				rdInventoryWarningDao.updateInventoryByWareCodeAndSpecId(inMap1);
+			}
+		}
+	}
+
+	@Override
+	public void addAllocationOweNew(RdWareOrder rdWareOrder, RdWareAllocation wareAllocation, JSONArray array) throws Exception {
+
+		rdWareOrderDao.insert(rdWareOrder);
+		rdWareAllocationDao.insert(wareAllocation);
+
+		//添加出库调整单
+		RdWareAdjust wareAdjustOut = new RdWareAdjust();
+		wareAdjustOut.setWareCode(wareAllocation.getWareCodeOut());
+		wareAdjustOut.setWareName(wareAllocation.getWareNameOut());
+		wareAdjustOut.setAdjustType("TOT");
+		wareAdjustOut.setAttachAdd(wareAllocation.getAttachAdd());
+		wareAdjustOut.setWareAmount(new BigDecimal("0.00"));
+		wareAdjustOut.setStatus(3);
+		wareAdjustOut.setAutohrizeBy("自提店欠货创建");
+		wareAdjustOut.setAutohrizeTime(new Date());
+		wareAdjustOut.setAutohrizeDesc("调拨单号"+wareAllocation.getWId()+"预扣商品");
+		rdWareAdjustDao.insert(wareAdjustOut);
+
+		//发货商品
+		for (Object o : array) {
+
+			Long specId = 0l;
+			Integer stockInto = 0;
+			JSONObject jsonObject = JSON.parseObject(o.toString());
+			for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
+				System.out.println(entry.getKey() + ":" + entry.getValue());
+				if (entry.getKey().equals("id")) {
+					specId = Long.valueOf(entry.getValue().toString());
+				}
+				if (entry.getKey().equals("inventory")) {
+					stockInto = Integer.valueOf(entry.getValue().toString());
+				}
+			}
+
+			//Integer inventory = stockInto;
+			Integer num = Math.abs(stockInto);
+
+			ShopGoodsSpec goodsSpec = shopGoodsSpecDao.find(specId);
 			ShopGoods shopGoods = shopGoodsDao.find(goodsSpec.getGoodsId());
 			Map<String, Object> map1 = new HashMap<>();
 			map1.put("wareCode",wareAllocation.getWareCodeOut());

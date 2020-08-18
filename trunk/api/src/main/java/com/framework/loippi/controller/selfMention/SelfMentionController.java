@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.controller.BaseController;
@@ -726,6 +729,98 @@ public class SelfMentionController extends BaseController {
 
         //创建调拨单和订单
         rdWareAllocationService.addAllocationOwe(rdWareOrder,wareAllocation,inventoryWarningList);
+
+        return ApiUtils.success();
+    }
+
+    /**
+     * 按欠货创建发货单
+     */
+    @RequestMapping(value = "/api/mention/createOweOrderNew", method = RequestMethod.POST)
+    @ResponseBody
+    public String createOweOrderNew( HttpServletRequest request,String mapS) throws Exception {
+
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+
+        String mmCode = member.getMmCode();
+        RdWarehouse warehouseIn = rdWarehouseService.findByMmCode(mmCode);
+        if (warehouseIn == null ) {
+            return ApiUtils.error("该会员没有自提仓库");
+        }
+        String wareCode = warehouseIn.getWareCode();
+
+        List<RdWareAllocation> list = rdWareAllocationService.haveAllocation(wareCode,2);
+        if (list.size()>0){
+            return ApiUtils.error("该会员自提仓库还有待审调拨单，请等待审核后再进行创建新的调拨单");
+        }
+
+        RdWareOrder rdWareOrder = new RdWareOrder();
+        rdWareOrder.setId(twiterIdService.getTwiterId());
+        String orderSn = "DH"+twiterIdService.getTwiterId();
+        rdWareOrder.setOrderSn(orderSn);
+        rdWareOrder.setStoreId(warehouseIn.getWareCode());
+        rdWareOrder.setStoreName(warehouseIn.getWareName());
+        rdWareOrder.setMCode(Optional.ofNullable(warehouseIn.getMmCode()).orElse(""));
+        rdWareOrder.setConsigneeName(Optional.ofNullable(warehouseIn.getConsigneeName()).orElse(""));
+        rdWareOrder.setWarePhone(Optional.ofNullable(warehouseIn.getWarePhone()).orElse(""));
+        rdWareOrder.setOrderType(8);
+        rdWareOrder.setOrderState(5);//待审
+        RdSysPeriod nowPeriod = rdSysPeriodService.getPeriodService(new Date());
+        if (nowPeriod==null){
+            rdWareOrder.setCreationPeriod("");
+        }else {
+            rdWareOrder.setCreationPeriod(nowPeriod.getPeriodCode());
+        }
+        rdWareOrder.setCreateTime(new Date());
+        rdWareOrder.setOrderDesc("欠货创建");
+        rdWareOrder.setProvinceCode(Optional.ofNullable(warehouseIn.getProvinceCode()).orElse(""));
+        rdWareOrder.setCityCode(Optional.ofNullable(warehouseIn.getCityCode()).orElse(""));
+        rdWareOrder.setCountryCode(Optional.ofNullable(warehouseIn.getCountryCode()).orElse(""));
+        rdWareOrder.setWareDetial(Optional.ofNullable(warehouseIn.getWareDetial()).orElse(""));
+
+
+        RdWarehouse warehouseOut = rdWarehouseService.findByCode("20192514");//仓库
+        //调拨单
+        RdWareAllocation wareAllocation = new RdWareAllocation();
+        wareAllocation.setWareCodeIn(warehouseIn.getWareCode());
+        wareAllocation.setWareNameIn(warehouseIn.getWareName());
+        wareAllocation.setWareCodeOut(warehouseOut.getWareCode());
+        wareAllocation.setWareNameOut(warehouseOut.getWareName());
+        wareAllocation.setAttachAdd("");
+        wareAllocation.setStatus(2);
+        wareAllocation.setWareOrderSn(orderSn);
+        wareAllocation.setAutohrizeBy("");
+        wareAllocation.setAutohrizeDesc("");
+        wareAllocation.setCreateTime(new Date());
+
+        //查找入库仓库为负数的商品
+        //List<RdInventoryWarning> inventoryWarningList = rdInventoryWarningService.findByWareCodeAndOweInven(wareAllocation.getWareCodeIn());
+        JSONArray array = JSON.parseArray(mapS);
+        if (array.size()==0){
+            return ApiUtils.error("请选择欠货商品");
+        }
+        System.out.println("mapS="+mapS);
+        System.out.println("array="+array);
+        for (Object o : array) {
+        System.out.println("o="+o);
+            Long specId = 0l;
+            Integer stockInto = 0;
+            JSONObject jsonObject = JSON.parseObject(o.toString());
+            for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
+                System.out.println(entry.getKey() + ":" + entry.getValue());
+                if (entry.getKey().equals("id")) {
+                    specId = Long.valueOf(entry.getValue().toString());
+                    System.out.println("id="+ specId);
+                }
+                if (entry.getKey().equals("inventory")) {
+                    stockInto = Integer.valueOf(entry.getValue().toString());
+                    System.out.println("inventory="+ stockInto);
+                }
+            }
+        }
+
+        //创建调拨单和订单
+        //rdWareAllocationService.addAllocationOweNew(rdWareOrder,wareAllocation,array);
 
         return ApiUtils.success();
     }
