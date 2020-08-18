@@ -217,6 +217,9 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 				map.put("sponsorCode",relation.getSponsorCode());
 				map.put("sponsorName",relation.getSponsorName());
 			}
+			List<RdMmRelation> list=rdMmRelationDao.selectAllLower(rdMmBasicInfo.getMmCode());
+			System.out.println(list);
+			System.out.println("*************rdMmBasicInfo"+rdMmBasicInfo.getMmCode()+"**********************");
 			rdMmRelationDao.updateRelaSponsorBySponsorCode(map);
 			//3.修改该会员所有待审核的修改信息未驳回
 			rdMmEditService.updateByStatusAndMCode(rdMmBasicInfo.getMmCode());

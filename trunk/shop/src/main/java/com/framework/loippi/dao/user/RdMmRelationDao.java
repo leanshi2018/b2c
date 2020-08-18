@@ -39,4 +39,5 @@ public interface RdMmRelationDao  extends GenericDao<RdMmRelation, Long> {
 
 	Integer findSponCountByMCode(String sponsorCode);
 
+    List<RdMmRelation> selectAllLower(String mmCode);
 }
