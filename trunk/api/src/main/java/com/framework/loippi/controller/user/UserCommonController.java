@@ -248,7 +248,9 @@ public class UserCommonController extends BaseController {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmRelation mmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
-
+        if(rdMmBasicInfo==null||rdMmBasicInfo.getMainFlag()==null){
+            return ApiUtils.error("会员信息异常");
+        }
         if (!mobile.equals(rdMmBasicInfo.getMobile())){
             return ApiUtils.error("输入的手机号与该账号绑定的手机号不一致");
         }
@@ -256,83 +258,249 @@ public class UserCommonController extends BaseController {
         if (!SmsUtil.validMsg(rdMmBasicInfo.getMobile(), code, redisService)) {
             return ApiUtils.error("验证码不正确或已过期");
         }
+        if(rdMmBasicInfo.getMainFlag()==1){//主店注销
+            List<RdMmBasicInfo> infos = rdMmBasicInfoService.findList("mobile", rdMmBasicInfo.getMobile());
+            if(infos!=null&&infos.size()>0){
+                for (RdMmBasicInfo info : infos) {
+                    if(info.getMainFlag()!=null&&info.getMainFlag()==1){
+                        //修改会员状态为注销
+                        mmRelation.setMmStatus(2);
+                        rdMmRelationService.update(mmRelation);
 
-        //修改会员状态为注销
-        mmRelation.setMmStatus(2);
-        rdMmRelationService.update(mmRelation);
+                        //修改下线推荐人
+                        rdMmRelationService.updateRelaSponsorBySponsorCode(rdMmBasicInfo.getMmCode(),mmRelation.getSponsorCode(),mmRelation.getSponsorName());
 
-        //修改下线推荐人
-        rdMmRelationService.updateRelaSponsorBySponsorCode(rdMmBasicInfo.getMmCode(),mmRelation.getSponsorCode(),mmRelation.getSponsorName());
-
-        //修改该会员所有待审核的修改信息未驳回
-        rdMmEditService.updateByStatusAndMCode(member.getMmCode());
+                        //修改该会员所有待审核的修改信息未驳回
+                        rdMmEditService.updateByStatusAndMCode(member.getMmCode());
 
 
-        RdMmLogOutNum rdMmLogOutNum = rdMmLogOutNumService.find(1);
-        Integer logoutNum = rdMmLogOutNum.getLogoutNum()+1;
-        rdMmLogOutNum.setLogoutNum(logoutNum);
-        rdMmLogOutNumService.update(rdMmLogOutNum);
-        //手机号码 = 19900000001开始累加
-        StringBuilder phone = new StringBuilder(); //构建空的可变字符串
-        phone.append("199");
+                        RdMmLogOutNum rdMmLogOutNum = rdMmLogOutNumService.find(1);
+                        Integer logoutNum = rdMmLogOutNum.getLogoutNum()+1;
+                        rdMmLogOutNum.setLogoutNum(logoutNum);
+                        rdMmLogOutNumService.update(rdMmLogOutNum);
+                        //手机号码 = 19900000001开始累加
+                        StringBuilder phone = new StringBuilder(); //构建空的可变字符串
+                        phone.append("199");
 
-        for (int i=0;i<8-(logoutNum+"").length();i++){
-            phone.append("0");
+                        for (int i=0;i<8-(logoutNum+"").length();i++){
+                            phone.append("0");
+                        }
+                        phone.append(logoutNum+"");
+
+                        //昵称= 已注销1+手机号码开始累加
+                        String nickName = "已注销"+logoutNum+"-"+phone;
+
+                        //添加修改信息
+                        RdMmEdit rdMmEdit = new RdMmEdit();
+                        rdMmEdit.setMmCode(rdMmBasicInfo.getMmCode());
+                        rdMmEdit.setMmNickNameBefore(rdMmBasicInfo.getMmNickName());
+                        rdMmEdit.setMmNickNameAfter(nickName);
+                        rdMmEdit.setMobileBefore(rdMmBasicInfo.getMobile());
+                        rdMmEdit.setMobileAfter(phone.toString());
+                        rdMmEdit.setUpdateBy("用户");
+                        rdMmEdit.setUpdateMemo("用户注销");
+                        rdMmEdit.setUpdateType(0);
+                        rdMmEdit.setUpdateTime(new Date());
+                        rdMmEdit.setReviewMemo("用户注销");
+                        rdMmEdit.setReviewStatus(3);
+                        rdMmEditService.save(rdMmEdit);
+
+                        //修改基础表
+                        rdMmBasicInfo.setMmNickName(nickName);
+                        rdMmBasicInfo.setMobile(phone.toString());
+                        rdMmBasicInfoService.update(rdMmBasicInfo);
+
+                        //修改欠款明细 rd_receiveable_detail
+                        rdReceiveableDetailService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+                        //修改会员账户交易日志表
+                        rdMmAccountLogService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+                        //修改会员欠款主表 rd_receivable_master
+                        rdReceivableMasterService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+                        //修改会员状态变更明细 rd_mm_status_detail
+                        rdMmStatusDetailService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+                        //添加会员状态变更明细 rd_mm_status_detail
+                        RdMmStatusDetail rdMmStatusDetail = new RdMmStatusDetail();
+                        rdMmStatusDetail.setMmCode(rdMmBasicInfo.getMmCode());
+                        rdMmStatusDetail.setMmNickName(nickName);
+                        rdMmStatusDetail.setStatusType("MM");
+                        rdMmStatusDetail.setStatusBefore(mmRelation.getMmStatus());
+                        rdMmStatusDetail.setStatusAfter(2);
+                        rdMmStatusDetail.setUpdateBy("用户");
+                        rdMmStatusDetail.setUpdateTime(new Date());
+                        rdMmStatusDetail.setUpdateDesc("用户主动注销");
+                        rdMmStatusDetailService.save(rdMmStatusDetail);
+
+                        //修改奖金发放表 rd_bonus_payment
+                        rdBonusPaymentService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+                        //删除redis记录
+                        redisService.delete(member.getSessionid());
+                    }else if(info.getMainFlag()!=null&&info.getMainFlag()==2){
+                        RdMmRelation mmRelation1 = rdMmRelationService.find("mmCode",info.getMmCode());
+                        //修改会员状态为注销
+                        mmRelation1.setMmStatus(2);
+                        rdMmRelationService.update(mmRelation1);
+                        RdMmRelation mmRelation2 = rdMmRelationService.find("mmCode",mmRelation1.getSponsorCode());
+                        //修改下线推荐人
+                        rdMmRelationService.updateRelaSponsorBySponsorCode(info.getMmCode(),mmRelation2.getSponsorCode(),mmRelation2.getSponsorName());
+
+                        //修改该会员所有待审核的修改信息未驳回
+                        rdMmEditService.updateByStatusAndMCode(info.getMmCode());
+
+
+                        RdMmLogOutNum rdMmLogOutNum = rdMmLogOutNumService.find(1);
+                        Integer logoutNum = rdMmLogOutNum.getLogoutNum()+1;
+                        rdMmLogOutNum.setLogoutNum(logoutNum);
+                        rdMmLogOutNumService.update(rdMmLogOutNum);
+                        //手机号码 = 19900000001开始累加
+                        StringBuilder phone = new StringBuilder(); //构建空的可变字符串
+                        phone.append("199");
+
+                        for (int i=0;i<8-(logoutNum+"").length();i++){
+                            phone.append("0");
+                        }
+                        phone.append(logoutNum+"");
+
+                        //昵称= 已注销1+手机号码开始累加
+                        String nickName = "已注销"+logoutNum+"-"+phone;
+
+                        //添加修改信息
+                        RdMmEdit rdMmEdit = new RdMmEdit();
+                        rdMmEdit.setMmCode(info.getMmCode());
+                        rdMmEdit.setMmNickNameBefore(info.getMmNickName());
+                        rdMmEdit.setMmNickNameAfter(nickName);
+                        rdMmEdit.setMobileBefore(info.getMobile());
+                        rdMmEdit.setMobileAfter(phone.toString());
+                        rdMmEdit.setUpdateBy("用户");
+                        rdMmEdit.setUpdateMemo("用户注销");
+                        rdMmEdit.setUpdateType(0);
+                        rdMmEdit.setUpdateTime(new Date());
+                        rdMmEdit.setReviewMemo("用户注销");
+                        rdMmEdit.setReviewStatus(3);
+                        rdMmEditService.save(rdMmEdit);
+
+                        //修改基础表
+                        info.setMmNickName(nickName);
+                        info.setMobile(phone.toString());
+                        rdMmBasicInfoService.update(info);
+
+                        //修改欠款明细 rd_receiveable_detail
+                        rdReceiveableDetailService.updateNickNameByMCode(nickName,info.getMmCode());
+
+                        //修改会员账户交易日志表
+                        rdMmAccountLogService.updateNickNameByMCode(nickName,info.getMmCode());
+
+                        //修改会员欠款主表 rd_receivable_master
+                        rdReceivableMasterService.updateNickNameByMCode(nickName,info.getMmCode());
+
+                        //修改会员状态变更明细 rd_mm_status_detail
+                        rdMmStatusDetailService.updateNickNameByMCode(nickName,info.getMmCode());
+
+                        //添加会员状态变更明细 rd_mm_status_detail
+                        RdMmStatusDetail rdMmStatusDetail = new RdMmStatusDetail();
+                        rdMmStatusDetail.setMmCode(info.getMmCode());
+                        rdMmStatusDetail.setMmNickName(nickName);
+                        rdMmStatusDetail.setStatusType("MM");
+                        rdMmStatusDetail.setStatusBefore(mmRelation1.getMmStatus());
+                        rdMmStatusDetail.setStatusAfter(2);
+                        rdMmStatusDetail.setUpdateBy("用户");
+                        rdMmStatusDetail.setUpdateTime(new Date());
+                        rdMmStatusDetail.setUpdateDesc("用户主动注销");
+                        rdMmStatusDetailService.save(rdMmStatusDetail);
+
+                        //修改奖金发放表 rd_bonus_payment
+                        rdBonusPaymentService.updateNickNameByMCode(nickName,info.getMmCode());
+                        String sessionId = redisService.get("user_name" + info.getMmCode());
+                        if(sessionId!=null){
+                            //删除redis记录
+                            redisService.delete(member.getSessionid());
+                        }
+                    }
+                }
+            }
         }
-        phone.append(logoutNum+"");
+        if(rdMmBasicInfo.getMainFlag()==2){//次店注销
+            //修改会员状态为注销
+            mmRelation.setMmStatus(2);
+            rdMmRelationService.update(mmRelation);
 
-        //昵称= 已注销1+手机号码开始累加
-        String nickName = "已注销"+logoutNum+"-"+phone;
+            //修改下线推荐人
+            rdMmRelationService.updateRelaSponsorBySponsorCode(rdMmBasicInfo.getMmCode(),mmRelation.getSponsorCode(),mmRelation.getSponsorName());
 
-        //添加修改信息
-        RdMmEdit rdMmEdit = new RdMmEdit();
-        rdMmEdit.setMmCode(rdMmBasicInfo.getMmCode());
-        rdMmEdit.setMmNickNameBefore(rdMmBasicInfo.getMmNickName());
-        rdMmEdit.setMmNickNameAfter(nickName);
-        rdMmEdit.setMobileBefore(rdMmBasicInfo.getMobile());
-        rdMmEdit.setMobileAfter(phone.toString());
-        rdMmEdit.setUpdateBy("用户");
-        rdMmEdit.setUpdateMemo("用户注销");
-        rdMmEdit.setUpdateType(0);
-        rdMmEdit.setUpdateTime(new Date());
-        rdMmEdit.setReviewMemo("用户注销");
-        rdMmEdit.setReviewStatus(3);
-        rdMmEditService.save(rdMmEdit);
+            //修改该会员所有待审核的修改信息未驳回
+            rdMmEditService.updateByStatusAndMCode(member.getMmCode());
 
-        //修改基础表
-        rdMmBasicInfo.setMmNickName(nickName);
-        rdMmBasicInfo.setMobile(phone.toString());
-        rdMmBasicInfoService.update(rdMmBasicInfo);
 
-        //修改欠款明细 rd_receiveable_detail
-        rdReceiveableDetailService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+            RdMmLogOutNum rdMmLogOutNum = rdMmLogOutNumService.find(1);
+            Integer logoutNum = rdMmLogOutNum.getLogoutNum()+1;
+            rdMmLogOutNum.setLogoutNum(logoutNum);
+            rdMmLogOutNumService.update(rdMmLogOutNum);
+            //手机号码 = 19900000001开始累加
+            StringBuilder phone = new StringBuilder(); //构建空的可变字符串
+            phone.append("199");
 
-        //修改会员账户交易日志表
-        rdMmAccountLogService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+            for (int i=0;i<8-(logoutNum+"").length();i++){
+                phone.append("0");
+            }
+            phone.append(logoutNum+"");
 
-        //修改会员欠款主表 rd_receivable_master
-        rdReceivableMasterService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+            //昵称= 已注销1+手机号码开始累加
+            String nickName = "已注销"+logoutNum+"-"+phone;
 
-        //修改会员状态变更明细 rd_mm_status_detail
-        rdMmStatusDetailService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+            //添加修改信息
+            RdMmEdit rdMmEdit = new RdMmEdit();
+            rdMmEdit.setMmCode(rdMmBasicInfo.getMmCode());
+            rdMmEdit.setMmNickNameBefore(rdMmBasicInfo.getMmNickName());
+            rdMmEdit.setMmNickNameAfter(nickName);
+            rdMmEdit.setMobileBefore(rdMmBasicInfo.getMobile());
+            rdMmEdit.setMobileAfter(phone.toString());
+            rdMmEdit.setUpdateBy("用户");
+            rdMmEdit.setUpdateMemo("用户注销");
+            rdMmEdit.setUpdateType(0);
+            rdMmEdit.setUpdateTime(new Date());
+            rdMmEdit.setReviewMemo("用户注销");
+            rdMmEdit.setReviewStatus(3);
+            rdMmEditService.save(rdMmEdit);
 
-        //添加会员状态变更明细 rd_mm_status_detail
-        RdMmStatusDetail rdMmStatusDetail = new RdMmStatusDetail();
-        rdMmStatusDetail.setMmCode(rdMmBasicInfo.getMmCode());
-        rdMmStatusDetail.setMmNickName(nickName);
-        rdMmStatusDetail.setStatusType("MM");
-        rdMmStatusDetail.setStatusBefore(mmRelation.getMmStatus());
-        rdMmStatusDetail.setStatusAfter(2);
-        rdMmStatusDetail.setUpdateBy("用户");
-        rdMmStatusDetail.setUpdateTime(new Date());
-        rdMmStatusDetail.setUpdateDesc("用户主动注销");
-        rdMmStatusDetailService.save(rdMmStatusDetail);
+            //修改基础表
+            rdMmBasicInfo.setMmNickName(nickName);
+            rdMmBasicInfo.setMobile(phone.toString());
+            rdMmBasicInfoService.update(rdMmBasicInfo);
 
-        //修改奖金发放表 rd_bonus_payment
-        rdBonusPaymentService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+            //修改欠款明细 rd_receiveable_detail
+            rdReceiveableDetailService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
 
-        //删除redis记录
-        redisService.delete(member.getSessionid());
+            //修改会员账户交易日志表
+            rdMmAccountLogService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+            //修改会员欠款主表 rd_receivable_master
+            rdReceivableMasterService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+            //修改会员状态变更明细 rd_mm_status_detail
+            rdMmStatusDetailService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+            //添加会员状态变更明细 rd_mm_status_detail
+            RdMmStatusDetail rdMmStatusDetail = new RdMmStatusDetail();
+            rdMmStatusDetail.setMmCode(rdMmBasicInfo.getMmCode());
+            rdMmStatusDetail.setMmNickName(nickName);
+            rdMmStatusDetail.setStatusType("MM");
+            rdMmStatusDetail.setStatusBefore(mmRelation.getMmStatus());
+            rdMmStatusDetail.setStatusAfter(2);
+            rdMmStatusDetail.setUpdateBy("用户");
+            rdMmStatusDetail.setUpdateTime(new Date());
+            rdMmStatusDetail.setUpdateDesc("用户主动注销");
+            rdMmStatusDetailService.save(rdMmStatusDetail);
+
+            //修改奖金发放表 rd_bonus_payment
+            rdBonusPaymentService.updateNickNameByMCode(nickName,rdMmBasicInfo.getMmCode());
+
+            //删除redis记录
+            redisService.delete(member.getSessionid());
+        }
         return ApiUtils.success();
     }
     /**
