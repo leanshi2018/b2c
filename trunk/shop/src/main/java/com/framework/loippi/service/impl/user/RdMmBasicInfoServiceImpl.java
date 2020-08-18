@@ -109,8 +109,8 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         rdMmRelation.setMmCode(newMmCode);
         rdMmRelation.setAPpv(BigDecimal.ZERO);
         rdMmRelation.setATotal(BigDecimal.ZERO);
-        RdMmEdit rdMmEdit = new RdMmEdit();
-        rdMmEdit.setMmCode(newMmCode);
+        /*RdMmEdit rdMmEdit = new RdMmEdit();
+        rdMmEdit.setMmCode(newMmCode);*/
         //会员等级相关
         List<RdRanks> rdRanksList = rdRanksDao.findByParams(Paramap.create().put("rankClass", 0));
         if (rdRanksList != null && rdRanksList.size() > 0) {
@@ -242,7 +242,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         rdMmBasicInfo.setMmCode(newMmCode);
         rdMmRelationDao.insert(rdMmRelation);
         rdMmAccountInfoDao.insert(rdMmAccountInfo);
-        rdMmEditDao.insert(rdMmEdit);
+        //rdMmEditDao.insert(rdMmEdit);
     }
 
     /**
