@@ -900,14 +900,14 @@ public class UserIntegrationAPIController extends BaseController {
             parm.put("amount", Qb.toString()); //转账金额  单位分
             parm.put("desc", "测试转账到个人"); //企业付款描述信息
             parm.put("spbill_create_ip", WeixinUtils.getLocalIp(request)); //服务器Ip地址
-            parm.put("sign", WeixinUtils.getSign(parm, WXpayConfig.APP_SECRET));
+            parm.put("sign", WeixinUtils.getSign(parm, WXpayConfig.API_KEY));
+
 
             String restxml = HttpUtils.posts(WeixinUtils.TRANSFERS_PAY, XmlUtils.xmlFormat(parm, false));
             restmap = XmlUtils.xmlParse(restxml);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-
 
         System.out.println("-------------------------------------------------------");
         System.out.println("-------------------" + restmap + "------------------------------------");
