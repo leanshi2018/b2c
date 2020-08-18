@@ -1,10 +1,7 @@
 package com.framework.loippi.controller.user;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -236,7 +233,6 @@ public class UserCommonController extends BaseController {
      */
     @RequestMapping("/logoutMember.json")
     public String logoutMember(String code,String mobile,HttpServletRequest request) {
-
         if (mobile==null|| "".equals(mobile)){
             return ApiUtils.error("请输入手机号");
         }
@@ -247,9 +243,13 @@ public class UserCommonController extends BaseController {
 
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
-        RdMmRelation mmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        //RdMmRelation mmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
         if(rdMmBasicInfo==null||rdMmBasicInfo.getMainFlag()==null){
             return ApiUtils.error("会员信息异常");
+        }
+        List<RdMmBasicInfo> mmBasicInfos=new ArrayList<>();
+        if(rdMmBasicInfo.getMainFlag()==1){
+            mmBasicInfos = rdMmBasicInfoService.findList("mobile", rdMmBasicInfo.getMobile());
         }
         if (!mobile.equals(rdMmBasicInfo.getMobile())){
             return ApiUtils.error("输入的手机号与该账号绑定的手机号不一致");
@@ -258,7 +258,17 @@ public class UserCommonController extends BaseController {
         if (!SmsUtil.validMsg(rdMmBasicInfo.getMobile(), code, redisService)) {
             return ApiUtils.error("验证码不正确或已过期");
         }
-        if(rdMmBasicInfo.getMainFlag()==1){//主店注销
+        rdMmRelationService.cancellation(rdMmBasicInfo);
+        if(rdMmBasicInfo.getMainFlag()==2){
+            redisService.delete(member.getSessionid());
+        }
+        if(rdMmBasicInfo.getMainFlag()==1){
+            for (RdMmBasicInfo mmBasicInfo : mmBasicInfos) {
+                String sessionId = redisService.get("user_name" + mmBasicInfo.getMmCode());
+                redisService.delete(sessionId);
+            }
+        }
+        /*if(rdMmBasicInfo.getMainFlag()==1){//主店注销
             List<RdMmBasicInfo> infos = rdMmBasicInfoService.findList("mobile", rdMmBasicInfo.getMobile());
             if(infos!=null&&infos.size()>0){
                 for (RdMmBasicInfo info : infos) {
@@ -500,9 +510,53 @@ public class UserCommonController extends BaseController {
 
             //删除redis记录
             redisService.delete(member.getSessionid());
+        }*/
+        return ApiUtils.success();
+    }
+
+    /**
+     * 注销用户(改手机号和昵称和状态)
+     */
+    @RequestMapping("/logoutMemberNew.json")
+    public String logoutMemberNew(String code,String mobile,HttpServletRequest request) {
+        if (mobile==null|| "".equals(mobile)){
+            return ApiUtils.error("请输入手机号");
+        }
+
+        if (code==null||"".equals(code)){
+            return ApiUtils.error("请输入短信验证码");
+        }
+
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        //RdMmRelation mmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        if(rdMmBasicInfo==null||rdMmBasicInfo.getMainFlag()==null){
+            return ApiUtils.error("会员信息异常");
+        }
+        List<RdMmBasicInfo> mmBasicInfos=new ArrayList<>();
+        if(rdMmBasicInfo.getMainFlag()==1){
+            mmBasicInfos = rdMmBasicInfoService.findList("mobile", rdMmBasicInfo.getMobile());
+        }
+        if (!mobile.equals(rdMmBasicInfo.getMobile())){
+            return ApiUtils.error("输入的手机号与该账号绑定的手机号不一致");
+        }
+
+        if (!SmsUtil.validMsg(rdMmBasicInfo.getMobile(), code, redisService)) {
+            return ApiUtils.error("验证码不正确或已过期");
+        }
+        rdMmRelationService.cancellation(rdMmBasicInfo);
+        if(rdMmBasicInfo.getMainFlag()==2){
+            redisService.delete(member.getSessionid());
+        }
+        if(rdMmBasicInfo.getMainFlag()==1){
+            for (RdMmBasicInfo mmBasicInfo : mmBasicInfos) {
+                String sessionId = redisService.get("user_name" + mmBasicInfo.getMmCode());
+                redisService.delete(sessionId);
+            }
         }
         return ApiUtils.success();
     }
+
     /**
      * 设置积分账户积分预留线
      */
