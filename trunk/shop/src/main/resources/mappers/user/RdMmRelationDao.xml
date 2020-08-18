@@ -293,8 +293,12 @@
 	</select>
 
 	<update id="updateRelaSponsorBySponsorCode" parameterType="map">
-        update RD_MM_RELATION  set SPONSOR_CODE=#{sponsorCode},SPONSOR_NAME = #{sponsorName} WHERE SPONSOR_CODE = #{mCode}
+        update RD_MM_RELATION  set SPONSOR_CODE=#{sponsorCode},SPONSOR_NAME = #{sponsorName} WHERE SPONSOR_CODE = #{mmCode}
     </update>
+
+	<select id="selectAllLower" parameterType="string" resultMap="RdMmRelationResultMap">
+        select *  from RD_MM_RELATION WHERE SPONSOR_CODE = #{mCode}
+    </select>
 
 	<select id="getMemAtotal" parameterType="map" resultType="com.framework.loippi.pojo.common.MemCensusVo">
 		select count(1) as num,SUM(A_TOTAL) as amountTotal from RD_MM_RELATION

@@ -29,4 +29,6 @@ public interface RdMmRelationService  extends GenericService<RdMmRelation, Long>
 	Integer findSponCountByMCode(String mmCode);
 
     void updatePassword(String mobile, String newpassword);
+
+    void cancellation(RdMmBasicInfo rdMmBasicInfo);
 }

@@ -109,8 +109,8 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         rdMmRelation.setMmCode(newMmCode);
         rdMmRelation.setAPpv(BigDecimal.ZERO);
         rdMmRelation.setATotal(BigDecimal.ZERO);
-        RdMmEdit rdMmEdit = new RdMmEdit();
-        rdMmEdit.setMmCode(newMmCode);
+        /*RdMmEdit rdMmEdit = new RdMmEdit();
+        rdMmEdit.setMmCode(newMmCode);*/
         //会员等级相关
         List<RdRanks> rdRanksList = rdRanksDao.findByParams(Paramap.create().put("rankClass", 0));
         if (rdRanksList != null && rdRanksList.size() > 0) {
@@ -229,11 +229,20 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         //获取当前时间设置的业务周期
         String period = rdSysPeriodDao.getSysPeriodService(new Date());
         rdMmBasicInfo.setCreationPeriod(period);
+        RdMmEdit memberEditReview = new RdMmEdit();
+        memberEditReview.setMmCode(rdMmBasicInfo.getMmCode());
+        memberEditReview.setMmNameAfter(rdMmBasicInfo.getMmName());
+        memberEditReview.setMmNickNameAfter(rdMmBasicInfo.getMmNickName());
+        memberEditReview.setMobileAfter(rdMmBasicInfo.getMobile());
+        memberEditReview.setUpdateType(0);
+        memberEditReview.setUpdateTime(new Date());
+        memberEditReview.setReviewStatus(3);
         rdMmBasicInfoDao.insert(rdMmBasicInfo);
+        rdMmEditDao.insert(memberEditReview);
         rdMmBasicInfo.setMmCode(newMmCode);
         rdMmRelationDao.insert(rdMmRelation);
         rdMmAccountInfoDao.insert(rdMmAccountInfo);
-        rdMmEditDao.insert(rdMmEdit);
+        //rdMmEditDao.insert(rdMmEdit);
     }
 
     /**
@@ -492,9 +501,15 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         rdMmAccountInfo.setWithdrawalLine(new BigDecimal("500"));
         rdMmAccountInfoDao.insert(rdMmAccountInfo);
         //4.会员修改记录表初始化
-        RdMmEdit rdMmEdit = new RdMmEdit();
-        rdMmEdit.setMmCode(newMmCode);
-        rdMmEditDao.insert(rdMmEdit);
+        RdMmEdit memberEditReview = new RdMmEdit();
+        memberEditReview.setMmCode(secondaryUser.getMmCode());
+        memberEditReview.setMmNameAfter(secondaryUser.getMmName());
+        memberEditReview.setMmNickNameAfter(secondaryUser.getMmNickName());
+        memberEditReview.setMobileAfter(secondaryUser.getMobile());
+        memberEditReview.setUpdateType(0);
+        memberEditReview.setUpdateTime(new Date());
+        memberEditReview.setReviewStatus(3);
+        rdMmEditDao.insert(memberEditReview);
     }
 
 }
