@@ -501,9 +501,15 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         rdMmAccountInfo.setWithdrawalLine(new BigDecimal("500"));
         rdMmAccountInfoDao.insert(rdMmAccountInfo);
         //4.会员修改记录表初始化
-        RdMmEdit rdMmEdit = new RdMmEdit();
-        rdMmEdit.setMmCode(newMmCode);
-        rdMmEditDao.insert(rdMmEdit);
+        RdMmEdit memberEditReview = new RdMmEdit();
+        memberEditReview.setMmCode(secondaryUser.getMmCode());
+        memberEditReview.setMmNameAfter(secondaryUser.getMmName());
+        memberEditReview.setMmNickNameAfter(secondaryUser.getMmNickName());
+        memberEditReview.setMobileAfter(secondaryUser.getMobile());
+        memberEditReview.setUpdateType(0);
+        memberEditReview.setUpdateTime(new Date());
+        memberEditReview.setReviewStatus(3);
+        rdMmEditDao.insert(memberEditReview);
     }
 
 }
