@@ -1,13 +1,15 @@
 package com.framework.loippi.controller.user;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.service.user.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,9 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.common.ShopCommonDocument;
 import com.framework.loippi.entity.common.ShopCommonFeedback;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.document.DocumentListResult;
@@ -29,6 +34,17 @@ import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.common.ShopAppService;
 import com.framework.loippi.service.common.ShopCommonDocumentService;
 import com.framework.loippi.service.common.ShopCommonFeedbackService;
+import com.framework.loippi.service.user.RdBonusPaymentService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmEditService;
+import com.framework.loippi.service.user.RdMmLogOutNumService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdMmStatusDetailService;
+import com.framework.loippi.service.user.RdReceivableMasterService;
+import com.framework.loippi.service.user.RdReceiveableDetailService;
+import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Constants;
@@ -75,6 +91,8 @@ public class UserCommonController extends BaseController {
     private RdBonusPaymentService rdBonusPaymentService;
     @Resource
     private RdMmAccountInfoService rdMmAccountInfoService;
+    @Resource
+    private RdWarehouseService rdWarehouseService;
 
     /**
      * 文章列表
@@ -250,6 +268,12 @@ public class UserCommonController extends BaseController {
         List<RdMmBasicInfo> mmBasicInfos=new ArrayList<>();
         if(rdMmBasicInfo.getMainFlag()==1){
             mmBasicInfos = rdMmBasicInfoService.findList("mobile", rdMmBasicInfo.getMobile());
+
+            //停用自提店
+            RdWarehouse rdWarehouse = rdWarehouseService.findByMmCode(rdMmBasicInfo.getMmCode());
+            rdWarehouse.setWareStatus(1);
+            rdWarehouseService.update(rdWarehouse);
+
         }
         if (!mobile.equals(rdMmBasicInfo.getMobile())){
             return ApiUtils.error("输入的手机号与该账号绑定的手机号不一致");
