@@ -271,8 +271,10 @@ public class UserCommonController extends BaseController {
 
             //停用自提店
             RdWarehouse rdWarehouse = rdWarehouseService.findByMmCode(rdMmBasicInfo.getMmCode());
-            rdWarehouse.setWareStatus(1);
-            rdWarehouseService.update(rdWarehouse);
+            if (rdWarehouse!=null){
+                rdWarehouse.setWareStatus(1);
+                rdWarehouseService.update(rdWarehouse);
+            }
 
         }
         if (!mobile.equals(rdMmBasicInfo.getMobile())){
