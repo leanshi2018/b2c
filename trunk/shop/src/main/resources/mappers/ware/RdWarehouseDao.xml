@@ -142,7 +142,7 @@
 	<select id="find" resultMap="RdWarehouseResultMap">
 		SELECT	<include refid="base_column" />
 		FROM	RD_WAREHOUSE
-		WHERE	ID=#{id,jdbcType=BIGINT}
+		WHERE	WARE_CODE=#{wareCode}
 	</select>
 	
 	<!-- 查询所有 -->
@@ -175,19 +175,19 @@
 		<set>
 			<include refid="set_column" />
 		</set>
-		WHERE	ID = #{id,jdbcType=BIGINT}
+		WHERE	WARE_CODE = #{wareCode}
 	</update>
 	
 	<!-- 删除单条记录 -->
 	<delete id="delete">
 		DELETE	FROM RD_WAREHOUSE
-		WHERE	ID = #{id,jdbcType=BIGINT}
+		WHERE	WARE_CODE = #{wareCode}
 	</delete>
 	
 	<!-- 删除多条记录-->
 	<delete id="deleteAll">
 		DELETE	FROM RD_WAREHOUSE
-		WHERE	ID	IN
+		WHERE	WARE_CODE	IN
     	<foreach item="RdWarehouseId" index="index" collection="ids" open="(" separator="," close=")">
 	  		#{RdWarehouseId} 
 		</foreach>
