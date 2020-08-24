@@ -101,4 +101,13 @@
 		<include refid="base_column" />
 		FROM rd_mm_privilege order by LAST_WITHDRAWAL_TIME asc
 	</select>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.user.MemberPrivilege">
+		UPDATE rd_mm_privilege
+		<set>
+			<include refid="set_column"/>
+		</set>
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
 </mapper>
