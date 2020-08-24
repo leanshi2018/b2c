@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -54,12 +56,6 @@ import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.entity.user.RdMmAddInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -93,13 +89,6 @@ import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.union.UnionpayService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAccountLogService;
-import com.framework.loippi.service.user.RdMmAddInfoService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdRanksService;
-import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.support.Page;
@@ -184,7 +173,8 @@ public class OrderAPIController extends BaseController {
     private RdSysPeriodService rdSysPeriodService;
     @Resource
     private RdMmAccountLogService rdMmAccountLogService;
-
+    @Resource
+    private MemberPrivilegeService memberPrivilegeService;
 
     /**
      * 提交订单
@@ -1916,6 +1906,20 @@ public class OrderAPIController extends BaseController {
         }
         BigDecimal amount = orderAmount.multiply(new BigDecimal(Integer.toString(AllInPayBillCutConstant.PERCENTAGE))).multiply(new BigDecimal("0.01")).setScale(0,BigDecimal.ROUND_UP);//当前订单需要分出去多少钱，单位为圆
         BigDecimal acc = amount;//奖励积分需要的积分数量 积分取整
+        //******************************特权会员提现*****************************************
+        List<MemberPrivilege> list=memberPrivilegeService.findAscTime();
+        if(list!=null&&list.size()>0){
+            for (MemberPrivilege memberPrivilege : list) {
+                RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode",memberPrivilege.getMmCode());
+                if(accountInfo!=null&&accountInfo.getBonusStatus()!=null&&accountInfo.getBonusStatus()==0&&accountInfo.getAutomaticWithdrawal()!=null&&accountInfo.getAutomaticWithdrawal()==1&&
+                        accountInfo.getWithdrawalLine()!=null&&(accountInfo.getBonusBlance().subtract(accountInfo.getWithdrawalLine())).compareTo(acc)!=-1){
+                    map.put("accountInfo",accountInfo);
+                    map.put("acc",acc);//TODO
+                    rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,acc);
+                }
+            }
+        }
+        //**********************************************************************************
         RdMmAccountInfo rdMmAccountInfo = cutGetPeople(shopOrder, acc);
         if(rdMmAccountInfo!=null&&rdMmAccountInfo.getMmCode()!=null){
             map.put("accountInfo",rdMmAccountInfo);
@@ -1926,7 +1930,7 @@ public class OrderAPIController extends BaseController {
             List<RdMmAccountInfo> accountInfos=rdMmAccountInfoService.findLastWithdrawalOneHundred(acc);
             if(accountInfos!=null&&accountInfos.size()>0){
                 for (RdMmAccountInfo accountInfo : accountInfos) {
-                    if(accountInfo.getBonusBlance().compareTo(acc)!=-1){
+                    if(accountInfo.getBonusBlance().subtract(rdMmAccountInfo.getWithdrawalLine()).compareTo(acc)!=-1){
                         map.put("accountInfo",accountInfo);
                         map.put("acc",acc);
                         rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,acc);

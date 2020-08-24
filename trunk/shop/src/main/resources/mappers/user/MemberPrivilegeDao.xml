@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.user.MemberPrivilegeDao">
+
+	<resultMap id="MemberPrivilegeResultMap" type="com.framework.loippi.entity.user.MemberPrivilege">
+		<result column="id" property="id" />
+		<result column="M_CODE" property="mmCode" />
+		<result column="LAST_WITHDRAWAL_TIME" property="lastWithdrawalTime" />
+	</resultMap>
+
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 id,M_CODE,LAST_WITHDRAWAL_TIME
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{id},#{mmCode},#{lastWithdrawalTime}
+	</sql>
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null">
+			AND id = #{id}
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			AND M_CODE = #{mmCode,jdbcType=VARCHAR}
+		</if>
+		<if test="lastWithdrawalTime != null and lastWithdrawalTime != ''">
+			AND LAST_WITHDRAWAL_TIME = #{lastWithdrawalTime}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="id != null">
+			 id = #{id},
+		</if>
+		<if test="mmCode != null and mmCode != ''">
+			 M_CODE = #{mmCode,jdbcType=VARCHAR},
+		</if>
+		<if test="lastWithdrawalTime != null and lastWithdrawalTime != ''">
+			 LAST_WITHDRAWAL_TIME = #{lastWithdrawalTime},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="MemberPrivilegeResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	rd_mm_privilege
+		WHERE	id=#{id}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="MemberPrivilegeResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	rd_mm_privilege
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM rd_mm_privilege
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.user.rd_mm_privilege">
+		<!--<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">  -->
+	          <!--SELECT LAST_INSERT_ID() AS ID    -->
+	    <!--</selectKey>  -->
+		INSERT rd_mm_privilege
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="MemberPrivilegeResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	rd_mm_privilege
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="MemberPrivilegeResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM rd_mm_privilege
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+
+	<select id="findAscTime" resultMap="MemberPrivilegeResultMap">
+		select
+		<include refid="base_column" />
+		FROM rd_mm_privilege order by LAST_WITHDRAWAL_TIME asc
+	</select>
+</mapper>
