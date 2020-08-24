@@ -204,7 +204,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         //获取当前时间设置的业务周期
         //通联接口互通
         //进行通联进行会员数据交互存储
-        /*final YunRequest request = new YunRequest("MemberService", "createMember");
+/*        final YunRequest request = new YunRequest("MemberService", "createMember");
         request.put("bizUserId", rdMmBasicInfo.getMmCode());
         request.put("memberType", 3);
         request.put("source", 1);
@@ -439,7 +439,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         secondaryUser.setAllInContractStatus(0);
         secondaryUser.setMainFlag(2);//设置次店
         //进行通联进行会员数据交互存储
-/*        final YunRequest request = new YunRequest("MemberService", "createMember");
+        /*final YunRequest request = new YunRequest("MemberService", "createMember");
         request.put("bizUserId", secondaryUser.getMmCode());
         request.put("memberType", 3);
         request.put("source", 1);

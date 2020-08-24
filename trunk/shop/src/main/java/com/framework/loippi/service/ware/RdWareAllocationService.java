@@ -3,6 +3,7 @@ package com.framework.loippi.service.ware;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONArray;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAllocation;
 import com.framework.loippi.entity.ware.RdWareOrder;
@@ -21,4 +22,6 @@ public interface RdWareAllocationService extends GenericService<RdWareAllocation
 	RdWareAllocation findBySn(String orderSn);
 
 	List<RdWareAllocation> haveAllocation(String wareCode, int status);
+
+	void addAllocationOweNew(RdWareOrder rdWareOrder, RdWareAllocation wareAllocation, JSONArray array) throws Exception;
 }
