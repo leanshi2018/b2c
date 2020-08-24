@@ -1,5 +1,8 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.consts.GatherAreaConstant;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.vo.goods.GoodsStatisticsVo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -717,5 +720,100 @@ public class CartAPIController extends BaseController {
             log.error("再次购买错误", e);
             return ApiUtils.error(e.getMessage());
         }
+    }
+
+
+    /**
+     * 凑单区搜索
+     * @param request
+     * @param pageSize 当前页大小 默认为3
+     * @param pageNum 页码
+     * @param searchType 查询类别 白菜价精选：1     百元好物精选：2     包邮转区：3      升级复消区：4
+     * @return
+     */
+    @RequestMapping(value = "/api/cart/gatherArea", method = RequestMethod.POST)
+    @ResponseBody
+    public String gatherArea(HttpServletRequest request,@RequestParam(required = false,value = "pageSize",defaultValue = "3")Integer pageSize,
+                             @RequestParam(required = false,value = "pageNum",defaultValue = "1")Integer pageNum,Integer searchType) {
+        if (searchType==null){
+            return ApiUtils.error("请传入对应查询类型");
+        }
+        Pageable pager = new Pageable();
+        pager.setPageNumber(pageNum);
+        pager.setPageSize(pageSize);
+        Paramap paramap = Paramap.create();
+        if(searchType==1){
+            paramap.put("highPrice", GatherAreaConstant.CABBAGE_PRICE);
+        }
+        if(searchType==2){
+            paramap.put("highPrice", GatherAreaConstant.HANDPICK_CLOSE_HUNDRED_HIGH);
+            paramap.put("lowPrice", GatherAreaConstant.HANDPICK_CLOSE_HUNDRED_LOW);
+        }
+        if(searchType==3){
+            paramap.put("highPrice", GatherAreaConstant.PACKAGE_MAIL_HIGH);
+            paramap.put("lowPrice", GatherAreaConstant.PACKAGE_MAIL_LOW);
+        }
+        if(searchType==4){
+            paramap.put("lowMi", GatherAreaConstant.AFTER_ELIMINATION_MI);
+        }
+        paramap.put("goodsSalenum","yes");
+        pager.setParameter(paramap);
+        Page<ShopGoods> page = goodsService.findByPage(pager);
+        List<ShopGoods> goods = page.getContent();
+        return ApiUtils.success(goods);
+    }
+
+    /**
+     * 热卖商品top10
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/cart/hotSaleGoods", method = RequestMethod.GET)
+    @ResponseBody
+    public String hotSaleGoods(HttpServletRequest request) {
+        Pageable pager = new Pageable();
+        pager.setPageSize(10);
+        pager.setPageNumber(1);
+        GoodsStatisticsVo goodsStatisticsVo = new GoodsStatisticsVo();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE,-1);
+        Date time = calendar.getTime();
+        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd");
+        String str = format.format(time);
+        goodsStatisticsVo.setStartTime(str+" 00:00:00");
+        goodsStatisticsVo.setEndTime(str+" 23:59:59");
+        pager.setParameter(goodsStatisticsVo);
+        Page<GoodsStatisticsVo> page = orderService.listBestSellGoods(pager);
+        List<GoodsStatisticsVo> list = page.getContent();
+        Integer size=0;
+        ArrayList<ShopGoods> shopGoods = new ArrayList<>();
+        if(list!=null&&list.size()>=10){
+            for (GoodsStatisticsVo statisticsVo : list) {
+                ShopGoods goods = goodsService.find(statisticsVo.getGoodsId());
+                shopGoods.add(goods);
+            }
+        }else {
+            if(list==null){
+                size=10;
+            }else {
+                size=10-list.size();
+                for (GoodsStatisticsVo statisticsVo : list) {
+                    ShopGoods goods = goodsService.find(statisticsVo.getGoodsId());
+                    shopGoods.add(goods);
+                }
+            }
+            Pageable pageable = new Pageable();
+            pageable.setPageSize(size);
+            pageable.setPageNumber(1);
+            Paramap paramap = Paramap.create();
+            paramap.put("goodsSalenum","yes");
+            pager.setParameter(paramap);
+            Page<ShopGoods> page1 = goodsService.findByPage(pager);
+            List<ShopGoods> goods = page1.getContent();
+            for (ShopGoods good : goods) {
+                shopGoods.add(good);
+            }
+        }
+        return ApiUtils.success(shopGoods);
     }
 }

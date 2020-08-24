@@ -272,7 +272,15 @@
     <if test="searchEndTime !=null and searchEndTime != ''">
       <![CDATA[and update_time <= #{searchEndTime}]]>
     </if>
-
+    <if test="highPrice != null and highPrice != ''">
+      AND goods_member_price &lt; #{highPrice}
+    </if>
+    <if test="lowPrice != null and lowPrice != ''">
+      AND goods_member_price >= #{lowPrice}
+    </if>
+    <if test="lowMi != null and lowMi != ''">
+      AND ppv >= #{lowMi}
+    </if>
   </sql>
 
   <!-- 设置语句 -->

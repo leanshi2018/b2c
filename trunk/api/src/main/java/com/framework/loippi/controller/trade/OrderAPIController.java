@@ -1231,6 +1231,9 @@ public class OrderAPIController extends BaseController {
             contactAddrInfo = ("后台还未设置");
         }
         List<RdMmAddInfo> addrList = rdMmAddInfoService.findList("mmCode", member.getMmCode());
+        if(addrList==null||addrList.size()==0){
+            throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXIT, "收货地址不能为空");
+        }
         RdMmAddInfo addr = new RdMmAddInfo();
         if (CollectionUtils.isNotEmpty(addrList)) {
             addr = addrList.stream()

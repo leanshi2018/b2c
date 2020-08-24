@@ -1267,7 +1267,7 @@
         left join shop_goods_class sgc on sg.gc_id = sgc.id
         left join shop_goods_class sgc2 on sgc.gc_parent_id = sgc2.id
         where
-            sorder.order_state = 40
+            sorder.payment_state = 1 and sorder.order_state != 0
         <if test="startTime !=null and startTime != ''">
             <![CDATA[and sorder.create_time >= #{startTime}]]>
         </if>
