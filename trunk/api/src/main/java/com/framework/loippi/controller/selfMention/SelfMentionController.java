@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.controller.BaseController;
@@ -799,7 +798,7 @@ public class SelfMentionController extends BaseController {
         if (array.size()==0){
             return ApiUtils.error("请选择欠货商品");
         }
-        System.out.println("mapS="+mapS);
+        /*System.out.println("mapS="+mapS);
         System.out.println("array="+array);
         for (Object o : array) {
         System.out.println("o="+o);
@@ -817,10 +816,10 @@ public class SelfMentionController extends BaseController {
                     System.out.println("inventory="+ stockInto);
                 }
             }
-        }
+        }*/
 
         //创建调拨单和订单
-        //rdWareAllocationService.addAllocationOweNew(rdWareOrder,wareAllocation,array);
+        rdWareAllocationService.addAllocationOweNew(rdWareOrder,wareAllocation,array);
 
         return ApiUtils.success();
     }
