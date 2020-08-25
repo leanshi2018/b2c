@@ -272,7 +272,6 @@
     <if test="searchEndTime !=null and searchEndTime != ''">
       <![CDATA[and update_time <= #{searchEndTime}]]>
     </if>
-
   </sql>
 
   <!-- 设置语句 -->
@@ -562,6 +561,18 @@
         AND s.is_del = #{isDels}
       </if>
       <include refid="where_column"/>
+      <if test="highPrice != null and highPrice != ''">
+        AND s.goods_member_price &lt; #{highPrice}
+      </if>
+      <if test="lowPrice != null and lowPrice != ''">
+        AND s.goods_member_price >= #{lowPrice}
+      </if>
+      <if test="lowMi != null and lowMi != ''">
+        AND s.ppv >= #{lowMi}
+      </if>
+      <if test="noExchange != null and noExchange != ''">
+        AND s.goods_type != 2
+      </if>
     </where>
     GROUP BY s.goods_name
     <if test="goodsEvaluaterate != null and goodsEvaluaterate != ''">

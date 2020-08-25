@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.framework.loippi.entity.user.MemberPrivilege;
+import com.framework.loippi.service.user.MemberPrivilegeService;
 import com.framework.loippi.utils.Digests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.utils.Paramap;
+
+import javax.annotation.Resource;
 
 /**
  * SERVICE - RdMmAccountInfo(会员账户信息)
@@ -56,7 +60,8 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 	private ShopOrderDao shopOrderDao;
 	@Autowired
 	private TwiterIdService twiterIdService;
-	
+	@Resource
+	private MemberPrivilegeService memberPrivilegeService;
 	
 	@Autowired
 	public void setGenericDao() {
@@ -184,8 +189,14 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 			rdMmAccountLog.setAccStatus(0);
 			rdMmAccountLogDao.insert(rdMmAccountLog);
 			//3.扣减用户积分
+			Date date = new Date();
+			MemberPrivilege memberPrivilege = memberPrivilegeService.find("mmCode",accountInfo.getMmCode());
+			if(memberPrivilege!=null){
+				memberPrivilege.setLastWithdrawalTime(date);
+				memberPrivilegeService.update(memberPrivilege);
+			}
 			accountInfo.setBonusBlance(accountInfo.getBonusBlance().subtract(acc));
-			accountInfo.setLastWithdrawalTime(new Date());
+			accountInfo.setLastWithdrawalTime(date);
 			rdMmAccountInfoDao.update(accountInfo);
 			//4.生成通知消息
 			ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
