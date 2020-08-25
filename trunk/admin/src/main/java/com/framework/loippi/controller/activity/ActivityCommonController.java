@@ -15,10 +15,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.entity.common.ShopProductRecommendation;
+import com.framework.loippi.entity.common.ShopRecommendationGoods;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.TwiterIdService;
@@ -380,11 +384,8 @@ public class ActivityCommonController extends GenericController {
             model.addAttribute("msg", "请上传图片");
             return Constants.MSG_URL;
         }
-        if(shopProductsRecommendation.getAuditStatus()==null){
-            model.addAttribute("msg", "请选择是否显示");
-            return Constants.MSG_URL;
-        }
         shopProductsRecommendation.setId(twiterIdService.getTwiterId());
+        shopProductsRecommendation.setAuditStatus(1);
         shopProductRecommendationService.save(shopProductsRecommendation);
 
         return "redirect:findProductsRecommendationList.jhtml";
@@ -414,11 +415,59 @@ public class ActivityCommonController extends GenericController {
      * @param rId
      * @return
      */
-    @RequestMapping(value = "/findProductsRecommendation")
-    public String findProductsRecommendation(HttpServletRequest request, Pageable pageable, ModelMap model, @RequestParam(required = false, value = "rId") Long rId) {
+    @RequestMapping(value = "/findProductsRecommendationInfo")
+    public String findProductsRecommendationInfo(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "rId") Long rId) {
+        model.addAttribute("page", shopProductRecommendationService.find(rId));
+
+        return "";
+    }
+
+    /**
+     * 删除推荐页
+     * @param request
+     * @param model
+     * @param rId
+     * @return
+     */
+    @RequestMapping(value = "/delProductsRecommendation")
+    public String delProductsRecommendation(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "rId") Long rId) {
+        if (rId==null){
+            model.addAttribute("msg", "未找到该推荐页");
+            return Constants.MSG_URL;
+        }
+        shopProductRecommendationService.delete(rId);
+        shopRecommendationGoodsService.delByRId(rId);
+
+        return "redirect:findProductsRecommendationList.jhtml";
+    }
+
+    /**
+     * 修改推荐页详情
+     * @param request
+     * @param model
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/updateProductsRecommendation")
+    public String updateProductsRecommendation(HttpServletRequest request, ModelMap model, @ModelAttribute ShopProductRecommendation param) {
+        shopProductRecommendationService.update(param);
+
+        return "redirect:findProductsRecommendationList.jhtml";
+    }
+
+    /**
+     * 推荐页商品管理
+     * @param request
+     * @param pageable
+     * @param model
+     * @param rId
+     * @return
+     */
+    @RequestMapping(value = "/findRecommendationGoods")
+    public String findRecommendationGoods(HttpServletRequest request, Pageable pageable, ModelMap model, @RequestParam(required = false, value = "rId") Long rId) {
         pageable.setParameter(Paramap.create().put("rId", rId));
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", shopRecommendationGoodsService.findByPage(pageable));
+        model.addAttribute("page", shopRecommendationGoodsService.findGoodsResult(pageable));
         return "";
     }
 
@@ -440,6 +489,68 @@ public class ActivityCommonController extends GenericController {
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopGoodsService.findByPage(pageable));
         return "";
+    }
+
+    /**
+     * 推荐页商品添加
+     * @param request
+     * @param model
+     * @param rId
+     * @param jsonMap
+     * @return
+     */
+    @RequestMapping(value = "/saveRecommendationGoods")
+    public String saveRecommendationGoods(HttpServletRequest request, ModelMap model,
+                                          @RequestParam(required = false, value = "rId") Long rId,
+                                          @RequestParam(required = false, value = "jsonMap") String jsonMap) {
+
+        if (rId==null){
+            model.addAttribute("msg", "找不到该推荐页");
+            return Constants.MSG_URL;
+        }
+
+        JSONArray array = JSON.parseArray(jsonMap);
+        if (array.size()==0){
+            model.addAttribute("msg", "请选择商品添加");
+            return Constants.MSG_URL;
+        }
+
+        for (Object o : array) {
+            System.out.println("o="+o);
+            ShopRecommendationGoods recommendationGoods = new ShopRecommendationGoods();
+            recommendationGoods.setId(twiterIdService.getTwiterId());
+            recommendationGoods.setRId(rId);
+            Long goodsId = 0l;
+            JSONObject jsonObject = JSON.parseObject(o.toString());
+            for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
+                System.out.println(entry.getKey() + ":" + entry.getValue());
+                goodsId = Long.valueOf(entry.getValue().toString());
+                System.out.println("id="+ goodsId);
+                recommendationGoods.setGoodsId(goodsId);
+            }
+            shopRecommendationGoodsService.save(recommendationGoods);
+        }
+        return "";
+    }
+
+    /**
+     * 删除推荐页商品
+     * @param request
+     * @param model
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/delRecommendationGoods")
+    public String delRecommendationGoods(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "id") Long id) {
+        if (id==null){
+            model.addAttribute("msg", "未找到该商品");
+            return Constants.MSG_URL;
+        }
+        ShopRecommendationGoods goods = shopRecommendationGoodsService.find(id);
+        Long rId = goods.getRId();
+        shopRecommendationGoodsService.delete(id);
+
+        return "redirect:findShopGoodList.jhtml?rId="+rId;
     }
 
 }

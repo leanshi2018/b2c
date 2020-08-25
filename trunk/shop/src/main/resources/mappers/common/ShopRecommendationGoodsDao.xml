@@ -122,4 +122,20 @@
         </where>
     </select>
 
+    <delete id="delByRId">
+        DELETE FROM shop_recommendation_goods
+        WHERE r_id = #{rId}
+    </delete>
+
+    <select id="findLogResultByPage" parameterType="com.framework.loippi.result.common.recommendation.RecommendationGoodsResult"
+            resultType="com.framework.loippi.result.common.recommendation.RecommendationGoodsResult">
+        SELECT
+        *
+        FROM shop_recommendation_goods a
+        left join shop_goods b on a.goods_id=b.id
+        where 1=1
+
+    </select>
+
+
 </mapper>

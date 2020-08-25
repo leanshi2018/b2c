@@ -1,29 +1,37 @@
 package com.framework.loippi.controller.activity;
 
-import com.framework.loippi.consts.GoodsState;
-import com.framework.loippi.controller.BaseController;
-import com.framework.loippi.entity.activity.ShopActivity;
-import com.framework.loippi.entity.activity.ShopActivityGoods;
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.enus.ActivityTypeEnus;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.result.activity.promotion.SalesPromotionGoodsResult;
-import com.framework.loippi.service.activity.ShopActivityGoodsService;
-import com.framework.loippi.service.activity.ShopActivityService;
-import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.StringUtil;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import java.util.*;
+import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.activity.ShopActivity;
+import com.framework.loippi.entity.activity.ShopActivityGoods;
+import com.framework.loippi.entity.common.ShopProductRecommendation;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.enus.ActivityTypeEnus;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.result.activity.promotion.SalesPromotionGoodsResult;
+import com.framework.loippi.service.activity.ShopActivityGoodsService;
+import com.framework.loippi.service.activity.ShopActivityService;
+import com.framework.loippi.service.common.ShopProductRecommendationService;
+import com.framework.loippi.service.common.ShopRecommendationGoodsService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
 
 /**
  * 新品首发相关接口
@@ -40,6 +48,10 @@ public class ActivityGoodsController extends BaseController {
     private ShopActivityGoodsService shopActivityGoodsService;
     @Resource
     private ShopGoodsService shopGoodsService;
+    @Resource
+    private ShopProductRecommendationService shopProductRecommendationService;
+    @Resource
+    private ShopRecommendationGoodsService shopRecommendationGoodsService;
 
     /**
      * 促销活动查看更多商品信息
@@ -113,6 +125,17 @@ public class ActivityGoodsController extends BaseController {
 
         return ApiUtils.success(Paramap.create().put("activityName", shopActivity.getActivityName())
                 .put("activityPicture", shopActivity.getActivityPicturePc()));
+    }
+
+    /**
+     * 获取推荐页专场详情（名称和活动图片)
+     */
+    @RequestMapping(value = "/recommendationInfo", method = RequestMethod.POST)
+    public String recommendationInfo(Long rId) {
+        ShopProductRecommendation recommendation = shopProductRecommendationService.find(rId);
+
+        return ApiUtils.success(Paramap.create().put("recommendationName", recommendation.getRecommendationName())
+                .put("pictureUrl", recommendation.getPictureUrl()));
     }
 
 }

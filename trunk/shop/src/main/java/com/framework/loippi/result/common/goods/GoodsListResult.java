@@ -208,6 +208,36 @@ public class GoodsListResult {
         return results;
     }
 
+    public static List<GoodsListResult> buildGoodsRecommendListNew(List<ShopGoods> items, String prefix) {
+        if (CollectionUtils.isEmpty(items)) {
+            return Collections.emptyList();
+        }
+        List<GoodsListResult> results = new ArrayList<GoodsListResult>();
+        for (ShopGoods item : items) {
+            GoodsListResult result = new GoodsListResult();
+            result.setItemId(Optional.ofNullable(item.getId()).orElse(-1L));
+            result.setTitle(Optional.ofNullable(item.getGoodsName()).orElse(""));
+            result.setImage(Optional.ofNullable(prefix + item.getGoodsImage()).orElse(""));
+            result.setImageNew(Optional.ofNullable(prefix + item.getGoodsImageNew()).orElse(""));
+            result.setSalenum(Optional.ofNullable(item.getSalenum()).orElse(0));
+            result.setSpecName(Optional.ofNullable(item.getSpecName()).orElse(""));
+            result.setGoodsSpecId(Optional.ofNullable(item.getSpecId()).orElse(-1L));
+            result.setGoodsType(Optional.ofNullable(item.getGoodsType()).orElse(1));
+            //设置价格
+            result.setGoodsRetailPrice(Optional.ofNullable(item.getGoodsRetailPrice()).orElse(new BigDecimal(0)));
+            result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(new BigDecimal(0)));
+            result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
+            result.setEvaluaterate(Optional.ofNullable(item.getEvaluaterate()).orElse(0d)*100);
+            result.setCommentnum(Optional.ofNullable(item.getCommentnum()).orElse(0));
+
+            result.setActivityId(-1L);
+            result.setActivityType(-1 + "");
+
+            results.add(result);
+        }
+        return results;
+    }
+
     public static GoodsListResult buildItem(ShopGoods item, String prefix, String wapServer) {
         GoodsListResult result = new GoodsListResult();
         result.setItemId(Optional.ofNullable(item.getId()).orElse(-1L));
