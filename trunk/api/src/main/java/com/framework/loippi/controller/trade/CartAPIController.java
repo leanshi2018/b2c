@@ -1,13 +1,16 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.result.common.goods.GoodsListResult;
-import com.framework.loippi.service.activity.ShopActivityGoodsService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
@@ -43,6 +46,8 @@ import com.framework.loippi.param.cart.CartAddParam;
 import com.framework.loippi.result.app.cart.CartCheckOutResult;
 import com.framework.loippi.result.app.cart.CartResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.common.goods.GoodsListResult;
+import com.framework.loippi.service.activity.ShopActivityGoodsService;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
@@ -827,12 +832,12 @@ public class CartAPIController extends BaseController {
             Page<ShopGoods> page1 = goodsService.findByPage(pageable);
             List<ShopGoods> goods = page1.getContent();
             for (ShopGoods good : goods) {
-                if(10-size<=0){
+                if(size<=0){
                     break;
                 }
                 if(goodsMap.get(good.getId())==null){
                     shopGoods.add(good);
-                    size++;
+                    size--;
                 }
             }
             //填充活动信息
