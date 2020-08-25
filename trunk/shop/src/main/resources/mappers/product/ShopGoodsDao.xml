@@ -570,6 +570,9 @@
       <if test="lowMi != null and lowMi != ''">
         AND s.ppv >= #{lowMi}
       </if>
+      <if test="noExchange != null and noExchange != ''">
+        AND s.goods_type != 2
+      </if>
     </where>
     GROUP BY s.goods_name
     <if test="goodsEvaluaterate != null and goodsEvaluaterate != ''">

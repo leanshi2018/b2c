@@ -1289,6 +1289,9 @@
         <if test="gcId !=null and gcId != ''">
            and  sgc.id = #{gcId}
         </if>
+        <if test="noExchange != null and noExchange != ''">
+            AND sg.goods_type != 2
+        </if>
         group by
             ogoods.goods_id
         order by

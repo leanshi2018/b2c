@@ -757,6 +757,7 @@ public class CartAPIController extends BaseController {
             paramap.put("lowMi", GatherAreaConstant.AFTER_ELIMINATION_MI);
         }
         paramap.put("goodsSalenum","yes");
+        paramap.put("noExchange","yes");
         pager.setParameter(paramap);
         Page<ShopGoods> page = goodsService.findByPage(pager);
         List<ShopGoods> goods = page.getContent();
@@ -782,6 +783,7 @@ public class CartAPIController extends BaseController {
         String str = format.format(time);
         goodsStatisticsVo.setStartTime(str+" 00:00:00");
         goodsStatisticsVo.setEndTime(str+" 23:59:59");
+        goodsStatisticsVo.setNoExchange("yes");
         pager.setParameter(goodsStatisticsVo);
         Page<GoodsStatisticsVo> page = orderService.listBestSellGoods(pager);
         List<GoodsStatisticsVo> list = page.getContent();
@@ -813,6 +815,7 @@ public class CartAPIController extends BaseController {
             pageable.setPageNumber(1);
             Paramap paramap = Paramap.create();
             paramap.put("goodsSalenum","yes");
+            paramap.put("noExchange","yes");
             pager.setParameter(paramap);
             Page<ShopGoods> page1 = goodsService.findByPage(pageable);
             List<ShopGoods> goods = page1.getContent();
