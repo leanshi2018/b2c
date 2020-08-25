@@ -108,7 +108,7 @@
                         <td>
                             <select name="openType" class="w200" id="openType">
                                 <option value="" selected="selected">请选择</option>
-                                <option value="跳转商品推荐页" id=""<#if picture.openType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品推荐页</option>
+                                <option value="跳转商品推荐页" id=""<#if picture.openType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品活动页</option>
                                 <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
                                 <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
                             </select>
@@ -132,6 +132,8 @@
                                     <#--选择跳转路径-->
                                     <select name="openPage" class="w200" id="openPage"style="display: none;">
                                         <option value="" selected="selected">请选择</option>
+                                        <option value="gatherGoodspage" <#if picture.openPage == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
+                                        <option value="recommendGoodspage" <#if picture.openPage == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
                                         <option value="homepage" <#if picture.openPage == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.openPage == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.openPage == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -242,7 +244,7 @@
                         </td>
                         <td>
                             <select name="openType" class="w200" id="openType">
-                                <option value="跳转商品推荐页" id=""<#if picture.openType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品推荐页</option>
+                                <option value="跳转商品推荐页" id=""<#if picture.openType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品活动页</option>
                                 <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
                                 <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
                             </select>
@@ -267,6 +269,8 @@
                                     <#--选择跳转路径-->
                                     <select name="activityUrl" class="w200" id="openPage"style="display: none;">
                                         <option value="" selected="selected">请选择</option>
+                                        <option value="gatherGoodspage" <#if picture.openPage == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
+                                        <option value="recommendGoodspage" <#if picture.openPage == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
                                         <option value="homepage" <#if picture.activityUrl == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.activityUrl == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.activityUrl == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -300,7 +304,7 @@
                                     </form>
                                     <#--选择优惠券-->
                                     <input type="hidden" id="couponId" name="couponId" value="${id}">
-                                    <#--                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
+                                    <#--<input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
                                     <input name="couponName" id="couponName" type="text" value="${couponName}">
                                     <#--映射的名字-->
                                     <input name="openName" id="openName"class="w150" type="hidden" value=""/>
@@ -422,17 +426,27 @@
         $('#openPage').change(function(){
             $("#openpages").attr("name","");
             var value=$(this).children('option:selected').val();
+            if(value=="gatherGoodspage"){
+                $("#openName").val("凑单页面");
+            }
+            if(value=="recommendGoodspage"){
+                $("#openName").val("推荐页面");
+                $("#recommendGoods").show();
+                $("#searchrecommendGoods").css("display","");
+            }else{
+                $("#recommendGoods").css("display","none");
+                $("#searchrecommendGoods").css("display","none");
+            }
             if(value=="homepage"){
                 $("#openName").val("辑");
             }
             if(value=="messagepage"){
-
                 $("#openName").val("消息中心");
             }
             if (value=="goodsdetailspage"){
                 $("#goodsName").show();
-                $("#openName").val("商品详情");
                 $("#searchgoods").css("display","");
+                $("#openName").val("商品详情");
             }else {
                 $("#searchgoods").css("display","none");
                 $("#goodsName").css("display","none");
