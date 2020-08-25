@@ -785,7 +785,6 @@ public class CartAPIController extends BaseController {
         pager.setParameter(goodsStatisticsVo);
         Page<GoodsStatisticsVo> page = orderService.listBestSellGoods(pager);
         List<GoodsStatisticsVo> list = page.getContent();
-        System.out.println(list.size()+"热销top10集合大小");
         Integer size=0;
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
         if(list!=null&&list.size()>=10){
@@ -815,7 +814,7 @@ public class CartAPIController extends BaseController {
             Paramap paramap = Paramap.create();
             paramap.put("goodsSalenum","yes");
             pager.setParameter(paramap);
-            Page<ShopGoods> page1 = goodsService.findByPage(pager);
+            Page<ShopGoods> page1 = goodsService.findByPage(pageable);
             List<ShopGoods> goods = page1.getContent();
             for (ShopGoods good : goods) {
                 shopGoods.add(good);
