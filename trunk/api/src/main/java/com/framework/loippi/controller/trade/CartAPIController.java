@@ -825,7 +825,7 @@ public class CartAPIController extends BaseController {
             paramap.put("goodsSalenum","yes");
             paramap.put("noExchange","yes");
             paramap.put("goodsShow",1);
-            pager.setParameter(paramap);
+            pageable.setParameter(paramap);
             Page<ShopGoods> page1 = goodsService.findByPage(pageable);
             List<ShopGoods> goods = page1.getContent();
             for (ShopGoods good : goods) {
