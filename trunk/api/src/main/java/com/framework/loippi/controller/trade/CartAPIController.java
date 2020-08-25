@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.result.common.goods.GoodsListResult;
+import com.framework.loippi.service.activity.ShopActivityGoodsService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -96,6 +98,8 @@ public class CartAPIController extends BaseController {
     private ShopGoodsFreightService shopGoodsFreightService;
     @Resource
     private ShopGoodsFreightRuleService shopGoodsFreightRuleService;
+    @Resource
+    private ShopActivityGoodsService shopActivityGoodsService;
     /**
      * 购物车列表
      */
@@ -758,10 +762,12 @@ public class CartAPIController extends BaseController {
         }
         paramap.put("goodsSalenum","yes");
         paramap.put("noExchange","yes");
+        paramap.put("goodsShow",1);
         pager.setParameter(paramap);
         Page<ShopGoods> page = goodsService.findByPage(pager);
         List<ShopGoods> goods = page.getContent();
-        return ApiUtils.success(goods);
+        List<GoodsListResult> build = shopActivityGoodsService.findAndAddAtiInfo(goods, prefix);
+        return ApiUtils.success(build);
     }
 
     /**
@@ -784,11 +790,13 @@ public class CartAPIController extends BaseController {
         goodsStatisticsVo.setStartTime(str+" 00:00:00");
         goodsStatisticsVo.setEndTime(str+" 23:59:59");
         goodsStatisticsVo.setNoExchange("yes");
+        goodsStatisticsVo.setGoodsShow(1);
         pager.setParameter(goodsStatisticsVo);
         Page<GoodsStatisticsVo> page = orderService.listBestSellGoods(pager);
         List<GoodsStatisticsVo> list = page.getContent();
         Integer size=0;
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
+        List<GoodsListResult> build = new ArrayList<>();
         if(list!=null&&list.size()>=10){
             int i=0;
             for (GoodsStatisticsVo statisticsVo : list) {
@@ -799,7 +807,7 @@ public class CartAPIController extends BaseController {
                 shopGoods.add(goods);
                 i++;
             }
-            return ApiUtils.success(shopGoods);
+            build = shopActivityGoodsService.findAndAddAtiInfo(shopGoods, prefix);
         }else {
             if(list==null){
                 size=10;
@@ -816,13 +824,16 @@ public class CartAPIController extends BaseController {
             Paramap paramap = Paramap.create();
             paramap.put("goodsSalenum","yes");
             paramap.put("noExchange","yes");
+            paramap.put("goodsShow",1);
             pager.setParameter(paramap);
             Page<ShopGoods> page1 = goodsService.findByPage(pageable);
             List<ShopGoods> goods = page1.getContent();
             for (ShopGoods good : goods) {
                 shopGoods.add(good);
             }
+            //填充活动信息
+            build = shopActivityGoodsService.findAndAddAtiInfo(shopGoods, prefix);
         }
-        return ApiUtils.success(shopGoods);
+        return ApiUtils.success(build);
     }
 }
