@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.activity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,14 +24,18 @@ import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.entity.common.ShopProductRecommendation;
 import com.framework.loippi.entity.common.ShopRecommendationGoods;
+import com.framework.loippi.entity.product.ShopGoodsClass;
 import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.result.common.recommendation.RecommendationGoodsResult;
 import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.common.ShopHomePictureService;
 import com.framework.loippi.service.common.ShopProductRecommendationService;
 import com.framework.loippi.service.common.ShopRecommendationGoodsService;
+import com.framework.loippi.service.product.ShopGoodsClassService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.user.RetailProfitService;
+import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
@@ -56,6 +61,8 @@ public class ActivityCommonController extends GenericController {
     private ShopRecommendationGoodsService shopRecommendationGoodsService;
     @Resource
     private ShopGoodsService shopGoodsService;
+    @Resource
+    private ShopGoodsClassService shopGoodsClassService;
 
     @RequestMapping(value = "/grant", method = RequestMethod.GET)
     public void grant() {
@@ -405,7 +412,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setOrderProperty("create_time");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopProductRecommendationService.findByPage(pageable));
-        return "";
+        return "/common/recommended/index";
     }
 
     /**
@@ -419,7 +426,7 @@ public class ActivityCommonController extends GenericController {
     public String findProductsRecommendationInfo(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "rId") Long rId) {
         model.addAttribute("page", shopProductRecommendationService.find(rId));
 
-        return "";
+        return "/common/recommended/edit";
     }
 
     /**
@@ -465,10 +472,14 @@ public class ActivityCommonController extends GenericController {
      */
     @RequestMapping(value = "/findRecommendationGoods")
     public String findRecommendationGoods(HttpServletRequest request, Pageable pageable, ModelMap model, @RequestParam(required = false, value = "rId") Long rId) {
-        pageable.setParameter(Paramap.create().put("rId", rId));
+        RecommendationGoodsResult goodsResult = new RecommendationGoodsResult();
+        goodsResult.setRId(rId);
+        pageable.setParameter(goodsResult);
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", shopRecommendationGoodsService.findGoodsResult(pageable));
-        return "";
+        Page serviceGoodsResult = shopRecommendationGoodsService.findGoodsResult(pageable);
+        //model.addAttribute("page",RecommendationGoodsResult.build(serviceGoodsResult));
+        model.addAttribute("page",serviceGoodsResult);
+        return "/common/recommended/manage";
     }
 
     /**
@@ -488,7 +499,25 @@ public class ActivityCommonController extends GenericController {
         pageable.setOrderProperty("create_time");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopGoodsService.findByPage(pageable));
-        return "";
+        return "/common/recommended/selectGoods";
+    }
+
+    /**
+     *  商品分类列表
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/findShopGoodClassList")
+    public List<String> findShopGoodClassList(HttpServletRequest request,  ModelMap model){;
+        List<ShopGoodsClass> all = shopGoodsClassService.findAll();
+        List<String> gcNameList = new ArrayList<>();
+        if (all.size()>0){
+            for (ShopGoodsClass goodsClass : all) {
+                gcNameList.add(goodsClass.getGcName());
+            }
+        }
+        return gcNameList;
     }
 
     /**
@@ -530,7 +559,7 @@ public class ActivityCommonController extends GenericController {
             }
             shopRecommendationGoodsService.save(recommendationGoods);
         }
-        return "";
+        return "redirect:findShopGoodList.jhtml?rId="+rId;
     }
 
     /**
