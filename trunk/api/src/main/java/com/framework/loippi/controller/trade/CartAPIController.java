@@ -785,13 +785,20 @@ public class CartAPIController extends BaseController {
         pager.setParameter(goodsStatisticsVo);
         Page<GoodsStatisticsVo> page = orderService.listBestSellGoods(pager);
         List<GoodsStatisticsVo> list = page.getContent();
+        System.out.println(list.size()+"热销top10集合大小");
         Integer size=0;
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
         if(list!=null&&list.size()>=10){
+            int i=0;
             for (GoodsStatisticsVo statisticsVo : list) {
+                if(i>9){
+                    break;
+                }
                 ShopGoods goods = goodsService.find(statisticsVo.getGoodsId());
                 shopGoods.add(goods);
+                i++;
             }
+            return ApiUtils.success(shopGoods);
         }else {
             if(list==null){
                 size=10;

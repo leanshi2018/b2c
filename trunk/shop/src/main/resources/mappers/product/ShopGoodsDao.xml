@@ -272,15 +272,6 @@
     <if test="searchEndTime !=null and searchEndTime != ''">
       <![CDATA[and update_time <= #{searchEndTime}]]>
     </if>
-    <if test="highPrice != null and highPrice != ''">
-      AND goods_member_price &lt; #{highPrice}
-    </if>
-    <if test="lowPrice != null and lowPrice != ''">
-      AND goods_member_price >= #{lowPrice}
-    </if>
-    <if test="lowMi != null and lowMi != ''">
-      AND ppv >= #{lowMi}
-    </if>
   </sql>
 
   <!-- 设置语句 -->
@@ -570,6 +561,15 @@
         AND s.is_del = #{isDels}
       </if>
       <include refid="where_column"/>
+      <if test="highPrice != null and highPrice != ''">
+        AND s.goods_member_price &lt; #{highPrice}
+      </if>
+      <if test="lowPrice != null and lowPrice != ''">
+        AND s.goods_member_price >= #{lowPrice}
+      </if>
+      <if test="lowMi != null and lowMi != ''">
+        AND s.ppv >= #{lowMi}
+      </if>
     </where>
     GROUP BY s.goods_name
     <if test="goodsEvaluaterate != null and goodsEvaluaterate != ''">
