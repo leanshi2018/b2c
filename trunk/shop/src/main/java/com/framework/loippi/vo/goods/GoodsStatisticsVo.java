@@ -70,4 +70,6 @@ public class GoodsStatisticsVo {
     String goodsIdKeyWord;
 
     private String noExchange;
+
+    private Integer goodsShow;
 }
