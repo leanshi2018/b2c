@@ -1292,6 +1292,9 @@
         <if test="noExchange != null and noExchange != ''">
             AND sg.goods_type != 2
         </if>
+        <if test="goodsShow != null">
+            AND sg.goods_show = #{goodsShow}
+        </if>
         group by
             ogoods.goods_id
         order by
