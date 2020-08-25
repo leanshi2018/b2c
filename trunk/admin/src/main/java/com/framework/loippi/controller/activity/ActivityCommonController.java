@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.framework.loippi.service.user.RetailProfitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,10 +18,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.common.ShopHomePicture;
+import com.framework.loippi.entity.common.ShopProductRecommendation;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.common.ShopHomePictureService;
+import com.framework.loippi.service.common.ShopProductRecommendationService;
+import com.framework.loippi.service.common.ShopRecommendationGoodsService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
@@ -42,6 +46,12 @@ public class ActivityCommonController extends GenericController {
     private TwiterIdService twiterIdService;
     @Resource
     private RetailProfitService retailProfitService;
+    @Resource
+    private ShopProductRecommendationService shopProductRecommendationService;
+    @Resource
+    private ShopRecommendationGoodsService shopRecommendationGoodsService;
+    @Resource
+    private ShopGoodsService shopGoodsService;
 
     @RequestMapping(value = "/grant", method = RequestMethod.GET)
     public void grant() {
@@ -351,5 +361,85 @@ public class ActivityCommonController extends GenericController {
     }
 
 
+    /**
+     * 添加推荐页
+     * @param request
+     * @param shopProductsRecommendation
+     * @param model
+     * @param attr
+     * @return
+     */
+    @RequestMapping(value = "/saveProductsRecommendation",method = RequestMethod.POST)
+    public String saveProductsRecommendation(HttpServletRequest request, @ModelAttribute ShopProductRecommendation shopProductsRecommendation, ModelMap model, RedirectAttributes attr ){
+
+        if(StringUtil.isEmpty(shopProductsRecommendation.getRecommendationName())){
+            model.addAttribute("msg", "名称不可以为空");
+            return Constants.MSG_URL;
+        }
+        if(StringUtil.isEmpty(shopProductsRecommendation.getPictureUrl())){
+            model.addAttribute("msg", "请上传图片");
+            return Constants.MSG_URL;
+        }
+        if(shopProductsRecommendation.getAuditStatus()==null){
+            model.addAttribute("msg", "请选择是否显示");
+            return Constants.MSG_URL;
+        }
+        shopProductsRecommendation.setId(twiterIdService.getTwiterId());
+        shopProductRecommendationService.save(shopProductsRecommendation);
+
+        return "redirect:findProductsRecommendationList.jhtml";
+    }
+
+    /**
+     * 推荐页列表
+     * @param request
+     * @param pageable
+     * @param model
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/findProductsRecommendationList")
+    public String findProductsRecommendationList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopProductRecommendation param) {
+        pageable.setParameter(Paramap.create().put("recommendationName", param.getRecommendationName()));
+        pageable.setOrderProperty("create_time");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", shopProductRecommendationService.findByPage(pageable));
+        return "";
+    }
+
+    /**
+     * 商品推荐页管理详情
+     * @param request
+     * @param model
+     * @param rId
+     * @return
+     */
+    @RequestMapping(value = "/findProductsRecommendation")
+    public String findProductsRecommendation(HttpServletRequest request, Pageable pageable, ModelMap model, @RequestParam(required = false, value = "rId") Long rId) {
+        pageable.setParameter(Paramap.create().put("rId", rId));
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", shopRecommendationGoodsService.findByPage(pageable));
+        return "";
+    }
+
+    /**
+     *  商品列表
+     * @param request
+     * @param pageable
+     * @param model
+     * @param gcId
+     * @param goodsName
+     * @return
+     */
+    @RequestMapping(value = "/findShopGoodList")
+    public String findShopGoodList(HttpServletRequest request, Pageable pageable, ModelMap model,
+                                   @RequestParam(required = false, value = "gcId") Long gcId,
+                                   @RequestParam(required = false, value = "goodsName") String goodsName) {
+        pageable.setParameter(Paramap.create().put("gcId", gcId).put("goodsName",goodsName).put("goodsShow",1));
+        pageable.setOrderProperty("create_time");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", shopGoodsService.findByPage(pageable));
+        return "";
+    }
 
 }
