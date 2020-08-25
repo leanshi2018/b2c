@@ -4,12 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.framework.loippi.entity.coupon.CouponDetail;
-import com.framework.loippi.entity.coupon.CouponPayDetail;
 
 /**
  * @author :ldq
@@ -58,8 +54,5 @@ public class RecommendationGoodsResult {
 	private String gcName;
 
 
-	public static RecommendationGoodsResult build(CouponPayDetail couponPayDetail, List<CouponDetail> couponDetailList) {
-		return null;
-	}
 
 }
