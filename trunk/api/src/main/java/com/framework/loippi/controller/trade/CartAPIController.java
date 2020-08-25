@@ -7,11 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
@@ -809,6 +805,7 @@ public class CartAPIController extends BaseController {
             }
             build = shopActivityGoodsService.findAndAddAtiInfo(shopGoods, prefix);
         }else {
+            HashMap<Long, ShopGoods> goodsMap = new HashMap<>();
             if(list==null){
                 size=10;
             }else {
@@ -816,10 +813,11 @@ public class CartAPIController extends BaseController {
                 for (GoodsStatisticsVo statisticsVo : list) {
                     ShopGoods goods = goodsService.find(statisticsVo.getGoodsId());
                     shopGoods.add(goods);
+                    goodsMap.put(goods.getId(),goods);
                 }
             }
             Pageable pageable = new Pageable();
-            pageable.setPageSize(size);
+            pageable.setPageSize(20);
             pageable.setPageNumber(1);
             Paramap paramap = Paramap.create();
             paramap.put("goodsSalenum","yes");
@@ -829,7 +827,13 @@ public class CartAPIController extends BaseController {
             Page<ShopGoods> page1 = goodsService.findByPage(pageable);
             List<ShopGoods> goods = page1.getContent();
             for (ShopGoods good : goods) {
-                shopGoods.add(good);
+                if(10-size<=0){
+                    break;
+                }
+                if(goodsMap.get(good.getId())==null){
+                    shopGoods.add(good);
+                    size++;
+                }
             }
             //填充活动信息
             build = shopActivityGoodsService.findAndAddAtiInfo(shopGoods, prefix);
