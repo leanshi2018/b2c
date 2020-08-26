@@ -87,6 +87,9 @@
         <if test="searchTime != null and searchTime != ''">
             and start_time &lt;= #{searchTime} and end_time >= #{searchTime}
         </if>
+        <if test="numTuxedo != null and numTuxedo != ''">
+            AND activity_name  LIKE CONCAT('%', #{activityNameLike},'%')
+        </if>
     </sql>
 
     <!-- 设置语句 -->

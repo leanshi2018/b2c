@@ -1,5 +1,9 @@
 package com.framework.loippi.controller.travel;
 
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.travel.RdTravelActivity;
+import com.framework.loippi.service.travel.RdTravelActivityService;
+import com.framework.loippi.utils.JacksonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Calendar;
@@ -13,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +64,8 @@ public class TravelController {
 	private RdTravelTicketService rdTravelTicketService;
 	@Resource
 	private RdTravelTicketDetailService ticketDetailService;
+	@Resource
+	private RdTravelActivityService rdTravelActivityService;
 
 	/**
 	 * 周期计算达标送券
@@ -565,6 +572,24 @@ public class TravelController {
 	}
 
 	/**
+	 * 新增或者编辑按钮
+	 * @param model
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value ="/forward",method = RequestMethod.GET)
+	public String forward(Model model, @RequestParam(value = "id",required = false) Long id) {
+		if (id != null && id != 0) {
+			RdTravelTicket rdTravelTicket = rdTravelTicketService.find(id);
+			model.addAttribute("rdTravelTicket",rdTravelTicket);
+			return "";//跳往新增或编辑页面
+		} else {
+			model.addAttribute("rdTravelTicket", null);
+			return "";
+		}
+	}
+
+	/**
 	 * 保存或者编辑修改旅游券信息
 	 * @param request
 	 * @param model
@@ -597,6 +622,10 @@ public class TravelController {
 			model.addAttribute("msg", "旅游券使用说明为空");
 			return Constants.MSG_URL;
 		}
+		if(StringUtil.isEmpty(travelTicket.getRemark())){
+			model.addAttribute("msg", "旅游券使用说明为空");
+			return Constants.MSG_URL;
+		}
 		travelTicket.setIssueNum(0L);
 		Subject subject = SecurityUtils.getSubject();
 		if(subject!=null){
@@ -617,7 +646,7 @@ public class TravelController {
 					return Constants.MSG_URL;
 				}
 				//model.addAttribute("msg", "成功");
-				return "";//TODO
+				return "redirect:travelTicket/list.jhtml";//TODO
 			}
 		}
 		model.addAttribute("msg", "请登录后再进行旅游券相关操作");
@@ -631,7 +660,7 @@ public class TravelController {
 	@RequestMapping("/travelTicket/list")
 	public String list(ModelMap model,
 					   @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
-					   @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
+					   @RequestParam(required = false, value = "pageSize", defaultValue = "10") int pageSize,
 					   @ModelAttribute RdTravelTicket travelTicket) {
 		//参数整理
 		Pageable pager = new Pageable();
@@ -652,7 +681,7 @@ public class TravelController {
 	@RequestMapping("/travelTicketDetail/list")
 	public String detailList(ModelMap model,
 					   @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
-					   @RequestParam(required = false, value = "pageSize", defaultValue = "20") int pageSize,
+					   @RequestParam(required = false, value = "pageSize", defaultValue = "10") int pageSize,
 					   @ModelAttribute RdTravelTicketDetail detail) {
 		//参数整理
 		Pageable pager = new Pageable();
@@ -675,7 +704,12 @@ public class TravelController {
 	 */
 	@RequestMapping("/travelTicketDetail/restoreOrDestroy")
 	public String restoreOrDestroy(ModelMap model,@RequestParam(required = true, value = "ticketSn") String ticketSn,
-								   @RequestParam(required = true, value = "species") Integer species) {
+								   @RequestParam(required = true, value = "status") Integer status,
+								   @RequestParam(required = true, value = "species") Integer species,Long activityId) {
+		if(status!=null&&status==0&&species==2&&activityId==null){
+			model.addAttribute("msg", "请选择旅游活动进行旅游券核销");
+			return Constants.MSG_URL;
+		}
 		if(StringUtil.isEmpty(ticketSn)){
 			model.addAttribute("msg", "请选择需要操作的旅游券");
 			return Constants.MSG_URL;
@@ -702,7 +736,7 @@ public class TravelController {
 				//对旅游券进行核销或者恢复操作
 				try {
 					ticketDetailService.restoreOrDestroy(ticketDetail,species,id,username);
-					return "";//TODO
+					return "redirect:travelTicketDetail/list.jhtml";//TODO
 				} catch (Exception e) {
 					e.printStackTrace();
 					model.addAttribute("msg", e.getMessage());
@@ -711,6 +745,137 @@ public class TravelController {
 			}
 		}
 		model.addAttribute("msg", "请登录后再进行旅游券相关操作");
+		return Constants.MSG_URL;
+	}
+
+	/**
+	 * 根据旅游活动id查询
+	 * @param model
+	 * @param activityId
+	 * @return
+	 */
+	@RequestMapping("/travelTicketActivity/findById")
+	public String findActivityById(ModelMap model, @RequestParam(required = true, value = "activityId") Long activityId) {
+		if(activityId==null){
+			model.addAttribute("msg", "请填入旅游活动id");
+			return Constants.MSG_URL;
+		}
+		RdTravelActivity rdTravelActivity = rdTravelActivityService.find(activityId);
+		if(rdTravelActivity==null){
+			model.addAttribute("msg", "旅游活动信息异常");
+			return Constants.MSG_URL;
+		}
+		model.addAttribute("rdTravelActivity", rdTravelActivity);
+		return "";
+	}
+
+	/**
+	 * 旅游活动列表
+	 *
+	 */
+	@RequestMapping("/travelActivity/list")
+	public String activityList(ModelMap model,
+							 @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+							 @RequestParam(required = false, value = "pageSize", defaultValue = "10") int pageSize,
+							 @ModelAttribute RdTravelActivity activity) {
+		//参数整理
+		Pageable pager = new Pageable();
+		pager.setPageNumber(pageNo);
+		pager.setPageSize(pageSize);
+		pager.setOrderProperty("create_time");
+		pager.setOrderDirection(Order.Direction.DESC);
+		pager.setParameter(activity);
+		Page<RdTravelActivity> page = rdTravelActivityService.findByPage(pager);
+		model.addAttribute("rdTravelActivityList", page);
+		return "";//TODO
+	}
+
+	/**
+	 * 旅游活动新增或者编辑按钮
+	 * @param model
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value ="/activity/forward",method = RequestMethod.GET)
+	public String activityForward(Model model, @RequestParam(value = "id",required = false) Long id) {
+		if (id != null && id != 0) {
+			RdTravelActivity travelActivity = rdTravelActivityService.find(id);
+			model.addAttribute("travelActivity",travelActivity);
+			return "";//跳往新增或编辑页面
+		} else {
+			model.addAttribute("travelActivity", null);
+			return "";
+		}
+	}
+
+	/**
+	 * 旅游活动保存或者编辑修改旅游券信息
+	 * @param request
+	 * @param model
+	 * @param travelActivity 旅游活动信息
+	 * @return
+	 */
+	@RequestMapping(value = "/activity/addOrUpdate",method = RequestMethod.POST)
+	public String addOrUpdate(HttpServletRequest request, ModelMap model,@ModelAttribute RdTravelActivity travelActivity) {
+		if(StringUtil.isEmpty(travelActivity.getActivityName())){
+			model.addAttribute("msg", "旅游活动名称不可以为空");
+			return Constants.MSG_URL;
+		}
+		if(StringUtil.isEmpty(travelActivity.getCoverImage())){
+			model.addAttribute("msg", "旅游活动封面图片不可以为空");
+			return Constants.MSG_URL;
+		}
+		if(StringUtil.isEmpty(travelActivity.getImage())){
+			model.addAttribute("msg", "旅游活动图片不可以为空");
+			return Constants.MSG_URL;
+		}
+		if(travelActivity.getStatus()==null){
+			model.addAttribute("msg", "旅游活动状态不可以为空");
+			return Constants.MSG_URL;
+		}
+		if(travelActivity.getActivityCost()==null){
+			model.addAttribute("msg", "旅游活动价格不可以为空");
+			return Constants.MSG_URL;
+		}
+		if(StringUtil.isEmpty(travelActivity.getRemark())){
+			model.addAttribute("msg", "旅游活动规则不可以为空");
+			return Constants.MSG_URL;
+		}
+		if(travelActivity.getStartTime()==null){
+			model.addAttribute("msg", "旅游活动报名开始时间不可以为空");
+			return Constants.MSG_URL;
+		}
+		if(travelActivity.getEndTime()==null){
+			model.addAttribute("msg", "旅游活动报名结束时间不可以为空");
+			return Constants.MSG_URL;
+		}
+		if(travelActivity.getNumCeiling()==null){
+			model.addAttribute("msg", "旅游活动参团人数上限不可以为空");
+			return Constants.MSG_URL;
+		}
+		Subject subject = SecurityUtils.getSubject();
+		if(subject!=null){
+			Principal principal = (Principal) subject.getPrincipal();
+			if (principal != null && principal.getId() != null) {
+				Long id = principal.getId();
+				String username = principal.getUsername();
+				Map<String, String> map =rdTravelActivityService.saveOrEdit(travelActivity,id,username);
+				if (map == null || StringUtil.isEmpty(map.get("code"))) {
+					model.addAttribute("msg", "保存旅游券失败！");
+					return Constants.MSG_URL;
+				}
+
+				String code = map.get("code");
+				if (StringUtil.isEmpty(code) || code.equals("0")) {
+					String errorMsg = map.get("msg");
+					model.addAttribute("msg", errorMsg);
+					return Constants.MSG_URL;
+				}
+				//model.addAttribute("msg", "成功");
+				return "redirect:travelActivity/list.jhtml";//TODO
+			}
+		}
+		model.addAttribute("msg", "请登录后再进行旅游活动相关操作");
 		return Constants.MSG_URL;
 	}
 }

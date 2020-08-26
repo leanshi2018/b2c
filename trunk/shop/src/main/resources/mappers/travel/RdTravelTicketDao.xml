@@ -63,6 +63,9 @@
         <if test="issueNum != null and issueNum != ''">
             AND issue_num = #{issueNum}
         </if>
+        <if test="travelLikeName != null and travelLikeName != ''">
+            AND travel_name LIKE CONCAT('%', #{travelLikeName},'%')
+        </if>
     </sql>
 
     <!-- 设置语句 -->

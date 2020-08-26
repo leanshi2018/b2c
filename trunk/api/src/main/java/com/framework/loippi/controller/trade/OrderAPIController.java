@@ -1234,17 +1234,17 @@ public class OrderAPIController extends BaseController {
             contactAddrInfo = ("后台还未设置");
         }
         List<RdMmAddInfo> addrList = rdMmAddInfoService.findList("mmCode", member.getMmCode());
-        if(addrList==null||addrList.size()==0){
-            throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXIT, "收货地址不能为空");
-        }
         RdMmAddInfo addr = new RdMmAddInfo();
+        Integer hadReceiveAddr=null;
         if (CollectionUtils.isNotEmpty(addrList)) {
             addr = addrList.stream()
                     .filter(item -> item.getDefaultadd() != null && item.getDefaultadd() == 1)
                     .findFirst()
                     .orElse(addrList.get(0));
+            hadReceiveAddr=1;
         } else {
             addr.setAid(-1);
+            hadReceiveAddr=2;
         }
         ShopOrderPay orderPay = orderService
             .addReplacementOrder(param.getGoodsId(), param.getCount(), param.getSpecId(),
@@ -1255,7 +1255,7 @@ public class OrderAPIController extends BaseController {
                 Optional.ofNullable(rdMmAccountInfo.getRedemptionBlance()).orElse(BigDecimal.valueOf(0)))
             .put("contactName", contactName).put("contactPhone", contactPhone).put("contactAddrInfo", contactAddrInfo)
             .put("paySn", orderPay.getPaySn()).put("ismodify", 1)
-            .put("orderId", orderPay.getOrderId()).put("addr", addr));
+            .put("orderId", orderPay.getOrderId()).put("addr", addr).put("hadReceiveAddr",hadReceiveAddr));
     }
 
     /**
