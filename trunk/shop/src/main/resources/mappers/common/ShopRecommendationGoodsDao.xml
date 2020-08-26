@@ -142,6 +142,12 @@
         <if test="rId != null and rId != ''">
             AND a.r_id = #{rId}
         </if>
+        <if test="goodsId != null and goodsId != ''">
+            AND a.goods_id = #{goodsId}
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            AND b.goods_name like CONCAT('%',#{goodsName},'%')
+        </if>
     </select>
 
 

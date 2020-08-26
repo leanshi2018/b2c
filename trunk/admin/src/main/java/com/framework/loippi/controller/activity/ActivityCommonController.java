@@ -1,6 +1,5 @@
 package com.framework.loippi.controller.activity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -400,6 +400,16 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
+     * 新增
+     * @param model
+     * @return
+     */
+    @RequestMapping(value ="/add",method = RequestMethod.GET)
+    public String add(Model model) {
+        return "/common/recommended/add";
+    }
+
+    /**
      * 推荐页列表
      * @param request
      * @param pageable
@@ -472,9 +482,14 @@ public class ActivityCommonController extends GenericController {
      * @return
      */
     @RequestMapping(value = "/findRecommendationGoods")
-    public String findRecommendationGoods(HttpServletRequest request, Pageable pageable, ModelMap model, @RequestParam(required = false, value = "rId") Long rId) {
+    public String findRecommendationGoods(HttpServletRequest request, Pageable pageable, ModelMap model,
+                                          @RequestParam(required = false, value = "rId") Long rId,
+                                          @RequestParam(required = false, value = "goodsId") Long goodsId,
+                                          @RequestParam(required = false, value = "goodsName") String goodsName) {
         RecommendationGoodsResult goodsResult = new RecommendationGoodsResult();
         goodsResult.setRId(rId);
+        goodsResult.setGoodsId(goodsId);
+        goodsResult.setGoodsName(goodsName);
         pageable.setParameter(goodsResult);
         pageable.setOrderDirection(Order.Direction.DESC);
         Page serviceGoodsResult = shopRecommendationGoodsService.findGoodsResult(pageable);
@@ -510,15 +525,15 @@ public class ActivityCommonController extends GenericController {
      * @return
      */
     @RequestMapping(value = "/findShopGoodClassList")
-    public List<String> findShopGoodClassList(HttpServletRequest request,  ModelMap model){;
+    public Map<Long,String> findShopGoodClassList(HttpServletRequest request,  ModelMap model){;
         List<ShopGoodsClass> all = shopGoodsClassService.findAll();
-        List<String> gcNameList = new ArrayList<>();
+        Map<Long,String> gcNameMap = new HashMap<Long,String>();
         if (all.size()>0){
             for (ShopGoodsClass goodsClass : all) {
-                gcNameList.add(goodsClass.getGcName());
+                gcNameMap.put(goodsClass.getId(),goodsClass.getGcName());
             }
         }
-        return gcNameList;
+        return gcNameMap;
     }
 
     /**
