@@ -1,6 +1,5 @@
 package com.framework.loippi.controller.activity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -526,15 +525,15 @@ public class ActivityCommonController extends GenericController {
      * @return
      */
     @RequestMapping(value = "/findShopGoodClassList")
-    public List<String> findShopGoodClassList(HttpServletRequest request,  ModelMap model){;
+    public Map<Long,String> findShopGoodClassList(HttpServletRequest request,  ModelMap model){;
         List<ShopGoodsClass> all = shopGoodsClassService.findAll();
-        List<String> gcNameList = new ArrayList<>();
+        Map<Long,String> gcNameMap = new HashMap<Long,String>();
         if (all.size()>0){
             for (ShopGoodsClass goodsClass : all) {
-                gcNameList.add(goodsClass.getGcName());
+                gcNameMap.put(goodsClass.getId(),goodsClass.getGcName());
             }
         }
-        return gcNameList;
+        return gcNameMap;
     }
 
     /**
