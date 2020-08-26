@@ -90,6 +90,9 @@
         <if test="ownTimeRight != null and ownTimeRight != ''">
             AND own_time &lt;= #{ownTimeRight}
         </if>
+        <if test="travelNameLike != null and travelNameLike != ''">
+            AND travel_name LIKE CONCAT('%', #{travelNameLike},'%')
+        </if>
     </sql>
 
     <!-- 设置语句 -->

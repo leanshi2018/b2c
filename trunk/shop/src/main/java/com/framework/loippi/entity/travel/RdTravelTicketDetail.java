@@ -121,4 +121,7 @@ public class RdTravelTicketDetail implements GenericEntity {
 
     //获取时间范围右边限
     private String ownTimeRight;
+
+    //旅游券名称模糊查询
+    private String travelNameLike;
 }

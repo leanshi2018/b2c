@@ -87,4 +87,6 @@ public class RdTravelTicket implements GenericEntity {
      */
     @Column(name = "issue_num" )
     private Long issueNum;
+
+    private String travelLikeName;
 }

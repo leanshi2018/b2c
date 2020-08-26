@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -92,5 +89,32 @@ public class RdTravelActivityServiceImpl extends GenericServiceImpl<RdTravelActi
         rdTravelCost.setMoenyYet(BigDecimal.ZERO);
         rdTravelCost.setMoneyResidue(rdTravelCost.getMoenyFill().subtract(rdTravelCost.getMoenyYet()));
         rdTravelCostService.save(rdTravelCost);
+    }
+
+    @Override
+    public Map<String, String> saveOrEdit(RdTravelActivity travelActivity, Long id, String username) {
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("code", "0");
+        String errorMsg = "";
+        resultMap.put("msg", errorMsg);
+        if(travelActivity.getId()==null){
+            Long twiterId = twiterIdService.getTwiterId();
+            travelActivity.setId(twiterId);
+            travelActivity.setActivityCode("T"+twiterIdService.getSessionId());
+            travelActivity.setCreateCode(Long.toString(id));
+            travelActivity.setCreateName(username);
+            travelActivity.setCreateTime(new Date());
+            travelActivity.setNumTuxedo(0);
+            Long flag = rdTravelActivityDao.insert(travelActivity);
+            if(flag==1){
+                resultMap.put("code", "1");
+            }
+        }else {
+            Long flag = rdTravelActivityDao.update(travelActivity);
+            if(flag==1){
+                resultMap.put("code", "1");
+            }
+        }
+        return resultMap;
     }
 }

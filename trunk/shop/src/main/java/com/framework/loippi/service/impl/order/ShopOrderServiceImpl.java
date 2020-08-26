@@ -2248,86 +2248,88 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         order.setDaddressId(0L);
         //收货地址id TODO
             if (address == null) {
-                throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXIT, "收货地址不能为空");
-            }
-        ShopOrderAddress orderAddress = new ShopOrderAddress();
-        orderAddress.setIsDefault(Optional.ofNullable(address.getDefaultadd()).orElse(0).toString());
-            orderAddress.setId(twiterIdService.getTwiterId());
-            orderAddress.setMemberId(Long.parseLong(address.getMmCode()));
-            orderAddress.setTrueName(address.getConsigneeName());
-            orderAddress.setAddress(address.getAddDetial());
-            orderAddress.setMobPhone(address.getMobile());
-            orderAddress
-                    .setAreaInfo(address.getAddProvinceCode() + address.getAddCityCode() + address.getAddCountryCode());
-            if ("".equals(address.getAddCountryCode())){
-                ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCityCode());
-                if (shopCommonArea==null) {
-                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
-                }
-                if (shopCommonArea.getExpressState()==1){//不配送
-                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址暂不配送");
-                }
-                orderAddress.setAreaId(shopCommonArea.getId());
-                orderAddress.setCityId(shopCommonArea.getId());
-                orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
-                orderAddressDao.insert(orderAddress);
-            }else{
-                List<ShopCommonArea> shopCommonAreas = areaService.findByAreaName(address.getAddCountryCode());//区
-                if (CollectionUtils.isEmpty(shopCommonAreas)) {
-                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
-                }
-                if (shopCommonAreas.size()>1){
-                    List<ShopCommonArea> shopCommonCitys = areaService.findByAreaName(address.getAddCityCode());//市
-                    if (shopCommonCitys==null) {
+
+            }else {
+                ShopOrderAddress orderAddress = new ShopOrderAddress();
+                orderAddress.setIsDefault(Optional.ofNullable(address.getDefaultadd()).orElse(0).toString());
+                orderAddress.setId(twiterIdService.getTwiterId());
+                orderAddress.setMemberId(Long.parseLong(address.getMmCode()));
+                orderAddress.setTrueName(address.getConsigneeName());
+                orderAddress.setAddress(address.getAddDetial());
+                orderAddress.setMobPhone(address.getMobile());
+                orderAddress
+                        .setAreaInfo(address.getAddProvinceCode() + address.getAddCityCode() + address.getAddCountryCode());
+                if ("".equals(address.getAddCountryCode())){
+                    ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCityCode());
+                    if (shopCommonArea==null) {
                         throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
                     }
-                    if (shopCommonCitys.size()==1){
-                        ShopCommonArea shopCommonCity = shopCommonCitys.get(0);
-                        orderAddress.setCityId(shopCommonCity.getId());
-                        orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
-                        for (ShopCommonArea shopCommonArea : shopCommonAreas) {
-                            if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
-                                orderAddress.setAreaId(shopCommonArea.getId());
-                                if (shopCommonArea.getExpressState()==1){//不配送
-                                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                    if (shopCommonArea.getExpressState()==1){//不配送
+                        throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址暂不配送");
+                    }
+                    orderAddress.setAreaId(shopCommonArea.getId());
+                    orderAddress.setCityId(shopCommonArea.getId());
+                    orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
+                    orderAddressDao.insert(orderAddress);
+                }else{
+                    List<ShopCommonArea> shopCommonAreas = areaService.findByAreaName(address.getAddCountryCode());//区
+                    if (CollectionUtils.isEmpty(shopCommonAreas)) {
+                        throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                    }
+                    if (shopCommonAreas.size()>1){
+                        List<ShopCommonArea> shopCommonCitys = areaService.findByAreaName(address.getAddCityCode());//市
+                        if (shopCommonCitys==null) {
+                            throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                        }
+                        if (shopCommonCitys.size()==1){
+                            ShopCommonArea shopCommonCity = shopCommonCitys.get(0);
+                            orderAddress.setCityId(shopCommonCity.getId());
+                            orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                            for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                                if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
+                                    orderAddress.setAreaId(shopCommonArea.getId());
+                                    if (shopCommonArea.getExpressState()==1){//不配送
+                                        throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                                    }
                                 }
                             }
-                        }
-                    }else {
-                        ShopCommonArea shopCommonProvice = areaService.find("areaName", address.getAddProvinceCode());//省
-                        for (ShopCommonArea shopCommonCity : shopCommonCitys) {
-                            if (shopCommonCity.getAreaParentId().longValue()==shopCommonProvice.getId().longValue()){
-                                orderAddress.setCityId(shopCommonCity.getId());
-                                orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
-                                for (ShopCommonArea shopCommonArea : shopCommonAreas) {
-                                    if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
-                                        orderAddress.setAreaId(shopCommonArea.getId());
-                                        if (shopCommonArea.getExpressState()==1){//不配送
-                                            throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                        }else {
+                            ShopCommonArea shopCommonProvice = areaService.find("areaName", address.getAddProvinceCode());//省
+                            for (ShopCommonArea shopCommonCity : shopCommonCitys) {
+                                if (shopCommonCity.getAreaParentId().longValue()==shopCommonProvice.getId().longValue()){
+                                    orderAddress.setCityId(shopCommonCity.getId());
+                                    orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                                    for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                                        if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
+                                            orderAddress.setAreaId(shopCommonArea.getId());
+                                            if (shopCommonArea.getExpressState()==1){//不配送
+                                                throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                        orderAddressDao.insert(orderAddress);
+                    }else{
+                        ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
+                        if (shopCommonArea.getExpressState()==1){//不配送
+                            throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                        }
+                        orderAddress.setAreaId(shopCommonArea.getId());
+                        //if ()
+                        orderAddress.setCityId(shopCommonArea.getAreaParentId());
+                        ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
+                        if (shopCommonArea2==null) {
+                            throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                        }
+                        orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
+                        orderAddressDao.insert(orderAddress);
                     }
-                    orderAddressDao.insert(orderAddress);
-                }else{
-                    ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
-                    if (shopCommonArea.getExpressState()==1){//不配送
-                        throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
-                    }
-                    orderAddress.setAreaId(shopCommonArea.getId());
-                    //if ()
-                    orderAddress.setCityId(shopCommonArea.getAreaParentId());
-                    ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
-                    if (shopCommonArea2==null) {
-                        throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
-                    }
-                    orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
-                    orderAddressDao.insert(orderAddress);
                 }
+                order.setAddressId(orderAddress.getId());
             }
-        order.setAddressId(orderAddress.getId());
+
         //支付表id
         order.setPayId(orderPay.getId());
         //订单类型 换购订单
@@ -2369,7 +2371,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setShippingPreferentialFee(preferentialFreightAmount);
         } else {
             //运费
-            order.setShippingFee(BigDecimal.valueOf(0));
+            order.setShippingFee(BigDecimal.valueOf(8));
             //订单运费优惠价格
             order.setShippingPreferentialFee(BigDecimal.valueOf(0));
         }
