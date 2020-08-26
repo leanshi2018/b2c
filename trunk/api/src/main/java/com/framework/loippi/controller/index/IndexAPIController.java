@@ -28,6 +28,7 @@ import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
 import com.framework.loippi.entity.common.RdKeyword;
 import com.framework.loippi.entity.common.ShopHomePicture;
+import com.framework.loippi.entity.common.ShopRecommendationGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.product.ShopGoodsRecommend;
@@ -44,6 +45,8 @@ import com.framework.loippi.service.activity.ShopActivityGoodsService;
 import com.framework.loippi.service.activity.ShopActivityService;
 import com.framework.loippi.service.common.RdKeywordService;
 import com.framework.loippi.service.common.ShopHomePictureService;
+import com.framework.loippi.service.common.ShopProductRecommendationService;
+import com.framework.loippi.service.common.ShopRecommendationGoodsService;
 import com.framework.loippi.service.product.ShopGoodsBrandService;
 import com.framework.loippi.service.product.ShopGoodsClassService;
 import com.framework.loippi.service.product.ShopGoodsRecommendService;
@@ -82,6 +85,10 @@ public class IndexAPIController extends BaseController {
     private ShopHomePictureService shopHomePictureService;
     @Resource
     private RdKeywordService rdKeywordService;
+    @Resource
+    private ShopProductRecommendationService shopProductRecommendationService;
+    @Resource
+    private ShopRecommendationGoodsService shopRecommendationGoodsService;
 
     /**
      * 首页数据（初始化数据）
@@ -165,6 +172,7 @@ public class IndexAPIController extends BaseController {
      * @param minPrice 最低价格
      * @param maxPrice 最大价格
      * @param activityId 活动id
+     * @param rId 推荐页id
      * @param request
      * @return
      */
@@ -178,7 +186,7 @@ public class IndexAPIController extends BaseController {
         @RequestParam(required = false, value = "pageNumber", defaultValue = "1") Integer pageNumber,
         @RequestParam(required = false, value = "orderBy", defaultValue = "1") Integer orderBy,
         String keyword, Long[] categoryIds, Long[] brandIds, BigDecimal minPrice,
-        BigDecimal maxPrice, Long activityId, HttpServletRequest request) {
+        BigDecimal maxPrice, Long activityId,Long rId, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         Pageable pager = new Pageable();
         Map<String, Object> shopGoodsVo = new HashMap<>();
@@ -250,6 +258,19 @@ public class IndexAPIController extends BaseController {
                 shopGoodsVo.put("ids", longList);
             }
         }
+        if (rId != null) {
+            List<ShopRecommendationGoods> shopRecommendationGoodsList = shopRecommendationGoodsService.findList("rId", rId);
+            List<Long> longList = new ArrayList<>();
+            for (int i = 0; i < shopRecommendationGoodsList.size(); i++) {
+                longList.add(shopRecommendationGoodsList.get(i).getGoodsId());
+            }
+            if (longList.size() > 0) {
+                shopGoodsVo.put("ids", longList);
+            } else {
+                longList.add(-1L);
+                shopGoodsVo.put("ids", longList);
+            }
+        }
         //List<ShopGoodsBrand> shopGoodsBrandList = shopGoodsBrandService
         //    .findList(Paramap.create().put("brandRecommend", 0));
         //List<Long> noBrandIds = new ArrayList<>();
@@ -263,8 +284,13 @@ public class IndexAPIController extends BaseController {
         shopGoodsVo.put("showCommentNum",1);
         pager.setParameter(shopGoodsVo);
         Page<ShopGoods> byPage = shopGoodsService.findByPage(pager);// 结果集
-        //填充活动信息
-        List<GoodsListResult> build = shopActivityGoodsService.findAndAddAtiInfo(byPage.getContent(), prefix);
+        //填充活动信息/推荐页信息
+        List<GoodsListResult> build = new ArrayList<>();
+        if (rId!=null){
+            build = GoodsListResult.buildGoodsRecommendListNew(byPage.getContent(), prefix);
+        }else {
+            build = shopActivityGoodsService.findAndAddAtiInfo(byPage.getContent(), prefix);
+        }
         map.put("GoodsList", build);
         return ApiUtils.success(map);
     }

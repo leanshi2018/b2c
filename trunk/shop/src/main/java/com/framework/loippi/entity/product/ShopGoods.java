@@ -354,4 +354,9 @@ public class ShopGoods implements GenericEntity {
     private List<Long> noBrandIds;
     private String noGoodsType;
     private String joinNum;
+
+    private BigDecimal highPrice;
+    private BigDecimal lowPrice;
+    private BigDecimal lowMi;
+    private String noExchange;
 }

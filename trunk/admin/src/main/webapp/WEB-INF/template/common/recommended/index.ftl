@@ -11,15 +11,10 @@
     .th_w{width:8%;}
     .ths{width:16%;}
     .ui-widget-overlay {display: none;}
-    /*.ui-widget-header{*/
-    /*    background: none;border:none;color: #666}*/
-    /*.ui-widget-header .ui-icon {*/
-    /*    background-image: url(images/ui-icons_222222_256x240.png);*/
-    /*}*/
 </style>
 <script type="text/javascript">
     $(function () {
-        $('#shopPMansongSubmit').click(function () {
+        $('#Submit').click(function () {
             $('#formSearch').submit();
             $("#pictureName").val($("#pictureName").val());
         });
@@ -29,12 +24,9 @@
     <div class="page">
         <div class="fixed-bar">
             <div class="item-title">
-                <h3>管理</h3>
+                <h3>商品推荐页管理</h3>
                 <ul class="tab-base">
                     <li><a href="JavaScript:void(0);" class="current"><@spring.message "manage"/></a></li>
-                    <li>
-                        <a href="${base}/admin/shop_activity_common/findPicture.jhtml?pictureId=${id}"><@spring.message "add"/></a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -44,11 +36,11 @@
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
-                    <th class="th_w">轮播图名称</th>
+                    <th class="th_w">推荐页名称</th>
                     <td class="ths"><input type="text" class="text" name="pictureName" id="pictureName" value="${pictureName}" ></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
-                        <a href="javascript:void(0);" id="shopPMansongSubmit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
+                        <a href="javascript:void(0);" id="Submit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
                         <a href="" class="btns "><@spring.message "search.cancel"/></a>
                     </td>
                 </tr>
@@ -61,10 +53,8 @@
                 <thead>
                 <tr class="thead">
                     <th class="w24"><input type="checkbox" id="idsAll" class="checkitem"></th>
-                    <th class="align-center">轮播题名称</th>
-                    <th class="align-center">跳转页面</th>
-                    <th class="align-center">排序</th>
-                    <th class="align-center">是否显示</th>
+                    <th class="align-center">商品推荐页ID</th>
+                    <th class="align-center">商品推荐页名称</th>
                     <th class="align-center"><@spring.message "operation"/></th>
                 </tr>
                 </thead>
