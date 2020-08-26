@@ -27,6 +27,7 @@ import com.framework.loippi.entity.common.ShopRecommendationGoods;
 import com.framework.loippi.entity.product.ShopGoodsClass;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.common.recommendation.RecommendationGoodsResult;
+import com.framework.loippi.result.common.recommendation.RecommendationGoodsResultPage;
 import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.common.ShopHomePictureService;
@@ -477,8 +478,8 @@ public class ActivityCommonController extends GenericController {
         pageable.setParameter(goodsResult);
         pageable.setOrderDirection(Order.Direction.DESC);
         Page serviceGoodsResult = shopRecommendationGoodsService.findGoodsResult(pageable);
-        //model.addAttribute("page",RecommendationGoodsResult.build(serviceGoodsResult));
-        model.addAttribute("page",serviceGoodsResult);
+        model.addAttribute("page", RecommendationGoodsResultPage.build(serviceGoodsResult,shopGoodsClassService.findAll()));
+        //model.addAttribute("page",serviceGoodsResult);
         return "/common/recommended/manage";
     }
 
