@@ -17,7 +17,37 @@
         $('#Submit').click(function () {
             $('#formSearch').submit();
         });
+
     });
+    function toSelectGoodsDialog() {
+        layer.open({
+            type: 2,
+            move: false,
+            shade: [0.3, '#393D49'],//开启遮罩层
+            title: '选择规格',
+            content: ['${base}//admin/shop_activity_common/findShopGoodList.jhtml', 'yes'],
+            area: ['800px', '600px']
+        });
+    }
+
+    function appendInfo(id, name) {
+        var url = "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml";
+        var para = {
+            "rId": id,
+            "jsonMap": $("#typeId").val()
+        };
+        var va = $.ajax({
+            type: "post",
+            url: url,
+            data: para,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $('#formSearch').submit();
+
+            }
+        });
+    }
 </script>
 <@layout.body>
     <div class="page">
@@ -41,6 +71,7 @@
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="Submit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
                         <a href="" class="btns "><@spring.message "search.cancel"/></a>
+                        <a href="javascript:toSelectGoodsDialog()"  class="btns ">添加</a>
                     </td>
                 </tr>
                 </tbody>
@@ -109,7 +140,7 @@
                 }
             })
         }
-        /
+
         $(function () {
             $("#idsAll").click(function () {
                 $('input[name="ids"]').attr("checked", this.checked);

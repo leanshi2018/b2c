@@ -71,8 +71,8 @@
                             ${list.recommendationName}
                         </td>
                         <td>
-                            <a class="change" href="${base}/admin/shop_activity_common/findPicture.jhtml?rId=${list.id}">修 改</a>||
-                            <a id="manage" href="${base}/admin/shop_activity_common/findProductsRecommendationInfo.jhtml?rId=${list.id}">商品管理</a>||
+                            <a class="change" href="${base}/admin/shop_activity_common/findProductsRecommendationInfo.jhtml?rId=${list.id}">修 改</a>||
+                            <a id="manage" href="${base}/admin/shop_activity_common/findRecommendationGoods.jhtml?rId=${list.id}">商品管理</a>||
                             <a href="JavaScript:void(0);" onclick="del('${list.id}');">删 除</a>
                         </td>
                     </tr>
