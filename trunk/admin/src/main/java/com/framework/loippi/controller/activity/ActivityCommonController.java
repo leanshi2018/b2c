@@ -483,9 +483,14 @@ public class ActivityCommonController extends GenericController {
      * @return
      */
     @RequestMapping(value = "/findRecommendationGoods")
-    public String findRecommendationGoods(HttpServletRequest request, Pageable pageable, ModelMap model, @RequestParam(required = false, value = "rId") Long rId) {
+    public String findRecommendationGoods(HttpServletRequest request, Pageable pageable, ModelMap model,
+                                          @RequestParam(required = false, value = "rId") Long rId,
+                                          @RequestParam(required = false, value = "goodsId") Long goodsId,
+                                          @RequestParam(required = false, value = "goodsName") String goodsName) {
         RecommendationGoodsResult goodsResult = new RecommendationGoodsResult();
         goodsResult.setRId(rId);
+        goodsResult.setGoodsId(goodsId);
+        goodsResult.setGoodsName(goodsName);
         pageable.setParameter(goodsResult);
         pageable.setOrderDirection(Order.Direction.DESC);
         Page serviceGoodsResult = shopRecommendationGoodsService.findGoodsResult(pageable);
