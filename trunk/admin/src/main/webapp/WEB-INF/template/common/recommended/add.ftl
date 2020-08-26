@@ -130,14 +130,13 @@
                     dataType: "json",
                     async: false,
                     success: function (data) {
+                        console.log("添加"+ data);
                         if (data.result == 1) {
                             layer.msg("添加成功", {icon: 1, time: 500}, function () {
                                 location.reload();
                             });
                         } else {
-                            layer.msg('添加失败', {icon: 2, time: 1000}, function () {
-                                location.reload();
-                            });
+                            layer.msg(data.message, {icon: 2});
                         }
                     }
                 });
