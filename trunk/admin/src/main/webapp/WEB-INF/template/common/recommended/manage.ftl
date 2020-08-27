@@ -24,22 +24,22 @@
             type: 2,
             move: false,
             shade: [0.3, '#393D49'],//开启遮罩层
-            title: '选择规格',
-            content: ['${base}//admin/shop_activity_common/findShopGoodList.jhtml', 'yes'],
+            title: '选择',
+            content: ['${base}/admin/shop_activity_common/findShopGoodList.jhtml', 'yes'],
             area: ['800px', '600px']
         });
     }
 
-    function appendInfo(id, name) {
-        var url = "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml";
-        var para = {
-            "rId": id,
-            "jsonMap": $("#typeId").val()
-        };
+    function appendInfo(id, gcId) {
+        // var data=[];
+        // data={id:id}
         var va = $.ajax({
             type: "post",
-            url: url,
-            data: para,
+            url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",
+            data: {
+                "rId": gcId,
+                "jsonMap":JSON.stringify(data)
+            },
             dataType: "json",
             async: false,
             success: function (data) {

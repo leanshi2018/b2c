@@ -47,13 +47,13 @@
                 <tr>
                     <td colspan="3" class="required" style="background: #eee">基本信息</td>
                 </tr>
-                <input type="hidden" name="id" value="${picture.id}" />
+                <input type="hidden" name="id" value="${id}" />
                 <tr class="noborder">
                     <td class="required">
                         <em class="pngFix"></em>名称
                     </td>
                     <td>
-                        <input name="recommendationName" id="Name" type="text" value="${picture.recommendationName}" class="w200"/>
+                        <input name="recommendationName" id="Name" type="text" value="${recommendationName}" class="w200"/>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -64,9 +64,9 @@
                     <td>
                         <p>
                             <span class="sign">
-                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
+                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${pictureUrl}"/>
                                  <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
-                            <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
+                            <img src="${pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
                               </span>
                         </p>
                         <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
@@ -129,15 +129,11 @@
                     data:param,
                     dataType: "json",
                     async: false,
-                    success: function (data) {
-                        console.log("添加"+ data);
-                        if (data.result == 1) {
-                            layer.msg("添加成功", {icon: 1, time: 500}, function () {
-                                location.reload();
-                            });
-                        } else {
-                            layer.msg(data.message, {icon: 2});
-                        }
+                    success : function(data) {		      //请求成功的回调函数
+                        alert("添加成功")
+                    },
+                    error : function(e) {		      //请求失败的回调函数
+                        alert("添加失败")
                     }
                 });
             })

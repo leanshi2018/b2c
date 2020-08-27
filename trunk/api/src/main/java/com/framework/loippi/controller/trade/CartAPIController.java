@@ -783,10 +783,10 @@ public class CartAPIController extends BaseController {
         pager.setPageSize(10);
         pager.setPageNumber(1);
         GoodsStatisticsVo goodsStatisticsVo = new GoodsStatisticsVo();
-        /*Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE,-1);
-        Date time = calendar.getTime();*/
-        Date time = new Date();
+        Date time = calendar.getTime();
+        //Date time = new Date();
         SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd");
         String str = format.format(time);
         goodsStatisticsVo.setStartTime(str+" 00:00:00");

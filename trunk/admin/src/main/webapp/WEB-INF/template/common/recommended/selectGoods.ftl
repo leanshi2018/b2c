@@ -19,24 +19,21 @@
             <form method="POST" name="formSearch" id="formSearch"
                   action="${base}/admin/shop_activity_common/findShopGoodList.jhtml">
                 <input type="hidden" name="pageable" value="${1}">
-                <input type="hidden" name="id" value="${id}"/>
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
-                        <td>
-<#--                            <form method="post" action="${base}/admin/shop_activity_common/findShopGoodClassList.jhtml">-->
-<#--                                <select>-->
-<#--                                    <#if stringList??>-->
-<#--                                        <#list stringList as stringList >-->
-<#--                                            <option value="${stringList.id}">${stringList.ruleTitle}</option>-->
-<#--                                        </#list>-->
-<#--                                    </#if>-->
-<#--                                </select>-->
-<#--                            </form>-->
-                            <input name="couponName" type="text" value="${couponName}" placeholder="请输入商品名称"/>
+                       <td>
+                            <select class="select">
+                                <#list goodsClass as list>
+                                    <option name="Id" value="${list.id}">${list.gcName}</option>
+                                </#list>
+                            </select>
+                            <input name="goodsName" type="text" value="${goodsName}" placeholder="请输入商品名称"/>
                             <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
                             </a>
-                        </td>
+                            <a href="javascript:selectgoodsbtn()"  class="btns ">确定</a>
+                       </td>
+
                     </tr>
                     </tbody>
                 </table>
@@ -62,13 +59,13 @@
                             ${list.goodsName}
                         </td>
                         <td class="w100 tc">
-                            <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpecGoods('${list.id}','${list.goodsName}')">选择</a>
+                            <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5" onclick="selSpecGoods('${list.id}','${list.gcId}')">选择</a>
                         </td>
                     </tr>
                 </#list>
                 </tbody>
                 <tfoot>
+
                 <tr>
                     <td colspan="20">
                         <@layout.pager pager/>
@@ -80,9 +77,22 @@
         </div>
     </div>
     <script>
-        function selSpecGoods(id, goodsName) {
+        function selectgoodsbtn() {
+            var items = $("input[name='ids']:checked").length;
+            if (items == 0) {
+                alert("请至少选择一个商品!");
+            } else {
+                //
+                var jsonMap=""
+                for(var i=0;i<items.length;i++){
+                    jsonMap+="{\"id\":\""+items[i].id+"\"}";
+                }
+                console.log(jsonMap);
+            }
+        }
+        function selSpecGoods(id, gcId) {
             //调用父级窗口
-            parent.appendInfo(id, goodsName);
+            parent.appendInfo(id, gcId);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

@@ -515,6 +515,15 @@ public class ActivityCommonController extends GenericController {
         pageable.setOrderProperty("create_time");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopGoodsService.findByPage(pageable));
+		List<ShopGoodsClass> all = shopGoodsClassService.findAll();
+		Map<String,Object> gcNameMap = new HashMap<String,Object>();
+		if (all.size()>0){
+			for (ShopGoodsClass goodsClass : all) {
+				gcNameMap.put("id",goodsClass.getId());
+				gcNameMap.put("gcName",goodsClass.getGcName());
+			}
+		}
+		model.addAttribute("goodsClass", gcNameMap);
         return "/common/recommended/selectGoods";
     }
 
@@ -525,15 +534,20 @@ public class ActivityCommonController extends GenericController {
      * @return
      */
     @RequestMapping(value = "/findShopGoodClassList")
-    public Map<Long,String> findShopGoodClassList(HttpServletRequest request,  ModelMap model){;
+    public String findShopGoodClassList(HttpServletRequest request,  ModelMap model){
+        System.out.println("进来了");
         List<ShopGoodsClass> all = shopGoodsClassService.findAll();
-        Map<Long,String> gcNameMap = new HashMap<Long,String>();
+        Map<String,String> gcNameMap = new HashMap<String,String>();
         if (all.size()>0){
             for (ShopGoodsClass goodsClass : all) {
-                gcNameMap.put(goodsClass.getId(),goodsClass.getGcName());
+                gcNameMap.put(goodsClass.getId().toString(),goodsClass.getGcName());
             }
         }
-        return gcNameMap;
+        System.out.println("***************************");
+        System.out.println("gcn="+gcNameMap);
+        System.out.println("***************************");
+        model.addAttribute("goodsClass", gcNameMap);
+        return "/common/recommended/selectGoods";
     }
 
     /**
@@ -554,6 +568,7 @@ public class ActivityCommonController extends GenericController {
             return Constants.MSG_URL;
         }
 
+		System.out.println("json="+jsonMap);
         JSONArray array = JSON.parseArray(jsonMap);
         if (array.size()==0){
             model.addAttribute("msg", "请选择商品添加");
