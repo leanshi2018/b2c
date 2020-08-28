@@ -98,7 +98,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list page.content as list>
+                <#list page.goodsResultList as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
@@ -108,7 +108,7 @@
                             ${list.goodsName}
                         </td>
                         <td>
-
+                            ${list.gcName}
                         </td>
                         <td>
                             <a href="JavaScript:void(0);" onclick="del('${list.id}');">删 除</a>
@@ -131,7 +131,7 @@
         <#-- 删除推荐页-->
         function del(id) {
             $("#editdetaildiv" ).dialog({
-                title: '确定删除选中推荐页？',
+                title: '确定删除选中？',
                 height: 170,
                 width: 250,
                 modal: true,
