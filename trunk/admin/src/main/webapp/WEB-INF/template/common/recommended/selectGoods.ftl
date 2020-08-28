@@ -45,7 +45,7 @@
                     <th>&nbsp;</th>
                     <th><b>分类Id</b></th>
                     <th><b>商品名称</b></th>
-                    <th><b>操作</b></th>
+<#--                    <th><b>操作</b></th>-->
                 </tr>
                 </thead>
                 <tbody>
@@ -58,9 +58,9 @@
                         <td style="text-align: left">
                             ${list.goodsName}
                         </td>
-                        <td class="w100 tc">
-                            <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5" onclick="selSpecGoods('${list.id}','${list.gcId}')">选择</a>
-                        </td>
+<#--                        <td class="w100 tc">-->
+<#--                            <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5" onclick="selSpecGoods('${list.id}')">选择</a>-->
+<#--                        </td>-->
                     </tr>
                 </#list>
                 </tbody>
@@ -78,21 +78,26 @@
     </div>
     <script>
         function selectgoodsbtn() {
-            var items = $("input[name='ids']:checked").length;
-            if (items == 0) {
+            var items = $("input[name='ids']:checked");
+            if (items.length == 0) {
                 alert("请至少选择一个商品!");
             } else {
-                //
-                var jsonMap=""
+                var jsonMap=[];
                 for(var i=0;i<items.length;i++){
-                    jsonMap+="{\"id\":\""+items[i].id+"\"}";
+                    var id=items[i].value;
+                    var map={id};
+                    jsonMap.push(map);
+                    // jsonMap+="{\"id\":\""+items[i].value+"\"},";
                 }
+
+                // jsonMap = jsonMap.substring(0, jsonMap.length - 1);
                 console.log(jsonMap);
+                parent.appendInfo(jsonMap);
             }
         }
-        function selSpecGoods(id, gcId) {
+        function selSpecGoods(id) {
             //调用父级窗口
-            parent.appendInfo(id, gcId);
+            parent.appendInfo(id);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

@@ -29,22 +29,29 @@
             area: ['800px', '600px']
         });
     }
-
-    function appendInfo(id, gcId) {
-        // var data=[];
-        // data={id:id}
-        var va = $.ajax({
+    setTimeout(function(){
+        console.log($("#rId").val());
+        localStorage.setItem('rId', $("#rId").val());
+    },1000)
+    function appendInfo(id) {
+        // var data={id:id}
+        console.log(id);
+        $.ajax({
             type: "post",
             url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",
             data: {
-                "rId": gcId,
-                "jsonMap":JSON.stringify(data)
+                "rId":localStorage.getItem('rId'),
+                "jsonMap":JSON.stringify(id)
             },
             dataType: "json",
             async: false,
             success: function (data) {
-                $('#formSearch').submit();
-
+                console.log(data);
+                if(data.result=='1'){
+                    $('#formSearch').submit();
+                }else{
+                    alert("添加失败");
+                }
             }
         });
     }
@@ -62,6 +69,7 @@
         <div class="fixed-empty"></div>
         <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findRecommendationGoods.jhtml">
             <input type="hidden" name="pageable" value="${1}">
+            <input type="hidden"  value="${RequestParameters["rId"]}" id="rId">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
