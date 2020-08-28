@@ -1,5 +1,7 @@
 package com.framework.loippi.dao.common;
 
+import java.util.List;
+
 import com.framework.loippi.entity.common.ShopRecommendationGoods;
 import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.mybatis.paginator.domain.PageBounds;
@@ -15,4 +17,6 @@ public interface ShopRecommendationGoodsDao extends GenericDao<ShopRecommendatio
 	void delByRId(Long rId);
 
 	PageList<RecommendationGoodsResult> findGoodsResult(Object parameter, PageBounds pageBounds);
+
+	List<ShopRecommendationGoods> findByRId(Long rId);
 }

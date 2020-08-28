@@ -1,5 +1,7 @@
 package com.framework.loippi.service.common;
 
+import java.util.List;
+
 import com.framework.loippi.entity.common.ShopRecommendationGoods;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
@@ -15,4 +17,5 @@ public interface ShopRecommendationGoodsService extends GenericService<ShopRecom
 
 	Page findGoodsResult(Pageable pageable);
 
+	List<ShopRecommendationGoods> findByRId(Long rId);
 }
