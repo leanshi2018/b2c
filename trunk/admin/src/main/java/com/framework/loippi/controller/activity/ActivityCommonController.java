@@ -567,6 +567,8 @@ public class ActivityCommonController extends GenericController {
             model.addAttribute("msg", "找不到该推荐页");
             return Constants.MSG_URL;
         }
+        List<ShopRecommendationGoods> goodsList = shopRecommendationGoodsService.findByRId(rId);
+
 
 		System.out.println("json="+jsonMap);
         JSONArray array = JSON.parseArray(jsonMap);
@@ -588,7 +590,15 @@ public class ActivityCommonController extends GenericController {
                 System.out.println("id="+ goodsId);
                 recommendationGoods.setGoodsId(goodsId);
             }
-            shopRecommendationGoodsService.save(recommendationGoods);
+            int flag = 0;
+            for (ShopRecommendationGoods goods : goodsList) {
+                if (goods.getGoodsId().toString().equals(goodsId.toString())){
+                    flag=1;
+                }
+            }
+            if (flag==0){
+                shopRecommendationGoodsService.save(recommendationGoods);
+            }
         }
         return "redirect:findShopGoodList.jhtml?rId="+rId;
     }
