@@ -427,6 +427,18 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
+     * 选择推荐页列表
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/findProductsRecommendationList")
+    public String selectProductsRecommendationList(HttpServletRequest request, ModelMap model) {
+        model.addAttribute("page", shopProductRecommendationService.findAll());
+        return "/common/select/selectRecomend";
+    }
+
+    /**
      * 商品推荐页管理详情
      * @param request
      * @param model
