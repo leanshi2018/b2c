@@ -48,6 +48,7 @@
             success: function (data) {
                 console.log(data);
                 if(data.result=='1'){
+                    alert("添加成功");
                     $('#formSearch').submit();
                 }else{
                     alert("添加失败");

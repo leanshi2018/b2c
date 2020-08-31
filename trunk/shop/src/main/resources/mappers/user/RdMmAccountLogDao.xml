@@ -37,15 +37,20 @@
 		<result property="presentationFeeNow" column="PRESENTATION_FEE_NOW" />
 		<result property="actualWithdrawals" column="ACTUAL_WITHDRAWALS" />
 		<result property="backWithdrawals" column="BACK_WITHDRAWALS" />
+		<result property="invoiceImage" column="invoice_image" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 TRANS_NUMBER ,BATCH_NUMBER ,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,ACC_STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC ,PRESENTATION_FEE_NOW,ACTUAL_WITHDRAWALS,BACK_WITHDRAWALS
+		 TRANS_NUMBER ,BATCH_NUMBER ,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,
+		 BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,ACC_STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,
+		 CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC ,PRESENTATION_FEE_NOW,ACTUAL_WITHDRAWALS,BACK_WITHDRAWALS,invoice_image
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{transNumber},#{batchNumber},#{mmCode},#{mmNickName},#{transTypeCode},#{accType},#{trSourceType},#{trMmCode},#{trBankOid},#{trOrderOid},#{currencyCode},#{blanceBefore},#{amount},#{blanceAfter},#{transDate},#{transPeriod},#{transDesc},#{status},#{accStatus},#{washedYn},#{orignTransNumber},#{creationBy},#{creationTime},#{updateBy},#{updateTime},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{presentationFeeNow},#{actualWithdrawals},#{backWithdrawals}
+		 #{transNumber},#{batchNumber},#{mmCode},#{mmNickName},#{transTypeCode},#{accType},#{trSourceType},#{trMmCode},#{trBankOid},#{trOrderOid},#{currencyCode},
+		 #{blanceBefore},#{amount},#{blanceAfter},#{transDate},#{transPeriod},#{transDesc},#{status},#{accStatus},#{washedYn},#{orignTransNumber},#{creationBy},
+		 #{creationTime},#{updateBy},#{updateTime},#{autohrizeBy},#{autohrizeTime},#{autohrizeDesc},#{presentationFeeNow},#{actualWithdrawals},#{backWithdrawals},#{invoiceImage}
 	</sql>
 	<sql id="base_list_column">
 		TRANS_NUMBER,MM_CODE ,MM_NICK_NAME ,TRANS_TYPE_CODE ,ACC_TYPE ,TR_SOURCE_TYPE ,TR_MM_CODE ,TR_BANK_OID ,TR_ORDER_OID ,CURRENCY_CODE ,BLANCE_BEFORE ,AMOUNT ,BLANCE_AFTER ,TRANS_DATE ,TRANS_PERIOD ,TRANS_DESC ,STATUS ,WASHED_YN ,ORIGN_TRANS_NUMBER ,CREATION_BY ,CREATION_TIME ,UPDATE_BY ,UPDATE_TIME ,AUTOHRIZE_BY ,AUTOHRIZE_TIME ,AUTOHRIZE_DESC
@@ -140,6 +145,9 @@
 		</if>
 		<if test="autohrizeDesc != null and autohrizeDesc != ''">
 			AND AUTOHRIZE_DESC = #{autohrizeDesc,jdbcType=VARCHAR}
+		</if>
+		<if test="invoiceImage != null and invoiceImage != ''">
+			AND invoice_image = #{invoiceImage,jdbcType=VARCHAR}
 		</if>
 		<if test="presentationFeeNow != null and presentationFeeNow != ''">
 			AND PRESENTATION_FEE_NOW = #{presentationFeeNow}
@@ -258,6 +266,9 @@
 		</if>
 		<if test="backWithdrawals != null">
 			BACK_WITHDRAWALS = #{backWithdrawals},
+		</if>
+		<if test="invoiceImage != null and invoiceImage != ''">
+			 invoice_image = #{invoiceImage,jdbcType=VARCHAR},
 		</if>
 	</sql>
 
