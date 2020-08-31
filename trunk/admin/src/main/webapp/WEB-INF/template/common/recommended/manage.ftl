@@ -29,22 +29,29 @@
             area: ['800px', '600px']
         });
     }
-
-    function appendInfo(id, gcId) {
-        // var data=[];
-        // data={id:id}
-        var va = $.ajax({
+    setTimeout(function(){
+        console.log($("#rId").val());
+        localStorage.setItem('rId', $("#rId").val());
+    },1000)
+    function appendInfo(id) {
+        // var data={id:id}
+        console.log(id);
+        $.ajax({
             type: "post",
             url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",
             data: {
-                "rId": gcId,
-                "jsonMap":JSON.stringify(data)
+                "rId":localStorage.getItem('rId'),
+                "jsonMap":JSON.stringify(id)
             },
             dataType: "json",
             async: false,
             success: function (data) {
-                $('#formSearch').submit();
-
+                console.log(data);
+                if(data.result=='1'){
+                    $('#formSearch').submit();
+                }else{
+                    alert("添加失败");
+                }
             }
         });
     }
@@ -62,6 +69,7 @@
         <div class="fixed-empty"></div>
         <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findRecommendationGoods.jhtml">
             <input type="hidden" name="pageable" value="${1}">
+            <input type="hidden"  value="${RequestParameters["rId"]}" id="rId">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
@@ -90,7 +98,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list page.content as list>
+                <#list page.goodsResultList as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
@@ -100,7 +108,7 @@
                             ${list.goodsName}
                         </td>
                         <td>
-
+                            ${list.gcName}
                         </td>
                         <td>
                             <a href="JavaScript:void(0);" onclick="del('${list.id}');">删 除</a>
@@ -123,7 +131,7 @@
         <#-- 删除推荐页-->
         function del(id) {
             $("#editdetaildiv" ).dialog({
-                title: '确定删除选中推荐页？',
+                title: '确定删除选中？',
                 height: 170,
                 width: 250,
                 modal: true,

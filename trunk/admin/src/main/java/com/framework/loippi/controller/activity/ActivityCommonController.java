@@ -612,7 +612,9 @@ public class ActivityCommonController extends GenericController {
                 shopRecommendationGoodsService.save(recommendationGoods);
             }
         }
-        return "redirect:findShopGoodList.jhtml?rId="+rId;
+        model.addAttribute("msg", "添加商品成功");
+        return Constants.MSG_URL;
+        //return "redirect:findRecommendationGoods.jhtml?rId="+rId;
     }
 
     /**
@@ -631,8 +633,9 @@ public class ActivityCommonController extends GenericController {
         ShopRecommendationGoods goods = shopRecommendationGoodsService.find(id);
         Long rId = goods.getRId();
         shopRecommendationGoodsService.delete(id);
-
-        return "redirect:findShopGoodList.jhtml?rId="+rId;
+        model.addAttribute("msg", "删除商品成功");
+        return Constants.MSG_URL;
+        //return "redirect:findRecommendationGoods.jhtml?rId="+rId;
     }
 
 }
