@@ -16,8 +16,8 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/jpush/findActivityings.jhtml">
-<#--                <input type="hidden" name="pageNo" value="${1}">-->
+            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findProductsRecommendationList.jhtml">
+                <#--                <input type="hidden" name="pageNo" value="${1}">-->
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
@@ -35,8 +35,8 @@
                 <thead>
                 <tr>
                     <th>&nbsp;</th>
-                    <th><b>活动ID</b></th>
-                    <th><b>活动名称</b></th>
+                    <th><b>推荐页ID</b></th>
+                    <th><b>推荐页名称</b></th>
                     <th><b>操作</b></th>
                 </tr>
                 </thead>
@@ -48,30 +48,24 @@
                             ${activity.id}
                         </td>
                         <td style="text-align: left">
-                            ${activity.name}
+                            ${activity.recommendationName}
                         </td>
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpeccoupons('${activity.id}','${activity.name}','${activity.info}')">选择</a>
+                               onclick="selSpeccoupons('${activity.id}','${activity.recommendationName}')">选择</a>
                         </td>
                     </tr>
                 </#list>
                 </tbody>
-                <tfoot>
-                <tr>
-<#--                    <td colspan="20">-->
-<#--                        <@layout.pager pager/>-->
-<#--                    </td>-->
-                </tr>
-                </tfoot>
             </table>
         </div>
     </div>
     <script>
-        function selSpeccoupons(id,name,info) {
+
+        function selSpeccoupons(id,name) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendWareInfo(id,name,info);
+            parent.appendGoodsAll(id,name);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

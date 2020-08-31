@@ -18,7 +18,7 @@
         width: 100px;
         text-align: center;
     }
-    #articleTitle,#activityname,#goodsName,#couponName{display: none;width: 209px;}
+    #articleTitle,#activityname,#goodsName,#couponName,#recommendationName{display: none;width: 209px;}
 </style>
 <@layout.body>
     <script type="text/javascript" src="${base}/res/js/jquery.js"></script>
@@ -160,6 +160,9 @@
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
                                     <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
                                     <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>
+                                    <#-- 选择推荐页 -->
+                                    <input name="recommendationName" type="text" id="recommendationName" value="${recommendationName}"/>
+                                    <input name="id" id="rId" type="hidden" value="${id}"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -168,7 +171,7 @@
                                     </form>
                                     <#--选择优惠券-->
                                     <input type="hidden" id="couponId" name="couponId" value="${id}">
-                                    <#--                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
+                                    <#--<input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
                                     <input name="couponName" id="couponName" type="text" value="${couponName}">
                                     <#--映射的名字-->
                                     <input name="openName" id="openName"class="w150" type="hidden" value=""/>
@@ -179,6 +182,7 @@
                                     <#--搜索优惠券-->
                                     <a class="btn-search" id="searchbuys" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="buyCouponspage()"></a>
                                     <a class="btn-search" id="searchactivity" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="activityGoodsListpage()"></a>
+                                    <a class="btn-search" id="searchrecommend" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="recommendpage()"></a>
                                     <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>
                                 </div>
                             </div>
@@ -312,17 +316,19 @@
                                     <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}"style="height:23px;display:none;"/>
                                     <#--搜索商品的按鈕-->
                                     <a class="btn-search" id="searchgoods" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="goodsdetailspage()"></a>
+                                    <#-- 选择推荐页 -->
+                                    <input name="recommendationName" type="text" id="recommendationName" value="${recommendationName}"/>
+                                    <input name="id" id="rId" type="hidden" value="${id}"/>
                                     <#--搜索优惠券-->
                                     <a class="btn-search" id="searchbuys" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="buyCouponspage()"></a>
                                     <a class="btn-search" id="searchactivity" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="activityGoodsListpage()"></a>
+                                    <a class="btn-search" id="searchrecommend" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="recommendpage()"></a>
                                     <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>
                                 </div>
                             </div>
                         </td>
                     </tr>
                 </#if>
-
-
                 </tbody>
                 <tfoot>
                 <tr>
@@ -431,11 +437,11 @@
             }
             if(value=="recommendGoodspage"){
                 $("#openName").val("推荐页面");
-                $("#recommendGoods").show();
-                $("#searchrecommendGoods").css("display","");
+                $("#recommendationName").show();
+                $("#searchrecommend").css("display","");
             }else{
-                $("#recommendGoods").css("display","none");
-                $("#searchrecommendGoods").css("display","none");
+                $("#recommendationName").css("display","none");
+                $("#searchrecommend").css("display","none");
             }
             if(value=="homepage"){
                 $("#openName").val("辑");
@@ -526,6 +532,24 @@
             var title=$("#articleTitle").val();
             // console.log(articleContent);
             $("#jsons").val("{\"url\":\"" + articleContent + "\",\"title\":\"" + title + "\"}");
+
+        }
+        /*选择推荐页*/
+        function recommendpage() {
+            layer.open({
+                type: 2,
+                move: false,
+                shade: [0.3, '#393D49'],//开启遮罩层
+                title: '选择推荐页',
+                content: ['${base}/admin/shop_activity_common/findProductsRecommendationList.jhtml', 'yes'],
+                area: ['800px', '600px']
+            })
+        }
+        function appendGoodsAll(id,name) {
+            $("#recommendationName").val(name);
+            $("#rId").val(id);
+            var rId=$("#rId").val();
+            $("#jsons").val("{\"rId\":\"" + rId + "\"}");
 
         }
         /*选择活动*/

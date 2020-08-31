@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.framework.loippi.dao.common.ShopRecommendationGoodsDao;
 import com.framework.loippi.entity.common.ShopRecommendationGoods;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
-import com.framework.loippi.result.common.coupon.CouponUserLogResult;
 import com.framework.loippi.result.common.recommendation.RecommendationGoodsResult;
 import com.framework.loippi.service.common.ShopRecommendationGoodsService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
@@ -39,5 +38,10 @@ public class ShopRecommendationGoodsServiceImpl extends GenericServiceImpl<ShopR
 	public Page findGoodsResult(Pageable pageable) {
 		PageList<RecommendationGoodsResult> result = shopRecommendationGoodsDao.findGoodsResult(pageable.getParameter(), pageable.getPageBounds());
 		return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
+	}
+
+	@Override
+	public List<ShopRecommendationGoods> findByRId(Long rId) {
+		return shopRecommendationGoodsDao.findByRId(rId);
 	}
 }

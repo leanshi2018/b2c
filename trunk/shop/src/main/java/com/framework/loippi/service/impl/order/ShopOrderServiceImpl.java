@@ -2247,8 +2247,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         // 发货地址id,暂时写死
         order.setDaddressId(0L);
         //收货地址id TODO
-            if (address == null) {
-
+            if (address .getAid()==-1) {
+                order.setAddressId(-1L);
             }else {
                 ShopOrderAddress orderAddress = new ShopOrderAddress();
                 orderAddress.setIsDefault(Optional.ofNullable(address.getDefaultadd()).orElse(0).toString());
@@ -2360,7 +2360,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         order.setGoodsAmount(goodsSpec.getSpecRetailPrice().multiply(BigDecimal.valueOf(count)));
 
         //运费计算
-        if (address != null) {
+        if (address.getAid()!= -1) {
             //运费
             BigDecimal freightAmount = shopGoodsFreightService.CalculateFreight(address.getAddProvinceCode(), goodsSpec.getWeight()*count);
             //运费优惠

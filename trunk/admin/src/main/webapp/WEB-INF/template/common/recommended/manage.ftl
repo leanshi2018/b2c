@@ -17,7 +17,45 @@
         $('#Submit').click(function () {
             $('#formSearch').submit();
         });
+
     });
+    function toSelectGoodsDialog() {
+        layer.open({
+            type: 2,
+            move: false,
+            shade: [0.3, '#393D49'],//开启遮罩层
+            title: '选择',
+            content: ['${base}/admin/shop_activity_common/findShopGoodList.jhtml', 'yes'],
+            area: ['800px', '600px']
+        });
+    }
+    setTimeout(function(){
+        console.log($("#rId").val());
+        localStorage.setItem('rId', $("#rId").val());
+    },1000)
+    function appendInfo(id) {
+        // var data={id:id}
+        console.log(id);
+        $.ajax({
+            type: "post",
+            url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",
+            data: {
+                "rId":localStorage.getItem('rId'),
+                "jsonMap":JSON.stringify(id)
+            },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                console.log(data);
+                if(data.result=='1'){
+                    alert("添加成功");
+                    $('#formSearch').submit();
+                }else{
+                    alert("添加失败");
+                }
+            }
+        });
+    }
 </script>
 <@layout.body>
     <div class="page">
@@ -32,6 +70,7 @@
         <div class="fixed-empty"></div>
         <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findRecommendationGoods.jhtml">
             <input type="hidden" name="pageable" value="${1}">
+            <input type="hidden"  value="${RequestParameters["rId"]}" id="rId">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
@@ -41,6 +80,7 @@
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="Submit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
                         <a href="" class="btns "><@spring.message "search.cancel"/></a>
+                        <a href="javascript:toSelectGoodsDialog()"  class="btns ">添加</a>
                     </td>
                 </tr>
                 </tbody>
@@ -59,7 +99,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list page.content as list>
+                <#list page.goodsResultList as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
@@ -69,7 +109,7 @@
                             ${list.goodsName}
                         </td>
                         <td>
-
+                            ${list.gcName}
                         </td>
                         <td>
                             <a href="JavaScript:void(0);" onclick="del('${list.id}');">删 除</a>
@@ -92,7 +132,7 @@
         <#-- 删除推荐页-->
         function del(id) {
             $("#editdetaildiv" ).dialog({
-                title: '确定删除选中推荐页？',
+                title: '确定删除选中？',
                 height: 170,
                 width: 250,
                 modal: true,
@@ -109,7 +149,7 @@
                 }
             })
         }
-        /
+
         $(function () {
             $("#idsAll").click(function () {
                 $('input[name="ids"]').attr("checked", this.checked);

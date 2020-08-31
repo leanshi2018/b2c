@@ -129,15 +129,11 @@
                     data:shopProductsRecommendation,
                     dataType: "json",
                     async: false,
-                    success: function (data) {
-                        console.log("添加"+ data);
-                        if (data.result == 1) {
-                            layer.msg("添加成功", {icon: 1, time: 500}, function () {
-                                location.reload();
-                            });
-                        } else {
-                            layer.msg(data.message, {icon: 2});
-                        }
+                    success : function() {		      //请求成功的回调函数
+                        alert("添加成功")
+                    },
+                    error : function(e) {		      //请求失败的回调函数
+                        alert("添加失败")
                     }
                 });
             })

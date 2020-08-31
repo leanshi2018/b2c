@@ -150,5 +150,11 @@
         </if>
     </select>
 
+    <select id="findByRId" parameterType="java.lang.Long" resultMap="ShopRecommendationGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM shop_recommendation_goods
+        WHERE r_id = #{rId}
+    </select>
 
 </mapper>

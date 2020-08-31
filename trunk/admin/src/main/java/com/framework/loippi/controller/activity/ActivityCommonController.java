@@ -427,6 +427,18 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
+     * 选择推荐页列表
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/selectProductsRecommendationList")
+    public String selectProductsRecommendationList(HttpServletRequest request, ModelMap model) {
+        model.addAttribute("page", shopProductRecommendationService.findAll());
+        return "/common/select/selectRecomend";
+    }
+
+    /**
      * 商品推荐页管理详情
      * @param request
      * @param model
@@ -515,6 +527,15 @@ public class ActivityCommonController extends GenericController {
         pageable.setOrderProperty("create_time");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopGoodsService.findByPage(pageable));
+		List<ShopGoodsClass> all = shopGoodsClassService.findAll();
+		Map<String,Object> gcNameMap = new HashMap<String,Object>();
+		if (all.size()>0){
+			for (ShopGoodsClass goodsClass : all) {
+				gcNameMap.put("id",goodsClass.getId());
+				gcNameMap.put("gcName",goodsClass.getGcName());
+			}
+		}
+		model.addAttribute("goodsClass", gcNameMap);
         return "/common/recommended/selectGoods";
     }
 
@@ -525,15 +546,20 @@ public class ActivityCommonController extends GenericController {
      * @return
      */
     @RequestMapping(value = "/findShopGoodClassList")
-    public Map<Long,String> findShopGoodClassList(HttpServletRequest request,  ModelMap model){;
+    public String findShopGoodClassList(HttpServletRequest request,  ModelMap model){
+        System.out.println("进来了");
         List<ShopGoodsClass> all = shopGoodsClassService.findAll();
-        Map<Long,String> gcNameMap = new HashMap<Long,String>();
+        Map<String,String> gcNameMap = new HashMap<String,String>();
         if (all.size()>0){
             for (ShopGoodsClass goodsClass : all) {
-                gcNameMap.put(goodsClass.getId(),goodsClass.getGcName());
+                gcNameMap.put(goodsClass.getId().toString(),goodsClass.getGcName());
             }
         }
-        return gcNameMap;
+        System.out.println("***************************");
+        System.out.println("gcn="+gcNameMap);
+        System.out.println("***************************");
+        model.addAttribute("goodsClass", gcNameMap);
+        return "/common/recommended/selectGoods";
     }
 
     /**
@@ -553,7 +579,10 @@ public class ActivityCommonController extends GenericController {
             model.addAttribute("msg", "找不到该推荐页");
             return Constants.MSG_URL;
         }
+        List<ShopRecommendationGoods> goodsList = shopRecommendationGoodsService.findByRId(rId);
 
+
+		System.out.println("json="+jsonMap);
         JSONArray array = JSON.parseArray(jsonMap);
         if (array.size()==0){
             model.addAttribute("msg", "请选择商品添加");
@@ -573,9 +602,19 @@ public class ActivityCommonController extends GenericController {
                 System.out.println("id="+ goodsId);
                 recommendationGoods.setGoodsId(goodsId);
             }
-            shopRecommendationGoodsService.save(recommendationGoods);
+            int flag = 0;
+            for (ShopRecommendationGoods goods : goodsList) {
+                if (goods.getGoodsId().toString().equals(goodsId.toString())){
+                    flag=1;
+                }
+            }
+            if (flag==0){
+                shopRecommendationGoodsService.save(recommendationGoods);
+            }
         }
-        return "redirect:findShopGoodList.jhtml?rId="+rId;
+        model.addAttribute("msg", "添加商品成功");
+        return Constants.MSG_URL;
+        //return "redirect:findRecommendationGoods.jhtml?rId="+rId;
     }
 
     /**
@@ -594,8 +633,9 @@ public class ActivityCommonController extends GenericController {
         ShopRecommendationGoods goods = shopRecommendationGoodsService.find(id);
         Long rId = goods.getRId();
         shopRecommendationGoodsService.delete(id);
-
-        return "redirect:findShopGoodList.jhtml?rId="+rId;
+        model.addAttribute("msg", "删除商品成功");
+        return Constants.MSG_URL;
+        //return "redirect:findRecommendationGoods.jhtml?rId="+rId;
     }
 
 }
