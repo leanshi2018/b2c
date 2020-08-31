@@ -432,7 +432,7 @@ public class ActivityCommonController extends GenericController {
      * @param model
      * @return
      */
-    @RequestMapping(value = "/findProductsRecommendationList")
+    @RequestMapping(value = "/selectProductsRecommendationList")
     public String selectProductsRecommendationList(HttpServletRequest request, ModelMap model) {
         model.addAttribute("page", shopProductRecommendationService.findAll());
         return "/common/select/selectRecomend";

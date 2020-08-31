@@ -435,7 +435,21 @@ public class SelfMentionController extends BaseController {
             wareGoodsVo.setInventory(Optional.ofNullable(inventoryWarning.getInventory()).orElse(0));
             String ware = inventoryWarning.getWareCode();
             Long specId = inventoryWarning.getSpecificationId();
-            list.add(wareGoodsVo);
+
+            Map<String, Object> haveMap = new HashMap<String, Object>();
+            haveMap.put("wareCode","20192514");
+            haveMap.put("specificationId",specId);
+            RdInventoryWarning warning = rdInventoryWarningService.haveInventoryByWareCodeAndSpecId(haveMap);
+            Integer wareNum = 0;
+            if (warning!=null){
+                wareNum = warning.getInventory();
+            }
+
+            Integer num = Math.abs(wareGoodsVo.getInventory());
+
+            if (wareNum>=num){
+                list.add(wareGoodsVo);
+            }
         }
         return ApiUtils.success(list);
     }
