@@ -4,12 +4,14 @@ import com.framework.loippi.consts.CompanyWithdrawalConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.companyInfo.CompanyLicense;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.param.companyWithdrawal.CompanyWithdrawalParm;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.companyInfo.CompanyLicenseService;
+import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
@@ -25,7 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author zc
@@ -46,6 +50,8 @@ public class CompanyWithdrawalController extends BaseController {
     private RdMmRelationService rdMmRelationService;
     @Resource
     private RdMmAccountInfoService rdMmAccountInfoService;
+    @Resource
+    private RdMmIntegralRuleService rdMmIntegralRuleService;
 
     /**
      * 判断当前登录用户商户提现认证状态 返回Integer数值 1：待审核 2：已认证 -1：未认证
@@ -137,9 +143,18 @@ public class CompanyWithdrawalController extends BaseController {
         if(rdMmAccountInfo.getBonusStatus()!=0){
             return ApiUtils.error("奖励积分冻结或未激活");
         }
-        Paramap result = Paramap.create().put("bonusBlance", rdMmAccountInfo.getBonusBlance()).put("rate", CompanyWithdrawalConstant.COMPANY_WITHDRAWAL_RATE)
-                .put("lowAcc",CompanyWithdrawalConstant.LOW_ACC);
-        return ApiUtils.success(result);
+        List<RdMmIntegralRule> list = rdMmIntegralRuleService.findAll();
+        if (list!=null&&list.size()>0){
+            RdMmIntegralRule rdMmIntegralRule = list.get(0);
+            Optional<RdMmIntegralRule> optional = Optional.ofNullable(rdMmIntegralRule);
+            Paramap result = Paramap.create().put("bonusBlance", rdMmAccountInfo.getBonusBlance()).put("rate", optional.map(RdMmIntegralRule::getBonusPointWd).orElse(0))
+                    .put("lowAcc",optional.map(RdMmIntegralRule::getBonusPointWdLimit).orElse(0));
+            return ApiUtils.success(result);
+        }else {
+            Paramap result = Paramap.create().put("bonusBlance", rdMmAccountInfo.getBonusBlance()).put("rate", CompanyWithdrawalConstant.COMPANY_WITHDRAWAL_RATE)
+                    .put("lowAcc",CompanyWithdrawalConstant.LOW_ACC);
+            return ApiUtils.success(result);
+        }
     }
 
     /**
