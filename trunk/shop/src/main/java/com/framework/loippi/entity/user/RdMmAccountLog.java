@@ -183,5 +183,8 @@ CSH：现金 */
 	/** 授权说明（同意或不同意的理由） */
 	@Column(name = "AUTOHRIZE_DESC" )
 	private String autohrizeDesc;
-	
+
+	/** 商户提现发票图片 */
+	@Column(name = "invoice_image" )
+	private String invoiceImage;
 }
