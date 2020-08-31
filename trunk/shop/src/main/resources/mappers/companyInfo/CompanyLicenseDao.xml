@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.companyInfo.CompanyLicenseDao">
+    <resultMap id="companyLicenseResultMap" type="com.framework.loippi.entity.companyInfo.CompanyLicense">
+        <id property="id" column="id"/>
+        <result property="mCode" column="mm_code"/>
+        <result property="companyName" column="company_name"/>
+        <result property="creditCode" column="credit_code"/>
+        <result property="companyAdd" column="company_add"/>
+        <result property="companyPhone" column="company_phone"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankId" column="bank_id"/>
+        <result property="businessLicense" column="business_license"/>
+        <result property="permissionLicense" column="permission_license"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="auditTime" column="audit_time"/>
+        <result property="auditCode" column="audit_code"/>
+        <result property="auditRemark" column="audit_remark"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,mm_code ,company_name ,credit_code ,company_add ,company_phone ,bank_name ,bank_id ,business_license ,permission_license ,status ,create_time,audit_time,
+        audit_code ,audit_remark
+    </sql>
+
+    <sql id="base_value_column">
+        #{id},#{mCode},#{companyName},#{creditCode},#{companyAdd},#{companyPhone},#{bankName},#{bankId},#{businessLicense},#{permissionLicense},#{status},#{createTime},
+        #{auditTime},#{auditCode},#{auditRemark}
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="mCode != null and mCode != ''">
+            AND mm_code = #{mCode,jdbcType=VARCHAR}
+        </if>
+        <if test="companyName != null and companyName != ''">
+            AND company_name = #{companyName,,jdbcType=VARCHAR}
+        </if>
+        <if test="creditCode != null and creditCode != ''">
+            AND credit_code = #{creditCode,jdbcType=VARCHAR}
+        </if>
+        <if test="companyAdd != null and companyAdd != ''">
+            AND company_add = #{companyAdd,jdbcType=VARCHAR}
+        </if>
+        <if test="companyPhone != null and companyPhone != ''">
+            AND company_phone = #{companyPhone,jdbcType=VARCHAR}
+        </if>
+        <if test="bankName != null and bankName != ''">
+            AND bank_name = #{bankName,jdbcType=VARCHAR}
+        </if>
+        <if test="bankId != null and bankId != ''">
+            AND bank_id = #{bankId,jdbcType=VARCHAR}
+        </if>
+        <if test="businessLicense != null and businessLicense != ''">
+            AND business_license = #{businessLicense,jdbcType=VARCHAR}
+        </if>
+        <if test="permissionLicense != null and permissionLicense != ''">
+            AND permission_license = #{permissionLicense,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="createTime != null">
+            AND create_time = #{createTime}
+        </if>
+        <if test="auditTime != null">
+            AND audit_time = #{auditTime}
+        </if>
+        <if test="auditCode != null and auditCode != ''">
+            AND audit_code = #{auditCode,jdbcType=VARCHAR}
+        </if>
+        <if test="auditRemark != null and auditRemark != ''">
+            AND audit_remark = #{auditRemark,jdbcType=VARCHAR}
+        </if>
+        <if test="noStatus != null and noStatus != ''">
+            AND status != #{noStatus,jdbcType=INTEGER}
+        </if>
+    </sql>
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+             id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="mCode != null and mCode != ''">
+             mm_code = #{mCode,jdbcType=VARCHAR},
+        </if>
+        <if test="companyName != null and companyName != ''">
+             company_name = #{companyName,,jdbcType=VARCHAR},
+        </if>
+        <if test="creditCode != null and creditCode != ''">
+             credit_code = #{creditCode,jdbcType=VARCHAR},
+        </if>
+        <if test="companyAdd != null and companyAdd != ''">
+             company_add = #{companyAdd,jdbcType=VARCHAR},
+        </if>
+        <if test="companyPhone != null and companyPhone != ''">
+             company_phone = #{companyPhone,jdbcType=VARCHAR},
+        </if>
+        <if test="bankName != null and bankName != ''">
+             bank_name = #{bankName,jdbcType=VARCHAR},
+        </if>
+        <if test="bankId != null and bankId != ''">
+             bank_id = #{bankId,jdbcType=VARCHAR},
+        </if>
+        <if test="businessLicense != null and businessLicense != ''">
+             business_license = #{businessLicense,jdbcType=VARCHAR},
+        </if>
+        <if test="permissionLicense != null and permissionLicense != ''">
+             permission_license = #{permissionLicense,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null and status != ''">
+             status = #{status,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+             create_time = #{createTime},
+        </if>
+        <if test="auditTime != null">
+             audit_time = #{auditTime},
+        </if>
+        <if test="auditCode != null and auditCode != ''">
+             audit_code = #{auditCode,jdbcType=VARCHAR},
+        </if>
+        <if test="auditRemark != null and auditRemark != ''">
+             audit_remark = #{auditRemark,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="companyLicenseResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_company_license
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="companyLicenseResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_company_license
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_company_license
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.companyInfo.CompanyLicense">
+        INSERT rd_company_license
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.companyInfo.CompanyLicense">
+        UPDATE rd_company_license
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE FROM rd_company_license
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_company_license
+        WHERE ID IN
+        <foreach item="LicenseId" index="index" collection="ids" open="(" separator="," close=")">
+            #{LicenseId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="companyLicenseResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_company_license
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="companyLicenseResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_company_license
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

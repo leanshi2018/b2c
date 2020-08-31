@@ -1944,7 +1944,7 @@ public class OrderAPIController extends BaseController {
             List<RdMmAccountInfo> accountInfos=rdMmAccountInfoService.findLastWithdrawalOneHundred(acc);
             if(accountInfos!=null&&accountInfos.size()>0){
                 for (RdMmAccountInfo accountInfo : accountInfos) {
-                    if(accountInfo.getBonusBlance().subtract(rdMmAccountInfo.getWithdrawalLine()).compareTo(acc)!=-1){
+                    if(accountInfo.getBonusBlance().subtract(accountInfo.getWithdrawalLine()).compareTo(acc)!=-1){
                         map.put("accountInfo",accountInfo);
                         map.put("acc",acc);
                         rdMmAccountInfoService.reduceAcc(shopOrder,accountInfo,acc);

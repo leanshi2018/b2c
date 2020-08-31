@@ -3,11 +3,7 @@ package com.framework.loippi.service.impl.user;
 
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.framework.loippi.entity.user.MemberPrivilege;
 import com.framework.loippi.service.user.MemberPrivilegeService;
@@ -253,5 +249,57 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 				}
 			}
 		}
+	}
+
+	/**
+	 * 商户提现
+	 * @param rdMmAccountInfo 积分信息
+	 * @param amount 提现金额
+	 * @param companyWithdrawalRate 手续费税率
+	 * @return
+	 */
+	@Override
+	public HashMap<String, Object> companyDeposit(RdMmAccountInfo rdMmAccountInfo, BigDecimal amount, BigDecimal companyWithdrawalRate,String image) {
+		HashMap<String, Object> map = new HashMap<>();
+		RdMmBasicInfo basicInfo = rdMmBasicInfoDao.findByMCode(rdMmAccountInfo.getMmCode());
+		Optional<RdMmBasicInfo> optional = Optional.ofNullable(basicInfo);
+		//1.生成商户提现积分日志
+		RdMmAccountLog log = new RdMmAccountLog();
+		log.setMmCode(rdMmAccountInfo.getMmCode());
+		log.setMmNickName(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
+		log.setTransTypeCode("WD");
+		log.setAccType("SBB");
+		log.setTrSourceType("BNK");
+		log.setTrMmCode(rdMmAccountInfo.getMmCode());
+		log.setBlanceBefore(rdMmAccountInfo.getBonusBlance());
+		log.setAmount(amount);
+		BigDecimal bonusAfter = rdMmAccountInfo.getBonusBlance().subtract(amount);
+		log.setBlanceAfter(bonusAfter);
+		log.setPresentationFeeNow(companyWithdrawalRate);
+		BigDecimal bigDecimal = new BigDecimal("100.00");
+		BigDecimal actualWithdrawals = (bigDecimal.subtract(companyWithdrawalRate)).multiply(new BigDecimal("0.01")).multiply(amount).setScale(2, BigDecimal.ROUND_HALF_UP);
+		log.setActualWithdrawals(actualWithdrawals);
+		log.setTransDate(new Date());
+		String period = rdSysPeriodDao.getSysPeriodService(new Date());
+		if(period!=null){
+			log.setTransPeriod(period);
+		}else {
+			log.setTransPeriod("");
+		}
+		log.setTransDesc("商户提现");
+		log.setStatus(2);
+		log.setAccStatus(0);
+		log.setCreationBy(optional.map(RdMmBasicInfo::getMmNickName).orElse(""));
+		log.setCreationTime(new Date());
+		log.setInvoiceImage(image);
+		rdMmAccountLogDao.insert(log);
+		//2.扣减积分
+		rdMmAccountInfo.setBonusBlance(bonusAfter);
+		rdMmAccountInfoDao.update(rdMmAccountInfo);
+		map.put("amount",amount);
+		map.put("rate",companyWithdrawalRate);
+		map.put("actualAmount",actualWithdrawals);
+		map.put("bonusAfter",bonusAfter);
+		return map;
 	}
 }

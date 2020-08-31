@@ -4,6 +4,7 @@ package com.framework.loippi.service.user;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
@@ -42,4 +43,6 @@ public interface RdMmAccountInfoService  extends GenericService<RdMmAccountInfo,
 	Long updateStatus(RdMmAccountInfo rdMmAccountInfo);
 
     void updatePayPassword(RdMmBasicInfo mmBasicInfo, String newpassword);
+
+    Map<String, Object> companyDeposit(RdMmAccountInfo rdMmAccountInfo, BigDecimal amount, BigDecimal companyWithdrawalRate,String image);
 }
