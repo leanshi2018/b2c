@@ -137,7 +137,8 @@ public class CompanyWithdrawalController extends BaseController {
         if(rdMmAccountInfo.getBonusStatus()!=0){
             return ApiUtils.error("奖励积分冻结或未激活");
         }
-        Paramap result = Paramap.create().put("bonusBlance", rdMmAccountInfo.getBonusBlance()).put("rate", CompanyWithdrawalConstant.COMPANY_WITHDRAWAL_RATE);
+        Paramap result = Paramap.create().put("bonusBlance", rdMmAccountInfo.getBonusBlance()).put("rate", CompanyWithdrawalConstant.COMPANY_WITHDRAWAL_RATE)
+                .put("lowAcc",CompanyWithdrawalConstant.LOW_ACC);
         return ApiUtils.success(result);
     }
 
