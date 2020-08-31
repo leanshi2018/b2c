@@ -53,7 +53,7 @@
                         <em class="pngFix"></em>名称
                     </td>
                     <td>
-                        <input name="recommendationName" id="Name" type="text" value="${recommendationName}" class="w200"/>
+                        <input name="recommendationName" id="Name" type="text" value="${page.recommendationName}" class="w200"/>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -64,9 +64,9 @@
                     <td>
                         <p>
                             <span class="sign">
-                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${pictureUrl}"/>
+                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${page.pictureUrl}"/>
                                  <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
-                            <img src="${pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
+                            <img src="${page.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
                               </span>
                         </p>
                         <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"

@@ -162,7 +162,7 @@
                                     <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>
                                     <#-- 选择推荐页 -->
                                     <input name="recommendationName" type="text" id="recommendationName" value="${recommendationName}"/>
-                                    <input name="id" id="rId" type="hidden" value="${id}"/>
+                                    <input  id="rId" type="hidden" value="${id}"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -318,7 +318,7 @@
                                     <a class="btn-search" id="searchgoods" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="goodsdetailspage()"></a>
                                     <#-- 选择推荐页 -->
                                     <input name="recommendationName" type="text" id="recommendationName" value="${recommendationName}"/>
-                                    <input name="id" id="rId" type="hidden" value="${id}"/>
+                                    <input  id="rId" type="hidden" value="${id}"/>
                                     <#--搜索优惠券-->
                                     <a class="btn-search" id="searchbuys" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="buyCouponspage()"></a>
                                     <a class="btn-search" id="searchactivity" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="activityGoodsListpage()"></a>
@@ -541,7 +541,7 @@
                 move: false,
                 shade: [0.3, '#393D49'],//开启遮罩层
                 title: '选择推荐页',
-                content: ['${base}/admin/shop_activity_common/findProductsRecommendationList.jhtml', 'yes'],
+                content: ['${base}/admin/shop_activity_common/selectProductsRecommendationList.jhtml', 'yes'],
                 area: ['800px', '600px']
             })
         }

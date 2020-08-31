@@ -87,10 +87,7 @@
                     var id=items[i].value;
                     var map={id};
                     jsonMap.push(map);
-                    // jsonMap+="{\"id\":\""+items[i].value+"\"},";
                 }
-
-                // jsonMap = jsonMap.substring(0, jsonMap.length - 1);
                 console.log(jsonMap);
                 parent.appendInfo(jsonMap);
             }
