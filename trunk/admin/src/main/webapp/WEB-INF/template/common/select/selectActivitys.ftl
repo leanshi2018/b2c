@@ -68,7 +68,6 @@
         </div>
     </div>
     <script>
-
         function selSpeccoupons(id,name,info) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
