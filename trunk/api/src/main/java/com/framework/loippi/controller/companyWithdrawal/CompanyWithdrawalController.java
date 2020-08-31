@@ -193,8 +193,16 @@ public class CompanyWithdrawalController extends BaseController {
         if(amount.compareTo(rdMmAccountInfo.getBonusBlance())==1){
             return ApiUtils.error("提现金额大于奖励积分余额");
         }
+        List<RdMmIntegralRule> list = rdMmIntegralRuleService.findAll();
+        BigDecimal decimal=null;
+        if (list!=null&&list.size()>0){
+            RdMmIntegralRule rdMmIntegralRule = list.get(0);
+            decimal=new BigDecimal(Integer.toString(rdMmIntegralRule.getBonusPointWd()));
+        }else {
+            decimal=CompanyWithdrawalConstant.COMPANY_WITHDRAWAL_RATE;
+        }
         //处理积分 生成日志
-        Map<String,Object> map=rdMmAccountInfoService.companyDeposit(rdMmAccountInfo,amount,CompanyWithdrawalConstant.COMPANY_WITHDRAWAL_RATE,image);
+        Map<String,Object> map=rdMmAccountInfoService.companyDeposit(rdMmAccountInfo,amount,decimal,image);
         return ApiUtils.success(map);
     }
 }
