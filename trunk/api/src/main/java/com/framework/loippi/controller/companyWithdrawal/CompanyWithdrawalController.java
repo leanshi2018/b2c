@@ -1,5 +1,21 @@
 package com.framework.loippi.controller.companyWithdrawal;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.framework.loippi.consts.CompanyWithdrawalConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.BaseController;
@@ -15,21 +31,11 @@ import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.utils.*;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
 
 /**
  * @author zc
