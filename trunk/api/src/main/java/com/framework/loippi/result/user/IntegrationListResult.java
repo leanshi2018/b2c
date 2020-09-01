@@ -131,13 +131,13 @@ public class IntegrationListResult {
                      if ("SP".equals(transTypeCode) && item.getStatus()==3){
                          transTypeName="转出";
                      }else if ("WD".equals(transTypeCode) && item.getStatus()==2){
-                         transTypeName="提到通联钱包-审核中，未到账";
+                         transTypeName="提现-审核中，未到账";
                      }else if ("WD".equals(transTypeCode) && item.getStatus()==3){
-                         transTypeName="提到通联钱包-";
+                         transTypeName="提现-";
                      }else if ("WD".equals(transTypeCode) && item.getStatus()==-2){
-                         transTypeName="提到通联钱包-提现失败，已全额退款";
+                         transTypeName="提现-提现失败，已全额退款";
                      }else if ("WD".equals(transTypeCode) && item.getStatus()==4){
-                         transTypeName="提到通联钱包-成功";
+                         transTypeName="提现-成功";
                      }else if ("BA".equals(transTypeCode) && item.getStatus()==3){
                          transTypeName="奖金转入";
                          symbol="+";
