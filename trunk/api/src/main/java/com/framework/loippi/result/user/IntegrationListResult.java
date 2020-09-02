@@ -133,7 +133,7 @@ public class IntegrationListResult {
                      }else if ("WD".equals(transTypeCode) && item.getStatus()==2){
                          transTypeName="提现-审核中，未到账";
                      }else if ("WD".equals(transTypeCode) && item.getStatus()==3){
-                         transTypeName="提现-";
+                         transTypeName="提现-成功";
                      }else if ("WD".equals(transTypeCode) && item.getStatus()==-2){
                          transTypeName="提现-提现失败，已全额退款";
                      }else if ("WD".equals(transTypeCode) && item.getStatus()==4){
