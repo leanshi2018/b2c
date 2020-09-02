@@ -331,7 +331,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
                     rdMmAccountInfoDao.update(rdMmAccountInfo);
                     RdMmRelation rdMmRelation = new RdMmRelation();
                     rdMmRelation.setMmCode(basicInfo.getMmCode());
-                    rdMmRelation.setMmPointStatus(1);
+                    rdMmRelation.setMmPointStatus(0);
                     rdMmRelationDao.update(rdMmRelation);
                 }
             }
