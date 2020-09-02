@@ -131,7 +131,7 @@ public class UserCommonController extends BaseController {
             if (StringUtils.isNotBlank(shopCommonDocument.getDocTitle())) {
                 title = shopCommonDocument.getDocTitle();
             }
-            url.append(wapServer).append("/wap/document/" + shopCommonDocument.getId() + ".html?type=app");
+            url.append(wapServer).append("/wap/document/" + shopCommonDocument.getDocType() + ".html?type=app");
         }
         return ApiUtils.success(Paramap.create().put("content", content).put("title", title).put("url", url));
     }
