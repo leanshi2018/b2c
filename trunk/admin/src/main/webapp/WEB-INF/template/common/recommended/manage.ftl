@@ -34,7 +34,6 @@
         localStorage.setItem('rId', $("#rId").val());
     },1000)
     function appendInfo(id) {
-        // var data={id:id}
         console.log(id);
         $.ajax({
             type: "post",
@@ -139,7 +138,6 @@
                         $("#list").attr("action", "${base}/admin/shop_activity_common/delRecommendationGoods.jhtml?id=" + id);
                         $('#list').submit();
                         $(this).dialog("close");
-                        alert("删除成功！");
                     }
                 }
             })

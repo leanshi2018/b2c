@@ -34,14 +34,14 @@
             <div class="item-title">
                 <ul class="tab-base">
                     <li>
-                        <a href="${base}/admin/shop_activity_common/findHomePictureList.jhtml"><span>管理</span></a>
+                        <a href="${base}/admin/shop_activity_common/findProductsRecommendationList.jhtml"><span>管理</span></a>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="fixed-empty">
         </div>
-        <form id="add_form">
+        <form id="add_form" action="${base}/admin/shop_activity_common/saveProductsRecommendation.jhtml" method="post">
             <table class="table tb-type2">
                 <tbody>
                 <tr>
@@ -117,25 +117,12 @@
         $(function () {
             /*提交按钮*/
             $("#subForm").click(function () {
-                var Title = $("#Name").val();
-                if (Title == "") {
-                    alert("请输入推荐页名称！");
-                    return false;
-                }
-                var shopProductsRecommendation = {recommendationName: $("#Name").val(), pictureUrl: $("#pictureUrl").val()};
-                $.ajax({
-                    type: "post",
-                    url: "${base}/admin/shop_activity_common/saveProductsRecommendation.jhtml",
-                    data:shopProductsRecommendation,
-                    dataType: "json",
-                    async: false,
-                    success : function() {		      //请求成功的回调函数
-                        alert("添加成功")
-                    },
-                    error : function(e) {		      //请求失败的回调函数
-                        alert("添加失败")
-                    }
-                });
+                // var Title = $("#Name").val();
+                // if (Title == "") {
+                //     alert("请输入推荐页名称！");
+                //     return false;
+                // }
+                $('#add_form').submit();
             })
 
         });
