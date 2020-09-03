@@ -1,8 +1,8 @@
 package com.framework.loippi.controller.travel;
 
 import com.framework.loippi.entity.ShopCommonMessage;
-import com.framework.loippi.entity.travel.RdTravelActivity;
-import com.framework.loippi.service.travel.RdTravelActivityService;
+import com.framework.loippi.entity.travel.*;
+import com.framework.loippi.service.travel.*;
 import com.framework.loippi.utils.JacksonUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,17 +26,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.entity.Principal;
-import com.framework.loippi.entity.travel.RdTourismCompliance;
-import com.framework.loippi.entity.travel.RdTravelTicket;
-import com.framework.loippi.entity.travel.RdTravelTicketDetail;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.TwiterIdService;
-import com.framework.loippi.service.travel.RdTourismComplianceService;
-import com.framework.loippi.service.travel.RdTravelTicketDetailService;
-import com.framework.loippi.service.travel.RdTravelTicketService;
 import com.framework.loippi.service.user.MemberQualificationService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
@@ -66,6 +60,10 @@ public class TravelController {
 	private RdTravelTicketDetailService ticketDetailService;
 	@Resource
 	private RdTravelActivityService rdTravelActivityService;
+	@Resource
+	private RdTravelMemInfoService rdTravelMemInfoService;
+	@Resource
+	private RdTravelCostService rdTravelCostService;
 
 	/**
 	 * 周期计算达标送券
@@ -563,10 +561,10 @@ public class TravelController {
 		List<RdTravelTicket> ticketServiceAll = rdTravelTicketService.findAll();
 		if (ticketServiceAll.size()>0){
 			model.addAttribute("travelTicketList", ticketServiceAll);
-			return "";
+			return "/common/travelTicket/index/list";
 		}else {
 			model.addAttribute("msg", "没有旅游券可选择");
-			return "";
+			return "/common/travelTicket/index/list";
 		}
 
 	}
@@ -582,10 +580,10 @@ public class TravelController {
 		if (id != null && id != 0) {
 			RdTravelTicket rdTravelTicket = rdTravelTicketService.find(id);
 			model.addAttribute("rdTravelTicket",rdTravelTicket);
-			return "";//跳往新增或编辑页面
+			return "/common/travelTicket/index/edit";//跳往新增或编辑页面
 		} else {
 			model.addAttribute("rdTravelTicket", null);
-			return "";
+			return "/common/travelTicket/index/edit";
 		}
 	}
 
@@ -671,7 +669,7 @@ public class TravelController {
 		pager.setParameter(travelTicket);
 		Page<RdTravelTicket> page = rdTravelTicketService.findByPage(pager);
 		model.addAttribute("travelTicketList", page);
-		return "";//TODO
+		return "/common/travelTicket/index/list";//TODO
 	}
 
 	/**
@@ -692,7 +690,7 @@ public class TravelController {
 		pager.setParameter(detail);
 		Page<RdTravelTicketDetail> page = ticketDetailService.findByPage(pager);
 		model.addAttribute("travelTicketDetailList", page);
-		return "";//TODO
+		return "/common/travelTicket/record/list";//TODO
 	}
 
 	/**
@@ -787,7 +785,28 @@ public class TravelController {
 		pager.setParameter(activity);
 		Page<RdTravelActivity> page = rdTravelActivityService.findByPage(pager);
 		model.addAttribute("rdTravelActivityList", page);
-		return "";//TODO
+		return "/common/travelTicket/activity/list";//TODO
+	}
+
+	/**
+	 * 旅游活动列表(供弹窗核销旅游券使用)
+	 *
+	 */
+	@RequestMapping("/travelActivity/list2")
+	public String activityList2(ModelMap model,
+							   @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+							   @RequestParam(required = false, value = "pageSize", defaultValue = "10") int pageSize,
+							   @ModelAttribute RdTravelActivity activity) {
+		//参数整理
+		Pageable pager = new Pageable();
+		pager.setPageNumber(pageNo);
+		pager.setPageSize(pageSize);
+		pager.setOrderProperty("create_time");
+		pager.setOrderDirection(Order.Direction.DESC);
+		pager.setParameter(activity);
+		Page<RdTravelActivity> page = rdTravelActivityService.findByPage(pager);
+		model.addAttribute("rdTravelActivityList", page);
+		return "/common/travelTicket/record/select";
 	}
 
 	/**
@@ -801,10 +820,10 @@ public class TravelController {
 		if (id != null && id != 0) {
 			RdTravelActivity travelActivity = rdTravelActivityService.find(id);
 			model.addAttribute("travelActivity",travelActivity);
-			return "";//跳往新增或编辑页面
+			return "/common/travelTicket/activity/edit";//跳往新增或编辑页面
 		} else {
 			model.addAttribute("travelActivity", null);
-			return "";
+			return "/common/travelTicket/activity/edit";
 		}
 	}
 
@@ -877,5 +896,58 @@ public class TravelController {
 		}
 		model.addAttribute("msg", "请登录后再进行旅游活动相关操作");
 		return Constants.MSG_URL;
+	}
+
+	/**
+	 * 旅游参团信息管理列表
+	 *
+	 */
+	@RequestMapping("/travelMemInfo/list")
+	public String travelMemInfo(ModelMap model,
+							 @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+							 @RequestParam(required = false, value = "pageSize", defaultValue = "10") int pageSize,
+							 @ModelAttribute RdTravelMemInfo memInfo) {
+		//参数整理
+		Pageable pager = new Pageable();
+		pager.setPageNumber(pageNo);
+		pager.setPageSize(pageSize);
+		pager.setOrderProperty("id");
+		pager.setOrderDirection(Order.Direction.DESC);
+		pager.setParameter(memInfo);
+		Page<RdTravelMemInfo> page = rdTravelMemInfoService.findByPage(pager);
+		model.addAttribute("rdTravelMemInfoList", page);
+		return "/common/travelTicket/join/list";//TODO
+	}
+
+	/**
+	 * 旅游团价格表
+	 *
+	 */
+	@RequestMapping("/travelCost/list")
+	public String travelCost(ModelMap model,
+								@RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+								@RequestParam(required = false, value = "pageSize", defaultValue = "10") int pageSize,
+								@ModelAttribute RdTravelCost costInfo) {
+		//参数整理
+		Pageable pager = new Pageable();
+		pager.setPageNumber(pageNo);
+		pager.setPageSize(pageSize);
+		pager.setOrderProperty("id");
+		pager.setOrderDirection(Order.Direction.DESC);
+		pager.setParameter(costInfo);
+		Page<RdTravelCost> page = rdTravelCostService.findByPage(pager);
+		model.addAttribute("rdTravelCostList", page);
+		return " /common/travelTicket/price/list";//TODO
+	}
+
+	/**
+	 * 旅游团价格表
+	 *
+	 */
+	@RequestMapping("/travelCost/export")
+	public String travelCostExport(ModelMap model,@ModelAttribute RdTravelCost costInfo) {
+		rdTravelCostService.export(costInfo);
+		model.addAttribute("msg", "导出成功");
+		return Constants.MSG_URL;//TODO
 	}
 }
