@@ -85,8 +85,8 @@
 		<if test="automaticWithdrawal != null and automaticWithdrawal != ''">
 			AND AUTOMATIC_WITHDRAWAL = #{automaticWithdrawal,jdbcType=INTEGER}
 		</if>
-		<if test="withdrawalLine != null and withdrawalLine != ''">
-			AND WITHDRAWAL_LINE = #{withdrawalLine,jdbcType=VARCHAR}
+		<if test="withdrawalLine != null">
+			AND WITHDRAWAL_LINE = #{withdrawalLine}
 		</if>
 	</sql>
 	
@@ -140,8 +140,8 @@
 		<if test="automaticWithdrawal != null">
 			AUTOMATIC_WITHDRAWAL = #{automaticWithdrawal,jdbcType=INTEGER},
 		</if>
-		<if test="withdrawalLine != null and withdrawalLine != ''">
-			 WITHDRAWAL_LINE = #{withdrawalLine,jdbcType=VARCHAR},
+		<if test="withdrawalLine != null">
+			 WITHDRAWAL_LINE = #{withdrawalLine},
 		</if>
 	</sql>
 
