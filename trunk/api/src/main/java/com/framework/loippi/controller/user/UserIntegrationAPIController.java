@@ -809,7 +809,12 @@ public class UserIntegrationAPIController extends BaseController {
         if (type == 1) {//奖励积分
             if ("-1".equals(transTypeCode)) {
                 map.put("bop", "1");
-            } else {
+            }else if("WD".equals(transTypeCode)){
+                map.put("wd", "1");
+            }else if ("TT".equals(transTypeCode)){
+                map.put("tt", "1");
+            }
+            else {
                 map.put("transTypeCode", transTypeCode);
             }
         } else if (type == 2) {//购物积分
