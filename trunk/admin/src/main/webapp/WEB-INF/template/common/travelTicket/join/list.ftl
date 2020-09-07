@@ -23,21 +23,21 @@
         <div class="fixed-empty"></div>
 
         <!-- 搜索栏 -->
-        <form method="post" name="formSearch" id="formSearch" action="${base}">
+        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/travel/travelMemInfo/list.jhtml">
             <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">会员号</th>
-                    <td class="w160"><input type="text" class="text w150" name="id" value="${id}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="activityId" value="${activityId}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">活动ID</th>
-                    <td class="w160"><input type="text" class="text w150" name="" value="${}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="mmCode" value="${mmCode}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
-                        <a href="${base}/admin/travel/travelTicket/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
+                        <a href="${base}/admin/travel/travelMemInfo/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
                         <a class="btn btn-outline btn-info btn-xs" id="btn-add-loippi exportExcell" href="javascript:void(0)"
                            onclick="exportExcell('${page.pageNumber}')"><i class="fa fa-plus"></i>导出Excel</a>
                     </td>
