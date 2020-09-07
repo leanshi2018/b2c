@@ -509,4 +509,9 @@
 			</if>
 		</where>
 	</select>
+
+	<select id="findBranch" parameterType="string" resultMap="RdMmBasicInfoResultMap">
+		SELECT a.* FROM rd_mm_basic_info a INNER JOIN rd_mm_relation b on
+			a.mm_code = b.mm_code and a.main_flag = 2 and b.SPONSOR_CODE = #{mmCode}
+	</select>
 </mapper> 

@@ -66,7 +66,7 @@
 			AND TRANS_NUMBER = #{transNumber,jdbcType=INTEGER}
 		</if>
 		<if test="batchNumber != null and batchNumber != ''">
-			AND BATCH_NUMBER = #{batchNumber,jdbcType=INTEGER}
+			AND BATCH_NUMBER = #{batchNumber}
 		</if>
 		<if test="mmCode != null and mmCode != ''">
 			AND MM_CODE = #{mmCode,jdbcType=VARCHAR}
@@ -178,7 +178,7 @@
 			TRANS_NUMBER = #{transNumber,jdbcType=INTEGER},
 		</if>
 		<if test="batchNumber != null">
-			BATCH_NUMBER = #{batchNumber,jdbcType=INTEGER},
+			BATCH_NUMBER = #{batchNumber},
 		</if>
 		<if test="mmCode != null and mmCode != ''">
 			MM_CODE = #{mmCode,jdbcType=VARCHAR},

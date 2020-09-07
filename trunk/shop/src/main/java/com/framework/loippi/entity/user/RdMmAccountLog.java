@@ -32,7 +32,7 @@ public class RdMmAccountLog implements GenericEntity {
 	/** 批记录号
 （一次处理多条记录的需记录批记录号，以备回滚操作） */
 	@Column(name = "BATCH_NUMBER" )
-	private Integer batchNumber;
+	private Long batchNumber;
 	
 	/** 会员编号 */
 	@Column(name = "MM_CODE" )
@@ -57,6 +57,7 @@ TT:转给他人
 PC:购买商品并评论
 AWD:自动提现预扣减积分
 CF:自动自提失败退还积分
+REB:提现失败退还奖励积分
 EG:换购商品 */
 	@Column(name = "TRANS_TYPE_CODE" )
 	private String transTypeCode;
