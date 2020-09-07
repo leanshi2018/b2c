@@ -168,6 +168,15 @@ public class IntegrationDetailResult {
             }else if ("CF".equals(transTypeCode)){
                 transTypeName="自动自提失败退还积分";
             }
+            else if ("TT".equals(transTypeCode) ){
+                transTypeName="会员奖励积分转出";
+            }
+            else if ("TF".equals(transTypeCode) ){
+                transTypeName="会员奖励积分到账";
+            }
+            else if ("REB".equals(transTypeCode)){
+                transTypeName="商户提现失败退还奖励积分";
+            }
         }else if (type==2) {
             if ("BT".equals(transTypeCode)) {
                 transTypeName = "奖励积分转换";
