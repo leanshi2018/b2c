@@ -9,14 +9,6 @@
 
 </@layout.head>
 <@layout.body>
-    <!-- 提交关键字查询 -->
-    <script type="text/javascript">
-        $(function () {
-            $('#mansongSubmit').click(function () {
-                $('#formSearch').submit();
-            });
-        });
-    </script>
     <div class="page">
         <div class="fixed-bar">
             <div class="item-title">
@@ -32,8 +24,7 @@
         <div class="fixed-empty"></div>
 
         <!-- 搜索栏 -->
-        <form method="post" name="formSearch" id="formSearch"
-              action="${base}/admin/travel/travelTicketDetail/list.jhtml">
+        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/travel/travelTicketDetail/list.jhtml">
             <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
@@ -48,7 +39,7 @@
                     <th>状态</th>
                     <td>
                         <select name="status" class="w100">
-                            <option value="" <#if status == null>selected="selected"</#if>>不限</option>
+                            <option value=""  <#if status == null>selected="selected"</#if>>不限</option>
                             <option value="0" <#if status == '0'>selected="selected"</#if>>未使用</option>
                             <option value="1" <#if status == '1'>selected="selected"</#if>>报名占用</option>
                             <option value="2" <#if status == '2'>selected="selected"</#if>>已核销</option>
@@ -59,10 +50,11 @@
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">领取时间</th>
-                    <td class="w160">
-                        <input class="w160 Wdate" readonly style="width: 150px"
-                               onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="startTimeStr" name="startTimeStr"
-                               <#if shopActivity ?? && shopActivity.searchStartTime??>value="${shopActivity.ownTimeLeft}"</#if>/>
+                    <td class="w160"><input class="txt Wdate" type="text" id="query_start_time" name="ownTimeLeft" readonly value="${ownTimeLeft}"
+                               onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'query_end_time\')}'});"/>
+                        <label for="query_start_time">~</label>
+                        <input class="txt Wdate" type="text" id="query_end_time" name="ownTimeRight" readonly value="${ownTimeRight}"
+                               onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'query_start_time\')}'});"/>
                     </td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">领取人id</th>
@@ -77,7 +69,7 @@
                     <td class="w160"><input type="text" class="text w150" name="useActivityId" value="${useActivityId}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
-                        <a href="javascript:void(0);" id="mansongSubmit" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
+                        <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
                         <a href="${base}/admin/travel/travelTicketDetail/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
                     </td>
                 </tr>
@@ -85,6 +77,9 @@
             </table>
         </form>
         <form method="post" id='form_list'>
+            <input type="hidden"  id="ticketSn" value="">
+            <input type="hidden"  id="status" value="">
+            <input type="hidden"  id="activityId" value="">
             <table class="table tb-type2">
                 <thead>
                 <tr class="thead">
@@ -133,7 +128,10 @@
                             ${list.createTime}
                         </td>
                         <td style="text-align: left">
-                            ${list.useStartTime}
+                            <#if list.status == 0>未使用</#if>
+                            <#if list.status == 1>报名占用</#if>
+                            <#if list.status == 2>已核销</#if>
+                            <#if list.status == 3>已过期</#if>
                         </td>
                         <td style="text-align: left">
                             ${list.useEndTime}
@@ -145,6 +143,12 @@
                             ${list.createTime}
                         </td>
                         <td>
+                            <a  href="javascript:updateStatus('${list.id},${list.status},${list.isReply}')">恢 复 </a>||
+                            <#if list.isReply==0>
+                                <a href="javascript:toDialog('${list.id},${list.status},${list.isReply}')">核 销</a>
+                            <#else >
+                                <a>已核销</a>
+                            </#if>
 
                         </td>
                     </tr>
@@ -161,6 +165,7 @@
         </form>
     </div>
     <script>
+
         $(function () {
             $("#idsAll").click(function () {
                 $('input[name="ids"]').attr("checked", this.checked);
@@ -169,6 +174,40 @@
             $subBox.click(function () {
                 $("#idsAll").attr("checked", $subBox.length == $("input[name='ids']:checked").length ? true : false);
             });
+            //恢复单张旅游券
+            function updateStatus(id,status,isReply) {
+                //旅游券状态为未使用,操作类型为核销时
+                var activityId;
+                if(status==0&isReply==0){
+                    // activityId
+                }
+                if (confirm('要恢复该券，并清除报名信息吗？')) {
+                    var url = "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
+                    location.href = url + "?ticketSn=" + id+"&species=1"+"&status="+status+"&activityId=";
+                }
+            }
+            //核销弹窗
+            function toDialog(id,status,isReply) {
+                layer.open({
+                    type: 2,
+                    move: false,
+                    shade: [0.3, '#393D49'],//开启遮罩层
+                    title: '选择',
+                    content: ['${base}/admin/shop_activity_common/findShopGoodList.jhtml', 'yes'],
+                    area: ['800px', '600px']
+                });
+                $("#ticketSn").val(id);
+                $("#status").val(status);
+                $("#activityId").val(activityId);
+            }
+
+            function appendInfo(id) {
+                console.log("旅游券编号"+$("#ticketSn").val())
+                console.log(id);
+                var url= "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
+                location.href = url + "?ticketSn=" + $("#ticketSn").val()+"&species=2"+"&status="+$("#status").val()+"&activityId="+$("#activityId").val();
+            }
+
         });
         function getCheckValue() {
             var ids = "";

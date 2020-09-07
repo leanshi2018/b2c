@@ -9,14 +9,6 @@
 
 </@layout.head>
 <@layout.body>
-    <!-- 提交关键字查询 -->
-    <script type="text/javascript">
-        $(function () {
-            $('#mansongSubmit').click(function () {
-                $('#formSearch').submit();
-            });
-        });
-    </script>
     <div class="page">
         <div class="fixed-bar">
             <div class="item-title">
@@ -48,12 +40,10 @@
                     <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${travelLikeName}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
-                        <a href="javascript:void(0);" id="mansongSubmit" class="btn-search "
-                           title="<@spring.message "search"/>">&nbsp;</a>
-                        <#if travelLikeName != '' || id != '' >
-                            <a href="${base}/admin/travel/travelTicket/list.jhtml"
-                               class="btns "><span><@spring.message "search.cancel"/></span></a>
-                        </#if>
+                        <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
+<#--                        <#if travelLikeName != '' || id != '' >-->
+                        <a href="${base}/admin/travel/travelTicket/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
+<#--                        </#if>-->
                     </td>
                 </tr>
                 </tbody>

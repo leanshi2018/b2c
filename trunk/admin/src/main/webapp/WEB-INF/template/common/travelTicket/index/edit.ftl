@@ -196,13 +196,6 @@
                 }
             });
 
-            $('[name="limitType"]').on('click', function () {
-                $('.couponSource').attr('disabled', 'disabled');
-                $('.limitWhere').attr('disabled', 'disabled');
-                $(this).parent().next().find('.limitWhere').removeAttr('disabled');
-                $(this).parent().next().find('.couponSource').removeAttr('disabled') &&
-                $(this).parent().next().next().find('.couponSource').removeAttr('disabled')
-            })
         });
 
     </script>

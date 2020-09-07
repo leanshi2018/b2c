@@ -35,20 +35,22 @@
     },1000)
     function appendInfo(id) {
         console.log(id);
-        $.ajax({
-            type: "post",
-            url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",
-            data: {
-                "rId":localStorage.getItem('rId'),
-                "jsonMap":JSON.stringify(id)
-            },
-            dataType: "json",
-            async: false,
-            success: function (data) {
-                console.log(data);
-                $('#formSearch').submit();
-            }
-        });
+        var url = "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml";
+        location.href = url + "?rId=" + localStorage.getItem('rId')+"&jsonMap="+JSON.stringify(id);
+        <#--$.ajax({-->
+        <#--    type: "post",-->
+        <#--    url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",-->
+        <#--    data: {-->
+        <#--        "rId":localStorage.getItem('rId'),-->
+        <#--        "jsonMap":JSON.stringify(id)-->
+        <#--    },-->
+        <#--    dataType: "json",-->
+        <#--    async: false,-->
+        <#--    success: function (data) {-->
+        <#--        console.log(data);-->
+        <#--        $('#formSearch').submit();-->
+        <#--    }-->
+        <#--});-->
     }
 </script>
 <@layout.body>
