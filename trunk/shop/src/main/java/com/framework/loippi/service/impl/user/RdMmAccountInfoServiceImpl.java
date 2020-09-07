@@ -302,4 +302,120 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 		map.put("bonusAfter",bonusAfter);
 		return map;
 	}
+
+	@Override
+	public HashMap<String, Object> bopTransSure(RdMmAccountInfo rdMmAccountInfo, RdMmAccountInfo acceptAccountInfo, BigDecimal total, String pwd, String message) {
+		HashMap<String, Object> map = new HashMap<>();
+		RdMmBasicInfo outBasic = rdMmBasicInfoDao.findByMCode(rdMmAccountInfo.getMmCode());
+		RdMmBasicInfo inBasic = rdMmBasicInfoDao.findByMCode(acceptAccountInfo.getMmCode());
+		Long batchNum = twiterIdService.getTwiterId();
+		//1.扣减积分
+		//1.1扣减转账人
+		rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(total).setScale(2,BigDecimal.ROUND_HALF_UP));
+		rdMmAccountInfoDao.update(rdMmAccountInfo);
+		//1.2增加收款人
+		acceptAccountInfo.setBonusBlance(acceptAccountInfo.getBonusBlance().add(total).setScale(2,BigDecimal.ROUND_HALF_UP));
+		rdMmAccountInfoDao.update(acceptAccountInfo);
+		//2.生成积分变更日志
+		//2.1生成转账人积分扣减日志
+		String period = rdSysPeriodDao.getSysPeriodService(new Date());
+		RdMmAccountLog outLog = new RdMmAccountLog();
+		outLog.setBatchNumber(batchNum);
+		outLog.setMmCode(rdMmAccountInfo.getMmCode());
+		outLog.setMmNickName(outBasic.getMmNickName());
+		outLog.setTransTypeCode("TT");
+		outLog.setAccType("SBB");
+		outLog.setTrSourceType("OBB");
+		outLog.setTrMmCode(acceptAccountInfo.getMmCode());
+		outLog.setBlanceBefore(rdMmAccountInfo.getBonusBlance());
+		outLog.setAmount(total);
+		BigDecimal bonusAfter = rdMmAccountInfo.getBonusBlance().subtract(total);
+		outLog.setBlanceAfter(bonusAfter);
+		outLog.setTransDate(new Date());
+		if(period!=null){
+			outLog.setTransPeriod(period);
+		}else {
+			outLog.setTransPeriod("");
+		}
+		outLog.setTransDesc("会员奖励积分转出");
+		outLog.setStatus(3);
+		outLog.setCreationBy(outBasic.getMmNickName());
+		outLog.setCreationTime(new Date());
+		rdMmAccountLogDao.insert(outLog);
+		//2.2生成收款人积分增加日志
+		RdMmAccountLog inLog = new RdMmAccountLog();
+		inLog.setBatchNumber(batchNum);
+		inLog.setMmCode(acceptAccountInfo.getMmCode());
+		inLog.setMmNickName(inBasic.getMmNickName());
+		inLog.setTransTypeCode("TF");
+		inLog.setAccType("SBB");
+		inLog.setTrSourceType("OBB");
+		inLog.setTrMmCode(rdMmAccountInfo.getMmCode());
+		inLog.setBlanceBefore(acceptAccountInfo.getBonusBlance());
+		inLog.setAmount(total);
+		BigDecimal bonusAfter1 = rdMmAccountInfo.getBonusBlance().add(total);
+		inLog.setBlanceAfter(bonusAfter1);
+		inLog.setTransDate(new Date());
+		if(period!=null){
+			inLog.setTransPeriod(period);
+		}else {
+			inLog.setTransPeriod("");
+		}
+		inLog.setTransDesc("会员奖励积分转入");
+		inLog.setStatus(3);
+		inLog.setCreationBy(outBasic.getMmNickName());
+		inLog.setCreationTime(new Date());
+		rdMmAccountLogDao.insert(inLog);
+		//3.生成消息通知
+		//3.1转账人消息通知
+		ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+		shopCommonMessage.setSendUid(rdMmAccountInfo.getMmCode());
+		shopCommonMessage.setType(1);
+		shopCommonMessage.setOnLine(1);
+		shopCommonMessage.setCreateTime(new Date());
+		shopCommonMessage.setBizType(2);
+		shopCommonMessage.setIsTop(1);
+		shopCommonMessage.setCreateTime(new Date());
+		shopCommonMessage.setTitle("奖励积分转账通知");
+		shopCommonMessage.setContent("已成功从奖励积分账户卡减"+total+"奖励积分转给会员"+acceptAccountInfo.getMmCode()+"，具体请查询奖励积分明细");
+		Long msgId = twiterIdService.getTwiterId();
+		shopCommonMessage.setId(msgId);
+		shopCommonMessageDao.insert(shopCommonMessage);
+		ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+		shopMemberMessage.setBizType(2);
+		shopMemberMessage.setCreateTime(new Date());
+		shopMemberMessage.setId(twiterIdService.getTwiterId());
+		shopMemberMessage.setIsRead(0);
+		shopMemberMessage.setMsgId(msgId);
+		shopMemberMessage.setUid(Long.parseLong(rdMmAccountInfo.getMmCode()));
+		shopMemberMessageDao.insert(shopMemberMessage);
+		//3.2收款人消息通知
+		ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
+		shopCommonMessage1.setSendUid(acceptAccountInfo.getMmCode());
+		shopCommonMessage1.setType(1);
+		shopCommonMessage1.setOnLine(1);
+		shopCommonMessage1.setCreateTime(new Date());
+		shopCommonMessage1.setBizType(2);
+		shopCommonMessage1.setIsTop(1);
+		shopCommonMessage1.setCreateTime(new Date());
+		shopCommonMessage1.setTitle("奖励积分到账通知");
+		shopCommonMessage1.setContent("您收到会员"+rdMmAccountInfo.getMmCode()+"转入的"+total+"奖励积分，具体请查询奖励积分明细");
+		Long msgId1 = twiterIdService.getTwiterId();
+		shopCommonMessage1.setId(msgId1);
+		shopCommonMessageDao.insert(shopCommonMessage1);
+		ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+		shopMemberMessage1.setBizType(2);
+		shopMemberMessage1.setCreateTime(new Date());
+		shopMemberMessage1.setId(twiterIdService.getTwiterId());
+		shopMemberMessage1.setIsRead(0);
+		shopMemberMessage1.setMsgId(msgId1);
+		shopMemberMessage1.setUid(Long.parseLong(acceptAccountInfo.getMmCode()));
+		shopMemberMessageDao.insert(shopMemberMessage1);
+		map.put("batchNum",batchNum);
+		map.put("amount",total.toString());
+		map.put("balance",bonusAfter.toString());
+		map.put("acceptNickName",inBasic.getMmNickName());
+		map.put("acceptMobile",inBasic.getMobile());
+		return map;
+	}
 }

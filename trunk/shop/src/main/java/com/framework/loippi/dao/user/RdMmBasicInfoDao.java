@@ -35,4 +35,6 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
 	void updatePhoneStatusByMCode(Map<String, Object> map);
 
     Long findNewMem(HashMap<String, Object> map);
+
+    List<RdMmBasicInfo> findBranch(String mmCode);
 }

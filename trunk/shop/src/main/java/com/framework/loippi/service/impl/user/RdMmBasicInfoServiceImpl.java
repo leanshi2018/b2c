@@ -512,4 +512,9 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         rdMmEditDao.insert(memberEditReview);
     }
 
+    @Override
+    public List<RdMmBasicInfo> findBranch(String mmCode) {
+        return rdMmBasicInfoDao.findBranch(mmCode);
+    }
+
 }

@@ -96,7 +96,7 @@ public class RdMentionCalculateServiceImpl extends GenericServiceImpl<RdMentionC
             }else {
                 calculate.setSubsidiesCoefficient(BigDecimal.ZERO);
             }
-            BigDecimal subsidiesAcc = calculate.getIncome().multiply(calculate.getSubsidiesCoefficient()).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal subsidiesAcc = calculate.getIncome().multiply(calculate.getSubsidiesCoefficient()).divide(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
             calculate.setSubsidiesAcc(subsidiesAcc);
             calculate.setStatus(1);
             calculates.add(calculate);

@@ -48,4 +48,6 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
      * @param mmAvatar 默认会员头像
      */
     void addSecondaryUser(RdMmBasicInfo mmBasicInfo, String mNickName, String mmAvatar);
+
+    List<RdMmBasicInfo> findBranch(String mmCode);
 }

@@ -3,6 +3,7 @@ package com.framework.loippi.service.user;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,4 +46,6 @@ public interface RdMmAccountInfoService  extends GenericService<RdMmAccountInfo,
     void updatePayPassword(RdMmBasicInfo mmBasicInfo, String newpassword);
 
     Map<String, Object> companyDeposit(RdMmAccountInfo rdMmAccountInfo, BigDecimal amount, BigDecimal companyWithdrawalRate,String image);
+
+    HashMap<String, Object> bopTransSure(RdMmAccountInfo rdMmAccountInfo, RdMmAccountInfo acceptAccountInfo, BigDecimal total, String pwd, String message);
 }
