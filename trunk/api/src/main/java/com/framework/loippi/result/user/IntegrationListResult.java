@@ -69,7 +69,9 @@ public class IntegrationListResult {
     /** 交易时间 */
     private Date transDate;
 
-    public static List<IntegrationListResult> build(List<RdMmAccountLog> rdMmAccountLogList,Integer type) {
+    private Long totalPageNum;
+
+    public static List<IntegrationListResult> build(List<RdMmAccountLog> rdMmAccountLogList, Integer type, Long totalPageNum) {
         List<IntegrationListResult> userIntegrationListResultList=new ArrayList<>();
          if (rdMmAccountLogList!=null && rdMmAccountLogList.size()>0){
              HashMap<Long, RdMmAccountLog> mapAWD = new HashMap<>();
@@ -124,6 +126,7 @@ public class IntegrationListResult {
                  integrationListResult.setTransDate(item.getTransDate());
                  integrationListResult.setTransNumber(item.getTransNumber());
                  integrationListResult.setTransTypeCode(item.getTransTypeCode());
+                 integrationListResult.setTotalPageNum(totalPageNum);
                  String transTypeName="";
                  String symbol="-";
                  if (type==1){

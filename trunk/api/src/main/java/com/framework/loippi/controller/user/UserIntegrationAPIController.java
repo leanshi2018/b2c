@@ -833,8 +833,20 @@ public class UserIntegrationAPIController extends BaseController {
         pager.setParameter(map);
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setOrderProperty("TRANS_DATE");
+        Long count = rdMmAccountLogService.count(map);
+        int pageSize = pager.getPageSize();
+        long l = count % pageSize;
+        long totalPageNum=0;
+        if(l==0){
+             totalPageNum = count / pageSize;
+        }else {
+             totalPageNum = count / pageSize + 1;
+        }
+        System.out.println(count);
+        System.out.println(pageSize);
+        System.out.println(totalPageNum);
         List<RdMmAccountLog> rdMmAccountLogList = RdMmAccountLogService.findByPage(pager).getContent();
-        return ApiUtils.success(IntegrationListResult.build(rdMmAccountLogList, type));
+        return ApiUtils.success(IntegrationListResult.build(rdMmAccountLogList, type,totalPageNum));
     }
 
     //积分明细详情
