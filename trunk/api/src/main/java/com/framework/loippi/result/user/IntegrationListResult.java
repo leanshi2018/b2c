@@ -162,6 +162,17 @@ public class IntegrationListResult {
                          symbol="+";
                          transTypeName="自动提现失败积分退还";
                      }
+                     else if ("TT".equals(transTypeCode) && item.getStatus()==3){
+                         transTypeName="会员奖励积分转出";
+                     }
+                     else if ("TF".equals(transTypeCode) && item.getStatus()==3){
+                         symbol="+";
+                         transTypeName="会员奖励积分到账";
+                     }
+                     else if ("REB".equals(transTypeCode) && item.getStatus()==3){
+                         symbol="+";
+                         transTypeName="商户提现失败退还奖励积分";
+                     }
                  }else if (type==2) {
                      //购物积分
                      if ("BT".equals(transTypeCode) && item.getStatus()==3) {

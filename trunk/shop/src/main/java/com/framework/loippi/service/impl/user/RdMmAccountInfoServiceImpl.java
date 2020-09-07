@@ -341,6 +341,8 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 		outLog.setStatus(3);
 		outLog.setCreationBy(outBasic.getMmNickName());
 		outLog.setCreationTime(new Date());
+		outLog.setAutohrizeDesc(message);
+        outLog.setAutohrizeBy(outBasic.getMmNickName());
 		rdMmAccountLogDao.insert(outLog);
 		//2.2生成收款人积分增加日志
 		RdMmAccountLog inLog = new RdMmAccountLog();
@@ -365,6 +367,8 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 		inLog.setStatus(3);
 		inLog.setCreationBy(outBasic.getMmNickName());
 		inLog.setCreationTime(new Date());
+        inLog.setAutohrizeDesc(message);
+        inLog.setAutohrizeBy(outBasic.getMmNickName());
 		rdMmAccountLogDao.insert(inLog);
 		//3.生成消息通知
 		//3.1转账人消息通知

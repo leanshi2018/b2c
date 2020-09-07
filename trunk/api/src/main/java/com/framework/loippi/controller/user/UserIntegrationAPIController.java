@@ -814,6 +814,9 @@ public class UserIntegrationAPIController extends BaseController {
             }else if ("TT".equals(transTypeCode)){
                 map.put("tt", "1");
             }
+            else if ("TF".equals(transTypeCode)){
+                map.put("tf", "1");
+            }
             else {
                 map.put("transTypeCode", transTypeCode);
             }
