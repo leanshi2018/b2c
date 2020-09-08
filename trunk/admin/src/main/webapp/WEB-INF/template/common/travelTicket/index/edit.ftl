@@ -5,6 +5,9 @@
     <script type="text/javascript" src="${base}/res/js/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
     <link href="${base}/res/css/font/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
 </@layout.head>
+<style>
+    .required{width:100px;}
+</style>
 <@layout.body>
     <script type="text/javascript" src="${base}/res/js/jquery.js"></script>
     <script type="text/javascript" src="${base}/res/js/layer/layer.js"></script>
@@ -32,71 +35,90 @@
         </div>
         <form id="add_form" action="${base}/admin/travel/addOrUpdate.jhtml" method="post">
             <table class="table tb-type2">
-                <#--<input type="hidden" name="id" <#if shopActivityPromotionRule ??> value="${shopActivityPromotionRule.id}" </#if> />-->
+                <input type="hidden" name="id" <#if rdTravelTicket ??> value="${rdTravelTicket.id}" </#if> />
                 <tr class="noborder">
-                    <td colspan="2" class="required">旅游券名称：</td>
-                    <td class="vatop  ">
-                        <input type="text" name="travelName" id="ruleTitle" value="${rdTravelTicket.travelName}" class="form-control" maxlength="200"/>
+                    <td class="required">
+                        <em class="pngFix"></em>旅游券名称
                     </td>
-                    <td class="vatop tips"></td>
+                    <td>
+                        <#if rdTravelTicket??>
+                            <input type="text" name="travelName" id="travelName" value="${rdTravelTicket.travelName}" class="form-control" maxlength="200"/>
+                        <#else>
+                            <input type="text" name="travelName" id="travelName" value="${travelName}" class="form-control" maxlength="200"/>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
                 </tr>
                 <tr class="noborder">
-                    <td>
+                    <td class="required">
                         <em class="pngFix"></em>旅游券图片
                     </td>
                     <td>
-<#--                        <#if coupon??>-->
-<#--                            <p>-->
-<#--                        <span class="sign">-->
-<#--                            <input class="w300 text" name="image" id="image" type="hidden"-->
-<#--                                   readonly   value="${coupon.image}"/>-->
-<#--                            <img src="${coupon.image!''} " name="image" id="mainPictureImg" nc_type="logo1"-->
-<#--                                 width="188"-->
-<#--                                 height="144"/>-->
-<#--                              </span>-->
-<#--                            </p>-->
-<#--                        <#else>-->
+                        <#if rdTravelTicket??>
                             <p>
                         <span class="sign">
-                            <input class="w300 text" name="image" id="image" type="hidden" value="${rdTravelTicket.image}"/>
-                            <img src="${rdTravelTicket.image!''} " name="image" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
+                            <input class="w300 text" name="image" id="image" type="hidden"
+                                   readonly   value="${rdTravelTicket.image}"/>
+                            <img src="${rdTravelTicket.image!''} " name="image" id="mainPictureImg" nc_type="logo1"
+                                 width="188"
+                                 height="144"/>
                               </span>
                             </p>
-<#--                        </#if>-->
-                        <p><input type="file" class="file" name="myfiles" id="mainPictureImg0" onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','image');"/></p>
+                        <#else>
+                            <p>
+                        <span class="sign">
+                            <input class="w300 text" name="image" id="image" type="hidden"
+                                   value="${image}"/>
+                            <img src="${image!''} " name="image" id="mainPictureImg" nc_type="logo1"
+                                 width="188"
+                                 height="144"/>
+                              </span>
+                            </p>
+                        </#if>
+                        <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
+                                  onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','image');"/></p>
                         <span class="error-message">建议上传图片尺寸351*184</span>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="2" class="required">面值：</td>
+
+                <tr class="noborder">
+                    <td class="required">
+                        <em class="pngFix"></em>面值
+                    </td>
+                    <td>
+                        <#if rdTravelTicket??>
+                            <input type="text" name="ticketPrice" id="ticketPrice" value="${rdTravelTicket.ticketPrice}" class="form-control" maxlength="200"/>
+                        <#else>
+                            <input type="text" name="ticketPrice" id="ticketPrice" value="${ticketPrice}" class="form-control" maxlength="200"/>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
                 </tr>
                 <tr class="noborder">
-                    <td class="vatop  ">
-                        <input type="text" name="ticketPrice" id="ticketPrice" value="${rdTravelTicket.ticketPrice}" class="form-control" maxlength="200"/>
+                    <td class="required">
+                        <em class="pngFix"></em>优惠券规则
                     </td>
-                    <td class="vatop tips"></td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="required">优惠券规则：</td>
-                </tr>
-                <tr class="noborder">
-                    <td class="vatop  ">
-                        <input type="text" name="remark" id="remark" value="${rdTravelTicket.remark}" class="form-control" maxlength="200"/>
+                    <td>
+                        <#if rdTravelTicket??>
+                            <input type="text" name="remark" id="remark" value="${rdTravelTicket.remark}" class="form-control" maxlength="200"/>
+                        <#else>
+                            <input type="text" name="remark" id="remark" value="${remark}" class="form-control" maxlength="200"/>
+                        </#if>
+                        <span class="error-message"></span>
                     </td>
-                    <td class="vatop tips"></td>
                 </tr>
                 <tr class="noborder">
                     <td class="required">
                         <em class="pngFix"></em>使用开始时间:
                     </td>
                     <td>
-<#--                        <#if coupon??>-->
-<#--                            <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"-->
-<#--                                   id="useStartTime" name="useStartTime" value="${useStartTime?string("yyyy-MM-dd")}"/>-->
-<#--                        <#else>-->
+                        <#if rdTravelTicket??>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useStartTime" name="useStartTime" value="${rdTravelTicket.useStartTime}"/>
-<#--                        </#if>-->
+                                   id="useStartTime" name="useStartTime" value="${rdTravelTicket.useStartTime?string("yyyy-MM-dd")}"/>
+                        <#else>
+                            <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                                   id="useStartTime" name="useStartTime" value=""/>
+                        </#if>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -105,13 +127,13 @@
                         <em class="pngFix"></em>使用结束时间:
                     </td>
                     <td>
-<#--                        <#if coupon??>-->
-<#--                            <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"-->
-<#--                                   id="useEndTime" name="useEndTime" value="${useEndTime?string("yyyy-MM-dd")}"/>-->
-<#--                        <#else>-->
+                        <#if rdTravelTicket??>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useEndTime" name="useEndTime" value="${rdTravelTicket.useEndTime}"/>
-<#--                        </#if>-->
+                                   id="useEndTime" name="useEndTime" value="${rdTravelTicket.useEndTime?string("yyyy-MM-dd")}"/>
+                        <#else>
+                            <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                                   id="useEndTime" name="useEndTime" value=""/>
+                        </#if>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -160,8 +182,6 @@
                     },
                     ticketPrice: {
                         digits: true,
-                        min: 1,
-                        max: 255
                     },
                     remark:{
                         required: true

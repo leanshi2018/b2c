@@ -5,6 +5,9 @@
     <script type="text/javascript" src="${base}/res/js/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
     <link href="${base}/res/css/font/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
 </@layout.head>
+<style>
+    .required{width:130px;}
+</style>
 <@layout.body>
     <script type="text/javascript" src="${base}/res/js/jquery.js"></script>
     <script type="text/javascript" src="${base}/res/js/layer/layer.js"></script>
@@ -30,9 +33,9 @@
         </div>
         <div class="fixed-empty">
         </div>
-        <form id="add_form" action="${base}/admin/travel/addOrUpdate.jhtml" method="post">
+        <form id="add_form" action="${base}/admin/travel/activity/addOrUpdate.jhtml" method="post">
             <table class="table tb-type2">
-<#--                <input type="hidden" name="id" <#if travelActivity ??> value="${travelActivity.id}" </#if> />-->
+                <input type="hidden" name="id" <#if travelActivity ??> value="${travelActivity.id}" </#if> />
                 <tr class="noborder">
                     <td class="required">
                         <em class="pngFix"></em>旅游活动名称
@@ -47,7 +50,7 @@
                     </td>
                 </tr>
                 <tr class="noborder">
-                    <td>
+                    <td class="required">
                         <em class="pngFix"></em>活动封面
                     </td>
                     <td>
@@ -77,98 +80,165 @@
                         <span class="error-message">建议上传图片尺寸351*184</span>
                     </td>
                 </tr>
-                <tr>
-                    <div class="pic_list">
-                        <input type="hidden" id="goods_images_isupload" value="true"/>
-                        <ul id="menu" class="menu">
-                            <li class="active" id="li_1">
-                                <a href="javascript:void(0);"
-                                   style="background:#3366CC; color:#fff; line-height:22px; height:22px; padding:0 11px; position:relative; margin-right:20px;">
-                                    <@spring.message "Local.upload"/>
-                                    <input type="file" onChange="moreAjaxFileUploads('gradeImage','photo')"
-                                           style="opacity:0; top:0; left:0; width:100%; height:100%; margin:0; position:absolute;"
-                                           id="gradeImage" name="myfiles" class="file" multiple="multiple"/>
-                                </a>
-                                <span><@spring.message "message.goods.image"/>(建议上传图片尺寸:750*562,最多9张)</span>
-                            </li>
-                        </ul>
-                        <div class="content">
-                            <div id="demo"></div>
-                            <div class="standard">
-                                <div>
-                                    <ul style="min-height: 130px;overflow:auto;overflow-x: hidden;"
-                                        id="photoView01" class="gbin1-list">
-                                        <#if imageList??>
-                                            <#list imageList as imgSrc>
-                                                <li style='height:120px;display:inline'>
-                                                    <img class='img' style='width:100px;height:100px' src='${imgSrc}'/>
-                                                    <a href='javascript:void(0)' imageSrc='${imgSrc}' name='deletePhoto'><@spring.message "del"/></a>
-                                                </li>
-                                            </#list>
-                                        </#if>
-                                    </ul>
+                <tr class="noborder displays" >
+                    <td class="required">
+                        <em class="pngFix">活动图片</em>
+                    </td>
+                    <td>
+                        <div class="pic_list">
+                            <input type="hidden" id="goods_images_isupload" value="true"/>
+                            <ul id="menu" class="menu" >
+                                <li class="active" id="li_1">
+                                    <a href="javascript:void(0);"
+                                       style="background:#3366CC; color:#fff; line-height:22px; height:22px; padding:0 11px; position:relative; margin-right:20px;">
+                                        <@spring.message "Local.upload"/>
+                                        <input type="file" onChange="moreAjaxFileUploads('gradeImage','photo')"
+                                               style="opacity:0; top:0; left:0; width:100%; height:100%; margin:0; position:absolute;"
+                                               id="gradeImage" name="myfiles" class="file" multiple="multiple"/>
+                                    </a>
+                                    <span><@spring.message "message.goods.image"/>(建议上传图片尺寸:750*562,最多9张)</span>
+                                </li>
+                            </ul>
+                            <div class="content">
+                                <div id="demo"></div>
+                                <div class="standard">
+                                    <div>
+                                        <ul style="min-height: 130px;overflow:auto;overflow-x: hidden;border: 1px solid #ccc;"
+                                            id="photoView01" class="gbin1-list">
+                                            <#if imageList??>
+                                                <#list imageList as imgSrc>
+                                                    <li style='height:120px;display:inline'><img class='img' style='width:100px;height:100px' src='${imgSrc}'/><a href='javascript:void(0)' imageSrc='${imgSrc}' name='deletePhoto'><@spring.message "del"/></a></li>
+                                                </#list>
+                                            </#if>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </tr>
-                <tr class="noborder">
-                    <td colspan="2" class="required">活动状态：</td>
-                    <td class="vatop  ">
-                    <select name="status" id="status">
-                        <option value="0" <#if status == 0>selected="selected" </#if>>未开始</option>
-                        <option value="1" <#if status == 1>selected="selected" </#if>>报名中</option>
-                        <option value="2" <#if status == 2>selected="selected" </#if>>已成团等待开团</option>
-                        <option value="3" <#if status == 3>selected="selected" </#if>>已完成</option>
-                        <option value="-1"<#if status ==-1>selected="selected" </#if>>已作废</option>
-                    </select>
-                   </td>
-                </tr>
-                <tr class="noborder">
-                    <td colspan="2" class="required">活动价格：</td>
-                    <td class="vatop  ">
-                        <input type="text" name="activityCost" id="activityCost" value="${activityCost}" class="form-control" maxlength="200"/>
                     </td>
-                    <td class="vatop tips"></td>
                 </tr>
                 <tr class="noborder">
-                    <td colspan="2" class="required">参团人数上限：</td>
-                    <td class="vatop ">
-                        <input name="notlimit"  type="radio" id="buxian" checked>不限
-                        <input name="numCeiling" id="buxians"  type="hidden" value="0" style="width:95px;"/>
-                        <input name="notlimit"   type="radio" id="totalnums" >
-                        <input name="" type="text" id="ts" value="${numCeiling}"  style="width:95px;"/>
+                    <td class="required">
+                        <em class="pngFix"></em>活动状态
                     </td>
-                    <td class="vatop tips"></td>
-                </tr>
-                <tr class="noborder">
-                    <td colspan="2" class="required">活动链接：</td>
-                    <td class="vatop  ">
-                        <input type="text" name="detailLink" id="detailLink" value="${detailLink}" class="form-control" maxlength="200"/>
-                    </td>
-                    <td class="vatop tips"></td>
-                </tr>
-                <tr class="noborder">
-                    <td colspan="2" class="required">活动规则：</td>
-                    <td class="vatop  ">
-                        <input type="text" name="remark" id="remark" value="${remark}" class="form-control" maxlength="200"/>
-                    </td>
-                    <td class="vatop tips"></td>
-                </tr>
-                <tr class="noborder">
-                    <td class="required"><em class="pngFix"></em>报名开始时间:</td>
                     <td>
-                        <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                               id="startTime" name="startTime" value=""/>
-
+                        <#if travelActivity??>
+                            <select name="status" id="status">
+                                <option value="0" <#if travelActivity.status == 0>selected="selected" </#if>>未开始</option>
+                                <option value="1" <#if travelActivity.status == 1>selected="selected" </#if>>报名中</option>
+                                <option value="2" <#if travelActivity.status == 2>selected="selected" </#if>>已成团等待开团</option>
+                                <option value="3" <#if travelActivity.status == 3>selected="selected" </#if>>已完成</option>
+                                <option value="-1"<#if travelActivity.status ==-1>selected="selected" </#if>>已作废</option>
+                            </select>
+                        <#else>
+                            <select name="status" id="status">
+                                <option value="0" <#if status == 0>selected="selected" </#if>>未开始</option>
+                                <option value="1" <#if status == 1>selected="selected" </#if>>报名中</option>
+                                <option value="2" <#if status == 2>selected="selected" </#if>>已成团等待开团</option>
+                                <option value="3" <#if status == 3>selected="selected" </#if>>已完成</option>
+                                <option value="-1"<#if status ==-1>selected="selected" </#if>>已作废</option>
+                            </select>
+                        </#if>
                         <span class="error-message"></span>
                     </td>
                 </tr>
                 <tr class="noborder">
-                    <td class="required"><em class="pngFix"></em>报名结束时间:</td>
+                    <td class="required">
+                        <em class="pngFix"></em>活动价格
+                    </td>
                     <td>
-                        <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                               id="endTime" name="endTime" value=""/>
+                        <#if travelActivity??>
+                            <input type="text" name="activityCost" id="activityCost" value="${travelActivity.activityCost}" class="form-control" maxlength="200"/>
+                        <#else>
+                            <input type="text" name="activityCost" id="activityCost" value="${activityCost}" class="form-control" maxlength="200"/>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
+                </tr>
+                <tr class="noborder">
+                    <td class="required">
+                        <em class="pngFix"></em>参团人数上限(0不限制)
+                    </td>
+                    <td>
+                        <#if travelActivity??>
+                            <input type="text" name="numCeiling" id="numCeiling" value="${travelActivity.numCeiling}" class="form-control" maxlength="200"/>
+                        <#else>
+                            <input type="text" name="numCeiling" id="numCeiling" value="${numCeiling}" class="form-control" maxlength="200"/>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
+                </tr>
+<#--                <tr class="noborder">-->
+<#--                    <td colspan="2" class="required">参团人数上限()：</td>-->
+<#--                    <td class="vatop ">-->
+<#--                        <input name="notlimit"  type="radio" id="buxian" checked>不限-->
+<#--                        <input name="numCeiling" id="buxians"  type="hidden" value="0" style="width:95px;"/>-->
+<#--                        <input name="notlimit"   type="radio" id="totalnums" >-->
+<#--                        <input name="" type="text" id="ts" value="${numCeiling}"  style="width:95px;"/>-->
+<#--                    </td>-->
+<#--                    <td class="vatop tips"></td>-->
+<#--                </tr>-->
+                <tr class="noborder">
+                    <td class="required">
+                        <em class="pngFix"></em>活动链接
+                    </td>
+                    <td>
+                        <#if travelActivity??>
+                            <input type="text" name="detailLink" id="detailLink" value="${travelActivity.detailLink}" class="form-control" maxlength="200"/>
+                        <#else>
+                            <input type="text" name="detailLink" id="detailLink" value="${detailLink}" class="form-control" maxlength="200"/>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
+                </tr>
+                <tr class="noborder">
+                    <td class="required">
+                        <em class="pngFix"></em>活动规则
+                    </td>
+                    <td>
+                        <#if travelActivity??>
+                            <input type="text" name="remark" id="remark" value="${travelActivity.remark}" class="form-control" maxlength="200"/>
+                        <#else>
+                            <input type="text" name="remark" id="remark" value="${remark}" class="form-control" maxlength="200"/>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
+                </tr>
+                <tr class="noborder">
+                    <td class="required">
+                        <em class="pngFix"></em>报名开始时间:
+                    </td>
+                    <td>
+                        <#if travelActivity??>
+                            <input class="w300 Wdate"
+                                   onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                                   id="startTime" name="startTime" readonly
+                                   value="${travelActivity.startTime?string("yyyy-MM-dd")}"/>
+                        <#else>
+                            <input class="w300 Wdate"
+                                   onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                                   id="startTime" name="startTime"
+                                   value=""/>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
+                </tr>
+                <tr class="noborder">
+                    <td class="required">
+                        <em class="pngFix"></em>报名结束时间:
+                    </td>
+                    <td>
+                        <#if travelActivity??>
+                            <input class="w300 Wdate"
+                                   onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                                   id="endTime" name="endTime" readonly
+                                   value="${travelActivity.endTime?string("yyyy-MM-dd")}"/>
+                        <#else>
+                            <input class="w300 Wdate"
+                                   onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                                   id="endTime" name="endTime"
+                                   value=""/>
+                        </#if>
                         <span class="error-message"></span>
                     </td>
                 </tr>
@@ -225,9 +295,7 @@
                         maxlength: 200
                     },
                     activityCost: {
-                        digits: true,
-                        min: 1,
-                        max: 255
+                        digits: true
                     },
                     remark:{
                         required: true

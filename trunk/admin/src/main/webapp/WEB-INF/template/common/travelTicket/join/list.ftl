@@ -59,26 +59,26 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list travelTicketList.content as list>
+                <#list rdTravelMemInfoList.content as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
-                            ${list.id}
+                            ${list.mmCode}
                         </td>
                         <td style="text-align: left">
-                            ${list.travelName}
+                            ${list.activityId}
                         </td>
                         <td style="text-align: left">
-                            ${list.ticketPrice}
+                            ${list.name}
                         </td>
                         <td style="text-align: left">
-                            ${list.issueNum}
+
                         </td>
                         <td style="text-align: left">
-                            ${list.createName}
+                            ${list.idCard}
                         </td>
                         <td style="text-align: left">
-                            ${list.createName}
+                            ${list.mobile}
                         </td>
                     </tr>
                 </#list>

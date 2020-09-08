@@ -143,12 +143,12 @@
                             ${list.createTime}
                         </td>
                         <td>
-                            <a  href="javascript:updateStatus('${list.id},${list.status},${list.isReply}')">恢 复 </a>||
-                            <#if list.isReply==0>
-                                <a href="javascript:toDialog('${list.id},${list.status},${list.isReply}')">核 销</a>
-                            <#else >
-                                <a>已核销</a>
-                            </#if>
+                            <a  href="javascript:updateStatus('${list.id},${list.status})">恢 复 </a>||
+<#--                            <#if list.isReply==0>-->
+<#--                                <a href="javascript:toDialog('${list.id},${list.status},${list.isReply}')">核 销</a>-->
+<#--                            <#else >-->
+<#--                                <a>已核销</a>-->
+<#--                            </#if>-->
 
                         </td>
                     </tr>
@@ -175,31 +175,31 @@
                 $("#idsAll").attr("checked", $subBox.length == $("input[name='ids']:checked").length ? true : false);
             });
             //恢复单张旅游券
-            function updateStatus(id,status,isReply) {
-                //旅游券状态为未使用,操作类型为核销时
-                var activityId;
-                if(status==0&isReply==0){
-                    // activityId
-                }
-                if (confirm('要恢复该券，并清除报名信息吗？')) {
-                    var url = "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
-                    location.href = url + "?ticketSn=" + id+"&species=1"+"&status="+status+"&activityId=";
-                }
-            }
+            <#--function updateStatus(id,status) {-->
+            <#--    //旅游券状态为未使用,操作类型为核销时-->
+            <#--    var activityId;-->
+            <#--    if(status==0&isReply==0){-->
+            <#--        // activityId-->
+            <#--    }-->
+            <#--    if (confirm('要恢复该券，并清除报名信息吗？')) {-->
+            <#--        var url = "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";-->
+            <#--        location.href = url + "?ticketSn=" + id+"&species=1"+"&status="+status+"&activityId=";-->
+            <#--    }-->
+            <#--}-->
             //核销弹窗
-            function toDialog(id,status,isReply) {
-                layer.open({
-                    type: 2,
-                    move: false,
-                    shade: [0.3, '#393D49'],//开启遮罩层
-                    title: '选择',
-                    content: ['${base}/admin/shop_activity_common/findShopGoodList.jhtml', 'yes'],
-                    area: ['800px', '600px']
-                });
-                $("#ticketSn").val(id);
-                $("#status").val(status);
-                $("#activityId").val(activityId);
-            }
+            <#--function toDialog(id,status) {-->
+            <#--    layer.open({-->
+            <#--        type: 2,-->
+            <#--        move: false,-->
+            <#--        shade: [0.3, '#393D49'],//开启遮罩层-->
+            <#--        title: '选择',-->
+            <#--        content: ['${base}/admin/shop_activity_common/findShopGoodList.jhtml', 'yes'],-->
+            <#--        area: ['800px', '600px']-->
+            <#--    });-->
+            <#--    $("#ticketSn").val(id);-->
+            <#--    $("#status").val(status);-->
+            <#--    $("#activityId").val(activityId);-->
+            <#--}-->
 
             function appendInfo(id) {
                 console.log("旅游券编号"+$("#ticketSn").val())
