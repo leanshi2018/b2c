@@ -1095,6 +1095,9 @@ public class UserIntegrationAPIController extends BaseController {
         if(rdMmRelation.getMmStatus()!=0){
             return ApiUtils.error("受赠人会员处于非正常状态");
         }
+        if(!StringUtil.isEmpty(message)&&message.length()>50){
+            return ApiUtils.error("交易留言已超过50字限制");
+        }
         try {
             BigDecimal total = new BigDecimal(amount);
             if(rdMmAccountInfo.getBonusBlance().compareTo(total)==-1){
