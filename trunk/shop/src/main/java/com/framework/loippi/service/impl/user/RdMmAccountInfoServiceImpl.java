@@ -309,13 +309,6 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 		RdMmBasicInfo outBasic = rdMmBasicInfoDao.findByMCode(rdMmAccountInfo.getMmCode());
 		RdMmBasicInfo inBasic = rdMmBasicInfoDao.findByMCode(acceptAccountInfo.getMmCode());
 		Long batchNum = twiterIdService.getTwiterId();
-		//1.扣减积分
-		//1.1扣减转账人
-		rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(total).setScale(2,BigDecimal.ROUND_HALF_UP));
-		rdMmAccountInfoDao.update(rdMmAccountInfo);
-		//1.2增加收款人
-		acceptAccountInfo.setBonusBlance(acceptAccountInfo.getBonusBlance().add(total).setScale(2,BigDecimal.ROUND_HALF_UP));
-		rdMmAccountInfoDao.update(acceptAccountInfo);
 		//2.生成积分变更日志
 		//2.1生成转账人积分扣减日志
 		String period = rdSysPeriodDao.getSysPeriodService(new Date());
@@ -355,7 +348,7 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
 		inLog.setTrMmCode(rdMmAccountInfo.getMmCode());
 		inLog.setBlanceBefore(acceptAccountInfo.getBonusBlance());
 		inLog.setAmount(total);
-		BigDecimal bonusAfter1 = rdMmAccountInfo.getBonusBlance().add(total);
+		BigDecimal bonusAfter1 = acceptAccountInfo.getBonusBlance().add(total);
 		inLog.setBlanceAfter(bonusAfter1);
 		inLog.setTransDate(new Date());
 		if(period!=null){
@@ -370,6 +363,13 @@ public class RdMmAccountInfoServiceImpl extends GenericServiceImpl<RdMmAccountIn
         inLog.setAutohrizeDesc(message);
         inLog.setAutohrizeBy(outBasic.getMmNickName());
 		rdMmAccountLogDao.insert(inLog);
+		//1.扣减积分
+		//1.1扣减转账人
+		rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(total).setScale(2,BigDecimal.ROUND_HALF_UP));
+		rdMmAccountInfoDao.update(rdMmAccountInfo);
+		//1.2增加收款人
+		acceptAccountInfo.setBonusBlance(acceptAccountInfo.getBonusBlance().add(total).setScale(2,BigDecimal.ROUND_HALF_UP));
+		rdMmAccountInfoDao.update(acceptAccountInfo);
 		//3.生成消息通知
 		//3.1转账人消息通知
 		ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
