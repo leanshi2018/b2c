@@ -3,12 +3,7 @@ package com.framework.loippi.controller.user;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -842,9 +837,6 @@ public class UserIntegrationAPIController extends BaseController {
         }else {
              totalPageNum = count / pageSize + 1;
         }
-        System.out.println(count);
-        System.out.println(pageSize);
-        System.out.println(totalPageNum);
         List<RdMmAccountLog> rdMmAccountLogList = RdMmAccountLogService.findByPage(pager).getContent();
         return ApiUtils.success(IntegrationListResult.build(rdMmAccountLogList, type,totalPageNum));
     }
@@ -986,11 +978,18 @@ public class UserIntegrationAPIController extends BaseController {
             RdMmBasicInfo infoMain = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
             infos.add(infoMain);//如果当前登录人为次店，则先将主店添加进集合
             list=rdMmBasicInfoService.findBranch(infoMain.getMmCode());
-            for (RdMmBasicInfo basicInfo : list) {
+            Iterator<RdMmBasicInfo> iterator = list.iterator();
+            while (iterator.hasNext()){
+                RdMmBasicInfo next = iterator.next();
+                if(next.getMmCode().equals(rdMmBasicInfo.getMmCode())){
+                    iterator.remove();
+                }
+            }
+            /*for (RdMmBasicInfo basicInfo : list) {
                 if(basicInfo.getMmCode().equals(rdMmBasicInfo.getMmCode())){
                     list.remove(basicInfo);
                 }
-            }
+            }*/
         }
         infos.addAll(list);
         HashMap<String, RdMmBasicInfo> map = new HashMap<>();
@@ -1007,6 +1006,10 @@ public class UserIntegrationAPIController extends BaseController {
             if(licenses!=null&&licenses.size()>0){
                 for (CompanyLicense licens : licenses) {
                     if(licens.getMCode().equals(companyLicense.getMCode())){
+                        continue;
+                    }
+                    RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode",licens.getMCode());
+                    if(rdMmRelation.getMmStatus()!=0){
                         continue;
                     }
                     //判断infos是否存在licens对应的会员，如果不存在，加入infos
@@ -1028,6 +1031,7 @@ public class UserIntegrationAPIController extends BaseController {
         for (RdMmBasicInfo info : infos) {
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode",info.getMmCode());
             relationMap.put(rdMmRelation.getMmCode(),rdMmRelation);
+
         }
         return ApiUtils.success(BopTransMemResult.build(infos,relationMap,rankMap));
     }
@@ -1083,6 +1087,13 @@ public class UserIntegrationAPIController extends BaseController {
         }
         if(rdMmAccountInfo.getMmCode().equals(acceptCode)){
             return ApiUtils.error("奖励积分不可以转给自己");
+        }
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", acceptCode);
+        if(rdMmRelation==null||rdMmRelation.getMmStatus()==null){
+            return ApiUtils.error("受赠人会员信息异常");
+        }
+        if(rdMmRelation.getMmStatus()!=0){
+            return ApiUtils.error("受赠人会员处于非正常状态");
         }
         try {
             BigDecimal total = new BigDecimal(amount);
