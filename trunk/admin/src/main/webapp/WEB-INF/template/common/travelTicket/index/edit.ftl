@@ -33,12 +33,10 @@
         <form id="add_form" action="${base}/admin/travel/addOrUpdate.jhtml" method="post">
             <table class="table tb-type2">
                 <#--<input type="hidden" name="id" <#if shopActivityPromotionRule ??> value="${shopActivityPromotionRule.id}" </#if> />-->
-                <tr>
-                    <td colspan="2" class="required">旅游券名称：</td>
-                </tr>
                 <tr class="noborder">
+                    <td colspan="2" class="required">旅游券名称：</td>
                     <td class="vatop  ">
-                        <input type="text" name="travelName" id="ruleTitle" value="${travelName}" class="form-control" maxlength="200"/>
+                        <input type="text" name="travelName" id="ruleTitle" value="${rdTravelTicket.travelName}" class="form-control" maxlength="200"/>
                     </td>
                     <td class="vatop tips"></td>
                 </tr>
@@ -60,8 +58,8 @@
 <#--                        <#else>-->
                             <p>
                         <span class="sign">
-                            <input class="w300 text" name="image" id="image" type="hidden" value="${image}"/>
-                            <img src="${image!''} " name="image" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
+                            <input class="w300 text" name="image" id="image" type="hidden" value="${rdTravelTicket.image}"/>
+                            <img src="${rdTravelTicket.image!''} " name="image" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
                               </span>
                             </p>
 <#--                        </#if>-->
@@ -74,7 +72,7 @@
                 </tr>
                 <tr class="noborder">
                     <td class="vatop  ">
-                        <input type="text" name="ticketPrice" id="ticketPrice" value="${ticketPrice}" class="form-control" maxlength="200"/>
+                        <input type="text" name="ticketPrice" id="ticketPrice" value="${rdTravelTicket.ticketPrice}" class="form-control" maxlength="200"/>
                     </td>
                     <td class="vatop tips"></td>
                 </tr>
@@ -83,7 +81,7 @@
                 </tr>
                 <tr class="noborder">
                     <td class="vatop  ">
-                        <input type="text" name="remark" id="remark" value="${remark}" class="form-control" maxlength="200"/>
+                        <input type="text" name="remark" id="remark" value="${rdTravelTicket.remark}" class="form-control" maxlength="200"/>
                     </td>
                     <td class="vatop tips"></td>
                 </tr>
@@ -97,7 +95,7 @@
 <#--                                   id="useStartTime" name="useStartTime" value="${useStartTime?string("yyyy-MM-dd")}"/>-->
 <#--                        <#else>-->
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useStartTime" name="useStartTime" value=""/>
+                                   id="useStartTime" name="useStartTime" value="${rdTravelTicket.useStartTime}"/>
 <#--                        </#if>-->
                         <span class="error-message"></span>
                     </td>
@@ -112,7 +110,7 @@
 <#--                                   id="useEndTime" name="useEndTime" value="${useEndTime?string("yyyy-MM-dd")}"/>-->
 <#--                        <#else>-->
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useEndTime" name="useEndTime" value=""/>
+                                   id="useEndTime" name="useEndTime" value="${rdTravelTicket.useEndTime}"/>
 <#--                        </#if>-->
                         <span class="error-message"></span>
                     </td>
@@ -164,7 +162,7 @@
                         digits: true,
                         min: 1,
                         max: 255
-                    }
+                    },
                     remark:{
                         required: true
                     },

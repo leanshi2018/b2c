@@ -32,28 +32,52 @@
         </div>
         <form id="add_form" action="${base}/admin/travel/addOrUpdate.jhtml" method="post">
             <table class="table tb-type2">
-                <#--<input type="hidden" name="id" <#if shopActivityPromotionRule ??> value="${shopActivityPromotionRule.id}" </#if> />-->
+<#--                <input type="hidden" name="id" <#if travelActivity ??> value="${travelActivity.id}" </#if> />-->
                 <tr class="noborder">
-                    <td colspan="2" class="required">旅游活动名称：</td>
-                    <td class="vatop ">
-                        <input type="text" name="activityName" id="activityName" value="${activityName}" class="form-control" maxlength="200"/>
+                    <td class="required">
+                        <em class="pngFix"></em>旅游活动名称
                     </td>
-                    <td class="vatop tips"></td>
+                    <td>
+                        <#if travelActivity??>
+                            <input type="text" name="activityName" id="activityName" value="${travelActivity.activityName}" class="form-control" maxlength="200"/>
+                        <#else>
+                            <input type="text" name="activityName" id="activityName" value="${activityName}" class="form-control" maxlength="200"/>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
                 </tr>
                 <tr class="noborder">
-                    <td><em class="pngFix"></em>活动封面</td>
                     <td>
-                        <p>
+                        <em class="pngFix"></em>活动封面
+                    </td>
+                    <td>
+                        <#if travelActivity??>
+                            <p>
                         <span class="sign">
-                            <input class="w300 text" name="coverImage" id="coverImage" type="hidden" value="${coverImage}"/>
-                            <img src="${coverImage!''} " name="coverImage" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
-                        </span>
-                        </p>
-                        <p><input type="file" class="file" name="myfiles" id="mainPictureImg0" onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','coverImage');"/></p>
+                            <input class="w300 text" name="coverImage" id="coverImage" type="hidden"
+                                   readonly   value="${travelActivity.coverImage}"/>
+                            <img src="${travelActivity.coverImage!''} " name="coverImage" id="mainPictureImg" nc_type="logo1"
+                                 width="188"
+                                 height="144"/>
+                              </span>
+                            </p>
+                        <#else>
+                            <p>
+                        <span class="sign">
+                            <input class="w300 text" name="coverImage" id="coverImage" type="hidden"
+                                   value="${coverImage}"/>
+                            <img src="${coverImage!''} " name="coverImage" id="mainPictureImg" nc_type="logo1"
+                                 width="188"
+                                 height="144"/>
+                              </span>
+                            </p>
+                        </#if>
+                        <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
+                                  onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','coverImage');"/></p>
                         <span class="error-message">建议上传图片尺寸351*184</span>
                     </td>
                 </tr>
-                <dd>
+                <tr>
                     <div class="pic_list">
                         <input type="hidden" id="goods_images_isupload" value="true"/>
                         <ul id="menu" class="menu">
@@ -87,7 +111,7 @@
                             </div>
                         </div>
                     </div>
-                </dd>
+                </tr>
                 <tr class="noborder">
                     <td colspan="2" class="required">活动状态：</td>
                     <td class="vatop  ">
@@ -204,7 +228,7 @@
                         digits: true,
                         min: 1,
                         max: 255
-                    }
+                    },
                     remark:{
                         required: true
                     },

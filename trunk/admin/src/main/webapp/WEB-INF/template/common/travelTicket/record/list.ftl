@@ -156,9 +156,9 @@
                 </tbody>
                 <tfoot class="tfoot">
                 <tr>
-                    <td colspan="16">
-                        <@layout.pager page/>
-                    </td>
+<#--                    <td colspan="16">-->
+<#--                        <@layout.pager page/>-->
+<#--                    </td>-->
                 </tr>
                 </tfoot>
             </table>
