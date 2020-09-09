@@ -23,21 +23,21 @@
         <div class="fixed-empty"></div>
 
         <!-- 搜索栏 -->
-        <form method="post" name="formSearch" id="formSearch" action="${base}">
+        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/travel/travelMemInfo/list.jhtml">
             <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">会员号</th>
-                    <td class="w160"><input type="text" class="text w150" name="id" value="${id}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="activityId" value="${activityId}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">活动ID</th>
-                    <td class="w160"><input type="text" class="text w150" name="" value="${}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="mmCode" value="${mmCode}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
-                        <a href="${base}/admin/travel/travelTicket/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
+                        <a href="${base}/admin/travel/travelMemInfo/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
                         <a class="btn btn-outline btn-info btn-xs" id="btn-add-loippi exportExcell" href="javascript:void(0)"
                            onclick="exportExcell('${page.pageNumber}')"><i class="fa fa-plus"></i>导出Excel</a>
                     </td>
@@ -59,35 +59,35 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list travelTicketList.content as list>
+                <#list rdTravelMemInfoList.content as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
-                            ${list.id}
+                            ${list.mmCode}
                         </td>
                         <td style="text-align: left">
-                            ${list.travelName}
+                            ${list.activityId}
                         </td>
                         <td style="text-align: left">
-                            ${list.ticketPrice}
+                            ${list.name}
                         </td>
                         <td style="text-align: left">
-                            ${list.issueNum}
+
                         </td>
                         <td style="text-align: left">
-                            ${list.createName}
+                            ${list.idCard}
                         </td>
                         <td style="text-align: left">
-                            ${list.createName}
+                            ${list.mobile}
                         </td>
                     </tr>
                 </#list>
                 </tbody>
                 <tfoot class="tfoot">
                 <tr>
-                    <td colspan="16">
-                        <@layout.pager page/>
-                    </td>
+<#--                    <td colspan="16">-->
+<#--                        <@layout.pager page/>-->
+<#--                    </td>-->
                 </tr>
                 </tfoot>
             </table>
