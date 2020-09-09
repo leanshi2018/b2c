@@ -123,4 +123,14 @@ public class RdTravelActivity implements GenericEntity {
     private Date searchTime;
     //查询字段
     private String activityNameLike;
+
+    /**
+     * 报名开始时间
+     */
+    private String startTimeStr;
+
+    /**
+     * 报名结束时间
+     */
+    private String endTimeStr;
 }
