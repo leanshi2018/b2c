@@ -891,12 +891,25 @@ public class TravelController {
 			model.addAttribute("msg", "旅游活动规则不可以为空");
 			return Constants.MSG_URL;
 		}
-		if(travelActivity.getStartTime()==null){
+		if(StringUtil.isEmpty(travelActivity.getStartTimeStr())){
 			model.addAttribute("msg", "旅游活动报名开始时间不可以为空");
 			return Constants.MSG_URL;
 		}
-		if(travelActivity.getEndTime()==null){
+		if(StringUtil.isEmpty(travelActivity.getEndTimeStr())){
 			model.addAttribute("msg", "旅游活动报名结束时间不可以为空");
+			return Constants.MSG_URL;
+		}
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date start=null;
+		Date end=null;
+		try {
+			start = format.parse(travelActivity.getStartTimeStr() + " 00:00:00");
+			end = format.parse(travelActivity.getEndTimeStr() + " 23:59:59");
+			travelActivity.setStartTime(start);
+			travelActivity.setEndTime(end);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			model.addAttribute("msg", "传入时间格式错误");
 			return Constants.MSG_URL;
 		}
 		if(travelActivity.getNumCeiling()==null){
