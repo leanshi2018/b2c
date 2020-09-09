@@ -8,6 +8,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -613,12 +617,25 @@ public class TravelController {
 			model.addAttribute("msg", "旅游券名称不可以为空");
 			return Constants.MSG_URL;
 		}
-		if(travelTicket.getUseStartTime()==null){
+		if(StringUtil.isEmpty(travelTicket.getUseStartTimeStr())){
 			model.addAttribute("msg", "旅游券使用开始时间为空");
 			return Constants.MSG_URL;
 		}
-		if(travelTicket.getUseEndTime()==null){
+		if(StringUtil.isEmpty(travelTicket.getUseEndTimeStr())){
 			model.addAttribute("msg", "旅游券使用结束时间为空");
+			return Constants.MSG_URL;
+		}
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date start=null;
+		Date end=null;
+		try {
+			start = format.parse(travelTicket.getUseStartTimeStr() + " 00:00:00");
+			end = format.parse(travelTicket.getUseEndTimeStr() + " 23:59:59");
+			travelTicket.setUseStartTime(start);
+			travelTicket.setUseEndTime(end);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			model.addAttribute("msg", "传入时间格式错误");
 			return Constants.MSG_URL;
 		}
 		if(travelTicket.getTicketPrice()==null){
