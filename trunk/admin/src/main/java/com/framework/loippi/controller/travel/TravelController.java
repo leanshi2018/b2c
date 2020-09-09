@@ -3,20 +3,20 @@ package com.framework.loippi.controller.travel;
 
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.travel.*;
+import com.framework.loippi.result.travel.RdTravelActivityResult;
 import com.framework.loippi.service.travel.*;
 import com.framework.loippi.utils.JacksonUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -828,7 +828,14 @@ public class TravelController {
 	public String activityForward(Model model, @RequestParam(value = "id",required = false) Long id) {
 		if (id != null && id != 0) {
 			RdTravelActivity travelActivity = rdTravelActivityService.find(id);
-			model.addAttribute("travelActivity",travelActivity);
+			RdTravelActivityResult result = new RdTravelActivityResult();
+			BeanUtils.copyProperties(travelActivity,result);
+			if(travelActivity.getImage()!=null){
+				String[] strings = travelActivity.getImage().split(",");
+				List<String> list = Arrays.asList(strings);
+				result.setImageList(list);
+			}
+			model.addAttribute("travelActivity",result);
 			return "/common/travelTicket/activity/edit";//跳往新增或编辑页面
 		} else {
 			model.addAttribute("travelActivity", null);
