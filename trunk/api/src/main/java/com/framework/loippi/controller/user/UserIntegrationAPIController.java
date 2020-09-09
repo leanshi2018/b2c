@@ -3,15 +3,18 @@ package com.framework.loippi.controller.user;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.framework.loippi.entity.companyInfo.CompanyLicense;
-import com.framework.loippi.result.integral.BopTransMemResult;
-import com.framework.loippi.service.companyInfo.CompanyLicenseService;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +28,7 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.companyInfo.CompanyLicense;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -36,11 +40,13 @@ import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.integral.BopTransMemResult;
 import com.framework.loippi.result.user.IntegrationBuildResult;
 import com.framework.loippi.result.user.IntegrationDetailResult;
 import com.framework.loippi.result.user.IntegrationListResult;
 import com.framework.loippi.result.user.IntegrationMemberListResult;
 import com.framework.loippi.result.user.UserIntegrationListResult;
+import com.framework.loippi.service.companyInfo.CompanyLicenseService;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.MemberQualificationService;
@@ -1002,7 +1008,7 @@ public class UserIntegrationAPIController extends BaseController {
         if(companyLicenses!=null&&companyLicenses.size()>0){
             CompanyLicense companyLicense = companyLicenses.get(0);
             //3.2获取统一社保号，进行匹配
-            List<CompanyLicense> licenses = companyLicenseService.findList(Paramap.create().put("creditCode",companyLicense.getAuditCode()).put("status",2));
+            List<CompanyLicense> licenses = companyLicenseService.findList(Paramap.create().put("creditCode",companyLicense.getCreditCode()).put("status",2));
             if(licenses!=null&&licenses.size()>0){
                 for (CompanyLicense licens : licenses) {
                     if(licens.getMCode().equals(companyLicense.getMCode())){

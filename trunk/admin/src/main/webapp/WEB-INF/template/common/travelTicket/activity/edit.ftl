@@ -82,11 +82,13 @@
                 </tr>
                 <tr class="noborder displays" >
                     <td class="required">
-                        <em class="pngFix">活动图片</em>
+                        <em class="pngFix">
+                            <label for="image" class="validation">活动图片 :</label>
+                        </em>
                     </td>
                     <td>
                         <div class="pic_list">
-                            <input type="hidden" id="goods_images_isupload" value="true"/>
+                            <input type="hidden" id="image" name="image" value="true"/>
                             <ul id="menu" class="menu" >
                                 <li class="active" id="li_1">
                                     <a href="javascript:void(0);"
@@ -103,11 +105,13 @@
                                 <div id="demo"></div>
                                 <div class="standard">
                                     <div>
-                                        <ul style="min-height: 130px;overflow:auto;overflow-x: hidden;border: 1px solid #ccc;"
-                                            id="photoView01" class="gbin1-list">
-                                            <#if imageList??>
-                                                <#list imageList as imgSrc>
-                                                    <li style='height:120px;display:inline'><img class='img' style='width:100px;height:100px' src='${imgSrc}'/><a href='javascript:void(0)' imageSrc='${imgSrc}' name='deletePhoto'><@spring.message "del"/></a></li>
+                                        <ul style="min-height: 130px;overflow:auto;overflow-x: hidden;border: 1px solid #ccc;" id="photoView01" class="gbin1-list">
+                                            <#if travelActivity.image??>
+                                                <#list travelActivity.image as imgSrc>
+                                                    <li style='height:120px;display:inline'>
+                                                        <img class='img recommendImage' style='width:100px;height:100px' src='${imgSrc}'/>
+                                                        <a href='javascript:void(0)' imageSrc='${imgSrc}' name='deletePhoto'><@spring.message "del"/></a>
+                                                    </li>
                                                 </#list>
                                             </#if>
                                         </ul>
@@ -287,6 +291,27 @@
                 }
             });
         }
+        function moreAjaxFileUploads(imageid, imgView) {
+            var $img = $(imgView);
+            $.ajaxFileUpload({
+                url: '${base}/admin/fileupload/uploadImage.jhtml',
+                data: '',
+                secureuri: false,
+                fileElementId: imageid,
+                dataType: 'json',
+                fileSize: 5120000,
+                allowType: 'jpg,jpeg,png,JPG,JPEG,PNG',
+                success: function (data) {        //服务器响应成功时的处理函数
+                    if (data.success) {
+                        var photoServcerSrc = data.result;
+                        $("#photoView01").append("<li style='height:120px;display:inline'><img class='img recommendImage' style='width:100px;height:100px' src='" + photoServcerSrc + "'/><a href='javascript:void(0)' imageSrc='" + photoServcerSrc + "' name='deletePhoto'> 删除</a></li>");
+                    }
+                    $('.gbin1-list').sortable();
+                },
+                error: function (data, status, e) { //服务器响应失败时的处理函数
+                }
+            });
+        }
         $(document).ready(function () {
             $("#add_form").validate({
                 rules: {
@@ -323,10 +348,18 @@
             //表单提交
             $("#subForm").click(function () {
                 $(":radio").not(":checked").parent().find("input[type='text']").val("");
+                var imageStr = "";
+                var recommendImage = $(".recommendImage");
+                recommendImage.each(function () {
+                    imageStr += $(this).attr("src");
+                    imageStr += ",";
+                });
+                $("#image").val(imageStr);
                 if($("#add_form").validate()){
                     $('#add_form').submit();
                 }
-            });
+
+
         });
 
     </script>
