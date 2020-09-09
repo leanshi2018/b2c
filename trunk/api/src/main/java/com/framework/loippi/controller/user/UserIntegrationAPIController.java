@@ -1123,7 +1123,7 @@ public class UserIntegrationAPIController extends BaseController {
             return ApiUtils.success(map);
         } catch (Exception e) {
             e.printStackTrace();
-            return ApiUtils.error("请出入正确的积分数量");
+            return ApiUtils.error("网络异常，请稍后重试");
         }
     }
 }
