@@ -3,15 +3,13 @@ package com.framework.loippi.controller.travel;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.lang.reflect.Array;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -715,7 +713,7 @@ public class TravelController {
 		Pageable pager = new Pageable();
 		pager.setPageNumber(pageNo);
 		pager.setPageSize(pageSize);
-		pager.setOrderProperty("create_time");
+		pager.setOrderProperty("own_time");
 		pager.setOrderDirection(Order.Direction.DESC);
 		pager.setParameter(detail);
 		Page<RdTravelTicketDetail> page = ticketDetailService.findByPage(pager);
