@@ -129,10 +129,10 @@
                     <td>
                         <#if rdTravelTicket??>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useEndTime" name="useEndTime" value="${rdTravelTicket.useEndTime?string("yyyy-MM-dd")}"/>
+                                   id="useEndTimeStr" name="useEndTimeStr" value="${rdTravelTicket.useEndTimeStr?string("yyyy-MM-dd")}"/>
                         <#else>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useEndTime" name="useEndTime" value=""/>
+                                   id="useEndTimeStr" name="useEndTimeStr" value=""/>
                         </#if>
                         <span class="error-message"></span>
                     </td>
@@ -193,7 +193,7 @@
                     useStartTimeStr:{
                         required: true
                     },
-                    useEndTime:{
+                    useEndTimeStr:{
                         required: true
                     }
                 },
@@ -215,7 +215,7 @@
                     useStartTimeStr:{
                         required: "请选择使用开始时间!"
                     },
-                    useEndTime:{
+                    useEndTimeStr:{
                         required: "请选择使用结束时间!"
                     }
                 }
