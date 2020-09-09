@@ -13,7 +13,7 @@
     <script type="text/javascript" src="${base}/res/js/layer/layer.js"></script>
     <script type="text/javascript" src="${base}/res/js/jquery.validation.min.js"></script>
     <script type="text/javascript" src="${base}/res/js/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
-    <script type="text/javascript" src="${base}/res/js/ajaxfileupload/ajaxfileupload.js"></script>
+    <script type="text/javascript" src="${base}/res/js/jquery.ajaxContent.pack.js"></script>
     <script type="text/javascript" src="${base}/res/js/ajaxfileupload/ajaxfileupload.js"></script>
     <link rel="stylesheet" type="text/css" href="${base}/res/js/jquery-ui/themes/ui-lightness/jquery.ui.css">
     <link rel="stylesheet" type="text/css" href="${base}/resources/css/plugins/colpick/css/colpick.css"/>
@@ -83,12 +83,12 @@
                 <tr class="noborder displays" >
                     <td class="required">
                         <em class="pngFix">
-                            <label for="image" class="validation">活动图片 :</label>
+                            <label for="imageList" class="validation">活动图片 :</label>
                         </em>
                     </td>
                     <td>
                         <div class="pic_list">
-                            <input type="hidden" id="image" name="image" value="true"/>
+                            <input type="hidden" id="imageList" name="imageList"/>
                             <ul id="menu" class="menu" >
                                 <li class="active" id="li_1">
                                     <a href="javascript:void(0);"
@@ -106,8 +106,8 @@
                                 <div class="standard">
                                     <div>
                                         <ul style="min-height: 130px;overflow:auto;overflow-x: hidden;border: 1px solid #ccc;" id="photoView01" class="gbin1-list">
-                                            <#if travelActivity.image??>
-                                                <#list travelActivity.image as imgSrc>
+                                            <#if travelActivity.imageList??>
+                                                <#list travelActivity.imageList as imgSrc>
                                                     <li style='height:120px;display:inline'>
                                                         <img class='img recommendImage' style='width:100px;height:100px' src='${imgSrc}'/>
                                                         <a href='javascript:void(0)' imageSrc='${imgSrc}' name='deletePhoto'><@spring.message "del"/></a>
@@ -152,7 +152,7 @@
                     </td>
                     <td>
                         <#if travelActivity??>
-                            <input type="text" name="activityCost" id="activityCost" value="${travelActivity.activityCost}" class="form-control" maxlength="200"/>
+                            <input type="text" name="activityCost" id="activityCost" value="${travelActivity.activityCost}" readonly class="form-control" maxlength="200"/>
                         <#else>
                             <input type="text" name="activityCost" id="activityCost" value="${activityCost}" class="form-control" maxlength="200"/>
                         </#if>
@@ -260,6 +260,9 @@
         </form>
     </div>
     <script>
+        $("[name=deletePhoto]").live("click", function(){
+            $(this).parent().remove();
+        });
         //参团人数上限
         $("#totalnums").click(function() {
             $("#ts").attr("name","numCeiling");
@@ -319,13 +322,27 @@
                         required: true,
                         maxlength: 200
                     },
-                    activityCost: {
-                        digits: true
-                    },
-                    remark:{
+                    coverImage: {
                         required: true
                     },
-                    startTime:{
+                    imageList: {
+                        required: true
+                    },
+                    activityCost: {
+                        required: true,
+                        digits: true
+                    },
+                    numCeiling:{
+                        required: true,
+                        digits: true
+                    },
+                    remark: {
+                        required: true
+                    },
+                    startTime: {
+                        required: true
+                    },
+                    endTime:{
                         required: true
                     }
                 },
@@ -334,14 +351,28 @@
                         required: "请输入旅游活动名称！",
                         maxlength: '标题最多100个字符'
                     },
+                    coverImage: {
+                        required: '请上传封面图片!'
+                    },
+                    imageList: {
+                        required: '请上传图片!'
+                    },
                     activityCost: {
+                        required: '请上传图片!',
+                        digits: '只能是数字'
+                    },
+                    numCeiling:{
+                        required: '请输入参团人数上限!',
                         digits: '只能是数字'
                     },
                     remark: {
                         required: "请输入活动规则！"
                     },
-                    startTime:{
+                    startTime: {
                         required: "请选择使用开始时间!"
+                    },
+                    endTime: {
+                        required: "请选择使用结束时间!"
                     }
                 }
             });
@@ -354,14 +385,14 @@
                     imageStr += $(this).attr("src");
                     imageStr += ",";
                 });
-                $("#image").val(imageStr);
-                if($("#add_form").validate()){
+                $("#mainPictureImg0").attr("name","");
+                $("#gradeImage").attr("name","");
+                $("#imageList").val(imageStr);
+                if ($("#add_form").validate()) {
                     $('#add_form').submit();
                 }
-
-
+            });
         });
-
     </script>
     <div class="clear"></div>
 </@layout.body>

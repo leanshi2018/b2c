@@ -77,9 +77,9 @@
             </table>
         </form>
         <form method="post" id='form_list'>
-            <input type="hidden"  id="ticketSn" value="">
-            <input type="hidden"  id="status" value="">
-            <input type="hidden"  id="activityId" value="">
+<#--            <input type="hidden"  id="ticketSn" value="">-->
+<#--            <input type="hidden"  id="status" value="">-->
+<#--            <input type="hidden"  id="activityId" value="">-->
             <table class="table tb-type2">
                 <thead>
                 <tr class="thead">
@@ -96,7 +96,7 @@
                     <th class="align-center">报名的旅游ID</th>
                     <th class="align-center">报名的旅游名称</th>
                     <th class="align-center">更新人</th>
-                    <th class=" align-center"><@spring.message "operation"/></th>
+                    <th class="align-center"><@spring.message "operation"/></th>
                 </tr>
                 </thead>
                 <tbody>

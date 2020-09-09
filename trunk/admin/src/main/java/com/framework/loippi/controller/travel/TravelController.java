@@ -1,15 +1,13 @@
 package com.framework.loippi.controller.travel;
 
 
-import com.framework.loippi.entity.ShopCommonMessage;
-import com.framework.loippi.entity.travel.*;
-import com.framework.loippi.result.travel.RdTravelActivityResult;
-import com.framework.loippi.service.travel.*;
-import com.framework.loippi.utils.JacksonUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -29,15 +27,20 @@ import com.framework.loippi.consts.Constants;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.travel.RdTourismCompliance;
 import com.framework.loippi.entity.travel.RdTravelActivity;
+import com.framework.loippi.entity.travel.RdTravelCost;
+import com.framework.loippi.entity.travel.RdTravelMemInfo;
 import com.framework.loippi.entity.travel.RdTravelTicket;
 import com.framework.loippi.entity.travel.RdTravelTicketDetail;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.result.travel.RdTravelActivityResult;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.travel.RdTourismComplianceService;
 import com.framework.loippi.service.travel.RdTravelActivityService;
+import com.framework.loippi.service.travel.RdTravelCostService;
+import com.framework.loippi.service.travel.RdTravelMemInfoService;
 import com.framework.loippi.service.travel.RdTravelTicketDetailService;
 import com.framework.loippi.service.travel.RdTravelTicketService;
 import com.framework.loippi.service.user.MemberQualificationService;
@@ -605,6 +608,7 @@ public class TravelController {
 	 */
 	@RequestMapping(value = "/addOrUpdate",method = RequestMethod.POST)
 	public String addOrUpdate(HttpServletRequest request, ModelMap model,@ModelAttribute RdTravelTicket travelTicket) {
+		System.out.println("进入旅游券添加");
 		if(StringUtil.isEmpty(travelTicket.getTravelName())){
 			model.addAttribute("msg", "旅游券名称不可以为空");
 			return Constants.MSG_URL;
@@ -851,7 +855,7 @@ public class TravelController {
 	 * @return
 	 */
 	@RequestMapping(value = "/activity/addOrUpdate",method = RequestMethod.POST)
-	public String addOrUpdate(HttpServletRequest request, ModelMap model,@ModelAttribute RdTravelActivity travelActivity) {
+	public String addOrUpdateActivity(HttpServletRequest request, ModelMap model,@ModelAttribute RdTravelActivity travelActivity) {
 		if(StringUtil.isEmpty(travelActivity.getActivityName())){
 			model.addAttribute("msg", "旅游活动名称不可以为空");
 			return Constants.MSG_URL;
@@ -953,7 +957,7 @@ public class TravelController {
 		pager.setParameter(costInfo);
 		Page<RdTravelCost> page = rdTravelCostService.findByPage(pager);
 		model.addAttribute("rdTravelCostList", page);
-		return " /common/travelTicket/price/list";//TODO
+		return "/common/travelTicket/price/list";//TODO
 	}
 
 	/**

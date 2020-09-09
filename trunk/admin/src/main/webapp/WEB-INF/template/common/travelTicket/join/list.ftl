@@ -39,7 +39,7 @@
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
                         <a href="${base}/admin/travel/travelMemInfo/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
                         <a class="btn btn-outline btn-info btn-xs" id="btn-add-loippi exportExcell" href="javascript:void(0)"
-                           onclick="exportExcell('${page.pageNo}')"><i class="fa fa-plus"></i>导出Excel</a>
+                           onclick="exportExcell('${rdTravelMemInfoList.pageNo}')"><i class="fa fa-plus"></i>导出Excel</a>
                     </td>
                 </tr>
                 </tbody>

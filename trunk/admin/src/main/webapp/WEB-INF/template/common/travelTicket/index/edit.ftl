@@ -114,10 +114,10 @@
                     <td>
                         <#if rdTravelTicket??>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useStartTime" name="useStartTime" value="${rdTravelTicket.useStartTime?string("yyyy-MM-dd")}"/>
+                                   id="useStartTimeStr" name="useStartTimeStr" value="${rdTravelTicket.useStartTimeStr?string("yyyy-MM-dd")}"/>
                         <#else>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useStartTime" name="useStartTime" value=""/>
+                                   id="useStartTimeStr" name="useStartTimeStr" value=""/>
                         </#if>
                         <span class="error-message"></span>
                     </td>
@@ -142,8 +142,8 @@
             <div class="hr-line-dashed">
                 <div class="form-group">
                     <div class="col-sm-12 col-sm-offset-10">
-                        <button type="button" class="btn btn-default" onclick="window.history.back();">返回</button>
-                        <button class="btn btn-success" id="subForm" type="submit">提交</button>
+                        <a class="btn" href="javascript:history.go(-1);" style="float:left"><span><@spring.message "button.back"/></span></a>
+                        <a class="btn btn-success" id="subForm" type="submit">提交</a>
                     </div>
                 </div>
             </div>
@@ -180,13 +180,20 @@
                         required: true,
                         maxlength: 200
                     },
+                    image:{
+                        required: true
+                    },
                     ticketPrice: {
-                        digits: true,
+                        required: true,
+                        digits: true
                     },
                     remark:{
                         required: true
                     },
-                    useStartTime:{
+                    useStartTimeStr:{
+                        required: true
+                    },
+                    useEndTime:{
                         required: true
                     }
                 },
@@ -195,20 +202,28 @@
                         required: "请输入旅游券名称！",
                         maxlength: '标题最多100个字符'
                     },
+                    image: {
+                        required: "请上传旅游券图片！"
+                    },
                     ticketPrice: {
+                        required: "请输入面值！",
                         digits: '只能是数字'
                     },
                     remark: {
                         required: "请输入旅游券规则！"
                     },
-                    useStartTime:{
+                    useStartTimeStr:{
                         required: "请选择使用开始时间!"
+                    },
+                    useEndTime:{
+                        required: "请选择使用结束时间!"
                     }
                 }
             });
             //表单提交
             $("#subForm").click(function () {
                 $(":radio").not(":checked").parent().find("input[type='text']").val("");
+                $("#mainPictureImg0").attr("name","");
                 if($("#add_form").validate()){
                     $('#add_form').submit();
                 }
