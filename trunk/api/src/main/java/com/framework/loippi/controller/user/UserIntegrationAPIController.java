@@ -3,6 +3,7 @@ package com.framework.loippi.controller.user;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 
 import javax.annotation.Resource;
@@ -190,6 +191,9 @@ public class UserIntegrationAPIController extends BaseController {
                 .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        String format = new DecimalFormat("#.00").format(integration);
+        BigDecimal amount = new BigDecimal(format);
+        System.out.println(format);
         if (integration <= 0) {
             return ApiUtils.error("所转积分不合理");
         }
@@ -200,7 +204,7 @@ public class UserIntegrationAPIController extends BaseController {
             return ApiUtils.error("支付密码错误");
         }
 
-        if (rdMmAccountInfo.getBonusBlance().compareTo(BigDecimal.valueOf(integration)) == -1) {
+        if (rdMmAccountInfo.getBonusBlance().compareTo(amount) == -1) {
             return ApiUtils.error("转出积分大于可转出积分");
         }
         List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
@@ -209,11 +213,12 @@ public class UserIntegrationAPIController extends BaseController {
         if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
             rdMmIntegralRule = rdMmIntegralRuleList.get(0);
         }
-        BigDecimal walletBlance = BigDecimal
-                .valueOf(integration * Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0) * 0.01);
+        /*BigDecimal walletBlance = BigDecimal
+                .valueOf(integration * Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0) * 0.01);*/
+        BigDecimal walletBlance = amount.multiply(new BigDecimal(rdMmIntegralRule.getBonusPointShopping().toString())).multiply(new BigDecimal("0.01")).setScale(2, BigDecimal.ROUND_HALF_UP);
         List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
         RdMmAccountLog rdMmAccountLogSP = IntegrationBuildResult
-                .bonusSPNew(shopMember, rdMmAccountInfo, integration, walletBlance);
+                .bonusSPNew(shopMember, rdMmAccountInfo, amount.doubleValue(), walletBlance);
         RdMmAccountLog rdMmAccountLogBT = IntegrationBuildResult.WalletBT(shopMember, rdMmAccountInfo, walletBlance);
         rdMmAccountLogList.add(rdMmAccountLogSP);
         rdMmAccountLogList.add(rdMmAccountLogBT);
@@ -225,7 +230,7 @@ public class UserIntegrationAPIController extends BaseController {
         commonMessage1.setTitle("积分转换");
         commonMessage1.setBizId(0L);
         commonMessage1.setBizType(2);
-        commonMessage1.setContent("您已成功将"+integration+"点奖励积分转换为"+walletBlance+"点购物积分，祝您购物愉快");
+        commonMessage1.setContent("您已成功将"+amount+"点奖励积分转换为"+walletBlance+"点购物积分，祝您购物愉快");
         commonMessage1.setCreateTime(new Date());
         commonMessage1.setSendUid(member.getMmCode());
         commonMessage1.setType(1);
@@ -240,11 +245,11 @@ public class UserIntegrationAPIController extends BaseController {
         shopMemberMessage.setCreateTime(new Date());
         shopMemberMessage.setUid(Long.parseLong(member.getMmCode()));
         shopMemberMessages.add(shopMemberMessage);
-        rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
+        rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(amount));
         rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(walletBlance));
         Integer transNumber = rdMmAccountInfoService
-                .saveAccountInfoNew(rdMmAccountInfo,integration,IntegrationNameConsts.BOP, rdMmAccountLogList, null,shopCommonMessages,shopMemberMessages);
-        return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
+                .saveAccountInfoNew(rdMmAccountInfo,amount.doubleValue(),IntegrationNameConsts.BOP, rdMmAccountLogList, null,shopCommonMessages,shopMemberMessages);
+        return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", amount.doubleValue())
                 .put("bopIntegration", rdMmAccountInfo.getBonusBlance().setScale(2,BigDecimal.ROUND_HALF_UP)).put("transferInPoints", walletBlance.setScale(2,BigDecimal.ROUND_HALF_UP))
                 .put("shpIntegration", rdMmAccountInfo.getWalletBlance().setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
@@ -1002,7 +1007,7 @@ public class UserIntegrationAPIController extends BaseController {
         if(companyLicenses!=null&&companyLicenses.size()>0){
             CompanyLicense companyLicense = companyLicenses.get(0);
             //3.2获取统一社保号，进行匹配
-            List<CompanyLicense> licenses = companyLicenseService.findList(Paramap.create().put("creditCode",companyLicense.getAuditCode()).put("status",2));
+            List<CompanyLicense> licenses = companyLicenseService.findList(Paramap.create().put("creditCode",companyLicense.getCreditCode()).put("status",2));
             if(licenses!=null&&licenses.size()>0){
                 for (CompanyLicense licens : licenses) {
                     if(licens.getMCode().equals(companyLicense.getMCode())){
