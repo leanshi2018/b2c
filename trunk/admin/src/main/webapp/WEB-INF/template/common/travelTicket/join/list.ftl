@@ -30,16 +30,14 @@
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">会员号</th>
-                    <td class="w160"><input type="text" class="text w150" name="activityId" value="${activityId}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="mmCode" value="${mmCode}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">活动ID</th>
-                    <td class="w160"><input type="text" class="text w150" name="mmCode" value="${mmCode}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="activityId" value="${activityId}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
                         <a href="${base}/admin/travel/travelMemInfo/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
-                        <a class="btn btn-outline btn-info btn-xs" id="btn-add-loippi exportExcell" href="javascript:void(0)"
-                           onclick="exportExcell('${rdTravelMemInfoList.pageNo}')"><i class="fa fa-plus"></i>导出Excel</a>
                     </td>
                 </tr>
                 </tbody>
@@ -52,7 +50,6 @@
                     <th class="w24"><input type="checkbox" id="idsAll" class="checkitem"></th>
                     <th class="align-center">会员号</th>
                     <th class="align-center">活动ID</th>
-                    <th class="align-center">活动名称</th>
                     <th class="align-center">报名人名字</th>
                     <th class="align-center">身份证号</th>
                     <th class="align-center">手机号</th>
@@ -70,9 +67,6 @@
                         </td>
                         <td style="text-align: left">
                             ${list.name}
-                        </td>
-                        <td style="text-align: left">
-
                         </td>
                         <td style="text-align: left">
                             ${list.idCard}

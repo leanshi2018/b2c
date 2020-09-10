@@ -42,7 +42,7 @@
                     </td>
                     <td>
                         <#if rdTravelTicket??>
-                            <input type="text" name="travelName" id="travelName" value="${rdTravelTicket.travelName}" class="form-control" maxlength="200"/>
+                            <input type="text" name="travelName" id="travelName" readonly value="${rdTravelTicket.travelName}" class="form-control" maxlength="200"/>
                         <#else>
                             <input type="text" name="travelName" id="travelName" value="${travelName}" class="form-control" maxlength="200"/>
                         </#if>
@@ -87,7 +87,7 @@
                     </td>
                     <td>
                         <#if rdTravelTicket??>
-                            <input type="text" name="ticketPrice" id="ticketPrice" value="${rdTravelTicket.ticketPrice}" class="form-control" maxlength="200"/>
+                            <input type="text" readonly name="ticketPrice" id="ticketPrice" value="${rdTravelTicket.ticketPrice}" class="form-control" maxlength="200"/>
                         <#else>
                             <input type="text" name="ticketPrice" id="ticketPrice" value="${ticketPrice}" class="form-control" maxlength="200"/>
                         </#if>
@@ -96,7 +96,7 @@
                 </tr>
                 <tr class="noborder">
                     <td class="required">
-                        <em class="pngFix"></em>优惠券规则
+                        <em class="pngFix"></em>旅游券规则
                     </td>
                     <td>
                         <#if rdTravelTicket??>
@@ -113,8 +113,8 @@
                     </td>
                     <td>
                         <#if rdTravelTicket??>
-                            <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useStartTimeStr" name="useStartTimeStr" value="${rdTravelTicket.useStartTimeStr?string("yyyy-MM-dd")}"/>
+                            <input class="w300 Wdate" readonly onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                                   id="useStartTimeStr" name="useStartTimeStr" value="${rdTravelTicket.useStartTime?string("yyyy-MM-dd")}"/>
                         <#else>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
                                    id="useStartTimeStr" name="useStartTimeStr" value=""/>
@@ -128,8 +128,8 @@
                     </td>
                     <td>
                         <#if rdTravelTicket??>
-                            <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useEndTimeStr" name="useEndTimeStr" value="${rdTravelTicket.useEndTimeStr?string("yyyy-MM-dd")}"/>
+                            <input class="w300 Wdate" readonly onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
+                                   id="useEndTimeStr" name="useEndTimeStr" value="${rdTravelTicket.useEndTime?string("yyyy-MM-dd")}"/>
                         <#else>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
                                    id="useEndTimeStr" name="useEndTimeStr" value=""/>
@@ -177,8 +177,7 @@
             $("#add_form").validate({
                 rules: {
                     travelName: {
-                        required: true,
-                        maxlength: 200
+                        required: true
                     },
                     image:{
                         required: true
@@ -199,8 +198,8 @@
                 },
                 messages: {
                     travelName: {
-                        required: "请输入旅游券名称！",
-                        maxlength: '标题最多100个字符'
+                        required: "请输入旅游券名称！"
+
                     },
                     image: {
                         required: "请上传旅游券图片！"

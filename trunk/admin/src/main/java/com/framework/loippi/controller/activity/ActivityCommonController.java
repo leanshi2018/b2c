@@ -634,8 +634,8 @@ public class ActivityCommonController extends GenericController {
         Long rId = goods.getRId();
         shopRecommendationGoodsService.delete(id);
         model.addAttribute("msg", "删除商品成功");
-        return Constants.MSG_URL;
-        //return "redirect:findRecommendationGoods.jhtml?rId="+rId;
+        //return Constants.MSG_URL;
+        return "redirect:findRecommendationGoods.jhtml?rId="+rId+"&goodsId"+"&goodsName";
     }
 
 }

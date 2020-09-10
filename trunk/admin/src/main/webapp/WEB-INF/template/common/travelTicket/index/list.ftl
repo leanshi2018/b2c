@@ -34,10 +34,10 @@
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">旅游劵ID</th>
-                    <td class="w160"><input type="text" class="text w150" name="id" value="${id}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="id" value="${travelTicketList.id}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">旅游券名称</th>
-                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${travelLikeName}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${travelTicketList.travelLikeName}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
