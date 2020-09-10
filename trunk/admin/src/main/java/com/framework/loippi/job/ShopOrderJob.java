@@ -14,6 +14,9 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.xml.namespace.QName;
 
+import com.framework.loippi.entity.travel.RdTravelTicket;
+import com.framework.loippi.service.travel.RdTourismComplianceService;
+import com.framework.loippi.service.travel.RdTravelTicketService;
 import org.apache.axis.client.Call;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -178,7 +181,10 @@ public class ShopOrderJob {
     private RdMmBasicInfoService rdMmBasicInfoService;
     @Resource
     private OrderFundFlowService orderFundFlowService;
-
+    @Resource
+    private RdTravelTicketService rdTravelTicketService;
+    @Resource
+    private RdTourismComplianceService rdTourismComplianceService;
 
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 
@@ -1068,4 +1074,12 @@ public class ShopOrderJob {
             orderService.autoReceipt2(list2);
         }*/
     }
+
+/*    @Scheduled(cron = "0 33 * * * ? ")  //每隔一小时执行一次 每小时33分执行定时任务
+    public void grantTicket(){
+        RdTravelTicket rdTravelTicket = rdTravelTicketService.find(6696310439497699328L);
+        if(rdTravelTicket!=null){
+            rdTourismComplianceService.grantTicket(rdTravelTicket);
+        }
+    }*/
 }

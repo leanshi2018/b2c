@@ -1,5 +1,21 @@
 package com.framework.loippi.controller.companyWithdrawal;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.framework.loippi.consts.CompanyWithdrawalConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.BaseController;
@@ -15,21 +31,11 @@ import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.utils.*;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
 
 /**
  * @author zc
@@ -166,12 +172,12 @@ public class CompanyWithdrawalController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/depositApply", method = RequestMethod.POST)
-    public String depositApply(HttpServletRequest request, BigDecimal amount,String image,String pwd) {
+    public String depositApply(HttpServletRequest request, String amount,String image,String pwd) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
         if(member==null){
             return ApiUtils.error("用户尚未登录");
         }
-        if(amount==null||amount.compareTo(new BigDecimal("5000.00"))==-1){
+        if(amount==null||new BigDecimal(amount).compareTo(new BigDecimal("5000.00"))==-1){
             return ApiUtils.error("提现金额小于5000");
         }
         if(StringUtil.isEmpty(image)){
@@ -190,7 +196,9 @@ public class CompanyWithdrawalController extends BaseController {
         if (!Digests.validatePassword(pwd, rdMmAccountInfo.getPaymentPwd())) {
             return ApiUtils.error("支付密码错误");
         }
-        if(amount.compareTo(rdMmAccountInfo.getBonusBlance())==1){
+        System.out.println(amount);
+        BigDecimal bigDecimal = new BigDecimal(amount);
+        if(bigDecimal.compareTo(rdMmAccountInfo.getBonusBlance())==1){
             return ApiUtils.error("提现金额大于奖励积分余额");
         }
         List<RdMmIntegralRule> list = rdMmIntegralRuleService.findAll();
@@ -202,7 +210,7 @@ public class CompanyWithdrawalController extends BaseController {
             decimal=CompanyWithdrawalConstant.COMPANY_WITHDRAWAL_RATE;
         }
         //处理积分 生成日志
-        Map<String,Object> map=rdMmAccountInfoService.companyDeposit(rdMmAccountInfo,amount,decimal,image);
+        Map<String,Object> map=rdMmAccountInfoService.companyDeposit(rdMmAccountInfo,bigDecimal,decimal,image);
         return ApiUtils.success(map);
     }
 }

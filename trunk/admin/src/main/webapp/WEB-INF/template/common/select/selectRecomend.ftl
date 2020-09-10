@@ -16,7 +16,7 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findProductsRecommendationList.jhtml">
+            <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/selectProductsRecommendationList.jhtml">
                 <#--                <input type="hidden" name="pageNo" value="${1}">-->
                 <table class="tb-type1 noborder search">
                     <tbody>
@@ -41,18 +41,18 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list activitys.content as activity>
+                <#list page as list>
                     <tr>
-                        <td><input type="checkbox" name="ids" value="${activity.id}" class="checkitem"></td>
+                        <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
-                            ${activity.id}
+                            ${list.id}
                         </td>
                         <td style="text-align: left">
-                            ${activity.recommendationName}
+                            ${list.recommendationName}
                         </td>
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpeccoupons('${activity.id}','${activity.recommendationName}')">选择</a>
+                               onclick="selSpeccoupons('${list.id}','${list.recommendationName}')">选择</a>
                         </td>
                     </tr>
                 </#list>

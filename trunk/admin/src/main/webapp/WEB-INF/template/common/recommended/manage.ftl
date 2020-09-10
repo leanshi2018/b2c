@@ -34,27 +34,23 @@
         localStorage.setItem('rId', $("#rId").val());
     },1000)
     function appendInfo(id) {
-        // var data={id:id}
         console.log(id);
-        $.ajax({
-            type: "post",
-            url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",
-            data: {
-                "rId":localStorage.getItem('rId'),
-                "jsonMap":JSON.stringify(id)
-            },
-            dataType: "json",
-            async: false,
-            success: function (data) {
-                console.log(data);
-                if(data.result=='1'){
-                    alert("添加成功");
-                    $('#formSearch').submit();
-                }else{
-                    alert("添加失败");
-                }
-            }
-        });
+        var url = "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml";
+        location.href = url + "?rId=" + localStorage.getItem('rId')+"&jsonMap="+JSON.stringify(id);
+        <#--$.ajax({-->
+        <#--    type: "post",-->
+        <#--    url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",-->
+        <#--    data: {-->
+        <#--        "rId":localStorage.getItem('rId'),-->
+        <#--        "jsonMap":JSON.stringify(id)-->
+        <#--    },-->
+        <#--    dataType: "json",-->
+        <#--    async: false,-->
+        <#--    success: function (data) {-->
+        <#--        console.log(data);-->
+        <#--        $('#formSearch').submit();-->
+        <#--    }-->
+        <#--});-->
     }
 </script>
 <@layout.body>
@@ -144,7 +140,6 @@
                         $("#list").attr("action", "${base}/admin/shop_activity_common/delRecommendationGoods.jhtml?id=" + id);
                         $('#list').submit();
                         $(this).dialog("close");
-                        alert("删除成功！");
                     }
                 }
             })

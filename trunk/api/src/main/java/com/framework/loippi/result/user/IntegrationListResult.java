@@ -69,7 +69,9 @@ public class IntegrationListResult {
     /** 交易时间 */
     private Date transDate;
 
-    public static List<IntegrationListResult> build(List<RdMmAccountLog> rdMmAccountLogList,Integer type) {
+    private Long totalPageNum;
+
+    public static List<IntegrationListResult> build(List<RdMmAccountLog> rdMmAccountLogList, Integer type, Long totalPageNum) {
         List<IntegrationListResult> userIntegrationListResultList=new ArrayList<>();
          if (rdMmAccountLogList!=null && rdMmAccountLogList.size()>0){
              HashMap<Long, RdMmAccountLog> mapAWD = new HashMap<>();
@@ -124,6 +126,7 @@ public class IntegrationListResult {
                  integrationListResult.setTransDate(item.getTransDate());
                  integrationListResult.setTransNumber(item.getTransNumber());
                  integrationListResult.setTransTypeCode(item.getTransTypeCode());
+                 integrationListResult.setTotalPageNum(totalPageNum);
                  String transTypeName="";
                  String symbol="-";
                  if (type==1){
@@ -161,6 +164,17 @@ public class IntegrationListResult {
                      else if ("CF".equals(transTypeCode) && item.getStatus()==3){
                          symbol="+";
                          transTypeName="自动提现失败积分退还";
+                     }
+                     else if ("TT".equals(transTypeCode) && item.getStatus()==3){
+                         transTypeName="会员奖励积分转出";
+                     }
+                     else if ("TF".equals(transTypeCode) && item.getStatus()==3){
+                         symbol="+";
+                         transTypeName="会员奖励积分到账";
+                     }
+                     else if ("REB".equals(transTypeCode) && item.getStatus()==3){
+                         symbol="+";
+                         transTypeName="商户提现失败退还奖励积分";
                      }
                  }else if (type==2) {
                      //购物积分

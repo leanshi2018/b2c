@@ -6,9 +6,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.text.DecimalFormat;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +30,7 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.companyInfo.CompanyLicense;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -38,11 +42,13 @@ import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.integral.BopTransMemResult;
 import com.framework.loippi.result.user.IntegrationBuildResult;
 import com.framework.loippi.result.user.IntegrationDetailResult;
 import com.framework.loippi.result.user.IntegrationListResult;
 import com.framework.loippi.result.user.IntegrationMemberListResult;
 import com.framework.loippi.result.user.UserIntegrationListResult;
+import com.framework.loippi.service.companyInfo.CompanyLicenseService;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.user.MemberQualificationService;
@@ -103,6 +109,8 @@ public class UserIntegrationAPIController extends BaseController {
     private RdSysPeriodDao sysPeriodDao;
     @Resource
     private ShopOrderService shopOrderService;
+    @Resource
+    private CompanyLicenseService companyLicenseService;
     //积分列表
     @RequestMapping(value = "/list.json")
     public String list(HttpServletRequest request) {
@@ -190,6 +198,9 @@ public class UserIntegrationAPIController extends BaseController {
                 .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        String format = new DecimalFormat("#.00").format(integration);
+        BigDecimal amount = new BigDecimal(format);
+        System.out.println(format);
         if (integration <= 0) {
             return ApiUtils.error("所转积分不合理");
         }
@@ -200,7 +211,7 @@ public class UserIntegrationAPIController extends BaseController {
             return ApiUtils.error("支付密码错误");
         }
 
-        if (rdMmAccountInfo.getBonusBlance().compareTo(BigDecimal.valueOf(integration)) == -1) {
+        if (rdMmAccountInfo.getBonusBlance().compareTo(amount) == -1) {
             return ApiUtils.error("转出积分大于可转出积分");
         }
         List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
@@ -209,11 +220,12 @@ public class UserIntegrationAPIController extends BaseController {
         if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
             rdMmIntegralRule = rdMmIntegralRuleList.get(0);
         }
-        BigDecimal walletBlance = BigDecimal
-                .valueOf(integration * Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0) * 0.01);
+        /*BigDecimal walletBlance = BigDecimal
+                .valueOf(integration * Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0) * 0.01);*/
+        BigDecimal walletBlance = amount.multiply(new BigDecimal(rdMmIntegralRule.getBonusPointShopping().toString())).multiply(new BigDecimal("0.01")).setScale(2, BigDecimal.ROUND_HALF_UP);
         List<RdMmAccountLog> rdMmAccountLogList = new ArrayList<>();
         RdMmAccountLog rdMmAccountLogSP = IntegrationBuildResult
-                .bonusSPNew(shopMember, rdMmAccountInfo, integration, walletBlance);
+                .bonusSPNew(shopMember, rdMmAccountInfo, amount.doubleValue(), walletBlance);
         RdMmAccountLog rdMmAccountLogBT = IntegrationBuildResult.WalletBT(shopMember, rdMmAccountInfo, walletBlance);
         rdMmAccountLogList.add(rdMmAccountLogSP);
         rdMmAccountLogList.add(rdMmAccountLogBT);
@@ -225,7 +237,7 @@ public class UserIntegrationAPIController extends BaseController {
         commonMessage1.setTitle("积分转换");
         commonMessage1.setBizId(0L);
         commonMessage1.setBizType(2);
-        commonMessage1.setContent("您已成功将"+integration+"点奖励积分转换为"+walletBlance+"点购物积分，祝您购物愉快");
+        commonMessage1.setContent("您已成功将"+amount+"点奖励积分转换为"+walletBlance+"点购物积分，祝您购物愉快");
         commonMessage1.setCreateTime(new Date());
         commonMessage1.setSendUid(member.getMmCode());
         commonMessage1.setType(1);
@@ -240,11 +252,11 @@ public class UserIntegrationAPIController extends BaseController {
         shopMemberMessage.setCreateTime(new Date());
         shopMemberMessage.setUid(Long.parseLong(member.getMmCode()));
         shopMemberMessages.add(shopMemberMessage);
-        rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(BigDecimal.valueOf(integration)));
+        rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().subtract(amount));
         rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(walletBlance));
         Integer transNumber = rdMmAccountInfoService
-                .saveAccountInfoNew(rdMmAccountInfo,integration,IntegrationNameConsts.BOP, rdMmAccountLogList, null,shopCommonMessages,shopMemberMessages);
-        return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
+                .saveAccountInfoNew(rdMmAccountInfo,amount.doubleValue(),IntegrationNameConsts.BOP, rdMmAccountLogList, null,shopCommonMessages,shopMemberMessages);
+        return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", amount.doubleValue())
                 .put("bopIntegration", rdMmAccountInfo.getBonusBlance().setScale(2,BigDecimal.ROUND_HALF_UP)).put("transferInPoints", walletBlance.setScale(2,BigDecimal.ROUND_HALF_UP))
                 .put("shpIntegration", rdMmAccountInfo.getWalletBlance().setScale(2,BigDecimal.ROUND_HALF_UP)));
     }
@@ -804,7 +816,15 @@ public class UserIntegrationAPIController extends BaseController {
         if (type == 1) {//奖励积分
             if ("-1".equals(transTypeCode)) {
                 map.put("bop", "1");
-            } else {
+            }else if("WD".equals(transTypeCode)){
+                map.put("wd", "1");
+            }else if ("TT".equals(transTypeCode)){
+                map.put("tt", "1");
+            }
+            else if ("TF".equals(transTypeCode)){
+                map.put("tf", "1");
+            }
+            else {
                 map.put("transTypeCode", transTypeCode);
             }
         } else if (type == 2) {//购物积分
@@ -820,8 +840,17 @@ public class UserIntegrationAPIController extends BaseController {
         pager.setParameter(map);
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setOrderProperty("TRANS_DATE");
+        Long count = rdMmAccountLogService.count(map);
+        int pageSize = pager.getPageSize();
+        long l = count % pageSize;
+        long totalPageNum=0;
+        if(l==0){
+             totalPageNum = count / pageSize;
+        }else {
+             totalPageNum = count / pageSize + 1;
+        }
         List<RdMmAccountLog> rdMmAccountLogList = RdMmAccountLogService.findByPage(pager).getContent();
-        return ApiUtils.success(IntegrationListResult.build(rdMmAccountLogList, type));
+        return ApiUtils.success(IntegrationListResult.build(rdMmAccountLogList, type,totalPageNum));
     }
 
     //积分明细详情
@@ -937,6 +966,165 @@ public class UserIntegrationAPIController extends BaseController {
         }
 
     }
+    //获取奖励积分可互转会员列表
+    @RequestMapping(value = "/bop/transferMem/list.json")
+    public String bopTransferEach(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request
+                .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("用户未登录");
+        }
+        //1.查询当前会员基础信息，判断当前会员是主店还是次店
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.findByMCode(member.getMmCode());
+        if(rdMmBasicInfo==null||rdMmBasicInfo.getMainFlag()==null){
+            return ApiUtils.error("会员基础信息异常");
+        }
+        ArrayList<RdMmBasicInfo> infos = new ArrayList<>();
+        List<RdMmBasicInfo> list=new ArrayList<>();
+        //2.筛选除自身以外的其他关联主次店会员信息
+        if(rdMmBasicInfo.getMainFlag()==1){
+            list=rdMmBasicInfoService.findBranch(rdMmBasicInfo.getMmCode());
+        }
+        if(rdMmBasicInfo.getMainFlag()==2){
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", rdMmBasicInfo.getMmCode());
+            RdMmBasicInfo infoMain = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
+            infos.add(infoMain);//如果当前登录人为次店，则先将主店添加进集合
+            list=rdMmBasicInfoService.findBranch(infoMain.getMmCode());
+            Iterator<RdMmBasicInfo> iterator = list.iterator();
+            while (iterator.hasNext()){
+                RdMmBasicInfo next = iterator.next();
+                if(next.getMmCode().equals(rdMmBasicInfo.getMmCode())){
+                    iterator.remove();
+                }
+            }
+            /*for (RdMmBasicInfo basicInfo : list) {
+                if(basicInfo.getMmCode().equals(rdMmBasicInfo.getMmCode())){
+                    list.remove(basicInfo);
+                }
+            }*/
+        }
+        infos.addAll(list);
+        HashMap<String, RdMmBasicInfo> map = new HashMap<>();
+        for (RdMmBasicInfo info : infos) {
+            map.put(info.getMmCode(),info);
+        }
+        //3.搜索关联同商户信息会员信息
+        //3.1判断当前登录会员是否存在提交且通过审核的商户信息
+        List<CompanyLicense> companyLicenses = companyLicenseService.findList(Paramap.create().put("mCode",rdMmBasicInfo.getMmCode()).put("status",2));
+        if(companyLicenses!=null&&companyLicenses.size()>0){
+            CompanyLicense companyLicense = companyLicenses.get(0);
+            //3.2获取统一社保号，进行匹配
+            List<CompanyLicense> licenses = companyLicenseService.findList(Paramap.create().put("creditCode",companyLicense.getCreditCode()).put("status",2));
+            if(licenses!=null&&licenses.size()>0){
+                for (CompanyLicense licens : licenses) {
+                    if(licens.getMCode().equals(companyLicense.getMCode())){
+                        continue;
+                    }
+                    RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode",licens.getMCode());
+                    if(rdMmRelation.getMmStatus()!=0){
+                        continue;
+                    }
+                    //判断infos是否存在licens对应的会员，如果不存在，加入infos
+                    if (map.get(licens.getMCode())==null){
+                        RdMmBasicInfo licenInfo = rdMmBasicInfoService.findByMCode(licens.getMCode());
+                        infos.add(licenInfo);
+                        map.put(licenInfo.getMmCode(),licenInfo);
+                    }
+                }
+            }
+        }
+        //4.处理返回信息
+        List<RdRanks> ranks = rdRanksService.findAll();
+        HashMap<Integer, String> rankMap = new HashMap<>();
+        for (RdRanks rank : ranks) {
+            rankMap.put(rank.getRankId(),rank.getRankName());
+        }
+        HashMap<String, RdMmRelation> relationMap= new HashMap<>();
+        for (RdMmBasicInfo info : infos) {
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode",info.getMmCode());
+            relationMap.put(rdMmRelation.getMmCode(),rdMmRelation);
 
+        }
+        return ApiUtils.success(BopTransMemResult.build(infos,relationMap,rankMap));
+    }
+
+    //进入转给主/分店页面
+    @RequestMapping(value = "/bop/transferMem/forward.json")
+    public String bopTransferForward(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request
+                .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("用户未登录");
+        }
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        if (rdMmAccountInfo.getBonusStatus() != null && rdMmAccountInfo.getBonusStatus() != 0) {
+            return ApiUtils.error("该积分未处于正常状态不能进行转出");
+        }
+        return ApiUtils.success(rdMmAccountInfo);
+    }
+
+
+
+    /**
+     * 奖励积分转账
+     * @param request
+     * @param amount 转出积分金额
+     * @param acceptCode 接收人会员编号
+     * @param pwd 密码
+     * @param message 转账留言
+     * @return
+     */
+    @RequestMapping(value = "/bop/transferMem/makeSure.json")
+    public String bopTransSure(HttpServletRequest request,String amount,String acceptCode,String pwd,String message) {
+        if(StringUtil.isEmpty(amount)){
+            return ApiUtils.error("请选择需要转出积分数额");
+        }
+        if(StringUtil.isEmpty(acceptCode)){
+            return ApiUtils.error("请选择需转出会员编号");
+        }
+        if(StringUtil.isEmpty(pwd)){
+            return ApiUtils.error("请输入积分支付密码");
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request
+                .getAttribute(com.framework.loippi.consts.Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("用户未登录");
+        }
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        if (rdMmAccountInfo.getBonusStatus() != null && rdMmAccountInfo.getBonusStatus() != 0) {
+            return ApiUtils.error("该积分未处于正常状态不能进行转出");
+        }
+        if (!Digests.validatePassword(pwd,rdMmAccountInfo.getPaymentPwd())) {
+            return ApiUtils.error("积分支付密码错误");
+        }
+        if(rdMmAccountInfo.getMmCode().equals(acceptCode)){
+            return ApiUtils.error("奖励积分不可以转给自己");
+        }
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", acceptCode);
+        if(rdMmRelation==null||rdMmRelation.getMmStatus()==null){
+            return ApiUtils.error("受赠人会员信息异常");
+        }
+        if(rdMmRelation.getMmStatus()!=0){
+            return ApiUtils.error("受赠人会员处于非正常状态");
+        }
+        if(!StringUtil.isEmpty(message)&&message.length()>50){
+            return ApiUtils.error("交易留言已超过50字限制");
+        }
+        try {
+            BigDecimal total = new BigDecimal(amount);
+            if(rdMmAccountInfo.getBonusBlance().compareTo(total)==-1){
+                return ApiUtils.error("转出积分大于账户奖励积分余额");
+            }
+            RdMmAccountInfo acceptAccountInfo = rdMmAccountInfoService.find("mmCode", acceptCode);
+            if(acceptAccountInfo==null){
+                return ApiUtils.error("接收人积分账户异常");
+            }
+            HashMap<String,Object> map=rdMmAccountInfoService.bopTransSure(rdMmAccountInfo,acceptAccountInfo,total,pwd,message);
+            return ApiUtils.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiUtils.error("网络异常，请稍后重试");
+        }
+    }
 }
 

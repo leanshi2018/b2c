@@ -331,7 +331,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
                     rdMmAccountInfoDao.update(rdMmAccountInfo);
                     RdMmRelation rdMmRelation = new RdMmRelation();
                     rdMmRelation.setMmCode(basicInfo.getMmCode());
-                    rdMmRelation.setMmPointStatus(1);
+                    rdMmRelation.setMmPointStatus(0);
                     rdMmRelationDao.update(rdMmRelation);
                 }
             }
@@ -510,6 +510,11 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         memberEditReview.setUpdateTime(new Date());
         memberEditReview.setReviewStatus(3);
         rdMmEditDao.insert(memberEditReview);
+    }
+
+    @Override
+    public List<RdMmBasicInfo> findBranch(String mmCode) {
+        return rdMmBasicInfoDao.findBranch(mmCode);
     }
 
 }

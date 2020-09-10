@@ -16,63 +16,51 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="POST" name="formSearch" id="formSearch"
-                  action="${base}/admin/shop_activity_common/findShopGoodList.jhtml">
+            <form method="POST" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findShopGoodList.jhtml">
                 <input type="hidden" name="pageable" value="${1}">
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
-                       <td>
-                            <select class="select">
-                                <#list goodsClass as list>
-                                    <option name="Id" value="${list.id}">${list.gcName}</option>
-                                </#list>
-                            </select>
-                            <input name="goodsName" type="text" value="${goodsName}" placeholder="请输入商品名称"/>
-                            <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
-                            </a>
+                        <td>
+                            <input name="" type="text" value="${goodsName}" placeholder="请输入ID"/>
+                            <input name="goodsName" type="text" value="${goodsName}" placeholder="请输入名称"/>
+                            <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询"></a>
                             <a href="javascript:selectgoodsbtn()"  class="btns ">确定</a>
-                       </td>
-
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </form>
             <form id="form_list" method="get" action="${base}/admin/shop_activity_common/findShopGoodList.jhtml">
-            <table class="order">
-                <thead>
-                <tr>
-                    <th>&nbsp;</th>
-                    <th><b>分类Id</b></th>
-                    <th><b>商品名称</b></th>
-<#--                    <th><b>操作</b></th>-->
-                </tr>
-                </thead>
-                <tbody>
-                <#list page.content as list>
+                <table class="order">
+                    <thead>
                     <tr>
-                        <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
-                        <td style="text-align: left">
-                            ${list.gcId}
-                        </td>
-                        <td style="text-align: left">
-                            ${list.goodsName}
-                        </td>
-<#--                        <td class="w100 tc">-->
-<#--                            <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5" onclick="selSpecGoods('${list.id}')">选择</a>-->
-<#--                        </td>-->
+                        <th>&nbsp;</th>
+                        <th><b>Id</b></th>
+                        <th><b>名称</b></th>
                     </tr>
-                </#list>
-                </tbody>
-                <tfoot>
-
-                <tr>
-                    <td colspan="20">
-                        <@layout.pager pager/>
-                    </td>
-                </tr>
-                </tfoot>
-            </table>
+                    </thead>
+                    <tbody>
+                    <#list page.content as list>
+                        <tr>
+                            <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
+                            <td style="text-align: left">
+                                ${list.gcId}
+                            </td>
+                            <td style="text-align: left">
+                                ${list.goodsName}
+                            </td>
+                        </tr>
+                    </#list>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="20">
+                            <@layout.pager pager/>
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
             </form>
         </div>
     </div>
@@ -80,7 +68,7 @@
         function selectgoodsbtn() {
             var items = $("input[name='ids']:checked");
             if (items.length == 0) {
-                alert("请至少选择一个商品!");
+                alert("请至少选择一个!");
             } else {
                 var jsonMap=[];
                 for(var i=0;i<items.length;i++){

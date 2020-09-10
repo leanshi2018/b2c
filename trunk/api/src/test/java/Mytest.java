@@ -86,10 +86,11 @@ public class Mytest {
 
     @Test
     public void test() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MONTH,-1);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
-        String time = format.format(calendar.getTime());
-        System.out.println(time);
+        String a="http://rdnmall.com/FqtxVTc0MOkVsDpUYxgCBLG8ZCh-,http://rdnmall.com/FvnmLjKRTm7lSoGAqqENpqnX1JiL,http://rdnmall.com/FkVJ6iQNoikVcfbIyNlGFyS8yFn3,http://rdnmall.com/FvLRSJM72KL61PjV_p1wHJCyLqBp,";
+        String[] strings = a.split(",");
+        System.out.println(strings.length);
+        for (String string : strings) {
+            System.out.println(string);
+        }
     }
 }

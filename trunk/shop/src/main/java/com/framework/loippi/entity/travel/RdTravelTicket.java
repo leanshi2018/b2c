@@ -89,4 +89,14 @@ public class RdTravelTicket implements GenericEntity {
     private Long issueNum;
 
     private String travelLikeName;
+
+    /**
+     * 使用开始时间
+     */
+    private String useStartTimeStr;
+
+    /**
+     * 使用结束时间
+     */
+    private String useEndTimeStr;
 }
