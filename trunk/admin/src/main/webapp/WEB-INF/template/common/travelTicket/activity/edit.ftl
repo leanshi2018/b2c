@@ -88,7 +88,7 @@
                     </td>
                     <td>
                         <div class="pic_list">
-                            <input type="hidden" id="imageList" name="imageList"/>
+                            <input type="hidden" id="imageList" name="image"/>
                             <ul id="menu" class="menu" >
                                 <li class="active" id="li_1">
                                     <a href="javascript:void(0);"
@@ -152,7 +152,7 @@
                     </td>
                     <td>
                         <#if travelActivity??>
-                            <input type="text" name="activityCost" id="activityCost" value="${travelActivity.activityCost}" readonly class="form-control" maxlength="200"/>
+                            <input type="text" name="activityCost"  id="activityCost" value="${travelActivity.activityCost}" readonly class="form-control" maxlength="200"/>
                         <#else>
                             <input type="text" name="activityCost" id="activityCost" value="${activityCost}" class="form-control" maxlength="200"/>
                         </#if>
@@ -216,12 +216,12 @@
                         <#if travelActivity??>
                             <input class="w300 Wdate"
                                    onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="startTime" name="startTime" readonly
+                                   id="startTimeStr" name="startTimeStr" readonly
                                    value="${travelActivity.startTime?string("yyyy-MM-dd")}"/>
                         <#else>
                             <input class="w300 Wdate"
                                    onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="startTime" name="startTime"
+                                   id="startTimeStr" name="startTimeStr"
                                    value=""/>
                         </#if>
                         <span class="error-message"></span>
@@ -235,12 +235,12 @@
                         <#if travelActivity??>
                             <input class="w300 Wdate"
                                    onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="endTime" name="endTime" readonly
+                                   id="endTimeStr" name="endTimeStr" readonly
                                    value="${travelActivity.endTime?string("yyyy-MM-dd")}"/>
                         <#else>
                             <input class="w300 Wdate"
                                    onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="endTime" name="endTime"
+                                   id="endTimeStr" name="endTimeStr"
                                    value=""/>
                         </#if>
                         <span class="error-message"></span>
@@ -339,10 +339,10 @@
                     remark: {
                         required: true
                     },
-                    startTime: {
+                    startTimeStr: {
                         required: true
                     },
-                    endTime:{
+                    endTimeStr:{
                         required: true
                     }
                 },
@@ -368,10 +368,10 @@
                     remark: {
                         required: "请输入活动规则！"
                     },
-                    startTime: {
+                    startTimeStr: {
                         required: "请选择使用开始时间!"
                     },
-                    endTime: {
+                    endTimeStr: {
                         required: "请选择使用结束时间!"
                     }
                 }

@@ -26,6 +26,8 @@
         <!-- 搜索栏 -->
         <form method="post" name="formSearch" id="formSearch" action="${base}/admin/travel/travelTicketDetail/list.jhtml">
             <input type="hidden" name="pageNo" value="${1}">
+            <input type="hidden" id="status" value="">
+            <input type="hidden" id="ticketSn" value="">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
@@ -77,9 +79,6 @@
             </table>
         </form>
         <form method="post" id='form_list'>
-<#--            <input type="hidden"  id="ticketSn" value="">-->
-<#--            <input type="hidden"  id="status" value="">-->
-<#--            <input type="hidden"  id="activityId" value="">-->
             <table class="table tb-type2">
                 <thead>
                 <tr class="thead">
@@ -100,32 +99,38 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list travelTicketList.content as list>
+                <#list travelTicketDetailList.content as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
-                            ${list.id}
+                            ${list.travelId}
                         </td>
                         <td style="text-align: left">
                             ${list.travelName}
                         </td>
                         <td style="text-align: left">
+                            ${list.ownCode}
+                        </td>
+                        <td style="text-align: left">
+                            ${list.ownNickName}
+                        </td>
+                        <td style="text-align: left">
                             ${list.ticketPrice}
                         </td>
                         <td style="text-align: left">
-                            ${list.issueNum}
+                            <#if list.ownTime??>
+                                ${list.ownTime?string("yyyy-MM-dd HH:mm:ss")}
+                            </#if>
                         </td>
                         <td style="text-align: left">
-                            ${list.useStartTime}
+                            <#if list.useTime??>
+                                ${list.useTime?string("yyyy-MM-dd HH:mm:ss")}
+                            </#if>
                         </td>
                         <td style="text-align: left">
-                            ${list.useEndTime}
-                        </td>
-                        <td style="text-align: left">
-                            ${list.createName}
-                        </td>
-                        <td style="text-align: left">
-                            ${list.createTime}
+                            <#if list.confirmTime??>
+                                ${list.confirmTime?string("yyyy-MM-dd HH:mm:ss")}
+                            </#if>
                         </td>
                         <td style="text-align: left">
                             <#if list.status == 0>未使用</#if>
@@ -134,22 +139,21 @@
                             <#if list.status == 3>已过期</#if>
                         </td>
                         <td style="text-align: left">
-                            ${list.useEndTime}
+                            ${list.id}
                         </td>
                         <td style="text-align: left">
-                            ${list.createName}
+
                         </td>
                         <td style="text-align: left">
-                            ${list.createTime}
+
                         </td>
                         <td>
-                            <a  href="javascript:updateStatus('${list.id},${list.status})">恢 复 </a>||
-<#--                            <#if list.isReply==0>-->
-<#--                                <a href="javascript:toDialog('${list.id},${list.status},${list.isReply}')">核 销</a>-->
-<#--                            <#else >-->
-<#--                                <a>已核销</a>-->
-<#--                            </#if>-->
-
+                            <#if list.status==0||list.status==3>
+                                <a href="javascript:updateStatus('${list.ticketSn}','${list.status}')">核 销</a>
+                            </#if>
+                            <#if list.status==1||list.status==2>
+                                <a href="javascript:update('${list.ticketSn}','${list.status}')">恢 复</a>
+                            </#if>
                         </td>
                     </tr>
                 </#list>
@@ -165,6 +169,50 @@
         </form>
     </div>
     <script>
+        //核销弹窗
+        function updateStatus(ticketSn,status) {
+            $("#ticketSn").val(ticketSn);
+            $("#status").val(status);
+            layer.open({
+                type: 2,
+                move: false,
+                shade: [0.3, '#393D49'],//开启遮罩层
+                title: '选择',
+                content: ['${base}/admin/travel/travelActivity/list2.jhtml', 'yes'],
+                area: ['800px', '600px']
+            });
+
+        }
+
+        function appendInfo(id) {
+            console.log("旅游券编号"+$("#ticketSn").val())
+            console.log(id);
+            <#--$.ajax({-->
+            <#--    type: "post",-->
+            <#--    url: "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml",-->
+            <#--    data: {-->
+            <#--        "ticketSn":$("#ticketSn").val(),-->
+            <#--        "species":2,-->
+            <#--        "status":$("#status").val(),-->
+            <#--        "activityId":id-->
+            <#--    },-->
+            <#--    dataType: "json",-->
+            <#--    async: false,-->
+            <#--    success: function (data) {-->
+            <#--        console.log(data);-->
+            <#--        $('#formSearch').submit();-->
+            <#--    }-->
+            <#--});-->
+            var url= "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
+            location.href = url + "?ticketSn=" + $("#ticketSn").val()+"&species=2"+"&status="+$("#status").val()+"&activityId="+id;
+        }
+        //恢复单张旅游券
+        function update(ticketSn,status) {
+            if (confirm('要恢复该券，并清除报名信息吗？')) {
+                var url = "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
+                location.href = url + "?ticketSn=" + ticketSn+"&species=1"+"&status="+status;
+            }
+        }
 
         $(function () {
             $("#idsAll").click(function () {
@@ -174,39 +222,7 @@
             $subBox.click(function () {
                 $("#idsAll").attr("checked", $subBox.length == $("input[name='ids']:checked").length ? true : false);
             });
-            //恢复单张旅游券
-            <#--function updateStatus(id,status) {-->
-            <#--    //旅游券状态为未使用,操作类型为核销时-->
-            <#--    var activityId;-->
-            <#--    if(status==0&isReply==0){-->
-            <#--        // activityId-->
-            <#--    }-->
-            <#--    if (confirm('要恢复该券，并清除报名信息吗？')) {-->
-            <#--        var url = "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";-->
-            <#--        location.href = url + "?ticketSn=" + id+"&species=1"+"&status="+status+"&activityId=";-->
-            <#--    }-->
-            <#--}-->
-            //核销弹窗
-            <#--function toDialog(id,status) {-->
-            <#--    layer.open({-->
-            <#--        type: 2,-->
-            <#--        move: false,-->
-            <#--        shade: [0.3, '#393D49'],//开启遮罩层-->
-            <#--        title: '选择',-->
-            <#--        content: ['${base}/admin/shop_activity_common/findShopGoodList.jhtml', 'yes'],-->
-            <#--        area: ['800px', '600px']-->
-            <#--    });-->
-            <#--    $("#ticketSn").val(id);-->
-            <#--    $("#status").val(status);-->
-            <#--    $("#activityId").val(activityId);-->
-            <#--}-->
 
-            function appendInfo(id) {
-                console.log("旅游券编号"+$("#ticketSn").val())
-                console.log(id);
-                var url= "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
-                location.href = url + "?ticketSn=" + $("#ticketSn").val()+"&species=2"+"&status="+$("#status").val()+"&activityId="+$("#activityId").val();
-            }
 
         });
         function getCheckValue() {

@@ -117,6 +117,7 @@
         $(function () {
             /*提交按钮*/
             $("#subForm").click(function () {
+                $("#mainPictureImg0").attr("name","");
                 // var Title = $("#Name").val();
                 // if (Title == "") {
                 //     alert("请输入推荐页名称！");
