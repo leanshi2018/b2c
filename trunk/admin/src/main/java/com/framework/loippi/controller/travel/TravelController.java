@@ -761,7 +761,7 @@ public class TravelController {
 				String username = principal.getUsername();
 				//对旅游券进行核销或者恢复操作
 				try {
-					ticketDetailService.restoreOrDestroy(ticketDetail,species,id,username);
+					ticketDetailService.restoreOrDestroy(ticketDetail,species,id,username,activityId);
 					return "redirect:travelTicketDetail/list.jhtml";//TODO
 				} catch (Exception e) {
 					e.printStackTrace();
