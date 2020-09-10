@@ -263,11 +263,6 @@
                         <td>
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
-                                    <#--选择跳转商品推荐页-->
-                                    <#--                                    <select name="openPage" class="w200" id="toactitvty" style="display: none;">-->
-                                    <#--                                        <option value="" selected="selected">请选择</option>-->
-                                    <#--                                        <option value="activityGoodsListpage" <#if picture.openPage == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>-->
-                                    <#--                                    </select>-->
                                     <#--选择跳转链接-->
                                     <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" class="w200"style="display: none;"/>
                                     <#--选择跳转路径-->
@@ -287,7 +282,7 @@
                                         <option value="buyintegralpage" <#if picture.activityUrl == "buyintegralpage">selected="selected" </#if>>换购积分</option>
                                         <option value="bankcardpage" <#if picture.activityUrl == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
                                         <option value="learnpage" <#if picture.activityUrl == "learnpage">selected="selected" </#if>>学堂</option>
-                                        <option value="learnarticlepage" <#if picture.activityUrl == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
+                                        <option value="learnarticlepage" <#if picture.activityUrl == "learnarticlcepage">selected="selected" </#if>>学堂文章详情</option>
                                         <option value="invitationpage" <#if picture.activityUrl == "invitationpage">selected="selected" </#if>>我的邀请</option>
                                         <option value="buyCouponspage"  <#if picture.activityUrl == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
