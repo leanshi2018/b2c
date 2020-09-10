@@ -18,7 +18,7 @@ public class RdTravelTicketDetailServiceImpl extends GenericServiceImpl<RdTravel
     private RdTravelTicketDetailDao rdTravelTicketDetailDao;
 
     @Override
-    public void restoreOrDestroy(RdTravelTicketDetail ticketDetail, Integer species, Long id, String username) throws Exception{
+    public void restoreOrDestroy(RdTravelTicketDetail ticketDetail, Integer species, Long id, String username, Long activityId) throws Exception{
         if(species==1){//恢复
             ticketDetail.setStatus(0);
             ticketDetail.setUseTime(null);
@@ -29,6 +29,9 @@ public class RdTravelTicketDetailServiceImpl extends GenericServiceImpl<RdTravel
             ticketDetail.setStatus(2);
             ticketDetail.setConfirmTime(new Date());
             ticketDetail.setConfirmCode(Long.toString(id));
+            if(activityId!=null){
+                ticketDetail.setUseActivityId(activityId);
+            }
         }
         rdTravelTicketDetailDao.update(ticketDetail);
     }
