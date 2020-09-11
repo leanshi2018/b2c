@@ -39,21 +39,6 @@
         <#--var url = "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml";-->
         <#--location.href = url + "?rId=" + localStorage.getItem('rId')+"&jsonMap="+JSON.stringify(id);-->
 
-        <#--$.ajax({-->
-        <#--    type: "post",-->
-        <#--    url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",-->
-        <#--    data: {-->
-        <#--        "rId":localStorage.getItem('rId'),-->
-        <#--        "jsonMap":JSON.stringify(id)-->
-        <#--    },-->
-        <#--    dataType: "json",-->
-        <#--    async: false,-->
-        <#--    success: function (data) {-->
-        <#--        console.log(data);-->
-        <#--        $('#formSearch').submit();-->
-        <#--    }-->
-        <#--});-->
-
         document.write("<form action='${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml' method=post name=form1 style='display:none'>"+"<input type=hidden name=rId value='"+localStorage.getItem('rId')+"'/>"+"<input type=hidden name=jsonMap value='"+JSON.stringify(id)+"'/></form>");
         // document.write("<input type=hidden name=rId value='"+localStorage.getItem('rId')+"'/>");
         // document.write("<input type=hidden name=jsonMap value='"+JSON.stringify(id)+"'/>");
