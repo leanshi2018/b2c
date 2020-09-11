@@ -52,7 +52,6 @@
                 <tr class="thead">
                     <th class="w24"><input type="checkbox" id="idsAll" class="checkitem"></th>
                     <th class="align-center">会员号</th>
-                    <th class="align-center">会员昵称</th>
                     <th class="align-center">活动ID</th>
                     <th class="align-center">活动名称</th>
                     <th class="align-center">报名人数</th>
@@ -66,9 +65,6 @@
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
                             ${list.mmCode}
-                        </td>
-                        <td style="text-align: left">
-                            ${list.mnickName}
                         </td>
                         <td style="text-align: left">
                             ${list.activityId}
