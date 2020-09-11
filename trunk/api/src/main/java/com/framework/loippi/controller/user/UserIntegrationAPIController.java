@@ -708,6 +708,10 @@ public class UserIntegrationAPIController extends BaseController {
         if(shopMember.getMmCode().equals(accentMemberId+"")){
             return ApiUtils.error(Xerror.PARAM_INVALID, "转出账户不能是自己");
         }
+        BigDecimal decimal = new BigDecimal(integration.toString());
+        if(rdMmAccountInfo.getWalletBlance().compareTo(decimal)==-1){
+            return ApiUtils.error("转出购物积分金额大于购物积分余额");
+        }
         if (integration <= 0) {
             return ApiUtils.error("所转积分不合理");
         }
