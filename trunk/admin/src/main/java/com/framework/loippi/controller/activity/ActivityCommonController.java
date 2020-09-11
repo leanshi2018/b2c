@@ -613,9 +613,9 @@ public class ActivityCommonController extends GenericController {
             }
         }
         model.addAttribute("msg", "添加商品成功");
-        return Constants.MSG_URL;
+        //return Constants.MSG_URL;
         //return "";
-        //return "redirect:findRecommendationGoods.jhtml?rId="+rId+"&goodsId"+"&goodsName";
+        return "redirect:findRecommendationGoods.jhtml?rId="+rId+"&goodsId"+"&goodsName";
     }
 
     /**
