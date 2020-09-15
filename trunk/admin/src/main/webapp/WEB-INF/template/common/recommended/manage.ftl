@@ -30,28 +30,23 @@
         });
     }
     setTimeout(function(){
-        console.log($("#rId").val());
+        // console.log($("#rId").val());
         localStorage.setItem('rId', $("#rId").val());
     },1000)
     function appendInfo(id) {
         console.log(id);
-        var url = "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml";
-        location.href = url + "?rId=" + localStorage.getItem('rId')+"&jsonMap="+JSON.stringify(id);
-        <#--$.ajax({-->
-        <#--    type: "post",-->
-        <#--    url: "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml",-->
-        <#--    data: {-->
-        <#--        "rId":localStorage.getItem('rId'),-->
-        <#--        "jsonMap":JSON.stringify(id)-->
-        <#--    },-->
-        <#--    dataType: "json",-->
-        <#--    async: false,-->
-        <#--    success: function (data) {-->
-        <#--        console.log(data);-->
-        <#--        $('#formSearch').submit();-->
-        <#--    }-->
-        <#--});-->
+
+        <#--var url = "${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml";-->
+        <#--location.href = url + "?rId=" + localStorage.getItem('rId')+"&jsonMap="+JSON.stringify(id);-->
+
+        document.write("<form action='${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml' method=post name=form1 style='display:none'>"+"<input type=hidden name=rId value='"+localStorage.getItem('rId')+"'/>"+"<input type=hidden name=jsonMap value='"+JSON.stringify(id)+"'/></form>");
+        // document.write("<input type=hidden name=rId value='"+localStorage.getItem('rId')+"'/>");
+        // document.write("<input type=hidden name=jsonMap value='"+JSON.stringify(id)+"'/>");
+        // document.write("</form>");
+        document.form1.submit();
     }
+
+
 </script>
 <@layout.body>
     <div class="page">

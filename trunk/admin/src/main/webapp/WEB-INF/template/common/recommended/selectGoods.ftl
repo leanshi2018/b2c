@@ -18,14 +18,14 @@
             <!-- 搜索栏 -->
             <form method="POST" name="formSearch" id="formSearch"
                   action="${base}/admin/shop_activity_common/findShopGoodList.jhtml">
-                <input type="hidden" name="pageable" value="${1}">
+                <input type="hidden" name="pageNumber" value="${1}">
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
                        <td>
                             <select class="select">
                                 <#list goodsClass as list>
-                                    <option name="Id" value="${list.id}">${list.gcName}</option>
+                                    <option name="id" value="${list.id}">${list.gcName}</option>
                                 </#list>
                             </select>
                             <input name="goodsName" type="text" value="${goodsName}" placeholder="请输入商品名称"/>
@@ -88,7 +88,6 @@
                     var map={id};
                     jsonMap.push(map);
                 }
-                console.log(jsonMap);
                 parent.appendInfo(jsonMap);
             }
         }

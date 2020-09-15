@@ -47,7 +47,9 @@
                 <tr>
                     <td colspan="3" class="required" style="background: #eee">基本信息</td>
                 </tr>
-<#--                <input type="hidden" name="id" value="${id}" />-->
+                <input type="hidden" name="id" value="${page.id}" />
+                <input type="hidden" name="auditStatus" value="${page.auditStatus}" />
+                <input type="hidden" name="createTime" value="${page.createTime}" />
                 <tr class="noborder">
                     <td class="required">
                         <em class="pngFix"></em>名称
