@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.system.RdAccessKey;
+import com.framework.loippi.service.system.RdAccessKeyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -61,6 +63,8 @@ public class ShopCommonMessageController extends GenericController {
     private RdMmBasicInfoService rdMmBasicInfoService;
     @Resource
     private RedisService redisService;
+    @Resource
+    private RdAccessKeyService rdAccessKeyService;
 
     @RequestMapping("/list")
     public String list(Model model, HttpServletRequest request,
@@ -393,12 +397,13 @@ public class ShopCommonMessageController extends GenericController {
     }
 
     public void SendBatchSms(MessageTemplateDto messageTemplateDto, ShopCommonMessage message, String[] sendUidSort) {
+        RdAccessKey accessKey = rdAccessKeyService.find(1L);
         if (sendUidSort == null) {
             List<RdMmBasicInfo> shopMemberList = rdMmBasicInfoService.findList(Paramap.create().put("pushStatus", 1));
             int length = shopMemberList.size();
             for (int i = 0; i < length; i++) {
                 try {
-                    AldayuUtil.sendSms(shopMemberList.get(i).getMobile(), "{\"code\":\"" + (i + 1) + "\"}", messageTemplateDto.getCode(), messageTemplateDto.getSignName());
+                    AldayuUtil.sendSms(shopMemberList.get(i).getMobile(), "{\"code\":\"" + (i + 1) + "\"}", messageTemplateDto.getCode(), messageTemplateDto.getSignName(),accessKey.getAccessKey(),accessKey.getSecret());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -408,7 +413,7 @@ public class ShopCommonMessageController extends GenericController {
             List<RdMmBasicInfo> shopMemberList = rdMmBasicInfoService.findList(Paramap.create().put("mmCodes", sendUidSort));
             for (int i = 0; i < length; i++) {
                 try {
-                    AldayuUtil.sendSms(shopMemberList.get(i).getMobile(), "{\"code\":\"" + (i + 1) + "\"}", messageTemplateDto.getCode(), messageTemplateDto.getSignName());
+                    AldayuUtil.sendSms(shopMemberList.get(i).getMobile(), "{\"code\":\"" + (i + 1) + "\"}", messageTemplateDto.getCode(), messageTemplateDto.getSignName(),accessKey.getAccessKey(),accessKey.getSecret());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

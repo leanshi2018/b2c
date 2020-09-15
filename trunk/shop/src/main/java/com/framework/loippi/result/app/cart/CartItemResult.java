@@ -1,5 +1,6 @@
 package com.framework.loippi.result.app.cart;
 
+import com.framework.loippi.vo.cart.ShopCartExchangeVo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -79,6 +80,29 @@ public class CartItemResult extends BaseGoodsResult {
                 .setQuantity(optCart.map(ShopCartVo::getGoodsNum).orElse(0))
                 .setDefaultImage(optCart.map(ShopCartVo::getGoodsImages).orElse(""));
         // TODO: 2018/12/11 待补充
+        itemResult.setPpv(optGoodsSpec.map(ShopGoodsSpec::getPpv).orElse(BigDecimal.ZERO));
+        itemResult.setVipPrice(optGoodsSpec.map(ShopGoodsSpec::getSpecMemberPrice).orElse(BigDecimal.ZERO));
+        return itemResult;
+    }
+
+    public static CartItemResult build2(ShopCartExchangeVo cart) {
+        Optional<ShopCartExchangeVo> optCart = Optional.ofNullable(cart);
+        Optional<ShopGoodsSpec> optGoodsSpec = optCart.map(ShopCartExchangeVo::getGoodsSpec);
+        CartItemResult itemResult = new CartItemResult();
+        itemResult.setActivityId(optCart.map(ShopCartExchangeVo::getActivityId).orElse(0L));
+        itemResult.setActivityType(optCart.map(ShopCartExchangeVo::getActivityType).orElse(0));
+        itemResult.setCartId(optCart.map(ShopCartExchangeVo::getId).orElse(0L));
+        itemResult.setGoodsMarketPrice(optCart.map(ShopCartExchangeVo::getGoodsRetailPrice).orElse(BigDecimal.ZERO));
+        itemResult.setStock(optGoodsSpec.map(ShopGoodsSpec::getSpecGoodsStorage).orElse(0));
+        itemResult.setGoodsType(optCart.map(ShopCartExchangeVo::getGoodsState).orElse(1));
+        // 基本商品信息
+        itemResult.setSpecInfo(optCart.map(ShopCartExchangeVo::getSpecInfo).orElse(""))
+                .setGoodsName(optCart.map(ShopCartExchangeVo::getGoodsName).orElse(""))
+//                .setGoodsStorePrice(optGoodsSpec.map(ShopGoodsSpec::getSpecRetailPrice).orElse(BigDecimal.ZERO))
+                .setSpecId(optCart.map(ShopCartExchangeVo::getSpecId).orElse(0L))
+                .setGoodsId(optCart.map(ShopCartExchangeVo::getGoodsId).orElse(0L))
+                .setQuantity(optCart.map(ShopCartExchangeVo::getGoodsNum).orElse(0))
+                .setDefaultImage(optCart.map(ShopCartExchangeVo::getGoodsImages).orElse(""));
         itemResult.setPpv(optGoodsSpec.map(ShopGoodsSpec::getPpv).orElse(BigDecimal.ZERO));
         itemResult.setVipPrice(optGoodsSpec.map(ShopGoodsSpec::getSpecMemberPrice).orElse(BigDecimal.ZERO));
         return itemResult;
