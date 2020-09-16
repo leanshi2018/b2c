@@ -33,42 +33,42 @@
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">劵序号</th>
-                    <td class="w160"><input type="text" class="text w150" name="id" value="${id}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="ticketSn" value="${rdTravelTicketDetail.ticketSn}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">旅游券名称</th>
-                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${travelLikeName}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${rdTravelTicketDetail.travelLikeName}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th>状态</th>
                     <td>
                         <select name="status" class="w100">
-                            <option value=""  <#if status == null>selected="selected"</#if>>不限</option>
-                            <option value="0" <#if status == '0'>selected="selected"</#if>>未使用</option>
-                            <option value="1" <#if status == '1'>selected="selected"</#if>>报名占用</option>
-                            <option value="2" <#if status == '2'>selected="selected"</#if>>已核销</option>
-                            <option value="3" <#if status == '3'>selected="selected"</#if>>已过期</option>
+                            <option value=""  <#if rdTravelTicketDetail.status == null>selected="selected"</#if>>不限</option>
+                            <option value="0" <#if rdTravelTicketDetail.status == '0'>selected="selected"</#if>>未使用</option>
+                            <option value="1" <#if rdTravelTicketDetail.status == '1'>selected="selected"</#if>>报名占用</option>
+                            <option value="2" <#if rdTravelTicketDetail.status == '2'>selected="selected"</#if>>已核销</option>
+                            <option value="3" <#if rdTravelTicketDetail.status == '3'>selected="selected"</#if>>已过期</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">领取时间</th>
-                    <td class="w160"><input class="txt Wdate" type="text" id="query_start_time" name="ownTimeLeft" readonly value="${ownTimeLeft}"
+                    <td class="w160"><input class="txt Wdate" type="text" id="query_start_time" name="ownTimeLeft" readonly value="${rdTravelTicketDetail.ownTimeLeft}"
                                onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'query_end_time\')}'});"/>
                         <label for="query_start_time">~</label>
-                        <input class="txt Wdate" type="text" id="query_end_time" name="ownTimeRight" readonly value="${ownTimeRight}"
+                        <input class="txt Wdate" type="text" id="query_end_time" name="ownTimeRight" readonly value="${rdTravelTicketDetail.ownTimeRight}"
                                onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'query_start_time\')}'});"/>
                     </td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">领取人id</th>
-                    <td class="w160"><input type="text" class="text w150" name="ownCode" value="${ownCode}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="ownCode" value="${rdTravelTicketDetail.ownCode}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">领取人昵称</th>
-                    <td class="w160"><input type="text" class="text w150" name="ownNickName" value="${ownNickName}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="ownNickName" value="${rdTravelTicketDetail.ownNickName}"></td>
                 </tr>
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">报名活动id</th>
-                    <td class="w160"><input type="text" class="text w150" name="useActivityId" value="${useActivityId}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="useActivityId" value="${rdTravelTicketDetail.useActivityId}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
@@ -103,7 +103,7 @@
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
-                            ${list.travelId}
+                            ${list.ticketSn}
                         </td>
                         <td style="text-align: left">
                             ${list.travelName}
@@ -139,7 +139,7 @@
                             <#if list.status == 3>已过期</#if>
                         </td>
                         <td style="text-align: left">
-                            ${list.id}
+                            ${list.useActivityId}
                         </td>
                         <td style="text-align: left">
 
@@ -147,7 +147,7 @@
                         <td style="text-align: left">
 
                         </td>
-                        <td>
+                        <td>cc
                             <#if list.status==0||list.status==3>
                                 <a href="javascript:updateStatus('${list.ticketSn}','${list.status}')">核 销</a>
                             </#if>

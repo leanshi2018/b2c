@@ -30,10 +30,10 @@
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">会员号</th>
-                    <td class="w160"><input type="text" class="text w150" name="mmCode" value="${mmCode}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="mmCode" value="${rdTravelCost.mmCode}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">活动ID</th>
-                    <td class="w160"><input type="text" class="text w150" name="activityId" value="${activityId}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="activityId" value="${rdTravelCost.activityId}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>

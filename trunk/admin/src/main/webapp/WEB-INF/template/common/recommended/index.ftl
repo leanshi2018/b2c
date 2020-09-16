@@ -39,7 +39,7 @@
                 <tbody>
                 <tr>
                     <th class="th_w">推荐页名称</th>
-                    <td class="ths"><input type="text" class="text" name="recommendationName" id="recommendationName" value="${recommendationName}" ></td>
+                    <td class="ths"><input type="text" class="text" name="recommendationName" id="recommendationName" value="${shopProductRecommendation.recommendationName}" ></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="Submit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
