@@ -13,6 +13,7 @@ import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.pojo.cart.CartExchangeInfo;
 import com.framework.loippi.pojo.cart.CartInfo;
 import com.framework.loippi.pojo.cart.CartVo;
@@ -76,7 +77,7 @@ public class ShopCartExchangeServiceImpl extends GenericServiceImpl<ShopCartExch
      * @param saveTypeAddToCart 添加类型 立即购买:1   加入购物车:0
      */
     @Override
-    public void saveExchangeCart(Long goodsId, String mmCode, Integer rankId, Integer count, Long specId, int saveTypeAddToCart) {
+    public Long saveExchangeCart(Long goodsId, String mmCode, Integer rankId, Integer count, Long specId, int saveTypeAddToCart) {
         //商品信息
         ShopGoods goods = goodsService.find(goodsId);
         //商品规格信息
@@ -168,6 +169,7 @@ public class ShopCartExchangeServiceImpl extends GenericServiceImpl<ShopCartExch
         if (cart.getGoodsNum()> goodsSpec.getSpecGoodsStorage()) {
             throw new RuntimeException("购物车数量大于库存");
         }
+        return cart.getId();
     }
 
     /**
@@ -296,6 +298,15 @@ public class ShopCartExchangeServiceImpl extends GenericServiceImpl<ShopCartExch
         map.put("preferentialFreightAmount",info.getPreferentialFreightAmount());
         map.put("totalAmount",info.getTotalPrice());
         return map;
+    }
+
+    @Override
+    public List<Long> saveCartList(List<ShopCartExchange> cartList, String mmCode, RdRanks rdRanks) {
+        List<Long> longList = new ArrayList<>();
+        for (ShopCartExchange item : cartList) {
+            longList.add(saveExchangeCart(item.getGoodsId(), mmCode, rdRanks.getRankId(), item.getGoodsNum(), item.getSpecId(), 1));
+        }
+        return longList;
     }
 
     public CartExchangeInfo getCartExchangeInfo(List<ShopCartExchange> cartList, RdMmAddInfo addr, String mmCode) {

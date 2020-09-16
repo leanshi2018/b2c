@@ -46,19 +46,19 @@ import com.framework.loippi.utils.Paramap;
 @Transactional
 public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, Long> implements RdMmBasicInfoService {
 
-    @Autowired
+    @Resource
     private RdMmBasicInfoDao rdMmBasicInfoDao;
-    @Autowired
+    @Resource
     private RdSysPeriodDao rdSysPeriodDao;
-    @Autowired
+    @Resource
     private RdMmRelationDao rdMmRelationDao;
-    @Autowired
+    @Resource
     private RdMmAccountInfoDao rdMmAccountInfoDao;
-    @Autowired
+    @Resource
     private RdMmEditDao rdMmEditDao;
-    @Autowired
+    @Resource
     private RdRanksDao rdRanksDao;
-    @Autowired
+    @Resource
     private OldSysRelationshipService oldSysRelationshipService;
     @Resource
     private RdRaBindingDao rdRaBindingDao;
@@ -515,6 +515,37 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
     @Override
     public List<RdMmBasicInfo> findBranch(String mmCode) {
         return rdMmBasicInfoDao.findBranch(mmCode);
+    }
+
+    @Override
+    public Long countSecondShop(String mmCode) {
+        return rdMmBasicInfoDao.countSecondShop(mmCode);
+    }
+
+    /**
+     * 主次店会员绑定
+     * @param mainBasic 绑定主店会员
+     * @param secondBasic 绑定次店会员
+     */
+    @Override
+    public void storeBinding(RdMmBasicInfo mainBasic, RdMmBasicInfo secondBasic) {
+        //修改次店会员手机号以及主次店标识，判断主店会员积分账户是否激活，如果未激活，不做处理，如果激活且次店会员为激活，使用主店会员信息激活次店会员积分信息
+        secondBasic.setMobile(mainBasic.getMobile());
+        secondBasic.setMainFlag(2);
+        rdMmBasicInfoDao.update(secondBasic);
+        RdMmAccountInfo mainAccInfo = rdMmAccountInfoDao.findAccByMCode(mainBasic.getMmCode());
+        if(mainAccInfo!=null&&mainAccInfo.getBonusStatus()!=null&&mainAccInfo.getBonusStatus()!=0){//如果主店会员积分账户未激活，不进行次店处理
+            return;
+        }
+        RdMmAccountInfo secondAccInfo = rdMmAccountInfoDao.findAccByMCode(secondBasic.getMmCode());
+        if(secondAccInfo!=null&&secondAccInfo.getBonusStatus()!=null&&secondAccInfo.getBonusStatus()==2){
+            secondAccInfo.setBonusStatus(0);
+            secondAccInfo.setWalletStatus(0);
+            secondAccInfo.setRedemptionStatus(0);
+            secondAccInfo.setPaymentPwd(mainAccInfo.getPaymentPwd());
+            secondAccInfo.setPaymentPhone(mainAccInfo.getPaymentPhone());
+            rdMmAccountInfoDao.update(secondAccInfo);
+        }
     }
 
 }

@@ -50,4 +50,8 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
     void addSecondaryUser(RdMmBasicInfo mmBasicInfo, String mNickName, String mmAvatar);
 
     List<RdMmBasicInfo> findBranch(String mmCode);
+
+    Long countSecondShop(String mainCode);
+
+    void storeBinding(RdMmBasicInfo mainBasic, RdMmBasicInfo secondBasic);
 }
