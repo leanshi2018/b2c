@@ -3,6 +3,7 @@ package com.framework.loippi.result.app.cart;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.framework.loippi.entity.cart.ShopCartExchange;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -63,6 +64,10 @@ public class CartExchangeCheckOutResult {
      */
     private BigDecimal totalAmount;
     /**
+     * 用户换购积分余额
+     */
+    private BigDecimal redemptionBlance;
+    /**
      * 换购商品购物车id
      */
     public List<Long> cartIds;
@@ -74,7 +79,7 @@ public class CartExchangeCheckOutResult {
     public List<Long> cartIdsStr;
 
     public static CartExchangeCheckOutResult build(Map<String, Object> moneyMap,
-                                                   List<ShopCartExchange> cartList, RdMmAddInfo address) {
+                                                   List<ShopCartExchange> cartList, RdMmAddInfo address, RdMmAccountInfo accountInfo) {
         CartExchangeCheckOutResult result = new CartExchangeCheckOutResult().setHadReceiveAddr(address == null ? 0 : 1);
         Optional<RdMmAddInfo> optAddress = Optional.ofNullable(address);
         // 个人收货信息信息
@@ -107,6 +112,7 @@ public class CartExchangeCheckOutResult {
                 .setPreferentialFreightAmount(Optional.ofNullable((BigDecimal) moneyMap.get("preferentialFreightAmount")).orElse(new BigDecimal("0")))
                 //总金额
                 .setTotalAmount(Optional.ofNullable((BigDecimal) moneyMap.get("totalAmount")).orElse(new BigDecimal("0")));
+        result.setRedemptionBlance(Optional.ofNullable(accountInfo.getRedemptionBlance()).orElse(BigDecimal.ZERO));
         return result;
     }
 }

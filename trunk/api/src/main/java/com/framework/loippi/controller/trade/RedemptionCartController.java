@@ -4,30 +4,28 @@ import com.framework.loippi.consts.CartConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.cart.ShopCartExchange;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoodsFreightRule;
-import com.framework.loippi.entity.user.RdMmAddInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.*;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.param.cart.CartAddParam;
 import com.framework.loippi.result.app.cart.CartExchangeCheckOutResult;
 import com.framework.loippi.result.app.cart.CartExchangeResult;
 import com.framework.loippi.result.app.cart.CartResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartExchangeService;
 import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.service.user.RdMmAddInfoService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.*;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.cart.ShopCartExchangeVo;
 import com.framework.loippi.vo.cart.ShopCartVo;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -42,6 +40,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -65,7 +64,10 @@ public class RedemptionCartController extends BaseController {
     private RdMmBasicInfoService rdMmBasicInfoService;
     @Resource
     private RdMmAddInfoService rdMmAddInfoService;
-
+    @Resource
+    private RdMmAccountInfoService rdMmAccountInfoService;
+    @Resource
+    private ShopOrderService shopOrderService;
     /**
      * 换购商品购物车列表
      */
@@ -168,6 +170,10 @@ public class RedemptionCartController extends BaseController {
         //订单类型相关
         RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        if(accountInfo==null||accountInfo.getRedemptionStatus()==null||accountInfo.getRedemptionStatus()!=0){
+            return ApiUtils.error("换购积分账户尚未激活");
+        }
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
         // 获取收货地址
         RdMmAddInfo addr = null;
@@ -199,7 +205,57 @@ public class RedemptionCartController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         CartExchangeCheckOutResult result = CartExchangeCheckOutResult
-                .build(map, cartList, addr);
+                .build(map, cartList, addr,accountInfo);
         return ApiUtils.success(result);
+    }
+
+    /**
+     * 换购商品购物车数量
+     */
+    @RequestMapping(value = "/api/redemption/cart/count", method = RequestMethod.POST)
+    @ResponseBody
+    public String countOfMemberCart(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        Long count = shopCartExchangeService.count(Paramap.create().put("memberId", member.getMmCode()));
+        return ApiUtils.success(count);
+    }
+
+    /**
+     * 换购商品再次购买
+     * @param orderId 原换购订单id
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/redemption/cart/buyAgain", method = RequestMethod.POST)
+    @ResponseBody
+    public String buyAgain(Long orderId, HttpServletRequest request) {
+        try {
+            if (orderId == null) {
+                ApiUtils.error(Xerror.PARAM_INVALID);
+            }
+            AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+            ShopOrder order = shopOrderService.findWithOrderGoodsById(orderId);
+            if (order == null || order.getShopOrderGoodses() == null || order.getShopOrderGoodses().size() < 1) {
+                ApiUtils.error("没有购买记录");
+            }
+            List<ShopCartExchange> cartList = new ArrayList<>();
+            for (ShopOrderGoods item : order.getShopOrderGoodses()) {
+                ShopCartExchange cart = new ShopCartExchange();
+                cart.setGoodsId(item.getGoodsId());
+                cart.setMemberId(Long.parseLong(item.getBuyerId()));
+                cart.setGoodsNum(item.getGoodsNum());
+                cart.setSpecId(item.getSpecId());
+                if(item.getIsPresentation()==null||item.getIsPresentation()!=1){
+                    cartList.add(cart);
+                }
+            }
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+            RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+            List<Long> list = shopCartExchangeService.saveCartList(cartList, member.getMmCode(),rdRanks);
+            return checkout(Joiner.on(",").join(list), null, null);
+        } catch (Exception e) {
+            log.error("再次购买错误", e);
+            return ApiUtils.error(e.getMessage());
+        }
     }
 }
