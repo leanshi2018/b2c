@@ -3,6 +3,7 @@ package com.framework.loippi.service.product;
 import com.framework.loippi.entity.cart.ShopCartExchange;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.pojo.cart.CartExchangeInfo;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.vo.cart.ShopCartExchangeVo;
@@ -22,4 +23,6 @@ public interface ShopCartExchangeService extends GenericService<ShopCartExchange
     Map<String, Object> queryTotalPrice(String cartIds, String mmCode, RdMmAddInfo addr);
 
     List<Long> saveCartList(List<ShopCartExchange> cartList, String mmCode, RdRanks rdRanks);
+
+    CartExchangeInfo queryCartExchangeInfo(String cartIds, RdMmAddInfo address, String memberId);
 }

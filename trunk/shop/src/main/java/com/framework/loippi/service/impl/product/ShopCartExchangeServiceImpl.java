@@ -309,6 +309,23 @@ public class ShopCartExchangeServiceImpl extends GenericServiceImpl<ShopCartExch
         return longList;
     }
 
+    @Override
+    public CartExchangeInfo queryCartExchangeInfo(String cartIds, RdMmAddInfo address, String memberId) {
+        //通过多个购物车id查询购物车数据
+        List<ShopCartExchange> cartList = Lists.newArrayList();
+        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
+            String[] cartId = cartIds.split(",");
+            if (cartId != null && cartId.length > 0) {
+                cartList = shopCartExchangeDao.findByParams(Paramap.create().put("ids", cartId));
+            }
+        }
+        if (cartList.isEmpty()){
+            throw new StateResult(AppConstants.FAIL, "购物车不存在");
+        }
+        // 获取基本数据
+        return getCartExchangeInfo(cartList,address, memberId);
+    }
+
     public CartExchangeInfo getCartExchangeInfo(List<ShopCartExchange> cartList, RdMmAddInfo addr, String mmCode) {
         CartExchangeInfo info = new CartExchangeInfo();
         //商品种类数量
