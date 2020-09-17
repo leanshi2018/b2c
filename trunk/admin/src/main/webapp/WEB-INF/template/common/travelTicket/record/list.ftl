@@ -36,7 +36,7 @@
                     <td class="w160"><input type="text" class="text w150" name="ticketSn" value="${rdTravelTicketDetail.ticketSn}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">旅游券名称</th>
-                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${rdTravelTicketDetail.travelLikeName}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="travelName" value="${rdTravelTicketDetail.travelName}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th>状态</th>
                     <td>
@@ -93,7 +93,7 @@
                     <th class="align-center">核销时间</th>
                     <th class="align-center">状态</th>
                     <th class="align-center">报名的旅游ID</th>
-                    <th class="align-center">报名的旅游名称</th>
+<#--                    <th class="align-center">报名的旅游名称</th>-->
                     <th class="align-center">更新人</th>
                     <th class="align-center"><@spring.message "operation"/></th>
                 </tr>
@@ -141,13 +141,13 @@
                         <td style="text-align: left">
                             ${list.useActivityId}
                         </td>
+<#--                        <td style="text-align: left">-->
+
+<#--                        </td>-->
                         <td style="text-align: left">
 
                         </td>
-                        <td style="text-align: left">
-
-                        </td>
-                        <td>cc
+                        <td>
                             <#if list.status==0||list.status==3>
                                 <a href="javascript:updateStatus('${list.ticketSn}','${list.status}')">核 销</a>
                             </#if>

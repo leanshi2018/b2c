@@ -6,7 +6,6 @@
     <script type="text/javascript" src="${base}/res/js/jquery.edit.js"></script>
     <script type="text/javascript" src="${base}/res/js/layer/layer.js"></script>
     <script type="text/javascript" src="${base}/res/js/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
-
 </@layout.head>
 <script type="text/javascript">
     $(function () {
@@ -35,7 +34,7 @@
 
         <!-- 搜索栏 -->
         <form method="post" name="formSearch" id="formSearch" action="${base}/admin/travel/travelTicket/list.jhtml">
-            <input type="hidden" name="pageNo" value="${1}">
+            <input type="hidden" name="pageNumber" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
@@ -112,9 +111,10 @@
                     </tr>
                 </#list>
                 </tbody>
+                <div id="editdetaildiv" ></div>
                 <tfoot class="tfoot">
                 <tr>
-<#--                    <td colspan="16">-->
+<#--                    <td colspan="20">-->
 <#--                        <@layout.pager page/>-->
 <#--                    </td>-->
                 </tr>

@@ -56,11 +56,12 @@
                         </td>
                         <td>
                             <#if picture=="">
-                                <input name="auditStatus" type="radio" value="1"  <#if auditStatus==1>checked</#if>>
+                                <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1>checked</#if>>
                                 是
-                                <input name="auditStatus" type="radio" value="0"  <#if auditStatus==0>checked</#if>>
+                                <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
                                 否
-                            <#else>
+                            </#if>
+                            <#if picture!=null>
                                 <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1>checked</#if>>
                                 是
                                 <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
@@ -75,8 +76,9 @@
                         </td>
                         <td>
                              <#if picture=="">
-                                 <input name="pictureName" id="pictureName" type="text" value="${pictureName}" class="w200"/>
-                             <#else>
+                                 <input name="pictureName" id="pictureName" type="text" value="${picture.pictureName}" class="w200"/>
+                             </#if>
+                            <#if picture!=null>
                                  <input name="pictureName" id="pictureName" type="text" value="${picture.pictureName}" class="w200"/>
                              </#if>
                             <span class="error-message"></span>
@@ -90,17 +92,18 @@
                             <#if picture=="">
                             <p>
                                 <span class="sign">
-                                    <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${pictureUrl}"/>
+                                    <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
                                     <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
-                                    <img src="${pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
+                                    <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
                                 </span>
                             </p>
                             <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
                                       onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                            <span class="error-message">建议上传图片尺寸351*184</span>
+                            <span class="error-message">建议上传图片尺寸702*302px</span>
                             <span class="error-message"></span>
                         </td>
-                        <#else>
+                        </#if>
+                        <#if picture!=null>
                             <p>
                                 <span class="sign">
                                     <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
@@ -110,7 +113,7 @@
                             </p>
                             <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
                                       onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                            <span class="error-message">建议上传图片尺寸351*184</span>
+                            <span class="error-message">建议上传图片尺寸702*302px</span>
                             <span class="error-message"></span>
 
                         </#if>
@@ -121,9 +124,10 @@
                         </td>
                         <td>
                             <#if picture=="">
-                                <input name="pSort"  type="text" value="${psort}" class="w200"/>
-                            <#else>
                                 <input name="pSort"  type="text" value="${picture.psort}" class="w200"/>
+                            </#if>
+                            <#if picture!=null>
+                                <input name="pSort"  type="text" value="${picture.PSort}" class="w200"/>
                             </#if>
                             <span class="error-message"></span>
                         </td>
@@ -136,10 +140,11 @@
                             <select name="openType" class="w200" id="openType">
                                 <#if picture=="">
                                     <option value="" selected="selected">请选择</option>
-                                    <option value="活动页面" id=""<#if openType == '活动页面'>selected="selected"</#if>>跳转商品活动页</option>
-                                    <option value="跳转路径" id=""<#if openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
-                                    <option value="跳转链接" id=""<#if openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
-                                <#else>
+                                    <option value="活动页面" id=""<#if picture.openType == '活动页面'>selected="selected"</#if>>跳转商品活动页</option>
+                                    <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
+                                    <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
+                                </#if>
+                                <#if picture!=null>
                                     <option value="活动页面" id=""<#if picture.jumpName == '活动页面'>selected="selected"</#if>>跳转商品活动页</option>
                                     <option value="跳转路径" id=""<#if picture.jumpName == "推荐页面">selected="selected" </#if>>跳转路径</option>
                                     <option value="跳转链接" id=""<#if picture.jumpInterface!= "">selected="selected" </#if>>跳转链接</option>
@@ -162,28 +167,28 @@
                                         <option value="" selected="selected">请选择</option>
                                     </select>
                                     <#--选择跳转链接-->
-                                    <input name="jumpInterface" id="jumpInterface" type="text" value="${jumpInterface}" class="w200"style="display: none;"/>
+                                    <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" class="w200"style="display: none;"/>
                                     <#--选择跳转路径-->
                                     <select name="openPage" class="w200" id="openPage"style="display: none;">
                                         <option value="" selected="selected">请选择</option>
-                                        <option value="gatherGoodspage" <#if openPage == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
-                                        <option value="recommendGoodspage" <#if openPage == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
-                                        <option value="homepage" <#if openPage == 'homepage'>selected="selected"</#if>>辑</option>
-                                        <option value="messagepage"<#if openPage == "messagepage">selected="selected" </#if>>消息中心</option>
-                                        <option value="goodsdetailspage" id="goodsdetailspage" <#if openPage == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
-                                        <option value="mypage"  <#if openPage == "mypage">selected="selected" </#if>>我</option>
-                                        <option value="myresultspage" <#if openPage == "myresultspage">selected="selected" </#if>>个人业绩</option>
-                                        <option value="orderpage"    <#if openPage == "orderpage">selected="selected" </#if>>我的订单</option>
-                                        <option value="myintegralpage" <#if openPage == "myintegralpage">selected="selected" </#if>>我的积分</option>
-                                        <option value="rewardintegralpage" <#if openPage == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>
-                                        <option value="shoppingintegralpage" <#if openPage == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>
-                                        <option value="buyintegralpage" <#if openPage == "buyintegralpage">selected="selected" </#if>>换购积分</option>
-                                        <option value="bankcardpage" <#if openPage == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
-                                        <option value="learnpage" <#if openPage == "learnpage">selected="selected" </#if>>学堂</option>
-                                        <option value="learnarticlepage" <#if openPage == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
-                                        <option value="invitationpage" <#if openPage == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                        <option value="activityGoodsListpage" <#if openPage =="activityGoodsListpage">selected="selected" </#if>>活动页面</option>
-                                        <option value="buyCouponspage" id="buyCouponspage" <#if openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
+                                        <option value="gatherGoodspage" <#if picture.openPage == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
+                                        <option value="recommendGoodspage" <#if picture.openPage == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
+                                        <option value="homepage" <#if picture.openPage == 'homepage'>selected="selected"</#if>>辑</option>
+                                        <option value="messagepage"<#if picture.openPage == "messagepage">selected="selected" </#if>>消息中心</option>
+                                        <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.openPage == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
+                                        <option value="mypage"  <#if picture.openPage == "mypage">selected="selected" </#if>>我</option>
+                                        <option value="myresultspage" <#if picture.openPage == "myresultspage">selected="selected" </#if>>个人业绩</option>
+                                        <option value="orderpage"    <#if picture.openPage == "orderpage">selected="selected" </#if>>我的订单</option>
+                                        <option value="myintegralpage" <#if picture.openPage == "myintegralpage">selected="selected" </#if>>我的积分</option>
+                                        <option value="rewardintegralpage" <#if picture.openPage == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>
+                                        <option value="shoppingintegralpage" <#if picture.openPage == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>
+                                        <option value="buyintegralpage" <#if picture.openPage == "buyintegralpage">selected="selected" </#if>>换购积分</option>
+                                        <option value="bankcardpage" <#if picture.openPage == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
+                                        <option value="learnpage" <#if picture.openPage == "learnpage">selected="selected" </#if>>学堂</option>
+                                        <option value="learnarticlepage" <#if picture.openPage == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
+                                        <option value="invitationpage" <#if picture.openPage == "invitationpage">selected="selected" </#if>>我的邀请</option>
+                                        <option value="activityGoodsListpage" <#if picture.openPage =="activityGoodsListpage">selected="selected" </#if>>活动页面</option>
+                                        <option value="buyCouponspage" id="buyCouponspage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
                                     <#--选择文章-->
                                     <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" id="contents">
@@ -221,7 +226,8 @@
                                     <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>
                                 </div>
                             </div>
-                        <#else>
+                        </#if>
+                            <#if picture!=null>
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <#--选择跳转链接-->
@@ -470,62 +476,62 @@
                     console.log(rId);
                     $("#jsons").val("{\"rId\":\"" + rId + "\"}");
                 }
-                if(value=="gatherGoodspage"){
+                if(vals=="gatherGoodspage"){
                     $("#openName").val("凑单页面");
                 }
-                if(value=="homepage"){
+                if(vals=="homepage"){
                     $("#openName").val("辑");
                 }
-                if(value=="messagepage"){
+                if(vals=="messagepage"){
                     $("#openName").val("消息中心");
                 }
-                if (value=="goodsdetailspage"){
+                if (vals=="goodsdetailspage"){
                     $("#goodsName").show();
                     $("#searchgoods").css("display","");
                     $("#openName").val("商品详情");
                     var goodsId = jsonstr.replace(/[^0-9]/ig,"");
                     $("#jsons").val("{\"goodsId\":\"" + goodsId + "\"}");
                 }
-                if(value=="mypage"){
+                if(vals=="mypage"){
                     $("#openName").val("我");
                 }
-                if(value=="myresultspage"){
+                if(vals=="myresultspage"){
                     $("#openName").val("个人业绩");
                 }
-                if(value=="orderpage"){
+                if(vals=="orderpage"){
                     $("#openName").val("我的订单");
                 }
-                if(value=="myintegralpage"){
+                if(vals=="myintegralpage"){
                     $("#openName").val("我的积分");
                 }
-                if(value=="rewardintegralpage"){
+                if(vals=="rewardintegralpage"){
                     $("#openName").val("奖励积分");
                 }
-                if(value=="shoppingintegralpage"){
+                if(vals=="shoppingintegralpage"){
                     $("#openName").val("购物积分");
                 }
-                if(value=="bankcardpage"){
+                if(vals=="bankcardpage"){
                     $("#openName").val("我的银行卡");
                 }
-                if(value=="learnpage"){
+                if(vals=="learnpage"){
                     $("#openName").val("学堂");
                 }
-                if(value=="learnarticlepage"){
+                if(vals=="learnarticlepage"){
                     $("#articleTitle").show();
                     $("#searchlearnarticle").css("display","");
                     $("#openName").val("学堂文章详情");
                 }
-                if(value=="invitationpage"){
+                if(vals=="invitationpage"){
                     $("#openName").val("我的邀请");
                 }
-                if(value=="activityGoodsListpage"){
+                if(vals=="activityGoodsListpage"){
                     $("#activityname").show();
                     $("#searchactivity").css("display","");
                     $("#openName").val("活动页面");
                     var activityId = jsonstr.replace(/[^0-9]/ig,"");
                     $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
                 }
-                if (value=="buyCouponspage"){
+                if (vals=="buyCouponspage"){
                     $("#couponName").show();
                     $("#searchbuys").css("display","");
                     $("#openName").val("优惠券购买详情");

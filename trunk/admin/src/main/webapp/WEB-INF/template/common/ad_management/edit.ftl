@@ -99,7 +99,7 @@
                                 </p>
                                 <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
                                           onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                                <span class="error-message">建议上传图片尺寸351*184</span>
+                                <span class="error-message">建议上传图片尺寸222*296px</span>
                             <#else>
                                 <span class="sign">
                             <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
@@ -109,7 +109,7 @@
                                 </p>
                                 <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
                                           onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                                <span class="error-message">建议上传图片尺寸351*184</span>
+                                <span class="error-message">建议上传图片尺寸222*296px</span>
                             </#if>
                             <p>
 
@@ -124,7 +124,7 @@
                             <#if picture=="">
                                 <input name="pSort" id="pSort" type="text" value="${pSort}" class="w200"/>
                             <#else>
-                                <input name="pSort" id="pSort" type="text" value="${picture.psort}" class="w200"/>
+                                <input name="pSort" id="pSort" type="text" value="${picture.PSort}" class="w200"/>
                             </#if>
 
                             <span class="error-message"></span>
@@ -475,62 +475,62 @@
                     console.log(rId);
                     $("#jsons").val("{\"rId\":\"" + rId + "\"}");
                 }
-                if(value=="gatherGoodspage"){
+                if(vals=="gatherGoodspage"){
                     $("#openName").val("凑单页面");
                 }
-                if(value=="homepage"){
+                if(vals=="homepage"){
                     $("#openName").val("辑");
                 }
-                if(value=="messagepage"){
+                if(vals=="messagepage"){
                     $("#openName").val("消息中心");
                 }
-                if (value=="goodsdetailspage"){
+                if (vals=="goodsdetailspage"){
                     $("#goodsName").show();
                     $("#searchgoods").css("display","");
                     $("#openName").val("商品详情");
                     var goodsId = jsonstr.replace(/[^0-9]/ig,"");
                     $("#jsons").val("{\"goodsId\":\"" + goodsId + "\"}");
                 }
-                if(value=="mypage"){
+                if(vals=="mypage"){
                     $("#openName").val("我");
                 }
-                if(value=="myresultspage"){
+                if(vals=="myresultspage"){
                     $("#openName").val("个人业绩");
                 }
-                if(value=="orderpage"){
+                if(vals=="orderpage"){
                     $("#openName").val("我的订单");
                 }
-                if(value=="myintegralpage"){
+                if(vals=="myintegralpage"){
                     $("#openName").val("我的积分");
                 }
-                if(value=="rewardintegralpage"){
+                if(vals=="rewardintegralpage"){
                     $("#openName").val("奖励积分");
                 }
-                if(value=="shoppingintegralpage"){
+                if(vals=="shoppingintegralpage"){
                     $("#openName").val("购物积分");
                 }
-                if(value=="bankcardpage"){
+                if(vals=="bankcardpage"){
                     $("#openName").val("我的银行卡");
                 }
-                if(value=="learnpage"){
+                if(vals=="learnpage"){
                     $("#openName").val("学堂");
                 }
-                if(value=="learnarticlepage"){
+                if(vals=="learnarticlepage"){
                     $("#articleTitle").show();
                     $("#searchlearnarticle").css("display","");
                     $("#openName").val("学堂文章详情");
                 }
-                if(value=="invitationpage"){
+                if(vals=="invitationpage"){
                     $("#openName").val("我的邀请");
                 }
-                if(value=="activityGoodsListpage"){
+                if(vals=="activityGoodsListpage"){
                     $("#activityname").show();
                     $("#searchactivity").css("display","");
                     $("#openName").val("活动页面");
                     var activityId = jsonstr.replace(/[^0-9]/ig,"");
                     $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
                 }
-                if (value=="buyCouponspage"){
+                if (vals=="buyCouponspage"){
                     $("#couponName").show();
                     $("#searchbuys").css("display","");
                     $("#openName").val("优惠券购买详情");

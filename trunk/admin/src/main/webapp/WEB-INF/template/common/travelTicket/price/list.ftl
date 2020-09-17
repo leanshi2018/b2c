@@ -97,9 +97,11 @@
 
     <script>
         function exportExcell(pageNumber) {
-            var fromVal=$("#formSearch").serialize();
-            var pageNumber = pageNumber;
-            window.location.href = "${base}/admin/order/list/exportExcel.jhtml?pages=" + pageNumber+"&param="+ fromVal;
+            // var fromVal=$("#formSearch").serialize();
+            // var pageNumber = pageNumber;
+            var activityId;
+            var mmCode;
+            window.location.href = "${base}/admin/travel/travelCost/export.jhtml?activityId=" + activityId+"&mmCode="+ mmCode;
             //layer.msg("暂未实现",{icon:5});
         }
         $(function () {
