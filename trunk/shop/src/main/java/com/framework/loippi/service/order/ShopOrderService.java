@@ -374,5 +374,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     List<OrderInfo> findLastMonthOrderInfo(Integer mentionId);
 
+    ShopOrderPay addOrderReturnPaySnRedemption(String cartIds, String mmCode, Map<String, Object> orderMsgMap, Long addressId, Integer platformCode, Integer logisticType, Integer paymentType);
+
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }
