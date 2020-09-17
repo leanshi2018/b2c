@@ -78,6 +78,8 @@ public class CartExchangeCheckOutResult {
     @JsonSerialize(using = ToStringSerializer.class)
     public List<Long> cartIdsStr;
 
+    public List<ShopCartExchange> cartExchangeList=new ArrayList<>();
+
     public static CartExchangeCheckOutResult build(Map<String, Object> moneyMap,
                                                    List<ShopCartExchange> cartList, RdMmAddInfo address, RdMmAccountInfo accountInfo) {
         CartExchangeCheckOutResult result = new CartExchangeCheckOutResult().setHadReceiveAddr(address == null ? 0 : 1);
@@ -93,6 +95,7 @@ public class CartExchangeCheckOutResult {
                         optAddress.map(RdMmAddInfo::getAddDetial).orElse(""));
         // 购物车总数量
         int totalNum = 0;
+        result.setCartExchangeList(cartList);
         for (ShopCartExchange cart : cartList) {
             totalNum += cart.getGoodsNum();
             if (result.getCartIds() == null) {
