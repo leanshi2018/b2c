@@ -224,6 +224,7 @@
                                 </div>
                             </div>
                         <#else>
+                            <input type="hidden" name="id" value="${picture.id}" />
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <#--选择跳转商品推荐页-->

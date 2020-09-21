@@ -114,7 +114,7 @@
                     <td>
                         <#if rdTravelTicket??>
                             <input class="w300 Wdate" readonly onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useStartTimeStr" name="useStartTimeStr" value="${rdTravelTicket.useStartTime?string("yyyy-MM-dd")}"/>
+                                   id="useStartTimeStr" name="" value="${rdTravelTicket.useStartTime?string("yyyy-MM-dd")}"/>
                         <#else>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
                                    id="useStartTimeStr" name="useStartTimeStr" value=""/>
@@ -129,7 +129,7 @@
                     <td>
                         <#if rdTravelTicket??>
                             <input class="w300 Wdate" readonly onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
-                                   id="useEndTimeStr" name="useEndTimeStr" value="${rdTravelTicket.useEndTime?string("yyyy-MM-dd")}"/>
+                                   id="useEndTimeStr" name="" value="${rdTravelTicket.useEndTime?string("yyyy-MM-dd")}"/>
                         <#else>
                             <input class="w300 Wdate" onFocus="WdatePicker({skin:'twoer',lang:'zh-cn',dateFmt:'yyyy-MM-dd'})"
                                    id="useEndTimeStr" name="useEndTimeStr" value=""/>
@@ -177,7 +177,8 @@
             $("#add_form").validate({
                 rules: {
                     travelName: {
-                        required: true
+                        required: true,
+                        maxlength: 100
                     },
                     image:{
                         required: true

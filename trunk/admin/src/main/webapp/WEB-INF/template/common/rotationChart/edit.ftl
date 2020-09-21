@@ -228,6 +228,7 @@
                             </div>
                         </#if>
                             <#if picture!=null>
+                                <input type="hidden" name="id" value="${picture.id}" />
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <#--选择跳转链接-->
@@ -441,6 +442,7 @@
         //提交参数和判断选择方式及传参
         $(function () {
             var value =  $('#openType option:selected').val();
+            console.log(value);
             if (value == "活动页面") {
                 $("#activityname").show();
                 $("#openPage").attr("name","");
@@ -465,6 +467,7 @@
 
             //取jsons编辑页面不修改状态默认传过来的参数
             var jsonstr=$("#pictureJson").html();
+            console.log(jsonstr);
             if(jsonstr!=""){
                 var vals = $('#openPage option:selected').val();
                 console.log(vals);
@@ -473,7 +476,6 @@
                     $("#recommendationName").show();
                     $("#searchrecommend").css("display","");
                     var rId = jsonstr.replace(/[^0-9]/ig,"");
-                    console.log(rId);
                     $("#jsons").val("{\"rId\":\"" + rId + "\"}");
                 }
                 if(vals=="gatherGoodspage"){

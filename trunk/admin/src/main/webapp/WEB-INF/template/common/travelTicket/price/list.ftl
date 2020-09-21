@@ -99,10 +99,13 @@
         function exportExcell(pageNumber) {
             // var fromVal=$("#formSearch").serialize();
             // var pageNumber = pageNumber;
-            var activityId;
-            var mmCode;
-            window.location.href = "${base}/admin/travel/travelCost/export.jhtml?activityId=" + activityId+"&mmCode="+ mmCode;
+            var activityId="";
+            var mmCode="";
+            <#--window.location.href = "${base}/admin/travel/travelCost/export.jhtml?activityId=" + activityId+"&mmCode="+ mmCode;-->
             //layer.msg("暂未实现",{icon:5});
+            document.write("<form action='${base}/admin/travel/travelCost/export.jhtml' method=post name=form1 style='display:none'>"+"<input type=hidden name=activityId value='"+activityId+"'/>"+"<input type=hidden name=mmCode value='"+mmCode+"'/></form>");
+
+            document.form1.submit();
         }
         $(function () {
             $("#idsAll").click(function () {

@@ -97,7 +97,7 @@ public class TravelController {
 		}
 		Integer sign = 0;
 		String periods = "202007,202008,202009,202010,202011,202012";
-		//String periods = "202004,202008,202009,202010,202011,202012";
+		//String periods = "202004,202005,202006,202007,202011,202012";
 		String[] periodList = periods.split(",");
 		for (String period : periodList) {
 			if (period.equals(periodCode)){
@@ -527,8 +527,9 @@ public class TravelController {
 				}
 			}
 			//model.addAttribute("referer", "");
+			model.addAttribute("msg", "计算成功");
 			System.out.println("跑完");
-			return "";
+			return Constants.MSG_URL;
 		}else {
 			model.addAttribute("msg", "传入的周期代码不在活动范围");
 			return Constants.MSG_URL;
@@ -575,10 +576,10 @@ public class TravelController {
 		List<RdTravelTicket> ticketServiceAll = rdTravelTicketService.findAll();
 		if (ticketServiceAll.size()>0){
 			model.addAttribute("travelTicketList", ticketServiceAll);
-			return "/common/travelTicket/index/list";
+			return "/common/travelTicket/index/select";
 		}else {
 			model.addAttribute("msg", "没有旅游券可选择");
-			return "/common/travelTicket/index/list";
+			return "/common/travelTicket/index/select";
 		}
 
 	}

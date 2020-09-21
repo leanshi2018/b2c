@@ -187,30 +187,22 @@
         function appendInfo(id) {
             console.log("旅游券编号"+$("#ticketSn").val())
             console.log(id);
-            <#--$.ajax({-->
-            <#--    type: "post",-->
-            <#--    url: "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml",-->
-            <#--    data: {-->
-            <#--        "ticketSn":$("#ticketSn").val(),-->
-            <#--        "species":2,-->
-            <#--        "status":$("#status").val(),-->
-            <#--        "activityId":id-->
-            <#--    },-->
-            <#--    dataType: "json",-->
-            <#--    async: false,-->
-            <#--    success: function (data) {-->
-            <#--        console.log(data);-->
-            <#--        $('#formSearch').submit();-->
-            <#--    }-->
-            <#--});-->
-            var url= "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
-            location.href = url + "?ticketSn=" + $("#ticketSn").val()+"&species=2"+"&status="+$("#status").val()+"&activityId="+id;
+            var species=2;
+            document.write("<form action='${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml' method=post name=form2 style='display:none'>"+"<input type=hidden name=ticketSn value='"+$("#ticketSn").val()+"'/>"+"<input type=hidden name=species value='"+species+"'/>"+"<input type=hidden name=status value='"+$("#status").val()+"'/>"+"<input type=hidden name=activityId value='"+id+"'/></form>");
+
+            document.form2.submit();
+            <#--var url= "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";-->
+            <#--location.href = url + "?ticketSn=" + $("#ticketSn").val()+"&species=2"+"&status="+$("#status").val()+"&activityId="+id;-->
         }
-        //恢复单张旅游券
+
         function update(ticketSn,status) {
+             var species=1;
             if (confirm('要恢复该券，并清除报名信息吗？')) {
-                var url = "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
-                location.href = url + "?ticketSn=" + ticketSn+"&species=1"+"&status="+status;
+                document.write("<form action='${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml' method=post name=form1 style='display:none'>"+"<input type=hidden name=ticketSn value='"+ticketSn+"'/>"+"<input type=hidden name=species value='"+species+"'/>"+"<input type=hidden name=status value='"+status+"'/></form>");
+
+                document.form1.submit();
+                <#--var url = "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";-->
+                <#--location.href = url + "?ticketSn=" + ticketSn+"&species=1"+"&status="+status;-->
             }
         }
 
