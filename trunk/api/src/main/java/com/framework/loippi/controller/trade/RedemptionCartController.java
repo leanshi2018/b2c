@@ -238,6 +238,9 @@ public class RedemptionCartController extends BaseController {
             if (order == null || order.getShopOrderGoodses() == null || order.getShopOrderGoodses().size() < 1) {
                 ApiUtils.error("没有购买记录");
             }
+            if (order.getOrderType()==null||order.getOrderType()!=5) {
+                ApiUtils.error("订单类型错误");
+            }
             List<ShopCartExchange> cartList = new ArrayList<>();
             for (ShopOrderGoods item : order.getShopOrderGoodses()) {
                 ShopCartExchange cart = new ShopCartExchange();
