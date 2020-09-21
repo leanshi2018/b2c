@@ -667,6 +667,9 @@ public class CartAPIController extends BaseController {
             if (order == null || order.getShopOrderGoodses() == null || order.getShopOrderGoodses().size() < 1) {
                 ApiUtils.error("没有购买记录");
             }
+            if(order.getOrderType()!=null&&order.getOrderType()==5){//换购订单不可以调用正常订单的购买
+                ApiUtils.error("订单类型错误");
+            }
             List<ShopCart> cartList = new ArrayList<>();
             for (ShopOrderGoods item : order.getShopOrderGoodses()) {
                 ShopCart cart = new ShopCart();
@@ -703,6 +706,9 @@ public class CartAPIController extends BaseController {
             ShopOrder order = orderService.findWithOrderGoodsById(orderId);
             if (order == null || order.getShopOrderGoodses() == null || order.getShopOrderGoodses().size() < 1) {
                 ApiUtils.error("没有购买记录");
+            }
+            if(order.getOrderType()!=null&&order.getOrderType()==5){//换购订单不可以调用正常订单的购买
+                ApiUtils.error("订单类型错误");
             }
             List<ShopCart> cartList = new ArrayList<>();
             for (ShopOrderGoods item : order.getShopOrderGoodses()) {

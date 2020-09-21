@@ -78,6 +78,9 @@ public class CartExchangeCheckOutResult {
     @JsonSerialize(using = ToStringSerializer.class)
     public List<Long> cartIdsStr;
 
+    /**
+     * 购物车结算选中购物车集合
+     */
     public List<ShopCartExchange> cartExchangeList=new ArrayList<>();
 
     public static CartExchangeCheckOutResult build(Map<String, Object> moneyMap,
