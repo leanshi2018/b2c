@@ -660,15 +660,15 @@ public class CartAPIController extends BaseController {
     public String buyAgain(Long orderId, HttpServletRequest request) {
         try {
             if (orderId == null) {
-                ApiUtils.error(Xerror.PARAM_INVALID);
+                return ApiUtils.error(Xerror.PARAM_INVALID);
             }
             AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
             ShopOrder order = orderService.findWithOrderGoodsById(orderId);
             if (order == null || order.getShopOrderGoodses() == null || order.getShopOrderGoodses().size() < 1) {
-                ApiUtils.error("没有购买记录");
+                return ApiUtils.error("没有购买记录");
             }
             if(order.getOrderType()!=null&&order.getOrderType()==5){//换购订单不可以调用正常订单的购买
-                ApiUtils.error("订单类型错误");
+                return ApiUtils.error("订单类型错误");
             }
             List<ShopCart> cartList = new ArrayList<>();
             for (ShopOrderGoods item : order.getShopOrderGoodses()) {
@@ -700,15 +700,15 @@ public class CartAPIController extends BaseController {
     public String buyAgainNew(Long orderId, HttpServletRequest request) {
         try {
             if (orderId == null) {
-                ApiUtils.error(Xerror.PARAM_INVALID);
+                return ApiUtils.error(Xerror.PARAM_INVALID);
             }
             AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
             ShopOrder order = orderService.findWithOrderGoodsById(orderId);
             if (order == null || order.getShopOrderGoodses() == null || order.getShopOrderGoodses().size() < 1) {
-                ApiUtils.error("没有购买记录");
+                return ApiUtils.error("没有购买记录");
             }
             if(order.getOrderType()!=null&&order.getOrderType()==5){//换购订单不可以调用正常订单的购买
-                ApiUtils.error("订单类型错误");
+                return ApiUtils.error("订单类型错误");
             }
             List<ShopCart> cartList = new ArrayList<>();
             for (ShopOrderGoods item : order.getShopOrderGoodses()) {
