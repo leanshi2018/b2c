@@ -2459,6 +2459,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         orderPay.setOrderTotalPrice(order.getOrderTotalPrice());
         orderPay.setOrderId(orderId);
         orderPay.setPaymentType(2);
+        orderPay.setShippingFee(order.getShippingFee());
+        orderPay.setShippingPreferentialFee(order.getShippingPreferentialFee());
         return orderPay;
     }
 
