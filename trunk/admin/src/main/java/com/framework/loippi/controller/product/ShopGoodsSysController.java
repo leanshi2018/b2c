@@ -385,6 +385,7 @@ public class ShopGoodsSysController extends GenericController {
             goods.setState(GoodsState.GOODS_OPEN_STATE);
             goods.setIsDel(GoodsState.GOODS_NOT_DELETE);
             goods.setUpdateTime(new Date());
+            goods.setEvaluaterate(1D);
             Long goodsId = shopGoodsService.saveGoods(goods, goodsSpecJson, specNameJson);
             //判断是否成功
             if (goodsId.equals("0")) {
