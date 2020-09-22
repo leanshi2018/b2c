@@ -254,16 +254,17 @@ public class OrderSysController extends GenericController {
                                 int b = 0;//不是白酒1
                                 if (orderGoodsLists.size()>0){
                                     for (ShopOrderGoods orderGoods : orderGoodsLists) {
-                                        if (orderGoods.getGoodsId()!=spirit_goods_id){
+                                        if (orderGoods.getGoodsId().longValue()!=spirit_goods_id.longValue()){
                                             b=1;
                                         }
-                                        if (orderGoods.getGoodsId()==spirit_goods_id){
+                                        if (orderGoods.getGoodsId().longValue()==spirit_goods_id.longValue()){
                                             a=1;
                                         }
                                     }
                                 }
-
+                                System.out.println("a="+a+"sssssb="+b);
                                 if (a==1&&b==0){//订单中只有白酒
+                                    System.out.println("只有白酒");
                                     for (ShopOrderGoods orderGoods : orderGoodsLists) {
                                         ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
                                         spiritOrderInfo.setId(twiterIdService.getTwiterId());
@@ -276,6 +277,7 @@ public class OrderSysController extends GenericController {
                                         shopSpiritOrderInfoService.save(spiritOrderInfo);
                                     }
                                 }else {
+                                    System.out.println("不只有白酒");
                                     Map<String, Object> resMap = orderShip(id);//发货返回信息
                                     String resultS = (String) resMap.get("res");
                                     if (!"".equals(resultS)) {
@@ -746,7 +748,7 @@ public class OrderSysController extends GenericController {
             String sgs = (String)product.get("SKU");
             ShopGoodsSpec spec = shopGoodsSpecService.findByspecGoodsSerial(sgs);
 
-            if (spec.getGoodsId()==spirit_goods_id){//是白酒
+            if (spec.getGoodsId().longValue()==spirit_goods_id.longValue()){//是白酒
                 ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
                 spiritOrderInfo.setId(twiterIdService.getTwiterId());
                 spiritOrderInfo.setOrderId(shopOrder.getId());
