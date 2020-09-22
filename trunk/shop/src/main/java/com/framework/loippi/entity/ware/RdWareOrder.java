@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -57,5 +58,69 @@ public class RdWareOrder implements GenericEntity {
 
 	/** 详细地址 */
 	private String wareDetial;
+
+	/** 订单应付金额(现金支付) */
+	private BigDecimal orderAmount;
+
+	/** 订单总价格 */
+	private BigDecimal orderTotalPrice;
+
+	/** 补偿积分 */
+	private BigDecimal compensatePoint;
+
+	/**
+	 * 支付方式id
+	 * */
+	private Long paymentId;
+	/**
+	 * 支付方式名称代码
+	 * */
+	private String paymentCode;
+	/**
+	 * 支付方式名称
+	 * */
+	private String paymentName;
+	/**
+	 * 付款状态:0:未付款;1:已付款
+	 * */
+	private Integer paymentState;
+	/**
+	 * 支付(付款)时间
+	 * */
+	private Date paymentTime;
+	/**
+	 * 是否需要支付（现金或者积分抵扣）
+	 * 	  0不需要  1需要
+	 * */
+	private Integer flagState;
+	/**
+	 * 支付表id
+	 * */
+	private Long payId;
+	/**
+	 * 支付表编号
+	 * */
+	private String paySn;
+	/**
+	 * 交易流水号
+	 * */
+	private String tradeSn;
+	/** 订单所用积分数量 */
+	private Integer usePointNum;
+
+	/** 积分抵扣金额 */
+	private BigDecimal pointRmbNum;
+	/** 退款状态:0是无退款,1是退款 */
+	private Integer refundState;
+	/** 售后积分 */
+	private BigDecimal refundPoint;
+
+
+	/**
+	 * 上一订单状态
+	 */
+	private Integer prevOrderState;
+
+
 
 }

@@ -1,20 +1,13 @@
 package com.framework.loippi.service.product;
 
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.result.common.goods.IdNameDto;
-import com.framework.loippi.service.GenericService;
-import com.framework.loippi.support.Message.Type;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.vo.goods.BrandListVo;
-import com.framework.loippi.vo.goods.GoodsExcel;
-import com.framework.loippi.vo.goods.ShopGoodsVo;
-
-import com.framework.loippi.vo.stats.StatsCountVo;
-
 import java.util.List;
 import java.util.Map;
+
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.result.common.goods.IdNameDto;
+import com.framework.loippi.service.GenericService;
+import com.framework.loippi.vo.goods.BrandListVo;
+import com.framework.loippi.vo.stats.StatsCountVo;
 
 /**
  * 功能：商品
@@ -53,4 +46,6 @@ public interface ShopGoodsService extends GenericService<ShopGoods, Long> {
 
     //批量查询
     Map<Long, List<IdNameDto>> findGoodsBySpecMap(List<Long> goodIds,Integer type);
+
+	List<ShopGoods> findOweGoods();
 }

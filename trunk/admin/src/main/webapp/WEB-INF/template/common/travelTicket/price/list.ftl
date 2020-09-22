@@ -31,10 +31,10 @@
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">会员号</th>
-                    <td class="w160"><input type="text" class="text w150" name="mmCode" value="${mmCode}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="mmCode" value="${rdTravelCost.mmCode}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">活动ID</th>
-                    <td class="w160"><input type="text" class="text w150" name="activityId" value="${activityId}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="activityId" value="${rdTravelCost.activityId}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
@@ -97,10 +97,15 @@
 
     <script>
         function exportExcell(pageNumber) {
-            var fromVal=$("#formSearch").serialize();
-            var pageNumber = pageNumber;
-            window.location.href = "${base}/admin/order/list/exportExcel.jhtml?pages=" + pageNumber+"&param="+ fromVal;
+            // var fromVal=$("#formSearch").serialize();
+            // var pageNumber = pageNumber;
+            var activityId="";
+            var mmCode="";
+            <#--window.location.href = "${base}/admin/travel/travelCost/export.jhtml?activityId=" + activityId+"&mmCode="+ mmCode;-->
             //layer.msg("暂未实现",{icon:5});
+            document.write("<form action='${base}/admin/travel/travelCost/export.jhtml' method=post name=form1 style='display:none'>"+"<input type=hidden name=activityId value='"+activityId+"'/>"+"<input type=hidden name=mmCode value='"+mmCode+"'/></form>");
+
+            document.form1.submit();
         }
         $(function () {
             $("#idsAll").click(function () {

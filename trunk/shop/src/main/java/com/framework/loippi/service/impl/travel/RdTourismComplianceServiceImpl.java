@@ -245,4 +245,9 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 		rdTravelTicketDao.update(rdTravelTicket);
 	}
 
+	@Override
+	public List<RdTourismCompliance> findBySql() {
+		return rdTourismComplianceDao.findBySql();
+	}
+
 }

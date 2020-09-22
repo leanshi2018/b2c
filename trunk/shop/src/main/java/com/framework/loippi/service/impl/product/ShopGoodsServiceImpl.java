@@ -402,6 +402,16 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
         }
         return specMaps;
     }
+
+    @Override
+    public List<ShopGoods> findOweGoods() {
+        List<ShopGoods> goodsShow1 = shopGoodsDao.findByShow1AndType();
+        List<ShopGoods> goodsShow2 = shopGoodsDao.findByShow2AndType();
+        if (goodsShow2.size()>0){
+            goodsShow1.addAll(goodsShow2);
+        }
+        return goodsShow1;
+    }
 }
 
 

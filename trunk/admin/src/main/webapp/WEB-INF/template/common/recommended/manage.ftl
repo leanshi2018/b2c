@@ -40,9 +40,7 @@
         <#--location.href = url + "?rId=" + localStorage.getItem('rId')+"&jsonMap="+JSON.stringify(id);-->
 
         document.write("<form action='${base}/admin/shop_activity_common/saveRecommendationGoods.jhtml' method=post name=form1 style='display:none'>"+"<input type=hidden name=rId value='"+localStorage.getItem('rId')+"'/>"+"<input type=hidden name=jsonMap value='"+JSON.stringify(id)+"'/></form>");
-        // document.write("<input type=hidden name=rId value='"+localStorage.getItem('rId')+"'/>");
-        // document.write("<input type=hidden name=jsonMap value='"+JSON.stringify(id)+"'/>");
-        // document.write("</form>");
+
         document.form1.submit();
     }
 

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.order.ShopSpiritOrderInfoDao">
+
+    <resultMap id="ShopSpiritOrderResultMap" type="com.framework.loippi.entity.order.ShopSpiritOrderInfo">
+        <id property="id" column="id"  />
+        <result column="order_id" property="orderId" />
+        <result column="goods_id" property="goodsId" />
+        <result column="spec_id" property="specId" />
+        <result column="goods_num" property="goodsNum" />
+        <result column="submit_state" property="submitState" />
+        <result column="order_ship_state" property="orderShipState" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,order_id ,goods_id ,spec_id ,goods_num ,submit_state ,order_ship_state
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{orderId},#{goodsId},#{specId},#{goodsNum},#{submitState},#{orderShipState}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="goodsId != null">
+            AND goods_id = #{goodsId}
+        </if>
+        <if test="specId != null">
+            AND spec_id = #{specId}
+        </if>
+        <if test="goodsNum != null">
+            AND goods_num = #{goodsNum}
+        </if>
+        <if test="submitState != null">
+            AND submit_state = #{submitState}
+        </if>
+        <if test="orderShipState != null">
+            AND order_ship_state = #{orderShipState}
+        </if>
+    </sql>
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="orderId != null">
+            order_id = #{orderId},
+        </if>
+        <if test="goodsId != null">
+            goods_id = #{goodsId},
+        </if>
+        <if test="specId != null">
+            spec_id = #{specId},
+        </if>
+        <if test="goodsNum != null">
+            goods_num = #{goodsNum},
+        </if>
+        <if test="submitState != null">
+            submit_state = #{submitState},
+        </if>
+        <if test="orderShipState != null">
+            order_ship_state = #{orderShipState},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopSpiritOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	shop_spirit_order_info
+        WHERE	ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopSpiritOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM	shop_spirit_order_info
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM shop_spirit_order_info
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.order.ShopSpiritOrderInfo">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        INSERT shop_spirit_order_info
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.order.ShopSpiritOrderInfo">
+        UPDATE	shop_spirit_order_info
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM shop_spirit_order_info
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM shop_spirit_order_info
+        WHERE	ID	IN
+        <foreach item="shopSpiritOrderInfoIds" index="index" collection="ids" open="(" separator="," close=")">
+            #{shopSpiritOrderInfoId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopSpiritOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	shop_spirit_order_info
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopSpiritOrderResultMap">
+        SELECT
+        <include refid="base_column" />
+        FROM shop_spirit_order_info
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+</mapper>

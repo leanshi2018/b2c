@@ -302,6 +302,18 @@ public class ShopGoods implements GenericEntity {
     @Column(name = "sale_population_name")
     private String salePopulationName;
 
+    /**
+     * 成本价
+     */
+    @Column(name = "cost_price")
+    private BigDecimal costPrice;
+
+    /**
+     * 欠货列表下架展示  0.隐藏  1.显示
+     */
+    @Column(name = "off_shelf_show")
+    private Integer offShelfShow;
+
 
     /*###################扩展##############*/
     private String shopGoodsSpecs;

@@ -7,6 +7,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAllocation;
 import com.framework.loippi.entity.ware.RdWareOrder;
+import com.framework.loippi.entity.ware.RdWarehouse;
+import com.framework.loippi.result.selfMention.SelfOrderSubmitResult;
 import com.framework.loippi.service.GenericService;
 
 /**
@@ -24,4 +26,7 @@ public interface RdWareAllocationService extends GenericService<RdWareAllocation
 	List<RdWareAllocation> haveAllocation(String wareCode, int status);
 
 	void addAllocationOweNew(RdWareOrder rdWareOrder, RdWareAllocation wareAllocation, JSONArray array) throws Exception;
+
+	SelfOrderSubmitResult addAllocationOwe1(RdWarehouse warehouseIn, RdWarehouse warehouseOut, JSONArray array) throws Exception;
+
 }

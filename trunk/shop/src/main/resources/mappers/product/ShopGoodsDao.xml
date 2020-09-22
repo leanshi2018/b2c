@@ -55,6 +55,8 @@
     <result property="goodsType" column="goods_type"/>
     <result property="salePopulationIds" column="sale_population_ids"/>
     <result property="salePopulationName" column="sale_population_name"/>
+    <result property="costPrice" column="cost_price"/>
+    <result property="offShelfShow" column="off_shelf_show"/>
   </resultMap>
 
   <resultMap id="countOnSaleBrand" type="com.framework.loippi.vo.goods.BrandListVo">
@@ -68,7 +70,7 @@
         type_id ,spec_open ,spec_id ,spec_name ,goods_image ,goods_image_new,goods_image_more ,goods_retail_price ,goods_retail_profit,goods_member_price ,
         goods_big_price ,ppv ,big_ppv,weight,shelf_life ,goods_show ,goods_click ,goods_state ,create_time ,mobile_body ,goods_spec ,update_time ,
         transport_id ,goods_close_reason ,commentnum ,salenum ,goods_collect ,is_del ,stock ,sort ,gc_levle ,release_time ,details ,evaluateRate ,state
-        ,goods_type,sale_population_ids,sale_population_name
+        ,goods_type,sale_population_ids,sale_population_name,cost_price ,off_shelf_show
     </sql>
 
   <sql id="base_value_column">
@@ -76,7 +78,7 @@
         #{specId},#{specName},#{goodsImage},#{goodsImageNew},#{goodsImageMore},#{goodsRetailPrice},#{goodsRetailProfit},#{goodsMemberPrice},#{goodsBigPrice},#{ppv},#{bigPpv},#{weight},#{shelfLife},#{goodsShow},#{goodsClick},
         #{goodsState},#{createTime},#{mobileBody},#{goodsSpec},#{updateTime},#{transportId},#{goodsCloseReason},#{commentnum},#{salenum},#{goodsCollect},#{isDel},
         #{stock},#{sort},#{gcLevle},#{releaseTime},#{details},#{evaluaterate},#{state}
-        ,#{goodsType},#{salePopulationIds},#{salePopulationName}
+        ,#{goodsType},#{salePopulationIds},#{salePopulationName},#{costPrice},#{offShelfShow}
     </sql>
 
   <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -218,6 +220,12 @@
     </if>
     <if test="goodsType != null and goodsType != ''">
       AND goods_type = #{goodsType,jdbcType=INTEGER}
+    </if>
+    <if test="costPrice != null and goodsType != ''">
+      AND cost_price = #{costPrice}
+    </if>
+    <if test="offShelfShow != null">
+      AND off_shelf_show = #{offShelfShow,jdbcType=INTEGER}
     </if>
     <if test="salePopulationIds != null and salePopulationIds != ''">
       AND sale_population_ids = #{salePopulationIds}
@@ -419,6 +427,12 @@
     </if>
     <if test="salePopulationName != null and salePopulationName != ''">
       sale_population_name = #{salePopulationName},
+    </if>
+    <if test="costPrice != null and costPrice != ''">
+      cost_price = #{costPrice},
+    </if>
+    <if test="offShelfShow != null">
+      off_shelf_show = #{offShelfShow},
     </if>
   </sql>
 
@@ -723,4 +737,12 @@
         UNION
         select sum(salenum) count, 'untilNow' timeLong from shop_goods;
     </select>
+
+  <select id="findByShow1AndType" resultMap="ShopGoodsResultMap">
+    SELECT * FROM shop_goods WHERE goods_type IN(1,3) AND goods_show=1
+   </select>
+  <select id="findByShow2AndType" resultMap="ShopGoodsResultMap">
+    SELECT * FROM shop_goods WHERE goods_type IN(1,3) AND goods_show=2 AND off_shelf_show=1
+   </select>
+
 </mapper>

@@ -33,20 +33,20 @@
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">活动id</th>
-                    <td class="w160"><input type="text" class="text w150" name="id" value="${id}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="id" value="${rdTravelActivity.id}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">活动名称</th>
-                    <td class="w160"><input type="text" class="text w150" name="activityName" value="${activityName}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="activityName" value="${rdTravelActivity.activityName}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th>活动状态</th>
                     <td>
                         <select name="status" class="w100">
-                            <option value="" <#if status == null>selected="selected"</#if>>不限</option>
-                            <option value="0" <#if status == '0'>selected="selected"</#if>>未开始</option>
-                            <option value="1" <#if status == '1'>selected="selected"</#if>>报名中</option>
-                            <option value="2" <#if status == '2'>selected="selected"</#if>>已成团等待开团</option>
-                            <option value="3" <#if status == '3'>selected="selected"</#if>>已完成</option>
-                            <option value="-1"<#if status == '-1'>selected="selected"</#if>>已作废</option>
+                            <option value="" <#if rdTravelActivity.status == null>selected="selected"</#if>>不限</option>
+                            <option value="0" <#if rdTravelActivity.status == '0'>selected="selected"</#if>>未开始</option>
+                            <option value="1" <#if rdTravelActivity.status == '1'>selected="selected"</#if>>报名中</option>
+                            <option value="2" <#if rdTravelActivity.status == '2'>selected="selected"</#if>>已成团等待开团</option>
+                            <option value="3" <#if rdTravelActivity.status == '3'>selected="selected"</#if>>已完成</option>
+                            <option value="-1"<#if rdTravelActivity.status == '-1'>selected="selected"</#if>>已作废</option>
                         </select>
                     </td>
                     <td style="width:10px">&nbsp;</td>

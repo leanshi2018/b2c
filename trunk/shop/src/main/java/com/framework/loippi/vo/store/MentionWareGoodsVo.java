@@ -57,6 +57,11 @@ public class MentionWareGoodsVo {
 	private BigDecimal ppv;
 
 	/**
+	 * 成本价
+	 */
+	private BigDecimal costPrice;
+
+	/**
 	 * 销量
 	 SELECT sum(sog.goods_num) FROM
 	 (SELECT so.id id,soa.mention_id mention_id FROM shop_order as so LEFT JOIN shop_order_address as soa ON so.address_id = soa.id

@@ -50,18 +50,23 @@
                 <tr>
                     <td colspan="3" class="required" style="background: #eee">基本信息</td>
                 </tr>
-                <#if picture=="">
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>是否显示
                         </td>
                         <td>
-
-                            <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1>checked</#if>>
-                            是
-                            <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
-                            否
-
+                            <#if picture=="">
+                                <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1>checked</#if>>
+                                是
+                                <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
+                                否
+                            </#if>
+                            <#if picture!=null>
+                                <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1>checked</#if>>
+                                是
+                                <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
+                                否
+                            </#if>
                             <span class="error-message"></span>
                         </td>
                     </tr>
@@ -70,7 +75,12 @@
                             <em class="pngFix"></em>名称
                         </td>
                         <td>
-                            <input name="pictureName" id="pictureName" type="text" value="${picture.pictureName}" class="w200"/>
+                             <#if picture=="">
+                                 <input name="pictureName" id="pictureName" type="text" value="${picture.pictureName}" class="w200"/>
+                             </#if>
+                            <#if picture!=null>
+                                 <input name="pictureName" id="pictureName" type="text" value="${picture.pictureName}" class="w200"/>
+                             </#if>
                             <span class="error-message"></span>
                         </td>
                     </tr>
@@ -79,25 +89,46 @@
                             <em class="pngFix"></em>主图
                         </td>
                         <td>
+                            <#if picture=="">
                             <p>
-                            <span class="sign">
-                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
-                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
-                            <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
-                              </span>
+                                <span class="sign">
+                                    <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
+                                    <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
+                                    <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
+                                </span>
                             </p>
                             <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
                                       onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                            <span class="error-message">建议上传图片尺寸351*184</span>
+                            <span class="error-message">建议上传图片尺寸702*302px</span>
                             <span class="error-message"></span>
                         </td>
+                        </#if>
+                        <#if picture!=null>
+                            <p>
+                                <span class="sign">
+                                    <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
+                                    <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
+                                    <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
+                                </span>
+                            </p>
+                            <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
+                                      onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
+                            <span class="error-message">建议上传图片尺寸702*302px</span>
+                            <span class="error-message"></span>
+
+                        </#if>
                     </tr>
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>排序数字
                         </td>
                         <td>
-                            <input name="pSort"  type="text" value="${picture.pSort}" class="w200"/>
+                            <#if picture=="">
+                                <input name="pSort"  type="text" value="${picture.psort}" class="w200"/>
+                            </#if>
+                            <#if picture!=null>
+                                <input name="pSort"  type="text" value="${picture.PSort}" class="w200"/>
+                            </#if>
                             <span class="error-message"></span>
                         </td>
                     </tr>
@@ -107,10 +138,17 @@
                         </td>
                         <td>
                             <select name="openType" class="w200" id="openType">
-                                <option value="" selected="selected">请选择</option>
-                                <option value="跳转商品推荐页" id=""<#if picture.openType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品活动页</option>
-                                <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
-                                <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
+                                <#if picture=="">
+                                    <option value="" selected="selected">请选择</option>
+                                    <option value="活动页面" id=""<#if picture.openType == '活动页面'>selected="selected"</#if>>跳转商品活动页</option>
+                                    <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
+                                    <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
+                                </#if>
+                                <#if picture!=null>
+                                    <option value="活动页面" id=""<#if picture.jumpName == '活动页面'>selected="selected"</#if>>跳转商品活动页</option>
+                                    <option value="跳转路径" id=""<#if picture.jumpName == "推荐页面">selected="selected" </#if>>跳转路径</option>
+                                    <option value="跳转链接" id=""<#if picture.jumpInterface!= "">selected="selected" </#if>>跳转链接</option>
+                                </#if>
                             </select>
                             <span class="error-message"></span>
                         </td>
@@ -121,6 +159,7 @@
                             <em class="pngFix"></em>选择（填入）跳转
                         </td>
                         <td>
+                        <#if picture=="">
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <#--选择跳转商品推荐页-->
@@ -148,7 +187,7 @@
                                         <option value="learnpage" <#if picture.openPage == "learnpage">selected="selected" </#if>>学堂</option>
                                         <option value="learnarticlepage" <#if picture.openPage == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
                                         <option value="invitationpage" <#if picture.openPage == "invitationpage">selected="selected" </#if>>我的邀请</option>
-<#--                                        <option value="activityGoodsListpage" <#if picture.openPage =="activityGoodsListpage">selected="selected" </#if>>活动页面</option>-->
+                                        <option value="activityGoodsListpage" <#if picture.openPage =="activityGoodsListpage">selected="selected" </#if>>活动页面</option>
                                         <option value="buyCouponspage" id="buyCouponspage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
                                     <#--选择文章-->
@@ -176,7 +215,8 @@
                                     <#--映射的名字-->
                                     <input name="openName" id="openName"class="w150" type="hidden" value=""/>
                                     <#--拼接的json-->
-                                    <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}"style="height:23px;display:none;"/>
+                                    <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}" type="hidden" />
+                                    <p style="display:none;" id="pictureJson"></p>
                                     <#--搜索商品的按鈕-->
                                     <a class="btn-search" id="searchgoods" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="goodsdetailspage()"></a>
                                     <#--搜索优惠券-->
@@ -186,90 +226,18 @@
                                     <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                </#if>
-
-                <#if picture!=null>
-                    <input type="hidden" name="id" value="${picture.id}" />
-                    <tr class="noborder">
-                        <td class="required">
-                            <em class="pngFix"></em>是否显示
-                        </td>
-                        <td>
-
-                            <input name="auditStatus" type="radio" value="1"  <#if picture.auditStatus==1>checked</#if>>
-                            是
-                            <input name="auditStatus" type="radio" value="0"  <#if picture.auditStatus==0>checked</#if>>
-                            否
-
-                            <span class="error-message"></span>
-                        </td>
-                    </tr>
-                    <tr class="noborder">
-                        <td class="required">
-                            <em class="pngFix"></em>名称
-                        </td>
-                        <td>
-                            <input name="pictureName" id="pictureName" type="text" value="${picture.pictureName}" class="w200"/>
-                            <span class="error-message"></span>
-                        </td>
-                    </tr>
-                    <tr class="noborder">
-                        <td class="required">
-                            <em class="pngFix"></em>主图
-                        </td>
-                        <td>
-                            <p>
-                            <span class="sign">
-                            <input class="w300 text" name="pictureUrl" id="pictureUrl" type="hidden"value="${picture.pictureUrl}"/>
-                                 <input class="w300 text" name="pictureType" id="pictureType" type="hidden" value="0"/>
-                            <img src="${picture.pictureUrl!''}" name="pictureUrl" id="mainPictureImg" nc_type="logo1" width="188" height="144"/>
-                              </span>
-                            </p>
-                            <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
-                                      onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                            <span class="error-message">建议上传图片尺寸351*184</span>
-                            <span class="error-message"></span>
-                        </td>
-                    </tr>
-                    <tr class="noborder">
-                        <td class="required">
-                            <em class="pngFix"></em>排序数字
-                        </td>
-                        <td>
-                            <input name="pSort" id="pSort" type="text" value="${picture.PSort}" class="w200"/>
-                            <span class="error-message"></span>
-                        </td>
-                    </tr>
-                    <tr class="noborder">
-                        <td class="required">
-                            <em class="pngFix"></em>打开方式
-                        </td>
-                        <td>
-                            <select name="openType" class="w200" id="openType">
-                                <option value="跳转商品推荐页" id=""<#if picture.openType == '跳转商品推荐页'>selected="selected"</#if>>跳转商品活动页</option>
-                                <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
-                                <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
-                            </select>
-                            <span class="error-message"></span>
-                        </td>
-                    </tr>
-
-                    <tr class="noborder">
-                        <td class="required" width="150px">
-                            <em class="pngFix"></em>选择（填入）跳转
-                        </td>
-                        <td>
+                        </#if>
+                            <#if picture!=null>
+                                <input type="hidden" name="id" value="${picture.id}" />
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <#--选择跳转链接-->
                                     <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" class="w200"style="display: none;"/>
                                     <#--选择跳转路径-->
-                                    <select name="activityUrl" class="w200" id="openPage"style="display: none;">
+                                    <select name="openPage" class="w200" id="openPage"style="display: none;">
                                         <option value="" selected="selected">请选择</option>
-                                        <option value="gatherGoodspage" <#if picture.openPage == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
-                                        <option value="recommendGoodspage" <#if picture.openPage == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
+                                        <option value="gatherGoodspage" <#if picture.activityUrl == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
+                                        <option value="recommendGoodspage" <#if picture.activityUrl == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
                                         <option value="homepage" <#if picture.activityUrl == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.activityUrl == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.activityUrl == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -306,9 +274,10 @@
                                     <#--<input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
                                     <input name="couponName" id="couponName" type="text" value="${couponName}">
                                     <#--映射的名字-->
-                                    <input name="openName" id="openName"class="w150" type="hidden" value=""/>
+                                    <input name="openName" id="openName"class="w150" type="hidden" value="${picture.pictureName}"/>
                                     <#--拼接的json-->
-                                    <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}"style="height:23px;display:none;"/>
+                                    <input name="jumpJson" class="w150" id="jsons" value="" style="height:23px;display:none;"/>
+                                    <p style="display:none;" id="pictureJson">${picture.pictureJson}</p>
                                     <#--搜索商品的按鈕-->
                                     <a class="btn-search" id="searchgoods" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="goodsdetailspage()"></a>
                                     <#-- 选择推荐页 -->
@@ -321,23 +290,17 @@
                                     <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>
                                 </div>
                             </div>
+                        </#if>
                         </td>
                     </tr>
-                </#if>
                 </tbody>
                 <tfoot>
                 <tr>
                     <td></td>
                     <td>
-<#--                        <#if picture=="">-->
-                            <a class="btn" href="javascript:history.go(-1);"
-                               style="float:left"><span><@spring.message "button.back"/></span></a>
-                            <a class="btn btn-success" id="subForm" type="submit">提交</a>
-<#--                        </#if>-->
-<#--                        <#if picture!=null>-->
-<#--                            <a class="btn" href="javascript:history.go(-1);"-->
-<#--                               style="float:left"><span><@spring.message "button.back"/></span></a>-->
-<#--                        </#if>-->
+                        <a class="btn" href="javascript:history.go(-1);"
+                           style="float:left"><span><@spring.message "button.back"/></span></a>
+                        <a class="btn btn-success" id="subForm" type="submit">提交</a>
                     </td>
                 </tr>
                 </tfoot>
@@ -346,35 +309,6 @@
     </div>
     <script type="text/javascript" src="${base}/resources/js/plugins/colpick/colpick.js"></script>
     <script>
-        /*判断是否选择打开方式*/
-        $('#openType').change(function() {
-            var value = $(this).children('option:selected').val();
-            if (value == "跳转商品推荐页") {
-                $("#activityname").show();
-                $("#openPage").attr("name","");
-                $("#searchactivity").css("display","");
-                $("#openName").val("活动页面");
-            }else{
-                $("#activityname").css("display","none");
-                $("#searchactivity").css("display","none");
-
-            }
-            if (value == "跳转路径") {
-
-                $("#openPage").css("display","");
-                $("#openpages").attr("name","");
-            }else{
-                $("#openPage").css("display","none");
-
-            }
-            if (value == "跳转链接") {
-                $("#jumpInterface").css("display","");
-                $("#openpages").attr("name","");
-            }else{
-                $("#jumpInterface").css("display","none");
-
-            }
-        })
         //上传图片
         function ajaxFileUploads(myBlogImage, imgId, img) {
             $.ajaxFileUpload({
@@ -398,31 +332,32 @@
                 }
             });
         }
-        $(function () {
-            /*提交按钮*/
-            $("#subForm").click(function () {
-                var Title = $("#pictureName").val();
-                if (Title == "") {
-                    alert("请输入名称！");
-                    return false;
-                }
-                var num = $("#pSort").val();
-                if (num == "") {
-                    alert("请输入排序数字！");
-                    return false;
-                }
-                var num = $("#pSort").val();
-                if (num == "") {
-                    alert("请输入排序数字！");
-                    return false;
-                }
 
-
-                $('#add_form').submit();
-            })
-
-        });
-
+        /*判断是否选择打开方式*/
+        $('#openType').change(function() {
+            var value = $(this).children('option:selected').val();
+            if (value == "活动页面") {
+                $("#activityname").show();
+                $("#openPage").attr("name","");
+                $("#searchactivity").css("display","");
+                $("#openName").val("活动页面");
+            }else{
+                $("#activityname").css("display","none");
+                $("#searchactivity").css("display","none");
+            }
+            if (value == "跳转路径") {
+                $("#openPage").css("display","");
+                $("#openpages").attr("name","");
+            }else{
+                $("#openPage").css("display","none");
+            }
+            if (value == "跳转链接") {
+                $("#jumpInterface").css("display","");
+                $("#openpages").attr("name","");
+            }else{
+                $("#jumpInterface").css("display","none");
+            }
+        })
         /*判断是否选择跳转路径*/
         $('#openPage').change(function(){
             $("#openpages").attr("name","");
@@ -499,15 +434,135 @@
                 $("#couponName").show();
                 $("#searchbuys").css("display","");
                 $("#openName").val("优惠券购买详情");
-
             }else{
                 $("#searchbuys").css("display","none");
                 $("#couponName").css("display","");
-
+            }
+        });
+        //提交参数和判断选择方式及传参
+        $(function () {
+            var value =  $('#openType option:selected').val();
+            console.log(value);
+            if (value == "活动页面") {
+                $("#activityname").show();
+                $("#openPage").attr("name","");
+                $("#searchactivity").css("display","");
+                $("#openName").val("活动页面");
+            }else{
+                $("#activityname").css("display","none");
+                $("#searchactivity").css("display","none");
+            }
+            if (value == "跳转路径") {
+                $("#openPage").css("display","");
+                $("#openpages").attr("name","");
+            }else{
+                $("#openPage").css("display","none");
+            }
+            if (value == "跳转链接") {
+                $("#jumpInterface").css("display","");
+                $("#openpages").attr("name","");
+            }else{
+                $("#jumpInterface").css("display","none");
             }
 
-        });
+            //取jsons编辑页面不修改状态默认传过来的参数
+            var jsonstr=$("#pictureJson").html();
+            console.log(jsonstr);
+            if(jsonstr!=""){
+                var vals = $('#openPage option:selected').val();
+                console.log(vals);
+                if(vals=="recommendGoodspage"){
+                    $("#openName").val("推荐页面");
+                    $("#recommendationName").show();
+                    $("#searchrecommend").css("display","");
+                    var rId = jsonstr.replace(/[^0-9]/ig,"");
+                    $("#jsons").val("{\"rId\":\"" + rId + "\"}");
+                }
+                if(vals=="gatherGoodspage"){
+                    $("#openName").val("凑单页面");
+                }
+                if(vals=="homepage"){
+                    $("#openName").val("辑");
+                }
+                if(vals=="messagepage"){
+                    $("#openName").val("消息中心");
+                }
+                if (vals=="goodsdetailspage"){
+                    $("#goodsName").show();
+                    $("#searchgoods").css("display","");
+                    $("#openName").val("商品详情");
+                    var goodsId = jsonstr.replace(/[^0-9]/ig,"");
+                    $("#jsons").val("{\"goodsId\":\"" + goodsId + "\"}");
+                }
+                if(vals=="mypage"){
+                    $("#openName").val("我");
+                }
+                if(vals=="myresultspage"){
+                    $("#openName").val("个人业绩");
+                }
+                if(vals=="orderpage"){
+                    $("#openName").val("我的订单");
+                }
+                if(vals=="myintegralpage"){
+                    $("#openName").val("我的积分");
+                }
+                if(vals=="rewardintegralpage"){
+                    $("#openName").val("奖励积分");
+                }
+                if(vals=="shoppingintegralpage"){
+                    $("#openName").val("购物积分");
+                }
+                if(vals=="bankcardpage"){
+                    $("#openName").val("我的银行卡");
+                }
+                if(vals=="learnpage"){
+                    $("#openName").val("学堂");
+                }
+                if(vals=="learnarticlepage"){
+                    $("#articleTitle").show();
+                    $("#searchlearnarticle").css("display","");
+                    $("#openName").val("学堂文章详情");
+                }
+                if(vals=="invitationpage"){
+                    $("#openName").val("我的邀请");
+                }
+                if(vals=="activityGoodsListpage"){
+                    $("#activityname").show();
+                    $("#searchactivity").css("display","");
+                    $("#openName").val("活动页面");
+                    var activityId = jsonstr.replace(/[^0-9]/ig,"");
+                    $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
+                }
+                if (vals=="buyCouponspage"){
+                    $("#couponName").show();
+                    $("#searchbuys").css("display","");
+                    $("#openName").val("优惠券购买详情");
+                    var couponId = jsonstr.replace(/[^0-9]/ig,"");
+                    $("#jsons").val("{\"couponId\":\"" + id + "\"}");
+                }
+            }
 
+            /*提交按钮*/
+            $("#subForm").click(function () {
+                var Title = $("#pictureName").val();
+                if (Title == "") {
+                    alert("请输入名称！");
+                    return false;
+                }
+                var num = $("#pSort").val();
+                if (num == "") {
+                    alert("请输入排序数字！");
+                    return false;
+                }
+                var num = $("#pSort").val();
+                if (num == "") {
+                    alert("请输入排序数字！");
+                    return false;
+                }
+                $('#add_form').submit();
+            })
+
+        });
         /*选择学堂文章*/
         function learnarticlepage() {
             var infos = $("[name='info']").val();
@@ -590,7 +645,6 @@
             $("#jsons").val("{\"goodsId\":\"" + goodsId + "\"}");
 
         }
-
         /*选择优惠券*/
         function buyCouponspage() {
             var couponName = $("[name='couponName']").val();

@@ -14,7 +14,7 @@
             <div class="item-title">
                 <ul class="tab-base">
                     <li>
-                        <a href="#" class="current"><span>旅游券领取使用明细</span></a>
+                        <a href="#" class="current"><span>旅游券记录</span></a>
                     </li>
                 </ul>
             </div>
@@ -33,42 +33,42 @@
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">劵序号</th>
-                    <td class="w160"><input type="text" class="text w150" name="id" value="${id}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="ticketSn" value="${rdTravelTicketDetail.ticketSn}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">旅游券名称</th>
-                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${travelLikeName}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="travelName" value="${rdTravelTicketDetail.travelName}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th>状态</th>
                     <td>
                         <select name="status" class="w100">
-                            <option value=""  <#if status == null>selected="selected"</#if>>不限</option>
-                            <option value="0" <#if status == '0'>selected="selected"</#if>>未使用</option>
-                            <option value="1" <#if status == '1'>selected="selected"</#if>>报名占用</option>
-                            <option value="2" <#if status == '2'>selected="selected"</#if>>已核销</option>
-                            <option value="3" <#if status == '3'>selected="selected"</#if>>已过期</option>
+                            <option value=""  <#if rdTravelTicketDetail.status == null>selected="selected"</#if>>不限</option>
+                            <option value="0" <#if rdTravelTicketDetail.status == '0'>selected="selected"</#if>>未使用</option>
+                            <option value="1" <#if rdTravelTicketDetail.status == '1'>selected="selected"</#if>>报名占用</option>
+                            <option value="2" <#if rdTravelTicketDetail.status == '2'>selected="selected"</#if>>已核销</option>
+                            <option value="3" <#if rdTravelTicketDetail.status == '3'>selected="selected"</#if>>已过期</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">领取时间</th>
-                    <td class="w160"><input class="txt Wdate" type="text" id="query_start_time" name="ownTimeLeft" readonly value="${ownTimeLeft}"
+                    <td class="w160"><input class="txt Wdate" type="text" id="query_start_time" name="ownTimeLeft" readonly value="${rdTravelTicketDetail.ownTimeLeft}"
                                onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'query_end_time\')}'});"/>
                         <label for="query_start_time">~</label>
-                        <input class="txt Wdate" type="text" id="query_end_time" name="ownTimeRight" readonly value="${ownTimeRight}"
+                        <input class="txt Wdate" type="text" id="query_end_time" name="ownTimeRight" readonly value="${rdTravelTicketDetail.ownTimeRight}"
                                onClick="WdatePicker({lang:'${locale}',dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'query_start_time\')}'});"/>
                     </td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">领取人id</th>
-                    <td class="w160"><input type="text" class="text w150" name="ownCode" value="${ownCode}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="ownCode" value="${rdTravelTicketDetail.ownCode}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">领取人昵称</th>
-                    <td class="w160"><input type="text" class="text w150" name="ownNickName" value="${ownNickName}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="ownNickName" value="${rdTravelTicketDetail.ownNickName}"></td>
                 </tr>
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">报名活动id</th>
-                    <td class="w160"><input type="text" class="text w150" name="useActivityId" value="${useActivityId}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="useActivityId" value="${rdTravelTicketDetail.useActivityId}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
@@ -93,7 +93,7 @@
                     <th class="align-center">核销时间</th>
                     <th class="align-center">状态</th>
                     <th class="align-center">报名的旅游ID</th>
-                    <th class="align-center">报名的旅游名称</th>
+<#--                    <th class="align-center">报名的旅游名称</th>-->
                     <th class="align-center">更新人</th>
                     <th class="align-center"><@spring.message "operation"/></th>
                 </tr>
@@ -103,7 +103,7 @@
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
-                            ${list.travelId}
+                            ${list.ticketSn}
                         </td>
                         <td style="text-align: left">
                             ${list.travelName}
@@ -139,11 +139,11 @@
                             <#if list.status == 3>已过期</#if>
                         </td>
                         <td style="text-align: left">
-                            ${list.id}
+                            ${list.useActivityId}
                         </td>
-                        <td style="text-align: left">
+<#--                        <td style="text-align: left">-->
 
-                        </td>
+<#--                        </td>-->
                         <td style="text-align: left">
 
                         </td>
@@ -187,30 +187,22 @@
         function appendInfo(id) {
             console.log("旅游券编号"+$("#ticketSn").val())
             console.log(id);
-            <#--$.ajax({-->
-            <#--    type: "post",-->
-            <#--    url: "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml",-->
-            <#--    data: {-->
-            <#--        "ticketSn":$("#ticketSn").val(),-->
-            <#--        "species":2,-->
-            <#--        "status":$("#status").val(),-->
-            <#--        "activityId":id-->
-            <#--    },-->
-            <#--    dataType: "json",-->
-            <#--    async: false,-->
-            <#--    success: function (data) {-->
-            <#--        console.log(data);-->
-            <#--        $('#formSearch').submit();-->
-            <#--    }-->
-            <#--});-->
-            var url= "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
-            location.href = url + "?ticketSn=" + $("#ticketSn").val()+"&species=2"+"&status="+$("#status").val()+"&activityId="+id;
+            var species=2;
+            document.write("<form action='${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml' method=post name=form2 style='display:none'>"+"<input type=hidden name=ticketSn value='"+$("#ticketSn").val()+"'/>"+"<input type=hidden name=species value='"+species+"'/>"+"<input type=hidden name=status value='"+$("#status").val()+"'/>"+"<input type=hidden name=activityId value='"+id+"'/></form>");
+
+            document.form2.submit();
+            <#--var url= "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";-->
+            <#--location.href = url + "?ticketSn=" + $("#ticketSn").val()+"&species=2"+"&status="+$("#status").val()+"&activityId="+id;-->
         }
-        //恢复单张旅游券
+
         function update(ticketSn,status) {
+             var species=1;
             if (confirm('要恢复该券，并清除报名信息吗？')) {
-                var url = "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";
-                location.href = url + "?ticketSn=" + ticketSn+"&species=1"+"&status="+status;
+                document.write("<form action='${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml' method=post name=form1 style='display:none'>"+"<input type=hidden name=ticketSn value='"+ticketSn+"'/>"+"<input type=hidden name=species value='"+species+"'/>"+"<input type=hidden name=status value='"+status+"'/></form>");
+
+                document.form1.submit();
+                <#--var url = "${base}/admin/travel/travelTicketDetail/restoreOrDestroy.jhtml";-->
+                <#--location.href = url + "?ticketSn=" + ticketSn+"&species=1"+"&status="+status;-->
             }
         }
 

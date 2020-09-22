@@ -1,17 +1,12 @@
 package com.framework.loippi.dao.product;
 
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.mybatis.dao.GenericDao;
-import com.framework.loippi.mybatis.paginator.domain.PageBounds;
-import com.framework.loippi.mybatis.paginator.domain.PageList;
-import com.framework.loippi.vo.goods.BrandListVo;
-import com.framework.loippi.vo.goods.GoodsExcel;
-import com.framework.loippi.vo.goods.ShopGoodsVo;
-import com.framework.loippi.vo.stats.StatsCountVo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
 import java.util.Map;
+
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.mybatis.dao.GenericDao;
+import com.framework.loippi.vo.goods.BrandListVo;
+import com.framework.loippi.vo.stats.StatsCountVo;
 
 
 /**
@@ -41,4 +36,8 @@ public interface ShopGoodsDao extends GenericDao<ShopGoods, Long> {
      * 批量操作 取消收藏
      */
     void updateAllGoodsCollect(Map<String, Object> map);
+
+	List<ShopGoods> findByShow1AndType();
+
+    List<ShopGoods> findByShow2AndType();
 }

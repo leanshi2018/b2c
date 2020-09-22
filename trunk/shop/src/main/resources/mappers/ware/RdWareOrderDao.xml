@@ -27,19 +27,37 @@
         <result column="city_code" property="cityCode" />
         <result column="country_code" property="countryCode" />
         <result column="ware_detial" property="wareDetial" />
+        <result column="order_amount" property="orderAmount" />
+        <result column="order_total_price" property="orderTotalPrice" />
+        <result column="compensate_point" property="compensatePoint" />
+        <result column="payment_id" property="paymentId" />
+        <result column="payment_code" property="paymentCode" />
+        <result column="payment_name" property="paymentName" />
+        <result column="payment_state" property="paymentState" />
+        <result column="payment_time" property="paymentTime" />
+        <result column="flag_state" property="flagState" />
+        <result column="pay_id" property="payId" />
+        <result column="pay_sn" property="paySn" />
+        <result column="trade_sn" property="tradeSn" />
+        <result column="use_point_num" property="usePointNum" />
+        <result column="point_rmb_num" property="pointRmbNum" />
+        <result column="refund_state" property="refundState" />
+        <result column="refund_point" property="refundPoint" />
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
 		 id ,order_sn ,store_id ,store_name ,mm_code ,consigee_name ,ware_phone ,order_type ,order_state ,creation_period ,
 		 create_time ,express_time ,logistic_type ,express_id ,shipping_code ,order_desc ,shop_order_sn,province_code ,
-		 city_code ,country_code ,ware_detial
+		 city_code ,country_code ,ware_detial ,order_amount ,order_total_price ,compensate_point ,payment_id ,payment_code ,
+		 payment_name ,payment_state ,payment_time ,flag_state ,pay_id ,pay_sn ,trade_sn ,use_point_num ,point_rmb_num ,refund_state ,refund_point
 	</sql>
 
     <sql id="base_value_column">
 		 #{id},#{orderSn},#{storeId},#{storeName},#{mCode},#{consigneeName},#{warePhone},#{orderType},#{orderState},#{creationPeriod},
 		 #{createTime},#{expressTime},#{logisticType},#{expressId},#{shippingCode},#{orderDesc},#{shopOrderSn},#{provinceCode},
-		 #{cityCode},#{countryCode},#{wareDetial}
+		 #{cityCode},#{countryCode},#{wareDetial},#{orderAmount},#{orderTotalPrice},#{compensatePoint},#{paymentId},#{paymentCode},#{paymentName},
+		 #{paymentState},#{paymentTime},#{flagState},#{payId},#{paySn},#{tradeSn},#{usePointNum},#{pointRmbNum},#{refundState},#{refundPoint}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -113,6 +131,54 @@
         <if test="expressTimeStar !=null and expressTimeStar != ''">
             <![CDATA[and express_time >= #{expressTimeStar}]]>
         </if>
+        <if test="orderAmount != null and orderAmount != ''">
+            AND order_amount = #{orderAmount}
+        </if>
+        <if test="orderTotalPrice != null and orderTotalPrice != ''">
+            AND order_total_price = #{orderTotalPrice}
+        </if>
+        <if test="compensatePoint != null and compensatePoint != ''">
+            AND compensate_point = #{compensatePoint}
+        </if>
+        <if test="paymentId != null and paymentId != ''">
+            AND payment_id = #{paymentId}
+        </if>
+        <if test="paymentCode != null and paymentCode != ''">
+            AND payment_code = #{paymentCode}
+        </if>
+        <if test="paymentName != null and paymentName != ''">
+            AND payment_name = #{paymentName}
+        </if>
+        <if test="paymentState != null and paymentState != ''">
+            AND payment_state = #{paymentState}
+        </if>
+        <if test="paymentTime != null and paymentTime != ''">
+            AND payment_time = #{paymentTime}
+        </if>
+        <if test="flagState != null and flagState != ''">
+            AND flag_state = #{flagState}
+        </if>
+        <if test="payId != null and payId != ''">
+            AND pay_id = #{payId}
+        </if>
+        <if test="paySn != null and paySn != ''">
+            AND pay_sn = #{paySn}
+        </if>
+        <if test="tradeSn != null and tradeSn != ''">
+            AND trade_sn = #{tradeSn}
+        </if>
+        <if test="usePointNum != null and usePointNum != ''">
+            AND use_point_num = #{usePointNum}
+        </if>
+        <if test="pointRmbNum != null and pointRmbNum != ''">
+            AND point_rmb_num = #{pointRmbNum}
+        </if>
+        <if test="refundState != null and refundState != ''">
+            AND refund_state = #{refundState}
+        </if>
+        <if test="refundPoint != null and refundPoint != ''">
+            AND refund_point = #{refundPoint}
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
@@ -178,6 +244,54 @@
         </if>
         <if test="wareDetial !=null and wareDetial != ''">
             ware_detial = #{wareDetial},
+        </if>
+        <if test="orderAmount !=null and orderAmount != ''">
+            order_amount = #{orderAmount},
+        </if>
+        <if test="orderTotalPrice !=null and orderTotalPrice != ''">
+            order_total_price = #{orderTotalPrice},
+        </if>
+        <if test="compensatePoint !=null and compensatePoint != ''">
+            compensate_point = #{compensatePoint},
+        </if>
+        <if test="paymentId !=null and paymentId != ''">
+            payment_id = #{paymentId},
+        </if>
+        <if test="paymentCode !=null and paymentCode != ''">
+            payment_code = #{paymentCode},
+        </if>
+        <if test="paymentName !=null and paymentName != ''">
+            payment_name = #{paymentName},
+        </if>
+        <if test="paymentState !=null and paymentState != ''">
+            payment_state = #{paymentState},
+        </if>
+        <if test="paymentTime !=null and paymentTime != ''">
+            payment_time = #{paymentTime},
+        </if>
+        <if test="flagState !=null and flagState != ''">
+            flag_state = #{flagState},
+        </if>
+        <if test="payId !=null and payId != ''">
+            pay_id = #{payId},
+        </if>
+        <if test="paySn !=null and paySn != ''">
+            pay_sn = #{paySn},
+        </if>
+        <if test="tradeSn !=null and tradeSn != ''">
+            trade_sn = #{tradeSn},
+        </if>
+        <if test="usePointNum !=null and usePointNum != ''">
+            use_point_num = #{usePointNum},
+        </if>
+        <if test="pointRmbNum !=null and pointRmbNum != ''">
+            point_rmb_num = #{pointRmbNum},
+        </if>
+        <if test="refundState !=null and refundState != ''">
+            refund_state = #{refundState},
+        </if>
+        <if test="refundPoint !=null and refundPoint != ''">
+            refund_point = #{refundPoint},
         </if>
     </sql>
 
@@ -260,5 +374,22 @@
         FROM 	rd_ware_order
         WHERE order_sn = #{orderSn}
     </select>
+
+    <select id="findByPaySn" parameterType="string" resultMap="RdWareOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	rd_ware_order
+        WHERE pay_sn = #{paySn}
+    </select>
+
+    <!--解决并发更新-->
+    <update id="updateByIdAndOrderStateAndLockState" parameterType="com.framework.loippi.entity.ware.RdWareOrder">
+        UPDATE rd_ware_order
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+        AND order_state=#{prevOrderState, jdbcType=INTEGER}
+
+    </update>
 
 </mapper> 

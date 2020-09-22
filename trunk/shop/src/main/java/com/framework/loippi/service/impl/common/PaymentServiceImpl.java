@@ -19,12 +19,14 @@ import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.ShopMemberPaymentTally;
+import com.framework.loippi.entity.ware.RdWareOrder;
 import com.framework.loippi.service.PaymentService;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.wallet.ShopWalletRechargeService;
+import com.framework.loippi.service.ware.RdWareOrderService;
 
 /**
  * 支付实现
@@ -46,6 +48,8 @@ public class PaymentServiceImpl implements PaymentService {
     private RdMmAccountInfoService rdMmAccountInfoService;
     @Autowired
     private CouponPayDetailService couponPayDetailService;
+    @Autowired
+    private RdWareOrderService rdWareOrderService;
 
 
     @Override
@@ -92,6 +96,14 @@ public class PaymentServiceImpl implements PaymentService {
 				//更改支付流水表状态
 				paymentTallyService.updatePaymentTally(sn, batchNo, plug);
 			}
+		}else if (substring.equals("W")){//调拨订单
+			RdWareOrder order = rdWareOrderService.find("paySn", sn);
+			// 回调会有多次
+			if (order.getPaymentState() == null || order.getPaymentState() == 0) {//TODO
+				rdWareOrderService.updateOrderStatePayFinish(sn, batchNo, plug);
+				//更改支付流水表状态
+				paymentTallyService.updatePaymentTally(sn, batchNo, plug);
+			}
 		}else {
 			ShopOrder order = orderService.find("paySn", sn);
 			// 回调会有多次
@@ -126,6 +138,24 @@ public class PaymentServiceImpl implements PaymentService {
 				rdMmAccountInfoService.update(rdMmAccountInfo);
 			}
 
+		}else if (substring.equals("W")){
+			List<RdWareOrder> rdWareOrderList= rdWareOrderService.findList("orderSn",sn);
+			int totalPointNum=0;
+			if (rdWareOrderList!=null && rdWareOrderList.size()>0){
+				Long memberId=Long.valueOf(rdWareOrderList.get(0).getMCode());
+				for (RdWareOrder item:rdWareOrderList) {
+					if (Optional.ofNullable(item.getUsePointNum()).orElse(0)!=0){
+						totalPointNum+=item.getUsePointNum();
+						item.setUsePointNum(0);
+						item.setOrderAmount(item.getOrderAmount().add(item.getPointRmbNum()));
+						item.setPointRmbNum(new BigDecimal("0"));
+						rdWareOrderService.update(item);
+					}
+				}
+				RdMmAccountInfo rdMmAccountInfo=rdMmAccountInfoService.find("mmCode",memberId);
+				rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(BigDecimal.valueOf(totalPointNum)));
+				rdMmAccountInfoService.update(rdMmAccountInfo);
+			}
 		}else{
 			List<ShopOrder> shopOrderList=orderService.findList("orderSn",sn);
 			int totalPointNum=0;

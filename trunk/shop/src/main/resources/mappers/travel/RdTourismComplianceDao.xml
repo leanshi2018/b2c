@@ -192,4 +192,11 @@
         WHERE three_qualify = 1
     </select>
 
+    <select id="findBySql" resultMap="RdTourismComplianceMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_tourism_compliance
+        WHERE	one_qualify !=0 AND two_qualify =0
+    </select>
+
 </mapper>

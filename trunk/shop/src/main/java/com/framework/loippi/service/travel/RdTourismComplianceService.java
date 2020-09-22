@@ -1,5 +1,7 @@
 package com.framework.loippi.service.travel;
 
+import java.util.List;
+
 import com.framework.loippi.entity.travel.RdTourismCompliance;
 import com.framework.loippi.entity.travel.RdTravelTicket;
 import com.framework.loippi.service.GenericService;
@@ -13,4 +15,6 @@ public interface RdTourismComplianceService extends GenericService<RdTourismComp
 	RdTourismCompliance findByMmCode(String mmCode);
 
 	void grantTicket(RdTravelTicket rdTravelTicket);
+
+	List<RdTourismCompliance> findBySql();
 }
