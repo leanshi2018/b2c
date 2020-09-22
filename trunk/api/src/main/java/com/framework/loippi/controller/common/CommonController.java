@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.system.RdAccessKey;
+import com.framework.loippi.service.system.RdAccessKeyService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +72,8 @@ public class CommonController extends BaseController {
     private ShopCommonDocumentService documentService;
     @Autowired
     private QiniuService qiniuService;
+    @Resource
+    private RdAccessKeyService rdAccessKeyService;
 
     /**
 	 * 注册过的手机才经过这个接口
@@ -89,7 +93,7 @@ public class CommonController extends BaseController {
         if (msgType == null) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
-
+        RdAccessKey rdAccessKey = rdAccessKeyService.find(1L);
         // 添加手机号相关业务逻辑判断
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", mobile);
@@ -132,7 +136,7 @@ public class CommonController extends BaseController {
         String code = RandomStringUtils.random(6, "0123456789");
         try {
             String codeJson = "{\"code\":\"" + code + "\"}";
-            AldayuUtil.sendSms(mobile, codeJson, "SMS_165115421", "蜗米商城");
+            AldayuUtil.sendSms(mobile, codeJson, "SMS_165115421", "蜗米商城",rdAccessKey.getAccessKey(),rdAccessKey.getSecret());
             redisService.save(mobile,code);
             return ApiUtils.success();
         } catch (Exception ex) {
@@ -168,7 +172,7 @@ public class CommonController extends BaseController {
             return ApiUtils.error(Xerror.LOGIN_VALIDCODE_ERROR);
         }
         redisService.delete("A" + mobile);
-
+        RdAccessKey rdAccessKey = rdAccessKeyService.find(1L);
 
         // 添加手机号相关业务逻辑判断
         Map<String, Object> params = new HashMap<>();
@@ -207,7 +211,7 @@ public class CommonController extends BaseController {
         String code = RandomStringUtils.random(6, "0123456789");
         try {
             String codeJson = "{\"code\":\"" + code + "\"}";
-            AldayuUtil.sendSms(mobile, codeJson, "SMS_165115421", "蜗米商城");
+            AldayuUtil.sendSms(mobile, codeJson, "SMS_165115421", "蜗米商城",rdAccessKey.getAccessKey(),rdAccessKey.getSecret());
             redisService.save(mobile,code);
             return ApiUtils.success();
         } catch (Exception ex) {

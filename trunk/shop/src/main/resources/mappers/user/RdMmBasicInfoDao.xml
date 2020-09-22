@@ -514,4 +514,9 @@
 		SELECT a.* FROM rd_mm_basic_info a INNER JOIN rd_mm_relation b on
 			a.mm_code = b.mm_code and a.main_flag = 2 and b.SPONSOR_CODE = #{mmCode} and b.MM_STATUS = 0
 	</select>
+
+	<select id="countSecondShop" parameterType="string" resultType="java.lang.Long">
+		SELECT COUNT(1) FROM rd_mm_basic_info a INNER JOIN rd_mm_relation b on
+			a.mm_code = b.mm_code and a.main_flag = 2 and b.SPONSOR_CODE = #{mmCode} and b.MM_STATUS = 0
+	</select>
 </mapper> 

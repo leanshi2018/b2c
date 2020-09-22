@@ -37,4 +37,6 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
     Long findNewMem(HashMap<String, Object> map);
 
     List<RdMmBasicInfo> findBranch(String mmCode);
+
+    Long countSecondShop(String mmCode);
 }

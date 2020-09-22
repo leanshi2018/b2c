@@ -1,5 +1,9 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.cart.ShopCartExchange;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
+import com.framework.loippi.result.app.order.*;
+import com.framework.loippi.service.product.ShopGoodsBrandService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -67,10 +71,6 @@ import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.param.cart.CartAddParam;
 import com.framework.loippi.param.order.OrderSubmitParam;
 import com.framework.loippi.param.order.RefundReturnParam;
-import com.framework.loippi.result.app.order.ApplyRefundReturnResult;
-import com.framework.loippi.result.app.order.OrderDetailResult;
-import com.framework.loippi.result.app.order.OrderResult;
-import com.framework.loippi.result.app.order.OrderSubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.evaluate.EvaluateOrderGoodsResult;
 import com.framework.loippi.result.order.AppletsPayTLResult;
@@ -188,6 +188,8 @@ public class OrderAPIController extends BaseController {
     private RdMmAccountLogService rdMmAccountLogService;
     @Resource
     private MemberPrivilegeService memberPrivilegeService;
+    @Resource
+    private ShopGoodsBrandService shopGoodsBrandService;
 
     /**
      * 提交订单
@@ -408,6 +410,48 @@ public class OrderAPIController extends BaseController {
             rdMmIntegralRule = rdMmIntegralRuleList.get(0);
         }
         return ApiUtils.success(OrderSubmitResult
+                .build(rdMmIntegralRule, orderPay, rdMmAccountInfoService.find("mmCode", member.getMmCode())));
+    }
+
+    /**
+     * 提交换购商品订单
+     * @param param
+     * @param vResult
+     * @param request
+     * @param platform
+     * @return
+     */
+    @RequestMapping(value = "/api/redemption/order/submit")
+    @ResponseBody
+    public String submitRedemptionOrder(@Valid OrderSubmitParam param, BindingResult vResult, HttpServletRequest request,
+                                  @RequestParam(required = false,value = "platform")String platform) {
+        if (vResult.hasErrors()) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        // 订单留言
+        Map<String, Object> orderMsgMap = new HashMap<>();
+        if (StringUtils.isNotBlank(param.getOrderMessages())) {//验证是否有留言信息
+            orderMsgMap.put("orderMessages", param.getOrderMessages());
+        }
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        //提交订单,返回订单支付实体
+        ShopOrderPay orderPay = new ShopOrderPay();
+        Integer platformCode=null;
+        if(platform!=null&&platform.equals("weixinAppletsPaymentPlugin")){
+            platformCode=OrderState.PLATFORM_WECHAT;
+        }else {
+            platformCode=OrderState.PLATFORM_APP;
+        }
+        orderPay=orderService.addOrderReturnPaySnRedemption(param.getCartIds(),member.getMmCode(),
+                orderMsgMap,param.getAddressId(),platformCode,param.getLogisticType(), param.getPaymentType());
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        return ApiUtils.success(RedemptionOrderSubmitResult
                 .build(rdMmIntegralRule, orderPay, rdMmAccountInfoService.find("mmCode", member.getMmCode())));
     }
 
@@ -1250,12 +1294,45 @@ public class OrderAPIController extends BaseController {
             .addReplacementOrder(param.getGoodsId(), param.getCount(), param.getSpecId(),
                 Long.parseLong(member.getMmCode()),addr);
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        ShopGoods goods = shopGoodsService.find(param.getGoodsId());
+        ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(param.getSpecId());
+        ShopCartExchange cart = new ShopCartExchange();
+        cart.setId(twiterIdService.getTwiterId());
+        cart.setMemberId(Long.parseLong(member.getMmCode()));
+        cart.setGoodsId(goodsSpec.getGoodsId());
+        cart.setGoodsName(goods.getGoodsName());
+        cart.setSpecId(goodsSpec.getId());
+        cart.setGoodsType(goods.getGoodsType());
+        //设置价格
+        cart.setGoodsMemberPrice(goodsSpec.getSpecMemberPrice());
+        cart.setGoodsBigPrice(goodsSpec.getSpecBigPrice());
+        cart.setGoodsRetailPrice(goodsSpec.getSpecRetailPrice());
+        cart.setBigPpv(goodsSpec.getBigPpv());
+        cart.setPpv(goodsSpec.getPpv());
+        cart.setGoodsState(goods.getGoodsType());
+        cart.setBrandId(goods.getBrandId());
+        ShopGoodsBrand shopGoodsBrand = shopGoodsBrandService.find(goods.getBrandId());
+        cart.setBrandIcon(shopGoodsBrand.getBrandIcon());
+        cart.setBrandName(goods.getBrandName());
+        cart.setWeight(goodsSpec.getWeight());
+        // 图片信息
+        if (goods.getGoodsImage() != null) {
+            //存储商品默认图片
+            cart.setGoodsImages(goods.getGoodsImage().split(",")[0]);
+        } else {
+            //若商品没有默认图片存储空字段
+            cart.setGoodsImages("");
+        }
+        cart.setGoodsNum(param.getCount());
         return ApiUtils.success(Paramap.create().put("goodsintegration", orderPay.getPayAmount())
             .put("redemptionBlance",
                 Optional.ofNullable(rdMmAccountInfo.getRedemptionBlance()).orElse(BigDecimal.valueOf(0)))
             .put("contactName", contactName).put("contactPhone", contactPhone).put("contactAddrInfo", contactAddrInfo)
             .put("paySn", orderPay.getPaySn()).put("ismodify", 1)
-            .put("orderId", orderPay.getOrderId()).put("addr", addr).put("hadReceiveAddr",hadReceiveAddr));
+            .put("orderId", orderPay.getOrderId()).put("addr", addr).put("hadReceiveAddr",hadReceiveAddr)
+        .put("shippingFee",orderPay.getShippingFee().subtract(orderPay.getShippingPreferentialFee())).put("goodsNum",param.getCount())
+        .put("goodsTotal",orderPay.getPayAmount().subtract(orderPay.getShippingFee()).add(orderPay.getShippingPreferentialFee()))
+        .put("goodsInfo",cart));
     }
 
     /**

@@ -31,9 +31,9 @@ public class AldayuUtil {
 
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
 
-    public static void sendSms(String phone, String code, String codeType, String signName)
+    public static void sendSms(String phone, String code, String codeType, String signName,String key,String value)
             throws Exception {
-        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", AldayuConsts.ACCESS_KEY_Id, AldayuConsts.ACCESS_KEY_SECRET);
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", key, value);
 
         IAcsClient client = new DefaultAcsClient(profile);
 

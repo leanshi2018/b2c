@@ -88,7 +88,6 @@
                     var map={id};
                     jsonMap.push(map);
                 }
-                console.log(jsonMap);
                 parent.appendInfo(jsonMap);
             }
         }

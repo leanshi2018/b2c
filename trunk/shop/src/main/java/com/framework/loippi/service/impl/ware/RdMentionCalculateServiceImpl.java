@@ -91,11 +91,14 @@ public class RdMentionCalculateServiceImpl extends GenericServiceImpl<RdMentionC
                 calculate.setSubsidiesCoefficient(MentionSubsidyConstants.SUBSIDY_MORE_TEN);
             }else if(total.compareTo(new BigDecimal("100000"))==-1&&total.compareTo(new BigDecimal("50000"))!=-1){
                 calculate.setSubsidiesCoefficient(MentionSubsidyConstants.SUBSIDY_BETWEEN_FIVE_TEN);
-            }else if(total.compareTo(new BigDecimal("50000"))==-1&&total.compareTo(new BigDecimal("10000"))!=-1){
+            }else {
+                calculate.setSubsidiesCoefficient(MentionSubsidyConstants.SUBSIDY_BETWEEN_ONE_FIVE);
+            }
+            /*else if(total.compareTo(new BigDecimal("50000"))==-1&&total.compareTo(new BigDecimal("10000"))!=-1){
                 calculate.setSubsidiesCoefficient(MentionSubsidyConstants.SUBSIDY_BETWEEN_ONE_FIVE);
             }else {
                 calculate.setSubsidiesCoefficient(BigDecimal.ZERO);
-            }
+            }*/
             BigDecimal subsidiesAcc = calculate.getIncome().multiply(calculate.getSubsidiesCoefficient()).divide(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
             calculate.setSubsidiesAcc(subsidiesAcc);
             calculate.setStatus(1);

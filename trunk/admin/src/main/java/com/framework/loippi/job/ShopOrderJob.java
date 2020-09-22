@@ -122,8 +122,6 @@ public class ShopOrderJob {
     @Resource
     private ShopRefundReturnService shopRefundReturnService;
     @Resource
-    private RetailProfitDao retailProfitDao;
-    @Resource
     private RetailProfitService retailProfitService;
     @Resource
     private RdMmRelationDao rdMmRelationDao;
@@ -1188,15 +1186,12 @@ public class ShopOrderJob {
         }*/
     }
 
-/*    @Scheduled(cron = "0 33 * * * ? ")  //每隔一小时执行一次 每小时33分执行定时任务
-    public void grantTicket(){
-        RdTravelTicket rdTravelTicket = rdTravelTicketService.find(6696310439497699328L);
-        if(rdTravelTicket!=null){
-            rdTourismComplianceService.grantTicket(rdTravelTicket);
-        }
-    }*/
+    @Scheduled(cron = "0 15 * * * ? ")  //每隔一小时执行一次 每小时15分执行定时任务
+    public void grantRetail(){
+        retailProfitService.grantRetail();
+    }
 
-    @Scheduled(cron = "0 8 17 * * ?" )
+    //@Scheduled(cron = "0 8 17 * * ?" )
     public void advance(){
         List<RdTourismCompliance> complianceList = rdTourismComplianceService.findBySql();
 
