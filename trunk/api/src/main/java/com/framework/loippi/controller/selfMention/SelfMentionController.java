@@ -18,6 +18,8 @@ import java.util.Set;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,15 +29,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.NotifyConsts;
 import com.framework.loippi.consts.OrderState;
+import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.PayCommon;
+import com.framework.loippi.entity.integration.RdMmIntegralRule;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdGoodsAdjustment;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAdjust;
@@ -49,23 +58,32 @@ import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.selfMention.SelfMentionOrderResult;
 import com.framework.loippi.result.selfMention.SelfMentionOrderStatistics;
 import com.framework.loippi.result.selfMention.SelfMentionShopResult;
+import com.framework.loippi.result.selfMention.SelfOrderSubmitResult;
+import com.framework.loippi.service.alipay.AlipayMobileService;
+import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.ShopOrderAddressService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
+import com.framework.loippi.service.order.ShopOrderPayService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
 import com.framework.loippi.service.user.RdGoodsAdjustmentService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
 import com.framework.loippi.service.ware.RdWareAdjustService;
 import com.framework.loippi.service.ware.RdWareAllocationService;
 import com.framework.loippi.service.ware.RdWareOrderService;
 import com.framework.loippi.service.ware.RdWarehouseService;
+import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Digests;
 import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
@@ -107,6 +125,20 @@ public class SelfMentionController extends BaseController {
     private ShopOrderAddressService shopOrderAddressService;
     @Resource
     private RdMmAddInfoService rdMmAddInfoService;
+    @Resource
+    private RdMmAccountInfoService rdMmAccountInfoService;
+    @Resource
+    private RdMmIntegralRuleService rdMmIntegralRuleService;
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
+    @Resource
+    private ShopOrderPayService orderPayService;
+    @Resource
+    private ShopMemberPaymentTallyService paymentTallyService;
+    @Resource
+    private AlipayMobileService alipayMobileService;
+    @Resource
+    private WechatMobileService wechatMobileService;
     /**
      * 点击进入我的小店
      * @param request
@@ -453,6 +485,139 @@ public class SelfMentionController extends BaseController {
         }
         return ApiUtils.success(list);
     }
+
+    /**
+     * 欠货商品列表
+     */
+    @RequestMapping(value = "/api/mention/oweGoodsList1", method = RequestMethod.GET)
+    @ResponseBody
+    public String oweGoodsList1(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("当前用户尚未登录");
+        }
+
+        String mmCode = member.getMmCode();
+        RdWarehouse warehouse = rdWarehouseService.findByMmCode(mmCode);
+        if (warehouse == null ) {
+            return ApiUtils.error("该会员没有自提仓库");
+        }
+        String wareCode = warehouse.getWareCode();
+
+
+        List<MentionWareGoodsVo> oweList = new ArrayList<MentionWareGoodsVo>();
+
+        List<RdInventoryWarning> inventoryWarningList = rdInventoryWarningService.findByWareCodeAndOweInven(wareCode);
+        List<Long> specIdList = new ArrayList<Long>();
+        for (RdInventoryWarning inventoryWarning : inventoryWarningList) {
+            ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(inventoryWarning.getGoodsCode()));
+            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());
+
+            //Integer num = Math.abs(wareGoodsVo.getInventory());
+            oweList.add(getWareGoodsVo(inventoryWarning,shopGoods,goodsSpec));
+            specIdList.add(goodsSpec.getId());
+        }
+
+        List<MentionWareGoodsVo> goodsVoList = new ArrayList<MentionWareGoodsVo>();
+        //所有展示商品
+        List<ShopGoods> goodsList = shopGoodsService.findOweGoods();
+        for (ShopGoods goods : goodsList) {
+            List<ShopGoodsSpec> goodsSpecList = shopGoodsSpecService.findListByGoodsId(goods.getId());
+            if (goodsSpecList.size()>0){
+                for (ShopGoodsSpec goodsSpec : goodsSpecList) {
+
+                    if (specIdList.size()>0){
+                        boolean flag = specIdList.contains(goodsSpec.getId());//判断是否在欠货列表中
+                        if (flag==false){
+                            RdInventoryWarning wareInventory = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(wareCode, goodsSpec.getId());
+                            if (wareInventory==null){
+                                //添加数据
+                                RdInventoryWarning inventoryWarning = new RdInventoryWarning();
+                                inventoryWarning.setWareCode(warehouse.getWareCode());
+                                inventoryWarning.setWareName(warehouse.getWareName());
+                                inventoryWarning.setGoodsCode(goodsSpec.getGoodsId().toString());
+                                inventoryWarning.setGoodsName(goods.getGoodsName());
+                                inventoryWarning.setSpecificationId(goodsSpec.getId());
+                                inventoryWarning.setSpecifications(goodsSpec.getSpecGoodsSpec());
+                                inventoryWarning.setInventory(0);
+                                inventoryWarning.setPrecautiousLine(0);
+                                rdInventoryWarningService.save(inventoryWarning);
+
+                                goodsVoList.add(getWareGoodsVo(inventoryWarning, goods, goodsSpec));
+                            }else {
+                                goodsVoList.add(getWareGoodsVo(wareInventory, goods, goodsSpec));
+                            }
+                        }
+
+                    }else {
+                        RdInventoryWarning wareInventory = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(wareCode, goodsSpec.getId());
+                        if (wareInventory==null){
+                            //添加数据
+                            RdInventoryWarning inventoryWarning = new RdInventoryWarning();
+                            inventoryWarning.setWareCode(warehouse.getWareCode());
+                            inventoryWarning.setWareName(warehouse.getWareName());
+                            inventoryWarning.setGoodsCode(goodsSpec.getGoodsId().toString());
+                            inventoryWarning.setGoodsName(goods.getGoodsName());
+                            inventoryWarning.setSpecificationId(goodsSpec.getId());
+                            inventoryWarning.setSpecifications(goodsSpec.getSpecGoodsSpec());
+                            inventoryWarning.setInventory(0);
+                            inventoryWarning.setPrecautiousLine(0);
+                            rdInventoryWarningService.save(inventoryWarning);
+
+                            goodsVoList.add(getWareGoodsVo(inventoryWarning, goods, goodsSpec));
+                        }else {
+                            goodsVoList.add(getWareGoodsVo(wareInventory, goods, goodsSpec));
+                        }
+                    }
+                }
+            }
+        }
+
+        if (oweList.size()==0 &&goodsVoList.size()==0){
+            return ApiUtils.success(new ArrayList<MentionWareGoodsVo>());
+        }
+
+        if (specIdList.size()>0){
+            oweList.addAll(goodsVoList);
+            return ApiUtils.success(oweList);
+        }else {
+            return ApiUtils.success(goodsVoList);
+        }
+
+
+
+    }
+
+    public MentionWareGoodsVo getWareGoodsVo(RdInventoryWarning wareInventory,ShopGoods goods,ShopGoodsSpec goodsSpec) {
+        GoodsUtils.getSepcMapAndColImgToGoodsSpec(goods, goodsSpec);
+        MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
+        wareGoodsVo.setWareCode(Optional.ofNullable(wareInventory.getWareCode()).orElse(""));
+        wareGoodsVo.setGoodsName(Optional.ofNullable(goods.getGoodsName()).orElse(""));
+        wareGoodsVo.setGoodsImage(Optional.ofNullable(goods.getGoodsImage()).orElse(""));
+        wareGoodsVo.setSpecId(Optional.ofNullable(wareInventory.getSpecificationId()).orElse(0l));
+        if (goods.getGoodsType()==3){
+            wareGoodsVo.setSpecGoodsSpec(goodsSpec.getSpecGoodsSerial());
+        }else{
+            String specInfo = "";
+            Map<String, String> map = goodsSpec.getSepcMap();
+            //遍历规格map,取出键值对,拼接specInfo
+            if (map != null) {
+                Set<String> set = map.keySet();
+                for (String str : set) {
+                    specInfo += str + ":" + map.get(str) + "、";
+                }
+                specInfo = specInfo.substring(0, specInfo.length() - 1);
+            }
+            wareGoodsVo.setSpecGoodsSpec(specInfo);
+        }
+        wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
+        wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
+        wareGoodsVo.setPpv(Optional.ofNullable(goods.getPpv()).orElse(BigDecimal.ZERO));
+        wareGoodsVo.setCostPrice(Optional.ofNullable(goods.getCostPrice()).orElse(BigDecimal.ZERO));
+        wareGoodsVo.setInventory(Optional.ofNullable(wareInventory.getInventory()).orElse(0));
+        return wareGoodsVo;
+    }
+
 
     /**
      * 进货订单详情
@@ -835,6 +1000,211 @@ public class SelfMentionController extends BaseController {
         //创建调拨单和订单
         rdWareAllocationService.addAllocationOweNew(rdWareOrder,wareAllocation,array);
 
+        return ApiUtils.success();
+    }
+
+    /**
+     * 创建发货单(提交订单)
+     */
+    @RequestMapping(value = "/api/mention/createOweOrder1", method = RequestMethod.POST)
+    @ResponseBody
+    public String createOweOrder1( HttpServletRequest request,String mapS) throws Exception {
+
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+
+        String mmCode = member.getMmCode();
+        RdWarehouse warehouseIn = rdWarehouseService.findByMmCode(mmCode);
+        if (warehouseIn == null ) {
+            return ApiUtils.error("该会员没有自提仓库");
+        }
+        String wareCode = warehouseIn.getWareCode();
+
+        List<RdWareAllocation> list = rdWareAllocationService.haveAllocation(wareCode,2);
+        if (list.size()>0){
+            return ApiUtils.error("该会员自提仓库还有待审调拨单，请等待审核后再进行创建新的调拨单");
+        }
+
+        RdWarehouse warehouseOut = rdWarehouseService.findByCode("20192514");//仓库
+
+        JSONArray array = JSON.parseArray(mapS);
+        if (array.size()==0){
+            return ApiUtils.error("请选择欠货商品");
+        }
+
+        //创建调拨单和订单
+        SelfOrderSubmitResult result = rdWareAllocationService.addAllocationOwe1(warehouseIn,warehouseOut,array);
+
+        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        result.setIntegration(accountInfo.getWalletBlance().setScale(2));
+
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        if (rdMmIntegralRule==null || rdMmIntegralRule.getShoppingPointSr()==null){
+            result.setProportion(0d);
+        }else{
+            result.setProportion(rdMmIntegralRule.getShoppingPointSr().doubleValue()*0.01);
+        }
+
+        return ApiUtils.success(result);
+    }
+
+    /**
+     * 去付款
+     *
+     * @param paysn 支付订单编码
+     * @param paymentCode 支付代码名称: ZFB YL weiscan
+     * @param paymentId 支付方式索引id
+     * @param integration 积分
+     * @param paypassword 支付密码
+     * @param paymentType 1在线支付 2货到付款
+     */
+    @RequestMapping("/api/mention/pay")
+    @ResponseBody
+    public String payOrder(@RequestParam(value = "paysn") String paysn,
+                           @RequestParam(defaultValue = "pointsPaymentPlugin") String paymentCode,
+                           @RequestParam(defaultValue = "0") String paymentId,
+                           @RequestParam(defaultValue = "0") String integration,
+                           @RequestParam(defaultValue = "0") String paypassword,
+                           @RequestParam(defaultValue = "1") Integer paymentType,
+                           HttpServletRequest request) {
+
+        /*if (paymentCode.equals("alipayMobilePaymentPlugin")){
+            return ApiUtils.error("支付宝功能升级中，请先选用其他支付方式");
+        }*/
+
+        if(integration==null&&"".equals(integration)){
+            return ApiUtils.error("请输入支付的积分金额");
+        }
+        int i = 0;
+        try {
+            String[] strings = integration.split("\\.");
+            String string = strings[0];
+            i = Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return ApiUtils.error("输入积分数额有误");
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        //处理购物积分
+        //获取购物积分购物比例
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
+
+        List<RdWareOrder> wareOrderList = rdWareOrderService.findByPaySn(paysn);
+        if (CollectionUtils.isEmpty(wareOrderList)) {
+            return ApiUtils.error("调拨订单不存在");
+        }
+        RdWareOrder wareOrder = wareOrderList.get(0);
+        if (wareOrder.getFlagState()==0){
+            return ApiUtils.error("该调拨订单不需要付款");
+        }
+
+        //if (integration != 0) {
+        if (i != 0) {
+            if (rdMmAccountInfo.getPaymentPwd() == null) {
+                return ApiUtils.error("你还未设置支付密码");
+            }
+            if (!Digests.validatePassword(paypassword, rdMmAccountInfo.getPaymentPwd())) {
+                return ApiUtils.error("支付密码错误");
+            }
+            if (rdMmAccountInfo.getWalletStatus() != 0) {
+                return ApiUtils.error("购物积分账户状态未激活或者已被冻结");
+            }
+            ShopOrderPay pay = orderPayService.findBySn(paysn);
+            //处理积分支付
+            rdWareOrderService.ProcessingIntegrals(paysn, i, shopMember, pay, shoppingPointSr);
+        }
+
+        System.out.println("##########################################");
+        System.out
+                .println("###  订单支付编号：" + paysn + "  |  支付方式名称：" + paymentCode + " |  支付方式索引id：" + paymentId + "#########");
+        System.out.println("##########################################");
+        ShopOrderPay pay = orderPayService.findBySn(paysn);
+
+        //货到付款判断
+        if (paymentType == 2) {
+            if (pay.getPaymentType() != 2) {
+                return ApiUtils.error("该订单不是货到付款,请选择支付方式");
+            }
+        }
+        PayCommon payCommon = new PayCommon();
+        payCommon.setOutTradeNo(pay.getPaySn());
+        if ("balancePaymentPlugin".equals(paymentCode)) {
+            payCommon.setPayAmount(pay.getPayAmount());
+        } else {
+            //payCommon.setPayAmount(new BigDecimal(0.01));
+            payCommon.setPayAmount(pay.getPayAmount());
+        }
+        payCommon.setTitle("订单支付");
+        payCommon.setBody(pay.getPaySn() + "订单支付");
+        if (paymentCode.equals("alipayMobilePaymentPlugin")){
+            payCommon.setNotifyUrl(NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/alipayNotify/"+paysn+".jhtml");
+        }else {
+            payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
+        }
+        payCommon.setReturnUrl(server + "/payment/payfront");
+        String sHtmlText = "";
+        Map<String, Object> model = new HashMap<String, Object>();
+        if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("alipayMobilePaymentPlugin")) {
+            rdWareOrderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            System.out.println("dd:" + PaymentTallyState.PAYMENTTALLY_TREM_PC);
+            paymentTallyService.savePaymentTally(paymentCode, "支付宝", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            //修改订单付款信息
+            sHtmlText = alipayMobileService.toPay(payCommon);//TODO
+            model.put("tocodeurl", sHtmlText);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("weixinMobilePaymentPlugin")) {
+            //修改订单付款信息
+            rdWareOrderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            paymentTallyService.savePaymentTally(paymentCode, "微信支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
+            model.put("tocodeurl", tocodeurl);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("pointsPaymentPlugin")) {//积分全额支付
+            //积分全额支付判断
+            if (paymentCode.equals("pointsPaymentPlugin")) {
+                if (pay.getPayAmount().compareTo(new BigDecimal(0)) != 0) {
+                    return ApiUtils.error("该订单不符合购物积分全抵现,请选择支付方式");
+                }
+            }
+            paymentTallyService.savePaymentTally(paymentCode, "积分全抵扣", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
+            Map<String, Object> data = rdWareOrderService
+                    .updateOrderpay(payCommon, member.getMmCode(), "在线支付-购物积分", paymentCode, paymentId);
+            model.putAll(data);
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("cashOnDeliveryPlugin")) {//货到付款
+            // TODO: 2018/12/18
+            /*paymentTallyService.savePaymentTally(paymentCode, "货到付款", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 2);
+            Map<String, Object> data = orderService
+                    .updateOrderpay(payCommon, member.getMmCode(), "货到付款", paymentCode, paymentId);
+            model.putAll(data);*/
+        }
+
+        return ApiUtils.success(model);
+    }
+
+    /**
+     * 取消订单
+     */
+    @RequestMapping(value = "/api/mention/cancelWareOrder", method = RequestMethod.POST)
+    @ResponseBody
+    public String cancelWareOrder(@RequestParam long orderId, HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        // 更新订单状态与库存
+        rdWareOrderService.updateCancelOrder(orderId, Constants.OPERATOR_MEMBER, member.getMmCode(),
+                PaymentTallyState.PAYMENTTALLY_TREM_MB, "用户自己取消订单","");
         return ApiUtils.success();
     }
 
