@@ -147,4 +147,10 @@
         </where>
     </select>
 
+    <select id="findByOrderIdAndSpecId" parameterType="map" resultMap="ShopSpiritOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	shop_spirit_order_info
+        WHERE order_id = #{orderId} AND spec_id = #{specId}
+    </select>
+
 </mapper>

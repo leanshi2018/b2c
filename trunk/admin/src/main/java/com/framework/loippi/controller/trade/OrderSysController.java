@@ -266,15 +266,18 @@ public class OrderSysController extends GenericController {
                                 if (a==1&&b==0){//订单中只有白酒
                                     System.out.println("只有白酒");
                                     for (ShopOrderGoods orderGoods : orderGoodsLists) {
-                                        ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
-                                        spiritOrderInfo.setId(twiterIdService.getTwiterId());
-                                        spiritOrderInfo.setOrderId(orderGoods.getOrderId());
-                                        spiritOrderInfo.setGoodsId(orderGoods.getGoodsId());
-                                        spiritOrderInfo.setSpecId(orderGoods.getSpecId());
-                                        spiritOrderInfo.setGoodsNum(orderGoods.getGoodsNum());
-                                        spiritOrderInfo.setSubmitState(0);
-                                        spiritOrderInfo.setOrderShipState(0);
-                                        shopSpiritOrderInfoService.save(spiritOrderInfo);
+                                        ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(orderGoods.getOrderId(),orderGoods.getSpecId());
+                                        if (haveInfo==null){
+                                            ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
+                                            spiritOrderInfo.setId(twiterIdService.getTwiterId());
+                                            spiritOrderInfo.setOrderId(orderGoods.getOrderId());
+                                            spiritOrderInfo.setGoodsId(orderGoods.getGoodsId());
+                                            spiritOrderInfo.setSpecId(orderGoods.getSpecId());
+                                            spiritOrderInfo.setGoodsNum(orderGoods.getGoodsNum());
+                                            spiritOrderInfo.setSubmitState(0);
+                                            spiritOrderInfo.setOrderShipState(0);
+                                            shopSpiritOrderInfoService.save(spiritOrderInfo);
+                                        }
                                     }
                                 }else {
                                     System.out.println("不只有白酒");
@@ -351,10 +354,10 @@ public class OrderSysController extends GenericController {
                     int b = 0;//不是白酒1
                     if (orderGoodsLists.size()>0){
                         for (ShopOrderGoods orderGoods : orderGoodsLists) {
-                            if (orderGoods.getGoodsId()!=spirit_goods_id){
+                            if (orderGoods.getGoodsId().longValue()!=spirit_goods_id.longValue()){
                                 b=1;
                             }
-                            if (orderGoods.getGoodsId()==spirit_goods_id){
+                            if (orderGoods.getGoodsId().longValue()==spirit_goods_id.longValue()){
                                 a=1;
                             }
                         }
@@ -362,15 +365,18 @@ public class OrderSysController extends GenericController {
 
                     if (a==1&&b==0){//订单中只有白酒
                         for (ShopOrderGoods orderGoods : orderGoodsLists) {
-                            ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
-                            spiritOrderInfo.setId(twiterIdService.getTwiterId());
-                            spiritOrderInfo.setOrderId(orderGoods.getOrderId());
-                            spiritOrderInfo.setGoodsId(orderGoods.getGoodsId());
-                            spiritOrderInfo.setSpecId(orderGoods.getSpecId());
-                            spiritOrderInfo.setGoodsNum(orderGoods.getGoodsNum());
-                            spiritOrderInfo.setSubmitState(0);
-                            spiritOrderInfo.setOrderShipState(0);
-                            shopSpiritOrderInfoService.save(spiritOrderInfo);
+                            ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(orderGoods.getOrderId(),orderGoods.getSpecId());
+                            if (haveInfo==null){
+                                ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
+                                spiritOrderInfo.setId(twiterIdService.getTwiterId());
+                                spiritOrderInfo.setOrderId(orderGoods.getOrderId());
+                                spiritOrderInfo.setGoodsId(orderGoods.getGoodsId());
+                                spiritOrderInfo.setSpecId(orderGoods.getSpecId());
+                                spiritOrderInfo.setGoodsNum(orderGoods.getGoodsNum());
+                                spiritOrderInfo.setSubmitState(0);
+                                spiritOrderInfo.setOrderShipState(0);
+                                shopSpiritOrderInfoService.save(spiritOrderInfo);
+                            }
                         }
                     }else {
                         Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
@@ -442,7 +448,7 @@ public class OrderSysController extends GenericController {
      */
     public List<ShopOrderGoods> updateOrderGoods(List<ShopOrderGoods> shopOrderGoodsNullList,List<ShopOrderGoods> orderGoodsList,String trackingNo) {
         for (ShopOrderGoods orderGoods : orderGoodsList) {
-            if (orderGoods.getGoodsId()!=spirit_goods_id){//不是白酒的部分商品
+            if (orderGoods.getGoodsId().longValue()!=spirit_goods_id.longValue()){//不是白酒的部分商品
                 ShopCommonExpress express = commonExpressService.find(44l);
 
                 ShopOrderGoods shopOrderGoods = new ShopOrderGoods();
@@ -749,15 +755,18 @@ public class OrderSysController extends GenericController {
             ShopGoodsSpec spec = shopGoodsSpecService.findByspecGoodsSerial(sgs);
 
             if (spec.getGoodsId().longValue()==spirit_goods_id.longValue()){//是白酒
-                ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
-                spiritOrderInfo.setId(twiterIdService.getTwiterId());
-                spiritOrderInfo.setOrderId(shopOrder.getId());
-                spiritOrderInfo.setGoodsId(spec.getGoodsId());
-                spiritOrderInfo.setSpecId(spec.getId());
-                spiritOrderInfo.setGoodsNum((Integer) product.get("MaterialQuantity"));
-                spiritOrderInfo.setSubmitState(0);
-                spiritOrderInfo.setOrderShipState(1);
-                shopSpiritOrderInfoService.save(spiritOrderInfo);
+                ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(shopOrder.getId(),spec.getId());
+                if (haveInfo==null){
+                    ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
+                    spiritOrderInfo.setId(twiterIdService.getTwiterId());
+                    spiritOrderInfo.setOrderId(shopOrder.getId());
+                    spiritOrderInfo.setGoodsId(spec.getGoodsId());
+                    spiritOrderInfo.setSpecId(spec.getId());
+                    spiritOrderInfo.setGoodsNum((Integer) product.get("MaterialQuantity"));
+                    spiritOrderInfo.setSubmitState(0);
+                    spiritOrderInfo.setOrderShipState(1);
+                    shopSpiritOrderInfoService.save(spiritOrderInfo);
+                }
             }else {
                 productListss.add(product);
             }
