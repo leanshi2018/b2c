@@ -18,4 +18,6 @@ public interface RdTourismComplianceDao extends GenericDao<RdTourismCompliance, 
 	List<RdTourismCompliance> findTwoQualifyList();
 
 	List<RdTourismCompliance> findThreeQualifyList();
+
+	List<RdTourismCompliance> findBySql();
 }

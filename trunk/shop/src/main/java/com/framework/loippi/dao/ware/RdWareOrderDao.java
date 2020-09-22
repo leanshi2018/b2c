@@ -1,5 +1,7 @@
 package com.framework.loippi.dao.ware;
 
+import java.util.List;
+
 import com.framework.loippi.entity.ware.RdWareOrder;
 import com.framework.loippi.mybatis.dao.GenericDao;
 
@@ -10,4 +12,8 @@ import com.framework.loippi.mybatis.dao.GenericDao;
  */
 public interface RdWareOrderDao extends GenericDao<RdWareOrder, Long> {
 	RdWareOrder findBySn(String orderSn);
+
+	List<RdWareOrder> findByPaySn(String paySn);
+
+	Long updateByIdAndOrderStateAndLockState(RdWareOrder order);
 }

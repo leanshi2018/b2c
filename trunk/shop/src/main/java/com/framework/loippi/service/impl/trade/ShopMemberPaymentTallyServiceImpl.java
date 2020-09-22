@@ -13,12 +13,16 @@ import org.springframework.stereotype.Service;
 import com.framework.loippi.consts.PaymentTallyState;
 import com.framework.loippi.dao.coupon.CouponPayDetailDao;
 import com.framework.loippi.dao.order.ShopOrderDao;
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.user.ShopMemberPaymentTallyDao;
+import com.framework.loippi.dao.ware.RdWareOrderDao;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderPay;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.walet.ShopWalletRecharge;
+import com.framework.loippi.entity.ware.RdWareOrder;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
@@ -57,6 +61,12 @@ public class ShopMemberPaymentTallyServiceImpl extends GenericServiceImpl<ShopMe
     private CouponPayDetailDao couponPayDetailDao;
 
     @Autowired
+    private RdWareOrderDao rdWareOrderDao;
+
+    @Autowired
+    private RdMmBasicInfoDao rdMmBasicInfoDao;
+
+    @Autowired
     public void setGenericDao() {
         super.setGenericDao(shopMemberPaymentTallyDao);
     }
@@ -64,48 +74,98 @@ public class ShopMemberPaymentTallyServiceImpl extends GenericServiceImpl<ShopMe
     @Override
     public void savePaymentTally(String paytype, String payname, ShopOrderPay pay, Integer paytrem,Integer type) {
         //根据支付单号获取订单信息
-        List<ShopOrder> orderList = orderDao.findByParams(Paramap.create().put("paySn", pay.getPaySn()));
-        if (CollectionUtils.isEmpty(orderList)) {
-            return;
-        }
+        if (pay.getPaySn().substring(0,1).equals("W")){
+            //调拨订单
+            List<RdWareOrder> orderList = rdWareOrderDao.findByParams(Paramap.create().put("paySn", pay.getPaySn()));
+            if (CollectionUtils.isEmpty(orderList)) {
+                return;
+            }
 
-        ShopOrder order = orderList.get(0);
-        if (order != null) {
-            ShopMemberPaymentTally paymentTally = new ShopMemberPaymentTally();
-            paymentTally.setPaymentCode(paytype);//保存支付类型
-            paymentTally.setPaymentName(payname);//支付名称
-            paymentTally.setPaymentSn(pay.getPaySn());//商城内部交易号
-            paymentTally.setPaymentAmount(pay.getPayAmount());// 订单交易金额
-            if (pay.getPaySn().contains("R")) {//充值
-                paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_RECHARGE_PAY);
-            } else {//订单支付
-                paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_ORDER_PAY);
+            RdWareOrder order = orderList.get(0);
+            if (order != null) {
+                ShopMemberPaymentTally paymentTally = new ShopMemberPaymentTally();
+                paymentTally.setPaymentCode(paytype);//保存支付类型
+                paymentTally.setPaymentName(payname);//支付名称
+                paymentTally.setPaymentSn(pay.getPaySn());//商城内部交易号
+                paymentTally.setPaymentAmount(pay.getPayAmount());// 订单交易金额
+                if (pay.getPaySn().contains("R")) {//充值
+                    paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_RECHARGE_PAY);
+                } else {//订单支付
+                    paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_ORDER_PAY);
+                }
+                //支付状态
+                if (type==2){
+                    paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_SUCCESS);
+                }else{
+                    paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_NOSUCCESS);
+                }
+                //支付终端类型 1:PC;2:APP;3:h5
+                if (paytrem == 1) {
+                    paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_PC);
+                } else if (paytrem == 2) {
+                    paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_MB);
+                } else {
+                    paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_H5);
+                }
+                //用户id
+                paymentTally.setBuyerId(Long.valueOf(order.getMCode()));
+
+                RdMmBasicInfo info = rdMmBasicInfoDao.findByMCode(order.getMCode());
+                //用户名
+                paymentTally.setBuyerName(info.getMmNickName());
+                //保存生成时间
+                paymentTally.setCreateTime(new Date());
+                paymentTally.setId(twiterIdService.getTwiterId());
+                //保存流水表记录
+                paymentTallyDao.insert(paymentTally);
+                //释放资源
+                paymentTally = null;
             }
-            //支付状态
-            if (type==2){
-                paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_SUCCESS);
-            }else{
-                paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_NOSUCCESS);
+
+        }else {
+            List<ShopOrder> orderList = orderDao.findByParams(Paramap.create().put("paySn", pay.getPaySn()));
+            if (CollectionUtils.isEmpty(orderList)) {
+                return;
             }
-            //支付终端类型 1:PC;2:APP;3:h5
-            if (paytrem == 1) {
-                paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_PC);
-            } else if (paytrem == 2) {
-                paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_MB);
-            } else {
-                paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_H5);
+
+            ShopOrder order = orderList.get(0);
+            if (order != null) {
+                ShopMemberPaymentTally paymentTally = new ShopMemberPaymentTally();
+                paymentTally.setPaymentCode(paytype);//保存支付类型
+                paymentTally.setPaymentName(payname);//支付名称
+                paymentTally.setPaymentSn(pay.getPaySn());//商城内部交易号
+                paymentTally.setPaymentAmount(pay.getPayAmount());// 订单交易金额
+                if (pay.getPaySn().contains("R")) {//充值
+                    paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_RECHARGE_PAY);
+                } else {//订单支付
+                    paymentTally.setTradeType(PaymentTallyState.PAYMENTTALLY_ORDER_PAY);
+                }
+                //支付状态
+                if (type==2){
+                    paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_SUCCESS);
+                }else{
+                    paymentTally.setPaymentState(PaymentTallyState.PAYMENTTALLY_STATE_NOSUCCESS);
+                }
+                //支付终端类型 1:PC;2:APP;3:h5
+                if (paytrem == 1) {
+                    paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_PC);
+                } else if (paytrem == 2) {
+                    paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_MB);
+                } else {
+                    paymentTally.setPaymentFrom(PaymentTallyState.PAYMENTTALLY_TREM_H5);
+                }
+                //用户id
+                paymentTally.setBuyerId(order.getBuyerId());
+                //用户名
+                paymentTally.setBuyerName(order.getBuyerName());
+                //保存生成时间
+                paymentTally.setCreateTime(new Date());
+                paymentTally.setId(twiterIdService.getTwiterId());
+                //保存流水表记录
+                paymentTallyDao.insert(paymentTally);
+                //释放资源
+                paymentTally = null;
             }
-            //用户id
-            paymentTally.setBuyerId(order.getBuyerId());
-            //用户名
-            paymentTally.setBuyerName(order.getBuyerName());
-            //保存生成时间
-            paymentTally.setCreateTime(new Date());
-            paymentTally.setId(twiterIdService.getTwiterId());
-            //保存流水表记录
-            paymentTallyDao.insert(paymentTally);
-            //释放资源
-            paymentTally = null;
         }
     }
 
