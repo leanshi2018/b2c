@@ -14,7 +14,7 @@
             <div class="item-title">
                 <ul class="tab-base">
                     <li>
-                        <a href="#" class="current"><span>旅游券领取使用明细</span></a>
+                        <a href="#" class="current"><span>旅游券记录</span></a>
                     </li>
                 </ul>
             </div>
