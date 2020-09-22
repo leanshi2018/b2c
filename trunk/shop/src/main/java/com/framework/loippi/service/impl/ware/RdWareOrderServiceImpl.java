@@ -306,10 +306,14 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 			throw new RuntimeException("非法操作");
 		}
 
-		if (wareOrder.getOrderState() != WareOrderState.ORDER_STATE_NO_PATMENT
-				&& wareOrder.getOrderState() != WareOrderState.ORDER_STATE_UNFILLED) {
-			throw new RuntimeException("订单状态错误！");
+		if (wareOrder.getFlagState()==1){
+			if (wareOrder.getOrderState() != WareOrderState.ORDER_STATE_NO_PATMENT
+					&& wareOrder.getOrderState() != WareOrderState.ORDER_STATE_NO_AUDIT) {
+				throw new RuntimeException("订单状态错误！");
+			}
 		}
+
+
 
 
 	}
