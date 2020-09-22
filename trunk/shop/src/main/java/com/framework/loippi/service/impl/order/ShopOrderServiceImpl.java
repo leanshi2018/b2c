@@ -3470,8 +3470,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             if(shopOrderGoods.getIsPresentation()!=null&&shopOrderGoods.getIsPresentation()==1){
                                 continue;
                             }
-                            ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
-                            ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find( shopGoods.getSpecId());
+                            //ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
+                            ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find( shopOrderGoods.getSpecId());
                             profit=profit.add(shopGoodsSpec.getSpecRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));
                         }
                     }
@@ -4845,8 +4845,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 if(shopOrderGoods.getIsPresentation()!=null&&shopOrderGoods.getIsPresentation()==1){
                                     continue;
                                 }
-                                ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
-                                ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find(shopGoods.getSpecId());
+                                //ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
+                                ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find(shopOrderGoods.getSpecId());
                                 profit=profit.add(shopGoodsSpec.getSpecRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));
                             }
                         }
