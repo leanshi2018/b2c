@@ -9,4 +9,5 @@ import com.framework.loippi.service.GenericService;
  * @description:dubbo com.framework.loippi.service.order
  */
 public interface ShopSpiritOrderInfoService extends GenericService<ShopSpiritOrderInfo, Long> {
+	ShopSpiritOrderInfo findByOrderIdAndSpecId(Long orderId, Long specId);
 }

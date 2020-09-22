@@ -1,5 +1,8 @@
 package com.framework.loippi.service.impl.order;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,4 +28,11 @@ public class ShopSpiritOrderInfoServiceImpl extends GenericServiceImpl<ShopSpiri
 		super.setGenericDao(shopSpiritOrderInfoDao);
 	}
 
+	@Override
+	public ShopSpiritOrderInfo findByOrderIdAndSpecId(Long orderId, Long specId) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("orderId",orderId);
+		map.put("specId",specId);
+ 		return shopSpiritOrderInfoDao.findByOrderIdAndSpecId(map);
+	}
 }
