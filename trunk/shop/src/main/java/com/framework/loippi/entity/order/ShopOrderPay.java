@@ -71,5 +71,9 @@ public class ShopOrderPay implements GenericEntity {
 
     //是否可以使用积分支付
     private Boolean usePointFlag;
+    //运费
+    private BigDecimal shippingFee;
+    //运费优惠
+    private BigDecimal shippingPreferentialFee;
 }
 
