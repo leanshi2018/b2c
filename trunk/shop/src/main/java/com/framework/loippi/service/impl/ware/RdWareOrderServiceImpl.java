@@ -307,12 +307,19 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 		}
 
 		if (wareOrder.getFlagState()==1){
-			if (wareOrder.getOrderState() != WareOrderState.ORDER_STATE_NO_PATMENT
-					&& wareOrder.getOrderState() != WareOrderState.ORDER_STATE_NO_AUDIT) {
+			if (wareOrder.getOrderState() != WareOrderState.ORDER_STATE_NO_PATMENT) {
 				throw new RuntimeException("订单状态错误！");
 			}
 		}
 
+		if (wareOrder.getFlagState()==0){
+			if (wareOrder.getOrderState() != WareOrderState.ORDER_STATE_NO_AUDIT) {
+				throw new RuntimeException("订单状态错误！");
+			}
+		}
+
+		wareOrder.setOrderDesc(message); // 取消原因
+		wareOrder.setOrderState(OrderState.ORDER_STATE_CANCLE); //订单状态
 
 
 

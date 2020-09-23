@@ -32,6 +32,7 @@ import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.NotifyConsts;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.consts.WareHouseConsts;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.PayCommon;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
@@ -469,7 +470,7 @@ public class SelfMentionController extends BaseController {
             Long specId = inventoryWarning.getSpecificationId();
 
             Map<String, Object> haveMap = new HashMap<String, Object>();
-            haveMap.put("wareCode","20192514");
+            haveMap.put("wareCode", WareHouseConsts.COMPANY_WARE_CODE);
             haveMap.put("specificationId",specId);
             RdInventoryWarning warning = rdInventoryWarningService.haveInventoryByWareCodeAndSpecId(haveMap);
             Integer wareNum = 0;
@@ -512,9 +513,15 @@ public class SelfMentionController extends BaseController {
         for (RdInventoryWarning inventoryWarning : inventoryWarningList) {
             ShopGoods shopGoods = shopGoodsService.find(Long.valueOf(inventoryWarning.getGoodsCode()));
             ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(inventoryWarning.getSpecificationId());
-
+            RdInventoryWarning companyInven = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(WareHouseConsts.COMPANY_WARE_CODE, inventoryWarning.getSpecificationId());
+            Integer companyInvenInventory = 0;
+            if (companyInven==null){
+                companyInvenInventory = 0;
+            }else {
+                companyInvenInventory = companyInven.getInventory();
+            }
             //Integer num = Math.abs(wareGoodsVo.getInventory());
-            oweList.add(getWareGoodsVo(inventoryWarning,shopGoods,goodsSpec));
+            oweList.add(getWareGoodsVo(inventoryWarning,shopGoods,goodsSpec,companyInvenInventory));
             specIdList.add(goodsSpec.getId());
         }
 
@@ -530,6 +537,14 @@ public class SelfMentionController extends BaseController {
                         boolean flag = specIdList.contains(goodsSpec.getId());//判断是否在欠货列表中
                         if (flag==false){
                             RdInventoryWarning wareInventory = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(wareCode, goodsSpec.getId());
+                            RdInventoryWarning companyInven = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(WareHouseConsts.COMPANY_WARE_CODE, goodsSpec.getId());
+                            Integer companyInvenInventory = 0;
+                            if (companyInven==null){
+                                companyInvenInventory = 0;
+                            }else {
+                                 companyInvenInventory = companyInven.getInventory();
+                            }
+
                             if (wareInventory==null){
                                 //添加数据
                                 RdInventoryWarning inventoryWarning = new RdInventoryWarning();
@@ -543,14 +558,21 @@ public class SelfMentionController extends BaseController {
                                 inventoryWarning.setPrecautiousLine(0);
                                 rdInventoryWarningService.save(inventoryWarning);
 
-                                goodsVoList.add(getWareGoodsVo(inventoryWarning, goods, goodsSpec));
+                                goodsVoList.add(getWareGoodsVo(inventoryWarning, goods, goodsSpec,companyInvenInventory));
                             }else {
-                                goodsVoList.add(getWareGoodsVo(wareInventory, goods, goodsSpec));
+                                goodsVoList.add(getWareGoodsVo(wareInventory, goods, goodsSpec,companyInvenInventory));
                             }
                         }
 
                     }else {
                         RdInventoryWarning wareInventory = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(wareCode, goodsSpec.getId());
+                        RdInventoryWarning companyInven = rdInventoryWarningService.findInventoryWarningByWareAndSpecId(WareHouseConsts.COMPANY_WARE_CODE, goodsSpec.getId());
+                        Integer companyInvenInventory = 0;
+                        if (companyInven==null){
+                            companyInvenInventory = 0;
+                        }else {
+                            companyInvenInventory = companyInven.getInventory();
+                        }
                         if (wareInventory==null){
                             //添加数据
                             RdInventoryWarning inventoryWarning = new RdInventoryWarning();
@@ -564,9 +586,9 @@ public class SelfMentionController extends BaseController {
                             inventoryWarning.setPrecautiousLine(0);
                             rdInventoryWarningService.save(inventoryWarning);
 
-                            goodsVoList.add(getWareGoodsVo(inventoryWarning, goods, goodsSpec));
+                            goodsVoList.add(getWareGoodsVo(inventoryWarning, goods, goodsSpec,companyInvenInventory));
                         }else {
-                            goodsVoList.add(getWareGoodsVo(wareInventory, goods, goodsSpec));
+                            goodsVoList.add(getWareGoodsVo(wareInventory, goods, goodsSpec,companyInvenInventory));
                         }
                     }
                 }
@@ -588,7 +610,7 @@ public class SelfMentionController extends BaseController {
 
     }
 
-    public MentionWareGoodsVo getWareGoodsVo(RdInventoryWarning wareInventory,ShopGoods goods,ShopGoodsSpec goodsSpec) {
+    public MentionWareGoodsVo getWareGoodsVo(RdInventoryWarning wareInventory,ShopGoods goods,ShopGoodsSpec goodsSpec,Integer companyInvenInventory) {
         GoodsUtils.getSepcMapAndColImgToGoodsSpec(goods, goodsSpec);
         MentionWareGoodsVo wareGoodsVo = new MentionWareGoodsVo();
         wareGoodsVo.setWareCode(Optional.ofNullable(wareInventory.getWareCode()).orElse(""));
@@ -615,6 +637,7 @@ public class SelfMentionController extends BaseController {
         wareGoodsVo.setPpv(Optional.ofNullable(goods.getPpv()).orElse(BigDecimal.ZERO));
         wareGoodsVo.setCostPrice(Optional.ofNullable(goods.getCostPrice()).orElse(BigDecimal.ZERO));
         wareGoodsVo.setInventory(Optional.ofNullable(wareInventory.getInventory()).orElse(0));
+        wareGoodsVo.setInventoryGc(Optional.ofNullable(companyInvenInventory).orElse(0));
         return wareGoodsVo;
     }
 
@@ -815,7 +838,7 @@ public class SelfMentionController extends BaseController {
         rdWareOrder.setWareDetial(Optional.ofNullable(warehouseIn.getWareDetial()).orElse(""));
 
 
-        RdWarehouse warehouseOut = rdWarehouseService.findByCode("20192514");//仓库
+        RdWarehouse warehouseOut = rdWarehouseService.findByCode(WareHouseConsts.COMPANY_WARE_CODE);//仓库
         //调拨单
         RdWareAllocation wareAllocation = new RdWareAllocation();
         wareAllocation.setWareCodeIn(warehouseIn.getWareCode());
@@ -885,7 +908,7 @@ public class SelfMentionController extends BaseController {
         rdWareOrder.setWareDetial(Optional.ofNullable(warehouseIn.getWareDetial()).orElse(""));
 
 
-        RdWarehouse warehouseOut = rdWarehouseService.findByCode("20192514");//仓库
+        RdWarehouse warehouseOut = rdWarehouseService.findByCode(WareHouseConsts.COMPANY_WARE_CODE);//仓库
         //调拨单
         RdWareAllocation wareAllocation = new RdWareAllocation();
         wareAllocation.setWareCodeIn(warehouseIn.getWareCode());
@@ -957,7 +980,7 @@ public class SelfMentionController extends BaseController {
         rdWareOrder.setWareDetial(Optional.ofNullable(warehouseIn.getWareDetial()).orElse(""));
 
 
-        RdWarehouse warehouseOut = rdWarehouseService.findByCode("20192514");//仓库
+        RdWarehouse warehouseOut = rdWarehouseService.findByCode(WareHouseConsts.COMPANY_WARE_CODE);//仓库
         //调拨单
         RdWareAllocation wareAllocation = new RdWareAllocation();
         wareAllocation.setWareCodeIn(warehouseIn.getWareCode());
@@ -1024,7 +1047,7 @@ public class SelfMentionController extends BaseController {
             return ApiUtils.error("该会员自提仓库还有待审调拨单，请等待审核后再进行创建新的调拨单");
         }
 
-        RdWarehouse warehouseOut = rdWarehouseService.findByCode("20192514");//仓库
+        RdWarehouse warehouseOut = rdWarehouseService.findByCode(WareHouseConsts.COMPANY_WARE_CODE);//仓库
 
         JSONArray array = JSON.parseArray(mapS);
         if (array.size()==0){
@@ -1204,7 +1227,7 @@ public class SelfMentionController extends BaseController {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         // 更新订单状态与库存
         rdWareOrderService.updateCancelOrder(orderId, Constants.OPERATOR_MEMBER, member.getMmCode(),
-                PaymentTallyState.PAYMENTTALLY_TREM_MB, "用户自己取消订单","");
+                PaymentTallyState.PAYMENTTALLY_TREM_MB, "用户自己取消调拨订单","");
         return ApiUtils.success();
     }
 

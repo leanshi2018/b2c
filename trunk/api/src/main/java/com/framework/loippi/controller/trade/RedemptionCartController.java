@@ -1,33 +1,15 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.consts.CartConstant;
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.controller.BaseController;
-import com.framework.loippi.entity.cart.ShopCartExchange;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.product.ShopGoodsFreightRule;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.param.cart.CartAddParam;
-import com.framework.loippi.result.app.cart.CartExchangeCheckOutResult;
-import com.framework.loippi.result.app.cart.CartExchangeResult;
-import com.framework.loippi.result.app.cart.CartResult;
-import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.product.ShopCartExchangeService;
-import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
-import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.service.user.*;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.Xerror;
-import com.framework.loippi.vo.cart.ShopCartExchangeVo;
-import com.framework.loippi.vo.cart.ShopCartVo;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -37,12 +19,39 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.framework.loippi.consts.CartConstant;
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.controller.BaseController;
+import com.framework.loippi.entity.cart.ShopCartExchange;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.product.ShopGoodsFreightRule;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.mybatis.paginator.domain.Order;
+import com.framework.loippi.param.cart.CartAddParam;
+import com.framework.loippi.result.app.cart.CartExchangeCheckOutResult;
+import com.framework.loippi.result.app.cart.CartExchangeResult;
+import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopCartExchangeService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.Xerror;
+import com.framework.loippi.vo.cart.ShopCartExchangeVo;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 /**
  * 换购商品购物车
