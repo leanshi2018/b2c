@@ -18,6 +18,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class RedemptionOrderSubmitResult {
     /**
+     * 订单编号
+     */
+    private Long orderId;
+
+    /**
      * 支付订单编码
      */
     private String orderPaySn;
@@ -46,6 +51,7 @@ public class RedemptionOrderSubmitResult {
 
     public static RedemptionOrderSubmitResult build(RdMmIntegralRule rdMmIntegralRule, ShopOrderPay orderPay, RdMmAccountInfo rdMmAccountInfo) {
         RedemptionOrderSubmitResult result = new RedemptionOrderSubmitResult();
+        result.setOrderId(orderPay.getOrderId());
         result.setOrderPaySn(orderPay.getPaySn());
         result.setIntegration(rdMmAccountInfo.getRedemptionBlance().setScale(2));
         result.setOrderTotalPrice(orderPay.getPayAmount());
