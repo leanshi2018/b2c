@@ -1,9 +1,9 @@
 package com.framework.loippi.controller.trade;
 
 import com.framework.loippi.entity.cart.ShopCartExchange;
-import com.framework.loippi.entity.product.ShopGoodsBrand;
+import com.framework.loippi.entity.product.*;
 import com.framework.loippi.result.app.order.*;
-import com.framework.loippi.service.product.ShopGoodsBrandService;
+import com.framework.loippi.service.product.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -54,9 +54,6 @@ import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.order.ShopOrderPay;
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsEvaluate;
-import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.user.MemberPrivilege;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -88,9 +85,6 @@ import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderPayService;
 import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.product.ShopGoodsEvaluateService;
-import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.union.UnionpayService;
@@ -190,6 +184,8 @@ public class OrderAPIController extends BaseController {
     private MemberPrivilegeService memberPrivilegeService;
     @Resource
     private ShopGoodsBrandService shopGoodsBrandService;
+    @Resource
+    private ShopGoodsFreightRuleService shopGoodsFreightRuleService;
 
     /**
      * 提交订单
@@ -1324,6 +1320,8 @@ public class OrderAPIController extends BaseController {
             cart.setGoodsImages("");
         }
         cart.setGoodsNum(param.getCount());
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        ShopGoodsFreightRule shopGoodsFreightRule = shopGoodsFreightRuleService.find("memberGradeId",rdMmRelation.getRank());
         return ApiUtils.success(Paramap.create().put("goodsintegration", orderPay.getPayAmount())
             .put("redemptionBlance",
                 Optional.ofNullable(rdMmAccountInfo.getRedemptionBlance()).orElse(BigDecimal.valueOf(0)))
@@ -1332,7 +1330,7 @@ public class OrderAPIController extends BaseController {
             .put("orderId", orderPay.getOrderId()).put("addr", addr).put("hadReceiveAddr",hadReceiveAddr)
         .put("shippingFee",orderPay.getShippingFee().subtract(orderPay.getShippingPreferentialFee())).put("goodsNum",param.getCount())
         .put("goodsTotal",orderPay.getPayAmount().subtract(orderPay.getShippingFee()).add(orderPay.getShippingPreferentialFee()))
-        .put("goodsInfo",cart));
+        .put("goodsInfo",cart).put("packageAmount",shopGoodsFreightRule.getMinimumOrderAmount()));
     }
 
     /**
