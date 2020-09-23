@@ -255,7 +255,7 @@ public class RedemptionCartController extends BaseController {
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
             RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
             List<Long> list = shopCartExchangeService.saveCartList(cartList, member.getMmCode(),rdRanks);
-            return checkout(Joiner.on(",").join(list), null, null);
+            return checkout(Joiner.on(",").join(list), request, null);
         } catch (Exception e) {
             log.error("再次购买错误", e);
             return ApiUtils.error(e.getMessage());
