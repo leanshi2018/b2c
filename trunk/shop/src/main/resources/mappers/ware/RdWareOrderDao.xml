@@ -42,6 +42,7 @@
         <result column="use_point_num" property="usePointNum" />
         <result column="point_rmb_num" property="pointRmbNum" />
         <result column="refund_state" property="refundState" />
+        <result column="refund_rmb" property="refundRmb" />
         <result column="refund_point" property="refundPoint" />
     </resultMap>
 
@@ -50,14 +51,15 @@
 		 id ,order_sn ,store_id ,store_name ,mm_code ,consigee_name ,ware_phone ,order_type ,order_state ,creation_period ,
 		 create_time ,express_time ,logistic_type ,express_id ,shipping_code ,order_desc ,shop_order_sn,province_code ,
 		 city_code ,country_code ,ware_detial ,order_amount ,order_total_price ,compensate_point ,payment_id ,payment_code ,
-		 payment_name ,payment_state ,payment_time ,flag_state ,pay_id ,pay_sn ,trade_sn ,use_point_num ,point_rmb_num ,refund_state ,refund_point
+		 payment_name ,payment_state ,payment_time ,flag_state ,pay_id ,pay_sn ,trade_sn ,use_point_num ,point_rmb_num ,refund_state ,
+		 refund_rmb ,refund_point
 	</sql>
 
     <sql id="base_value_column">
 		 #{id},#{orderSn},#{storeId},#{storeName},#{mCode},#{consigneeName},#{warePhone},#{orderType},#{orderState},#{creationPeriod},
 		 #{createTime},#{expressTime},#{logisticType},#{expressId},#{shippingCode},#{orderDesc},#{shopOrderSn},#{provinceCode},
 		 #{cityCode},#{countryCode},#{wareDetial},#{orderAmount},#{orderTotalPrice},#{compensatePoint},#{paymentId},#{paymentCode},#{paymentName},
-		 #{paymentState},#{paymentTime},#{flagState},#{payId},#{paySn},#{tradeSn},#{usePointNum},#{pointRmbNum},#{refundState},#{refundPoint}
+		 #{paymentState},#{paymentTime},#{flagState},#{payId},#{paySn},#{tradeSn},#{usePointNum},#{pointRmbNum},#{refundState},#{refundRmb},#{refundPoint}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -176,6 +178,9 @@
         <if test="refundState != null and refundState != ''">
             AND refund_state = #{refundState}
         </if>
+        <if test="refundRmb != null and refundRmb != ''">
+            AND refund_rmb = #{refundRmb}
+        </if>
         <if test="refundPoint != null and refundPoint != ''">
             AND refund_point = #{refundPoint}
         </if>
@@ -289,6 +294,9 @@
         </if>
         <if test="refundState !=null and refundState != ''">
             refund_state = #{refundState},
+        </if>
+        <if test="refundRmb !=null and refundRmb != ''">
+            refund_rmb = #{refundRmb},
         </if>
         <if test="refundPoint !=null and refundPoint != ''">
             refund_point = #{refundPoint},

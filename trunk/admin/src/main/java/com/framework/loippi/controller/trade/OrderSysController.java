@@ -36,6 +36,7 @@ import com.alibaba.fastjson.JSON;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.consts.WareHouseConsts;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.dto.OrderSplitDetail;
 import com.framework.loippi.dto.ShippingDto;
@@ -313,7 +314,7 @@ public class OrderSysController extends GenericController {
                                                         Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
                                                         ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
                                                         Long goodsSpecId = goodsSpec.getId();//商品规格id
-                                                        inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", goodsSpecId, quantity);
+                                                        inventoryWarningService.updateInventoryByWareCodeAndSpecId(WareHouseConsts.COMPANY_WARE_CODE, goodsSpecId, quantity);
                                                     }*/
 
                                                     List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
@@ -410,7 +411,7 @@ public class OrderSysController extends GenericController {
                                             Integer quantity = Integer.valueOf(product.get("MaterialQuantity").toString());//发货商品数量
                                             ShopGoodsSpec goodsSpec = shopGoodsSpecService.findByspecGoodsSerial(sku);//商品规格信息
                                             Long goodsSpecId = goodsSpec.getId();//商品规格id
-                                            inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", goodsSpecId, quantity);
+                                            inventoryWarningService.updateInventoryByWareCodeAndSpecId(WareHouseConsts.COMPANY_WARE_CODE, goodsSpecId, quantity);
                                         }*/
 
                                         List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
@@ -469,7 +470,7 @@ public class OrderSysController extends GenericController {
                     }
                 }
 
-                RdWarehouse warehouse = rdWarehouseService.findByCode("20192514");
+                RdWarehouse warehouse = rdWarehouseService.findByCode(WareHouseConsts.COMPANY_WARE_CODE);
                 //新增发货单
                 RdWareAdjust rdWareAdjust = new RdWareAdjust();
                 rdWareAdjust.setWareCode(warehouse.getWareCode());
@@ -500,7 +501,7 @@ public class OrderSysController extends GenericController {
                 rdGoodsAdjustment.setStatus(1L);
                 rdGoodsAdjustmentService.insert(rdGoodsAdjustment);
 
-                inventoryWarningService.updateInventoryByWareCodeAndSpecId("20192514", orderGoods.getSpecId(), orderGoods.getGoodsNum());
+                inventoryWarningService.updateInventoryByWareCodeAndSpecId(WareHouseConsts.COMPANY_WARE_CODE, orderGoods.getSpecId(), orderGoods.getGoodsNum());
 
                 //新增订单商品物流信息表
                 ShopOrderLogistics shopOrderLogistics = new ShopOrderLogistics();

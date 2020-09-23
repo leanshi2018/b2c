@@ -112,6 +112,8 @@ public class RdWareOrder implements GenericEntity {
 	private BigDecimal pointRmbNum;
 	/** 退款状态:0是无退款,1是退款 */
 	private Integer refundState;
+	/** 退款金额（现金部分） */
+	private BigDecimal refundRmb;
 	/** 售后积分 */
 	private BigDecimal refundPoint;
 
