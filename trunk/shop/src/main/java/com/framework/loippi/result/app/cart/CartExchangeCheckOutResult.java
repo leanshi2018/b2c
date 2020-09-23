@@ -68,6 +68,10 @@ public class CartExchangeCheckOutResult {
      */
     private BigDecimal redemptionBlance;
     /**
+     * 包邮金额
+     */
+    public BigDecimal packageAmount;
+    /**
      * 换购商品购物车id
      */
     public List<Long> cartIds;
@@ -84,7 +88,7 @@ public class CartExchangeCheckOutResult {
     public List<ShopCartExchange> cartExchangeList=new ArrayList<>();
 
     public static CartExchangeCheckOutResult build(Map<String, Object> moneyMap,
-                                                   List<ShopCartExchange> cartList, RdMmAddInfo address, RdMmAccountInfo accountInfo) {
+                                                   List<ShopCartExchange> cartList, RdMmAddInfo address, RdMmAccountInfo accountInfo,BigDecimal packageAmount) {
         CartExchangeCheckOutResult result = new CartExchangeCheckOutResult().setHadReceiveAddr(address == null ? 0 : 1);
         Optional<RdMmAddInfo> optAddress = Optional.ofNullable(address);
         // 个人收货信息信息
@@ -119,6 +123,7 @@ public class CartExchangeCheckOutResult {
                 //总金额
                 .setTotalAmount(Optional.ofNullable((BigDecimal) moneyMap.get("totalAmount")).orElse(new BigDecimal("0")));
         result.setRedemptionBlance(Optional.ofNullable(accountInfo.getRedemptionBlance()).orElse(BigDecimal.ZERO));
+        result.setPackageAmount(packageAmount);
         return result;
     }
 }
