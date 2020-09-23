@@ -670,8 +670,12 @@ public class ShopOrderJob {
                             }
                         }
                     }
+                    Boolean flag = false;
+                    if (a==1&&b==0){
+                        flag = true;
+                    }
 
-                    if (a==1&&b==0){//订单中只有白酒
+                    if (flag = true){//订单中只有白酒
                         for (ShopOrderGoods orderGoods : orderGoodsLists) {
                             ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(shopOrder.getId(),orderGoods.getSpecId());
                             if (haveInfo==null){
@@ -723,7 +727,7 @@ public class ShopOrderJob {
 
                                         List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
                                         List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
-                                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo);//需要修改订单商品信息
+                                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo,flag);//需要修改订单商品信息
                                         shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
                                     }
                                 }
@@ -751,80 +755,78 @@ public class ShopOrderJob {
      * @param orderGoodsList
      * @return
      */
-    public List<ShopOrderGoods> updateOrderGoods(List<ShopOrderGoods> shopOrderGoodsNullList,List<ShopOrderGoods> orderGoodsList,String trackingNo) {
+    public List<ShopOrderGoods> updateOrderGoods(List<ShopOrderGoods> shopOrderGoodsNullList,List<ShopOrderGoods> orderGoodsList,String trackingNo,Boolean flag) {
         for (ShopOrderGoods orderGoods : orderGoodsList) {
-            if (orderGoods.getGoodsId().longValue()!=spirit_goods_id.longValue()){//不是白酒的部分商品
-                ShopCommonExpress express = commonExpressService.find(44l);
+            ShopCommonExpress express = commonExpressService.find(44l);
 
-                ShopOrderGoods shopOrderGoods = new ShopOrderGoods();
-                shopOrderGoods.setShippingExpressCode(Optional.ofNullable(express.getECode()).orElse(""));
-                shopOrderGoods.setShippingExpressId(Optional.ofNullable(express.getId()).orElse(-1L));
-                shopOrderGoods.setShippingExpressName(Optional.ofNullable(express.getEName()).orElse(""));
-                shopOrderGoods.setShippingCode(Optional.ofNullable(trackingNo).orElse("-1"));
-                shopOrderGoods.setShippingGoodsNum(orderGoods.getGoodsNum());
-                shopOrderGoods.setId(orderGoods.getId());
-                shopOrderGoodsNullList.add(shopOrderGoods);
+            ShopOrderGoods shopOrderGoods = new ShopOrderGoods();
+            shopOrderGoods.setShippingExpressCode(Optional.ofNullable(express.getECode()).orElse(""));
+            shopOrderGoods.setShippingExpressId(Optional.ofNullable(express.getId()).orElse(-1L));
+            shopOrderGoods.setShippingExpressName(Optional.ofNullable(express.getEName()).orElse(""));
+            shopOrderGoods.setShippingCode(Optional.ofNullable(trackingNo).orElse("-1"));
+            shopOrderGoods.setShippingGoodsNum(orderGoods.getGoodsNum());
+            shopOrderGoods.setId(orderGoods.getId());
+            shopOrderGoodsNullList.add(shopOrderGoods);
 
-                String adminName="";
-                Subject subject = SecurityUtils.getSubject();
-                if (subject != null) {
-                    Principal principal = (Principal) subject.getPrincipal();
-                    if (principal != null && principal.getId() != null) {
-                        adminName=principal.getUsername();
-                    }
+            String adminName="";
+            Subject subject = SecurityUtils.getSubject();
+            if (subject != null) {
+                Principal principal = (Principal) subject.getPrincipal();
+                if (principal != null && principal.getId() != null) {
+                    adminName=principal.getUsername();
                 }
-
-                RdWarehouse warehouse = rdWarehouseService.findByCode(WareHouseConsts.COMPANY_WARE_CODE);
-                //新增发货单
-                RdWareAdjust rdWareAdjust = new RdWareAdjust();
-                rdWareAdjust.setWareCode(warehouse.getWareCode());
-                rdWareAdjust.setWareName(warehouse.getWareName());
-                rdWareAdjust.setAdjustType("SOT");
-                rdWareAdjust.setStatus(3);
-                rdWareAdjust.setAutohrizeBy(adminName);
-                rdWareAdjust.setAutohrizeTime(new Date());
-                rdWareAdjust.setAutohrizeDesc("订单发货");
-                rdWareAdjustService.insert(rdWareAdjust);
-
-                ShopGoodsSpec shopGoodsSpec = shopGoodsSpecService.find(orderGoods.getSpecId());
-                ShopGoods shopGoods = shopGoodsService.find(orderGoods.getGoodsId());
-                //新增的发货商品详情
-                RdGoodsAdjustment rdGoodsAdjustment = new RdGoodsAdjustment();
-                rdGoodsAdjustment.setWid(rdWareAdjust.getWid());
-                rdGoodsAdjustment.setSpecificationId(shopGoodsSpec.getId());
-                rdGoodsAdjustment.setGoodId(shopGoodsSpec.getGoodsId());
-                rdGoodsAdjustment.setGoodsName(shopGoods.getGoodsName());
-                rdGoodsAdjustment.setSpecName(shopGoodsSpec.getSpecName());
-                rdGoodsAdjustment.setGoodsSpec(shopGoodsSpec.getSpecGoodsSpec());
-                rdGoodsAdjustment.setStockNow(shopGoodsSpec.getSpecGoodsStorage().longValue());
-                rdGoodsAdjustment.setStockInto(Long.valueOf(orderGoods.getGoodsNum()));
-                rdGoodsAdjustment.setCreateTime(shopGoods.getCreateTime());
-                rdGoodsAdjustment.setWareCode(warehouse.getWareCode());
-                rdGoodsAdjustment.setSign(1);
-                rdGoodsAdjustment.setAutohrizeTime(new Date());
-                rdGoodsAdjustment.setStatus(1L);
-                rdGoodsAdjustmentService.insert(rdGoodsAdjustment);
-
-                inventoryWarningService.updateInventoryByWareCodeAndSpecId(WareHouseConsts.COMPANY_WARE_CODE, orderGoods.getSpecId(), orderGoods.getGoodsNum());
-
-                //新增订单商品物流信息表
-                ShopOrderLogistics shopOrderLogistics = new ShopOrderLogistics();
-                shopOrderLogistics.setGoodsId(shopGoodsSpec.getGoodsId());
-                shopOrderLogistics.setGoodsImage(shopGoods.getGoodsImage());
-                shopOrderLogistics.setGoodsName(shopGoods.getGoodsName());
-                shopOrderLogistics.setGoodsType(shopGoods.getGoodsType());
-                shopOrderLogistics.setOrderId(orderGoods.getOrderId());
-                shopOrderLogistics.setSpecId(shopGoodsSpec.getId());
-                shopOrderLogistics.setSpecInfo(orderGoods.getSpecInfo());
-                shopOrderLogistics.setGoodsNum(orderGoods.getGoodsNum());
-                shopOrderLogistics.setPpv(shopGoodsSpec.getPpv());
-                shopOrderLogistics.setPrice(shopGoodsSpec.getSpecRetailPrice());
-                shopOrderLogistics.setShippingExpressCode(Optional.ofNullable(express.getECode()).orElse(""));
-                shopOrderLogistics.setShippingExpressId(Optional.ofNullable(express.getId()).orElse(-1L));
-                shopOrderLogistics.setShippingCode(Optional.ofNullable(trackingNo).orElse("-1"));
-                shopOrderLogistics.setId(twiterIdService.getTwiterId());
-                shopOrderLogisticsService.insert(shopOrderLogistics);
             }
+
+            RdWarehouse warehouse = rdWarehouseService.findByCode(WareHouseConsts.COMPANY_WARE_CODE);
+            //新增发货单
+            RdWareAdjust rdWareAdjust = new RdWareAdjust();
+            rdWareAdjust.setWareCode(warehouse.getWareCode());
+            rdWareAdjust.setWareName(warehouse.getWareName());
+            rdWareAdjust.setAdjustType("SOT");
+            rdWareAdjust.setStatus(3);
+            rdWareAdjust.setAutohrizeBy(adminName);
+            rdWareAdjust.setAutohrizeTime(new Date());
+            rdWareAdjust.setAutohrizeDesc("订单发货");
+            rdWareAdjustService.insert(rdWareAdjust);
+
+            ShopGoodsSpec shopGoodsSpec = shopGoodsSpecService.find(orderGoods.getSpecId());
+            ShopGoods shopGoods = shopGoodsService.find(orderGoods.getGoodsId());
+            //新增的发货商品详情
+            RdGoodsAdjustment rdGoodsAdjustment = new RdGoodsAdjustment();
+            rdGoodsAdjustment.setWid(rdWareAdjust.getWid());
+            rdGoodsAdjustment.setSpecificationId(shopGoodsSpec.getId());
+            rdGoodsAdjustment.setGoodId(shopGoodsSpec.getGoodsId());
+            rdGoodsAdjustment.setGoodsName(shopGoods.getGoodsName());
+            rdGoodsAdjustment.setSpecName(shopGoodsSpec.getSpecName());
+            rdGoodsAdjustment.setGoodsSpec(shopGoodsSpec.getSpecGoodsSpec());
+            rdGoodsAdjustment.setStockNow(shopGoodsSpec.getSpecGoodsStorage().longValue());
+            rdGoodsAdjustment.setStockInto(Long.valueOf(orderGoods.getGoodsNum()));
+            rdGoodsAdjustment.setCreateTime(shopGoods.getCreateTime());
+            rdGoodsAdjustment.setWareCode(warehouse.getWareCode());
+            rdGoodsAdjustment.setSign(1);
+            rdGoodsAdjustment.setAutohrizeTime(new Date());
+            rdGoodsAdjustment.setStatus(1L);
+            rdGoodsAdjustmentService.insert(rdGoodsAdjustment);
+
+            inventoryWarningService.updateInventoryByWareCodeAndSpecId(WareHouseConsts.COMPANY_WARE_CODE, orderGoods.getSpecId(), orderGoods.getGoodsNum());
+
+            //新增订单商品物流信息表
+            ShopOrderLogistics shopOrderLogistics = new ShopOrderLogistics();
+            shopOrderLogistics.setGoodsId(shopGoodsSpec.getGoodsId());
+            shopOrderLogistics.setGoodsImage(shopGoods.getGoodsImage());
+            shopOrderLogistics.setGoodsName(shopGoods.getGoodsName());
+            shopOrderLogistics.setGoodsType(shopGoods.getGoodsType());
+            shopOrderLogistics.setOrderId(orderGoods.getOrderId());
+            shopOrderLogistics.setSpecId(shopGoodsSpec.getId());
+            shopOrderLogistics.setSpecInfo(orderGoods.getSpecInfo());
+            shopOrderLogistics.setGoodsNum(orderGoods.getGoodsNum());
+            shopOrderLogistics.setPpv(shopGoodsSpec.getPpv());
+            shopOrderLogistics.setPrice(shopGoodsSpec.getSpecRetailPrice());
+            shopOrderLogistics.setShippingExpressCode(Optional.ofNullable(express.getECode()).orElse(""));
+            shopOrderLogistics.setShippingExpressId(Optional.ofNullable(express.getId()).orElse(-1L));
+            shopOrderLogistics.setShippingCode(Optional.ofNullable(trackingNo).orElse("-1"));
+            shopOrderLogistics.setId(twiterIdService.getTwiterId());
+            shopOrderLogisticsService.insert(shopOrderLogistics);
 
         }
         return shopOrderGoodsNullList;
