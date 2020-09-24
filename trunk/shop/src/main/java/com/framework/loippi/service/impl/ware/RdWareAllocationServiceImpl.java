@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.ware.RdWareAllocationService;
 import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.vo.store.MentionSubmitGoodsVo;
 
 @Service
 public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAllocation, Long> implements RdWareAllocationService {
@@ -565,7 +567,7 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 		}
 
 		BigDecimal orderAmount = BigDecimal.ZERO;
-
+		List<MentionSubmitGoodsVo> goodsVoList = new ArrayList<MentionSubmitGoodsVo>();
 		//发货商品
 		for (Object o : array) {
 
@@ -587,6 +589,29 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			ShopGoodsSpec goodsSpec = shopGoodsSpecDao.find(specId);
 			ShopGoods shopGoods = shopGoodsDao.find(goodsSpec.getGoodsId());
 
+			MentionSubmitGoodsVo goodsVo = new MentionSubmitGoodsVo();
+			goodsVo.setGoodsName(shopGoods.getGoodsName());
+			goodsVo.setGoodsImage(shopGoods.getGoodsImage());
+			goodsVo.setSpecId(goodsSpec.getId());
+			if (shopGoods.getGoodsType()==3){
+				goodsVo.setSpecGoodsSpec(goodsSpec.getSpecGoodsSerial());
+			}else{
+				String specInfo = "";
+				Map<String, String> map = goodsSpec.getSepcMap();
+				//遍历规格map,取出键值对,拼接specInfo
+				if (map != null) {
+					Set<String> set = map.keySet();
+					for (String str : set) {
+						specInfo += str + ":" + map.get(str) + "、";
+					}
+					specInfo = specInfo.substring(0, specInfo.length() - 1);
+				}
+				goodsVo.setSpecGoodsSpec(specInfo);
+			}
+			goodsVo.setPpv(shopGoods.getPpv());
+			goodsVo.setCostPrice(shopGoods.getCostPrice());
+			goodsVo.setComeInventory(num);
+
 			if (specIdList.contains(specId)){
 				//是欠货商品
 				RdInventoryWarning rdInventoryWarning = (RdInventoryWarning)warningMap.get(specId);
@@ -602,11 +627,14 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 					BigDecimal scale = shopGoods.getCostPrice().multiply(new BigDecimal(cNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
 					orderAmount = orderAmount.subtract(scale);
 				}
+				goodsVo.setOweInventory(oweNum);
 
 			}else {
 				BigDecimal scale = shopGoods.getCostPrice().multiply(new BigDecimal(num)).setScale(2, BigDecimal.ROUND_HALF_UP);
 				orderAmount = orderAmount.add(scale);
+				goodsVo.setOweInventory(0);
 			}
+			goodsVoList.add(goodsVo);
 
 			Map<String, Object> map1 = new HashMap<>();
 			map1.put("wareCode",wareAllocation.getWareCodeOut());
@@ -729,7 +757,7 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 		rdWareOrder.setOrderTotalPrice(orderAmount);
 		rdWareOrderDao.insert(rdWareOrder);
 		result.setWareOrder(rdWareOrder);
-
+		result.setGoodsListVo(goodsVoList);
 		return result;
 	}
 

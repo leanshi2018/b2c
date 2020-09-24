@@ -5,8 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.framework.loippi.entity.ware.RdWareOrder;
+import com.framework.loippi.vo.store.MentionSubmitGoodsVo;
 
 /**
  * @author :ldq
@@ -19,9 +21,14 @@ import com.framework.loippi.entity.ware.RdWareOrder;
 public class SelfOrderSubmitResult {
 
 	/**
-	 * 支付订单编码
+	 * 订单信息
 	 */
 	private RdWareOrder wareOrder;
+
+	/**
+	 * 订单信息
+	 */
+	private List<MentionSubmitGoodsVo> goodsListVo;
 
 	/**
 	 * 用户购物积分
