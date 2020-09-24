@@ -2655,73 +2655,127 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 //        if (member != null) {
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", memberId);
         RdMmBasicInfo rdMmBasicInfo=rdMmBasicInfoService.find("mmCode", memberId);
-        // 订单使用积分支付
-        if (order.getUsePointNum() != null && order.getUsePointNum() != 0) {
-            RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
-
-            BigDecimal available = BigDecimal.valueOf(0);
-            BigDecimal availableBefore = BigDecimal.valueOf(0);
-            //用户积分 = 原有积分 + 退还积分
-            if (order.getOrderType() == 5) {//换购
+        if(order.getOrderType() == 5){
+            if(order.getOrderAmount() != null && order.getOrderAmount().compareTo(BigDecimal.ZERO)==1){
+                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                BigDecimal available = BigDecimal.valueOf(0);
+                BigDecimal availableBefore = BigDecimal.valueOf(0);
                 rdMmAccountLog.setTransTypeCode("OT");
                 rdMmAccountLog.setAccType("SRB");
                 rdMmAccountLog.setTrSourceType("ORB");
                 availableBefore = rdMmAccountInfo.getRedemptionBlance();
-                available = rdMmAccountInfo.getRedemptionBlance().add(BigDecimal.valueOf(order.getUsePointNum()));
+                available = rdMmAccountInfo.getRedemptionBlance().add(order.getOrderAmount());
                 rdMmAccountInfo.setRedemptionBlance(available);
-            } else {
-                rdMmAccountLog.setTransTypeCode("OT");
-                rdMmAccountLog.setAccType("SWB");
-                rdMmAccountLog.setTrSourceType("OWB");
-                availableBefore = rdMmAccountInfo.getWalletBlance();
-                available = rdMmAccountInfo.getWalletBlance().add(BigDecimal.valueOf(order.getUsePointNum()));
-                rdMmAccountInfo.setWalletBlance(available);
+                //用户更新积分
+                rdMmAccountLog.setTrOrderOid(order.getId());
+                rdMmAccountLog.setMmCode(rdMmBasicInfo.getMmCode());
+                rdMmAccountLog.setMmNickName(rdMmBasicInfo.getMmNickName());
+                rdMmAccountLog.setTrMmCode(rdMmBasicInfo.getMmCode());
+                rdMmAccountLog.setBlanceBefore(availableBefore);
+                rdMmAccountLog.setAmount(order.getOrderAmount());
+                rdMmAccountLog.setBlanceAfter(available);
+                //无需审核直接成功
+                rdMmAccountLog.setStatus(3);
+                rdMmAccountLog.setCreationBy(rdMmBasicInfo.getMmNickName());
+                rdMmAccountLog.setCreationTime(new Date());
+                rdMmAccountLog.setAutohrizeBy(opName);
+                rdMmAccountLog.setAutohrizeTime(new Date());
+                rdMmAccountLog.setTransDate(new Date());
+                rdMmAccountLogService.save(rdMmAccountLog);
+                rdMmAccountInfoService.update(rdMmAccountInfo);
+                ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
+                shopCommonMessage1.setSendUid(rdMmBasicInfo.getMmCode());
+                shopCommonMessage1.setType(1);
+                shopCommonMessage1.setOnLine(1);
+                shopCommonMessage1.setCreateTime(new Date());
+                shopCommonMessage1.setBizType(2);
+                shopCommonMessage1.setIsTop(1);
+                shopCommonMessage1.setCreateTime(new Date());
+                shopCommonMessage1.setTitle("积分到账");
+                if (order.getOrderType() == 5) {//换购
+                    shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点换购积分,请进入换购积分账户查看");
+                }else {
+                    shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点购物积分,请进入购物积分账户查看");
+                }
+                Long msgId = twiterIdService.getTwiterId();
+                shopCommonMessage1.setId(msgId);
+                shopCommonMessageDao.insert(shopCommonMessage1);
+                ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                shopMemberMessage1.setBizType(2);
+                shopMemberMessage1.setCreateTime(new Date());
+                shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                shopMemberMessage1.setIsRead(0);
+                shopMemberMessage1.setMsgId(msgId);
+                shopMemberMessage1.setUid(Long.parseLong(rdMmBasicInfo.getMmCode()));
+                shopMemberMessageDao.insert(shopMemberMessage1);
             }
-            //用户更新积分
-            rdMmAccountLog.setTrOrderOid(order.getId());
-            rdMmAccountLog.setMmCode(rdMmBasicInfo.getMmCode());
-            rdMmAccountLog.setMmNickName(rdMmBasicInfo.getMmNickName());
-            rdMmAccountLog.setTrMmCode(rdMmBasicInfo.getMmCode());
-            rdMmAccountLog.setBlanceBefore(availableBefore);
-            rdMmAccountLog.setAmount(BigDecimal.valueOf(order.getUsePointNum()));
-            rdMmAccountLog.setBlanceAfter(available);
-            //无需审核直接成功
-            rdMmAccountLog.setStatus(3);
-            rdMmAccountLog.setCreationBy(rdMmBasicInfo.getMmNickName());
-            rdMmAccountLog.setCreationTime(new Date());
-            rdMmAccountLog.setAutohrizeBy(opName);
-            rdMmAccountLog.setAutohrizeTime(new Date());
-            rdMmAccountLog.setTransDate(new Date());
-            rdMmAccountLogService.save(rdMmAccountLog);
-            rdMmAccountInfoService.update(rdMmAccountInfo);
-            ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
-            shopCommonMessage1.setSendUid(rdMmBasicInfo.getMmCode());
-            shopCommonMessage1.setType(1);
-            shopCommonMessage1.setOnLine(1);
-            shopCommonMessage1.setCreateTime(new Date());
-            shopCommonMessage1.setBizType(2);
-            shopCommonMessage1.setIsTop(1);
-            shopCommonMessage1.setCreateTime(new Date());
-            shopCommonMessage1.setTitle("积分到账");
-            if (order.getOrderType() == 5) {//换购
-                shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点换购积分,请进入换购积分账户查看");
-            }else {
-                shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点购物积分,请进入购物积分账户查看");
+        }else {
+            // 订单使用积分支付
+            if (order.getUsePointNum() != null && order.getUsePointNum() != 0) {
+                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+
+                BigDecimal available = BigDecimal.valueOf(0);
+                BigDecimal availableBefore = BigDecimal.valueOf(0);
+                //用户积分 = 原有积分 + 退还积分
+                if (order.getOrderType() == 5) {//换购
+                    rdMmAccountLog.setTransTypeCode("OT");
+                    rdMmAccountLog.setAccType("SRB");
+                    rdMmAccountLog.setTrSourceType("ORB");
+                    availableBefore = rdMmAccountInfo.getRedemptionBlance();
+                    available = rdMmAccountInfo.getRedemptionBlance().add(BigDecimal.valueOf(order.getUsePointNum()));
+                    rdMmAccountInfo.setRedemptionBlance(available);
+                } else {
+                    rdMmAccountLog.setTransTypeCode("OT");
+                    rdMmAccountLog.setAccType("SWB");
+                    rdMmAccountLog.setTrSourceType("OWB");
+                    availableBefore = rdMmAccountInfo.getWalletBlance();
+                    available = rdMmAccountInfo.getWalletBlance().add(BigDecimal.valueOf(order.getUsePointNum()));
+                    rdMmAccountInfo.setWalletBlance(available);
+                }
+                //用户更新积分
+                rdMmAccountLog.setTrOrderOid(order.getId());
+                rdMmAccountLog.setMmCode(rdMmBasicInfo.getMmCode());
+                rdMmAccountLog.setMmNickName(rdMmBasicInfo.getMmNickName());
+                rdMmAccountLog.setTrMmCode(rdMmBasicInfo.getMmCode());
+                rdMmAccountLog.setBlanceBefore(availableBefore);
+                rdMmAccountLog.setAmount(BigDecimal.valueOf(order.getUsePointNum()));
+                rdMmAccountLog.setBlanceAfter(available);
+                //无需审核直接成功
+                rdMmAccountLog.setStatus(3);
+                rdMmAccountLog.setCreationBy(rdMmBasicInfo.getMmNickName());
+                rdMmAccountLog.setCreationTime(new Date());
+                rdMmAccountLog.setAutohrizeBy(opName);
+                rdMmAccountLog.setAutohrizeTime(new Date());
+                rdMmAccountLog.setTransDate(new Date());
+                rdMmAccountLogService.save(rdMmAccountLog);
+                rdMmAccountInfoService.update(rdMmAccountInfo);
+                ShopCommonMessage shopCommonMessage1=new ShopCommonMessage();
+                shopCommonMessage1.setSendUid(rdMmBasicInfo.getMmCode());
+                shopCommonMessage1.setType(1);
+                shopCommonMessage1.setOnLine(1);
+                shopCommonMessage1.setCreateTime(new Date());
+                shopCommonMessage1.setBizType(2);
+                shopCommonMessage1.setIsTop(1);
+                shopCommonMessage1.setCreateTime(new Date());
+                shopCommonMessage1.setTitle("积分到账");
+                if (order.getOrderType() == 5) {//换购
+                    shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点换购积分,请进入换购积分账户查看");
+                }else {
+                    shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点购物积分,请进入购物积分账户查看");
+                }
+                Long msgId = twiterIdService.getTwiterId();
+                shopCommonMessage1.setId(msgId);
+                shopCommonMessageDao.insert(shopCommonMessage1);
+                ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                shopMemberMessage1.setBizType(2);
+                shopMemberMessage1.setCreateTime(new Date());
+                shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                shopMemberMessage1.setIsRead(0);
+                shopMemberMessage1.setMsgId(msgId);
+                shopMemberMessage1.setUid(Long.parseLong(rdMmBasicInfo.getMmCode()));
+                shopMemberMessageDao.insert(shopMemberMessage1);
             }
-            Long msgId = twiterIdService.getTwiterId();
-            shopCommonMessage1.setId(msgId);
-            shopCommonMessageDao.insert(shopCommonMessage1);
-            ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
-            shopMemberMessage1.setBizType(2);
-            shopMemberMessage1.setCreateTime(new Date());
-            shopMemberMessage1.setId(twiterIdService.getTwiterId());
-            shopMemberMessage1.setIsRead(0);
-            shopMemberMessage1.setMsgId(msgId);
-            shopMemberMessage1.setUid(Long.parseLong(rdMmBasicInfo.getMmCode()));
-            shopMemberMessageDao.insert(shopMemberMessage1);
         }
-
-
         if (order.getPaymentState()==1){//已付款
             System.out.println("已付款退积分");
             //返还分账人积分
