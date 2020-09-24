@@ -184,6 +184,7 @@ public class RedemptionCartController extends BaseController {
             return ApiUtils.error("换购积分账户尚未激活");
         }
         RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        ShopGoodsFreightRule shopGoodsFreightRule = shopGoodsFreightRuleService.find("memberGradeId",rdMmRelation.getRank());
         // 获取收货地址
         RdMmAddInfo addr = null;
         if (addressId != null) {
@@ -214,7 +215,7 @@ public class RedemptionCartController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         CartExchangeCheckOutResult result = CartExchangeCheckOutResult
-                .build(map, cartList, addr,accountInfo);
+                .build(map, cartList, addr,accountInfo,shopGoodsFreightRule.getMinimumOrderAmount());
         return ApiUtils.success(result);
     }
 
