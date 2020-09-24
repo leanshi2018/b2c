@@ -39,5 +39,7 @@ public interface ShopGoodsSpecService extends GenericService<ShopGoodsSpec, Long
 
 	void updateSpecSaleNum(ShopGoodsSpec goodsSpec);
 
+	List<ShopGoodsSpec> findListBySpecGoodsSerial(String specGoodsSerial);
+
 	//Map<String, Object> getGoodsSpecBySpecId(Long goodsId, Long goodsSpecId);
 }

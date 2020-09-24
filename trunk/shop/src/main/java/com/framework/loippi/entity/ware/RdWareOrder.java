@@ -45,33 +45,21 @@ public class RdWareOrder implements GenericEntity {
 	private String orderDesc;//订单信息
 	private String shopOrderSn;//关联商品订单编号（补发货）
 
-	//app查询新添
-	private List<OrderGoodsVo> orderGoodsVoList;
-	/** 省 */
-	private String provinceCode;
+	private String provinceCode;/** 省 */
 
-	/** 市 */
-	private String cityCode;
+	private String cityCode;/** 市 */
 
-	/** 区 */
-	private String countryCode;
+	private String countryCode;/** 区 */
 
-	/** 详细地址 */
-	private String wareDetial;
+	private String wareDetial;/** 详细地址 */
 
-	/** 订单应付金额(现金支付) */
-	private BigDecimal orderAmount;
+	private BigDecimal orderAmount;/** 订单应付金额(现金支付) */
 
-	/** 订单总价格 */
-	private BigDecimal orderTotalPrice;
+	private BigDecimal orderTotalPrice;/** 订单总价格 */
 
-	/** 补偿积分 */
-	private BigDecimal compensatePoint;
+	private BigDecimal compensatePoint;/** 补偿积分 */
 
-	/**
-	 * 支付方式id
-	 * */
-	private Long paymentId;
+	private Long paymentId;/** 支付方式id*/
 	/**
 	 * 支付方式名称代码
 	 * */
@@ -122,6 +110,9 @@ public class RdWareOrder implements GenericEntity {
 	 * 上一订单状态
 	 */
 	private Integer prevOrderState;
+
+	//app查询新添
+	private List<OrderGoodsVo> orderGoodsVoList;
 
 
 

@@ -365,4 +365,11 @@
         <include refid="base_column"/>
         from shop_goods_spec where spec_goods_serial=#{specGoodsSerial}
     </select>
+
+    <select id="findListBySpecGoodsSerial" resultMap="ShopGoodsSpecResultMap" parameterType="string">
+        select
+        <include refid="base_column"/>
+        from shop_goods_spec where spec_goods_serial=#{specGoodsSerial}
+    </select>
+
 </mapper> 

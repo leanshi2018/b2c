@@ -263,7 +263,6 @@ public class OrderSysController extends GenericController {
                                         }
                                     }
                                 }
-                                System.out.println("a="+a+"sssssb="+b);
                                 if (a==1&&b==0){//订单中只有白酒
                                     System.out.println("只有白酒");
                                     for (ShopOrderGoods orderGoods : orderGoodsLists) {
@@ -579,6 +578,7 @@ public class OrderSysController extends GenericController {
 
         List<ShopOrderGoods> orderGoodsList = shopOrderGoodsService.listByOrderId(id);//订单所有商品
         List<Map<String,Object>> productLists = new ArrayList<Map<String,Object>>();//商品list
+        List<Long> gIdList = new ArrayList<Long>();
         for (ShopOrderGoods orderGoods : orderGoodsList) {
 
             int goodsNum = orderGoods.getGoodsNum();//商品数量
@@ -607,7 +607,7 @@ public class OrderSysController extends GenericController {
                     ShopGoods shopGoods = shopGoodsService.find(goodsSpec1.getGoodsId());//参与组合商品信息
                     productMap.put("EnName",shopGoods.getGoodsName());//物品名称
                     productMap.put("CnName",shopGoods.getGoodsName());//物品名称
-
+                    gIdList.add(shopGoods.getId());
                     for (ShopGoodsGoods goodsGoods : goodsGoodsList) {
                         int joinNum = goodsGoods.getJoinNum();//参与组合商品数量
                         total = joinNum*goodsNum;
@@ -625,6 +625,7 @@ public class OrderSysController extends GenericController {
                     ShopGoods shopGoods = shopGoodsService.find(goodsSpec.getGoodsId());//参与组合商品信息
                     productMap.put("EnName",shopGoods.getGoodsName());//物品名称
                     productMap.put("CnName",shopGoods.getGoodsName());//物品名称
+                    gIdList.add(shopGoods.getId());
                 }
 
                 if (productLists.size()==0){
@@ -673,7 +674,7 @@ public class OrderSysController extends GenericController {
                     ShopGoods shopGoods = shopGoodsService.find(goodsId1);//参与组合商品信息
                     productMap.put("EnName",shopGoods.getGoodsName());//物品名称
                     productMap.put("CnName",shopGoods.getGoodsName());//物品名称
-
+                    gIdList.add(shopGoods.getId());
                     Map<String,Object> map1 = new HashMap<>();
                     map1.put("goodId",goodsId);
                     map1.put("combineGoodsId",goodsId1);
@@ -751,16 +752,26 @@ public class OrderSysController extends GenericController {
 
             //剔除白酒
             String sgs = (String)product.get("SKU");
-            ShopGoodsSpec spec = shopGoodsSpecService.findByspecGoodsSerial(sgs);
+            List<ShopGoodsSpec> specList = shopGoodsSpecService.findListBySpecGoodsSerial(sgs);
+            Long gId = 0l;
+            Long sId = 0l;
+            if (specList.size()>0){
+                for (ShopGoodsSpec goodsSpec : specList) {
+                    if (gIdList.contains(goodsSpec.getGoodsId())){
+                        gId = goodsSpec.getGoodsId();
+                        sId = goodsSpec.getId();
+                    }
+                }
+            }
 
-            if (spec.getGoodsId().longValue()==spirit_goods_id.longValue()){//是白酒
-                ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(shopOrder.getId(),spec.getId());
+            if (gId.longValue()==spirit_goods_id.longValue()){//是白酒
+                ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(shopOrder.getId(),sId);
                 if (haveInfo==null){
                     ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
                     spiritOrderInfo.setId(twiterIdService.getTwiterId());
                     spiritOrderInfo.setOrderId(shopOrder.getId());
-                    spiritOrderInfo.setGoodsId(spec.getGoodsId());
-                    spiritOrderInfo.setSpecId(spec.getId());
+                    spiritOrderInfo.setGoodsId(gId);
+                    spiritOrderInfo.setSpecId(sId);
                     spiritOrderInfo.setGoodsNum((Integer) product.get("MaterialQuantity"));
                     spiritOrderInfo.setSubmitState(0);
                     spiritOrderInfo.setOrderShipState(1);
