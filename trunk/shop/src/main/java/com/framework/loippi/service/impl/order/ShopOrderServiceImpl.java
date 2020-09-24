@@ -2693,7 +2693,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 shopCommonMessage1.setCreateTime(new Date());
                 shopCommonMessage1.setTitle("积分到账");
                 if (order.getOrderType() == 5) {//换购
-                    shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点换购积分,请进入换购积分账户查看");
+                    shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getOrderAmount()+"点换购积分,请进入换购积分账户查看");
                 }else {
                     shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点购物积分,请进入购物积分账户查看");
                 }
@@ -2759,7 +2759,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 shopCommonMessage1.setCreateTime(new Date());
                 shopCommonMessage1.setTitle("积分到账");
                 if (order.getOrderType() == 5) {//换购
-                    shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点换购积分,请进入换购积分账户查看");
+                    shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getOrderAmount()+"点换购积分,请进入换购积分账户查看");
                 }else {
                     shopCommonMessage1.setContent("您取消了订单"+order.getOrderSn()+",返还"+order.getUsePointNum()+"点购物积分,请进入购物积分账户查看");
                 }
