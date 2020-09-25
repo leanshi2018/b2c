@@ -1076,7 +1076,7 @@ public class SelfMentionController extends BaseController {
     }
 
     /**
-     * 调整单详情
+     * 
      */
     @RequestMapping(value = "/api/mention/wareOrderInfo", method = RequestMethod.POST)
     @ResponseBody

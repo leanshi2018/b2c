@@ -45,6 +45,7 @@ import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.ware.RdWareAllocationService;
 import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.vo.store.MentionSubmitGoodsVo;
 
 @Service
@@ -588,6 +589,7 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 
 			ShopGoodsSpec goodsSpec = shopGoodsSpecDao.find(specId);
 			ShopGoods shopGoods = shopGoodsDao.find(goodsSpec.getGoodsId());
+			GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
 
 			MentionSubmitGoodsVo goodsVo = new MentionSubmitGoodsVo();
 			goodsVo.setGoodsName(shopGoods.getGoodsName());
