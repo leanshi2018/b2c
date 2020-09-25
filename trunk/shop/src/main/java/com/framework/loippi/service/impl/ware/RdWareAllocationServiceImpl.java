@@ -756,7 +756,9 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 		rdWareOrder.setOrderAmount(orderAmount);
 		rdWareOrder.setOrderTotalPrice(orderAmount);
 		rdWareOrderDao.insert(rdWareOrder);
-		result.setWareOrder(rdWareOrder);
+		RdWareOrder wareOrder = rdWareOrderDao.findBySn(rdWareOrder.getOrderSn());
+		System.out.println("w="+wareOrder);
+		result.setWareOrder(wareOrder);
 		result.setGoodsListVo(goodsVoList);
 		return result;
 	}
