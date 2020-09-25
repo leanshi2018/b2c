@@ -191,7 +191,7 @@
             id = #{id,jdbcType=BIGINT},
         </if>
         <if test="orderSn != null and orderSn != ''">
-            order_sn = #{orderSn,,jdbcType=VARCHAR},
+            order_sn = #{orderSn,jdbcType=VARCHAR},
         </if>
         <if test="storeId != null">
             store_id = #{storeId,jdbcType=VARCHAR},
