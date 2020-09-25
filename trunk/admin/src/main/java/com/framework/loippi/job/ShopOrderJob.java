@@ -662,10 +662,10 @@ public class ShopOrderJob {
                     int b = 0;//不是白酒1
                     if (orderGoodsLists.size()>0){
                         for (ShopOrderGoods orderGoods : orderGoodsLists) {
-                            if (orderGoods.getGoodsId().longValue()!=spirit_goods_id.longValue()){
+                            if (!orderGoods.getGoodsId().equals(spirit_goods_id)){
                                 b=1;
                             }
-                            if (orderGoods.getGoodsId().longValue()==spirit_goods_id.longValue()){
+                            if (orderGoods.getGoodsId().equals(spirit_goods_id)){
                                 a=1;
                             }
                         }
@@ -1075,7 +1075,7 @@ public class ShopOrderJob {
                 }
             }
 
-            if (gId.longValue()==spirit_goods_id.longValue()){//是白酒
+            if (gId.equals(spirit_goods_id)){//是白酒
                 ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(shopOrder.getId(),sId);
                 if (haveInfo==null){
                     ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();

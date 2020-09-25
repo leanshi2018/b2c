@@ -57,7 +57,7 @@ public class RdWareOrder implements GenericEntity {
 
 	private BigDecimal orderTotalPrice;/** 订单总价格 */
 
-	private BigDecimal compensatePoint;/** 补偿积分 */
+	private BigDecimal compensatePoint;/** 补偿积分（奖励积分） */
 
 	private Long paymentId;/** 支付方式id*/
 	/**
@@ -110,6 +110,8 @@ public class RdWareOrder implements GenericEntity {
 	 * 上一订单状态
 	 */
 	private Integer prevOrderState;
+
+	private Integer usePointFlag;//未用积分0  已用1
 
 	//app查询新添
 	private List<OrderGoodsVo> orderGoodsVoList;

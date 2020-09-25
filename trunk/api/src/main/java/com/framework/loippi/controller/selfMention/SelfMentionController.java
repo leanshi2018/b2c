@@ -1076,6 +1076,36 @@ public class SelfMentionController extends BaseController {
     }
 
     /**
+     * 调整单详情
+     */
+    @RequestMapping(value = "/api/mention/wareOrderInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public String wareOrderInfo(@RequestParam Long id,HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("当前用户尚未登录");
+        }
+
+        if(id==null){
+            return ApiUtils.error("订单id为空");
+        }
+
+        RdWareOrder wareOrder = rdWareOrderService.find(id);
+        if (wareOrder==null){
+            return ApiUtils.error("未找到该订单");
+        }
+        if (wareOrder.getUsePointNum()==null||wareOrder.getUsePointNum()==0){
+            wareOrder.setUsePointFlag(0);
+        }else {
+            wareOrder.setUsePointFlag(1);
+        }
+
+
+        return ApiUtils.success(wareOrder);
+    }
+
+
+    /**
      * 去付款
      *
      * @param paysn 支付订单编码
