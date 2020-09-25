@@ -11,7 +11,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.consts.WareOrderState;
 import com.framework.loippi.controller.AppConstants;
@@ -324,10 +323,6 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 
 		RdWareOrder wareOrder = rdWareOrderDao.find(orderId);
 		String orderSn = wareOrder.getOrderSn();
-
-		if (opType == Constants.OPERATOR_MEMBER && memberId.equals(wareOrder.getMCode())) {
-			throw new RuntimeException("非法操作");
-		}
 
 		BigDecimal refundPoint = BigDecimal.ZERO;
 		if (wareOrder.getFlagState()==1){//需要支付
