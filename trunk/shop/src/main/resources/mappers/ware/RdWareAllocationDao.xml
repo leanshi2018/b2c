@@ -152,13 +152,13 @@
         <set>
             <include refid="set_column" />
         </set>
-        WHERE	WID = #{id,jdbcType=BIGINT}
+        WHERE	WID = #{wId,jdbcType=BIGINT}
     </update>
 
     <!-- 删除单条记录 -->
     <delete id="delete">
 		DELETE	FROM rd_ware_allocation
-		WHERE	WID = #{id,jdbcType=BIGINT}
+		WHERE	WID = #{wId,jdbcType=BIGINT}
 	</delete>
 
     <!-- 删除多条记录-->

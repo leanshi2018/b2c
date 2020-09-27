@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.consts.WareOrderState;
@@ -57,6 +58,7 @@ import com.google.common.collect.Maps;
  * @description:dubbo com.framework.loippi.service.impl.ware
  */
 @Service
+@Transactional
 public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long> implements RdWareOrderService {
 	@Autowired
 	private RdWareOrderDao rdWareOrderDao;
@@ -414,9 +416,9 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 		wareAdjustIn.setAttachAdd(allocation.getAttachAdd());
 		wareAdjustIn.setWareAmount(new BigDecimal("0.00"));
 		wareAdjustIn.setStatus(3);
-		wareAdjustIn.setAutohrizeBy("取消订单"+orderSn);
+		wareAdjustIn.setAutohrizeBy("用户自己取消订单");
 		wareAdjustIn.setAutohrizeTime(new Date());
-		wareAdjustIn.setAutohrizeDesc("调拨单号"+allocation.getWId()+"取消订单返还入库");
+		wareAdjustIn.setAutohrizeDesc("调拨单号"+allocation.getWId()+"取消订单"+orderSn+"返还入库");
 		rdWareAdjustDao.insert(wareAdjustIn);
 
 		for (RdGoodsAdjustment goodsAdjustment : goodsAdjustments) {
