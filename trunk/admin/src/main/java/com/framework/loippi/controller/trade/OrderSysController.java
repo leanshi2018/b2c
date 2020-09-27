@@ -255,10 +255,10 @@ public class OrderSysController extends GenericController {
                                 int b = 0;//不是白酒1
                                 if (orderGoodsLists.size()>0){
                                     for (ShopOrderGoods orderGoods : orderGoodsLists) {
-                                        if (orderGoods.getGoodsId().longValue()!=spirit_goods_id.longValue()){
+                                        if (orderGoods.getGoodsId().equals(spirit_goods_id)){
                                             b=1;
                                         }
-                                        if (orderGoods.getGoodsId().longValue()==spirit_goods_id.longValue()){
+                                        if (orderGoods.getGoodsId().equals(spirit_goods_id)){
                                             a=1;
                                         }
                                     }
@@ -276,6 +276,7 @@ public class OrderSysController extends GenericController {
                                             spiritOrderInfo.setGoodsNum(orderGoods.getGoodsNum());
                                             spiritOrderInfo.setSubmitState(0);
                                             spiritOrderInfo.setOrderShipState(0);
+                                            spiritOrderInfo.setCreateTime(new Date());
                                             shopSpiritOrderInfoService.save(spiritOrderInfo);
                                         }
                                     }
@@ -364,6 +365,7 @@ public class OrderSysController extends GenericController {
                     }
 
                     if (a==1&&b==0){//订单中只有白酒
+                        System.out.println("只有白酒");
                         for (ShopOrderGoods orderGoods : orderGoodsLists) {
                             ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(orderGoods.getOrderId(),orderGoods.getSpecId());
                             if (haveInfo==null){
@@ -380,6 +382,7 @@ public class OrderSysController extends GenericController {
                             }
                         }
                     }else {
+                        System.out.println("不只有白酒");
                         Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
                         String resultS = (String)resMap.get("res");
                         if (!"".equals(resultS)){

@@ -50,7 +50,7 @@ import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.vo.store.MentionSubmitGoodsVo;
 
 @Service
-@Transactional
+@Transactional(rollbackFor=Exception.class)
 public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAllocation, Long> implements RdWareAllocationService {
 
 	@Autowired

@@ -670,12 +670,8 @@ public class ShopOrderJob {
                             }
                         }
                     }
-                    Boolean flag = false;
-                    if (a==1&&b==0){
-                        flag = true;
-                    }
 
-                    if (flag = true){//订单中只有白酒
+                    if (a==1&&b==0){//订单中只有白酒
                         for (ShopOrderGoods orderGoods : orderGoodsLists) {
                             ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(shopOrder.getId(),orderGoods.getSpecId());
                             if (haveInfo==null){
@@ -687,6 +683,7 @@ public class ShopOrderJob {
                                 spiritOrderInfo.setGoodsNum(orderGoods.getGoodsNum());
                                 spiritOrderInfo.setSubmitState(0);
                                 spiritOrderInfo.setOrderShipState(0);
+                                spiritOrderInfo.setCreateTime(new Date());
                                 shopSpiritOrderInfoService.save(spiritOrderInfo);
                             }
                         }
@@ -727,7 +724,7 @@ public class ShopOrderJob {
 
                                         List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
                                         List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
-                                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo,flag);//需要修改订单商品信息
+                                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo);//需要修改订单商品信息
                                         shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
                                     }
                                 }
@@ -755,7 +752,7 @@ public class ShopOrderJob {
      * @param orderGoodsList
      * @return
      */
-    public List<ShopOrderGoods> updateOrderGoods(List<ShopOrderGoods> shopOrderGoodsNullList,List<ShopOrderGoods> orderGoodsList,String trackingNo,Boolean flag) {
+    public List<ShopOrderGoods> updateOrderGoods(List<ShopOrderGoods> shopOrderGoodsNullList,List<ShopOrderGoods> orderGoodsList,String trackingNo) {
         for (ShopOrderGoods orderGoods : orderGoodsList) {
             ShopCommonExpress express = commonExpressService.find(44l);
 
@@ -1086,6 +1083,7 @@ public class ShopOrderJob {
                     spiritOrderInfo.setGoodsNum((Integer) product.get("MaterialQuantity"));
                     spiritOrderInfo.setSubmitState(0);
                     spiritOrderInfo.setOrderShipState(1);
+                    spiritOrderInfo.setCreateTime(new Date());
                     shopSpiritOrderInfoService.save(spiritOrderInfo);
                 }
             }else {
