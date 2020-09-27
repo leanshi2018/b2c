@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 import com.framework.loippi.mybatis.eitity.GenericEntity;
 import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.mybatis.ext.annotation.Table;
@@ -48,4 +50,10 @@ public class ShopSpiritOrderInfo implements GenericEntity {
 	/** 订单发货状态 0未发货 1已发货 */
 	@Column(name = "order_ship_state" )
 	private Integer orderShipState;
+
+	@Column(name = "create_time" )
+	private Date createTime;
+
+	@Column(name = "upload_time" )
+	private Date uploadTime;
 }

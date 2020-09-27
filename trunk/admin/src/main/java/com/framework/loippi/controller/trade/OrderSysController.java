@@ -375,6 +375,7 @@ public class OrderSysController extends GenericController {
                                 spiritOrderInfo.setGoodsNum(orderGoods.getGoodsNum());
                                 spiritOrderInfo.setSubmitState(0);
                                 spiritOrderInfo.setOrderShipState(0);
+                                spiritOrderInfo.setCreateTime(new Date());
                                 shopSpiritOrderInfoService.save(spiritOrderInfo);
                             }
                         }
@@ -775,6 +776,7 @@ public class OrderSysController extends GenericController {
                     spiritOrderInfo.setGoodsNum((Integer) product.get("MaterialQuantity"));
                     spiritOrderInfo.setSubmitState(0);
                     spiritOrderInfo.setOrderShipState(1);
+                    spiritOrderInfo.setCreateTime(new Date());
                     shopSpiritOrderInfoService.save(spiritOrderInfo);
                 }
             }else {
