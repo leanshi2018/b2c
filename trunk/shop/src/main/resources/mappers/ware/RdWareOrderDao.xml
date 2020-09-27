@@ -74,7 +74,7 @@
             AND store_id = #{storeId,jdbcType=VARCHAR}
         </if>
         <if test="storeName != null and storeName != ''">
-            AND store_name = #{storeName,,jdbcType=VARCHAR}
+            AND store_name = #{storeName,jdbcType=VARCHAR}
         </if>
         <if test="mCode != null and mCode != ''">
             and mm_code = #{mCode,jdbcType=VARCHAR}
@@ -197,7 +197,7 @@
             store_id = #{storeId,jdbcType=VARCHAR},
         </if>
         <if test="storeName != null and storeName != ''">
-            store_name = #{storeName,,jdbcType=VARCHAR},
+            store_name = #{storeName,jdbcType=VARCHAR},
         </if>
         <if test="mCode != null and mCode != ''">
             mm_code = #{mCode,jdbcType=VARCHAR},

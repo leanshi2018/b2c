@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -49,6 +50,7 @@ import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.vo.store.MentionSubmitGoodsVo;
 
 @Service
+@Transactional
 public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAllocation, Long> implements RdWareAllocationService {
 
 	@Autowired
@@ -671,7 +673,7 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			adjustment.setStockNow(stockNow);
 			adjustment.setStockInto(Long.valueOf(num));
 			if(stockNow-Long.valueOf(num)<0){
-				throw new Exception("蜗米仓库商品库存数量不足");
+				throw new Exception(shopGoods.getGoodsName()+"蜗米仓库商品库存数量不足");
 			}
 			adjustment.setCreateTime(shopGoods.getCreateTime());
 			if (shopGoods.getShelfLife()==null){
