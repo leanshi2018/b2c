@@ -1090,6 +1090,7 @@ public class SelfMentionController extends BaseController {
             return ApiUtils.error("订单id为空");
         }
 
+        SelfOrderSubmitResult result = new SelfOrderSubmitResult();
         RdWareOrder wareOrder = rdWareOrderService.find(id);
         if (wareOrder==null){
             return ApiUtils.error("未找到该订单");
@@ -1099,7 +1100,22 @@ public class SelfMentionController extends BaseController {
         }else {
             wareOrder.setUsePointFlag(1);
         }
+        result.setFlagState(wareOrder.getFlagState());
+        result.setWareOrder(wareOrder);
+        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        result.setIntegration(accountInfo.getWalletBlance().setScale(2));
 
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        if (rdMmIntegralRule==null || rdMmIntegralRule.getShoppingPointSr()==null){
+            result.setProportion(0d);
+        }else{
+            result.setProportion(rdMmIntegralRule.getShoppingPointSr().doubleValue()*0.01);
+        }
 
         return ApiUtils.success(wareOrder);
     }

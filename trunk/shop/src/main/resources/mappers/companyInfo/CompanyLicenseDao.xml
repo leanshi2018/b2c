@@ -39,7 +39,7 @@
             AND mm_code = #{mCode,jdbcType=VARCHAR}
         </if>
         <if test="companyName != null and companyName != ''">
-            AND company_name = #{companyName,,jdbcType=VARCHAR}
+            AND company_name = #{companyName,jdbcType=VARCHAR}
         </if>
         <if test="creditCode != null and creditCode != ''">
             AND credit_code = #{creditCode,jdbcType=VARCHAR}
@@ -90,7 +90,7 @@
              mm_code = #{mCode,jdbcType=VARCHAR},
         </if>
         <if test="companyName != null and companyName != ''">
-             company_name = #{companyName,,jdbcType=VARCHAR},
+             company_name = #{companyName,jdbcType=VARCHAR},
         </if>
         <if test="creditCode != null and creditCode != ''">
              credit_code = #{creditCode,jdbcType=VARCHAR},
