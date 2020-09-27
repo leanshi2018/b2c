@@ -766,6 +766,7 @@ public class OrderSysController extends GenericController {
             }
 
             if (gId.equals(spirit_goods_id)){//是白酒
+                System.out.println("是白酒"+gId);
                 ShopSpiritOrderInfo haveInfo = shopSpiritOrderInfoService.findByOrderIdAndSpecId(shopOrder.getId(),sId);
                 if (haveInfo==null){
                     ShopSpiritOrderInfo spiritOrderInfo = new ShopSpiritOrderInfo();
