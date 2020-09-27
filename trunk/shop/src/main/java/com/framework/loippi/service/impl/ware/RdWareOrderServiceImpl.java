@@ -416,7 +416,7 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 		wareAdjustIn.setStatus(3);
 		wareAdjustIn.setAutohrizeBy("取消订单"+orderSn);
 		wareAdjustIn.setAutohrizeTime(new Date());
-		wareAdjustIn.setAutohrizeDesc("调拨单号"+allocation.getWId()+"订单编号"+orderSn+"取消订单返还入库");
+		wareAdjustIn.setAutohrizeDesc("调拨单号"+allocation.getWId()+"取消订单返还入库");
 		rdWareAdjustDao.insert(wareAdjustIn);
 
 		for (RdGoodsAdjustment goodsAdjustment : goodsAdjustments) {

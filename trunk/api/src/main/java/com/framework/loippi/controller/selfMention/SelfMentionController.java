@@ -1117,7 +1117,7 @@ public class SelfMentionController extends BaseController {
             result.setProportion(rdMmIntegralRule.getShoppingPointSr().doubleValue()*0.01);
         }
 
-        return ApiUtils.success(wareOrder);
+        return ApiUtils.success(result);
     }
 
 
