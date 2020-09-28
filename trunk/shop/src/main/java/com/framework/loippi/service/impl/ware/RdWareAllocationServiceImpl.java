@@ -616,11 +616,12 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			goodsVo.setCostPrice(shopGoods.getCostPrice());
 			goodsVo.setComeInventory(num);
 
+			Integer oweNum = 0;
 			if (specIdList.contains(specId)){
 				//是欠货商品
 				RdInventoryWarning rdInventoryWarning = (RdInventoryWarning)warningMap.get(specId);
 				Integer oweInventory = rdInventoryWarning.getInventory();//欠货数量
-				Integer oweNum = Math.abs(oweInventory);
+				oweNum = Math.abs(oweInventory);
 				if (num>oweNum){//多进货
 					int purchaseNum = num - oweNum;//多进货数量
 					BigDecimal scale = shopGoods.getCostPrice().multiply(new BigDecimal(purchaseNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -672,6 +673,7 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			adjustment.setSpecGoodsSerial(goodsSpec.getSpecGoodsSerial());
 			adjustment.setStockNow(stockNow);
 			adjustment.setStockInto(Long.valueOf(num));
+			adjustment.setStockOwe(Long.valueOf(oweNum));
 			if(stockNow-Long.valueOf(num)<0){
 				throw new Exception(shopGoods.getGoodsName()+"蜗米仓库商品库存数量不足");
 			}

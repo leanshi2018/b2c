@@ -152,8 +152,6 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 				order.setOrderAmount(order.getOrderAmount().subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
 				System.out.println("o2="+order.getOrderAmount());
 				rdWareOrderDao.update(order);
-				RdWareOrder rdWareOrder = rdWareOrderDao.find(order.getId());
-				System.out.println("rdWare="+rdWareOrder);
 				ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
 				shopCommonMessage.setSendUid(shopMember.getMmCode());
 				shopCommonMessage.setType(1);

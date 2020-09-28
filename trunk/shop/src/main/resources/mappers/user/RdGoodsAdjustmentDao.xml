@@ -13,6 +13,7 @@
 		<result property="goodsSpec" column="goods_spec" />
 		<result property="stockNow" column="stock_now" />
 		<result property="stockInto" column="stock_into" />
+		<result property="stockOwe" column="stock_owe" />
 		<result property="createTime" column="create_time" />
 		<result property="qualityTime" column="quality_time" />
 		<result property="shelfLifeTime" column="shelf_life_time" />
@@ -28,11 +29,11 @@
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 id ,good_id ,goods_name ,spec_name ,goods_spec ,stock_now ,stock_into ,create_time ,quality_time ,shelf_life_time ,ware_code ,wId ,status ,sign,autohrize_time,specification_id,spec_goods_serial,precautious_line
+		 id ,good_id ,goods_name ,spec_name ,goods_spec ,stock_now ,stock_into ,stock_owe ,create_time ,quality_time ,shelf_life_time ,ware_code ,wId ,status ,sign,autohrize_time,specification_id,spec_goods_serial,precautious_line
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{id},#{goodId},#{goodsName},#{specName},#{goodsSpec},#{stockNow},#{stockInto},#{createTime},#{qualityTime},#{shelfLifeTime},#{wareCode},#{wid},#{status},#{sign},#{autohrizeTime},#{specificationId},#{specGoodsSerial},#{precautiousLine}
+		 #{id},#{goodId},#{goodsName},#{specName},#{goodsSpec},#{stockNow},#{stockInto},#{stockOwe},#{createTime},#{qualityTime},#{shelfLifeTime},#{wareCode},#{wid},#{status},#{sign},#{autohrizeTime},#{specificationId},#{specGoodsSerial},#{precautiousLine}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -57,6 +58,9 @@
 		</if>
 		<if test="stockInto != null and stockInto != ''">
 			AND stock_into = #{stockInto,jdbcType=BIGINT}
+		</if>
+		<if test="stockOwe != null and stockOwe != ''">
+			AND stock_owe = #{stockOwe,jdbcType=BIGINT}
 		</if>
 		<if test="createTime != null and createTime != ''">
 			AND create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -116,6 +120,9 @@
 		</if>
 		<if test="stockInto != null">
 			stock_into = #{stockInto,jdbcType=BIGINT},
+		</if>
+		<if test="stockOwe != null">
+			stock_owe = #{stockOwe,jdbcType=BIGINT},
 		</if>
 		<if test="createTime != null">
 			create_time = #{createTime,jdbcType=TIMESTAMP},

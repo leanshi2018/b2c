@@ -707,6 +707,9 @@ public class SelfMentionController extends BaseController {
                     orderGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goodsSpec.getSpecRetailPrice()).orElse(BigDecimal.ZERO));
                     orderGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goodsSpec.getSpecMemberPrice()).orElse(BigDecimal.ZERO));
                 }
+                orderGoodsVo.setCostPrice(Optional.ofNullable(shopGoods.getCostPrice()).orElse(BigDecimal.ZERO));
+                orderGoodsVo.setOweInventory(Optional.ofNullable(rdGoodsAdjustment.getStockOwe().intValue()).orElse(0));//欠货数量
+                orderGoodsVo.setComeInventory(Optional.ofNullable(rdGoodsAdjustment.getStockInto().intValue()).orElse(0));//补货数量
                 orderGoodsVos.add(orderGoodsVo);
             }
             if (orderGoodsVos.size()==0){
