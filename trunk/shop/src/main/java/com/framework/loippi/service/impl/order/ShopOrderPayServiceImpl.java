@@ -67,6 +67,7 @@ public class ShopOrderPayServiceImpl extends GenericServiceImpl<ShopOrderPay, Lo
             List<RdWareOrder> orderList = rdWareOrderService.findByPaySn(paySn);
             for (RdWareOrder order : orderList) {
                 orderSn=order.getOrderSn()+",";
+                System.out.println("o3="+order.getOrderAmount());
                 amount += order.getOrderAmount().doubleValue();
                 if (order.getPaymentState() == 0) {
                     payState = 0;

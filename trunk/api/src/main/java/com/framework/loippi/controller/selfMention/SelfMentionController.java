@@ -1191,6 +1191,7 @@ public class SelfMentionController extends BaseController {
                 return ApiUtils.error("购物积分账户状态未激活或者已被冻结");
             }
             ShopOrderPay pay = orderPayService.findBySn(paysn);
+            System.out.println("p1="+pay);
             //处理积分支付
             rdWareOrderService.ProcessingIntegrals(paysn, i, shopMember, pay, shoppingPointSr);
         }
@@ -1200,6 +1201,7 @@ public class SelfMentionController extends BaseController {
                 .println("###  订单支付编号：" + paysn + "  |  支付方式名称：" + paymentCode + " |  支付方式索引id：" + paymentId + "#########");
         System.out.println("##########################################");
         ShopOrderPay pay = orderPayService.findBySn(paysn);
+        System.out.println("p2="+pay);
 
         //货到付款判断
         if (paymentType == 2) {

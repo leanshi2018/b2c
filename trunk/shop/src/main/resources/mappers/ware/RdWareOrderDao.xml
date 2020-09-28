@@ -250,8 +250,8 @@
         <if test="wareDetial !=null and wareDetial != ''">
             ware_detial = #{wareDetial},
         </if>
-        <if test="orderAmount !=null and orderAmount != ''">
-            order_amount = #{orderAmount},
+        <if test="orderAmount !=null">
+            order_amount = #{orderAmount,jdbcType=DECIMAL},
         </if>
         <if test="orderTotalPrice !=null and orderTotalPrice != ''">
             order_total_price = #{orderTotalPrice},

@@ -148,9 +148,12 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 				order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(0) + pointNum);//设置订单所用积分数量
 				order.setPointRmbNum(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
 						.add(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
-				order.setOrderAmount(order.getOrderAmount()
-						.subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+				System.out.println("o1="+order.getOrderAmount());
+				order.setOrderAmount(order.getOrderAmount().subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+				System.out.println("o2="+order.getOrderAmount());
 				rdWareOrderDao.update(order);
+				RdWareOrder rdWareOrder = rdWareOrderDao.find(order.getId());
+				System.out.println("rdWare="+rdWareOrder);
 				ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
 				shopCommonMessage.setSendUid(shopMember.getMmCode());
 				shopCommonMessage.setType(1);
