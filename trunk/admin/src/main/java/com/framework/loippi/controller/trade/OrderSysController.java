@@ -277,6 +277,7 @@ public class OrderSysController extends GenericController {
                                             spiritOrderInfo.setSubmitState(0);
                                             spiritOrderInfo.setOrderShipState(0);
                                             spiritOrderInfo.setCreateTime(new Date());
+                                            spiritOrderInfo.setOrderType(0);
                                             shopSpiritOrderInfoService.save(spiritOrderInfo);
                                         }
                                     }
@@ -378,6 +379,7 @@ public class OrderSysController extends GenericController {
                                 spiritOrderInfo.setSubmitState(0);
                                 spiritOrderInfo.setOrderShipState(0);
                                 spiritOrderInfo.setCreateTime(new Date());
+                                spiritOrderInfo.setOrderType(0);
                                 shopSpiritOrderInfoService.save(spiritOrderInfo);
                             }
                         }
@@ -781,6 +783,7 @@ public class OrderSysController extends GenericController {
                     spiritOrderInfo.setSubmitState(0);
                     spiritOrderInfo.setOrderShipState(1);
                     spiritOrderInfo.setCreateTime(new Date());
+                    spiritOrderInfo.setOrderType(0);
                     shopSpiritOrderInfoService.save(spiritOrderInfo);
                 }
             }else {

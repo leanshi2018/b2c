@@ -15,15 +15,16 @@
         <result column="order_ship_state" property="orderShipState" />
         <result column="create_time" property="createTime" />
         <result column="upload_time" property="uploadTime" />
+        <result column="order_type" property="orderType" />
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,order_id ,goods_id ,spec_id ,goods_num ,submit_state ,order_ship_state ,create_time ,upload_time
+		 id ,order_id ,goods_id ,spec_id ,goods_num ,submit_state ,order_ship_state ,create_time ,upload_time ,order_type
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{orderId},#{goodsId},#{specId},#{goodsNum},#{submitState},#{orderShipState},#{createTime},#{uploadTime}
+		 #{id},#{orderId},#{goodsId},#{specId},#{goodsNum},#{submitState},#{orderShipState},#{createTime},#{uploadTime},#{orderType}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -55,6 +56,9 @@
         <if test="uploadTime != null">
             AND upload_time = #{uploadTime}
         </if>
+        <if test="orderType != null">
+            AND order_type = #{orderType}
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
@@ -84,6 +88,9 @@
         </if>
         <if test="uploadTime != null">
             upload_time = #{uploadTime},
+        </if>
+        <if test="orderType != null">
+            order_type = #{orderType},
         </if>
     </sql>
 

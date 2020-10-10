@@ -56,4 +56,7 @@ public class ShopSpiritOrderInfo implements GenericEntity {
 
 	@Column(name = "upload_time" )
 	private Date uploadTime;
+
+	@Column(name = "order_type" )
+	private Integer orderType;
 }
