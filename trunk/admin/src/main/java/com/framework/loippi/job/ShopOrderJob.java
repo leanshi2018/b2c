@@ -653,6 +653,7 @@ public class ShopOrderJob {
         }
 
         if (fStatus==1){
+            System.out.println("进来自动发货");
             List<ShopOrder> orderList = orderService.findStatu20();//所有代发货订单
             for (ShopOrder shopOrder : orderList) {
                 if (shopOrder.getLogisticType()==1){
@@ -689,6 +690,7 @@ public class ShopOrderJob {
                             }
                         }
                     }else {
+                        System.out.println("不只有白酒订单发货");
                         Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
                         String resultS = (String)resMap.get("res");
                         if (!"".equals(resultS)){
