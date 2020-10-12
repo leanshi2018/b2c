@@ -753,6 +753,9 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 
 		if (orderAmount.signum()==-1){//负数
 			rdWareOrder.setCompensatePoint(orderAmount.negate());//补偿积分   转为正数
+			rdWareOrder.setOrderAmount(new BigDecimal("0.00"));
+		}else {
+			rdWareOrder.setOrderAmount(orderAmount);
 		}
 
 		if (orderAmount.signum()==1){//正数
@@ -765,7 +768,6 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			result.setFlagState(0);
 		}
 
-		rdWareOrder.setOrderAmount(orderAmount);
 		rdWareOrder.setOrderTotalPrice(orderAmount);
 		rdWareOrderDao.insert(rdWareOrder);
 		RdWareOrder wareOrder = rdWareOrderDao.findBySn(rdWareOrder.getOrderSn());
