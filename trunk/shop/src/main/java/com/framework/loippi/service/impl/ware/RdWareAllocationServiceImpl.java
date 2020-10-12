@@ -752,7 +752,7 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 		SelfOrderSubmitResult result = new SelfOrderSubmitResult();
 
 		if (orderAmount.signum()==-1){//负数
-			rdWareOrder.setCompensatePoint(orderAmount);//补偿积分
+			rdWareOrder.setCompensatePoint(orderAmount.negate());//补偿积分   转为正数
 		}
 
 		if (orderAmount.signum()==1){//正数
