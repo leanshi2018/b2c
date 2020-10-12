@@ -1,16 +1,15 @@
 package com.framework.loippi.entity.product;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 商品规格表
@@ -135,6 +134,11 @@ public class ShopGoodsSpec implements GenericEntity {
      */
     @Column(name = "shelf_life")
     private Integer shelfLife;
+    /**
+     * 成本价
+     */
+    @Column(name = "cost_price")
+    private BigDecimal costPrice;
 
     /*********************添加*********************/
     /**

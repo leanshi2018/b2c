@@ -74,7 +74,7 @@
             AND store_id = #{storeId,jdbcType=VARCHAR}
         </if>
         <if test="storeName != null and storeName != ''">
-            AND store_name = #{storeName,,jdbcType=VARCHAR}
+            AND store_name = #{storeName,jdbcType=VARCHAR}
         </if>
         <if test="mCode != null and mCode != ''">
             and mm_code = #{mCode,jdbcType=VARCHAR}
@@ -191,13 +191,13 @@
             id = #{id,jdbcType=BIGINT},
         </if>
         <if test="orderSn != null and orderSn != ''">
-            order_sn = #{orderSn,,jdbcType=VARCHAR},
+            order_sn = #{orderSn,jdbcType=VARCHAR},
         </if>
         <if test="storeId != null">
             store_id = #{storeId,jdbcType=VARCHAR},
         </if>
         <if test="storeName != null and storeName != ''">
-            store_name = #{storeName,,jdbcType=VARCHAR},
+            store_name = #{storeName,jdbcType=VARCHAR},
         </if>
         <if test="mCode != null and mCode != ''">
             mm_code = #{mCode,jdbcType=VARCHAR},
@@ -250,8 +250,8 @@
         <if test="wareDetial !=null and wareDetial != ''">
             ware_detial = #{wareDetial},
         </if>
-        <if test="orderAmount !=null and orderAmount != ''">
-            order_amount = #{orderAmount},
+        <if test="orderAmount !=null">
+            order_amount = #{orderAmount,jdbcType=DECIMAL},
         </if>
         <if test="orderTotalPrice !=null and orderTotalPrice != ''">
             order_total_price = #{orderTotalPrice},

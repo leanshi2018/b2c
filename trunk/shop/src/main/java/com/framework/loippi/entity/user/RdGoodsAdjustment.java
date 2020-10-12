@@ -51,7 +51,11 @@ public class RdGoodsAdjustment implements GenericEntity {
 	/** 入库商品数量 */
 	@Column(name = "stock_into" )
 	private Long stockInto;
-	
+
+	/** 欠货数量（欠货订单生成  负数为欠货 ） */
+	@Column(name = "stock_owe" )
+	private Long stockOwe;
+
 	/** 生产时间 */
 	@Column(name = "create_time" )
 	private java.util.Date createTime;

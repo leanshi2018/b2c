@@ -34,7 +34,7 @@ public class RdWareAllocation implements GenericEntity {
     @Column(name = "STATUS" )
     private int status;//状态 -2：拒绝 -1：已取消 1：新单（保存状态） 2：待审 3：已授权
     @Column(name = "WARE_ORDER_SN" )
-    private String wareOrderSn;//授权人
+    private String wareOrderSn;//发货订单编号（为空的时候没有发货单）
     @Column(name = "AUTOHRIZE_BY" )
     private String autohrizeBy;//授权人
     @Column(name = "AUTOHRIZE_TIME" )

@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -45,9 +46,11 @@ import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.ware.RdWareAllocationService;
 import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.vo.store.MentionSubmitGoodsVo;
 
 @Service
+@Transactional(rollbackFor=Exception.class)
 public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAllocation, Long> implements RdWareAllocationService {
 
 	@Autowired
@@ -588,6 +591,7 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 
 			ShopGoodsSpec goodsSpec = shopGoodsSpecDao.find(specId);
 			ShopGoods shopGoods = shopGoodsDao.find(goodsSpec.getGoodsId());
+			GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
 
 			MentionSubmitGoodsVo goodsVo = new MentionSubmitGoodsVo();
 			goodsVo.setGoodsName(shopGoods.getGoodsName());
@@ -609,28 +613,35 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 				goodsVo.setSpecGoodsSpec(specInfo);
 			}
 			goodsVo.setPpv(shopGoods.getPpv());
-			goodsVo.setCostPrice(shopGoods.getCostPrice());
+			BigDecimal costPrice = new BigDecimal(100.00);
+			if (goodsSpec.getCostPrice()==null){
+				costPrice = new BigDecimal(100.00);
+			}else {
+				costPrice = goodsSpec.getCostPrice();
+			}
+			goodsVo.setCostPrice(costPrice);
 			goodsVo.setComeInventory(num);
 
+			Integer oweInventory = 0;
 			if (specIdList.contains(specId)){
 				//是欠货商品
 				RdInventoryWarning rdInventoryWarning = (RdInventoryWarning)warningMap.get(specId);
-				Integer oweInventory = rdInventoryWarning.getInventory();//欠货数量
+				oweInventory = rdInventoryWarning.getInventory();//欠货数量
 				Integer oweNum = Math.abs(oweInventory);
 				if (num>oweNum){//多进货
 					int purchaseNum = num - oweNum;//多进货数量
-					BigDecimal scale = shopGoods.getCostPrice().multiply(new BigDecimal(purchaseNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
+					BigDecimal scale = costPrice.multiply(new BigDecimal(purchaseNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
 					orderAmount = orderAmount.add(scale);
 				}
 				if (num<oweNum){//少进货
 					int cNum = oweNum - num;
-					BigDecimal scale = shopGoods.getCostPrice().multiply(new BigDecimal(cNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
+					BigDecimal scale = costPrice.multiply(new BigDecimal(cNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
 					orderAmount = orderAmount.subtract(scale);
 				}
 				goodsVo.setOweInventory(oweNum);
 
 			}else {
-				BigDecimal scale = shopGoods.getCostPrice().multiply(new BigDecimal(num)).setScale(2, BigDecimal.ROUND_HALF_UP);
+				BigDecimal scale = costPrice.multiply(new BigDecimal(num)).setScale(2, BigDecimal.ROUND_HALF_UP);
 				orderAmount = orderAmount.add(scale);
 				goodsVo.setOweInventory(0);
 			}
@@ -668,8 +679,9 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			adjustment.setSpecGoodsSerial(goodsSpec.getSpecGoodsSerial());
 			adjustment.setStockNow(stockNow);
 			adjustment.setStockInto(Long.valueOf(num));
+			adjustment.setStockOwe(Long.valueOf(oweInventory));
 			if(stockNow-Long.valueOf(num)<0){
-				throw new Exception("蜗米仓库商品库存数量不足");
+				throw new Exception(shopGoods.getGoodsName()+"蜗米仓库商品库存数量不足");
 			}
 			adjustment.setCreateTime(shopGoods.getCreateTime());
 			if (shopGoods.getShelfLife()==null){
@@ -756,7 +768,9 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 		rdWareOrder.setOrderAmount(orderAmount);
 		rdWareOrder.setOrderTotalPrice(orderAmount);
 		rdWareOrderDao.insert(rdWareOrder);
-		result.setWareOrder(rdWareOrder);
+		RdWareOrder wareOrder = rdWareOrderDao.findBySn(rdWareOrder.getOrderSn());
+		System.out.println("w="+wareOrder);
+		result.setWareOrder(wareOrder);
 		result.setGoodsListVo(goodsVoList);
 		return result;
 	}

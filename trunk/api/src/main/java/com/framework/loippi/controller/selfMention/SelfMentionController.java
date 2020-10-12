@@ -635,7 +635,7 @@ public class SelfMentionController extends BaseController {
         wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
         wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
         wareGoodsVo.setPpv(Optional.ofNullable(goods.getPpv()).orElse(BigDecimal.ZERO));
-        wareGoodsVo.setCostPrice(Optional.ofNullable(goods.getCostPrice()).orElse(BigDecimal.ZERO));
+        wareGoodsVo.setCostPrice(Optional.ofNullable(goodsSpec.getCostPrice()).orElse(new BigDecimal(100.00)));
         wareGoodsVo.setInventory(Optional.ofNullable(wareInventory.getInventory()).orElse(0));
         wareGoodsVo.setInventoryGc(Optional.ofNullable(companyInvenInventory).orElse(0));
         return wareGoodsVo;
@@ -707,6 +707,9 @@ public class SelfMentionController extends BaseController {
                     orderGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goodsSpec.getSpecRetailPrice()).orElse(BigDecimal.ZERO));
                     orderGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goodsSpec.getSpecMemberPrice()).orElse(BigDecimal.ZERO));
                 }
+                orderGoodsVo.setCostPrice(Optional.ofNullable(goodsSpec.getCostPrice()).orElse(new BigDecimal(100.00)));
+                orderGoodsVo.setOweInventory(Optional.ofNullable(rdGoodsAdjustment.getStockOwe().intValue()).orElse(0));//欠货数量
+                orderGoodsVo.setComeInventory(Optional.ofNullable(rdGoodsAdjustment.getStockInto().intValue()).orElse(0));//补货数量
                 orderGoodsVos.add(orderGoodsVo);
             }
             if (orderGoodsVos.size()==0){
@@ -1076,6 +1079,52 @@ public class SelfMentionController extends BaseController {
     }
 
     /**
+     * 
+     */
+    @RequestMapping(value = "/api/mention/wareOrderInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public String wareOrderInfo(@RequestParam Long id,HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("当前用户尚未登录");
+        }
+
+        if(id==null){
+            return ApiUtils.error("订单id为空");
+        }
+
+        SelfOrderSubmitResult result = new SelfOrderSubmitResult();
+        RdWareOrder wareOrder = rdWareOrderService.find(id);
+        if (wareOrder==null){
+            return ApiUtils.error("未找到该订单");
+        }
+        if (wareOrder.getUsePointNum()==null||wareOrder.getUsePointNum()==0){
+            wareOrder.setUsePointFlag(0);
+        }else {
+            wareOrder.setUsePointFlag(1);
+        }
+        result.setFlagState(wareOrder.getFlagState());
+        result.setWareOrder(wareOrder);
+        RdMmAccountInfo accountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
+        result.setIntegration(accountInfo.getWalletBlance().setScale(2));
+
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        if (rdMmIntegralRule==null || rdMmIntegralRule.getShoppingPointSr()==null){
+            result.setProportion(0d);
+        }else{
+            result.setProportion(rdMmIntegralRule.getShoppingPointSr().doubleValue()*0.01);
+        }
+
+        return ApiUtils.success(result);
+    }
+
+
+    /**
      * 去付款
      *
      * @param paysn 支付订单编码
@@ -1145,6 +1194,7 @@ public class SelfMentionController extends BaseController {
                 return ApiUtils.error("购物积分账户状态未激活或者已被冻结");
             }
             ShopOrderPay pay = orderPayService.findBySn(paysn);
+            System.out.println("p1="+pay);
             //处理积分支付
             rdWareOrderService.ProcessingIntegrals(paysn, i, shopMember, pay, shoppingPointSr);
         }
@@ -1154,6 +1204,7 @@ public class SelfMentionController extends BaseController {
                 .println("###  订单支付编号：" + paysn + "  |  支付方式名称：" + paymentCode + " |  支付方式索引id：" + paymentId + "#########");
         System.out.println("##########################################");
         ShopOrderPay pay = orderPayService.findBySn(paysn);
+        System.out.println("p2="+pay);
 
         //货到付款判断
         if (paymentType == 2) {

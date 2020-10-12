@@ -38,4 +38,6 @@ public interface ShopGoodsSpecDao extends GenericDao<ShopGoodsSpec, Long> {
 	ShopGoodsSpec findByspecGoodsSerial(String specGoodsSerial);
 
 	void updateSpecSaleNum(ShopGoodsSpec goodsSpec);
+
+	List<ShopGoodsSpec> findListBySpecGoodsSerial(String specGoodsSerial);
 }

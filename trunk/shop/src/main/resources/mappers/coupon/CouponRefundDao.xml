@@ -35,7 +35,7 @@
             AND refund_sn = #{refundSn,jdbcType=VARCHAR}
         </if>
         <if test="payDetailId != null">
-            AND pay_detail_id = #{payDetailId,,jdbcType=BIGINT}
+            AND pay_detail_id = #{payDetailId,jdbcType=BIGINT}
         </if>
         <if test="refundNum != null">
             AND refund_num = #{refundNum}

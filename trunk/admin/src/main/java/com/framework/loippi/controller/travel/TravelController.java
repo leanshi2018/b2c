@@ -114,7 +114,7 @@ public class TravelController {
 				Integer threeQualify = 0;//3
 				Integer keepQualify = 0;//保留资格
 
-				//计算'202006','202007','202008','202010','202011','202012'内rd_dis_qualification里DD_NEW_VIP_NUMBER新推荐vip人数
+				//计算'202006','202007','202008','202009','202010','202011','202012'内rd_dis_qualification里DD_NEW_VIP_NUMBER新推荐vip人数
 				Integer vipNum = memberQualificationService.findVipNumByMCode(qualification.getMCode());
 
 				//6月1号到12月31号从老会员转过来的会员任意一个月买满25mi算一个合格推荐
@@ -138,7 +138,7 @@ public class TravelController {
 							creationTime.setTime(byMCode.getCreationDate());
 							if (creationTime.after(begin) && creationTime.before(end)) {
 								//在区间注册
-								//'202006','202007','202008','202010','202011','202012'中任何个周期买足25mi
+								//'202006','202007','202008','202009','202010','202011','202012'中任何个周期买足25mi
 								Integer countMi = memberQualificationService.countByMCode(rdMmRelation.getMmCode());
 								if (countMi>0){
 									oldNum = oldNum+1;

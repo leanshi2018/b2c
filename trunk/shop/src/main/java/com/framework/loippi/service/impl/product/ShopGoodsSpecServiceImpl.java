@@ -119,4 +119,9 @@ public class ShopGoodsSpecServiceImpl extends GenericServiceImpl<ShopGoodsSpec, 
         shopGoodsSpecDao.updateSpecSaleNum(goodsSpec);
     }
 
+    @Override
+    public List<ShopGoodsSpec> findListBySpecGoodsSerial(String specGoodsSerial) {
+        return shopGoodsSpecDao.findListBySpecGoodsSerial(specGoodsSerial);
+    }
+
 }

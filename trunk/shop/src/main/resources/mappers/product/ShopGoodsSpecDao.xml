@@ -25,16 +25,17 @@
         <result property="bigPpv" column="big_ppv"/>
         <result property="weight" column="weight"/>
         <result property="shelfLife" column="shelf_life"/>
+        <result property="costPrice" column="cost_price"/>
     </resultMap>
 
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,goods_id ,spec_name ,spec_big_price ,spec_retail_price ,spec_retail_profit,spec_member_price ,spec_goods_storage ,spec_salenum ,spec_goods_color ,spec_goods_serial ,spec_goods_spec ,spec_isopen ,spec_bar_code,spec_pic,ppv,big_ppv,weight,shelf_life
+		 id ,goods_id ,spec_name ,spec_big_price ,spec_retail_price ,spec_retail_profit,spec_member_price ,spec_goods_storage ,spec_salenum ,spec_goods_color ,spec_goods_serial ,spec_goods_spec ,spec_isopen ,spec_bar_code,spec_pic,ppv,big_ppv,weight,shelf_life,cost_price
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{goodsId},#{specName},#{specBigPrice},#{specRetailPrice},#{specRetailProfit},#{specMemberPrice},#{specGoodsStorage},#{specSalenum},#{specGoodsColor},#{specGoodsSerial},#{specGoodsSpec},#{specIsopen},#{specBarCode},#{specPic},#{ppv},#{bigPpv},#{weight},#{shelfLife}
+		 #{id},#{goodsId},#{specName},#{specBigPrice},#{specRetailPrice},#{specRetailProfit},#{specMemberPrice},#{specGoodsStorage},#{specSalenum},#{specGoodsColor},#{specGoodsSerial},#{specGoodsSpec},#{specIsopen},#{specBarCode},#{specPic},#{ppv},#{bigPpv},#{weight},#{shelfLife},#{costPrice}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -95,6 +96,9 @@
         </if>
         <if test="shelfLife != null">
             AND shelf_life = #{shelfLife}
+        </if>
+        <if test="costPrice != null">
+            AND cost_price = #{costPrice}
         </if>
         <if test="keyWord != null and keyWord != ''">
             AND spec_goods_spec like concat('%',#{keyWord},'%')
@@ -171,6 +175,9 @@
         </if>
         <if test="shelfLife != null">
             shelf_life = #{shelfLife},
+        </if>
+        <if test="costPrice != null">
+            cost_price = #{costPrice},
         </if>
     </sql>
 
@@ -365,4 +372,11 @@
         <include refid="base_column"/>
         from shop_goods_spec where spec_goods_serial=#{specGoodsSerial}
     </select>
+
+    <select id="findListBySpecGoodsSerial" resultMap="ShopGoodsSpecResultMap" parameterType="string">
+        select
+        <include refid="base_column"/>
+        from shop_goods_spec where spec_goods_serial=#{specGoodsSerial}
+    </select>
+
 </mapper> 

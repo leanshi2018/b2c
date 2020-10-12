@@ -45,4 +45,16 @@ public class OrderGoodsVo {
 	 */
 	private BigDecimal goodsMemberPrice;
 
+	/**
+	 * 成本价
+	 */
+	private BigDecimal costPrice;
+
+
+	/** 欠货数量 */
+	private Integer oweInventory;
+
+	/** 补货数量 */
+	private Integer comeInventory;
+
 }
