@@ -635,7 +635,7 @@ public class SelfMentionController extends BaseController {
         wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
         wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
         wareGoodsVo.setPpv(Optional.ofNullable(goods.getPpv()).orElse(BigDecimal.ZERO));
-        wareGoodsVo.setCostPrice(Optional.ofNullable(goods.getCostPrice()).orElse(BigDecimal.ZERO));
+        wareGoodsVo.setCostPrice(Optional.ofNullable(goodsSpec.getCostPrice()).orElse(new BigDecimal(100.00)));
         wareGoodsVo.setInventory(Optional.ofNullable(wareInventory.getInventory()).orElse(0));
         wareGoodsVo.setInventoryGc(Optional.ofNullable(companyInvenInventory).orElse(0));
         return wareGoodsVo;
@@ -707,7 +707,7 @@ public class SelfMentionController extends BaseController {
                     orderGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goodsSpec.getSpecRetailPrice()).orElse(BigDecimal.ZERO));
                     orderGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goodsSpec.getSpecMemberPrice()).orElse(BigDecimal.ZERO));
                 }
-                orderGoodsVo.setCostPrice(Optional.ofNullable(shopGoods.getCostPrice()).orElse(BigDecimal.ZERO));
+                orderGoodsVo.setCostPrice(Optional.ofNullable(goodsSpec.getCostPrice()).orElse(new BigDecimal(100.00)));
                 orderGoodsVo.setOweInventory(Optional.ofNullable(rdGoodsAdjustment.getStockOwe().intValue()).orElse(0));//欠货数量
                 orderGoodsVo.setComeInventory(Optional.ofNullable(rdGoodsAdjustment.getStockInto().intValue()).orElse(0));//补货数量
                 orderGoodsVos.add(orderGoodsVo);

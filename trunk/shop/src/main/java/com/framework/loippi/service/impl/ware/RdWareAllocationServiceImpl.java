@@ -613,7 +613,13 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 				goodsVo.setSpecGoodsSpec(specInfo);
 			}
 			goodsVo.setPpv(shopGoods.getPpv());
-			goodsVo.setCostPrice(shopGoods.getCostPrice());
+			BigDecimal costPrice = new BigDecimal(100.00);
+			if (goodsSpec.getCostPrice()==null){
+				costPrice = new BigDecimal(100.00);
+			}else {
+				costPrice = goodsSpec.getCostPrice();
+			}
+			goodsVo.setCostPrice(costPrice);
 			goodsVo.setComeInventory(num);
 
 			Integer oweInventory = 0;
@@ -624,18 +630,18 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 				Integer oweNum = Math.abs(oweInventory);
 				if (num>oweNum){//多进货
 					int purchaseNum = num - oweNum;//多进货数量
-					BigDecimal scale = shopGoods.getCostPrice().multiply(new BigDecimal(purchaseNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
+					BigDecimal scale = costPrice.multiply(new BigDecimal(purchaseNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
 					orderAmount = orderAmount.add(scale);
 				}
 				if (num<oweNum){//少进货
 					int cNum = oweNum - num;
-					BigDecimal scale = shopGoods.getCostPrice().multiply(new BigDecimal(cNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
+					BigDecimal scale = costPrice.multiply(new BigDecimal(cNum)).setScale(2, BigDecimal.ROUND_HALF_UP);
 					orderAmount = orderAmount.subtract(scale);
 				}
 				goodsVo.setOweInventory(oweNum);
 
 			}else {
-				BigDecimal scale = shopGoods.getCostPrice().multiply(new BigDecimal(num)).setScale(2, BigDecimal.ROUND_HALF_UP);
+				BigDecimal scale = costPrice.multiply(new BigDecimal(num)).setScale(2, BigDecimal.ROUND_HALF_UP);
 				orderAmount = orderAmount.add(scale);
 				goodsVo.setOweInventory(0);
 			}
