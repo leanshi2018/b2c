@@ -7,13 +7,7 @@ import com.framework.loippi.service.product.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -1298,6 +1292,21 @@ public class OrderAPIController extends BaseController {
         cart.setGoodsId(goodsSpec.getGoodsId());
         cart.setGoodsName(goods.getGoodsName());
         cart.setSpecId(goodsSpec.getId());
+        if (goods.getGoodsType()==3){
+            cart.setSpecInfo(goodsSpec.getSpecGoodsSerial());
+        }else{
+            String specInfo = "";
+            Map<String, String> map = goodsSpec.getSepcMap();
+            //遍历规格map,取出键值对,拼接specInfo
+            if (map != null) {
+                Set<String> set = map.keySet();
+                for (String str : set) {
+                    specInfo += str + ":" + map.get(str) + "、";
+                }
+                specInfo = specInfo.substring(0, specInfo.length() - 1);
+            }
+            cart.setSpecInfo(specInfo);
+        }
         cart.setGoodsType(goods.getGoodsType());
         //设置价格
         cart.setGoodsMemberPrice(goodsSpec.getSpecMemberPrice());
