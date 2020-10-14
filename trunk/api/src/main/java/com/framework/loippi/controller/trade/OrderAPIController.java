@@ -1330,7 +1330,7 @@ public class OrderAPIController extends BaseController {
             .put("orderId", orderPay.getOrderId()).put("addr", addr).put("hadReceiveAddr",hadReceiveAddr)
         .put("shippingFee",orderPay.getShippingFee().subtract(orderPay.getShippingPreferentialFee())).put("goodsNum",param.getCount())
         .put("goodsTotal",orderPay.getPayAmount().subtract(orderPay.getShippingFee()).add(orderPay.getShippingPreferentialFee()))
-        .put("goodsInfo",cart).put("packageAmount",shopGoodsFreightRule.getMinimumOrderAmount()));
+        .put("goodsInfo",cart).put("packageAmount",shopGoodsFreightRule.getMinimumOrderAmount()).put("specInfo",goodsSpec));
     }
 
     /**
