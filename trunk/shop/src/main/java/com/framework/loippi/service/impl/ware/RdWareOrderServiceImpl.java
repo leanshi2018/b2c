@@ -405,7 +405,7 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 		RdWareAllocation allocation = rdWareAllocationDao.findBySn(orderSn);
 		RdWarehouse ware = rdWarehouseDao.findByCode(allocation.getWareCodeIn());
 		Map<String,Object> mapAll = new HashMap<>();
-		mapAll.put("wId",allocation.getWId());
+		mapAll.put("wid",allocation.getWId());
 		mapAll.put("sign",2);
 		List<RdGoodsAdjustment> goodsAdjustments = rdGoodsAdjustmentDao.findByWidAndSign(mapAll);
 
