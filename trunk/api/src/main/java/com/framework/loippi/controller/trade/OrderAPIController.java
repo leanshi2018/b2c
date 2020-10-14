@@ -4,6 +4,7 @@ import com.framework.loippi.entity.cart.ShopCartExchange;
 import com.framework.loippi.entity.product.*;
 import com.framework.loippi.result.app.order.*;
 import com.framework.loippi.service.product.*;
+import com.framework.loippi.utils.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -94,13 +95,6 @@ import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Digests;
-import com.framework.loippi.utils.JacksonUtil;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.StringUtil;
-import com.framework.loippi.utils.TongLianUtils;
-import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.order.ShopOrderVo;
 import com.framework.loippi.vo.refund.ReturnGoodsVo;
 
@@ -1286,6 +1280,7 @@ public class OrderAPIController extends BaseController {
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         ShopGoods goods = shopGoodsService.find(param.getGoodsId());
         ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(param.getSpecId());
+        GoodsUtils.getSepcMapAndColImgToGoodsSpec(goods, goodsSpec);
         ShopCartExchange cart = new ShopCartExchange();
         cart.setId(twiterIdService.getTwiterId());
         cart.setMemberId(Long.parseLong(member.getMmCode()));
