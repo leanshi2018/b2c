@@ -4,16 +4,11 @@ import com.framework.loippi.entity.cart.ShopCartExchange;
 import com.framework.loippi.entity.product.*;
 import com.framework.loippi.result.app.order.*;
 import com.framework.loippi.service.product.*;
+import com.framework.loippi.utils.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -100,13 +95,6 @@ import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Digests;
-import com.framework.loippi.utils.JacksonUtil;
-import com.framework.loippi.utils.Paramap;
-import com.framework.loippi.utils.StringUtil;
-import com.framework.loippi.utils.TongLianUtils;
-import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.order.ShopOrderVo;
 import com.framework.loippi.vo.refund.ReturnGoodsVo;
 
@@ -1292,12 +1280,28 @@ public class OrderAPIController extends BaseController {
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         ShopGoods goods = shopGoodsService.find(param.getGoodsId());
         ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(param.getSpecId());
+        GoodsUtils.getSepcMapAndColImgToGoodsSpec(goods, goodsSpec);
         ShopCartExchange cart = new ShopCartExchange();
         cart.setId(twiterIdService.getTwiterId());
         cart.setMemberId(Long.parseLong(member.getMmCode()));
         cart.setGoodsId(goodsSpec.getGoodsId());
         cart.setGoodsName(goods.getGoodsName());
         cart.setSpecId(goodsSpec.getId());
+        if (goods.getGoodsType()==3){
+            cart.setSpecInfo(goodsSpec.getSpecGoodsSerial());
+        }else{
+            String specInfo = "";
+            Map<String, String> map = goodsSpec.getSepcMap();
+            //遍历规格map,取出键值对,拼接specInfo
+            if (map != null) {
+                Set<String> set = map.keySet();
+                for (String str : set) {
+                    specInfo += str + ":" + map.get(str) + "、";
+                }
+                specInfo = specInfo.substring(0, specInfo.length() - 1);
+            }
+            cart.setSpecInfo(specInfo);
+        }
         cart.setGoodsType(goods.getGoodsType());
         //设置价格
         cart.setGoodsMemberPrice(goodsSpec.getSpecMemberPrice());
@@ -1330,7 +1334,7 @@ public class OrderAPIController extends BaseController {
             .put("orderId", orderPay.getOrderId()).put("addr", addr).put("hadReceiveAddr",hadReceiveAddr)
         .put("shippingFee",orderPay.getShippingFee().subtract(orderPay.getShippingPreferentialFee())).put("goodsNum",param.getCount())
         .put("goodsTotal",orderPay.getPayAmount().subtract(orderPay.getShippingFee()).add(orderPay.getShippingPreferentialFee()))
-        .put("goodsInfo",cart).put("packageAmount",shopGoodsFreightRule.getMinimumOrderAmount()));
+        .put("goodsInfo",cart).put("packageAmount",shopGoodsFreightRule.getMinimumOrderAmount()).put("specInfo",goodsSpec));
     }
 
     /**
