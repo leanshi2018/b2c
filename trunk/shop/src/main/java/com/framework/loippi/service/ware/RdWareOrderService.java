@@ -25,7 +25,7 @@ public interface RdWareOrderService extends GenericService<RdWareOrder, Long> {
 
 	Map<String, Object> updateOrderpay(PayCommon payCommon, String mmCode, String s, String paymentCode, String paymentId);
 
-	void updateOrderStatePayFinish(String sn, String batchNo, String plug);
+	void updateOrderStatePayFinish(String sn, String batchNo, String plug,String totalFee);
 
 	void updateCancelOrder(long orderId, int opType, String memberId, int paytrem, String message, String opName);
 }

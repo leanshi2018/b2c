@@ -100,7 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
 			RdWareOrder order = rdWareOrderService.find("paySn", sn);
 			// 回调会有多次
 			if (order.getPaymentState() == null || order.getPaymentState() == 0) {//TODO
-				rdWareOrderService.updateOrderStatePayFinish(sn, batchNo, plug);
+				rdWareOrderService.updateOrderStatePayFinish(sn, batchNo, plug,totalFee);
 				//更改支付流水表状态
 				paymentTallyService.updatePaymentTally(sn, batchNo, plug);
 			}
