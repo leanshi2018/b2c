@@ -364,7 +364,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     List<OrderInfo> findMonthOrderInfo(Integer mentionId);
 
-    List<ShopOrder> findSelfOrderByPage(RdWarehouse rdWarehouse, Integer pageNumber, Integer pageSize, Integer orderState);
+    List<ShopOrder> findSelfOrderByPage(RdWarehouse rdWarehouse, Integer pageNumber, Integer pageSize, Integer orderState,String selectName);
 
     SelfMentionOrderStatistics statisticsSelfOrderByTime(HashMap<String, Object> map);
 
