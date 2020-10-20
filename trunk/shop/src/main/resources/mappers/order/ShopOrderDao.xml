@@ -1786,10 +1786,7 @@
             and (a.order_state =30 or a.order_state = 40)
         </if>
         <if test="selectName != null and selectName != ''">
-            and b.mob_phone = #{selectName}
-        </if>
-        <if test="selectName !=null and selectName != ''">
-            <![CDATA[ and (b.true_name LIKE CONCAT(CONCAT('%',#{selectName}),'%'))]]>
+            and b.mob_phone LIKE "%"#{selectName}"%" or b.true_name LIKE "%"#{selectName}"%"
         </if>
         order by a.payment_time desc
         limit #{pageNumber},#{pageSize}
