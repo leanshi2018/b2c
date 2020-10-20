@@ -225,6 +225,9 @@ public class UserAPIController extends BaseController {
         RdRanks rdRankVip = rdRanksService.find("rankId", 1);
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
         PersonCenterResult result = PersonCenterResult.build(shopMember, rdRanks,banks,rdMmAccountInfo,rdRankVip);
+        if(shopMember.getPlusVip()!=null){
+            result.setPlusVipFlag(shopMember.getPlusVip());
+        }
         if(rdMmRelation.getRank()==4&&rdMmRelation.getPopupFlag()==0){
             result.setWindowFlag(0);
             List<RankExplain> params = rankExplainDao.findByParams(Paramap.create().put("rank", 4));

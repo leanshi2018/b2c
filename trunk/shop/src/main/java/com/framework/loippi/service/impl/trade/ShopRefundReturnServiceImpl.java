@@ -9,6 +9,10 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +45,6 @@ import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.entity.user.RetailProfit;
-import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.service.TSystemPluginConfigService;
 import com.framework.loippi.service.TwiterIdService;
@@ -55,9 +55,6 @@ import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAccountLogService;
-import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.service.wechat.WechatRefundService;
 import com.framework.loippi.support.Page;
@@ -117,7 +114,8 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
     private ShopMemberMessageDao shopMemberMessageDao;
     @Resource
     private ShopReturnOrderGoodsDao shopReturnOrderGoodsDao;
-
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
     @Resource
     private RdMmRelationDao rdMmRelationDao;
     @Resource
@@ -126,7 +124,10 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
     private CouponDetailService couponDetailService;
     @Resource
     private CouponService couponService;
-
+    @Resource
+    private PlusProfitService plusProfitService;
+    @Resource
+    private ShopGoodsService shopGoodsService;
     @Autowired
     public void setGenericDao() {
         super.setGenericDao(shopRefundReturnDao);
@@ -471,6 +472,32 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                 }
                 retailProfit.setProfits(retailProfit.getProfits().subtract(cut));
                 retailProfitDao.update(retailProfit);
+            }
+        }
+        if(order.getOrderType()==8){//如果是plus会员订单
+            List<PlusProfit> profits = plusProfitService.findList(Paramap.create().put("orderId",order.getId()).put("state",0));
+            if(profits!=null&&profits.size()>0){
+                PlusProfit plusProfit = profits.get(0);
+                //根据退款记录表查询退款
+                List<ShopReturnOrderGoods> shopReturnOrderGoods = shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",refundReturn.getId()));
+                if(shopReturnOrderGoods!=null&&shopReturnOrderGoods.size()>0){
+                    for (ShopReturnOrderGoods shopReturnOrderGood : shopReturnOrderGoods) {
+                        ShopGoods goods = shopGoodsService.find(shopReturnOrderGood.getGoodsId());
+                        if(goods!=null&&goods.getPlusVipType()!=null&&goods.getPlusVipType()==1){
+                            plusProfit.setState(2);
+                            plusProfitService.update(plusProfit);
+                            Long num=orderDao.getPlusVipOrderNum(order.getBuyerId());
+                            if(num<=1){
+                                RdMmBasicInfo mmBasicInfo = rdMmBasicInfoService.findByMCode(Long.toString(order.getBuyerId()));
+                                if(mmBasicInfo.getPlusVip()==1){
+                                    mmBasicInfo.setPlusVip(0);
+                                    rdMmBasicInfoService.update(mmBasicInfo);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
             }
         }
     }

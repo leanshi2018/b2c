@@ -113,6 +113,10 @@ public class CartCheckOutResult {
      */
     public BigDecimal useCouponAmount;
     /**
+     * plus会员优惠金额
+     */
+    public BigDecimal plusVipAmount;
+    /**
      * 活动优惠金额
      */
     public BigDecimal activityAmount;
@@ -185,6 +189,11 @@ public class CartCheckOutResult {
      * 优惠券使用说明
      */
     private String couponScopeRemark;
+
+    /**
+     * 是否存在plus会员商品 1：不存在  2：存在
+     */
+    private Integer svipFlag;
 
     @Data
     public static class selectShopOrderType {
@@ -311,7 +320,7 @@ public class CartCheckOutResult {
             totalPpv=totalPpv.add(Optional.ofNullable(cart.getPpv()).orElse(BigDecimal.ZERO).multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //            totalPpv += Optional.ofNullable(cart.getPpv()).orElse(0) * cart.getGoodsNum();
             totalWeight += Optional.ofNullable(cart.getWeight()).orElse(0d) * cart.getGoodsNum();
-            if (shopOrderDiscountType.getPreferentialType() == 3) {
+            if (shopOrderDiscountType.getPreferentialType() == 3||shopOrderDiscountType.getPreferentialType()==8) {
                 actualTotalPpv=actualTotalPpv.add(Optional.ofNullable(cart.getBigPpv()).orElse(BigDecimal.ZERO).multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //                actualTotalPpv += Optional.ofNullable(cart.getBigPpv()).orElse(0) * cart.getGoodsNum();
             } else {
@@ -380,7 +389,7 @@ public class CartCheckOutResult {
             totalPpv=totalPpv.add(Optional.ofNullable(cart.getPpv()).orElse(BigDecimal.ZERO).multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //            totalPpv += Optional.ofNullable(cart.getPpv()).orElse(0) * cart.getGoodsNum();
             totalWeight += Optional.ofNullable(cart.getWeight()).orElse(0d) * cart.getGoodsNum();
-            if (shopOrderDiscountType.getPreferentialType() == 3) {
+            if (shopOrderDiscountType.getPreferentialType() == 3||shopOrderDiscountType.getPreferentialType() == 8) {
                 actualTotalPpv=actualTotalPpv.add(Optional.ofNullable(cart.getBigPpv()).orElse(BigDecimal.ZERO).multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //                actualTotalPpv += Optional.ofNullable(cart.getBigPpv()).orElse(0) * cart.getGoodsNum();
             } else {
@@ -417,8 +426,11 @@ public class CartCheckOutResult {
                 .setRankAmount(BigDecimal.ZERO)
                 //优惠券优惠
                 .setUseCouponAmount(Optional.ofNullable((BigDecimal) moneyMap.get("useCouponAmount")).orElse(new BigDecimal("0")))
+                //plus会员优惠
+                .setPlusVipAmount(Optional.ofNullable((BigDecimal) moneyMap.get("plusVipAmount")).orElse(new BigDecimal("0")))
                 // 商品数据
-                .setStoreGoodsContainers(StoreGoodsContainer.buildList(cartList, shopOrderDiscountType));
+                .setStoreGoodsContainers(StoreGoodsContainer.buildList(cartList, shopOrderDiscountType))
+        .setSvipFlag(Optional.ofNullable((Integer) moneyMap.get("svipGoods")).orElse(1));
         cartCheckOutResult.setCouponId(Optional.ofNullable((Long) moneyMap.get("couponId")).orElse(null));
         ArrayList<Coupon> couponList = (ArrayList<Coupon>) moneyMap.get("couponList");
         if(couponList!=null&&couponList.size()>0){

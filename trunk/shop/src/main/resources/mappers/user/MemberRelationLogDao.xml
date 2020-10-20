@@ -27,18 +27,19 @@
 		<result column="category" property="category" />
 		<result column="create_time" property="createTime" />
 		<result column="mm_code" property="mCode" />
+		<result column="remark" property="remark" />
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 id,rank_before,rank_after,retail_before,retail_after,pwd_before,pwd_after,mm_status_before,mm_status_after,
 		 spo_code_before,spo_code_after,ra_spo_status_before,ra_spo_status_after,
-		 pv_before,pv_after,new_old_flag_before,new_old_flag_after,category,create_time,mm_code
+		 pv_before,pv_after,new_old_flag_before,new_old_flag_after,category,create_time,mm_code,remark
 	</sql>
 
 	<sql id="base_value_column">
 		 #{id},#{rankBefore},#{rankAfter},#{retailBefore},#{retailAfter},#{pwdBefore},#{pwdAfter},#{mStatusBefore},#{mStatusAfter},#{spoCodeBefore},
-		 #{spoCodeAfter},#{raSpoStatusBefore},#{raSpoStatusAfter},#{pvBefore},#{pvAfter},#{newOldFlagBefore},#{newOldFlagAfter},#{category},#{createTime},#{mCode}
+		 #{spoCodeAfter},#{raSpoStatusBefore},#{raSpoStatusAfter},#{pvBefore},#{pvAfter},#{newOldFlagBefore},#{newOldFlagAfter},#{category},#{createTime},#{mCode},#{remark}
 	</sql>
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
 	<sql id="where_column">
@@ -101,6 +102,9 @@
 		</if>
 		<if test="mCode != null and mCode != ''">
 			AND mm_code = #{mCode,jdbcType=VARCHAR}
+		</if>
+		<if test="remark != null and remark != ''">
+			AND remark = #{remark,jdbcType=VARCHAR}
 		</if>
 	</sql>
 	
@@ -165,6 +169,9 @@
 		</if>
 		<if test="mCode != null and mCode != ''">
 			mm_code = #{mCode,jdbcType=VARCHAR},
+		</if>
+		<if test="remark != null and remark != ''">
+			remark = #{remark,jdbcType=VARCHAR},
 		</if>
 	</sql>
 

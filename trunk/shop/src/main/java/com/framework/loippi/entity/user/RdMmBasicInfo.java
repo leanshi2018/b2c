@@ -204,6 +204,14 @@ public class RdMmBasicInfo implements GenericEntity {
 	@Column(name = "MAIN_FLAG" )
 	private Integer mainFlag;
 
+	/** 老系统会员状态 0：新会员或者活跃老会员 1：不活跃老会员 2：已冻结不活跃老会员*/
+	@Column(name = "OLD_SYS_STATUS" )
+	private Integer oldSysStatus;
+
+	/** 是否属于plus vip会员 0:不是plus会员 1：是plus会员*/
+	@Column(name = "PLUS_VIP" )
+	private Integer plusVip;
+
 	private String info;
 	private String verificationMobile;
 	private String verificationNickName;

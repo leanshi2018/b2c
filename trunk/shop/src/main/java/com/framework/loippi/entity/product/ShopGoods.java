@@ -314,6 +314,11 @@ public class ShopGoods implements GenericEntity {
     @Column(name = "off_shelf_show")
     private Integer offShelfShow;
 
+    /**
+     * 是否为plus vip商品 0：不是 1：是
+     */
+    @Column(name = "plus_vip_type")
+    private Integer plusVipType;
 
     /*###################扩展##############*/
     private String shopGoodsSpecs;

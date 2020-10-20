@@ -3,6 +3,8 @@ package com.framework.loippi.service.impl.product;
 
 import com.framework.loippi.dao.product.ShopGoodsBrandDao;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -115,7 +117,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
     private ShopOrderDao shopOrderDao;
     @Autowired
     private ShopGoodsBrandDao shopGoodsBrandDao;
-
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
     @Autowired
     public void setGenericDao() {
         super.setGenericDao(cartDao);
@@ -423,8 +426,12 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         // 待验证规格
         Map<Long, ShopGoods> goodsMap = goodsService.findGoodsMap(goodsIds);
         Map<Long, ShopGoodsSpec> specList = goodsSpecService.findMapSpec(specIds);
+        map.put("svipGoods", 1);
         for (ShopCart shopCart : cartList) {
             ShopGoods targetGoods = goodsMap.get(shopCart.getGoodsId());
+            if(targetGoods.getPlusVipType()!=null&&targetGoods.getPlusVipType()==1){
+                map.put("svipGoods", 2);
+            }
             // 商品审核通过； 商品已上架; 商品未删除
             boolean isShow = targetGoods.getState() == GoodsState.GOODS_OPEN_STATE &&
                     targetGoods.getGoodsShow() != null &&
@@ -519,6 +526,9 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         // 优惠券优惠金额
         double useCouponAmount = cartInfoList.stream().mapToDouble(item -> item.getUseCouponAmount().doubleValue())
                 .sum();
+        // 优惠券优惠金额
+        double plusVipAmount = cartInfoList.stream().mapToDouble(item -> item.getPlusVipPrice().doubleValue())
+                .sum();
         BigDecimal needPay = BigDecimal.valueOf(actotalGoodsPrice);
 
         // 商品总价
@@ -546,6 +556,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         map.put("rankDiscount",BigDecimal.valueOf(rankDiscount));
         //存储优惠券优惠金额
         map.put("useCouponAmount",BigDecimal.valueOf(useCouponAmount));
+        //存储优惠券优惠金额
+        map.put("plusVipAmount",BigDecimal.valueOf(plusVipAmount));
         map.put("goodsIds",goodsIds);
         return map;
     }
@@ -730,13 +742,13 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                                 .multiply(money)).doubleValue();
                         cartVo.setActualPrice(money);
                     }
-                    if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
+                    if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV||type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
                         actualGoodsTotalPrice += (NumberUtils.getBigDecimal(String.valueOf(cart.getGoodsNum()))
                                 .multiply(cart.getGoodsBigPrice())).doubleValue();
                         cartVo.setActualPrice(cart.getGoodsBigPrice());
                         rankDiscount=rankDiscount.add((cart.getGoodsRetailPrice().subtract(cart.getGoodsBigPrice())).multiply(new BigDecimal(cart.getGoodsNum())));
                     }
-                    if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
+                    if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV||type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
                         pv=pv.add(cart.getBigPpv().multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //                        pv += cart.getBigPpv().multiply(BigDecimal.valueOf(cart.getGoodsNum())) ;
                     }else {
@@ -768,9 +780,20 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             } else {
                 cartInfo.setActualGoodsTotalPrice(BigDecimal.valueOf(actualGoodsTotalPrice));
             }
+            RdMmBasicInfo basicInfo = rdMmBasicInfoService.findByMCode(memberId);
+            if(type ==ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS &&basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==1){//已经是plus会员则减一千块
+                cartInfo.setPlusVipPrice(new BigDecimal("1000.00"));
+                if(cartInfo.getActualGoodsTotalPrice().subtract(cartInfo.getPlusVipPrice()).compareTo(BigDecimal.ZERO)!=-1){
+                    cartInfo.setActualGoodsTotalPrice(cartInfo.getActualGoodsTotalPrice().subtract(cartInfo.getPlusVipPrice()));
+                }else {
+                    cartInfo.setActualGoodsTotalPrice(BigDecimal.ZERO);
+                }
+            }else {
+                cartInfo.setPlusVipPrice(new BigDecimal("0.00"));
+            }
             cartInfo.setRankAmount(rankDiscount);
             //优惠金额
-            cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()));
+            cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()).add(cartInfo.getPlusVipPrice()));
         //运费计算
         if (addr != null) {
             //运费
@@ -865,13 +888,13 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                         .multiply(money)).doubleValue();
                 cartVo.setActualPrice(money);
             }
-            if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
+            if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV||type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
                 actualGoodsTotalPrice += (NumberUtils.getBigDecimal(String.valueOf(cart.getGoodsNum()))
                         .multiply(cart.getGoodsBigPrice())).doubleValue();
                 cartVo.setActualPrice(cart.getGoodsBigPrice());
                 rankDiscount=rankDiscount.add((cart.getGoodsRetailPrice().subtract(cart.getGoodsBigPrice())).multiply(new BigDecimal(cart.getGoodsNum())));
             }
-            if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
+            if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV||type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
                 pv=pv.add(cart.getBigPpv().multiply(BigDecimal.valueOf(cart.getGoodsNum())));
 //                        pv += cart.getBigPpv().multiply(BigDecimal.valueOf(cart.getGoodsNum())) ;
             }else{
@@ -903,10 +926,21 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         } else {
             cartInfo.setActualGoodsTotalPrice(BigDecimal.valueOf(actualGoodsTotalPrice));
         }
+        RdMmBasicInfo basicInfo = rdMmBasicInfoService.findByMCode(memberId);
+        if(type ==ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS &&basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==1){//已经是plus会员则减一千块
+            cartInfo.setPlusVipPrice(new BigDecimal("1000.00"));
+            if(cartInfo.getActualGoodsTotalPrice().subtract(cartInfo.getPlusVipPrice()).compareTo(BigDecimal.ZERO)!=-1){
+                cartInfo.setActualGoodsTotalPrice(cartInfo.getActualGoodsTotalPrice().subtract(cartInfo.getPlusVipPrice()));
+            }else {
+                cartInfo.setActualGoodsTotalPrice(BigDecimal.ZERO);
+            }
+        }else {
+            cartInfo.setPlusVipPrice(new BigDecimal("0.00"));
+        }
         //会员等级优惠金额
         cartInfo.setRankAmount(rankDiscount);
         //优惠金额
-        cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()));
+        cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()).add(cartInfo.getPlusVipPrice()));
         //TODO create by zc 2019-11-08 计算优惠券折扣
         BigDecimal useCouponAmount=BigDecimal.ZERO;
         if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {

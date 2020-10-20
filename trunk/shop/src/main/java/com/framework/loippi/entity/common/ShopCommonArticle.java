@@ -151,5 +151,4 @@ public class ShopCommonArticle implements GenericEntity {
     private Long articleId;
 
     private Long[] articleIds;
-
 }

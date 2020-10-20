@@ -631,6 +631,12 @@ public class AuthcAPIController extends BaseController {
         rdMmBasicInfo.setAllInPayPhoneStatus(0);
         rdMmBasicInfo.setAllInContractStatus(0);
         rdMmBasicInfo.setMainFlag(1);//设置主店
+        if(param.getRegisterType()==3){
+            rdMmBasicInfo.setOldSysStatus(0);
+        }else {
+            rdMmBasicInfo.setOldSysStatus(1);
+        }
+        rdMmBasicInfo.setPlusVip(0);
         rdMmRelation.setARetail(BigDecimal.ZERO);
         rdMmRelation.setLoginPwd(Digests.entryptPassword(param.getPassword()));
         rdMmRelation.setSponsorCode(param.getInvitCode());
@@ -698,6 +704,7 @@ public class AuthcAPIController extends BaseController {
                 raMember.setOldSessionId(sessionId);
                 //密码屏蔽处理
                 raMember.setOPassword("");
+                raMember.setMemStatus(str.trim());
                 redisService.save(sessionId, raMember);
                 return ApiUtils.success(raMember);
             } else if ("1".equals(str.trim())) {
@@ -720,6 +727,69 @@ public class AuthcAPIController extends BaseController {
 
     }
 
+    @RequestMapping(value = "/verifyOldUser1", method = RequestMethod.POST)
+    public String verifyOldUser1(HttpServletRequest request, String oMCode, String password) {
+        String resultString = "";
+        //验证正确,需要查询老用户信息
+        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("oMcode", oMCode.trim());
+        //用户信息是否同步
+        if (oldSysRelationship != null) {
+            if (oldSysRelationship.getNYnRegistered() == 1) {
+                return ApiUtils.error("老用户已经注册或者绑定");
+            }
+            try {
+                resultString = PostUtil.postRequest(
+                        "http://admin.fkcn.com/m/user/verify",
+                        oMCode.trim(), password);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ApiUtils.error("验证老用户发生错误");
+            }
+            //0：正确，1老系统会员编号不存在，2密码不正确，-1账号暂时锁定，10分钟后再试
+            Map parse = (Map)JSON.parse(resultString);
+            Object whetherCorrect = parse.get("whetherCorrect");
+            String str = whetherCorrect+"";
+            if ("".equals(str.trim())) {
+                return ApiUtils.error("验证老用户发生错误");
+            } else if ("0".equals(str.trim())) {
+                //前期测试数据.后期前端不进行修改,后台进行修改
+                String sessionId = twiterIdService.getSessionId();
+                RaMember raMember = new RaMember();
+                raMember.setMmCode(oldSysRelationship.getOMcode());
+                raMember.setMmName(oldSysRelationship.getONickname());
+                raMember.setOldSessionId(sessionId);
+                //密码屏蔽处理
+                raMember.setOPassword("");
+                raMember.setMemStatus(str.trim());
+                redisService.save(sessionId, raMember);
+                return ApiUtils.success(raMember);
+            } else if ("1".equals(str.trim())) {
+                return ApiUtils.error("老系统会员编号不存在");
+            } else if ("2".equals(str.trim())) {
+                return ApiUtils.error("密码不正确");
+            } else if ("3".equals(str.trim())) {//不活跃会员也可注册
+                //前期测试数据.后期前端不进行修改,后台进行修改
+                String sessionId = twiterIdService.getSessionId();
+                RaMember raMember = new RaMember();
+                raMember.setMmCode(oldSysRelationship.getOMcode());
+                raMember.setMmName(oldSysRelationship.getONickname());
+                raMember.setOldSessionId(sessionId);
+                //密码屏蔽处理
+                raMember.setOPassword("");
+                raMember.setMemStatus(str.trim());
+                redisService.save(sessionId, raMember);
+                return ApiUtils.success(raMember);
+            } else if ("-1".equals(str.trim())) {
+                return ApiUtils.error("密码错误三次," +
+                        "账号暂时锁定，10分钟后再试");
+            } else {
+                return ApiUtils.error("验证老用户发生错误");
+            }
+
+        } else {
+            return ApiUtils.error("未找到该用户或该用户信息未同步，请核对信息，稍后再次尝试");
+        }
+    }
     //@RequestMapping(value = "/selectOldUser", method = RequestMethod.POST)
     //public String selectOldUser(HttpServletRequest request, String oMCode, String password) {
     //    List<RaMember> raMemberList=raMemberService.findList(Paramap.create().put("mmCode",oMCode).put("oPassword",password));

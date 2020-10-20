@@ -156,7 +156,8 @@ public class PersonCenterResult {
 
     //TODO 主店次店标识
     private Integer mainFlag;//会员主店次店标识 1：主店 2：次店
-
+    //TODO 主店次店标识
+    private Integer plusVipFlag;//plus vip会员标识
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo, RdRanks rdRankVip) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
         Optional<RdMmAccountInfo> optional2 = Optional.ofNullable(rdMmAccountInfo);

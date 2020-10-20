@@ -51,17 +51,19 @@
 		<result property="LockWalletStatus" column="LOCK_WALLET_STATUS" />
 		<result property="allInPayAuthority" column="ALL_IN_PAY_AUTHORITY" />
 		<result property="mainFlag" column="MAIN_FLAG" />
+		<result property="oldSysStatus" column="OLD_SYS_STATUS" />
+		<result property="plusVip" column="PLUS_VIP" />
 	</resultMap>
 
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
 		 MM_ID ,MM_CODE ,MM_NAME ,MM_NICK_NAME ,ID_TYPE ,ID_CODE ,GENDER ,BIRTHDATE ,EMAIL ,NATION_ID ,ADD_PROVINCE_ID ,ADD_CITY_ID ,ADD_COUNTRY_ID ,ADD_TOWN_ID ,ADD_DETIAL ,ADD_POST ,MOBILE ,WECHAT_CODE ,QQ_CODE ,FACEBOOK_CODE ,PHONE ,CREATION_SOURCE ,CREATION_IP ,CREATION_DATE ,CREATION_BY ,CREATION_PERIOD ,UPDATE_SOURCE ,UPDATE_IP ,UPDATE_DATE ,UPDATE_BY ,UPDATE_PERIOD ,MM_AVATAR,SHARE_NUM,PUSH_STATUS,TONG_LIAN_ID,WHETHER_TURE_NAME,
-		 TURE_ID,TURE_NAME, ALL_IN_CONTRACT_STATUS,CONTRACT_NO,ALL_IN_PAY_PHONE_STATUS,ALL_IN_PAY_PHONE,LOCK_WALLET_STATUS,ALL_IN_PAY_AUTHORITY,MAIN_FLAG
+		 TURE_ID,TURE_NAME, ALL_IN_CONTRACT_STATUS,CONTRACT_NO,ALL_IN_PAY_PHONE_STATUS,ALL_IN_PAY_PHONE,LOCK_WALLET_STATUS,ALL_IN_PAY_AUTHORITY,MAIN_FLAG,OLD_SYS_STATUS,PLUS_VIP
 	</sql>
 
 	<sql id="base_value_column">
 		 #{mmId},#{mmCode},#{mmName},#{mmNickName},#{idType},#{idCode},#{gender},#{birthdate},#{email},#{nationId},#{addProvinceId},#{addCityId},#{addCountryId},#{addTownId},#{addDetial},#{addPost},#{mobile},#{wechatCode},#{qqCode},#{facebookCode},#{phone},#{creationSource},#{creationIp},#{creationDate},#{creationBy},#{creationPeriod},#{updateSource},#{updateIp},#{updateDate},#{updateBy},#{updatePeriod},#{mmAvatar},#{shareNum},#{pushStatus},#{tongLianId},
-		 #{whetherTrueName},#{trueId},#{trueName},#{allInContractStatus},#{contractNo},#{allInPayPhoneStatus},#{allInPayPhone},#{LockWalletStatus},#{allInPayAuthority},#{mainFlag}
+		 #{whetherTrueName},#{trueId},#{trueName},#{allInContractStatus},#{contractNo},#{allInPayPhoneStatus},#{allInPayPhone},#{LockWalletStatus},#{allInPayAuthority},#{mainFlag},#{oldSysStatus},#{PLUS_VIP}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -200,6 +202,12 @@
 		</if>
 		<if test="mainFlag != null">
 			AND MAIN_FLAG = #{mainFlag}
+		</if>
+		<if test="oldSysStatus != null">
+			AND OLD_SYS_STATUS = #{oldSysStatus}
+		</if>
+		<if test="plusVip != null">
+			AND PLUS_VIP = #{plusVip}
 		</if>
 		<if test="info !=null and info != ''">
 			AND (MOBILE like CONCAT('%',#{info},'%') or MM_NICK_NAME like CONCAT('%',#{info},'%')or MM_CODE like CONCAT('%',#{info},'%'))
@@ -352,6 +360,12 @@
 		</if>
 		<if test="mainFlag != null">
 			MAIN_FLAG = #{mainFlag},
+		</if>
+		<if test="oldSysStatus != null">
+			OLD_SYS_STATUS = #{oldSysStatus},
+		</if>
+		<if test="plusVip != null">
+			PLUS_VIP = #{plusVip},
 		</if>
 	</sql>
 

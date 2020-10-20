@@ -202,7 +202,7 @@ public class RedemptionCartController extends BaseController {
                 .queryTotalPrice(cartIds, member.getMmCode(),addr);
         // 购物车数据
         if (map.get("error").equals("true")) {
-            return ApiUtils.error("商品属性发生改变,请重新结算");
+            return ApiUtils.error((String) map.get("message"));
         }
         List<ShopCartExchange> cartList = Lists.newArrayList();
         if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {

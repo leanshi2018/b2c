@@ -30,7 +30,10 @@ public class ShopOrderDiscountTypeConsts {
      */
     public static final int DISCOUNT_TYPE_RETRANSMISSION = 6;
 
-
+    /**
+     * plus会员订单
+     */
+    public static final int DISCOUNT_TYPE_PLUS = 8;
 
 
     public static String convert(int type){
@@ -51,6 +54,9 @@ public class ShopOrderDiscountTypeConsts {
         }
         if (type==DISCOUNT_TYPE_RETRANSMISSION){
             return "换货订单";
+        }
+        if (type==DISCOUNT_TYPE_PLUS){
+            return "PLUS会员订单";
         }
         return "";
     }
