@@ -42,5 +42,6 @@ public class RaMember implements GenericEntity {
 	private String oPassword;
 
 	private String oldSessionId;
-	
+
+	private String memStatus;
 }

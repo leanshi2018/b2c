@@ -80,4 +80,6 @@ public class MemberRelationLog implements GenericEntity {
     @Column(name = "mm_code" )
     private String mCode;//当前日志记录关联会员
 
+    @Column(name = "remark" )
+    private String remark;//日志备注
 }

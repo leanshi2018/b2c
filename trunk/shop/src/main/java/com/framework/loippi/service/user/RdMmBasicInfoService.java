@@ -54,4 +54,6 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
     Long countSecondShop(String mainCode);
 
     void storeBinding(RdMmBasicInfo mainBasic, RdMmBasicInfo secondBasic);
+
+    void whetherFreeze();
 }

@@ -1798,4 +1798,8 @@
     <select id="findByTime" resultMap="ShopOrderResultMap">
         SELECT * FROM shop_order where payment_state = 1 and order_state != 0 and payment_time >= '2020-06-01 00:00:00' and payment_time &lt; '2020-07-01 00:00:00' and order_type != 5
     </select>
+
+    <select id="getPlusVipOrderNum" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM shop_order WHERE payment_state = 1 and buyer_id = #{buyerId} and order_state != 0 and refund_state is null  and order_type = 8
+    </select>
 </mapper>

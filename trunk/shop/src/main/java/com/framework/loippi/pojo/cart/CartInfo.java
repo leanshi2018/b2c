@@ -140,5 +140,9 @@ public class CartInfo implements Serializable {
      */
     private Long voucherId;
 
+    /**
+     * plus vip优惠金额
+     */
+    private BigDecimal plusVipPrice = new BigDecimal(0);
 }
 

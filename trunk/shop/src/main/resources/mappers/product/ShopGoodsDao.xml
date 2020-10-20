@@ -57,6 +57,7 @@
     <result property="salePopulationName" column="sale_population_name"/>
     <result property="costPrice" column="cost_price"/>
     <result property="offShelfShow" column="off_shelf_show"/>
+    <result property="plusVipType" column="plus_vip_type"/>
   </resultMap>
 
   <resultMap id="countOnSaleBrand" type="com.framework.loippi.vo.goods.BrandListVo">
@@ -70,7 +71,7 @@
         type_id ,spec_open ,spec_id ,spec_name ,goods_image ,goods_image_new,goods_image_more ,goods_retail_price ,goods_retail_profit,goods_member_price ,
         goods_big_price ,ppv ,big_ppv,weight,shelf_life ,goods_show ,goods_click ,goods_state ,create_time ,mobile_body ,goods_spec ,update_time ,
         transport_id ,goods_close_reason ,commentnum ,salenum ,goods_collect ,is_del ,stock ,sort ,gc_levle ,release_time ,details ,evaluateRate ,state
-        ,goods_type,sale_population_ids,sale_population_name,cost_price ,off_shelf_show
+        ,goods_type,sale_population_ids,sale_population_name,cost_price ,off_shelf_show,plus_vip_type
     </sql>
 
   <sql id="base_value_column">
@@ -78,7 +79,7 @@
         #{specId},#{specName},#{goodsImage},#{goodsImageNew},#{goodsImageMore},#{goodsRetailPrice},#{goodsRetailProfit},#{goodsMemberPrice},#{goodsBigPrice},#{ppv},#{bigPpv},#{weight},#{shelfLife},#{goodsShow},#{goodsClick},
         #{goodsState},#{createTime},#{mobileBody},#{goodsSpec},#{updateTime},#{transportId},#{goodsCloseReason},#{commentnum},#{salenum},#{goodsCollect},#{isDel},
         #{stock},#{sort},#{gcLevle},#{releaseTime},#{details},#{evaluaterate},#{state}
-        ,#{goodsType},#{salePopulationIds},#{salePopulationName},#{costPrice},#{offShelfShow}
+        ,#{goodsType},#{salePopulationIds},#{salePopulationName},#{costPrice},#{offShelfShow},#{plusVipType}
     </sql>
 
   <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -226,6 +227,9 @@
     </if>
     <if test="offShelfShow != null">
       AND off_shelf_show = #{offShelfShow,jdbcType=INTEGER}
+    </if>
+    <if test="plusVipType != null">
+      AND plus_vip_type = #{plusVipType,jdbcType=INTEGER}
     </if>
     <if test="salePopulationIds != null and salePopulationIds != ''">
       AND sale_population_ids = #{salePopulationIds}
@@ -433,6 +437,9 @@
     </if>
     <if test="offShelfShow != null">
       off_shelf_show = #{offShelfShow},
+    </if>
+    <if test="plusVipType != null">
+        plus_vip_type = #{plusVipType,jdbcType=INTEGER},
     </if>
   </sql>
 

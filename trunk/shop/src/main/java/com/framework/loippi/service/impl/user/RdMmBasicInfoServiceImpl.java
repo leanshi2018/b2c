@@ -10,25 +10,13 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.framework.loippi.dao.user.*;
+import com.framework.loippi.entity.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
-import com.framework.loippi.dao.user.RdMmAccountInfoDao;
-import com.framework.loippi.dao.user.RdMmBasicInfoDao;
-import com.framework.loippi.dao.user.RdMmEditDao;
-import com.framework.loippi.dao.user.RdMmRelationDao;
-import com.framework.loippi.dao.user.RdRaBindingDao;
-import com.framework.loippi.dao.user.RdRanksDao;
-import com.framework.loippi.dao.user.RdSysPeriodDao;
-import com.framework.loippi.entity.user.OldSysRelationship;
-import com.framework.loippi.entity.user.RaMember;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmEdit;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.OldSysRelationshipService;
@@ -64,7 +52,8 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
     private RdRaBindingDao rdRaBindingDao;
     @Resource
     private RedisService redisService;
-
+    @Resource
+    private MemberRelationLogDao memberRelationLogDao;
 
     @Autowired
     public void setGenericDao() {
@@ -86,7 +75,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         }
         RaMember raMember = null;
 
-        if (registerType == 2) {
+        if (registerType == 2||registerType == 3) {
             raMember = redisService.get(rdMmRelation.getSponsorCode(), RaMember.class);
             if (raMember == null) {
                 throw new RuntimeException("老用户验证信息失效,请重新验证！");
@@ -132,7 +121,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
             rdMmRelation.setRaShopYn(0);
         }
         //老用户
-        if (registerType == 2) {
+        if (registerType == 2 || registerType == 3) {
             OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("oMcode", raMember.getMmCode());
             if (oldSysRelationship.getNYnRegistered()==1) {
                 throw new RuntimeException("老用户已注册或者绑定！");
@@ -438,6 +427,8 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         secondaryUser.setAllInPayPhoneStatus(0);
         secondaryUser.setAllInContractStatus(0);
         secondaryUser.setMainFlag(2);//设置次店
+        secondaryUser.setOldSysStatus(0);
+        secondaryUser.setPlusVip(0);
         //进行通联进行会员数据交互存储
 /*        final YunRequest request = new YunRequest("MemberService", "createMember");
         request.put("bizUserId", secondaryUser.getMmCode());
@@ -548,4 +539,33 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         }
     }
 
+    /**
+     * 查询是否有需要冻结的用户，并进行冻结操作（1.修改关系表会员状态 2.记录会员信息变更记录，包括时间原因等）
+     */
+    @Override
+    public void whetherFreeze() {
+        System.out.println("******************进入会员冻结*************************");
+        //1.查询出需要冻结的用户
+        List<RdMmRelation> list=rdMmRelationDao.findFreezeMem();
+        System.out.println(list.size()+"需冻结会员数");
+        if(list!=null&&list.size()>0){
+            for (RdMmRelation rdMmRelation : list) {
+                //2.进行冻结（修改关系表会员状态，基础信息表OLD_SYS_STATUS状态，生成关系表变更日志）
+                rdMmRelation.setMmStatus(1);
+                rdMmRelationDao.update(rdMmRelation);
+                MemberRelationLog log = new MemberRelationLog();
+                log.setMStatusBefore(0);
+                log.setMStatusAfter(1);
+                log.setCategory(4);
+                log.setCreateTime(new Date());
+                log.setMCode(rdMmRelation.getMmCode());
+                log.setRemark("非活跃老系统会员注册业绩不达标冻结");
+                memberRelationLogDao.insert(log);
+                RdMmBasicInfo mmBasicInfo = rdMmBasicInfoDao.findByMCode(rdMmRelation.getMmCode());
+                mmBasicInfo.setOldSysStatus(2);
+                rdMmBasicInfoDao.update(mmBasicInfo);
+            }
+        }
+        System.out.println("******************结束会员冻结*************************");
+    }
 }

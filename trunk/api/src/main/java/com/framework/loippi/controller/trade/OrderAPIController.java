@@ -1,10 +1,12 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.cart.ShopCartExchange;
 import com.framework.loippi.entity.product.*;
 import com.framework.loippi.result.app.order.*;
 import com.framework.loippi.service.product.*;
 import com.framework.loippi.utils.*;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -174,7 +176,8 @@ public class OrderAPIController extends BaseController {
     private ShopGoodsBrandService shopGoodsBrandService;
     @Resource
     private ShopGoodsFreightRuleService shopGoodsFreightRuleService;
-
+    @Resource
+    private ShopCartService shopCartService;
     /**
      * 提交订单
      */
@@ -185,6 +188,26 @@ public class OrderAPIController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        //***************************************************************************
+        List<ShopCart> cartList = Lists.newArrayList();
+        String cartIds = param.getCartIds();
+        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
+            String[] cartId = cartIds.split(",");
+            if (cartId != null && cartId.length > 0) {
+                cartList =shopCartService.findList(Paramap.create().put("ids", cartId));
+            }
+        }
+        for (ShopCart shopCart : cartList) {
+            Long goodsId = shopCart.getGoodsId();
+            ShopGoods goods = shopGoodsService.find(goodsId);
+            if(goods==null||goods.getPlusVipType()==null){
+                return ApiUtils.error("商品属性异常");
+            }
+            if(goods.getPlusVipType()==1){
+                return ApiUtils.error("因版本太低，您购买的商品"+goods.getGoodsName()+"无法享受PLUS VIP折扣，请您升级最新版本获取优惠");
+            }
+        }
+        //***************************************************************************
         // 订单留言
         Map<String, Object> orderMsgMap = new HashMap<>();
         if (StringUtils.isNotBlank(param.getOrderMessages())) {//验证是否有留言信息
@@ -245,6 +268,26 @@ public class OrderAPIController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        //***************************************************************************
+        List<ShopCart> cartList = Lists.newArrayList();
+        String cartIds = param.getCartIds();
+        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
+            String[] cartId = cartIds.split(",");
+            if (cartId != null && cartId.length > 0) {
+                cartList =shopCartService.findList(Paramap.create().put("ids", cartId));
+            }
+        }
+        for (ShopCart shopCart : cartList) {
+            Long goodsId = shopCart.getGoodsId();
+            ShopGoods goods = shopGoodsService.find(goodsId);
+            if(goods==null||goods.getPlusVipType()==null){
+                return ApiUtils.error("商品属性异常");
+            }
+            if(goods.getPlusVipType()==1){
+                return ApiUtils.error("因版本太低，您购买的商品"+goods.getGoodsName()+"无法享受PLUS VIP折扣，请您升级最新版本获取优惠");
+            }
+        }
+        //***************************************************************************
         // 订单留言
         Map<String, Object> orderMsgMap = new HashMap<>();
         if (StringUtils.isNotBlank(param.getOrderMessages())) {//验证是否有留言信息
@@ -322,6 +365,26 @@ public class OrderAPIController extends BaseController {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        //***************************************************************************
+        List<ShopCart> cartList = Lists.newArrayList();
+        String cartIds = param.getCartIds();
+        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
+            String[] cartId = cartIds.split(",");
+            if (cartId != null && cartId.length > 0) {
+                cartList =shopCartService.findList(Paramap.create().put("ids", cartId));
+            }
+        }
+        for (ShopCart shopCart : cartList) {
+            Long goodsId = shopCart.getGoodsId();
+            ShopGoods goods = shopGoodsService.find(goodsId);
+            if(goods==null||goods.getPlusVipType()==null){
+                return ApiUtils.error("商品属性异常");
+            }
+            if(goods.getPlusVipType()==1){
+                return ApiUtils.error("因版本太低，您购买的商品"+goods.getGoodsName()+"无法享受PLUS VIP折扣，请您升级最新版本获取优惠");
+            }
+        }
+        //***************************************************************************
         // 订单留言
         Map<String, Object> orderMsgMap = new HashMap<>();
         if (StringUtils.isNotBlank(param.getOrderMessages())) {//验证是否有留言信息
@@ -397,6 +460,98 @@ public class OrderAPIController extends BaseController {
                 .build(rdMmIntegralRule, orderPay, rdMmAccountInfoService.find("mmCode", member.getMmCode())));
     }
 
+    /**
+     * 提交订单（添加plus订单类型）TODO
+     */
+    @RequestMapping(value = "/api/order/submitNew2")
+    @ResponseBody
+    public String submitOrderNew2(@Valid OrderSubmitParam param, BindingResult vResult, HttpServletRequest request,
+                                  @RequestParam(required = false,value = "giftId")Long giftId,Integer giftNum,Long couponId,@RequestParam(required = false,value = "platform")String platform,
+                                    Integer plusOrderFlag) {
+        if (vResult.hasErrors()) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        // 订单留言
+        Map<String, Object> orderMsgMap = new HashMap<>();
+        if (StringUtils.isNotBlank(param.getOrderMessages())) {//验证是否有留言信息
+            orderMsgMap.put("orderMessages", param.getOrderMessages());
+        }
+        if (param.getLogisticType() == 2) {//如果订单为自提 需要记录自提人姓名和电话
+            orderMsgMap.put("userName", param.getUserName());
+            orderMsgMap.put("userPhone", param.getUserPhone());
+        }
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        Integer type = 1; //默认显示零售价  判断商品是按零售价还是会员价出售
+        if (rdRanks.getRankClass() > 0) {
+            type = 2;
+        }
+        ShopOrderDiscountType shopOrderDiscountType = null;//订单优惠类型
+        if (param.getShopOrderTypeId() != -1) {
+            shopOrderDiscountType = shopOrderDiscountTypeService.find(param.getShopOrderTypeId());
+            if (shopOrderDiscountType != null) {
+                type = shopOrderDiscountType.getPreferentialType();
+                if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_MEMBER
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PREFERENTIAL
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
+                    type = ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL;
+                    shopOrderDiscountType.setPreferentialType(type);
+                }
+            }
+        }
+        if (shopOrderDiscountType == null) {
+            shopOrderDiscountType = new ShopOrderDiscountType();
+            shopOrderDiscountType.setId(-1L);
+            shopOrderDiscountType.setPreferentialType(type);
+        }
+        if(plusOrderFlag!=null&&plusOrderFlag==1){
+            shopOrderDiscountType = new ShopOrderDiscountType();
+            shopOrderDiscountType.setId(-1L);
+            shopOrderDiscountType.setPreferentialType(ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS);
+        }
+        if(giftId!=null){
+            if(giftNum==null){
+                return ApiUtils.error("赠送数量不可以为空");
+            }
+            ShopGoods shopGoods = shopGoodsService.find(giftId);
+            if(shopGoods==null){
+                return ApiUtils.error("所选赠品不存在");
+            }
+            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find("goodsId", giftId);
+            if(goodsSpec==null){
+                return ApiUtils.error("所选赠品不存在");
+            }
+            if(goodsSpec.getSpecGoodsStorage()<giftNum){
+                return ApiUtils.error("所选赠品已赠完，请选择其他类型赠品");
+            }
+        }
+        //提交订单,返回订单支付实体
+        ShopOrderPay orderPay = new ShopOrderPay();
+        if(platform!=null&&platform.equals("weixinAppletsPaymentPlugin")){
+            orderPay = orderService.addOrderReturnPaySnNew1(param.getCartIds(), member.getMmCode()
+                    , orderMsgMap, param.getAddressId()
+                    , couponId, param.getIsPp()
+                    , OrderState.PLATFORM_WECHAT, param.getGroupBuyActivityId()
+                    , param.getGroupOrderId(), shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),giftId,giftNum);
+        }else{
+            orderPay= orderService.addOrderReturnPaySnNew1(param.getCartIds(), member.getMmCode()
+                    , orderMsgMap, param.getAddressId()
+                    , couponId, param.getIsPp()
+                    , OrderState.PLATFORM_APP, param.getGroupBuyActivityId()
+                    , param.getGroupOrderId(), shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),giftId,giftNum);
+        }
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        return ApiUtils.success(OrderSubmitResult
+                .build(rdMmIntegralRule, orderPay, rdMmAccountInfoService.find("mmCode", member.getMmCode())));
+    }
     /**
      * 提交换购商品订单
      * @param param

@@ -493,7 +493,29 @@ public class CartAPIController extends BaseController {
             type = 2;
             orderDiscountTypeList = shopOrderDiscountTypeService.findAll();
         }
-
+        //***************************************************************************
+        List<ShopCart> cartList = Lists.newArrayList();
+        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
+            String[] cartId = cartIds.split(",");
+            if (cartId != null && cartId.length > 0) {
+                cartList = cartService.findList("ids", cartId);
+            }
+        }
+        if (CollectionUtils.isEmpty(cartList)) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        for (ShopCart shopCart : cartList) {
+            Long goodsId = shopCart.getGoodsId();
+            ShopGoods goods = goodsService.find(goodsId);
+            if(goods==null||goods.getPlusVipType()==null){
+                return ApiUtils.error("商品属性异常");
+            }
+            if(goods.getPlusVipType()==1){
+                type = 8;
+                break;
+            }
+        }
+        //***************************************************************************
         // 获取收货地址
         RdMmAddInfo addr = null;
         if (addressId != null) {
@@ -518,7 +540,8 @@ public class CartAPIController extends BaseController {
                 if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_MEMBER
                         && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV
                         && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PREFERENTIAL
-                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL) {
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL
+                        && type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
                     type = ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETAIL;
                     shopOrderDiscountType.setPreferentialType(type);
                 }
@@ -537,16 +560,6 @@ public class CartAPIController extends BaseController {
                 return ApiUtils.error(map.get("message").toString());
             }
             return ApiUtils.error("商品属性发生改变,请重新结算");
-        }
-        List<ShopCart> cartList = Lists.newArrayList();
-        if (StringUtils.isNotEmpty(cartIds) && !"null".equals(cartIds)) {
-            String[] cartId = cartIds.split(",");
-            if (cartId != null && cartId.length > 0) {
-                cartList = cartService.findList("ids", cartId);
-            }
-        }
-        if (CollectionUtils.isEmpty(cartList)) {
-            return ApiUtils.error(Xerror.PARAM_INVALID);
         }
         CartCheckOutResult result = CartCheckOutResult
                 .buildNew(map, cartList, addr, shopOrderTypeId, shopOrderDiscountType);

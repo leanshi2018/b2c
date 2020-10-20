@@ -281,7 +281,16 @@ public class ShopCartExchangeServiceImpl extends GenericServiceImpl<ShopCartExch
             if (!isShow) {
                 map.put("error", "true");
                 map.put("code","10001");
-                map.put("message", targetGoods.getGoodsName() + "商品已下架");
+                map.put("message", "商品属性发生变化，请删除后重新提交");
+                if(targetGoods.getState() != GoodsState.GOODS_OPEN_STATE){
+                    map.put("message", targetGoods.getGoodsName() + "审核未通过，请删除后重新提交");
+                }
+                if(targetGoods.getGoodsShow() == null||targetGoods.getGoodsShow() != GoodsState.GOODS_ON_SHOW){
+                    map.put("message", targetGoods.getGoodsName() + "已下架，请删除后重新提交");
+                }
+                if(targetGoods.getIsDel() == null||targetGoods.getIsDel() == GoodsState.GOODS_HAS_DELETE){
+                    map.put("message", targetGoods.getGoodsName() + "不存在，请删除后重新提交");
+                }
                 return map;
             }
             ShopGoodsSpec targetSpec = specList.get(shopCart.getSpecId());

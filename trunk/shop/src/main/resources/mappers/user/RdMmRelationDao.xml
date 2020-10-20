@@ -332,4 +332,9 @@
 	<select id="findSponCountByMCode" parameterType="string" resultType="int">
 		SELECT COUNT(MM_CODE) FROM RD_MM_RELATION WHERE RA_SPONSOR_STATUS = 1 AND SPONSOR_CODE = #{sponsorCode}
 	</select>
+
+	<select id="findFreezeMem" resultMap="RdMmRelationResultMap">
+		SELECT a.* from rd_mm_relation a INNER JOIN rd_mm_basic_info b on a.mm_code = b.mm_code and b.CREATION_DATE &lt; DATE_SUB(CURDATE(), INTERVAL 3 MONTH) and b.OLD_SYS_STATUS = 1
+		and a.a_ppv &lt; 150
+	</select>
 </mapper> 

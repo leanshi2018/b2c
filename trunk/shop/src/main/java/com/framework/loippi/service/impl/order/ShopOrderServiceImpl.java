@@ -3,8 +3,10 @@ package com.framework.loippi.service.impl.order;
 
 
 import com.framework.loippi.entity.cart.ShopCartExchange;
+import com.framework.loippi.entity.user.*;
 import com.framework.loippi.pojo.cart.CartExchangeInfo;
 import com.framework.loippi.service.product.*;
+import com.framework.loippi.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -104,15 +106,6 @@ import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
-import com.framework.loippi.entity.user.RdGoodsAdjustment;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmAccountLog;
-import com.framework.loippi.entity.user.RdMmAddInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.entity.user.RetailProfit;
-import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAdjust;
@@ -149,14 +142,6 @@ import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.OrderFundFlowService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmAccountLogService;
-import com.framework.loippi.service.user.RdMmAddInfoService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdRanksService;
-import com.framework.loippi.service.user.RdSysPeriodService;
-import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.wallet.ShopWalletLogService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.service.wechat.WechatRefundService;
@@ -320,6 +305,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private OrderFundFlowService orderFundFlowService;
     @Resource
     private ShopCartExchangeService shopCartExchangeService;
+    @Resource
+    private PlusProfitService plusProfitService;
     @Autowired
     public void setGenericDao() {
         super.setGenericDao(orderDao);
@@ -455,10 +442,20 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 }
             }
         }
-
-
-
-
+        if(order.getOrderType().equals(8)){
+            PlusProfit plusProfit = plusProfitService.find("orderId", order.getId());
+            if(plusProfit!=null&&plusProfit.getState()==0){
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DATE, 10);
+                plusProfit.setExpectTime(calendar.getTime());
+                String periodCode = rdSysPeriodDao.getSysPeriodService(plusProfit.getExpectTime());
+                if(periodCode!=null){
+                    plusProfit.setExpectPeriod(periodCode);
+                }
+                plusProfitService.update(plusProfit);
+            }
+        }
         // 更新订单
         ShopOrder newOrder = new ShopOrder();
         newOrder.setId(order.getId());
@@ -588,8 +585,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     if(order.getOrderType()==1){
                         rdMmRelation.setARetail(money.subtract(orderMoney));
                     }
+                    if(order.getOrderType()==8){
+                        rdMmRelation.setARetail(money.subtract(new BigDecimal("360.00")));
+                    }
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                    if (order.getOrderType()==1&&money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
+                    if ((order.getOrderType()==1||order.getOrderType()==8)&&money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
                         rdMmRelation.setAPpv(ppv.subtract(orderPpv));
                         rdMmRelation.setATotal(aTotal.subtract(orderMoney));
                         rdMmRelation.setRank(0);
@@ -639,6 +639,22 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 retailProfit.setState(-1);
                 retailProfit.setRemark("待发货订单取消");
                 retailProfitService.update(retailProfit);
+            }
+        }
+        if(order.getOrderType().equals(8)){
+            PlusProfit plusProfit = plusProfitService.find("orderId",order.getId());
+            if(plusProfit!=null){
+                plusProfit.setState(-1);
+                plusProfit.setRemark("待发货订单取消");
+                plusProfitService.update(plusProfit);
+            }
+            Long num=orderDao.getPlusVipOrderNum(order.getBuyerId());
+            if(num<=1){
+                RdMmBasicInfo mmBasicInfo = rdMmBasicInfoService.findByMCode(Long.toString(order.getBuyerId()));
+                if(mmBasicInfo.getPlusVip()==1){
+                    mmBasicInfo.setPlusVip(0);
+                    rdMmBasicInfoService.update(mmBasicInfo);
+                }
             }
         }
         //order.settime Date());
@@ -3292,6 +3308,20 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 retailProfitService.update(retailProfit);
             }
         }
+        if(order.getOrderType().equals(8)){
+            PlusProfit plusProfit = plusProfitService.find("orderId", order.getId());
+            if(plusProfit!=null&&plusProfit.getState()==0){
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DATE, 8);
+                plusProfit.setExpectTime(calendar.getTime());
+                String periodCode = rdSysPeriodDao.getSysPeriodService(plusProfit.getExpectTime());
+                if(periodCode!=null){
+                    plusProfit.setExpectPeriod(periodCode);
+                }
+                plusProfitService.update(plusProfit);
+            }
+        }
         //##########################################################################################
         /*********************订单日志*********************/
         ShopOrderLog orderLog = new ShopOrderLog();
@@ -3532,6 +3562,41 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     retailProfit.setProfits(profit);
                     retailProfitService.save(retailProfit);
                 }
+                if(order.getOrderType()==8){//如果当前订单为PLUS会员订单 TODO plus会员订单生成plus_profit记录
+                    String buyerId = order.getBuyerId()+"";
+                    RdMmBasicInfo basicInfo = rdMmBasicInfoService.findByMCode(buyerId);
+                    PlusProfit plusProfit = new PlusProfit();
+                    plusProfit.setBuyerId(buyerId);
+                    plusProfit.setCreateTime(new Date());
+                    String periodCode = rdSysPeriodDao.getSysPeriodService(new Date());
+                    if(periodCode!=null){
+                        plusProfit.setCreatePeriod(periodCode);
+                    }
+                    plusProfit.setOrderId(order.getId());
+                    plusProfit.setOrderSn(order.getOrderSn());
+                    if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==0){//不是plus vip会员，奖励送给推荐人
+                        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", buyerId);
+                        if(rdMmRelation!=null&&rdMmRelation.getSponsorCode()!=null){
+                            plusProfit.setReceiptorId(rdMmRelation.getSponsorCode());
+                        }
+                        plusProfit.setState(0);
+                        RdMmBasicInfo basicInfoSpo = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
+                        if(basicInfoSpo.getPlusVip()==0){
+                            plusProfit.setProfits(new BigDecimal("500.00"));
+                        }
+                        if(basicInfoSpo.getPlusVip()==1){
+                            plusProfit.setProfits(new BigDecimal("1000.00"));
+                        }
+                        basicInfo.setPlusVip(1);
+                        rdMmBasicInfoService.update(basicInfo);
+                    }
+                    if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==1){//是plus vip会员，奖励减免给自己
+                        plusProfit.setReceiptorId(buyerId);
+                        plusProfit.setState(3);
+                        plusProfit.setProfits(new BigDecimal("1000.00"));
+                    }
+                    plusProfitService.save(plusProfit);
+                }
                 order.setLockState(OrderState.ORDER_LOCK_STATE_NO);
                 order.setPaymentTime(new Date());
                 String period = rdSysPeriodDao.getSysPeriodService(new Date());//TODO 2019/7/15 15:51 修改by zc
@@ -3611,8 +3676,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     if(order.getOrderType()==1){
                         rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                     }
+                    if(order.getOrderType()==8){
+                        rdMmRelation.setARetail(rdMmRelation.getARetail().add(new BigDecimal("360.00")));
+                    }
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                    if (order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                    if ((order.getOrderType()==1||order.getOrderType()==8)&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                         //2020-02-06 TODO 如果会员在指定月份升级，赠送优惠券
                         //1 确定当前月份为几月份 如果在赠送月份，判断送哪几个月的优惠券
                         ArrayList<Coupon> couponDetails = new ArrayList<>();
@@ -4907,6 +4975,41 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         retailProfit.setProfits(profit);
                         retailProfitService.save(retailProfit);
                     }
+                    if(order.getOrderType()==8){//如果当前订单为PLUS会员订单 TODO plus会员订单生成plus_profit记录
+                        String buyerId = order.getBuyerId()+"";
+                        RdMmBasicInfo basicInfo = rdMmBasicInfoService.findByMCode(buyerId);
+                        PlusProfit plusProfit = new PlusProfit();
+                        plusProfit.setBuyerId(buyerId);
+                        plusProfit.setCreateTime(new Date());
+                        String periodCode = rdSysPeriodDao.getSysPeriodService(new Date());
+                        if(periodCode!=null){
+                            plusProfit.setCreatePeriod(periodCode);
+                        }
+                        plusProfit.setOrderId(order.getId());
+                        plusProfit.setOrderSn(order.getOrderSn());
+                        if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==0){//不是plus vip会员，奖励送给推荐人
+                            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", buyerId);
+                            if(rdMmRelation!=null&&rdMmRelation.getSponsorCode()!=null){
+                                plusProfit.setReceiptorId(rdMmRelation.getSponsorCode());
+                            }
+                            plusProfit.setState(0);
+                            RdMmBasicInfo basicInfoSpo = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
+                            if(basicInfoSpo.getPlusVip()==0){
+                                plusProfit.setProfits(new BigDecimal("500.00"));
+                            }
+                            if(basicInfoSpo.getPlusVip()==1){
+                                plusProfit.setProfits(new BigDecimal("1000.00"));
+                            }
+                            basicInfo.setPlusVip(1);
+                            rdMmBasicInfoService.update(basicInfo);
+                        }
+                        if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==1){//是plus vip会员，奖励减免给自己
+                            plusProfit.setReceiptorId(buyerId);
+                            plusProfit.setState(3);
+                            plusProfit.setProfits(new BigDecimal("1000.00"));
+                        }
+                        plusProfitService.save(plusProfit);
+                    }
                     newOrder.setPaymentTime(new Date());
                     String period = rdSysPeriodDao.getSysPeriodService(new Date());
                     order.setCreationPeriod(period);
@@ -4939,8 +5042,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         if(order.getOrderType()==1){
                             rdMmRelation.setARetail(rdMmRelation.getARetail().add(orderMoney));
                         }
+                        if(order.getOrderType()==8){
+                            rdMmRelation.setARetail(rdMmRelation.getARetail().add(new BigDecimal("360.00")));
+                        }
                         //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                        if (order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                        if ((order.getOrderType()==1||order.getOrderType()==8)&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
                             //2020-02-06 TODO 如果会员在指定月份升级，赠送优惠券
                             //1 确定当前月份为几月份 如果在赠送月份，判断送哪几个月的优惠券
                             Calendar calendar = Calendar.getInstance();
@@ -5580,13 +5686,18 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if(order.getOrderType()==1){
                     rdMmRelation.setARetail(orderMoney);
                 }
+                if(order.getOrderType()==8){
+                    if(aRetail.subtract(new BigDecimal("360.00")).compareTo(BigDecimal.ZERO)!=-1&&aRetail.subtract(new BigDecimal("360.00")).compareTo(new BigDecimal("360"))==-1){
+                        rdMmRelation.setARetail(rdMmRelation.getARetail().subtract(new BigDecimal("360.00")));
+                    }
+                }
                 /*//降级到vip会员
                 if ((aPpv.compareTo(agencyPpv) == 1||aPpv.compareTo(agencyPpv) == 0) && orderPpv.compareTo(agencyPpv) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }*/
                 //******************************************降级到普通会员****************************************************************** TODO 修改by zc 2019-07-24
-                if (order.getOrderType()==1&&aRetail.compareTo(vipMoney)!=-1&&orderMoney.compareTo(vipMoney)==-1&&rdMmRelation.getNOFlag()==1) {//新会员 退款之前累计购买额大于等于360退款之后小于360降级vip
+                if ((order.getOrderType()==1||order.getOrderType()==8)&&aRetail.compareTo(vipMoney)!=-1&&orderMoney.compareTo(vipMoney)==-1&&rdMmRelation.getNOFlag()==1) {//新会员 退款之前累计购买额大于等于360退款之后小于360降级vip
                     rdMmRelation.setRank(0);
                     //进行用户降级通知
                     ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
@@ -5686,11 +5797,18 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     RdRanks rdRanks = rdRanksService.find("rankClass", 1);
                     rdMmRelation.setRank(rdRanks.getRankId());
                 }*/
+                if(order.getOrderType()==1){
+                    rdMmRelation.setARetail(orderMoney);
+                }
+                if(order.getOrderType()==8){
+                    if(aRetail.subtract(new BigDecimal("360.00")).compareTo(BigDecimal.ZERO)!=-1&&aRetail.subtract(new BigDecimal("360.00")).compareTo(new BigDecimal("360"))==-1){
+                        rdMmRelation.setARetail(rdMmRelation.getARetail().subtract(new BigDecimal("360.00")));
+                    }
+                }
                 //之前大于升级vip的价位 加上这个售后金额小于vip的价位
-                if (order.getOrderType()==1&&aRetail.compareTo(vipMoney) != -1 && orderMoney.compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
+                if ((order.getOrderType()==1||order.getOrderType()==8)&&aRetail.compareTo(vipMoney) != -1 && orderMoney.compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
                     RdRanks rdRanks = rdRanksService.find("rankClass", 0);
                     rdMmRelation.setRank(rdRanks.getRankId());
-                    rdMmRelation.setARetail(orderMoney);
                     //进行用户降级通知
                     ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
                     shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
@@ -5955,6 +6073,20 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 retailProfitService.update(retailProfit);
             }
         }
+        PlusProfit plusProfit = plusProfitService.find("orderSn", orderSn);
+        if(plusProfit!=null&&plusProfit.getState()==0){
+            if(plusProfit.getExpectTime()==null){
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DATE, 10);
+                plusProfit.setExpectTime(calendar.getTime());
+                String periodCode = rdSysPeriodDao.getSysPeriodService(plusProfit.getExpectTime());
+                if(periodCode!=null){
+                    plusProfit.setExpectPeriod(periodCode);
+                }
+                plusProfitService.update(plusProfit);
+            }
+        }
     }
     public void returnCoupon(Coupon coupon,CouponDetail couponDetail,String opName){
         CouponPayDetail couponPayDetail = couponPayDetailService.find(couponDetail.getBuyOrderId());
@@ -6154,6 +6286,20 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     retailProfitService.update(retailProfit);
                 }
             }
+            if(order.getOrderType().equals(8)){
+                PlusProfit plusProfit = plusProfitService.find("orderId", order.getId());
+                if(plusProfit!=null&&plusProfit.getState()==0){
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+                    calendar.add(Calendar.DATE, 8);
+                    plusProfit.setExpectTime(calendar.getTime());
+                    String periodCode = rdSysPeriodDao.getSysPeriodService(plusProfit.getExpectTime());
+                    if(periodCode!=null){
+                        plusProfit.setExpectPeriod(periodCode);
+                    }
+                    plusProfitService.update(plusProfit);
+                }
+            }
             //##########################################################################################
             /*********************订单日志*********************/
             ShopOrderLog orderLog = new ShopOrderLog();
@@ -6230,6 +6376,20 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         retailProfit.setExpectPeriod(periodCode);
                     }
                     retailProfitService.update(retailProfit);
+                }
+            }
+            if(order.getOrderType().equals(8)){
+                PlusProfit plusProfit = plusProfitService.find("orderId", order.getId());
+                if(plusProfit!=null&&plusProfit.getState()==0){
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+                    calendar.add(Calendar.DATE, 8);
+                    plusProfit.setExpectTime(calendar.getTime());
+                    String periodCode = rdSysPeriodDao.getSysPeriodService(plusProfit.getExpectTime());
+                    if(periodCode!=null){
+                        plusProfit.setExpectPeriod(periodCode);
+                    }
+                    plusProfitService.update(plusProfit);
                 }
             }
             //##########################################################################################
