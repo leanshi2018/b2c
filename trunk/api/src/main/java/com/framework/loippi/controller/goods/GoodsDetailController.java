@@ -114,7 +114,7 @@ public class GoodsDetailController extends BaseController {
         }
         List<ShopGoodsSpec> shopGoodsSpecs = shopGoodsSpecService.findListByGoodsId(shopGoods.getId());
         //评价标签
-        ActivityGoodsDetailResult goodsDetailResult = ActivityGoodsDetailResult.build(shopGoods,shopGoodsSpecs, prefix, wapServer);
+        ActivityGoodsDetailResult goodsDetailResult = ActivityGoodsDetailResult.build1(shopGoods,shopGoodsSpecs, prefix, wapServer);
         ShopGoodsFreightRule shopGoodsFreightRule = shopGoodsFreightRuleService.find("memberGradeId",0);
         //加载包邮金额
         goodsDetailResult.setShippingCouponAmount(shopGoodsFreightRule.getMinimumOrderAmount());

@@ -173,7 +173,55 @@ public class ActivityGoodsDetailResult {
      */
     List<ShopGoodsEvaluateKeywords> shopGoodsEvaluateKeywordsList=new ArrayList<ShopGoodsEvaluateKeywords>();
 
-    public static ActivityGoodsDetailResult build(ShopGoods item, List<ShopGoodsSpec> shopGoodsSpecs, String prefix, String wapServer) {
+    public static ActivityGoodsDetailResult build(ShopGoods item, String prefix, String wapServer) {
+        ActivityGoodsDetailResult result = new ActivityGoodsDetailResult();
+        Optional<ActivityGoodsDetailResult> opt = Optional.ofNullable(result);
+        result.setGoodsIs(Optional.ofNullable(item.getId()).orElse(0L));//商品id
+        result.setClassId(Optional.ofNullable(item.getGcId()).orElse(-1L));//分类id
+        result.setGoodsName(Optional.ofNullable(item.getGoodsName()).orElse(""));//商品名称
+        result.setGoodsKeywords(Optional.ofNullable(item.getGoodsKeywords()).orElse(""));//商品促销语
+        result.setGoodsSubtitle(Optional.ofNullable(item.getGoodsSubtitle()).orElse(""));//商品副标题,描述
+        result.setGoodsRetailPrice(Optional.ofNullable(item.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));//销售价
+        result.setGoodsRetailPriceHigh(Optional.ofNullable(item.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
+        result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));//销售价
+        result.setGoodsMemberPriceHigh(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
+        result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));//ppv
+        result.setPpvHigh(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
+
+        result.setGoodsType(Optional.ofNullable(item.getGoodsType()).orElse(1));
+        result.setSpecId(Optional.ofNullable(item.getSpecId()).orElse(-1L));//规格id
+        result.setListImage(Optional.ofNullable(prefix + item.getGoodsImageMore()).orElse(""));//轮播图
+        result.setDefaultImage(Optional.ofNullable(prefix + item.getGoodsImage()).orElse(""));
+        result.setEvaluateRate(Optional.ofNullable(item.getEvaluaterate()).orElse(1D));//好评率
+        //手机端详情拼接
+        String mobileBody = StringEscapeUtils.unescapeHtml4(item.getMobileBody());
+        if (!StringUtil.isEmpty(mobileBody)) {
+            List<Map> mobileBodyMap = JacksonUtil.convertList(mobileBody, Map.class);
+            StringBuilder strBuilder = new StringBuilder("");
+            for (Map<String, String> mobileBodyItem : mobileBodyMap) {
+                if (mobileBodyItem.get("type").equals("image")) {
+                    strBuilder.append("<img src='" + prefix + mobileBodyItem.get("value") + "' width='100%'>");
+                }
+                if (mobileBodyItem.get("type").equals("text")) {
+                    strBuilder.append("<p>" + mobileBodyItem.get("value") + "</p>");
+                }
+            }
+            result.setMobileBody(Optional.ofNullable(prefix + strBuilder.toString()).orElse(""));
+        }
+        result.setGoodsCollect(Optional.ofNullable(item.getGoodsCollect()).orElse(0));
+        result.setSaleNum(Optional.ofNullable(item.getSalenum()).orElse(0));
+        result.setStockNumber(Optional.ofNullable(item.getStock()).orElse(0l));
+        // 市场价不受活动影响
+        StringBuffer shareUrl = new StringBuffer();
+        shareUrl.append(wapServer);
+        shareUrl.append("/wap/goods/detail/");
+        shareUrl.append(item.getId());
+        shareUrl.append(".html");
+        result.setShareUrl(shareUrl.toString());
+        return result;
+    }
+
+    public static ActivityGoodsDetailResult build1(ShopGoods item, List<ShopGoodsSpec> shopGoodsSpecs, String prefix, String wapServer) {
         ActivityGoodsDetailResult result = new ActivityGoodsDetailResult();
         Optional<ActivityGoodsDetailResult> opt = Optional.ofNullable(result);
         result.setGoodsIs(Optional.ofNullable(item.getId()).orElse(0L));//商品id
