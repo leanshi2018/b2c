@@ -1291,7 +1291,7 @@ public class SelfMentionController extends BaseController {
      */
     @RequestMapping(value = "/api/mention/orders.json")
     @ResponseBody
-    public String getOrders(HttpServletRequest request,Integer orderState,Pageable pager) {
+    public String getOrders(HttpServletRequest request,Integer orderState,@RequestParam(required = false,value = "selectName")String selectName,Pageable pager) {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if(member==null){
             return ApiUtils.error("当前用户尚未登录");
@@ -1303,7 +1303,7 @@ public class SelfMentionController extends BaseController {
         }
         int pageSize = pager.getPageSize();
         int pageNumber = (pager.getPageNumber()-1)*pageSize;
-        List<ShopOrder> list=shopOrderService.findSelfOrderByPage(rdWarehouse,pageNumber,pageSize,orderState);
+        List<ShopOrder> list=shopOrderService.findSelfOrderByPage(rdWarehouse,pageNumber,pageSize,orderState,selectName);
         HashMap<Long, List<ShopOrderGoods>> hashMap = new HashMap<>();
         Map<Long, String> addressMap = new HashMap<>();
         if(list!=null&&list.size()>0){

@@ -86,6 +86,7 @@ import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.TSystemPluginConfig;
 import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
+import com.framework.loippi.entity.cart.ShopCartExchange;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.coupon.Coupon;
@@ -114,6 +115,7 @@ import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.pojo.activity.ShopGoodSpec;
+import com.framework.loippi.pojo.cart.CartExchangeInfo;
 import com.framework.loippi.pojo.cart.CartInfo;
 import com.framework.loippi.pojo.cart.CartVo;
 import com.framework.loippi.pojo.common.CensusVo;
@@ -142,6 +144,20 @@ import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.OrderFundFlowService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopCartExchangeService;
+import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
+import com.framework.loippi.service.product.ShopGoodsFreightService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmAddInfoService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdRanksService;
+import com.framework.loippi.service.user.RdSysPeriodService;
+import com.framework.loippi.service.user.RetailProfitService;
 import com.framework.loippi.service.wallet.ShopWalletLogService;
 import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.service.wechat.WechatRefundService;
@@ -6565,10 +6581,14 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
      * @return
      */
     @Override
-    public List<ShopOrder> findSelfOrderByPage(RdWarehouse rdWarehouse, Integer pageNumber, Integer pageSize, Integer orderState) {
+    public List<ShopOrder> findSelfOrderByPage(RdWarehouse rdWarehouse, Integer pageNumber, Integer pageSize, Integer orderState, String selectName) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("pageNumber",pageNumber);
         map.put("pageSize",pageSize);
+        if (selectName==null){
+            selectName = "";
+        }
+        map.put("selectName",selectName);
         if(orderState!=null&&orderState==100){
             map.put("searchState",100);
             map.put("orderState",null);

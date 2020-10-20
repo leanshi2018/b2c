@@ -279,7 +279,7 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 	}
 
 	@Override
-	public void updateOrderStatePayFinish(String paysn, String tradeSn, String paymentBranch) {
+	public void updateOrderStatePayFinish(String paysn, String tradeSn, String paymentBranch,String totalFee) {
 		// 用于积分计算
 		double orderTotalAmount = 0.0;
 		String memberId = "";
@@ -307,6 +307,10 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 				rdWareOrder.setPaymentState(1);
 				rdWareOrder.setPaymentTime(new Date());
 				rdWareOrder.setTradeSn(tradeSn);
+				if (rdWareOrder.getOrderAmount().compareTo(new BigDecimal("0.00"))==1){
+					System.out.println("totalFee="+totalFee);
+					rdWareOrder.setOrderAmount(rdWareOrder.getOrderAmount().subtract(new BigDecimal(totalFee)).setScale(2,BigDecimal.ROUND_HALF_UP));
+				}
 				rdWareOrder.setOrderState(WareOrderState.ORDER_STATE_NO_AUDIT);
 				rdWareOrderDao.update(rdWareOrder);
 

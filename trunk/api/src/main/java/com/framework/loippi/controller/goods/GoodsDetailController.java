@@ -1,10 +1,33 @@
 package com.framework.loippi.controller.goods;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
-import com.framework.loippi.entity.product.*;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
+import com.framework.loippi.entity.product.ShopGoodsBrowse;
+import com.framework.loippi.entity.product.ShopGoodsEvaluate;
+import com.framework.loippi.entity.product.ShopGoodsEvaluateKeywords;
+import com.framework.loippi.entity.product.ShopGoodsFreightRule;
+import com.framework.loippi.entity.product.ShopGoodsRecommend;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.result.activity.ActivityDetailResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.activity.ActivityEvaluateGoodsResult;
@@ -15,21 +38,24 @@ import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.activity.ShopActivityGoodsService;
 import com.framework.loippi.service.activity.ShopActivityGoodsSpecService;
 import com.framework.loippi.service.activity.ShopActivityService;
-import com.framework.loippi.service.product.*;
+import com.framework.loippi.service.product.ShopGoodsBrandService;
+import com.framework.loippi.service.product.ShopGoodsBrowseService;
+import com.framework.loippi.service.product.ShopGoodsEvaluateKeywordsService;
+import com.framework.loippi.service.product.ShopGoodsEvaluateService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
+import com.framework.loippi.service.product.ShopGoodsRecommendService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.*;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Constants;
+import com.framework.loippi.utils.Dateutil;
+import com.framework.loippi.utils.GoodsUtils;
+import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.vo.goods.GoodsSpecVo;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  * 商品详情新接口
@@ -86,8 +112,9 @@ public class GoodsDetailController extends BaseController {
         if (shopGoods == null) {
             return jsonFail("商品不存在");
         }
+        List<ShopGoodsSpec> shopGoodsSpecs = shopGoodsSpecService.findListByGoodsId(shopGoods.getId());
         //评价标签
-        ActivityGoodsDetailResult goodsDetailResult = ActivityGoodsDetailResult.build(shopGoods, prefix, wapServer);
+        ActivityGoodsDetailResult goodsDetailResult = ActivityGoodsDetailResult.build1(shopGoods,shopGoodsSpecs, prefix, wapServer);
         ShopGoodsFreightRule shopGoodsFreightRule = shopGoodsFreightRuleService.find("memberGradeId",0);
         //加载包邮金额
         goodsDetailResult.setShippingCouponAmount(shopGoodsFreightRule.getMinimumOrderAmount());
