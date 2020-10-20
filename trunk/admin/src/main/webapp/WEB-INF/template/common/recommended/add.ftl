@@ -71,7 +71,7 @@
                         </p>
                         <p><input type="file" class="file" name="myfiles" id="mainPictureImg0"
                                   onChange="ajaxFileUploads('mainPictureImg0','mainPictureImg','pictureUrl');"/></p>
-                        <span class="error-message">建议上传图片尺寸351*184</span>
+                        <span class="error-message">建议上传图片尺寸750*420</span>
                         <span class="error-message"></span>
                     </td>
                 </tr>
