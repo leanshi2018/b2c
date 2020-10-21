@@ -79,6 +79,11 @@ public class WapPageController extends BaseController {
         return "/wap/download";
     }
 
+    @RequestMapping(value = "/activityTemplate", method = RequestMethod.GET)
+    public String activityTemplate(ModelMap model) {
+        return "/wap/activityTemplate";
+    }
+
     @RequestMapping(value = "/loginSuccessful", method = RequestMethod.GET)
     public String loginSuccessful(ModelMap model, String name, HttpServletRequest request) {
         model.addAttribute("name", name);
