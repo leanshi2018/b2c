@@ -360,6 +360,8 @@ public class CartCheckOutResult {
     public static CartCheckOutResult buildNew(Map<String, Object> moneyMap,
                                               List<ShopCart> cartList, RdMmAddInfo address, Long shopOrderTypeId, ShopOrderDiscountType shopOrderDiscountType) {
         CartCheckOutResult cartCheckOutResult = new CartCheckOutResult().setHadReceiveAddr(address == null ? 0 : 1);
+        Integer type = Optional.ofNullable((Integer) moneyMap.get("discountType")).orElse(1);
+        shopOrderDiscountType.setPreferentialType(type);
         Optional<RdMmAddInfo> optAddress = Optional.ofNullable(address);
         // 个人收货信息信息
         cartCheckOutResult
@@ -451,6 +453,7 @@ public class CartCheckOutResult {
         cartCheckOutResult.setCouponList(couponList);
         ArrayList<Coupon> noUseCouponList = (ArrayList<Coupon>) moneyMap.get("noUseCouponList");
         cartCheckOutResult.setNoUseCouponList(noUseCouponList);
+        cartCheckOutResult.setShopOrderTypeId(type.longValue());
         return cartCheckOutResult;
     }
 
