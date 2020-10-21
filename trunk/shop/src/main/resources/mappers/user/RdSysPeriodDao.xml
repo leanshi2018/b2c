@@ -15,15 +15,16 @@
 		<result property="endDate" column="END_DATE" />
 		<result property="calTimes" column="CAL_TIMES" />
 		<result property="bonusStatus" column="BONUS_STATUS" />
+		<result property="pvProportion" column="PV_PROPORTION" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 PERIOD_CODE ,PRE_PERIOD ,NEXT_PERIOD ,SALES_STATUS ,CAL_STATUS ,BEGIN_DATE ,END_DATE ,CAL_TIMES ,BONUS_STATUS 
+		 PERIOD_CODE ,PRE_PERIOD ,NEXT_PERIOD ,SALES_STATUS ,CAL_STATUS ,BEGIN_DATE ,END_DATE ,CAL_TIMES ,BONUS_STATUS ,PV_PROPORTION
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{periodCode},#{prePeriod},#{nextPeriod},#{salesStatus},#{calStatus},#{beginDate},#{endDate},#{calTimes},#{bonusStatus}
+		 #{periodCode},#{prePeriod},#{nextPeriod},#{salesStatus},#{calStatus},#{beginDate},#{endDate},#{calTimes},#{bonusStatus},#{pvProportion}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -54,6 +55,9 @@
 		</if>
 		<if test="bonusStatus != null and bonusStatus != ''">
 			AND BONUS_STATUS = #{bonusStatus,jdbcType=INTEGER}
+		</if>
+		<if test="pvProportion != null and pvProportion != ''">
+			AND PV_PROPORTION = #{pvProportion}
 		</if>
 	</sql>
 	
