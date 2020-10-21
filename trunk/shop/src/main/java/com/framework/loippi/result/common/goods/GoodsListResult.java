@@ -49,10 +49,12 @@ public class GoodsListResult {
 
     //会员价格
     private java.math.BigDecimal goodsMemberPrice;
-
+    //大单价
+    private java.math.BigDecimal goodsBigPrice;
     //ppv
     private BigDecimal ppv;
-
+    //大单ppv
+    private BigDecimal bigPpv;
     //规格名称
     private String specName;
 
@@ -101,7 +103,9 @@ public class GoodsListResult {
             result.setGoodsType(Optional.ofNullable(item.getGoodsType()).orElse(1));
             result.setGoodsRetailPrice(Optional.ofNullable(item.getGoodsRetailPrice()).orElse(new BigDecimal(0)));
             result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(new BigDecimal(0)));
+            result.setGoodsBigPrice(Optional.ofNullable(item.getGoodsBigPrice()).orElse(new BigDecimal(0)));
             result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
+            result.setBigPpv(Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO));
             result.setEvaluaterate(Optional.ofNullable(item.getEvaluaterate()).orElse(0d)*100);
             result.setCommentnum(Optional.ofNullable(item.getCommentnum()).orElse(0));
             result.setFavNumber(Optional.ofNullable(item.getGoodsCollect()).orElse(0));
@@ -140,7 +144,9 @@ public class GoodsListResult {
             //设置价格
             result.setGoodsRetailPrice(Optional.ofNullable(item.getGoodsRetailPrice()).orElse(new BigDecimal(0)));
             result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(new BigDecimal(0)));
+            result.setGoodsBigPrice(Optional.ofNullable(item.getGoodsBigPrice()).orElse(new BigDecimal(0)));
             result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
+            result.setBigPpv(Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO));
             result.setEvaluaterate(Optional.ofNullable(item.getEvaluaterate()).orElse(0d)*100);
             result.setCommentnum(Optional.ofNullable(item.getCommentnum()).orElse(0));
             //填充活动信息
@@ -226,7 +232,9 @@ public class GoodsListResult {
             //设置价格
             result.setGoodsRetailPrice(Optional.ofNullable(item.getGoodsRetailPrice()).orElse(new BigDecimal(0)));
             result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(new BigDecimal(0)));
+            result.setGoodsBigPrice(Optional.ofNullable(item.getGoodsBigPrice()).orElse(new BigDecimal(0)));
             result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
+            result.setBigPpv(Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO));
             result.setEvaluaterate(Optional.ofNullable(item.getEvaluaterate()).orElse(0d)*100);
             result.setCommentnum(Optional.ofNullable(item.getCommentnum()).orElse(0));
 
@@ -249,7 +257,9 @@ public class GoodsListResult {
         result.setGoodsType(Optional.ofNullable(item.getGoodsType()).orElse(1));
         result.setGoodsRetailPrice(Optional.ofNullable(item.getGoodsRetailPrice()).orElse(new BigDecimal(0)));
         result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(new BigDecimal(0)));
+        result.setGoodsBigPrice(Optional.ofNullable(item.getGoodsBigPrice()).orElse(new BigDecimal(0)));
         result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
+        result.setBigPpv(Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO));
         result.setEvaluaterate(Optional.ofNullable(item.getEvaluaterate()).orElse(0d)*100);
         result.setCommentnum(Optional.ofNullable(item.getCommentnum()).orElse(0));
         result.setFavNumber(Optional.ofNullable(item.getGoodsCollect()).orElse(0));

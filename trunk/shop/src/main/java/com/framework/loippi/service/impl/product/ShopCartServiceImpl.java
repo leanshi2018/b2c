@@ -4,6 +4,7 @@ package com.framework.loippi.service.impl.product;
 import com.framework.loippi.dao.product.ShopGoodsBrandDao;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -119,6 +120,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
     private ShopGoodsBrandDao shopGoodsBrandDao;
     @Resource
     private RdMmBasicInfoService rdMmBasicInfoService;
+    @Resource
+    private ShopOrderDiscountTypeService shopOrderDiscountTypeService;
     @Autowired
     public void setGenericDao() {
         super.setGenericDao(cartDao);
@@ -405,6 +408,9 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
 
     @Override
     public Map<String, Object> queryTotalPrice1(String cartIds, String memberId, Long couponId, Long groupBuyActivityId, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr) {
+        List<ShopOrderDiscountType> discountTypes = shopOrderDiscountTypeService.findList("preferentialType",3);
+        ShopOrderDiscountType discountType = discountTypes.get(0);
+        BigDecimal ppvNum = discountType.getPpv();
         Map<String, Object> map = new HashMap<>(5);
         map.put("error", "false");
         //通过多个购物车id查询购物车数据
@@ -426,6 +432,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         // 待验证规格
         Map<Long, ShopGoods> goodsMap = goodsService.findGoodsMap(goodsIds);
         Map<Long, ShopGoodsSpec> specList = goodsSpecService.findMapSpec(specIds);
+        BigDecimal pvTotal=BigDecimal.ZERO;
         map.put("svipGoods", 1);
         for (ShopCart shopCart : cartList) {
             ShopGoods targetGoods = goodsMap.get(shopCart.getGoodsId());
@@ -459,7 +466,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             shopCart.setPpv(targetSpec.getPpv());
             shopCart.setBigPpv(targetSpec.getBigPpv());
             shopCart.setWeight(targetSpec.getWeight());
-
+            pvTotal=pvTotal.add(targetSpec.getPpv());
 
             /******************************2020.2.20判断限购商品**************************************/
             List<ShopGoodsStint> shopGoodsStintList = shopGoodsStintDao.findBySerial(targetSpec.getSpecGoodsSerial());
@@ -498,6 +505,11 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
 
             }
             /***************************************************************************************/
+        }
+        if(shopOrderDiscountType.getPreferentialType()!=8){
+            if(pvTotal.compareTo(ppvNum)!=-1){
+                shopOrderDiscountType.setPreferentialType(3);
+            }
         }
 
         List<CartInfo> cartInfoList = getCartInfoList1(cartList, shopOrderDiscountType, addr, memberId,activityIds,couponId);
@@ -559,6 +571,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         //存储优惠券优惠金额
         map.put("plusVipAmount",BigDecimal.valueOf(plusVipAmount));
         map.put("goodsIds",goodsIds);
+        map.put("discountType",shopOrderDiscountType.getPreferentialType());
         return map;
     }
 
