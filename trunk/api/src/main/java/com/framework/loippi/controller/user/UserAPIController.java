@@ -8,7 +8,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.result.user.*;
+import com.framework.loippi.service.common.ShopHomePictureService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -160,7 +162,8 @@ public class UserAPIController extends BaseController {
     private RdWarehouseService rdWarehouseService;
     @Resource
     private RdInventoryWarningService rdInventoryWarningService;
-
+    @Resource
+    private ShopHomePictureService shopHomePictureService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -375,6 +378,10 @@ public class UserAPIController extends BaseController {
                     result=PersonCenterResult.build3(result,rdRankHigh,rdRankVip,rdRanks);
                 }
             }
+        }
+        List<ShopHomePicture> list = shopHomePictureService.findList(Paramap.create().put("auditStatus", 1).put("pictureType", 3));
+        if(list!=null&&list.size()>0){
+            result.setShopHomePicture(list.get(0));
         }
         return ApiUtils.success(result);
     }

@@ -65,7 +65,7 @@ public class ShopHomePicture  implements GenericEntity{
 	 */
 	private Integer auditStatus;
 	/**
-	 * 图片类型： 0：首页轮播图；1:首页广告位图 2:首页广告图2
+	 * 图片类型： 0：首页轮播图；1:首页广告位图 2:首页广告图2  3：个人中心会员推广位
 	 */
 	private Integer pictureType;
 }
