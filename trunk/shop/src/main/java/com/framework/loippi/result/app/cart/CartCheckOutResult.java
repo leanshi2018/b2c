@@ -195,6 +195,8 @@ public class CartCheckOutResult {
      */
     private Integer svipFlag;
 
+
+
     @Data
     public static class selectShopOrderType {
         Long shopOrderTypeId;
@@ -521,6 +523,65 @@ public class CartCheckOutResult {
         result.setSelectShopOrderTypeList(selectShopOrderTypeList);
         return result;
     }
+
+    public CartCheckOutResult build2New(CartCheckOutResult result, List<ShopOrderDiscountType> shopOrderDiscountTypeList, RdRanks shopMemberGrade, RdMmBasicInfo shopMember, RdMmAddInfo shopMemberAddress) {
+        List<selectShopOrderType> selectShopOrderTypeList = new ArrayList<>();
+        com.framework.loippi.result.app.cart.CartCheckOutResult.userInfo userInfo = new userInfo();
+        Long shopOrderTypeId = result.getShopOrderTypeId();
+        if(shopOrderTypeId.equals(8)){
+            selectShopOrderType selectShopOrderType = new selectShopOrderType();
+            selectShopOrderType.setShopOrderTypeId(8L);
+            selectShopOrderType.setShopOrderTypeName("PLUS VIP订单");
+            selectShopOrderType.setIsSelect(1);
+            selectShopOrderTypeList.add(selectShopOrderType);
+        }else if (shopOrderTypeId.equals(3)){
+            selectShopOrderType selectShopOrderType = new selectShopOrderType();
+            selectShopOrderType.setShopOrderTypeId(3L);
+            selectShopOrderType.setShopOrderTypeName("大单价");
+            selectShopOrderType.setIsSelect(1);
+            selectShopOrderTypeList.add(selectShopOrderType);
+            selectShopOrderType selectShopOrderType1 = new selectShopOrderType();
+            selectShopOrderType1.setShopOrderTypeId(2L);
+            selectShopOrderType1.setShopOrderTypeName("会员订单");
+            selectShopOrderType1.setIsSelect(1);
+            selectShopOrderTypeList.add(selectShopOrderType1);
+        } else if (shopOrderTypeId.equals(2)){
+            selectShopOrderType selectShopOrderType = new selectShopOrderType();
+            selectShopOrderType.setShopOrderTypeId(3L);
+            selectShopOrderType.setShopOrderTypeName("大单价(还差"+(shopOrderDiscountTypeList.get(0).getPpv().subtract(result.getTotalPpv()))+"MI可享受该优惠)");
+            selectShopOrderType.setIsSelect(0);
+            selectShopOrderTypeList.add(selectShopOrderType);
+            selectShopOrderType selectShopOrderType1 = new selectShopOrderType();
+            selectShopOrderType1.setShopOrderTypeId(2L);
+            selectShopOrderType1.setShopOrderTypeName("会员订单");
+            selectShopOrderType1.setIsSelect(1);
+            selectShopOrderTypeList.add(selectShopOrderType1);
+        }else {
+            selectShopOrderType selectShopOrderType = new selectShopOrderType();
+            selectShopOrderType.setShopOrderTypeId(1L);
+            selectShopOrderType.setShopOrderTypeName("普通订单");
+            selectShopOrderType.setIsSelect(1);
+            selectShopOrderTypeList.add(selectShopOrderType);
+        }
+        userInfo.setUserName(shopMember.getMmNickName());
+        userInfo.setUserPhone(shopMember.getMobile());
+        // TODO: 2018/12/14 自提待后台补齐
+        if (shopMemberAddress != null) {
+            userInfo.setContactName(Optional.ofNullable(shopMemberAddress.getConsigneeName()).orElse("后台还未设置"));
+            userInfo.setContactPhone(Optional.ofNullable(shopMemberAddress.getMobile()).orElse("后台还未设置"));
+            userInfo.setContactAddrInfo(Optional.ofNullable(
+                    shopMemberAddress.getAddProvinceCode()+shopMemberAddress.getAddCityCode()+shopMemberAddress.getAddCountryCode()
+            ).orElse("后台还未设置") + Optional.ofNullable(shopMemberAddress.getAddDetial()).orElse(""));
+        } else {
+            userInfo.setContactName("后台还未设置");
+            userInfo.setContactPhone("后台还未设置");
+            userInfo.setContactAddrInfo("后台还未设置");
+        }
+        result.setUserInfo(userInfo);
+        result.setSelectShopOrderTypeList(selectShopOrderTypeList);
+        return result;
+    }
+
     /*********************************************************************************************************************************************************/
     public static CartCheckOutResult build3(CartCheckOutResult result, List<ShopGoods> shopGoods, Integer flag,Integer giftsNum) {
         result.setShowFlag(flag);
