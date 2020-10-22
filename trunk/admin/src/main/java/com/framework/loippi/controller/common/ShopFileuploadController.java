@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.service.QiniuService;
@@ -77,9 +78,9 @@ public class ShopFileuploadController extends GenericController {
     String key = null;
 
     @RequestMapping(value = "/upload", produces = "text/html;charset=UTF-8")
-    public
     @ResponseBody
-    String upload(@RequestParam MultipartFile myfiles) throws Exception {
+    public String upload(@RequestParam(required = false, value = "myfiles") CommonsMultipartFile myfiles) throws Exception {
+        System.out.println("进");
         //可以在上传文件的同时接收其它参数
         Map<String, Object> map = Maps.newConcurrentMap();
         if (myfiles.getSize()!=0){

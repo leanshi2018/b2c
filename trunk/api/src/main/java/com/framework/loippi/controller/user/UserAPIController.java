@@ -2,15 +2,20 @@ package com.framework.loippi.controller.user;
 
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.framework.loippi.entity.common.ShopHomePicture;
-import com.framework.loippi.result.user.*;
-import com.framework.loippi.service.common.ShopHomePictureService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -27,6 +32,7 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.dao.common.RankExplainDao;
 import com.framework.loippi.entity.common.RankExplain;
 import com.framework.loippi.entity.common.ShopApp;
+import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrowse;
 import com.framework.loippi.entity.user.MemberQualification;
@@ -51,10 +57,21 @@ import com.framework.loippi.param.wallet.BindCardDto;
 import com.framework.loippi.pojo.selfMention.GoodsType;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
 import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.user.BankCardsListResult;
+import com.framework.loippi.result.user.MemberBasicResult;
+import com.framework.loippi.result.user.PersonCenterResult;
+import com.framework.loippi.result.user.SelfPerformanceResult;
+import com.framework.loippi.result.user.SelfWalletResult;
+import com.framework.loippi.result.user.SubordinateUserInformationResult;
+import com.framework.loippi.result.user.UserCollectResult;
+import com.framework.loippi.result.user.UserFootprintsResult;
+import com.framework.loippi.result.user.UserProfileResult;
+import com.framework.loippi.result.user.WithdrawBalanceResult;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.ShopMemberMessageService;
 import com.framework.loippi.service.common.ShopAppService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
+import com.framework.loippi.service.common.ShopHomePictureService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopGoodsBrowseService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
@@ -1738,8 +1755,11 @@ public class UserAPIController extends BaseController {
         }else {
             result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2,SysPeriodCode,bugMi);
         }
-
-
+        if (period.getPvProportion()==null){
+            result.setPvProportion(0d);
+        }else {
+            result.setPvProportion(period.getPvProportion());
+        }
         return ApiUtils.success(result);
     }
 

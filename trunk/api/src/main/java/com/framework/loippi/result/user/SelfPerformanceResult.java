@@ -110,6 +110,8 @@ public class SelfPerformanceResult {
 	private BigDecimal shareMi;//分红mi值
 	private BigDecimal shareCoefficient;//分红系数
 
+	private Double pvProportion;
+
 	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, BigDecimal profits2, RdBonusMaster bonusMaster,List<String> periodCodeList, BigDecimal bugMi) {
 		Optional<RdMmBasicInfo> optionalBasicInfo = Optional.ofNullable(profile);
 		Optional<RdBonusMaster> optionalBonusMaster = Optional.ofNullable(bonusMaster);

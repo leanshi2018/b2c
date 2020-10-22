@@ -1,15 +1,14 @@
 package com.framework.loippi.entity.user;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 import lombok.AllArgsConstructor;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 业务周期
@@ -71,5 +70,9 @@ public class RdSysPeriod implements GenericEntity {
 1：已发出 */
 	@Column(name = "BONUS_STATUS" )
 	private Integer bonusStatus;
-	
+
+	/** pv与人民币之间的比例 */
+	@Column(name = "PV_PROPORTION" )
+	private Double pvProportion;
+
 }

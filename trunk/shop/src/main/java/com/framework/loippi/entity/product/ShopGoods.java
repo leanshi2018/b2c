@@ -132,6 +132,12 @@ public class ShopGoods implements GenericEntity {
     private String goodsImageMore="";
 
     /**
+     * 商品详情视频
+     */
+    @Column(name = "goods_video")
+    private String goodsVideo;
+
+    /**
      * 零售价
      */
     @Column(name = "goods_retail_price")

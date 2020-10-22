@@ -23,6 +23,7 @@
     <result property="goodsImage" column="goods_image"/>
     <result property="goodsImageNew" column="goods_image_new"/>
     <result property="goodsImageMore" column="goods_image_more"/>
+    <result property="goodsVideo" column="goods_video"/>
     <result property="goodsRetailPrice" column="goods_retail_price"/>
     <result property="goodsRetailProfit" column="goods_retail_profit"/>
     <result property="goodsMemberPrice" column="goods_member_price"/>
@@ -68,7 +69,7 @@
   <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
   <sql id="base_column">
         id ,goods_serial ,member_ship ,goods_name ,goods_subtitle ,goods_keywords ,gc_id ,gc_name ,brand_id ,brand_name ,
-        type_id ,spec_open ,spec_id ,spec_name ,goods_image ,goods_image_new,goods_image_more ,goods_retail_price ,goods_retail_profit,goods_member_price ,
+        type_id ,spec_open ,spec_id ,spec_name ,goods_image ,goods_image_new,goods_image_more ,goods_video ,goods_retail_price ,goods_retail_profit,goods_member_price ,
         goods_big_price ,ppv ,big_ppv,weight,shelf_life ,goods_show ,goods_click ,goods_state ,create_time ,mobile_body ,goods_spec ,update_time ,
         transport_id ,goods_close_reason ,commentnum ,salenum ,goods_collect ,is_del ,stock ,sort ,gc_levle ,release_time ,details ,evaluateRate ,state
         ,goods_type,sale_population_ids,sale_population_name,cost_price ,off_shelf_show,plus_vip_type
@@ -76,7 +77,7 @@
 
   <sql id="base_value_column">
         #{id},#{goodsSerial},#{memberShip},#{goodsName},#{goodsSubtitle},#{goodsKeywords},#{gcId},#{gcName},#{brandId},#{brandName},#{typeId},#{specOpen},
-        #{specId},#{specName},#{goodsImage},#{goodsImageNew},#{goodsImageMore},#{goodsRetailPrice},#{goodsRetailProfit},#{goodsMemberPrice},#{goodsBigPrice},#{ppv},#{bigPpv},#{weight},#{shelfLife},#{goodsShow},#{goodsClick},
+        #{specId},#{specName},#{goodsImage},#{goodsImageNew},#{goodsImageMore},#{goodsVideo},#{goodsRetailPrice},#{goodsRetailProfit},#{goodsMemberPrice},#{goodsBigPrice},#{ppv},#{bigPpv},#{weight},#{shelfLife},#{goodsShow},#{goodsClick},
         #{goodsState},#{createTime},#{mobileBody},#{goodsSpec},#{updateTime},#{transportId},#{goodsCloseReason},#{commentnum},#{salenum},#{goodsCollect},#{isDel},
         #{stock},#{sort},#{gcLevle},#{releaseTime},#{details},#{evaluaterate},#{state}
         ,#{goodsType},#{salePopulationIds},#{salePopulationName},#{costPrice},#{offShelfShow},#{plusVipType}
@@ -134,6 +135,9 @@
     </if>
     <if test="goodsImageMore != null and goodsImageMore != ''">
       AND goods_image_more = #{goodsImageMore,jdbcType=VARCHAR}
+    </if>
+    <if test="goodsVideo != null and goodsVideo != ''">
+      AND goods_video = #{goodsVideo,jdbcType=VARCHAR}
     </if>
     <if test="goodsRetailPrice != null and goodsRetailPrice != ''">
       AND goods_retail_price = #{goodsRetailPrice,jdbcType=DECIMAL}
@@ -338,6 +342,9 @@
     </if>
     <if test="goodsImageMore != '' ">
       goods_image_more = #{goodsImageMore},
+    </if>
+    <if test="goodsVideo != '' ">
+      goods_video = #{goodsVideo},
     </if>
     <if test="goodsRetailPrice != null">
       goods_retail_price = #{goodsRetailPrice,jdbcType=DECIMAL},
