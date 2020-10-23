@@ -169,6 +169,11 @@ public class ActivityGoodsDetailResult {
     private BigDecimal shippingCouponAmount;
 
     /**
+     * 商品详情视频
+     */
+    private String goodsVideo;
+
+    /**
      * 关键字集合
      */
     List<ShopGoodsEvaluateKeywords> shopGoodsEvaluateKeywordsList=new ArrayList<ShopGoodsEvaluateKeywords>();
@@ -293,6 +298,9 @@ public class ActivityGoodsDetailResult {
         result.setGoodsCollect(Optional.ofNullable(item.getGoodsCollect()).orElse(0));
         result.setSaleNum(Optional.ofNullable(item.getSalenum()).orElse(0));
         result.setStockNumber(Optional.ofNullable(item.getStock()).orElse(0l));
+
+        result.setGoodsVideo(Optional.ofNullable(item.getGoodsVideo()).orElse(""));
+
         // 市场价不受活动影响
         StringBuffer shareUrl = new StringBuffer();
         shareUrl.append(wapServer);

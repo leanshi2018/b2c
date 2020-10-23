@@ -7,9 +7,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -98,6 +100,7 @@ import com.framework.loippi.service.ware.RdWarehouseService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
+import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.excel.ExportExcelUtils;
 import com.framework.loippi.vo.order.ShopOrderVo;
@@ -255,11 +258,35 @@ public class OrderSysController extends GenericController {
                                 int b = 0;//不是白酒1
                                 if (orderGoodsLists.size()>0){
                                     for (ShopOrderGoods orderGoods : orderGoodsLists) {
-                                        if (orderGoods.getGoodsId().equals(spirit_goods_id)){
-                                            b=1;
-                                        }
-                                        if (orderGoods.getGoodsId().equals(spirit_goods_id)){
-                                            a=1;
+                                        ShopGoods shopGoods = shopGoodsService.find(orderGoods.getGoodsId());
+                                        if (shopGoods.getGoodsType()!=3){
+                                           //不是组合
+                                            if (!orderGoods.getGoodsId().equals(spirit_goods_id)){
+                                                b=1;
+                                            }
+                                            if (orderGoods.getGoodsId().equals(spirit_goods_id)){
+                                                a=1;
+                                            }
+                                        }else {
+                                            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(orderGoods.getSpecId());
+                                            Map<String, String> specMap = JacksonUtil.readJsonToMap(goodsSpec.getSpecGoodsSpec());
+                                            Map<String, String> goodsMap = JacksonUtil.readJsonToMap(goodsSpec.getSpecName());
+                                            Set<String> keySpec = specMap.keySet();
+                                            Set<String> keyGoods = goodsMap.keySet();
+                                            Iterator<String> itSpec = keySpec.iterator();
+                                            Iterator<String> itGoods = keyGoods.iterator();
+
+                                            while (itSpec.hasNext() ) {
+                                                String specId1 = itSpec.next();//单品的规格id
+                                                ShopGoodsSpec shopGoodsSpec = shopGoodsSpecService.find(new Long(specId1));
+                                                //String goodId1 = itGoods.next();//单品的商品id
+                                                if (!shopGoodsSpec.getGoodsId().equals(spirit_goods_id)){
+                                                    b=1;
+                                                }
+                                                if (shopGoodsSpec.getGoodsId().equals(spirit_goods_id)){
+                                                    a=1;
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -356,11 +383,34 @@ public class OrderSysController extends GenericController {
                     int b = 0;//不是白酒1
                     if (orderGoodsLists.size()>0){
                         for (ShopOrderGoods orderGoods : orderGoodsLists) {
-                            if (!orderGoods.getGoodsId().equals(spirit_goods_id)){
-                                b=1;
-                            }
-                            if (orderGoods.getGoodsId().equals(spirit_goods_id)){
-                                a=1;
+                            ShopGoods shopGoods = shopGoodsService.find(orderGoods.getGoodsId());
+                            if (shopGoods.getGoodsType()!=3){
+                                if (!orderGoods.getGoodsId().equals(spirit_goods_id)){
+                                    b=1;
+                                }
+                                if (orderGoods.getGoodsId().equals(spirit_goods_id)){
+                                    a=1;
+                                }
+                            }else {
+                                ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(orderGoods.getSpecId());
+                                Map<String, String> specMap = JacksonUtil.readJsonToMap(goodsSpec.getSpecGoodsSpec());
+                                Map<String, String> goodsMap = JacksonUtil.readJsonToMap(goodsSpec.getSpecName());
+                                Set<String> keySpec = specMap.keySet();
+                                Set<String> keyGoods = goodsMap.keySet();
+                                Iterator<String> itSpec = keySpec.iterator();
+                                Iterator<String> itGoods = keyGoods.iterator();
+
+                                while (itSpec.hasNext() ) {
+                                    String specId1 = itSpec.next();//单品的规格id
+                                    ShopGoodsSpec shopGoodsSpec = shopGoodsSpecService.find(new Long(specId1));
+                                    //String goodId1 = itGoods.next();//单品的商品id
+                                    if (!shopGoodsSpec.getGoodsId().equals(spirit_goods_id)){
+                                        b=1;
+                                    }
+                                    if (shopGoodsSpec.getGoodsId().equals(spirit_goods_id)){
+                                        a=1;
+                                    }
+                                }
                             }
                         }
                     }
