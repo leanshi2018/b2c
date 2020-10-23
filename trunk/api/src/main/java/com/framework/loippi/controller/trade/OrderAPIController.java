@@ -487,7 +487,7 @@ public class OrderAPIController extends BaseController {
         if (rdRanks.getRankClass() > 0) {
             type = 2;
         }
-        ShopOrderDiscountType shopOrderDiscountType = null;//订单优惠类型
+        /*ShopOrderDiscountType shopOrderDiscountType = null;//订单优惠类型
         if (param.getShopOrderTypeId() != -1) {
             shopOrderDiscountType = shopOrderDiscountTypeService.find(param.getShopOrderTypeId());
             if (shopOrderDiscountType != null) {
@@ -501,14 +501,30 @@ public class OrderAPIController extends BaseController {
                     shopOrderDiscountType.setPreferentialType(type);
                 }
             }
-        }
-        if (shopOrderDiscountType == null) {
-            shopOrderDiscountType = new ShopOrderDiscountType();
-            shopOrderDiscountType.setId(-1L);
+        }*/
+        ShopOrderDiscountType shopOrderDiscountType=new ShopOrderDiscountType();
+        shopOrderDiscountType.setId(-1L);
+        Long shopOrderTypeId = param.getShopOrderTypeId();
+        if(shopOrderTypeId==-1L){
             shopOrderDiscountType.setPreferentialType(type);
         }
+        if(shopOrderTypeId==1L&&rdRanks.getRankClass() > 0){
+            shopOrderDiscountType.setPreferentialType(2);
+        }
+        if(shopOrderTypeId==1L&&rdRanks.getRankClass() == 0){
+            shopOrderDiscountType.setPreferentialType(1);
+        }
+        if(shopOrderTypeId==2L&&rdRanks.getRankClass() == 0){
+            shopOrderDiscountType.setPreferentialType(1);
+        }
+        if(shopOrderTypeId==2L&&rdRanks.getRankClass() > 0){
+            shopOrderDiscountType.setPreferentialType(2);
+        }
+        if(shopOrderTypeId==3L&&rdRanks.getRankClass() > 0){
+            shopOrderDiscountType.setId(17L);
+            shopOrderDiscountType.setPreferentialType(3);
+        }
         if(plusOrderFlag!=null&&plusOrderFlag==1){
-            shopOrderDiscountType = new ShopOrderDiscountType();
             shopOrderDiscountType.setId(-1L);
             shopOrderDiscountType.setPreferentialType(ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS);
         }
