@@ -528,13 +528,13 @@ public class CartCheckOutResult {
         List<selectShopOrderType> selectShopOrderTypeList = new ArrayList<>();
         com.framework.loippi.result.app.cart.CartCheckOutResult.userInfo userInfo = new userInfo();
         Long shopOrderTypeId = result.getShopOrderTypeId();
-        if(shopOrderTypeId.equals(8)){
+        if(shopOrderTypeId.equals(8L)){
             selectShopOrderType selectShopOrderType = new selectShopOrderType();
             selectShopOrderType.setShopOrderTypeId(8L);
             selectShopOrderType.setShopOrderTypeName("PLUS VIP订单");
             selectShopOrderType.setIsSelect(1);
             selectShopOrderTypeList.add(selectShopOrderType);
-        }else if (shopOrderTypeId.equals(3)){
+        }else if (shopOrderTypeId.equals(3L)){
             selectShopOrderType selectShopOrderType = new selectShopOrderType();
             selectShopOrderType.setShopOrderTypeId(3L);
             selectShopOrderType.setShopOrderTypeName("大单价");
@@ -545,7 +545,7 @@ public class CartCheckOutResult {
             selectShopOrderType1.setShopOrderTypeName("会员订单");
             selectShopOrderType1.setIsSelect(1);
             selectShopOrderTypeList.add(selectShopOrderType1);
-        } else if (shopOrderTypeId.equals(2)){
+        } else if (shopOrderTypeId.equals(2L)){
             selectShopOrderType selectShopOrderType = new selectShopOrderType();
             selectShopOrderType.setShopOrderTypeId(3L);
             selectShopOrderType.setShopOrderTypeName("大单价(还差"+(shopOrderDiscountTypeList.get(0).getPpv().subtract(result.getTotalPpv()))+"MI可享受该优惠)");
