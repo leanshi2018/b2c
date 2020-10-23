@@ -16,6 +16,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.pojo.activity.PictureVio;
+import com.framework.loippi.result.common.index.HomeAndADPictureResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -398,7 +400,9 @@ public class UserAPIController extends BaseController {
         }
         List<ShopHomePicture> list = shopHomePictureService.findList(Paramap.create().put("auditStatus", 1).put("pictureType", 3));
         if(list!=null&&list.size()>0){
-            result.setShopHomePicture(list.get(0));
+            HomeAndADPictureResult build = HomeAndADPictureResult.build(list, null, null);
+            List<PictureVio> pictures = build.getHomePictures();
+            result.setHomePictures(pictures);
         }
         return ApiUtils.success(result);
     }

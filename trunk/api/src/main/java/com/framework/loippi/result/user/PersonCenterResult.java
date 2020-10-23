@@ -2,6 +2,7 @@ package com.framework.loippi.result.user;
 
 import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.entity.user.*;
+import com.framework.loippi.pojo.activity.PictureVio;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -161,6 +162,8 @@ public class PersonCenterResult {
     private Integer plusVipFlag;//plus vip会员标识
     //推广位信息
     private ShopHomePicture shopHomePicture=new ShopHomePicture();
+
+    private List<PictureVio> homePictures;
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo, RdRanks rdRankVip) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
         Optional<RdMmAccountInfo> optional2 = Optional.ofNullable(rdMmAccountInfo);
