@@ -631,9 +631,9 @@ public class AuthcAPIController extends BaseController {
         rdMmBasicInfo.setAllInContractStatus(0);
         rdMmBasicInfo.setMainFlag(1);//设置主店
         if(param.getRegisterType()==3){
-            rdMmBasicInfo.setOldSysStatus(0);
-        }else {
             rdMmBasicInfo.setOldSysStatus(1);
+        }else {
+            rdMmBasicInfo.setOldSysStatus(0);
         }
         rdMmBasicInfo.setPlusVip(0);
         rdMmRelation.setARetail(BigDecimal.ZERO);
