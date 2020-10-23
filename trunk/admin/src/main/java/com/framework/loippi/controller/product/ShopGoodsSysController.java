@@ -1,20 +1,52 @@
 package com.framework.loippi.controller.product;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.GoodsState;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.common.ShopCommonSpec;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.product.*;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
+import com.framework.loippi.entity.product.ShopGoodsClass;
+import com.framework.loippi.entity.product.ShopGoodsGoods;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.entity.product.ShopGoodsTypeSpec;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.common.goods.IdNameDto;
 import com.framework.loippi.service.RedisService;
-import com.framework.loippi.service.TUserSettingService;
 import com.framework.loippi.service.common.ShopCommonSpecService;
 import com.framework.loippi.service.common.ShopCommonSpecValueService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
-import com.framework.loippi.service.product.*;
+import com.framework.loippi.service.product.ShopGoodsBrandService;
+import com.framework.loippi.service.product.ShopGoodsClassService;
+import com.framework.loippi.service.product.ShopGoodsGoodsService;
+import com.framework.loippi.service.product.ShopGoodsRecommendService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.service.product.ShopGoodsTypeService;
+import com.framework.loippi.service.product.ShopGoodsTypeSpecService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.support.Message;
 import com.framework.loippi.support.Page;
@@ -25,15 +57,6 @@ import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.vo.goods.GoodsSpecVo;
 import com.framework.loippi.vo.goods.SpecVo;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  * Controller - 商品表
@@ -573,6 +596,24 @@ public class ShopGoodsSysController extends GenericController {
             //将失败的信号传到前台
             return Message.error("商品库数据更新异常");
         }
+    }
+
+    /**
+     * 编辑商品库商品信息
+     */
+    @RequestMapping(value = "/addVideo", method = RequestMethod.POST)
+    public String addVideo(HttpServletRequest request,@RequestParam(value = "goodsId", required = false) Long goodsId,
+                     @RequestParam(value = "goodsVideo", required = false, defaultValue = "")String goodsVideo, ModelMap model) {
+        if (goodsId==null){
+            model.addAttribute("msg", "商品Id为空");
+            model.addAttribute("referer", request.getHeader("Referer"));
+            return Constants.MSG_URL;
+        }
+        ShopGoods goods = new ShopGoods();
+        goods.setId(goodsId);
+        goods.setGoodsVideo(goodsVideo);
+        shopGoodsService.update(goods);
+        return "";
     }
 
 
