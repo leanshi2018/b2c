@@ -635,7 +635,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             shopCart.setPpv(targetSpec.getPpv());
             shopCart.setBigPpv(targetSpec.getBigPpv());
             shopCart.setWeight(targetSpec.getWeight());
-            pvTotal=pvTotal.add(targetSpec.getPpv());
+            pvTotal=pvTotal.add(targetSpec.getPpv().multiply(new BigDecimal(Integer.toString(shopCart.getGoodsNum()))));
 
             /******************************2020.2.20判断限购商品**************************************/
             List<ShopGoodsStint> shopGoodsStintList = shopGoodsStintDao.findBySerial(targetSpec.getSpecGoodsSerial());
@@ -675,12 +675,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             }
             /***************************************************************************************/
         }
-        System.out.println(pvTotal+"pvTotal");
-        System.out.println(ppvNum+"ppvNum");
         if(shopOrderDiscountType.getPreferentialType()!=8&&shopOrderDiscountType.getId().equals(-1L)){
-            System.out.println("进入1");
             if(pvTotal.compareTo(ppvNum)!=-1){
-                System.out.println("进入2");
                 shopOrderDiscountType.setPreferentialType(3);
             }
         }
