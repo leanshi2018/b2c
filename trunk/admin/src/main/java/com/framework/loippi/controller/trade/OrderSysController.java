@@ -584,7 +584,7 @@ public class OrderSysController extends GenericController {
      * @param id
      * @return
      */
-    public Map<String,Object> orderShip(Long id) {
+    public Map<String,Object> orderShip(Long id) throws Exception {
         Map<String,Object> map = new HashMap<String,Object>();//strorderinfo参数
         map.put("Style","1");
         map.put("CustomerID",customerID);
@@ -734,7 +734,24 @@ public class OrderSysController extends GenericController {
                     Map<String,Object> map1 = new HashMap<>();
                     map1.put("goodId",goodsId);
                     map1.put("combineGoodsId",goodsId1);
-                    ShopGoodsGoods goodsGoods = shopGoodsGoodsService.findGoodsGoods(map1);
+                    List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsService.findGoodsGoodsList(map1);
+                    ShopGoodsGoods goodsGoods = new ShopGoodsGoods();
+                    if (goodsGoodsList.size()>0){
+                        if (goodsGoodsList.size()==1){
+                            goodsGoods = goodsGoodsList.get(0);
+                        }else {
+                            for (ShopGoodsGoods shopGoodsGoods : goodsGoodsList) {
+                                if (shopGoodsGoods.getGoodsSpec().equals(specId)){
+                                    goodsGoods = shopGoodsGoods;
+                                }
+                            }
+                        }
+                        if (goodsGoods==null){
+                            throw new Exception("组合数据不全");
+                        }
+                    }else {
+                        throw new Exception("组合数据不全");
+                    }
                     int joinNum = goodsGoods.getJoinNum();//组合商品里商品数量
                     int total = joinNum*goodsNum;//总数量
                     productMap.put("MaterialQuantity",total);

@@ -169,4 +169,8 @@
         select * from shop_goods_goods where good_id = #{goodId} and combine_goods_id = #{combineGoodsId}
     </select>
 
+    <select id="findGoodsGoodsList" parameterType="java.util.Map" resultMap="ShopGoodsGoodsResultMap">
+        select * from shop_goods_goods where good_id = #{goodId} and combine_goods_id = #{combineGoodsId}
+    </select>
+
 </mapper> 

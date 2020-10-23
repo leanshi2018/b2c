@@ -17,7 +17,9 @@ public interface ShopGoodsGoodsService  extends GenericService<ShopGoodsGoods, L
 
 	List<ShopGoodsGoods> findGoodsGoodsByGoodsId(Long goodsId1);
 
-	ShopGoodsGoods findGoodsGoods(Map<String, Object> map1);
+	ShopGoodsGoods findGoodsGoods(Map<String, Object> map);
 
     List<GoodsListResult> addJoinNum(List<GoodsListResult> build, Long goodsId);
+
+	List<ShopGoodsGoods> findGoodsGoodsList(Map<String, Object> map);
 }

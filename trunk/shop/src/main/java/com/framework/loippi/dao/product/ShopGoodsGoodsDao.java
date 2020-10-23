@@ -21,4 +21,7 @@ public interface ShopGoodsGoodsDao  extends GenericDao<ShopGoodsGoods, Long> {
 	List<ShopGoodsGoods> findGoodsGoodsByGoodsId(Long goodsId);
 
 	ShopGoodsGoods findGoodsGoods(Map<String, Object> map);
+
+	List<ShopGoodsGoods> findGoodsGoodsList(Map<String, Object> map);
+
 }

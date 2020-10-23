@@ -58,7 +58,7 @@ public class RdInventoryWarningServiceImpl extends GenericServiceImpl<RdInventor
 	}
 
 	@Override
-	public Integer findProductInventory(String wareCode, Long speId) {
+	public Integer findProductInventory(String wareCode, Long speId) throws Exception {
 		List<RdInventoryWarning> inventoryWarnings = rdInventoryWarningDao.findByWareCode(wareCode);
 		Map<Long,Integer> inventoryMap = new HashMap<>();
 		for (RdInventoryWarning inventoryWarning : inventoryWarnings) {
@@ -80,9 +80,27 @@ public class RdInventoryWarningServiceImpl extends GenericServiceImpl<RdInventor
 					Map<String,Object> mapGGs= new HashMap<>();
 					mapGGs.put("goodId",inventoryWarning.getGoodsCode());
 					mapGGs.put("combineGoodsId",goodsId);
-					ShopGoodsGoods shopGoodsGoodsList = shopGoodsGoodsDao.findGoodsGoods(mapGGs);
-					if (shopGoodsGoodsList!=null){
-						joinNum= Optional.ofNullable(shopGoodsGoodsList.getJoinNum()).orElse(1);
+					List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsDao.findGoodsGoodsList(mapGGs);
+					ShopGoodsGoods goodsGoods = new ShopGoodsGoods();
+					if (goodsGoodsList.size()>0){
+						if (goodsGoodsList.size()==1){
+							goodsGoods = goodsGoodsList.get(0);
+						}else {
+							for (ShopGoodsGoods shopGoodsGoods : goodsGoodsList) {
+								if (shopGoodsGoods.getGoodsSpec().equals(specId)){
+									goodsGoods = shopGoodsGoods;
+								}
+							}
+						}
+						if (goodsGoods==null){
+							throw new Exception("组合数据不全");
+						}
+					}else {
+						throw new Exception("组合数据不全");
+					}
+
+					if (goodsGoods!=null){
+						joinNum= Optional.ofNullable(goodsGoods.getJoinNum()).orElse(1);
 					}
 
 					Integer inventory = inventoryWarning.getInventory()*joinNum;

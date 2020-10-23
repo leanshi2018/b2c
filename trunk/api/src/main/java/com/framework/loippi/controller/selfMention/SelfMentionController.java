@@ -188,7 +188,7 @@ public class SelfMentionController extends BaseController {
      */
     @RequestMapping(value = "/api/mention/goodsList", method = RequestMethod.GET)
     @ResponseBody
-    public String goodsList(HttpServletRequest request, Pageable pager) {
+    public String goodsList(HttpServletRequest request, Pageable pager) throws Exception {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if(member==null){
             return ApiUtils.error("当前用户尚未登录");
@@ -272,7 +272,7 @@ public class SelfMentionController extends BaseController {
      */
     @RequestMapping(value = "/api/mention/productGoodsList", method = RequestMethod.GET)
     @ResponseBody
-    public String productGoodsList(HttpServletRequest request, @RequestParam(required = false,defaultValue = "1",value = "currentPage")Integer currentPage) {
+    public String productGoodsList(HttpServletRequest request, @RequestParam(required = false,defaultValue = "1",value = "currentPage")Integer currentPage) throws Exception {
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if(member==null){
             return ApiUtils.error("当前用户尚未登录");
@@ -308,9 +308,26 @@ public class SelfMentionController extends BaseController {
                     Map<String,Object> mapGGs= new HashMap<>();
                     mapGGs.put("goodId",inventoryWarning.getGoodsCode());
                     mapGGs.put("combineGoodsId",goodsId);
-                    ShopGoodsGoods shopGoodsGoodsList = shopGoodsGoodsService.findGoodsGoods(mapGGs);
-                    if (shopGoodsGoodsList!=null){
-                        joinNum= Optional.ofNullable(shopGoodsGoodsList.getJoinNum()).orElse(1);
+                    List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsService.findGoodsGoodsList(mapGGs);
+                    ShopGoodsGoods goodsGoods = new ShopGoodsGoods();
+                    if (goodsGoodsList.size()>0){
+                        if (goodsGoodsList.size()==1){
+                            goodsGoods = goodsGoodsList.get(0);
+                        }else {
+                            for (ShopGoodsGoods shopGoodsGoods : goodsGoodsList) {
+                                if (shopGoodsGoods.getGoodsSpec().equals(specId)){
+                                    goodsGoods = shopGoodsGoods;
+                                }
+                            }
+                        }
+                        if (goodsGoods==null){
+                            throw new Exception("组合数据不全");
+                        }
+                    }else {
+                        throw new Exception("组合数据不全");
+                    }
+                    if (goodsGoods!=null){
+                        joinNum= Optional.ofNullable(goodsGoods.getJoinNum()).orElse(1);
                     }
 
                     Integer inventory = inventoryWarning.getInventory()*joinNum;

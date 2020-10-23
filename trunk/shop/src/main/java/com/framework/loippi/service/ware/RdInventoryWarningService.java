@@ -18,7 +18,7 @@ public interface RdInventoryWarningService  extends GenericService<RdInventoryWa
 
 	void updateInventoryByWareCodeAndSpecId(String s, Long goodsSpecId,Integer quantity);
 
-	Integer findProductInventory(String ware, Long specId);
+	Integer findProductInventory(String ware, Long specId) throws Exception;
 
 	List<RdInventoryWarning> findByWareCodeAndOweInven(String wareCode);
 

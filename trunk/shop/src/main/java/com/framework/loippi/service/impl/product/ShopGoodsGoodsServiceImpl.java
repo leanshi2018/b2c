@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.framework.loippi.dao.product.ShopGoodsDao;
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.result.common.goods.GoodsListResult;
-import com.framework.loippi.utils.Paramap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.framework.loippi.dao.product.ShopGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsGoodsDao;
+import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
+import com.framework.loippi.result.common.goods.GoodsListResult;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
+import com.framework.loippi.utils.Paramap;
 
 /**
  * SERVICE - ShopGoodsGoods(组合商品，商品选择)
@@ -63,5 +63,10 @@ public class ShopGoodsGoodsServiceImpl extends GenericServiceImpl<ShopGoodsGoods
             return goodsListResults;
         }
         return build;
+    }
+
+    @Override
+    public List<ShopGoodsGoods> findGoodsGoodsList(Map<String, Object> map) {
+        return shopGoodsGoodsDao.findGoodsGoodsList(map);
     }
 }
