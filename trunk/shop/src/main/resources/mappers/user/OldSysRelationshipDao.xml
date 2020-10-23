@@ -60,7 +60,7 @@
 		<if test="nMcode != null and nMcode != ''">
 			AND N_MCODE = #{nMcode,jdbcType=VARCHAR}
 		</if>
-		<if test="nYnRegistered != null and nYnRegistered != ''">
+		<if test="nYnRegistered != null">
 			AND N_YN_REGISTERED = #{nYnRegistered,jdbcType=INTEGER}
 		</if>
 	</sql>
