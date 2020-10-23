@@ -675,8 +675,12 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             }
             /***************************************************************************************/
         }
+        System.out.println(pvTotal+"pvTotal");
+        System.out.println(ppvNum+"ppvNum");
         if(shopOrderDiscountType.getPreferentialType()!=8&&shopOrderDiscountType.getId().equals(-1L)){
+            System.out.println("进入1");
             if(pvTotal.compareTo(ppvNum)!=-1){
+                System.out.println("进入2");
                 shopOrderDiscountType.setPreferentialType(3);
             }
         }
