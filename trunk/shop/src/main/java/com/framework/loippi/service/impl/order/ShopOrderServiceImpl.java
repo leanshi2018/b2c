@@ -3237,7 +3237,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             shopReturnOrderGoods.setUpdateTime(new Date());
             shopReturnOrderGoods.setPrice(orderGoods.getGoodsPayPrice());
             shopReturnOrderGoods.setGoodsType(shopGoods.getGoodsType());
-            if (order.getOrderType() == 3) {
+            if (order.getOrderType() == 3||order.getOrderType() == 8) {
                 shopReturnOrderGoods.setPpv(shopGoods.getBigPpv());
             } else {
                 shopReturnOrderGoods.setPpv(shopGoods.getPpv());
