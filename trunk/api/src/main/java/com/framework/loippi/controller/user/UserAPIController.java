@@ -1704,11 +1704,6 @@ public class UserAPIController extends BaseController {
         RdSysPeriod period = periodService.findByPeriodCode(periodCode);
 
         SelfPerformanceResult result = new SelfPerformanceResult();
-        if (period.getPvProportion()==null){
-            result.setPvProportion(0d);
-        }else {
-            result.setPvProportion(period.getPvProportion());
-        }
         MemberQualification qualification = qualificationService.findByMCodeAndPeriodCode(Paramap.create().put("mCode",mCode).put("periodCode",periodCode));
         if (qualification==null){
             return ApiUtils.error("该会员还未生成业绩信息！");
@@ -1760,8 +1755,11 @@ public class UserAPIController extends BaseController {
         }else {
             result = SelfPerformanceResult.build2(basicInfo,qualification,profits1,profits2,SysPeriodCode,bugMi);
         }
-
-
+        if (period.getPvProportion()==null){
+            result.setPvProportion(0d);
+        }else {
+            result.setPvProportion(period.getPvProportion());
+        }
         return ApiUtils.success(result);
     }
 

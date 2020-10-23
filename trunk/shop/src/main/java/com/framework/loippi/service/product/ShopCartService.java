@@ -78,4 +78,6 @@ public interface ShopCartService extends GenericService<ShopCart, Long> {
     Map<String, Object> queryTotalPrice1(String cartIds, String mmCode, Long couponId, Long groupBuyActivityId, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr);
 
     List<CartInfo> queryCartInfoList1(String cartIds, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo address, String memberId, Long couponId);
+
+    Map<String, Object> queryTotalPrice2(String cartIds, String mmCode, Long couponId, Long groupBuyActivityId, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr);
 }

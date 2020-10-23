@@ -1,3 +1,4 @@
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -9,6 +10,8 @@ import com.allinpay.yunst.sdk.bean.YunConfig;
 import com.allinpay.yunst.sdk.bean.YunRequest;
 import com.framework.loippi.consts.AllInPayBillCutConstant;
 import com.framework.loippi.consts.AllInPayConstant;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 public class Mytest {
     public static void main(String[] args) {
@@ -83,9 +86,19 @@ public class Mytest {
 
     @Test
     public void test() {
-        Date date = new Date(1601481599000L);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String str = format.format(date);
-        System.out.println(str);
+        byte[] data = null;
+        // 读取图片字节数组
+        try {
+            InputStream in = new FileInputStream("E:\\微信图片_20200427092558.jpg");
+            data = new byte[in.available()];
+            in.read(data);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 对字节数组Base64编码
+        BASE64Encoder encoder = new BASE64Encoder();
+        String encode = encoder.encode(Objects.requireNonNull(data));
+        System.out.println(encode);
     }
 }

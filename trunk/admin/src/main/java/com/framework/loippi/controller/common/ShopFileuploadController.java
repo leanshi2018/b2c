@@ -78,9 +78,9 @@ public class ShopFileuploadController extends GenericController {
     String key = null;
 
     @RequestMapping(value = "/upload", produces = "text/html;charset=UTF-8")
-    public
     @ResponseBody
-    String upload(@RequestParam(required = false, value = "myfiles") CommonsMultipartFile myfiles) throws Exception {
+    public String upload(@RequestParam(required = false, value = "myfiles") CommonsMultipartFile myfiles) throws Exception {
+        System.out.println("进");
         //可以在上传文件的同时接收其它参数
         Map<String, Object> map = Maps.newConcurrentMap();
         if (myfiles.getSize()!=0){
