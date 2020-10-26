@@ -615,6 +615,21 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     targetGoods.getGoodsShow() == GoodsState.GOODS_ON_SHOW &&
                     targetGoods.getIsDel() != null &&
                     targetGoods.getIsDel() == GoodsState.GOODS_NOT_DELETE;
+            if(targetGoods.getState()==null||targetGoods.getState() != GoodsState.GOODS_OPEN_STATE){
+                map.put("error", "true");
+                map.put("message", targetGoods.getGoodsName() + "商品审核未通过，请删除后重新提交");
+                return map;
+            }
+            if(targetGoods.getGoodsShow()==null||targetGoods.getGoodsShow() != GoodsState.GOODS_ON_SHOW){
+                map.put("error", "true");
+                map.put("message", targetGoods.getGoodsName() + "商品已下架，请删除后重新提交");
+                return map;
+            }
+            if(targetGoods.getIsDel()==null||targetGoods.getIsDel() != GoodsState.GOODS_ON_SHOW){
+                map.put("error", "true");
+                map.put("message", targetGoods.getGoodsName() + "商品不存在，请删除后重新提交");
+                return map;
+            }
             if (!isShow) {
                 map.put("error", "true");
                 map.put("code","10001");
