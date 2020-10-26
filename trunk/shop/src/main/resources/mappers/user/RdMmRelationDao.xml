@@ -335,6 +335,6 @@
 
 	<select id="findFreezeMem" resultMap="RdMmRelationResultMap">
 		SELECT a.* from rd_mm_relation a INNER JOIN rd_mm_basic_info b on a.mm_code = b.mm_code and b.CREATION_DATE &lt; DATE_SUB(CURDATE(), INTERVAL 3 MONTH) and b.OLD_SYS_STATUS = 1
-		and a.a_ppv &lt; 150
+		and a.a_ppv &lt; 150 and a.MM_STATUS = 0
 	</select>
 </mapper> 
