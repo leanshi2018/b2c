@@ -548,8 +548,13 @@ public class CartCheckOutResult {
         } else if (shopOrderTypeId.equals(2L)){
             selectShopOrderType selectShopOrderType = new selectShopOrderType();
             selectShopOrderType.setShopOrderTypeId(3L);
-            selectShopOrderType.setShopOrderTypeName("大单价(还差"+(shopOrderDiscountTypeList.get(0).getPpv().subtract(result.getTotalPpv()))+"MI可享受该优惠)");
-            selectShopOrderType.setIsSelect(0);
+            if((shopOrderDiscountTypeList.get(0).getPpv().subtract(result.getTotalPpv())).compareTo(BigDecimal.ZERO)!=1){
+                selectShopOrderType.setShopOrderTypeName("大单价");
+                selectShopOrderType.setIsSelect(1);
+            }else {
+                selectShopOrderType.setShopOrderTypeName("大单价(还差"+(shopOrderDiscountTypeList.get(0).getPpv().subtract(result.getTotalPpv()))+"MI可享受该优惠)");
+                selectShopOrderType.setIsSelect(0);
+            }
             selectShopOrderTypeList.add(selectShopOrderType);
             selectShopOrderType selectShopOrderType1 = new selectShopOrderType();
             selectShopOrderType1.setShopOrderTypeId(2L);
