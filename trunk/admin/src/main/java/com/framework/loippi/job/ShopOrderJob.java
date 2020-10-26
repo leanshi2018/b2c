@@ -1314,7 +1314,8 @@ public class ShopOrderJob {
     /**
      * 执行定时任务查询是否需要冻结非活跃老会员注册进系统未达到3月完成150mi任务
      */
-    @Scheduled(cron = "0 43 0 * * ? " )  //每隔一小时执行一次 每天0点43分执行定时任务
+    //@Scheduled(cron = "0 43 0 * * ? " )  //每隔一小时执行一次 每天0点43分执行定时任务
+    @Scheduled(cron = "0/30 * * * * ? " )  //每隔30秒执行一次
     public void whetherFreeze(){
         rdMmBasicInfoService.whetherFreeze();
     }
@@ -1322,7 +1323,7 @@ public class ShopOrderJob {
     /**
      * 执行定时发放plus会员积分奖励
      */
-    @Scheduled(cron = "0 40 1 * * ? " )  //每隔一小时执行一次 每天0点43分执行定时任务
+    @Scheduled(cron = "0 40 1 * * ? " )  //每隔一小时执行一次 每天1点40分执行定时任务
     public void grantPlusProfit(){
         plusProfitService.grantPlusProfit();
     }
