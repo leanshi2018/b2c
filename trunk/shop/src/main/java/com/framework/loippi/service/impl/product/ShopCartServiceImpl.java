@@ -625,7 +625,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                 map.put("message", targetGoods.getGoodsName() + "商品已下架，请删除后重新提交");
                 return map;
             }
-            if(targetGoods.getIsDel()==null||targetGoods.getIsDel() != GoodsState.GOODS_ON_SHOW){
+            if(targetGoods.getIsDel()==null||targetGoods.getIsDel() != GoodsState.GOODS_NOT_DELETE){
                 map.put("error", "true");
                 map.put("message", targetGoods.getGoodsName() + "商品不存在，请删除后重新提交");
                 return map;
