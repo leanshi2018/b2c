@@ -578,6 +578,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
     @Override
     public Map<String, Object> queryTotalPrice2(String cartIds, String memberId, Long couponId, Long groupBuyActivityId, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr) {
         List<ShopOrderDiscountType> discountTypes = shopOrderDiscountTypeService.findList("preferentialType",3);
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
         ShopOrderDiscountType discountType = discountTypes.get(0);
         BigDecimal ppvNum = discountType.getPpv();
         Map<String, Object> map = new HashMap<>(5);
@@ -675,7 +676,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             }
             /***************************************************************************************/
         }
-        if(shopOrderDiscountType.getPreferentialType()!=8&&shopOrderDiscountType.getId().equals(-1L)){
+        if(shopOrderDiscountType.getPreferentialType()!=8&&shopOrderDiscountType.getId().equals(-1L)&&rdMmRelation.getRank()>0){
             if(pvTotal.compareTo(ppvNum)!=-1){
                 shopOrderDiscountType.setPreferentialType(3);
             }

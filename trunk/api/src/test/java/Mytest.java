@@ -2,6 +2,8 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.JacksonUtil;
 import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
@@ -86,7 +88,7 @@ public class Mytest {
 
     @Test
     public void test() {
-        byte[] data = null;
+        /*byte[] data = null;
         // 读取图片字节数组
         try {
             InputStream in = new FileInputStream("E:\\微信图片_20200427092558.jpg");
@@ -99,6 +101,43 @@ public class Mytest {
         // 对字节数组Base64编码
         BASE64Encoder encoder = new BASE64Encoder();
         String encode = encoder.encode(Objects.requireNonNull(data));
-        System.out.println(encode);
+        System.out.println(encode);*/
+/*        final YunRequest allInRequest = new YunRequest("MemberService", "sendVerificationCode");
+        allInRequest.put("bizUserId", "900014088");
+        allInRequest.put("phone", "15770801265");
+        allInRequest.put("verificationCodeType", 6L);
+        try {
+            String s = YunClient.request(allInRequest);
+            Map<String, Object> map = JacksonUtil.convertMap(s);
+            if(map.get("status").equals("OK")){
+                System.out.println("解绑成功");
+            }else if(map.get("status").equals("error")){
+                String message = (String) map.get("message");
+                System.out.println(message);
+            } else {
+                throw new RuntimeException("通联支付发送手机验证码异常");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+/*
+        final YunRequest allInRequest = new YunRequest("MemberService", "unbindPhone");
+        allInRequest.put("bizUserId", "900014088");
+        allInRequest.put("phone", "15770801265");
+        allInRequest.put("verificationCode", "484451");
+        try {
+            String s = YunClient.request(allInRequest);
+            Map<String, Object> map = JacksonUtil.convertMap(s);
+            if(map.get("status").equals("OK")){
+                System.out.println("解绑成功");
+            }else if(map.get("status").equals("error")){
+                String message = (String) map.get("message");
+                System.out.println(message);
+            } else {
+                throw new RuntimeException("通联支付发送手机验证码异常");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
     }
 }
