@@ -85,7 +85,7 @@ public class PlusProfitServiceImpl extends GenericServiceImpl<PlusProfit, Long> 
                 shopCommonMessage.setIsTop(1);
                 shopCommonMessage.setCreateTime(new Date());
                 shopCommonMessage.setTitle("积分到账通知");
-                shopCommonMessage.setContent("您推荐的会员xx已购买PLUS VIP订单，奖励"+plusProfit.getProfits()+"点积分，已加入奖励积分账户");
+                shopCommonMessage.setContent("您推荐的会员"+plusProfit.getBuyerId()+"已购买PLUS VIP订单，奖励"+plusProfit.getProfits()+"点积分，已加入奖励积分账户");
                 Long msgId = twiterIdService.getTwiterId();
                 shopCommonMessage.setId(msgId);
                 shopCommonMessageDao.insert(shopCommonMessage);
@@ -122,6 +122,10 @@ public class PlusProfitServiceImpl extends GenericServiceImpl<PlusProfit, Long> 
                 rdMmAccountInfoService.update(rdMmAccountInfo);
                 //3.修改plusProfit发放状态 发放金额 受益人
                 plusProfit.setState(1);
+                plusProfit.setActualTime(new Date());
+                if(period!=null){
+                    plusProfit.setActualPeriod(period);
+                }
                 plusProfitDao.update(plusProfit);
             }
         }

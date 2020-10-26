@@ -1138,7 +1138,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         //会员等级优惠金额
         cartInfo.setRankAmount(rankDiscount);
         //优惠金额
-        cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()).add(cartInfo.getPlusVipPrice()));
+        cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()));
         //TODO create by zc 2019-11-08 计算优惠券折扣
         BigDecimal useCouponAmount=BigDecimal.ZERO;
         if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
