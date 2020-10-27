@@ -1,5 +1,21 @@
 package com.framework.loippi.controller.wap;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
@@ -7,7 +23,11 @@ import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
 import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.common.ShopCommonArticle;
 import com.framework.loippi.entity.common.ShopCommonDocument;
-import com.framework.loippi.entity.product.*;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
+import com.framework.loippi.entity.product.ShopGoodsEvaluate;
+import com.framework.loippi.entity.product.ShopGoodsRecommend;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.result.activity.ActivityDetailResult;
 import com.framework.loippi.result.common.activity.ActivityEvaluateGoodsResult;
 import com.framework.loippi.result.common.activity.ActivityGoodsDetailResult;
@@ -19,22 +39,17 @@ import com.framework.loippi.service.activity.ShopActivityService;
 import com.framework.loippi.service.common.ShopAppService;
 import com.framework.loippi.service.common.ShopCommonArticleService;
 import com.framework.loippi.service.common.ShopCommonDocumentService;
-import com.framework.loippi.service.product.*;
+import com.framework.loippi.service.product.ShopGoodsBrandService;
+import com.framework.loippi.service.product.ShopGoodsEvaluateService;
+import com.framework.loippi.service.product.ShopGoodsRecommendService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.vo.goods.GoodsSpecVo;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  * Created by longbh on 2018/12/27.
@@ -173,8 +188,11 @@ public class WapShareController extends BaseController {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("goodsDetailInfo", goodsDetailResult);
         if (activityId != null && activityId != -1) {
+            goodsDetailResult.setActivityId(activityId);
             ShopActivity shopActivity = shopActivityService.find(activityId);
             resultMap.put("activityInfo", ActivityDetailResult.build(shopActivity));
+        }else {
+            goodsDetailResult.setActivityId(-1l);
         }
         model.addAttribute("resultMap", resultMap);
         List<ShopApp> shopAppList= shopAppService.findAll();
