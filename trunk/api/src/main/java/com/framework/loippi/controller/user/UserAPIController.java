@@ -2319,7 +2319,7 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error("当前用户非主店会员，请切换至主店会员后进行次店会员注册");
         }
         List<RdMmBasicInfo> list = rdMmBasicInfoService.findList("mobile", mmBasicInfo.getMobile());
-        if(list!=null&&list.size()>4){//主店和次店会员公注册数量
+        if(list!=null&&list.size()>10){//主店和次店会员公注册数量
             return ApiUtils.error("当前用户不可注册更多次店会员");
         }
         if(StringUtil.isEmpty(mNickName)){
