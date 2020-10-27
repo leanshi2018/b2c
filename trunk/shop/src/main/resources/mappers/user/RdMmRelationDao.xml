@@ -107,7 +107,7 @@
 		<if test="isVip != null and isVip != ''">
 			AND IS_VIP = #{isVip}
 		</if>
-		<if test="aPpv != null and aPpv != ''">
+		<if test="aPpv != null">
 			AND A_PPV = #{aPpv}
 		</if>
 		<if test="nOFlag != null and nOFlag != ''">
@@ -148,7 +148,7 @@
 		<if test="aRetail != null">
 			A_RETAIL = #{aRetail},
 		</if>
-		<if test="aPpv != null and aPpv != ''">
+		<if test="aPpv != null">
 			 A_PPV = #{aPpv},
 		</if>
 		<if test="loginPwd != null and loginPwd != ''">
