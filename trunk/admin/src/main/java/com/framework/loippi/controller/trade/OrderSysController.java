@@ -232,6 +232,7 @@ public class OrderSysController extends GenericController {
     private static String secretkey = "1073f238-1971-4890-bfc4-fd903d90d7eb10294";//秘钥
     private static String customerID = "10294";//客户编号
     private static Long spirit_goods_id = 6714107763837898752l;//白酒商品Id
+    //private static Long spirit_goods_id = 6714063202381991936l;//白酒商品Id
     /**
      *  待发货订单连接第三方发货
      * @param request
