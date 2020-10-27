@@ -225,6 +225,17 @@ public class OrderDetailResult {
                             .setActivityId(Optional.ofNullable(result.getActivityId()).orElse(0L))
                             .setActivityType(Optional.ofNullable(result.getActivityType()).orElse(0)));
         }
+
+        public static List<OrderGoods>  buildList1(List<ShopOrderGoods> orderGoodsList,Integer orderType) throws Exception {
+            return BaseGoodsResult.buildList1(orderGoodsList,orderType,
+                    result -> new OrderGoods()
+                            .setIsShipment(
+                                    (result.getShippingExpressId()!=null && result.getShippingCode()!=null && !"".equals(result.getShippingCode())?1:0)
+                            )
+                            .setPpv(Optional.ofNullable(result.getPpv()).orElse(BigDecimal.ZERO))
+                            .setActivityId(Optional.ofNullable(result.getActivityId()).orElse(0L))
+                            .setActivityType(Optional.ofNullable(result.getActivityType()).orElse(0)));
+        }
     }
 
 
@@ -242,7 +253,8 @@ public class OrderDetailResult {
                 .setShippingCode(optOrder.map(ShopOrderVo::getShippingCode).orElse(""))
                 .setEvaluateState(optOrder.map(ShopOrderVo::getEvaluationStatus).orElse(0).intValue())
                 .setChatAccount("qqcloud_"+optOrder.map(ShopOrderVo::getStoreId).orElse(0L).toString())
-                .setOrderGoodsList(OrderGoods.buildList(order.getShopOrderGoods()))
+                //.setOrderGoodsList(OrderGoods.buildList(order.getShopOrderGoods()))
+                .setOrderGoodsList(OrderGoods.buildList1(order.getShopOrderGoods(),order.getOrderType()))
                 .setBrandId(optOrder.map(ShopOrderVo::getBrandId).orElse(-1L))
                 .setBrandName(optOrder.map(ShopOrderVo::getBrandName).orElse(""))
                 .setCancelCause(optOrder.map(ShopOrderVo::getCancelCause).orElse(""))
