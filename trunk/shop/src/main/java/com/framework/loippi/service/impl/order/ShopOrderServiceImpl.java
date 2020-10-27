@@ -604,8 +604,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     if(order.getOrderType()==8){
                         rdMmRelation.setARetail(money.subtract(new BigDecimal("360.00")));
                     }
+                    System.out.println(money+"*** money");
+                    System.out.println(orderMoney+"*** orderMoney");
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                    if ((order.getOrderType()==1||order.getOrderType()==8)&&money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
+                    //if ((order.getOrderType()==1||order.getOrderType()==8)&&money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1) {
+                    if ((order.getOrderType()==1&&money.compareTo(vipMoney) != -1 && (money.subtract(orderMoney)).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1)||
+                            (order.getOrderType()==8&&money.compareTo(vipMoney) != -1 && (money.subtract(new BigDecimal("360.00"))).compareTo(vipMoney) == -1&&rdMmRelation.getNOFlag()==1)) {
+                        System.out.println("进入降级");
                         rdMmRelation.setAPpv(ppv.subtract(orderPpv));
                         rdMmRelation.setATotal(aTotal.subtract(orderMoney));
                         rdMmRelation.setRank(0);
@@ -3696,8 +3701,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     if(order.getOrderType()==8){
                         rdMmRelation.setARetail(rdMmRelation.getARetail().add(new BigDecimal("360.00")));
                     }
+                    System.out.println(money+"***** money");
+                    System.out.println(orderMoney+"***** orderMoney");
                     //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                    if ((order.getOrderType()==1||order.getOrderType()==8)&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                    //if ((order.getOrderType()==1||order.getOrderType()==8)&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                    if ((order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1)||
+                            (order.getOrderType()==8&&money.compareTo(vipMoney) == -1 && (money.add(new BigDecimal("360.00"))).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1)) {
+                        System.out.println("进入升级");
                         //2020-02-06 TODO 如果会员在指定月份升级，赠送优惠券
                         //1 确定当前月份为几月份 如果在赠送月份，判断送哪几个月的优惠券
                         ArrayList<Coupon> couponDetails = new ArrayList<>();
@@ -5063,8 +5073,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         if(order.getOrderType()==8){
                             rdMmRelation.setARetail(rdMmRelation.getARetail().add(new BigDecimal("360.00")));
                         }
+                        System.out.println(money+"***** money");
+                        System.out.println(orderMoney+"***** orderMoney");
                         //之前少于升级vip的价位 加上这个订单大于或者等于升级vip的价位
-                        if ((order.getOrderType()==1||order.getOrderType()==8)&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                        //if ((order.getOrderType()==1||order.getOrderType()==8)&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1) {
+                        if ((order.getOrderType()==1&&money.compareTo(vipMoney) == -1 && (money.add(orderMoney)).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1)||
+                                    (order.getOrderType()==8&&money.compareTo(vipMoney) == -1 && (money.add(new BigDecimal("360.00"))).compareTo(vipMoney) != -1&&rdMmRelation.getNOFlag()==1)){
+                            System.out.println("进入升级");
                             //2020-02-06 TODO 如果会员在指定月份升级，赠送优惠券
                             //1 确定当前月份为几月份 如果在赠送月份，判断送哪几个月的优惠券
                             Calendar calendar = Calendar.getInstance();
