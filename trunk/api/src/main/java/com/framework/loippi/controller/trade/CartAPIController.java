@@ -698,10 +698,10 @@ public class CartAPIController extends BaseController {
                 .queryTotalPrice2(cartIds, member.getMmCode(), couponId, groupBuyActivityId, shopOrderDiscountType, addr);
         // 购物车数据
         if (map.get("error").equals("true")) {
-            if (map.get("code").equals("10002")){
+            //if (map.get("code").equals("10002")){
                 return ApiUtils.error(map.get("message").toString());
-            }
-            return ApiUtils.error("商品属性发生改变,请重新结算");
+            //}
+            //return ApiUtils.error("商品属性发生改变,请重新结算");
         }
         CartCheckOutResult result = CartCheckOutResult
                 .buildNew(map, cartList, addr, shopOrderTypeId, shopOrderDiscountType);
@@ -711,10 +711,11 @@ public class CartAPIController extends BaseController {
 
         // TODO: 2018/12/14 自提地址 自提地址 id为-1 表示平台地址
         RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", -1);
-        List<ShopOrderDiscountType> shopOrderDiscountTypeList = new ArrayList<>();
+        /*List<ShopOrderDiscountType> shopOrderDiscountTypeList = new ArrayList<>();
         if (rdRanks != null && rdRanks.getRankClass() != null && rdRanks.getRankClass() > 0) {
             shopOrderDiscountTypeList = shopOrderDiscountTypeService.findAll();
-        }
+        }*/
+        List<ShopOrderDiscountType> shopOrderDiscountTypeList =  shopOrderDiscountTypeService.findAll();
         result = result.build2New(result, shopOrderDiscountTypeList, rdRanks, rdMmBasicInfo, shopMemberAddress);
         //***************************************************************************************************************************
         Integer flag=0;

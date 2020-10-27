@@ -16,6 +16,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.pojo.activity.PictureVio;
+import com.framework.loippi.result.common.index.HomeAndADPictureResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -398,7 +400,9 @@ public class UserAPIController extends BaseController {
         }
         List<ShopHomePicture> list = shopHomePictureService.findList(Paramap.create().put("auditStatus", 1).put("pictureType", 3));
         if(list!=null&&list.size()>0){
-            result.setShopHomePicture(list.get(0));
+            HomeAndADPictureResult build = HomeAndADPictureResult.build(list, null, null);
+            List<PictureVio> pictures = build.getHomePictures();
+            result.setShopHomePicture(pictures.get(0));
         }
         return ApiUtils.success(result);
     }
@@ -2315,7 +2319,7 @@ public class UserAPIController extends BaseController {
             return ApiUtils.error("当前用户非主店会员，请切换至主店会员后进行次店会员注册");
         }
         List<RdMmBasicInfo> list = rdMmBasicInfoService.findList("mobile", mmBasicInfo.getMobile());
-        if(list!=null&&list.size()>4){//主店和次店会员公注册数量
+        if(list!=null&&list.size()>10){//主店和次店会员公注册数量
             return ApiUtils.error("当前用户不可注册更多次店会员");
         }
         if(StringUtil.isEmpty(mNickName)){

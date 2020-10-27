@@ -3237,7 +3237,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             shopReturnOrderGoods.setUpdateTime(new Date());
             shopReturnOrderGoods.setPrice(orderGoods.getGoodsPayPrice());
             shopReturnOrderGoods.setGoodsType(shopGoods.getGoodsType());
-            if (order.getOrderType() == 3) {
+            if (order.getOrderType() == 3||order.getOrderType() == 8) {
                 shopReturnOrderGoods.setPpv(shopGoods.getBigPpv());
             } else {
                 shopReturnOrderGoods.setPpv(shopGoods.getPpv());
@@ -3581,6 +3581,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 if(order.getOrderType()==8){//如果当前订单为PLUS会员订单 TODO plus会员订单生成plus_profit记录
                     String buyerId = order.getBuyerId()+"";
                     RdMmBasicInfo basicInfo = rdMmBasicInfoService.findByMCode(buyerId);
+                    System.out.println(basicInfo.getPlusVip()+"PlusVip");
                     PlusProfit plusProfit = new PlusProfit();
                     plusProfit.setBuyerId(buyerId);
                     plusProfit.setCreateTime(new Date());
@@ -3590,6 +3591,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     }
                     plusProfit.setOrderId(order.getId());
                     plusProfit.setOrderSn(order.getOrderSn());
+                    if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==1){//是plus vip会员，奖励减免给自己
+                        plusProfit.setReceiptorId(buyerId);
+                        plusProfit.setState(3);
+                        plusProfit.setProfits(new BigDecimal("1000.00"));
+                    }
                     if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==0){//不是plus vip会员，奖励送给推荐人
                         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", buyerId);
                         if(rdMmRelation!=null&&rdMmRelation.getSponsorCode()!=null){
@@ -3605,11 +3611,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         }
                         basicInfo.setPlusVip(1);
                         rdMmBasicInfoService.update(basicInfo);
-                    }
-                    if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==1){//是plus vip会员，奖励减免给自己
-                        plusProfit.setReceiptorId(buyerId);
-                        plusProfit.setState(3);
-                        plusProfit.setProfits(new BigDecimal("1000.00"));
                     }
                     plusProfitService.save(plusProfit);
                 }
@@ -4994,6 +4995,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     if(order.getOrderType()==8){//如果当前订单为PLUS会员订单 TODO plus会员订单生成plus_profit记录
                         String buyerId = order.getBuyerId()+"";
                         RdMmBasicInfo basicInfo = rdMmBasicInfoService.findByMCode(buyerId);
+                        System.out.println(basicInfo.getPlusVip()+"PlusVip");
                         PlusProfit plusProfit = new PlusProfit();
                         plusProfit.setBuyerId(buyerId);
                         plusProfit.setCreateTime(new Date());
@@ -5003,6 +5005,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         }
                         plusProfit.setOrderId(order.getId());
                         plusProfit.setOrderSn(order.getOrderSn());
+                        if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==1){//是plus vip会员，奖励减免给自己
+                            plusProfit.setReceiptorId(buyerId);
+                            plusProfit.setState(3);
+                            plusProfit.setProfits(new BigDecimal("1000.00"));
+                        }
                         if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==0){//不是plus vip会员，奖励送给推荐人
                             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", buyerId);
                             if(rdMmRelation!=null&&rdMmRelation.getSponsorCode()!=null){
@@ -5018,11 +5025,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             }
                             basicInfo.setPlusVip(1);
                             rdMmBasicInfoService.update(basicInfo);
-                        }
-                        if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==1){//是plus vip会员，奖励减免给自己
-                            plusProfit.setReceiptorId(buyerId);
-                            plusProfit.setState(3);
-                            plusProfit.setProfits(new BigDecimal("1000.00"));
                         }
                         plusProfitService.save(plusProfit);
                     }

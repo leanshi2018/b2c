@@ -182,7 +182,10 @@ public class OrderResult {
                 // TODO: 2018/12/6   等待判断登录用户是否是vip 显示不同价格
                 goodsInfo.setPrice(Optional.ofNullable(orderGoods.getGoodsPayPrice()).orElse(new BigDecimal(0)));
                 goodsInfo.setQuantity(Optional.ofNullable(orderGoods.getGoodsNum()).orElse(0));
-                if (orderGoods.getOrderId() == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
+                /*if (orderGoods.getOrderId() == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV||orderGoods.getOrderId() == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
+                    goodsInfo.setPpv(Optional.ofNullable(orderGoods.getBigPpv()).orElse(BigDecimal.ZERO));
+                }*/
+                if (shopOrderVo.getOrderType() == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV||shopOrderVo.getOrderType() == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
                     goodsInfo.setPpv(Optional.ofNullable(orderGoods.getBigPpv()).orElse(BigDecimal.ZERO));
                 }
                 goodsInfoList.add(goodsInfo);

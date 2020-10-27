@@ -143,7 +143,7 @@ public class HomeAndADPictureResult {
 			result.setAdPictures(list);
 		}
 
-		if (keywords.size()>0){
+		if (keywords!=null&&keywords.size()>0){
 			result.setKeywords(keywords);
 		}else {
 			result.setKeywords(new ArrayList<RdKeyword>());

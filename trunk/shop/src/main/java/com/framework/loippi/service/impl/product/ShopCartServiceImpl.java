@@ -578,6 +578,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
     @Override
     public Map<String, Object> queryTotalPrice2(String cartIds, String memberId, Long couponId, Long groupBuyActivityId, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr) {
         List<ShopOrderDiscountType> discountTypes = shopOrderDiscountTypeService.findList("preferentialType",3);
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", memberId);
         ShopOrderDiscountType discountType = discountTypes.get(0);
         BigDecimal ppvNum = discountType.getPpv();
         Map<String, Object> map = new HashMap<>(5);
@@ -614,6 +615,21 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
                     targetGoods.getGoodsShow() == GoodsState.GOODS_ON_SHOW &&
                     targetGoods.getIsDel() != null &&
                     targetGoods.getIsDel() == GoodsState.GOODS_NOT_DELETE;
+            if(targetGoods.getState()==null||targetGoods.getState() != GoodsState.GOODS_OPEN_STATE){
+                map.put("error", "true");
+                map.put("message", targetGoods.getGoodsName() + "商品审核未通过，请删除后重新提交");
+                return map;
+            }
+            if(targetGoods.getGoodsShow()==null||targetGoods.getGoodsShow() != GoodsState.GOODS_ON_SHOW){
+                map.put("error", "true");
+                map.put("message", targetGoods.getGoodsName() + "商品已下架，请删除后重新提交");
+                return map;
+            }
+            if(targetGoods.getIsDel()==null||targetGoods.getIsDel() != GoodsState.GOODS_NOT_DELETE){
+                map.put("error", "true");
+                map.put("message", targetGoods.getGoodsName() + "商品不存在，请删除后重新提交");
+                return map;
+            }
             if (!isShow) {
                 map.put("error", "true");
                 map.put("code","10001");
@@ -635,7 +651,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             shopCart.setPpv(targetSpec.getPpv());
             shopCart.setBigPpv(targetSpec.getBigPpv());
             shopCart.setWeight(targetSpec.getWeight());
-            pvTotal=pvTotal.add(targetSpec.getPpv());
+            pvTotal=pvTotal.add(targetSpec.getPpv().multiply(new BigDecimal(Integer.toString(shopCart.getGoodsNum()))));
 
             /******************************2020.2.20判断限购商品**************************************/
             List<ShopGoodsStint> shopGoodsStintList = shopGoodsStintDao.findBySerial(targetSpec.getSpecGoodsSerial());
@@ -675,7 +691,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             }
             /***************************************************************************************/
         }
-        if(shopOrderDiscountType.getPreferentialType()!=8&&shopOrderDiscountType.getId().equals(-1L)){
+        if(shopOrderDiscountType.getPreferentialType()!=8&&shopOrderDiscountType.getId().equals(-1L)&&rdMmRelation.getRank()>0){
             if(pvTotal.compareTo(ppvNum)!=-1){
                 shopOrderDiscountType.setPreferentialType(3);
             }
@@ -1122,7 +1138,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         //会员等级优惠金额
         cartInfo.setRankAmount(rankDiscount);
         //优惠金额
-        cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()).add(cartInfo.getPlusVipPrice()));
+        cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()));
         //TODO create by zc 2019-11-08 计算优惠券折扣
         BigDecimal useCouponAmount=BigDecimal.ZERO;
         if (type != ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
