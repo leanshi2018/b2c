@@ -529,13 +529,13 @@ public class IndexAPIController extends BaseController {
 
     @ResponseBody
     @RequestMapping("/api/index/getSignAture.json")
-    public String getSignaTure() throws UnsupportedEncodingException {
+    public String getSignAture(String url) throws UnsupportedEncodingException {
         String ticket = Token.getTicket();
         String noncestr = RandomStringGenerator.getRandomStringByLength(32);
         long timestamp = new Date().getTime()/1000;
         String sign =  "jsapi_ticket="+ticket+"&noncestr="//请勿更换字符组装顺序
                 +noncestr+"&timestamp="+timestamp
-                +"&url="+"www.rdnmall.com"; //url为你当前访问的url路径，除去#与#后面的数据
+                +"&url="+url; //url为你当前访问的url路径，除去#与#后面的数据
         String signature = new SHA1().getDigestOfString(sign.getBytes("utf-8"));
 
         return signature;
