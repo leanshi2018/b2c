@@ -174,6 +174,11 @@ public class ActivityGoodsDetailResult {
     private String goodsVideo;
 
     /**
+     * 活动Id
+     */
+    private Long activityId;
+
+    /**
      * 关键字集合
      */
     List<ShopGoodsEvaluateKeywords> shopGoodsEvaluateKeywordsList=new ArrayList<ShopGoodsEvaluateKeywords>();
@@ -218,7 +223,7 @@ public class ActivityGoodsDetailResult {
         result.setStockNumber(Optional.ofNullable(item.getStock()).orElse(0l));
 
         result.setGoodsVideo(Optional.ofNullable(item.getGoodsVideo()).orElse(""));
-        
+
         // 市场价不受活动影响
         StringBuffer shareUrl = new StringBuffer();
         shareUrl.append(wapServer);
