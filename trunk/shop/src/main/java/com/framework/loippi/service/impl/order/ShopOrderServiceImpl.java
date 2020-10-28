@@ -2064,7 +2064,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         money = new BigDecimal("0");
                     }
                     orderGoods.setGoodsPayPrice(money);
-                } else {
+                } else if(shopOrderDiscountType.getPreferentialType()
+                        == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS){
+                    orderGoods.setGoodsPayPrice(cartOrderVo.getGoodsBigPrice());
+                }else {
                     orderGoods.setGoodsPayPrice(cartOrderVo.getGoodsRetailPrice());
                 }
                 orderGoods.setPpv(cartOrderVo.getPpv());
