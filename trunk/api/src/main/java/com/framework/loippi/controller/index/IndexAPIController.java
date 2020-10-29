@@ -59,8 +59,10 @@ import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.wechat.applets.util.GetOpenIDUtil;
+import com.framework.loippi.utils.wechat.h5.config.WachatContent;
 import com.framework.loippi.utils.wechat.h5.handler.RandomStringGenerator;
 import com.framework.loippi.utils.wechat.h5.handler.SHA1;
+import com.framework.loippi.utils.wechat.h5.pojo.SignResult;
 import com.framework.loippi.utils.wechat.h5.pojo.Token;
 
 
@@ -529,7 +531,7 @@ public class IndexAPIController extends BaseController {
 
     @ResponseBody
     @RequestMapping("/api/index/getSignAture.json")
-    public String getSignAture(String url) throws UnsupportedEncodingException {
+    public Object getSignAture(String url) throws UnsupportedEncodingException {
         String ticket = Token.getTicket();
         String noncestr = RandomStringGenerator.getRandomStringByLength(32);
         long timestamp = new Date().getTime()/1000;
@@ -538,7 +540,15 @@ public class IndexAPIController extends BaseController {
                 +"&url="+url; //url为你当前访问的url路径，除去#与#后面的数据
         String signature = new SHA1().getDigestOfString(sign.getBytes("utf-8"));
 
-        return signature;
+        SignResult result = new SignResult();
+        result.setAppId(WachatContent.appid);
+        result.setAppsecret(WachatContent.appsecret);
+        result.setNonceStr(noncestr);
+        result.setSign(sign);
+        result.setTimestamp(timestamp);
+        result.setSignature(signature);
+        result.setTicket(ticket);
+        return result;
     }
 
 }
