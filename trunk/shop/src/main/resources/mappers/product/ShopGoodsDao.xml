@@ -343,7 +343,7 @@
     <if test="goodsImageMore != '' ">
       goods_image_more = #{goodsImageMore},
     </if>
-    <if test="goodsVideo != '' ">
+    <if test="goodsVideo != null and goodsVideo != '' ">
       goods_video = #{goodsVideo},
     </if>
     <if test="goodsRetailPrice != null">
