@@ -20,4 +20,5 @@ public class SignResult {
 	private String nonceStr;
 	private String signature;
 	private String sign;
+	private String ticket;
 }

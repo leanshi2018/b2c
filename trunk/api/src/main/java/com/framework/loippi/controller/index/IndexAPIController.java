@@ -547,6 +547,7 @@ public class IndexAPIController extends BaseController {
         result.setSign(sign);
         result.setTimestamp(timestamp);
         result.setSignature(signature);
+        result.setTicket(ticket);
         return result;
     }
 
