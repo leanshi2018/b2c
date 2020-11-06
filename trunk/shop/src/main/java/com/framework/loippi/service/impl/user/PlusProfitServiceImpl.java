@@ -131,4 +131,14 @@ public class PlusProfitServiceImpl extends GenericServiceImpl<PlusProfit, Long> 
         }
         System.out.println("grant plusProfit over");
     }
+
+    @Override
+    public List<PlusProfit> findListTimeAsc(Paramap paramaps) {
+        return plusProfitDao.findListTimeAsc(paramaps);
+    }
+
+    @Override
+    public BigDecimal countProfit(Paramap paramaps) {
+        return plusProfitDao.countProfit(paramaps);
+    }
 }

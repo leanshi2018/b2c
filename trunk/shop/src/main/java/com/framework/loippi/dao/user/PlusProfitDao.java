@@ -12,4 +12,8 @@ import java.util.List;
 public interface PlusProfitDao extends GenericDao<PlusProfit, Long> {
 
     List<PlusProfit> findTimeMature(String expectTime);
+
+    List<PlusProfit> findListTimeAsc(Paramap paramaps);
+
+    BigDecimal countProfit(Paramap paramaps);
 }

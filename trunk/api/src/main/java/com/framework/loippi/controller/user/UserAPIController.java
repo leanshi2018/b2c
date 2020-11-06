@@ -16,8 +16,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.framework.loippi.entity.user.*;
 import com.framework.loippi.pojo.activity.PictureVio;
 import com.framework.loippi.result.common.index.HomeAndADPictureResult;
+import com.framework.loippi.service.user.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -37,18 +39,6 @@ import com.framework.loippi.entity.common.ShopApp;
 import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrowse;
-import com.framework.loippi.entity.user.MemberQualification;
-import com.framework.loippi.entity.user.OldSysRelationship;
-import com.framework.loippi.entity.user.RdBonusMaster;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmBank;
-import com.framework.loippi.entity.user.RdMmBankDiscern;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
-import com.framework.loippi.entity.user.RdRanksNextMessage;
-import com.framework.loippi.entity.user.RdSysPeriod;
-import com.framework.loippi.entity.user.ShopMemberFavorites;
 import com.framework.loippi.entity.walet.RdMmWithdrawLog;
 import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.enus.SocialType;
@@ -79,20 +69,6 @@ import com.framework.loippi.service.product.ShopGoodsBrowseService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateService;
 import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.service.user.MemberQualificationService;
-import com.framework.loippi.service.user.OldSysRelationshipService;
-import com.framework.loippi.service.user.RdBonusMasterService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmBankDiscernService;
-import com.framework.loippi.service.user.RdMmBankService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.service.user.RdRaBindingService;
-import com.framework.loippi.service.user.RdRanksNextMessageService;
-import com.framework.loippi.service.user.RdRanksService;
-import com.framework.loippi.service.user.RdSysPeriodService;
-import com.framework.loippi.service.user.RetailProfitService;
-import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
 import com.framework.loippi.service.ware.RdWarehouseService;
@@ -183,6 +159,8 @@ public class UserAPIController extends BaseController {
     private RdInventoryWarningService rdInventoryWarningService;
     @Resource
     private ShopHomePictureService shopHomePictureService;
+    @Resource
+    private PlusProfitService plusProfitService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -403,6 +381,17 @@ public class UserAPIController extends BaseController {
             HomeAndADPictureResult build = HomeAndADPictureResult.build(list, null, null);
             List<PictureVio> pictures = build.getHomePictures();
             result.setShopHomePicture(pictures.get(0));
+        }
+        if(shopMember.getPlusVip()!=null&&shopMember.getPlusVip()==0){
+            List<PlusProfit> plusProfits = plusProfitService.findListTimeAsc(Paramap.create().put("receiptorId",shopMember.getMmCode()).put("state",0).put("expectTimeFlag","yes"));
+            if(plusProfits!=null&&plusProfits.size()>0){
+                result.setHavePlusProfitFlag(1);
+                result.setLatelyTime(plusProfits.get(0).getExpectTime());
+            }else {
+                result.setHavePlusProfitFlag(2);
+            }
+        }else {
+            result.setHavePlusProfitFlag(2);
         }
         return ApiUtils.success(result);
     }
@@ -1764,6 +1753,18 @@ public class UserAPIController extends BaseController {
         }else {
             result.setPvProportion(period.getPvProportion());
         }
+        //当期待发放
+        BigDecimal plusProfit1 = plusProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",0));
+        //当期已发放
+        BigDecimal plusProfit2 = plusProfitService.countProfit(Paramap.create().put("receiptorId",mCode).put("createPeriod",periodCode).put("state",1));
+        if (plusProfit1==null){
+            plusProfit1 = new BigDecimal("0.00");
+        }
+        if (plusProfit2==null){
+            plusProfit2 = new BigDecimal("0.00");
+        }
+        result.setPlusProfit1(plusProfit1);
+        result.setPlusProfit2(plusProfit2);
         return ApiUtils.success(result);
     }
 
