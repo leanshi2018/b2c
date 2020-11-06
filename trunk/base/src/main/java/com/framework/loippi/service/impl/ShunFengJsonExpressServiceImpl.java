@@ -37,13 +37,13 @@ public class ShunFengJsonExpressServiceImpl implements ShunFengJsonExpressServic
 	// 测试环境请求url
 	private static final String CALL_URL_BOX = "https://fyp-sit.sf-express.com/";
 	// 正式环境请求url
-	private static final String CALL_URL_PROD = "https://fyp-sit.sf-express.com/";
+	private static final String CALL_URL_PROD = "https://fyp.sf-express.com/";
 	//
-	private static final String APP_CODE = "m40itwu80";
+	private static final String APP_CODE = "m5ekge9r0";
 	//
-	private static final String APP_KEY = "zkiGVxKk5pOKxHonqlUZS4QTtCEtJPASJ6eit27p1jognENLPOXYjIyS4bI3NgQNlXWH9ZReRQeRFoQl+MuVhw==";
+	private static final String APP_KEY = "D6z1ONIUC4oC2IF0MB2+6oQTtCEtJPASJ6eit27p1jognENLPOXYjIyS4bI3NgQNlXWH9ZReRQeRFoQl+MuVhw==";
 	// 顺丰月结卡号
-	private static final String CUST_ID = "7551234567";
+	private static final String CUST_ID = "0520291837";
 
 
 	/**
@@ -99,7 +99,7 @@ public class ShunFengJsonExpressServiceImpl implements ShunFengJsonExpressServic
 			map.put("sign",VerifyCodeUtil.encryptToMd5(APP_CODE + APP_KEY + timeStamp));
 			map.put("timestamp",timeStamp);
 			JSONObject jsonObject = JSONObject.fromObject(map);
-			String str = HttpClientUtil.acquireDataLogin(CALL_URL_BOX, ShunFengServieCodeEnum.EXP_RECE_LOGIN_ORDER, "", jsonObject.toString());
+			String str = HttpClientUtil.acquireDataLogin(CALL_URL_PROD, ShunFengServieCodeEnum.EXP_RECE_LOGIN_ORDER, "", jsonObject.toString());
 			System.out.println("登录授权str="+str);
 			Map mapType = JSON.parseObject(str,Map.class);
 			accessToken = mapType.get("data").toString();
@@ -111,7 +111,7 @@ public class ShunFengJsonExpressServiceImpl implements ShunFengJsonExpressServic
 		}
 		String result = null;
 		try {
-			result = HttpClientUtil.acquireData(CALL_URL_BOX,servieCode,accessToken,requestJson);
+			result = HttpClientUtil.acquireData(CALL_URL_PROD,servieCode,accessToken,requestJson);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

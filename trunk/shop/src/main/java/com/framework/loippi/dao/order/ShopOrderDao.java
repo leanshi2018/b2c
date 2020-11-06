@@ -229,4 +229,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     Long getPlusVipOrderNum(Long buyerId);
 
 	ShopOrder findByOrderSn(String orderSn);
+
+	void updateOrderShipping(Map<String, Object> map);
 }

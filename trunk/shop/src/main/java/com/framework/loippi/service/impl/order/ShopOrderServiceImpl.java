@@ -2,11 +2,6 @@ package com.framework.loippi.service.impl.order;
 
 
 
-import com.framework.loippi.entity.cart.ShopCartExchange;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.pojo.cart.CartExchangeInfo;
-import com.framework.loippi.service.product.*;
-import com.framework.loippi.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -107,6 +102,16 @@ import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
+import com.framework.loippi.entity.user.PlusProfit;
+import com.framework.loippi.entity.user.RdGoodsAdjustment;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RetailProfit;
+import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAdjust;
@@ -150,6 +155,7 @@ import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.service.user.PlusProfitService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAccountLogService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
@@ -7107,5 +7113,18 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         orderPay.setOrderId(orderId);
         orderPay.setPaymentType(paymentType);
         return orderPay;
+    }
+
+    @Override
+    public void updateOrderShipping(String orderSn, String trackSn, long expressId) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderSn",orderSn);
+        map.put("shippingCode",trackSn);
+        ShopCommonExpress express = shopCommonExpressDao.find(29l);
+        map.put("shippingExpressCode",Optional.ofNullable(express.getECode()).orElse(""));
+        map.put("shippingExpressId",Optional.ofNullable(express.getId()).orElse(-1L));
+        map.put("shippingName",Optional.ofNullable(express.getEName()).orElse(""));
+        map.put("shippingTime",new Date());
+        orderDao.updateOrderShipping(map);
     }
 }

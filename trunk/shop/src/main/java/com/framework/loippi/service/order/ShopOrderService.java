@@ -376,5 +376,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     ShopOrderPay addOrderReturnPaySnRedemption(String cartIds, String mmCode, Map<String, Object> orderMsgMap, Long addressId, Integer platformCode, Integer logisticType, Integer paymentType);
 
-    /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
+	void updateOrderShipping(String orderSn, String trackSn, long expressId);
+
+	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }
