@@ -659,6 +659,20 @@ public class ShopOrderJob {
     public void timingSFOrder() throws Exception {
         System.out.println("###############################执行定时白酒顺丰发货#####################################");
 
+        Integer fStatus = 1;
+        List<ShopAutoShip> shipDaoAll = shopAutoShipDao.findAll();
+        Integer size = shipDaoAll.size();
+        if (size==1){
+            ShopAutoShip shopAutoShip = shipDaoAll.get(0);
+            Integer shipStatus = shopAutoShip.getShipStatus();
+            if (shipStatus==null){
+                fStatus =1;
+            }else {
+                fStatus = shipStatus;
+            }
+        }
+
+        if (fStatus==1){
         List<ShopSpiritOrderInfo> shopSpiritOrderAll = shopSpiritOrderInfoService.findNoSubmitOrderAll();
         Map<String, List<SpiritOrderVo>> excelMap = new HashMap<String, List<SpiritOrderVo>>();
         for (ShopSpiritOrderInfo spiritOrderInfo : shopSpiritOrderAll) {
@@ -676,7 +690,7 @@ public class ShopOrderJob {
             String area = "";//地区
             String address = "";
             String mobPhone = "";
-            if (orderType==null || orderType==0){
+            if (orderType == null || orderType == 0) {
                 ShopOrder shopOrder = shopOrderDao.find(id);
                 orderSn = shopOrder.getOrderSn();//订单编号
                 mCode = shopOrder.getBuyerId();
@@ -696,8 +710,8 @@ public class ShopOrderJob {
                 city = areaCity.getAreaName();//市
                 ShopCommonArea areaArea = areaService.find(areaId);
                 area = areaArea.getAreaName();//地区
-                address = area+orderAddress.getAddress();//地址
-            }else {
+                address = area + orderAddress.getAddress();//地址
+            } else {
                 RdWareOrder rdWareOrder = rdWareOrderDao.find(id);
                 orderSn = Optional.ofNullable(rdWareOrder.getOrderSn()).orElse("");
                 mCode = Optional.ofNullable(new Long(rdWareOrder.getMCode())).orElse(0l);
@@ -705,7 +719,7 @@ public class ShopOrderJob {
                 provinced = Optional.ofNullable(rdWareOrder.getProvinceCode()).orElse("");
                 city = Optional.ofNullable(rdWareOrder.getCityCode()).orElse("");
                 area = Optional.ofNullable(rdWareOrder.getCountryCode()).orElse("");
-                address = provinced+city+area+Optional.ofNullable(rdWareOrder.getWareDetial()).orElse("");
+                address = provinced + city + area + Optional.ofNullable(rdWareOrder.getWareDetial()).orElse("");
                 mobPhone = Optional.ofNullable(rdWareOrder.getWarePhone()).orElse("");
             }
 
@@ -713,10 +727,10 @@ public class ShopOrderJob {
             ShopGoods shopGoods = shopGoodsService.find(gId);
             ShopGoodsSpec spec = shopGoodsSpecService.find(specId);
             Map<String, String> specMap = JacksonUtil.readJsonToMap(spec.getSpecGoodsSpec());
-            if (shopGoods.getGoodsType()!=3){//非组合
+            if (shopGoods.getGoodsType() != 3) {//非组合
                 String specName = "";
-                for (Map.Entry<String, String> entry : specMap.entrySet()){
-                    specName = specName+entry.getValue();
+                for (Map.Entry<String, String> entry : specMap.entrySet()) {
+                    specName = specName + entry.getValue();
                 }
 
                 SpiritOrderVo orderExcel = new SpiritOrderVo();
@@ -726,7 +740,7 @@ public class ShopOrderJob {
                 orderExcel.setGoodsNum(spiritOrderInfo.getGoodsNum());
 
                 List<SpiritOrderVo> orderExcelList = new ArrayList<SpiritOrderVo>();
-                if (!excelMap.containsKey(id.toString())){
+                if (!excelMap.containsKey(id.toString())) {
                     orderExcel.setOrderSn(orderSn);
                     orderExcel.setBuyerName(trueName);
                     orderExcel.setProvince(provinced);
@@ -736,74 +750,74 @@ public class ShopOrderJob {
                     orderExcel.setBuyerPhone(mobPhone);
                     orderExcelList.add(orderExcel);
 
-                    if (spiritOrderInfo.getOrderShipState()==0){
+                    if (spiritOrderInfo.getOrderShipState() == 0) {
                         //未发货==订单只有白酒
                         //修改订单信息
                     }
 
-                }else {
+                } else {
                     orderExcelList = excelMap.get(id.toString());
                     SpiritOrderVo orderExcelOld = new SpiritOrderVo();
                     for (SpiritOrderVo spiritOrderExcel : orderExcelList) {
-                        if (spiritOrderExcel.getSpecGoodsSerial().equals(spec.getSpecGoodsSerial())){
+                        if (spiritOrderExcel.getSpecGoodsSerial().equals(spec.getSpecGoodsSerial())) {
                             orderExcelOld = spiritOrderExcel;
                         }
                     }
-                    if (orderExcelOld==null){
+                    if (orderExcelOld == null) {
                         orderExcelList.add(orderExcel);
-                    }else {
-                        if (orderExcelOld.getGoodsNum()==null){
+                    } else {
+                        if (orderExcelOld.getGoodsNum() == null) {
                             orderExcelList.add(orderExcel);
-                        }else {
+                        } else {
                             Integer goodsNumOld = orderExcelOld.getGoodsNum();
-                            orderExcelOld.setGoodsNum(goodsNumOld+orderExcel.getGoodsNum());
+                            orderExcelOld.setGoodsNum(goodsNumOld + orderExcel.getGoodsNum());
                             orderExcelList.add(orderExcelOld);
                         }
                     }
                 }
-                excelMap.put(id.toString(),orderExcelList);
+                excelMap.put(id.toString(), orderExcelList);
                 //修改shop_spirit_order_info信息
                 spiritOrderInfo.setSubmitState(1);
                 spiritOrderInfo.setUploadTime(new Date());
                 shopSpiritOrderInfoService.update(spiritOrderInfo);
-            }else {
+            } else {
                 Set<String> keySpec = specMap.keySet();
                 Iterator<String> itSpec = keySpec.iterator();
-                while (itSpec.hasNext() ) {
+                while (itSpec.hasNext()) {
                     String specId1 = itSpec.next();//单品的规格id
                     ShopGoodsSpec spec1 = shopGoodsSpecService.find(new Long(specId1));
                     ShopGoods shopGoods1 = shopGoodsService.find(spec1.getGoodsId());
 
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("goodId",shopGoods.getId());
-                    map.put("combineGoodsId",shopGoods1.getId());
+                    map.put("goodId", shopGoods.getId());
+                    map.put("combineGoodsId", shopGoods1.getId());
                     List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsService.findGoodsGoodsList(map);
                     ShopGoodsGoods goodsGoods = new ShopGoodsGoods();
-                    if (goodsGoodsList.size()>0){
-                        if (goodsGoodsList.size()==1){
+                    if (goodsGoodsList.size() > 0) {
+                        if (goodsGoodsList.size() == 1) {
                             goodsGoods = goodsGoodsList.get(0);
-                        }else {
+                        } else {
                             for (ShopGoodsGoods shopGoodsGoods : goodsGoodsList) {
-                                if (shopGoodsGoods.getGoodsSpec().equals(specId1)){
+                                if (shopGoodsGoods.getGoodsSpec().equals(specId1)) {
                                     goodsGoods = shopGoodsGoods;
                                 }
                             }
                         }
-                        if (goodsGoods==null){
+                        if (goodsGoods == null) {
                             throw new Exception("组合数据不全");
                         }
-                    }else {
+                    } else {
                         throw new Exception("组合数据不全");
                     }
 
                     //参与组合数
                     int joinNum = goodsGoods.getJoinNum();//组合商品里商品数量
-                    Integer total = spiritOrderInfo.getGoodsNum()*joinNum;
+                    Integer total = spiritOrderInfo.getGoodsNum() * joinNum;
 
                     Map<String, String> specMap1 = JacksonUtil.readJsonToMap(spec1.getSpecGoodsSpec());
                     String specName = "";
-                    for (Map.Entry<String, String> entry : specMap1.entrySet()){
-                        specName = specName+entry.getValue();
+                    for (Map.Entry<String, String> entry : specMap1.entrySet()) {
+                        specName = specName + entry.getValue();
                     }
 
                     SpiritOrderVo orderExcel = new SpiritOrderVo();
@@ -813,7 +827,7 @@ public class ShopOrderJob {
                     orderExcel.setGoodsNum(total);
 
                     List<SpiritOrderVo> orderExcelList = new ArrayList<SpiritOrderVo>();
-                    if (!excelMap.containsKey(id.toString())){
+                    if (!excelMap.containsKey(id.toString())) {
                         orderExcel.setOrderSn(orderSn);
                         orderExcel.setBuyerName(trueName);
                         orderExcel.setProvince(provinced);
@@ -823,32 +837,32 @@ public class ShopOrderJob {
                         orderExcel.setBuyerPhone(mobPhone);
                         orderExcelList.add(orderExcel);
 
-                        if (spiritOrderInfo.getOrderShipState()==0){
+                        if (spiritOrderInfo.getOrderShipState() == 0) {
                             //未发货==订单只有白酒
                             //修改订单信息
                         }
 
-                    }else {
+                    } else {
                         orderExcelList = excelMap.get(id.toString());
                         SpiritOrderVo orderExcelOld = new SpiritOrderVo();
                         for (SpiritOrderVo spiritOrderExcel : orderExcelList) {
-                            if (spiritOrderExcel.getSpecGoodsSerial().equals(spec1.getSpecGoodsSerial())){
+                            if (spiritOrderExcel.getSpecGoodsSerial().equals(spec1.getSpecGoodsSerial())) {
                                 orderExcelOld = spiritOrderExcel;
                             }
                         }
-                        if (orderExcelOld==null){
+                        if (orderExcelOld == null) {
                             orderExcelList.add(orderExcel);
-                        }else {
-                            if (orderExcelOld.getGoodsNum()==null){
+                        } else {
+                            if (orderExcelOld.getGoodsNum() == null) {
                                 orderExcelList.add(orderExcel);
-                            }else {
+                            } else {
                                 Integer goodsNumOld = orderExcelOld.getGoodsNum();
-                                orderExcelOld.setGoodsNum(goodsNumOld+total);
+                                orderExcelOld.setGoodsNum(goodsNumOld + total);
                                 orderExcelList.add(orderExcelOld);
                             }
                         }
                     }
-                    excelMap.put(id.toString(),orderExcelList);
+                    excelMap.put(id.toString(), orderExcelList);
                 }
                 //修改shop_spirit_order_info信息
                 spiritOrderInfo.setSubmitState(1);
@@ -871,32 +885,32 @@ public class ShopOrderJob {
                 String remark = "";//备注 （发货商品类型名字+数量）
                 List<SpiritOrderVo> orderExcelList = entry.getValue();
                 for (SpiritOrderVo a : orderExcelList) {
-                    if (a.getOrderSn()!=null&&!"".equals(a.getOrderSn())){
+                    if (a.getOrderSn() != null && !"".equals(a.getOrderSn())) {
                         orderSn = a.getOrderSn();
                     }
-                    if (a.getBuyerName()!=null&&!"".equals(a.getBuyerName())){
+                    if (a.getBuyerName() != null && !"".equals(a.getBuyerName())) {
                         dcontact = a.getBuyerName();
                     }
-                    if (a.getProvince()!=null&&!"".equals(a.getProvince())){
+                    if (a.getProvince() != null && !"".equals(a.getProvince())) {
                         dprovinced = a.getProvince();
                     }
-                    if (a.getCity()!=null&&!"".equals(a.getCity())){
+                    if (a.getCity() != null && !"".equals(a.getCity())) {
                         dcity = a.getCity();
                     }
-                    if (a.getArea()!=null&&!"".equals(a.getArea())){
+                    if (a.getArea() != null && !"".equals(a.getArea())) {
                         dcounty = a.getArea();
                     }
-                    if (a.getAddress()!=null&&!"".equals(a.getAddress())){
+                    if (a.getAddress() != null && !"".equals(a.getAddress())) {
                         daddress = a.getAddress();
                     }
-                    if (a.getBuyerPhone()!=null&&!"".equals(a.getBuyerPhone())){
+                    if (a.getBuyerPhone() != null && !"".equals(a.getBuyerPhone())) {
                         dmobile = a.getBuyerPhone();
                     }
-                    if (a.getSpecName()!=null&&!"".equals(a.getSpecName())){
-                        if ("".equals(remark)){
-                            remark = remark +a.getSpecName()+a.getGoodsNum().toString()+"箱";
-                        }else {
-                            remark = remark + ","+a.getSpecName()+a.getGoodsNum().toString()+"箱";
+                    if (a.getSpecName() != null && !"".equals(a.getSpecName())) {
+                        if ("".equals(remark)) {
+                            remark = remark + a.getSpecName() + a.getGoodsNum().toString() + "箱";
+                        } else {
+                            remark = remark + "," + a.getSpecName() + a.getGoodsNum().toString() + "箱";
                         }
                     }
                 }
@@ -914,7 +928,7 @@ public class ShopOrderJob {
                 createExpressOrderReq.setDcounty(dcounty);
                 createExpressOrderReq.setDaddress(daddress);
                 String result = shunFengJsonExpressService.shunFengOperationProcessor(createExpressOrderReq, ShunFengOperation.CRETE_ORDER);
-                System.out.println("res==="+result);
+                System.out.println("res===" + result);
                 Map<String, Object> maps = (Map) JSON.parse(result);
                 for (Map.Entry<String, Object> entry1 : maps.entrySet()) {
                     System.out.println("Key = " + entry1.getKey() + ", Value = " + entry1.getValue());
@@ -922,27 +936,26 @@ public class ShopOrderJob {
 
                 ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
                 String success = maps.get("success").toString();
-                if (success.equals("true")){//成功
+                if (success.equals("true")) {//成功
                     String trackSn = maps.get("data").toString();//运单号
 
                     //修改shop_spirit_order_info 数据  加入运单号
-                    shopSpiritOrderInfoService.updateTrackSnByOrderId(order.getId(),trackSn);
+                    shopSpiritOrderInfoService.updateTrackSnByOrderId(order.getId(), trackSn);
                     List<ShopSpiritOrderInfo> list = shopSpiritOrderInfoService.findByOrderId(order.getId());
-                    Integer flag = 10000;
+                    Integer flag = 1;
                     Integer orderType = 2;
                     for (ShopSpiritOrderInfo info : list) {
                         Integer shipState = info.getOrderShipState();
-                        if (shipState==0){
+                        if (shipState == 0) {
                             flag = 0;
                         }
-                        if (info.getOrderType()==null){
+                        if (info.getOrderType() == null) {
                             orderType = 0;
-                        }else {
+                        } else {
                             orderType = info.getOrderType();
                         }
                     }
-                    if (flag==0&&orderType==0){//订单未发货且是app订单
-                        System.out.println("待收货");
+                    if (flag == 0 && orderType == 0) {//订单未发货且是app订单
                         Integer orderState = 30;
                         Integer submitStatus = 10;
                         String failInfo = "";
@@ -951,19 +964,36 @@ public class ShopOrderJob {
                         List<ShopOrderGoods> orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
 
                         List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
-                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackSn,29l);//需要修改订单商品信息
+                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackSn, 29l);//需要修改订单商品信息
                         shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
+                    } else {
+                        if (flag == 1 && orderType == 0) {//订单已发货且是app订单
+                            //覆盖订单中的快递编号
+
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("orderSn", orderSn);
+                            map.put("shippingCode", trackSn);
+                            ShopCommonExpress express = commonExpressService.find(29l);
+                            map.put("shippingExpressCode", Optional.ofNullable(express.getECode()).orElse(""));
+                            map.put("shippingExpressId", Optional.ofNullable(express.getId()).orElse(-1L));
+                            map.put("shippingName", Optional.ofNullable(express.getEName()).orElse(""));
+                            map.put("shippingTime", new Date());
+                            orderService.updateOrderShipping(orderSn, trackSn, 29l);
+                        }
                     }
 
-                }else {
+                } else {
                     String msg = maps.get("msg").toString();
                     //修改shop_spirit_order_info
-                    shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(0,msg,order.getId());
+                    shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(0, msg, order.getId());
                 }
             }
         }
 
         System.out.println("白酒发货完成");
+        }else {
+            System.out.println("请开启自动发货");
+        }
     }
 
 

@@ -7138,4 +7138,17 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         orderPay.setPaymentType(paymentType);
         return orderPay;
     }
+
+    @Override
+    public void updateOrderShipping(String orderSn, String trackSn, long expressId) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderSn",orderSn);
+        map.put("shippingCode",trackSn);
+        ShopCommonExpress express = shopCommonExpressDao.find(29l);
+        map.put("shippingExpressCode",Optional.ofNullable(express.getECode()).orElse(""));
+        map.put("shippingExpressId",Optional.ofNullable(express.getId()).orElse(-1L));
+        map.put("shippingName",Optional.ofNullable(express.getEName()).orElse(""));
+        map.put("shippingTime",new Date());
+        orderDao.updateOrderShipping(map);
+    }
 }
