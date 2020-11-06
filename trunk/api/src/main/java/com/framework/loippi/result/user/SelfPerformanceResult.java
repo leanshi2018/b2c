@@ -112,6 +112,8 @@ public class SelfPerformanceResult {
 
 	private Double pvProportion;
 
+	private BigDecimal plusProfit1;//当期待发放plus vip奖励
+	private BigDecimal plusProfit2;//当期已发放plus vip奖励
 	public static SelfPerformanceResult build1(RdMmBasicInfo profile, MemberQualification qualification, BigDecimal profits1, BigDecimal profits2, RdBonusMaster bonusMaster,List<String> periodCodeList, BigDecimal bugMi) {
 		Optional<RdMmBasicInfo> optionalBasicInfo = Optional.ofNullable(profile);
 		Optional<RdBonusMaster> optionalBonusMaster = Optional.ofNullable(bonusMaster);

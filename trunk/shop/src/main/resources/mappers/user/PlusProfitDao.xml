@@ -60,7 +60,7 @@
 		<if test="orderSn != null and orderSn != ''">
 			AND order_sn = #{orderSn,jdbcType=VARCHAR}
 		</if>
-		<if test="state != null and state != ''">
+		<if test="state != null">
 			AND state = #{state,jdbcType=INTEGER}
 		</if>
 		<if test="remark != null and remark != ''">
@@ -74,6 +74,9 @@
 		</if>
 		<if test="actualPeriod != null and actualPeriod != ''">
 			AND actual_period = #{actualPeriod,jdbcType=VARCHAR}
+		</if>
+		<if test="expectTimeFlag != null and expectTimeFlag != ''">
+			AND expect_time is not null
 		</if>
 	</sql>
 	
@@ -106,7 +109,7 @@
 		<if test="orderSn != null and orderSn != ''">
 			order_sn = #{orderSn,jdbcType=VARCHAR},
 		</if>
-		<if test="state != null and state != ''">
+		<if test="state != null">
 			state = #{state,jdbcType=INTEGER},
 		</if>
 		<if test="remark != null and remark != ''">
@@ -202,5 +205,30 @@
 		<include refid="base_column" />
 		FROM plus_profit
 		where expect_time &lt;= #{expectTime} and state = 0 and profits > 0
+	</select>
+
+	<select id="findListTimeAsc" parameterType="map" resultMap="PlusProfitResultMap">
+		select
+		<include refid="base_column" />
+		FROM plus_profit
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+		order by expect_time asc
+	</select>
+
+	<select id="countProfit" parameterType="map" resultType="java.math.BigDecimal">
+		select sum(profits) from plus_profit
+		<where>
+			<if test="receiptorId != null and receiptorId != ''">
+				and receiptor_id = #{receiptorId}
+			</if>
+			<if test="createPeriod != null and createPeriod != ''">
+				and create_period  = #{createPeriod}
+			</if>
+			<if test="state != null">
+				and state = #{state}
+			</if>
+		</where>
 	</select>
 </mapper> 

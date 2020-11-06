@@ -17,4 +17,8 @@ import java.util.List;
 public interface PlusProfitService extends GenericService<PlusProfit, Long> {
 
     void grantPlusProfit();
+
+    List<PlusProfit> findListTimeAsc(Paramap put);
+
+    BigDecimal countProfit(Paramap put);
 }

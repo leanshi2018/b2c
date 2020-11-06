@@ -61,4 +61,6 @@ public class PlusProfit implements GenericEntity {
 
     @Column(name = "actual_period" )
     private String actualPeriod;//奖励积分实际发放周期
+
+    private String expectTimeFlag;
 }
