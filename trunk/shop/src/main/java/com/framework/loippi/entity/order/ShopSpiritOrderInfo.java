@@ -59,4 +59,10 @@ public class ShopSpiritOrderInfo implements GenericEntity {
 
 	@Column(name = "order_type" )
 	private Integer orderType;
+
+	@Column(name = "track_sn" )
+	private String trackSn;
+
+	@Column(name = "msg" )
+	private String msg;
 }

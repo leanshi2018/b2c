@@ -16,15 +16,17 @@
         <result column="create_time" property="createTime" />
         <result column="upload_time" property="uploadTime" />
         <result column="order_type" property="orderType" />
+        <result column="track_sn" property="trackSn" />
+        <result column="msg" property="msg" />
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,order_id ,goods_id ,spec_id ,goods_num ,submit_state ,order_ship_state ,create_time ,upload_time ,order_type
+		 id ,order_id ,goods_id ,spec_id ,goods_num ,submit_state ,order_ship_state ,create_time ,upload_time ,order_type ,track_sn ,msg
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{orderId},#{goodsId},#{specId},#{goodsNum},#{submitState},#{orderShipState},#{createTime},#{uploadTime},#{orderType}
+		 #{id},#{orderId},#{goodsId},#{specId},#{goodsNum},#{submitState},#{orderShipState},#{createTime},#{uploadTime},#{orderType},#{trackSn},#{msg}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -59,6 +61,12 @@
         <if test="orderType != null">
             AND order_type = #{orderType}
         </if>
+        <if test="trackSn != null and trackSn !=''">
+            AND track_sn = #{trackSn}
+        </if>
+        <if test="msg != null and msg !=''">
+            AND msg = #{msg}
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
@@ -91,6 +99,12 @@
         </if>
         <if test="orderType != null">
             order_type = #{orderType},
+        </if>
+        <if test="trackSn != null and trackSn !=''">
+            track_sn = #{trackSn},
+        </if>
+        <if test="msg != null and msg !=''">
+            msg = #{msg},
         </if>
     </sql>
 
@@ -173,5 +187,25 @@
         FROM 	shop_spirit_order_info
         WHERE order_id = #{orderId} AND spec_id = #{specId}
     </select>
+
+    <select id="findNoSubmitOrderAll" resultMap="ShopSpiritOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	shop_spirit_order_info
+        WHERE submit_state = 0
+    </select>
+
+    <select id="findByOrderId" parameterType="java.lang.Long" resultMap="ShopSpiritOrderResultMap">
+        SELECT	<include refid="base_column" />
+        FROM 	shop_spirit_order_info
+        WHERE order_id = #{orderId}
+    </select>
+
+    <update id="updateTrackSnByOrderId" parameterType="map">
+        UPDATE	shop_spirit_order_info SET track_sn = #{trackSn} WHERE	order_id = #{orderId}
+    </update>
+
+    <update id="updateSubmitStateAndMsgByOrderId" parameterType="map">
+        UPDATE	shop_spirit_order_info SET submit_state = #{submitState},msg = #{msg} WHERE	order_id = #{orderId}
+    </update>
 
 </mapper>

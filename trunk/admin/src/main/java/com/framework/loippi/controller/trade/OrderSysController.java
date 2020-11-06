@@ -44,6 +44,7 @@ import com.framework.loippi.dto.OrderSplitDetail;
 import com.framework.loippi.dto.ShippingDto;
 import com.framework.loippi.dto.ShopExchangeOrderExcel;
 import com.framework.loippi.dto.ShopOrderExcel;
+import com.framework.loippi.entity.CreateExpressOrderJsonDTO;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.User;
 import com.framework.loippi.entity.common.ShopCommonArea;
@@ -68,10 +69,12 @@ import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.ware.RdWareAdjust;
 import com.framework.loippi.entity.ware.RdWarehouse;
+import com.framework.loippi.enus.ShunFengOperation;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.sys.OrderView;
 import com.framework.loippi.service.KuaidiService;
 import com.framework.loippi.service.RedisService;
+import com.framework.loippi.service.ShunFengJsonExpressService;
 import com.framework.loippi.service.UserService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressNotAreaService;
@@ -169,6 +172,8 @@ public class OrderSysController extends GenericController {
     private ShopGoodsPresaleService shopGoodsPresaleService;
     @Resource
     private ShopSpiritOrderInfoService shopSpiritOrderInfoService;
+    @Resource
+    private ShunFengJsonExpressService shunFengJsonExpressService;
     // 订单编辑中
     private static final int ORDER_EDITING = 0;
     // 订单编辑完成
@@ -974,6 +979,138 @@ public class OrderSysController extends GenericController {
         }
     }*/
 
+    /**
+     * 测试顺丰下单接口
+     * @param model
+     * @param request
+     * @return
+     */
+    @RequestMapping("/admin/order/sf/createOrder")
+    public String sfCreateOrder(ModelMap model,HttpServletRequest request) {
+        System.out.println("进");
+        CreateExpressOrderJsonDTO createExpressOrderReq = new CreateExpressOrderJsonDTO();
+        // 如果提示重复下单，把这个编号变一下
+        createExpressOrderReq.setOrderId("AP20200121181653954007");
+        createExpressOrderReq.setRemark("酱品会·精品7箱，酱品会·珍品4箱，酱品会·甄藏2箱");
+        // 寄件人信息
+        /*createExpressOrderReq.setJcompany("深圳市乐安士有限公司");
+        createExpressOrderReq.setJcontact("李大宝");
+        createExpressOrderReq.setJmobile("18777276920");
+        createExpressOrderReq.setJprovince("广东省");
+        createExpressOrderReq.setJcity("深圳市");
+        createExpressOrderReq.setJcounty("南山区");
+        createExpressOrderReq.setJaddress("南山大道南园枫叶大厦");*/
+        // 收件人信息
+        createExpressOrderReq.setDcompany("个人");
+        createExpressOrderReq.setDcontact("滕大宝");
+        createExpressOrderReq.setDmobile("18938905541");
+        createExpressOrderReq.setDprovince("广东省");
+        createExpressOrderReq.setDcity("广州市");
+        createExpressOrderReq.setDcounty("海珠区");
+        createExpressOrderReq.setDaddress("广东省广州市海珠区宝芝林大厦701室");
+        String result = shunFengJsonExpressService.shunFengOperationProcessor(createExpressOrderReq, ShunFengOperation.CRETE_ORDER);
+        System.out.println("res==="+result);
+        Map<String, Object> maps = (Map) JSON.parse(result);
+        for (Map.Entry<String, Object> entry : maps.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+        }
+
+        return Constants.MSG_URL;
+    }
+
+    /**
+     * 测试顺丰路由查询接口
+     * @param model
+     * @param request
+     * @param trackSn 顺丰运单号
+     * @return
+     */
+    @RequestMapping("/admin/order/sf/searchOrder")
+    public String sfSearchOrder(ModelMap model,HttpServletRequest request,@RequestParam(required = true, value = "trackSn")String trackSn) {
+        System.out.println("进");
+        if (trackSn==null||"".equals(trackSn)){
+            model.addAttribute("err","顺丰运单号不能为空");
+            return Constants.MSG_URL;
+        }
+
+        String result = shunFengJsonExpressService.shunFengOperationProcessor(trackSn, ShunFengOperation.ROUTE_SEARCH);
+        System.out.println("res==="+result);
+        Map maps = (Map) JSON.parse(result);
+        /*
+        *{
+            "code": 200,
+            "success": true,
+            "msg": null,
+            "data": [
+                        {
+                        "id": "160456410060719",
+                        "orderId": "WB763002011051607331491461",
+                        "mainMailno": "SF1020036320192",
+                        "acceptTime": "2020-11-05 16:14:20",
+                        "acceptAddress": "",
+                        "remark": "派送成功",
+                        "opcode": "80",
+                        "createTime": "2020-11-05 16:15:01"
+                        },
+                        {
+                        "id": "160456409372918",
+                        "orderId": "WB763002011051607331491461",
+                        "mainMailno": "SF1020036320192",
+                        "acceptTime": "2020-11-05 16:14:16",
+                        "acceptAddress": "",
+                        "remark": "正在派件..",
+                        "opcode": "44",
+                        "createTime": "2020-11-05 16:14:53"
+                        },
+                        {
+                        "id": "160456408886567",
+                        "orderId": "WB763002011051607331491461",
+                        "mainMailno": "SF1020036320192",
+                        "acceptTime": "2020-11-05 16:13:55",
+                        "acceptAddress": "",
+                        "remark": "上门收件",
+                        "opcode": "50",
+                        "createTime": "2020-11-05 16:14:49"
+                        }
+                ]
+            }
+        * */
+        String data = maps.get("data").toString();
+
+        List<Object> list = JSON.parseArray(data);
+        for (Object object : list) {
+            Map <String,Object> ret = (Map<String, Object>) object;
+            for (Map.Entry<String, Object> entry : ret.entrySet()) {
+                System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            }
+        }
+
+        return Constants.MSG_URL;
+    }
+
+    /**
+     * 测试顺丰取消订单接口
+     * @param model
+     * @param request
+     * @param orderId  订单编号orderSn
+     * @return
+     */
+    @RequestMapping("/admin/order/sf/cancelOrder")
+    public String sfCancelOrder(ModelMap model,HttpServletRequest request,@RequestParam(required = true, value = "orderId")String orderId) {
+        System.out.println("进");
+        if (orderId==null||"".equals(orderId)){
+            model.addAttribute("err","顺丰运单号不能为空");
+            return Constants.MSG_URL;
+        }
+        String result = shunFengJsonExpressService.shunFengOperationProcessor(orderId, ShunFengOperation.CANCEL_ORDER);
+        System.out.println("res==="+result);
+        Map<String, Object> maps = (Map) JSON.parse(result);
+        for (Map.Entry<String, Object> entry : maps.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+        }
+
+        return Constants.MSG_URL;
+    }
 
 
     /**
