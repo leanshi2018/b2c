@@ -49,6 +49,8 @@ import com.framework.loippi.dao.user.RdMmAccountLogDao;
 import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.user.RdMmRelationDao;
 import com.framework.loippi.dao.user.RdSysPeriodDao;
+import com.framework.loippi.dao.ware.RdWareOrderDao;
+import com.framework.loippi.entity.CreateExpressOrderJsonDTO;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
@@ -76,7 +78,11 @@ import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.entity.ware.RdWareAdjust;
+import com.framework.loippi.entity.ware.RdWareOrder;
 import com.framework.loippi.entity.ware.RdWarehouse;
+import com.framework.loippi.enus.ShunFengOperation;
+import com.framework.loippi.pojo.order.SpiritOrderVo;
+import com.framework.loippi.service.ShunFengJsonExpressService;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressService;
@@ -153,6 +159,8 @@ public class ShopOrderJob {
     private ShopOrderDao shopOrderDao;
     @Resource
     private ShopAutoShipDao shopAutoShipDao;
+    @Resource
+    private RdWareOrderDao rdWareOrderDao;
 
     @Resource
     private ShopOrderGoodsService shopOrderGoodsService;
@@ -198,6 +206,8 @@ public class ShopOrderJob {
     private ShopSpiritOrderInfoService shopSpiritOrderInfoService;
     @Resource
     private PlusProfitService plusProfitService;
+    @Resource
+    private ShunFengJsonExpressService shunFengJsonExpressService;
 
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 
@@ -641,8 +651,323 @@ public class ShopOrderJob {
         }
     }
 
+    /**
+     * 白酒顺丰发货
+     * @throws Exception
+     */
+    @Scheduled(cron = "0 0 15 * * ?" )  //每天15点发货
+    public void timingSFOrder() throws Exception {
+        System.out.println("###############################执行定时白酒顺丰发货#####################################");
 
-    @Scheduled(cron = "0 0 15,17 * * ?" )  //每天15点和17点发货
+        List<ShopSpiritOrderInfo> shopSpiritOrderAll = shopSpiritOrderInfoService.findNoSubmitOrderAll();
+        Map<String, List<SpiritOrderVo>> excelMap = new HashMap<String, List<SpiritOrderVo>>();
+        for (ShopSpiritOrderInfo spiritOrderInfo : shopSpiritOrderAll) {
+
+            Long id = spiritOrderInfo.getOrderId();//订单Id
+            Long gId = spiritOrderInfo.getGoodsId();
+            Long specId = spiritOrderInfo.getSpecId();
+            Integer orderType = spiritOrderInfo.getOrderType();
+
+            String orderSn = "";
+            Long mCode = 0l;
+            String trueName = "";
+            String provinced = "";//省
+            String city = "";//市
+            String area = "";//地区
+            String address = "";
+            String mobPhone = "";
+            if (orderType==null || orderType==0){
+                ShopOrder shopOrder = shopOrderDao.find(id);
+                orderSn = shopOrder.getOrderSn();//订单编号
+                mCode = shopOrder.getBuyerId();
+                String buyerName = shopOrder.getBuyerName();//买家名称
+                String buyerPhone = shopOrder.getBuyerPhone();//买家手机号码
+                Long addressId = shopOrder.getAddressId();
+                ShopOrderAddress orderAddress = orderAddressService.find(addressId);
+                trueName = orderAddress.getTrueName();//收件人姓名
+                mobPhone = orderAddress.getMobPhone();//收件人电话号码
+                Long provinceId = orderAddress.getProvinceId();//省级id
+                Long cityId = orderAddress.getCityId();//市级ID
+                Long areaId = orderAddress.getAreaId();//地区ID
+                String zipCode = orderAddress.getZipCode();//邮编
+                ShopCommonArea areaProvinced = areaService.find(provinceId);
+                provinced = areaProvinced.getAreaName();//省
+                ShopCommonArea areaCity = areaService.find(cityId);
+                city = areaCity.getAreaName();//市
+                ShopCommonArea areaArea = areaService.find(areaId);
+                area = areaArea.getAreaName();//地区
+                address = area+orderAddress.getAddress();//地址
+            }else {
+                RdWareOrder rdWareOrder = rdWareOrderDao.find(id);
+                orderSn = Optional.ofNullable(rdWareOrder.getOrderSn()).orElse("");
+                mCode = Optional.ofNullable(new Long(rdWareOrder.getMCode())).orElse(0l);
+                trueName = Optional.ofNullable(rdWareOrder.getConsigneeName()).orElse("");
+                provinced = Optional.ofNullable(rdWareOrder.getProvinceCode()).orElse("");
+                city = Optional.ofNullable(rdWareOrder.getCityCode()).orElse("");
+                area = Optional.ofNullable(rdWareOrder.getCountryCode()).orElse("");
+                address = provinced+city+area+Optional.ofNullable(rdWareOrder.getWareDetial()).orElse("");
+                mobPhone = Optional.ofNullable(rdWareOrder.getWarePhone()).orElse("");
+            }
+
+
+            ShopGoods shopGoods = shopGoodsService.find(gId);
+            ShopGoodsSpec spec = shopGoodsSpecService.find(specId);
+            Map<String, String> specMap = JacksonUtil.readJsonToMap(spec.getSpecGoodsSpec());
+            if (shopGoods.getGoodsType()!=3){//非组合
+                String specName = "";
+                for (Map.Entry<String, String> entry : specMap.entrySet()){
+                    specName = specName+entry.getValue();
+                }
+
+                SpiritOrderVo orderExcel = new SpiritOrderVo();
+
+                orderExcel.setSpecGoodsSerial(spec.getSpecGoodsSerial());
+                orderExcel.setSpecName(specName);
+                orderExcel.setGoodsNum(spiritOrderInfo.getGoodsNum());
+
+                List<SpiritOrderVo> orderExcelList = new ArrayList<SpiritOrderVo>();
+                if (!excelMap.containsKey(id.toString())){
+                    orderExcel.setOrderSn(orderSn);
+                    orderExcel.setBuyerName(trueName);
+                    orderExcel.setProvince(provinced);
+                    orderExcel.setCity(city);
+                    orderExcel.setArea(area);
+                    orderExcel.setAddress(address);
+                    orderExcel.setBuyerPhone(mobPhone);
+                    orderExcelList.add(orderExcel);
+
+                    if (spiritOrderInfo.getOrderShipState()==0){
+                        //未发货==订单只有白酒
+                        //修改订单信息
+                    }
+
+                }else {
+                    orderExcelList = excelMap.get(id.toString());
+                    SpiritOrderVo orderExcelOld = new SpiritOrderVo();
+                    for (SpiritOrderVo spiritOrderExcel : orderExcelList) {
+                        if (spiritOrderExcel.getSpecGoodsSerial().equals(spec.getSpecGoodsSerial())){
+                            orderExcelOld = spiritOrderExcel;
+                        }
+                    }
+                    if (orderExcelOld==null){
+                        orderExcelList.add(orderExcel);
+                    }else {
+                        if (orderExcelOld.getGoodsNum()==null){
+                            orderExcelList.add(orderExcel);
+                        }else {
+                            Integer goodsNumOld = orderExcelOld.getGoodsNum();
+                            orderExcelOld.setGoodsNum(goodsNumOld+orderExcel.getGoodsNum());
+                            orderExcelList.add(orderExcelOld);
+                        }
+                    }
+                }
+                excelMap.put(id.toString(),orderExcelList);
+                //修改shop_spirit_order_info信息
+                spiritOrderInfo.setSubmitState(1);
+                spiritOrderInfo.setUploadTime(new Date());
+                shopSpiritOrderInfoService.update(spiritOrderInfo);
+            }else {
+                Set<String> keySpec = specMap.keySet();
+                Iterator<String> itSpec = keySpec.iterator();
+                while (itSpec.hasNext() ) {
+                    String specId1 = itSpec.next();//单品的规格id
+                    ShopGoodsSpec spec1 = shopGoodsSpecService.find(new Long(specId1));
+                    ShopGoods shopGoods1 = shopGoodsService.find(spec1.getGoodsId());
+
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("goodId",shopGoods.getId());
+                    map.put("combineGoodsId",shopGoods1.getId());
+                    List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsService.findGoodsGoodsList(map);
+                    ShopGoodsGoods goodsGoods = new ShopGoodsGoods();
+                    if (goodsGoodsList.size()>0){
+                        if (goodsGoodsList.size()==1){
+                            goodsGoods = goodsGoodsList.get(0);
+                        }else {
+                            for (ShopGoodsGoods shopGoodsGoods : goodsGoodsList) {
+                                if (shopGoodsGoods.getGoodsSpec().equals(specId1)){
+                                    goodsGoods = shopGoodsGoods;
+                                }
+                            }
+                        }
+                        if (goodsGoods==null){
+                            throw new Exception("组合数据不全");
+                        }
+                    }else {
+                        throw new Exception("组合数据不全");
+                    }
+
+                    //参与组合数
+                    int joinNum = goodsGoods.getJoinNum();//组合商品里商品数量
+                    Integer total = spiritOrderInfo.getGoodsNum()*joinNum;
+
+                    Map<String, String> specMap1 = JacksonUtil.readJsonToMap(spec1.getSpecGoodsSpec());
+                    String specName = "";
+                    for (Map.Entry<String, String> entry : specMap1.entrySet()){
+                        specName = specName+entry.getValue();
+                    }
+
+                    SpiritOrderVo orderExcel = new SpiritOrderVo();
+
+                    orderExcel.setSpecGoodsSerial(spec1.getSpecGoodsSerial());
+                    orderExcel.setSpecName(specName);
+                    orderExcel.setGoodsNum(total);
+
+                    List<SpiritOrderVo> orderExcelList = new ArrayList<SpiritOrderVo>();
+                    if (!excelMap.containsKey(id.toString())){
+                        orderExcel.setOrderSn(orderSn);
+                        orderExcel.setBuyerName(trueName);
+                        orderExcel.setProvince(provinced);
+                        orderExcel.setCity(city);
+                        orderExcel.setArea(area);
+                        orderExcel.setAddress(address);
+                        orderExcel.setBuyerPhone(mobPhone);
+                        orderExcelList.add(orderExcel);
+
+                        if (spiritOrderInfo.getOrderShipState()==0){
+                            //未发货==订单只有白酒
+                            //修改订单信息
+                        }
+
+                    }else {
+                        orderExcelList = excelMap.get(id.toString());
+                        SpiritOrderVo orderExcelOld = new SpiritOrderVo();
+                        for (SpiritOrderVo spiritOrderExcel : orderExcelList) {
+                            if (spiritOrderExcel.getSpecGoodsSerial().equals(spec1.getSpecGoodsSerial())){
+                                orderExcelOld = spiritOrderExcel;
+                            }
+                        }
+                        if (orderExcelOld==null){
+                            orderExcelList.add(orderExcel);
+                        }else {
+                            if (orderExcelOld.getGoodsNum()==null){
+                                orderExcelList.add(orderExcel);
+                            }else {
+                                Integer goodsNumOld = orderExcelOld.getGoodsNum();
+                                orderExcelOld.setGoodsNum(goodsNumOld+total);
+                                orderExcelList.add(orderExcelOld);
+                            }
+                        }
+                    }
+                    excelMap.put(id.toString(),orderExcelList);
+                }
+                //修改shop_spirit_order_info信息
+                spiritOrderInfo.setSubmitState(1);
+                spiritOrderInfo.setUploadTime(new Date());
+                shopSpiritOrderInfoService.update(spiritOrderInfo);
+            }
+        }
+
+        if (excelMap != null && excelMap.size() > 0) {
+
+            // 遍历
+            for (Map.Entry<String, List<SpiritOrderVo>> entry : excelMap.entrySet()) {
+                String orderSn = "";
+                String dcontact = "";//收件人
+                String dprovinced = "";//省
+                String dcity = "";//市
+                String dcounty = "";//地区
+                String daddress = "";
+                String dmobile = "";
+                String remark = "";//备注 （发货商品类型名字+数量）
+                List<SpiritOrderVo> orderExcelList = entry.getValue();
+                for (SpiritOrderVo a : orderExcelList) {
+                    if (a.getOrderSn()!=null&&!"".equals(a.getOrderSn())){
+                        orderSn = a.getOrderSn();
+                    }
+                    if (a.getBuyerName()!=null&&!"".equals(a.getBuyerName())){
+                        dcontact = a.getBuyerName();
+                    }
+                    if (a.getProvince()!=null&&!"".equals(a.getProvince())){
+                        dprovinced = a.getProvince();
+                    }
+                    if (a.getCity()!=null&&!"".equals(a.getCity())){
+                        dcity = a.getCity();
+                    }
+                    if (a.getArea()!=null&&!"".equals(a.getArea())){
+                        dcounty = a.getArea();
+                    }
+                    if (a.getAddress()!=null&&!"".equals(a.getAddress())){
+                        daddress = a.getAddress();
+                    }
+                    if (a.getBuyerPhone()!=null&&!"".equals(a.getBuyerPhone())){
+                        dmobile = a.getBuyerPhone();
+                    }
+                    if (a.getSpecName()!=null&&!"".equals(a.getSpecName())){
+                        if ("".equals(remark)){
+                            remark = remark +a.getSpecName()+a.getGoodsNum().toString()+"箱";
+                        }else {
+                            remark = remark + ","+a.getSpecName()+a.getGoodsNum().toString()+"箱";
+                        }
+                    }
+                }
+
+                CreateExpressOrderJsonDTO createExpressOrderReq = new CreateExpressOrderJsonDTO();
+                // 如果提示重复下单，把这个编号变一下
+                createExpressOrderReq.setOrderId(orderSn);
+                createExpressOrderReq.setRemark(remark);
+                // 收件人信息
+                createExpressOrderReq.setDcompany("个人");
+                createExpressOrderReq.setDcontact(dcontact);
+                createExpressOrderReq.setDmobile(dmobile);
+                createExpressOrderReq.setDprovince(dprovinced);
+                createExpressOrderReq.setDcity(dcity);
+                createExpressOrderReq.setDcounty(dcounty);
+                createExpressOrderReq.setDaddress(daddress);
+                String result = shunFengJsonExpressService.shunFengOperationProcessor(createExpressOrderReq, ShunFengOperation.CRETE_ORDER);
+                System.out.println("res==="+result);
+                Map<String, Object> maps = (Map) JSON.parse(result);
+                for (Map.Entry<String, Object> entry1 : maps.entrySet()) {
+                    System.out.println("Key = " + entry1.getKey() + ", Value = " + entry1.getValue());
+                }
+
+                ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
+                String success = maps.get("success").toString();
+                if (success.equals("true")){//成功
+                    String trackSn = maps.get("data").toString();//运单号
+
+                    //修改shop_spirit_order_info 数据  加入运单号
+                    shopSpiritOrderInfoService.updateTrackSnByOrderId(order.getId(),trackSn);
+                    List<ShopSpiritOrderInfo> list = shopSpiritOrderInfoService.findByOrderId(order.getId());
+                    Integer flag = 10000;
+                    Integer orderType = 2;
+                    for (ShopSpiritOrderInfo info : list) {
+                        Integer shipState = info.getOrderShipState();
+                        if (shipState==0){
+                            flag = 0;
+                        }
+                        if (info.getOrderType()==null){
+                            orderType = 0;
+                        }else {
+                            orderType = info.getOrderType();
+                        }
+                    }
+                    if (flag==0&&orderType==0){//订单未发货且是app订单
+                        System.out.println("待收货");
+                        Integer orderState = 30;
+                        Integer submitStatus = 10;
+                        String failInfo = "";
+                        orderService.updateOrderStatus(orderSn, orderState, submitStatus, failInfo, trackSn);
+
+                        List<ShopOrderGoods> orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
+
+                        List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
+                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackSn,29l);//需要修改订单商品信息
+                        shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
+                    }
+
+                }else {
+                    String msg = maps.get("msg").toString();
+                    //修改shop_spirit_order_info
+                    shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(0,msg,order.getId());
+                }
+            }
+        }
+
+        System.out.println("白酒发货完成");
+    }
+
+
+    @Scheduled(cron = "0 0 14,16 * * ?" )  //每天14点和16点发货
     public void timingOrder() throws Exception {
         System.out.println("###############################执行定时发货#####################################");
         Integer fStatus = 1;
@@ -763,7 +1088,7 @@ public class ShopOrderJob {
 
                                         List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
                                         List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
-                                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo);//需要修改订单商品信息
+                                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo,44l);//需要修改订单商品信息
                                         shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
                                     }
                                 }
@@ -791,9 +1116,9 @@ public class ShopOrderJob {
      * @param orderGoodsList
      * @return
      */
-    public List<ShopOrderGoods> updateOrderGoods(List<ShopOrderGoods> shopOrderGoodsNullList,List<ShopOrderGoods> orderGoodsList,String trackingNo) {
+    public List<ShopOrderGoods> updateOrderGoods(List<ShopOrderGoods> shopOrderGoodsNullList,List<ShopOrderGoods> orderGoodsList,String trackingNo,Long expressId) {
         for (ShopOrderGoods orderGoods : orderGoodsList) {
-            ShopCommonExpress express = commonExpressService.find(44l);
+            ShopCommonExpress express = commonExpressService.find(expressId);
 
             ShopOrderGoods shopOrderGoods = new ShopOrderGoods();
             shopOrderGoods.setShippingExpressCode(Optional.ofNullable(express.getECode()).orElse(""));
