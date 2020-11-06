@@ -186,7 +186,6 @@ public class WapShareController extends BaseController {
         //加载活动
         Long activityId = loadSpeckData(goodsDetailResult,shopGoods);
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("goodsDetailInfo", goodsDetailResult);
         if (activityId != null && activityId != -1) {
             goodsDetailResult.setActivityId(activityId);
             ShopActivity shopActivity = shopActivityService.find(activityId);
@@ -194,6 +193,7 @@ public class WapShareController extends BaseController {
         }else {
             goodsDetailResult.setActivityId(-1l);
         }
+        resultMap.put("goodsDetailInfo", goodsDetailResult);
         model.addAttribute("resultMap", resultMap);
         List<ShopApp> shopAppList= shopAppService.findAll();
         for (ShopApp item:shopAppList) {

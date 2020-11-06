@@ -19,13 +19,24 @@ public class WachatContent {
     public static final String auth2_access_token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?";
     //获取JSAPI_Ticket
     public static String jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=";
-    public static String appid = "wxd52948077ee73da4";//公众账号ID
-    public static String appsecret = "22e786adfadbb81973d0c36f1e4d3ead";//应用密钥
+    //public static String appid = "wxd52948077ee73da4";//公众账号ID
+    //public static String appsecret = "22e786adfadbb81973d0c36f1e4d3ead";//应用密钥
+    public static String appid = "wxd3739077659b39ae";//公众账号ID
+    public static String appsecret = "996268a39241c54007e8fa6da58b9f30";//应用密钥
     //public static String appid = "wx6e94bb18bedf3c4c";//公众账号ID
     //public static String appsecret = "a8729cb3fa0b5edbcef7be7cb904e41f";//应用密钥
     //public static String appsecret = "c7af91f8b99593a2073f6e691f8ebfc4";//应用密钥
     public static String partner = "1494509422";//微信支付商户号
     public static String apikey = "h7361t2y27shdie8uy6tgh789mnbg654";//API密钥，在商户平台设置
+
+    public static String access_token_url = "https://api.weixin.qq.com/sns/oauth2/access_token";
+
+    public static String oauth_url = "https://open.weixin.qq.com/connect/oauth2/authorize";
+
+    public static String redirect_uri = "http://www.rdnmall.com";//自己的授权地址
+
+    public static String server_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential";
+
 
     public static final String AUTH2_SCOPE_USERINFO = "snsapi_userinfo";//
 
