@@ -1680,6 +1680,18 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 orderGoods.setGoodsId(giftId);
                 orderGoods.setGoodsName(shopGoods.getGoodsName());
                 orderGoods.setSpecId(goodsSpec.getId());
+                GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
+                String specInfo = "";
+                Map<String, String> map = goodsSpec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                orderGoods.setSpecInfo(specInfo);
                 //大单价
                 orderGoods.setGoodsPrice(goodsSpec.getSpecBigPrice());
                 orderGoods.setGoodsNum(giftNum);
@@ -2133,6 +2145,18 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 orderGoods.setGoodsId(giftId);
                 orderGoods.setGoodsName(shopGoods.getGoodsName());
                 orderGoods.setSpecId(goodsSpec.getId());
+                GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
+                String specInfo = "";
+                Map<String, String> map = goodsSpec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                orderGoods.setSpecInfo(specInfo);
                 //大单价
                 orderGoods.setGoodsPrice(goodsSpec.getSpecBigPrice());
                 orderGoods.setGoodsNum(giftNum);

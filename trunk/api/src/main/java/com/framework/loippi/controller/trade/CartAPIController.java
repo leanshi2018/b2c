@@ -723,30 +723,46 @@ public class CartAPIController extends BaseController {
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date startTime = format.parse("2020-05-01 00:00:00");
-            Date endTime = format.parse("2020-06-10 23:59:59");
+            Date startTime = format.parse("2020-11-03 00:00:00");
+            Date endTime = format.parse("2020-11-11 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
             if(b){
                 if((rdMmRelation.getRank()==0&&(result.getNeedToPay().add(result.getUseCouponAmount())).compareTo(new BigDecimal("360"))!=-1)||
                         (rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))==-1)){
                     //单笔订单满360或25mi，赠送护手霜一支
-                    ShopGoods goods1 = goodsService.find(6638361764952018944L);//护手霜
+                    ShopGoods goods1 = goodsService.find(6552807081102020608L);//洗发露
                     //ShopGoods goods1 = goodsService.find(6659359562891530240L);//护手霜 formal
                     if (goods1!=null){
                         shopGoods.add(goods1);
                     }
-                    ShopGoods goods2 = goodsService.find(6552746788883795968L);//护手霜
+                    ShopGoods goods2 = goodsService.find(6552746788883795968L);//沐浴乳
                     if (goods2!=null){
                         shopGoods.add(goods2);
+                    }
+                    ShopGoods goods3 = goodsService.find(6552743534695288832L);//保湿面膜
+                    if (goods3!=null){
+                        shopGoods.add(goods3);
                     }
                     flag=1;
                 }
                 if(rdMmRelation.getRank()>0&&(result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1)){
-                    ShopGoods goods1 = goodsService.find(6661516062787375104L);//护手霜+护手霜组合套装
+                    /*ShopGoods goods1 = goodsService.find(6661516062787375104L);//护手霜+护手霜组合套装
                     //ShopGoods goods1 = goodsService.find(6661525543797657600L);//护手霜+护手霜组合套装 formal
                     if (goods1!=null){
                         shopGoods.add(goods1);
+                    }*/
+                    ShopGoods goods1 = goodsService.find(6552807081102020608L);//洗发露
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                    ShopGoods goods2 = goodsService.find(6552746788883795968L);//沐浴乳
+                    if (goods2!=null){
+                        shopGoods.add(goods2);
+                    }
+                    ShopGoods goods3 = goodsService.find(6552743534695288832L);//保湿面膜
+                    if (goods3!=null){
+                        shopGoods.add(goods3);
                     }
                     flag=1;
                 }
