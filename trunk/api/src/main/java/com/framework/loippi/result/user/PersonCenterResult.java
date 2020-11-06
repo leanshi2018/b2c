@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -162,6 +163,12 @@ public class PersonCenterResult {
     private Integer plusVipFlag;//plus vip会员标识
     //推广位信息
     private PictureVio shopHomePicture=new PictureVio();
+    //*****************************2020/11/06加***************************************************
+    //是否非plus vip会员且有待发放plusVip奖励  1：是（即会弹窗） 2：不是
+    private Integer havePlusProfitFlag;//plus vip会员标识
+    //最近一条待发放的plusProfit
+    private Date latelyTime;
+
     public static PersonCenterResult build(RdMmBasicInfo profile, RdRanks shopMemberGrade, List<RdMmBank> banks, RdMmAccountInfo rdMmAccountInfo, RdRanks rdRankVip) {
         Optional<RdMmBasicInfo> optional = Optional.ofNullable(profile);
         Optional<RdMmAccountInfo> optional2 = Optional.ofNullable(rdMmAccountInfo);

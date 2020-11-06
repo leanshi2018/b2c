@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.order.ShopOrderSplitDao">
+
+    <resultMap id="ShopOrderSplitResultMap" type="com.framework.loippi.entity.order.ShopOrderSplit">
+        <id property="id" column="id"  />
+        <result property="orderId" column="order_id" />
+        <result property="orderSn" column="order_sn" />
+        <result property="mmCode" column="mm_code" />
+        <result property="mmNickName" column="mm_nick_name" />
+        <result property="buyFlag" column="buy_flag" />
+        <result property="pv" column="pv" />
+        <result property="paymentTime" column="payment_time" />
+        <result property="periodCode" column="period_code" />
+        <result property="status" column="status" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,order_id,order_sn,mm_code,mm_nick_name,buy_flag,pv,payment_time,period_code,status
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{orderId},#{orderSn},#{mmCode},#{mmNickName},#{buyFlag},#{pv},#{paymentTime},#{periodCode},#{status}
+	</sql>
+
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND order_id = #{orderId,jdbcType=BIGINT}
+        </if>
+        <if test="orderSn != null and orderSn != ''">
+            AND order_sn = #{orderSn,jdbcType=VARCHAR}
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+            AND mm_code = #{mmCode,jdbcType=VARCHAR}
+        </if>
+        <if test="mmNickName != null and mmNickName != ''">
+            AND mm_nick_name = #{mmNickName,jdbcType=VARCHAR}
+        </if>
+        <if test="buyFlag != null">
+            AND buy_flag = #{buyFlag,jdbcType=INTEGER}
+        </if>
+        <if test="pv != null and pv != ''">
+            AND pv = #{pv}
+        </if>
+        <if test="paymentTime != null and paymentTime != ''">
+            AND payment_time = #{paymentTime}
+        </if>
+        <if test="periodCode != null and periodCode != ''">
+            AND period_code = #{periodCode,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+             id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="orderId != null and orderId != ''">
+             order_id = #{orderId,jdbcType=BIGINT},
+        </if>
+        <if test="orderSn != null and orderSn != ''">
+             order_sn = #{orderSn,jdbcType=VARCHAR},
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+             mm_code = #{mmCode,jdbcType=VARCHAR},
+        </if>
+        <if test="mmNickName != null and mmNickName != ''">
+             mm_nick_name = #{mmNickName,jdbcType=VARCHAR},
+        </if>
+        <if test="buyFlag != null">
+             buy_flag = #{buyFlag,jdbcType=INTEGER},
+        </if>
+        <if test="pv != null and pv != ''">
+             pv = #{pv},
+        </if>
+        <if test="paymentTime != null and paymentTime != ''">
+             payment_time = #{paymentTime},
+        </if>
+        <if test="periodCode != null and periodCode != ''">
+             period_code = #{periodCode,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null">
+             status = #{status,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopOrderSplitResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM shop_order_split
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopOrderSplitResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM shop_order_split
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM shop_order_split
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.order.ShopOrderSplit">
+        INSERT shop_order_split
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.order.ShopOrderSplit">
+        UPDATE shop_order_split
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM shop_order_split
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM shop_order_split
+        WHERE ID IN
+        <foreach item="ShopOrderId" index="index" collection="ids" open="(" separator="," close=")">
+            #{ShopOrderId}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopOrderSplitResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM shop_order_split
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopOrderSplitResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM shop_order_split
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+</mapper>
