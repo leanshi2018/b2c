@@ -1383,10 +1383,11 @@ public class ShopOrderJob {
                             dmobile = a.getBuyerPhone();
                         }
                         if (a.getSpecName() != null && !"".equals(a.getSpecName())) {
+                            String[] split = a.getSpecName().split("·");
                             if ("".equals(remark)) {
-                                remark = remark + a.getSpecName() + a.getGoodsNum().toString() + "箱";
+                                remark = remark + split[1] + a.getGoodsNum().toString() + "箱";
                             } else {
-                                remark = remark + "," + a.getSpecName() + a.getGoodsNum().toString() + "箱";
+                                remark = remark + "," + split[1] + a.getGoodsNum().toString() + "箱";
                             }
                         }
                     }
