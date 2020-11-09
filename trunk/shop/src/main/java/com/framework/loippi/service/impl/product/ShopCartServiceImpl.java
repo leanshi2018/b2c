@@ -1,11 +1,6 @@
 package com.framework.loippi.service.impl.product;
 
 
-import com.framework.loippi.dao.product.ShopGoodsBrandDao;
-import com.framework.loippi.entity.product.ShopGoodsBrand;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -34,6 +29,7 @@ import com.framework.loippi.controller.StateResult;
 import com.framework.loippi.dao.cart.ShopCartDao;
 import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.order.ShopOrderGoodsDao;
+import com.framework.loippi.dao.product.ShopGoodsBrandDao;
 import com.framework.loippi.dao.product.ShopGoodsStintDao;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
@@ -45,9 +41,11 @@ import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.product.ShopGoodsStint;
 import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.pojo.cart.CartInfo;
@@ -60,11 +58,13 @@ import com.framework.loippi.service.activity.ShopActivityPromotionRuleService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
+import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.product.ShopCartService;
 import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.GoodsUtils;
@@ -991,7 +991,7 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             }
             cartInfo.setRankAmount(rankDiscount);
             //优惠金额
-            cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()).add(cartInfo.getPlusVipPrice()));
+            cartInfo.setCouponAmount(cartInfo.getGoodsTotalPrice().subtract(cartInfo.getActualGoodsTotalPrice()));
         //运费计算
         if (addr != null) {
             //运费
