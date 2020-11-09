@@ -309,7 +309,7 @@ public class SelfMentionController extends BaseController {
                     mapGGs.put("goodId",inventoryWarning.getGoodsCode());
                     mapGGs.put("combineGoodsId",goodsId);
                     List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsService.findGoodsGoodsList(mapGGs);
-                    ShopGoodsGoods goodsGoods = new ShopGoodsGoods();
+                    ShopGoodsGoods goodsGoods = null;
                     if (goodsGoodsList.size()>0){
                         if (goodsGoodsList.size()==1){
                             goodsGoods = goodsGoodsList.get(0);

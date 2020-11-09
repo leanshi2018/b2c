@@ -29,6 +29,8 @@ public class CreateExpressOrderJsonDTO {
     private String productName;
     // 	备注（发货详情）
     private String remark;
+    // 	保价金额（单位为分）
+    private int insureAmount;
 
     /*寄件*/
     // 寄件公司名称

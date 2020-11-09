@@ -741,13 +741,15 @@ public class OrderSysController extends GenericController {
                     map1.put("goodId",goodsId);
                     map1.put("combineGoodsId",goodsId1);
                     List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsService.findGoodsGoodsList(map1);
-                    ShopGoodsGoods goodsGoods = new ShopGoodsGoods();
+                    ShopGoodsGoods goodsGoods = null;
+                    System.out.println("sp"+specId2);
+                    System.out.println("list"+goodsGoodsList);
                     if (goodsGoodsList.size()>0){
                         if (goodsGoodsList.size()==1){
                             goodsGoods = goodsGoodsList.get(0);
                         }else {
                             for (ShopGoodsGoods shopGoodsGoods : goodsGoodsList) {
-                                if (shopGoodsGoods.getGoodsSpec().equals(specId)){
+                                if (shopGoodsGoods.getGoodsSpec().equals(specId2.toString())){
                                     goodsGoods = shopGoodsGoods;
                                 }
                             }
@@ -991,7 +993,7 @@ public class OrderSysController extends GenericController {
         System.out.println("进");
         CreateExpressOrderJsonDTO createExpressOrderReq = new CreateExpressOrderJsonDTO();
         // 如果提示重复下单，把这个编号变一下
-        createExpressOrderReq.setOrderId("AP20200121181653954007");
+        createExpressOrderReq.setOrderId("AP20200121181653954010");
         createExpressOrderReq.setRemark("酱品会·精品7箱，酱品会·珍品4箱，酱品会·甄藏2箱");
         // 寄件人信息
         /*createExpressOrderReq.setJcompany("深圳市乐安士有限公司");

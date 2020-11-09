@@ -132,11 +132,12 @@ public class ShunFengJsonExpressServiceImpl implements ShunFengJsonExpressServic
 		req.setExpressType(2);
 		req.setIsDoCall(0);
 		req.setMonthlyCust(CUST_ID);
-		req.setPackageNumber(1);
+		//req.setPackageNumber(2);
 		req.setPayMethod(2);
-		req.setBspType(1);
+		req.setBspType(2);
 		req.setReturnType("其他");
 		req.setDoOrderNow("1");
+		req.setInsureAmount(100000);
 		// 寄件基本信息
 		req.setProductName("白酒");
 		// 寄件人信息
