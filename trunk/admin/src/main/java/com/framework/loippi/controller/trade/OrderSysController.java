@@ -1584,12 +1584,25 @@ public class OrderSysController extends GenericController {
         model.addAttribute("order", orderVo);
         model.addAttribute("shopMember", rdMmBasicInfo);
 
-        ShopCommonExpress eCode = commonExpressService.find("eCode", expressCode);
-        String kuaiInfo = kuaidiService.query(expressCode, shippingCode);
+        List<ShopCommonExpress> eCodeList = commonExpressService.findList("eCode", expressCode);
+        ShopCommonExpress eCode = null;
+        if (eCodeList.size()==1){
+            eCode = eCodeList.get(0);
+        }
+        if (eCodeList.size()>1){
+            for (ShopCommonExpress express : eCodeList) {
+                if (express.getId().equals(44l)){//中通
+                    eCode = express;
+                }
+            }
+        }
+        String kuaiInfo = kuaidiService.query(eCode.getEAliCode(), shippingCode);
         List<ShopOrderLogistics> shopOrderGoodslist=shopOrderLogisticsService.findList("orderId",id);
         List<ShippingDto> shippingDtoList=ShippingDto.buildList(shopOrderGoodslist,shippingCode);
         Map mapType = JSON.parseObject(kuaiInfo, Map.class);
-        model.addAttribute("kuaidi", mapType);
+        Map<String, List<Map<String,String>>> result = (Map<String, List<Map<String,String>>>) mapType.get("result");
+        List<Map<String, String>> datainfo = result.get("list");
+        model.addAttribute("kuaidi", datainfo);
         model.addAttribute("totalQuantity", shippingDtoList.get(0).totalQuantity);
         model.addAttribute("expressName", eCode.getEName());
         model.addAttribute("shippingCode", shippingCode);

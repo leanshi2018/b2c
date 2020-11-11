@@ -82,4 +82,10 @@ public class ShopCommonExpress implements GenericEntity {
     @Column(name = "e_sort")
     private Integer eSort;
 
+    /**
+     * 阿里快递查询--公司缩写（用户查询）
+     */
+    @Column(name = "e_ali_code")
+    private String eAliCode;
+
 }
