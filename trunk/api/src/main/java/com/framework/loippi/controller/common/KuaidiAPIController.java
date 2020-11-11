@@ -75,12 +75,26 @@ public class KuaidiAPIController extends BaseController {
             return ApiUtils.error("订单不存在");
         }
         ShopOrderAddress shopOrderAddress=shopOrderAddressService.find(shopOrder.getAddressId());
-        ShopCommonExpress eCode = commonExpressService.find("eCode", expressCode);
-        String kuaiInfo = kuaidiService.query(expressCode, shippingCode);
+        List<ShopCommonExpress> eCodeList = commonExpressService.findList("eCode", expressCode);
+        ShopCommonExpress eCode = null;
+        if (eCodeList.size()==1){
+            eCode = eCodeList.get(0);
+        }
+        if (eCodeList.size()>1){
+            for (ShopCommonExpress express : eCodeList) {
+                if (express.getId().equals(44l)){//中通
+                    eCode = express;
+                }
+            }
+        }
+        String kuaiInfo = kuaidiService.query(eCode.getEAliCode(), shippingCode);
         Map mapType = JacksonUtil.convertMap(kuaiInfo);
         if (StringUtils.isBlank(kuaiInfo)) {
             return ApiUtils.error();
         }
+        Map<String, List<Map<String,String>>> result = (Map<String, List<Map<String,String>>>) mapType.get("result");
+        List<Map<String, String>> datainfo = result.get("list");
+
         List<ShopOrderLogistics> shopOrderGoodslist=shopOrderLogisticsService.findList("orderId",orderId);
         List<ShippingResult> shippingResultList=ShippingResult.buildList(shopOrderGoodslist,shippingCode);
         Map<String, Object> map = new HashMap<>();
@@ -93,7 +107,7 @@ public class KuaidiAPIController extends BaseController {
         map.put("receiverAddress", shopOrderAddress.getAreaInfo()+shopOrderAddress.getAddress());
         map.put("shippingResultList", shippingResultList);
         map.put("express", Optional.ofNullable(eCode).map(ShopCommonExpress::getEName).orElse(""));
-        map.put("detail", mapType);
+        map.put("detail", datainfo);
         return ApiUtils.success(map);
     }
 
