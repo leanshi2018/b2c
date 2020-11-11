@@ -298,7 +298,7 @@ public class UserIntegrationAPIController extends BaseController {
         }
         List<RdMmBank> mmBanks = rdMmBankService.findList(Paramap.create().put("mmCode",member.getMmCode()).put("inValid",1).put("defaultbank",1));
         //银行卡信息
-        RdMmBank rdMmBank = rdMmBankService.find(Long.parseLong(mmBanks.get(0).getAccCode()+""));
+        RdMmBank rdMmBank = mmBanks.get(0);
         if (rdMmBank == null) {
             return ApiUtils.error("不存在该银行卡");
         }
