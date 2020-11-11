@@ -14,6 +14,7 @@ import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.*;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.vo.user.PlusProfitVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -140,5 +141,10 @@ public class PlusProfitServiceImpl extends GenericServiceImpl<PlusProfit, Long> 
     @Override
     public BigDecimal countProfit(Paramap paramaps) {
         return plusProfitDao.countProfit(paramaps);
+    }
+
+    @Override
+    public List<PlusProfitVo> findPlusProfitVo(String mmCode) {
+        return plusProfitDao.findPlusProfitVo(mmCode);
     }
 }

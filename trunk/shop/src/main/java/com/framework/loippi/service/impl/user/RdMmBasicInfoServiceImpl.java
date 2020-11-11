@@ -568,4 +568,9 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         }
         System.out.println("******************结束会员冻结*************************");
     }
+
+    @Override
+    public Integer findInvitePlusNum(String mmCode) {
+        return rdMmBasicInfoDao.findInvitePlusNum(mmCode);
+    }
 }

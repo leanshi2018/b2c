@@ -272,7 +272,7 @@ public class CartCheckOutResult {
 //                            }
 //                            goodsResult.setGoodsMarketPrice(money);
 //                        }
-                        if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
+                        if (type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV||type == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
 //                            goodsResult.setGoodsMarketPrice(cart.getGoodsBigPrice());
                             goodsResult.setPpv(cart.getBigPpv());
                         }

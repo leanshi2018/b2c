@@ -1805,4 +1805,12 @@
     <select id="getPlusVipOrderNum" parameterType="java.lang.Long" resultType="java.lang.Long">
         SELECT COUNT(1) FROM shop_order WHERE payment_state = 1 and buyer_id = #{buyerId} and order_state != 0 and refund_state is null  and order_type = 8
     </select>
+
+    <select id="plusSaveMoney" parameterType="map" resultType="java.math.BigDecimal">
+        SELECT SUM(discount) FROM shop_order
+        WHERE refund_state is null and order_state != 0 and payment_state = 1  and order_type = 8
+        <if test="buyerId != null">
+            and buyer_id = #{buyerId}
+        </if>
+    </select>
 </mapper>

@@ -4,6 +4,7 @@ import com.framework.loippi.entity.user.PlusProfit;
 import com.framework.loippi.entity.user.RetailProfit;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.vo.user.PlusProfitVo;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -21,4 +22,6 @@ public interface PlusProfitService extends GenericService<PlusProfit, Long> {
     List<PlusProfit> findListTimeAsc(Paramap put);
 
     BigDecimal countProfit(Paramap put);
+
+    List<PlusProfitVo> findPlusProfitVo(String mmCode);
 }

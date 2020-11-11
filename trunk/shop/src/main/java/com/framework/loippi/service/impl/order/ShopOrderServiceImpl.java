@@ -3603,6 +3603,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         plusProfit.setReceiptorId(buyerId);
                         plusProfit.setState(3);
                         plusProfit.setProfits(new BigDecimal("1000.00"));
+                        plusProfit.setRemark("订单抵扣");
                     }
                     if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==0){//不是plus vip会员，奖励送给推荐人
                         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", buyerId);
@@ -3610,6 +3611,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             plusProfit.setReceiptorId(rdMmRelation.getSponsorCode());
                         }
                         plusProfit.setState(0);
+                        plusProfit.setRemark("直推");
                         RdMmBasicInfo basicInfoSpo = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
                         if(basicInfoSpo.getPlusVip()==0){
                             plusProfit.setProfits(new BigDecimal("500.00"));
@@ -5022,6 +5024,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             plusProfit.setReceiptorId(buyerId);
                             plusProfit.setState(3);
                             plusProfit.setProfits(new BigDecimal("1000.00"));
+                            plusProfit.setRemark("订单抵扣");
                         }
                         if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==0){//不是plus vip会员，奖励送给推荐人
                             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", buyerId);
@@ -5029,6 +5032,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 plusProfit.setReceiptorId(rdMmRelation.getSponsorCode());
                             }
                             plusProfit.setState(0);
+                            plusProfit.setRemark("直推");
                             RdMmBasicInfo basicInfoSpo = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
                             if(basicInfoSpo.getPlusVip()==0){
                                 plusProfit.setProfits(new BigDecimal("500.00"));
@@ -7107,5 +7111,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         orderPay.setOrderId(orderId);
         orderPay.setPaymentType(paymentType);
         return orderPay;
+    }
+
+    @Override
+    public BigDecimal plusSaveMoney(Paramap paramap) {
+        return orderDao.plusSaveMoney(paramap);
     }
 }

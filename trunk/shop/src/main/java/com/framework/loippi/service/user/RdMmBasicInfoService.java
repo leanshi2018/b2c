@@ -56,4 +56,6 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
     void storeBinding(RdMmBasicInfo mainBasic, RdMmBasicInfo secondBasic);
 
     void whetherFreeze();
+
+    Integer findInvitePlusNum(String mmCode);
 }

@@ -86,7 +86,8 @@ public class GoodsListResult {
     private Long recommendId;
     //参与组合商品数量
     private Integer joinNum;
-
+    //是否为plus vip商品 0：不是 1：是
+    private Integer plusVipType;
     public static List<GoodsListResult> build(List<ShopGoods> items, String prefix, Map<Long, ShopMemberFavorites> favoritesMap, String wapServer) {
         if (CollectionUtils.isEmpty(items)) {
             return Collections.emptyList();
@@ -121,6 +122,7 @@ public class GoodsListResult {
             } else {
                 result.setFavState(false);
             }
+            result.setPlusVipType(Optional.ofNullable(item.getPlusVipType()).orElse(0));
             results.add(result);
         }
         return results;
@@ -162,7 +164,7 @@ public class GoodsListResult {
                 result.setActivityId(-1L);
                 result.setActivityType(-1 + "");
             }
-
+            result.setPlusVipType(Optional.ofNullable(item.getPlusVipType()).orElse(0));
             results.add(result);
         }
         return results;
@@ -240,7 +242,7 @@ public class GoodsListResult {
 
             result.setActivityId(-1L);
             result.setActivityType(-1 + "");
-
+            result.setPlusVipType(Optional.ofNullable(item.getPlusVipType()).orElse(0));
             results.add(result);
         }
         return results;
@@ -269,6 +271,7 @@ public class GoodsListResult {
         shareUrl.append(item.getId());
         shareUrl.append(".html");
         result.setGoodsShareUrl(shareUrl.toString());
+        result.setPlusVipType(Optional.ofNullable(item.getPlusVipType()).orElse(0));
         return result;
     }
 

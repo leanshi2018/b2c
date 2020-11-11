@@ -227,4 +227,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     List<OrderInfo> findLastMonthOrderInfo(Integer mentionId);
 
     Long getPlusVipOrderNum(Long buyerId);
+
+    BigDecimal plusSaveMoney(Paramap paramap);
 }

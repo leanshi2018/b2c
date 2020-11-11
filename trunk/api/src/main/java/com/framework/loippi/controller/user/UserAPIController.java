@@ -19,7 +19,9 @@ import javax.validation.Valid;
 import com.framework.loippi.entity.user.*;
 import com.framework.loippi.pojo.activity.PictureVio;
 import com.framework.loippi.result.common.index.HomeAndADPictureResult;
+import com.framework.loippi.result.user.*;
 import com.framework.loippi.service.user.*;
+import com.framework.loippi.vo.user.PlusProfitVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -49,16 +51,6 @@ import com.framework.loippi.param.wallet.BindCardDto;
 import com.framework.loippi.pojo.selfMention.GoodsType;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
 import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.result.user.BankCardsListResult;
-import com.framework.loippi.result.user.MemberBasicResult;
-import com.framework.loippi.result.user.PersonCenterResult;
-import com.framework.loippi.result.user.SelfPerformanceResult;
-import com.framework.loippi.result.user.SelfWalletResult;
-import com.framework.loippi.result.user.SubordinateUserInformationResult;
-import com.framework.loippi.result.user.UserCollectResult;
-import com.framework.loippi.result.user.UserFootprintsResult;
-import com.framework.loippi.result.user.UserProfileResult;
-import com.framework.loippi.result.user.WithdrawBalanceResult;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.ShopMemberMessageService;
 import com.framework.loippi.service.common.ShopAppService;
@@ -2337,5 +2329,44 @@ public class UserAPIController extends BaseController {
         String mmAvatar=StringUtil.formatImg(prefix, "http://rdnmall.com/FoUi8VoKhZJRUnFxhfyQ3Ib50ySa");
         rdMmBasicInfoService.addSecondaryUser(mmBasicInfo,mNickName,mmAvatar);
         return ApiUtils.success("注册次店成功");
+    }
+
+    /**
+     * plus会员中心
+     */
+    @RequestMapping("/plusCenter")
+    @ResponseBody
+    public String plusCenter(HttpServletRequest request) {
+        // 获取缓存实体
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        //用户未登录或者登录失效
+        if (member == null) {
+            return ApiUtils.error("用户尚未登录");
+        }
+        RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        RdRanks rdRankVip = rdRanksService.find("rankId", 1);//如果会员级别为代理会员 显示vip会员名称
+        //已获得奖励
+        BigDecimal yetReward = plusProfitService.countProfit(Paramap.create().put("receiptorId",shopMember.getMmCode()).put("state",1));
+        if(yetReward==null){
+            yetReward=BigDecimal.ZERO;
+        }
+        //待发放奖励
+        BigDecimal waitReward = plusProfitService.countProfit(Paramap.create().put("receiptorId",shopMember.getMmCode()).put("state",0));
+        if(waitReward==null){
+            waitReward=BigDecimal.ZERO;
+        }
+        //累计省钱(即购买人是自己的plus订单)
+        BigDecimal saveMoney =shopOrderService.plusSaveMoney(Paramap.create().put("buyerId",shopMember.getMmCode()));
+        if(saveMoney==null){
+            saveMoney=BigDecimal.ZERO;
+        }
+        //邀请人数
+        Integer inviteNum = rdMmBasicInfoService.findInvitePlusNum(shopMember.getMmCode());
+        //plus vip奖励列表
+        List<PlusProfitVo> profitVos=plusProfitService.findPlusProfitVo(shopMember.getMmCode());
+        PlusCenterResult result=PlusCenterResult.build(shopMember,rdMmRelation,rdRanks,rdRankVip,yetReward,waitReward,saveMoney,inviteNum,profitVos);
+        return ApiUtils.success(result);
     }
 }

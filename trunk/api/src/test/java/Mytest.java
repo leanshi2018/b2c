@@ -102,9 +102,9 @@ public class Mytest {
         BASE64Encoder encoder = new BASE64Encoder();
         String encode = encoder.encode(Objects.requireNonNull(data));
         System.out.println(encode);*/
-/*        final YunRequest allInRequest = new YunRequest("MemberService", "sendVerificationCode");
-        allInRequest.put("bizUserId", "900014088");
-        allInRequest.put("phone", "15770801265");
+        final YunRequest allInRequest = new YunRequest("MemberService", "sendVerificationCode");
+        allInRequest.put("bizUserId", "900013900");
+        allInRequest.put("phone", "15669093971");
         allInRequest.put("verificationCodeType", 6L);
         try {
             String s = YunClient.request(allInRequest);
@@ -119,11 +119,11 @@ public class Mytest {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
 /*
         final YunRequest allInRequest = new YunRequest("MemberService", "unbindPhone");
-        allInRequest.put("bizUserId", "900014088");
-        allInRequest.put("phone", "15770801265");
+        allInRequest.put("bizUserId", "900013900");
+        allInRequest.put("phone", "15669093971");
         allInRequest.put("verificationCode", "484451");
         try {
             String s = YunClient.request(allInRequest);
