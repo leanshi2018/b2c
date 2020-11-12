@@ -692,6 +692,10 @@ public class ShopOrderJob {
             String mobPhone = "";
             if (orderType == null || orderType == 0) {
                 ShopOrder shopOrder = shopOrderDao.find(id);
+                if (shopOrder.getOrderState()==0){
+                    shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(2,"订单已取消",shopOrder.getId());
+                    continue;
+                }
                 orderSn = shopOrder.getOrderSn();//订单编号
                 mCode = shopOrder.getBuyerId();
                 String buyerName = shopOrder.getBuyerName();//买家名称
@@ -713,6 +717,10 @@ public class ShopOrderJob {
                 address = area + orderAddress.getAddress();//地址
             } else {
                 RdWareOrder rdWareOrder = rdWareOrderDao.find(id);
+                if (rdWareOrder.getOrderState()==0){
+                    shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(2,"订单已取消",rdWareOrder.getId());
+                    continue;
+                }
                 orderSn = Optional.ofNullable(rdWareOrder.getOrderSn()).orElse("");
                 mCode = Optional.ofNullable(new Long(rdWareOrder.getMCode())).orElse(0l);
                 trueName = Optional.ofNullable(rdWareOrder.getConsigneeName()).orElse("");
@@ -937,7 +945,7 @@ public class ShopOrderJob {
                     System.out.println("Key = " + entry1.getKey() + ", Value = " + entry1.getValue());
                 }
 
-                ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
+                String substring = orderSn.substring(0, 2);
                 String success = maps.get("success").toString();
                 if (success.equals("true")) {//成功
                     String trackSnList = maps.get("data").toString();//运单号
@@ -945,8 +953,16 @@ public class ShopOrderJob {
                     String trackSn = split[0];
 
                     //修改shop_spirit_order_info 数据  加入运单号
-                    shopSpiritOrderInfoService.updateTrackSnByOrderId(order.getId(), trackSn);
-                    List<ShopSpiritOrderInfo> list = shopSpiritOrderInfoService.findByOrderId(order.getId());
+                    List<ShopSpiritOrderInfo> list = null;
+                    if (!substring.equals("DH")){
+                        ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
+                        shopSpiritOrderInfoService.updateTrackSnByOrderId(order.getId(), trackSn);
+                        list = shopSpiritOrderInfoService.findByOrderId(order.getId());
+                    }else {
+                        RdWareOrder order = rdWareOrderDao.findBySn(orderSn);
+                        shopSpiritOrderInfoService.updateTrackSnByOrderId(order.getId(), trackSn);
+                        list = shopSpiritOrderInfoService.findByOrderId(order.getId());
+                    }
                     Integer flag = 1;
                     Integer orderType = 2;
                     for (ShopSpiritOrderInfo info : list) {
@@ -965,8 +981,14 @@ public class ShopOrderJob {
                         Integer submitStatus = 10;
                         String failInfo = "";
                         orderService.updateOrderStatus(orderSn, orderState, submitStatus, failInfo, trackSn);
-
-                        List<ShopOrderGoods> orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
+                        List<ShopOrderGoods> orderGoodsList = null;
+                        if (!substring.equals("DH")) {
+                            ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
+                             orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
+                        }else {
+                            RdWareOrder order = rdWareOrderDao.findBySn(orderSn);
+                            orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
+                        }
 
                         List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
                         List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackSn, 29l);//需要修改订单商品信息
@@ -990,7 +1012,13 @@ public class ShopOrderJob {
                 } else {
                     String msg = maps.get("msg").toString();
                     //修改shop_spirit_order_info
-                    shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(0, msg, order.getId());
+                    if (!substring.equals("DH")) {
+                        ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
+                        shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(0, msg, order.getId());
+                    }else {
+                        RdWareOrder order = rdWareOrderDao.findBySn(orderSn);
+                        shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(0, msg, order.getId());
+                    }
                 }
             }
         }
@@ -1166,6 +1194,10 @@ public class ShopOrderJob {
                 String mobPhone = "";
                 if (orderType == null || orderType == 0) {
                     ShopOrder shopOrder = shopOrderDao.find(id);
+                    if (shopOrder.getOrderState()==0){
+                        shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(2,"订单已取消",shopOrder.getId());
+                        continue;
+                    }
                     orderSn = shopOrder.getOrderSn();//订单编号
                     mCode = shopOrder.getBuyerId();
                     String buyerName = shopOrder.getBuyerName();//买家名称
@@ -1187,6 +1219,10 @@ public class ShopOrderJob {
                     address = area + orderAddress.getAddress();//地址
                 } else {
                     RdWareOrder rdWareOrder = rdWareOrderDao.find(id);
+                    if (rdWareOrder.getOrderState()==0){
+                        shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(2,"订单已取消",rdWareOrder.getId());
+                        continue;
+                    }
                     orderSn = Optional.ofNullable(rdWareOrder.getOrderSn()).orElse("");
                     mCode = Optional.ofNullable(new Long(rdWareOrder.getMCode())).orElse(0l);
                     trueName = Optional.ofNullable(rdWareOrder.getConsigneeName()).orElse("");
@@ -1412,7 +1448,7 @@ public class ShopOrderJob {
                         System.out.println("Key = " + entry1.getKey() + ", Value = " + entry1.getValue());
                     }
 
-                    ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
+                    String substring = orderSn.substring(0, 2);
                     String success = maps.get("success").toString();
                     if (success.equals("true")) {//成功
                         String trackSnList = maps.get("data").toString();//运单号
@@ -1420,8 +1456,16 @@ public class ShopOrderJob {
                         String trackSn = split[0];
 
                         //修改shop_spirit_order_info 数据  加入运单号
-                        shopSpiritOrderInfoService.updateTrackSnByOrderId(order.getId(), trackSn);
-                        List<ShopSpiritOrderInfo> list = shopSpiritOrderInfoService.findByOrderId(order.getId());
+                        List<ShopSpiritOrderInfo> list = null;
+                        if (!substring.equals("DH")){
+                            ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
+                            shopSpiritOrderInfoService.updateTrackSnByOrderId(order.getId(), trackSn);
+                            list = shopSpiritOrderInfoService.findByOrderId(order.getId());
+                        }else {
+                            RdWareOrder order = rdWareOrderDao.findBySn(orderSn);
+                            shopSpiritOrderInfoService.updateTrackSnByOrderId(order.getId(), trackSn);
+                            list = shopSpiritOrderInfoService.findByOrderId(order.getId());
+                        }
                         Integer flag = 1;
                         Integer orderType = 2;
                         for (ShopSpiritOrderInfo info : list) {
@@ -1441,7 +1485,14 @@ public class ShopOrderJob {
                             String failInfo = "";
                             orderService.updateOrderStatus(orderSn, orderState, submitStatus, failInfo, trackSn);
 
-                            List<ShopOrderGoods> orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
+                            List<ShopOrderGoods> orderGoodsList = null;
+                            if (!substring.equals("DH")) {
+                                ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
+                                orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
+                            }else {
+                                RdWareOrder order = rdWareOrderDao.findBySn(orderSn);
+                                orderGoodsList = shopOrderGoodsService.listByOrderId(order.getId());//订单所有商品
+                            }
 
                             List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
                             List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackSn, 29l);//需要修改订单商品信息
@@ -1465,7 +1516,13 @@ public class ShopOrderJob {
                     } else {
                         String msg = maps.get("msg").toString();
                         //修改shop_spirit_order_info
-                        shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(0, msg, order.getId());
+                        if (!substring.equals("DH")) {
+                            ShopOrder order = shopOrderDao.findByOrderSn(orderSn);
+                            shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(0, msg, order.getId());
+                        }else {
+                            RdWareOrder order = rdWareOrderDao.findBySn(orderSn);
+                            shopSpiritOrderInfoService.updateSubmitStateAndMsgByOrderId(0, msg, order.getId());
+                        }
                     }
                 }
             }
