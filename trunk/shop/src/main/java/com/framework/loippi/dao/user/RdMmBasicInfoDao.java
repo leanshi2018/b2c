@@ -1,6 +1,7 @@
 package com.framework.loippi.dao.user;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.vo.user.UserInfoVo;
 
 /**
  * DAO - RdMmBasicInfo(会员基础信息)
@@ -39,4 +41,8 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
     List<RdMmBasicInfo> findBranch(String mmCode);
 
     Long countSecondShop(String mmCode);
+
+    Integer findInvitePlusNum(String mmCode);
+
+    ArrayList<UserInfoVo> findMemberOneMobile(Paramap map);
 }

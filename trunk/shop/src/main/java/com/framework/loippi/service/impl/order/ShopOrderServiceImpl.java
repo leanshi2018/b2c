@@ -2,6 +2,16 @@ package com.framework.loippi.service.impl.order;
 
 
 
+import com.framework.loippi.consts.*;
+import com.framework.loippi.dao.product.ShopGoodsBrandDao;
+import com.framework.loippi.entity.cart.ShopCart;
+import com.framework.loippi.entity.cart.ShopCartExchange;
+import com.framework.loippi.entity.order.*;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.pojo.cart.CartExchangeInfo;
+import com.framework.loippi.service.order.ShopOrderSplitService;
+import com.framework.loippi.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -23,6 +33,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -35,15 +46,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.framework.loippi.consts.AllInPayBillCutConstant;
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.consts.CouponConstant;
-import com.framework.loippi.consts.IntegrationNameConsts;
-import com.framework.loippi.consts.NewVipConstant;
-import com.framework.loippi.consts.NotifyConsts;
-import com.framework.loippi.consts.OrderState;
-import com.framework.loippi.consts.PaymentTallyState;
-import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.StateResult;
 import com.framework.loippi.dao.ShopCommonMessageDao;
@@ -81,7 +83,6 @@ import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.TSystemPluginConfig;
 import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
-import com.framework.loippi.entity.cart.ShopCartExchange;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.coupon.Coupon;
@@ -89,14 +90,6 @@ import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.order.OrderFundFlow;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.order.ShopOrderAddress;
-import com.framework.loippi.entity.order.ShopOrderDiscountType;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.order.ShopOrderLog;
-import com.framework.loippi.entity.order.ShopOrderLogistics;
-import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
@@ -120,7 +113,6 @@ import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.pojo.activity.ShopGoodSpec;
-import com.framework.loippi.pojo.cart.CartExchangeInfo;
 import com.framework.loippi.pojo.cart.CartInfo;
 import com.framework.loippi.pojo.cart.CartVo;
 import com.framework.loippi.pojo.common.CensusVo;
@@ -329,6 +321,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     private ShopCartExchangeService shopCartExchangeService;
     @Resource
     private PlusProfitService plusProfitService;
+    @Resource
+    private ShopGoodsBrandDao shopGoodsBrandDao;
+    @Resource
+    private ShopOrderSplitService shopOrderSplitService;
     @Autowired
     public void setGenericDao() {
         super.setGenericDao(orderDao);
@@ -649,6 +645,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         rdMmRelationDao.update(rdMmRelation);
                     }
                 }
+                if(order.getOrderType()==8&&order.getSplitFlag()==1){
+                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",1));
+                    if(list!=null&&list.size()>0){
+                        for (ShopOrderSplit shopOrderSplit : list) {
+                            //判断分单会员取消订单后是否会降级
+                            rankControl(shopOrderSplit);
+                        }
+                    }
+                }
             }
         }
 
@@ -915,6 +920,39 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     couponUserService.update(couponUser);
                 }
             }
+        }
+    }
+
+    private void rankControl(ShopOrderSplit shopOrderSplit) {
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", shopOrderSplit.getMmCode());
+        BigDecimal aRetail = rdMmRelation.getARetail();
+        BigDecimal nowRetail = aRetail.subtract(new BigDecimal("360.00"));
+        if (aRetail.compareTo(new BigDecimal("360.00"))!=-1&&nowRetail.compareTo(new BigDecimal("360.00"))==-1) {
+            rdMmRelation.setRank(0);
+            rdMmRelation.setARetail(nowRetail);
+            rdMmRelationDao.update(rdMmRelation);
+            //进行用户降级通知
+            ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+            shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
+            shopCommonMessage.setType(1);
+            shopCommonMessage.setOnLine(1);
+            shopCommonMessage.setCreateTime(new Date());
+            shopCommonMessage.setBizType(2);
+            shopCommonMessage.setIsTop(1);
+            shopCommonMessage.setCreateTime(new Date());
+            shopCommonMessage.setTitle("很遗憾，等级降了");
+            shopCommonMessage.setContent("您已从VIP会员变成普通会员,多多购物可提升等级哦");
+            Long msgId = twiterIdService.getTwiterId();
+            shopCommonMessage.setId(msgId);
+            shopCommonMessageDao.insert(shopCommonMessage);
+            ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+            shopMemberMessage.setBizType(2);
+            shopMemberMessage.setCreateTime(new Date());
+            shopMemberMessage.setId(twiterIdService.getTwiterId());
+            shopMemberMessage.setIsRead(0);
+            shopMemberMessage.setMsgId(msgId);
+            shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+            shopMemberMessageDao.insert(shopMemberMessage);
         }
     }
 
@@ -1220,6 +1258,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setOrderAmount(orderVo.getOrderAmount());
             // 使用积分抵扣金额
             order.setPointRmbNum(Optional.ofNullable(orderVo.getRewardPointPrice()).orElse(BigDecimal.ZERO));
+            order.setSplitFlag(0);
             // 优惠券金额
 //            order.setCouponId(orderVo.getCouponId()); //优惠券id
 //            order.setCouponPrice(orderVo.getCouponPrice());
@@ -1580,6 +1619,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             //            order.setDiscount(orderVo.getDiscount());
             //            //促销优惠金额
             //            order.setPromoPrice(orderVo.getPromoPrice());
+            order.setSplitFlag(0);
             orderDao.insertEntity(order);
             // todo 推荐反拥
 
@@ -2020,6 +2060,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setOrderAmount(orderVo.getOrderAmount());
             // 使用积分抵扣金额
             order.setPointRmbNum(Optional.ofNullable(orderVo.getRewardPointPrice()).orElse(BigDecimal.ZERO));
+            order.setSplitFlag(0);
             // 优惠券金额
 //            order.setCouponId(orderVo.getCouponId()); //优惠券id
 //            order.setCouponPrice(orderVo.getCouponPrice());
@@ -3633,6 +3674,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         plusProfit.setReceiptorId(buyerId);
                         plusProfit.setState(3);
                         plusProfit.setProfits(new BigDecimal("1000.00"));
+                        plusProfit.setRemark("订单抵扣");
                     }
                     if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==0){//不是plus vip会员，奖励送给推荐人
                         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", buyerId);
@@ -3640,6 +3682,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             plusProfit.setReceiptorId(rdMmRelation.getSponsorCode());
                         }
                         plusProfit.setState(0);
+                        plusProfit.setRemark("直推");
                         RdMmBasicInfo basicInfoSpo = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
                         if(basicInfoSpo.getPlusVip()==0){
                             plusProfit.setProfits(new BigDecimal("500.00"));
@@ -3651,6 +3694,19 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         rdMmBasicInfoService.update(basicInfo);
                     }
                     plusProfitService.save(plusProfit);
+                    //判断当前订单是否分单，如果分单，判断分单用户是否需要升级
+                    if(order.getSplitFlag()!=null&&order.getSplitFlag()==1){
+                        List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",3));
+                        if(list!=null&&list.size()>0){
+                            for (ShopOrderSplit shopOrderSplit : list) {
+                                shopOrderSplit.setStatus(1);
+                                shopOrderSplit.setPaymentTime(new Date());
+                                shopOrderSplit.setPeriodCode(periodCode);
+                                shopOrderSplitService.update(shopOrderSplit);
+                                upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                            }
+                        }
+                    }
                 }
                 order.setLockState(OrderState.ORDER_LOCK_STATE_NO);
                 order.setPaymentTime(new Date());
@@ -4115,6 +4171,361 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
         /********************* 添加消费积分 *********************/
 //        addMemberConsumePoints(orderTotalAmount, memberId);
+    }
+
+    private void upgrade(String mmCode,ShopOrder order,String period) {
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", mmCode);
+        //会员升级，记入累计零售购买额，提升等级
+        if (rdMmRelation != null) {
+            if(rdMmRelation.getRank()>0){
+                return;
+            }
+            if(order.getOrderType()!=8){
+                return;
+            }
+            rdMmRelation.setARetail(rdMmRelation.getARetail().add(new BigDecimal("360.00")));
+            //发放旅游券
+            ArrayList<Coupon> couponDetails = new ArrayList<>();
+            Calendar calendar = Calendar.getInstance();
+            int month = calendar.get(Calendar.MONTH) + 1;
+            System.out.println(month);
+            if(month>=2&&month<=12){//只有在三月到十二月之间升级赠送 TODO
+                int month2=month+1;
+                int month3=month+2;
+                RdMmBasicInfo mmBasicInfo = rdMmBasicInfoService.findByMCode(rdMmRelation.getMmCode());
+                //2 查找当前月可使用升级优惠券user表
+                if(month==5) {
+                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUN_COUPON_ID);
+                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.JUN_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.JUN_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUL_COUPON_ID);
+                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers2.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.AUG_COUPON_ID);
+                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers3.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                }
+                if(month==6) {
+                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JUL_COUPON_ID);
+                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.JUL_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.AUG_COUPON_ID);
+                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers2.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.SEPT_COUPON_ID);
+                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers3.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                }
+                if(month==7) {
+                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.AUG_COUPON_ID);
+                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.AUG_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.SEPT_COUPON_ID);
+                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers2.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.OCT_COUPON_ID);
+                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers3.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                }
+                if(month==8) {
+                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.SEPT_COUPON_ID);
+                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.SEPT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.OCT_COUPON_ID);
+                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers2.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.NOV_COUPON_ID);
+                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers3.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                }
+                if(month==9) {
+                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.OCT_COUPON_ID);
+                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.OCT_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.NOV_COUPON_ID);
+                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers2.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.DEC_COUPON_ID);
+                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers3.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                }
+                if(month==10) {
+                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.NOV_COUPON_ID);
+                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.NOV_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.DEC_COUPON_ID);
+                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers2.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JAN21_COUPON_ID);
+                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers3.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                }
+                if(month==11) {
+                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.DEC_COUPON_ID);
+                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.DEC_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JAN21_COUPON_ID);
+                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers2.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.FEB21_COUPON_ID);
+                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers3.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                }
+                if(month==12) {
+                    List<CouponUser> couponUsers = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.JAN21_COUPON_ID);
+                    if(couponUsers==null||couponUsers.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.JAN21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers2 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.FEB21_COUPON_ID);
+                    if(couponUsers2==null||couponUsers2.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers2.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.FEB21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                    List<CouponUser> couponUsers3 = couponUserService.findByMMCodeAndCouponId(rdMmRelation.getMmCode(), CouponConstant.MAR21_COUPON_ID);
+                    if(couponUsers3==null||couponUsers3.size()==0){//如果当前用户没有该优惠券记录，说明没有升级获得过该优惠券，优惠券获取途径只有升级回去 则给当前用户发放该优惠券
+                        sendCoupon(CouponConstant.MAR21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                    }else {
+                        CouponUser couponUser = couponUsers3.get(0);
+                        if(couponUser.getHaveCouponNum()==0){
+                            sendCoupon(CouponConstant.MAR21_COUPON_ID,rdMmRelation,mmBasicInfo,couponDetails,order.getId());
+                        }
+                    }
+                }
+            }
+            //进行用户升级通知
+            ShopCommonMessage message=new ShopCommonMessage();
+            message.setSendUid(rdMmRelation.getMmCode());
+            message.setType(1);
+            message.setOnLine(1);
+            message.setCreateTime(new Date());
+            message.setBizType(2);
+            message.setIsTop(1);
+            message.setCreateTime(new Date());
+            message.setTitle("恭喜，升级啦");
+            message.setContent("您已从普通会员升级成VIP会员,祝您购物愉快");
+            Long msgId = twiterIdService.getTwiterId();
+            message.setId(msgId);
+            shopCommonMessageDao.insert(message);
+            ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+            shopMemberMessage.setBizType(2);
+            shopMemberMessage.setCreateTime(new Date());
+            shopMemberMessage.setId(twiterIdService.getTwiterId());
+            shopMemberMessage.setIsRead(0);
+            shopMemberMessage.setMsgId(msgId);
+            shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+            shopMemberMessageDao.insert(shopMemberMessage);
+            RdRanks rdRanks = rdRanksService.find("rankClass", 1);
+            rdMmRelation.setRank(rdRanks.getRankId());
+            //如果会员升级为vip则查询当期会员是否存在没有发放的零售利润奖励
+            List<RetailProfit> list=retailProfitService.findNoGrantByCode(rdMmRelation.getMmCode());
+            if(list!=null&&list.size()>0){
+                for (RetailProfit retailProfit : list) {
+                    if(retailProfit.getProfits()!=null&&retailProfit.getProfits().compareTo(BigDecimal.ZERO)!=1){
+                        continue;
+                    }
+                    RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", retailProfit.getReceiptorId());
+                    if(rdMmAccountInfo!=null){
+                        //生成积分日志表
+                        RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                        rdMmAccountLog.setMmCode(retailProfit.getReceiptorId());
+                        RdMmBasicInfo basicInfo = rdMmBasicInfoService.find("mmCode", retailProfit.getReceiptorId());
+                        rdMmAccountLog.setMmNickName(basicInfo.getMmNickName());
+                        rdMmAccountLog.setTransTypeCode("BA");
+                        rdMmAccountLog.setAccType("SBB");
+                        rdMmAccountLog.setTrSourceType("CMP");
+                        rdMmAccountLog.setTrOrderOid(retailProfit.getOrderId());
+                        rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getBonusBlance());
+                        List<RdMmIntegralRule> rules = rdMmIntegralRuleService.findAll();
+                        BigDecimal amount = retailProfit.getProfits().multiply(new BigDecimal(rules.get(0).getRsCountBonusPoint())).divide(new BigDecimal(100),2);
+                        rdMmAccountLog.setAmount(amount);
+                        rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getBonusBlance().add(amount));
+                        rdMmAccountLog.setTransDate(new Date());
+                        String periodStr = rdSysPeriodDao.getSysPeriodService(new Date());
+                        if(periodStr!=null){
+                            rdMmAccountLog.setTransPeriod(period);
+                        }
+                        rdMmAccountLog.setTransDesc("零售利润奖励发放");
+                        rdMmAccountLog.setAutohrizeDesc("零售利润奖励发放");
+                        rdMmAccountLog.setStatus(3);
+                        rdMmAccountLogService.save(rdMmAccountLog);
+                        OrderFundFlow orderFundFlow = orderFundFlowService.find("orderId",retailProfit.getOrderId());
+                        if(orderFundFlow!=null){
+                            orderFundFlow.setRetailFlag(1);
+                            orderFundFlow.setRetailProfit(amount);
+                            orderFundFlow.setRetailGetId(retailProfit.getReceiptorId());
+                            orderFundFlow.setRetailTime(new Date());
+                            orderFundFlowService.update(orderFundFlow);
+                        }
+                        //修改积分账户
+                        rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().add(amount));
+                        rdMmAccountInfoService.update(rdMmAccountInfo);
+                        //修改零售利润
+                        retailProfit.setReceiptorId(rdMmRelation.getSponsorCode());
+                        retailProfit.setActualTime(new Date());
+                        retailProfit.setState(1);
+                        retailProfitService.update(retailProfit);
+                        //设置零售利润积分发放通知
+                        ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                        shopCommonMessage.setSendUid(rdMmRelation.getMmCode());
+                        shopCommonMessage.setType(1);
+                        shopCommonMessage.setOnLine(1);
+                        shopCommonMessage.setCreateTime(new Date());
+                        shopCommonMessage.setBizType(2);
+                        shopCommonMessage.setIsTop(1);
+                        shopCommonMessage.setCreateTime(new Date());
+                        shopCommonMessage.setTitle("积分到账通知");
+                        shopCommonMessage.setContent("您从零售订单："+retailProfit.getOrderSn()+"获得"+amount+"点积分，已加入奖励积分账户");
+                        Long msgId1 = twiterIdService.getTwiterId();
+                        shopCommonMessage.setId(msgId1);
+                        shopCommonMessageDao.insert(shopCommonMessage);
+                        ShopMemberMessage shopMemberMessage1=new ShopMemberMessage();
+                        shopMemberMessage1.setBizType(2);
+                        shopMemberMessage1.setCreateTime(new Date());
+                        shopMemberMessage1.setId(twiterIdService.getTwiterId());
+                        shopMemberMessage1.setIsRead(0);
+                        shopMemberMessage1.setMsgId(msgId);
+                        shopMemberMessage1.setUid(Long.parseLong(rdMmRelation.getMmCode()));
+                        shopMemberMessageDao.insert(shopMemberMessage1);
+                    }
+                }
+            }
+            rdMmRelationService.update(rdMmRelation);
+        }
     }
 
     /**
@@ -5052,6 +5463,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             plusProfit.setReceiptorId(buyerId);
                             plusProfit.setState(3);
                             plusProfit.setProfits(new BigDecimal("1000.00"));
+                            plusProfit.setRemark("订单抵扣");
                         }
                         if(basicInfo!=null&&basicInfo.getPlusVip()!=null&&basicInfo.getPlusVip()==0){//不是plus vip会员，奖励送给推荐人
                             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", buyerId);
@@ -5059,6 +5471,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                                 plusProfit.setReceiptorId(rdMmRelation.getSponsorCode());
                             }
                             plusProfit.setState(0);
+                            plusProfit.setRemark("直推");
                             RdMmBasicInfo basicInfoSpo = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
                             if(basicInfoSpo.getPlusVip()==0){
                                 plusProfit.setProfits(new BigDecimal("500.00"));
@@ -5070,6 +5483,19 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             rdMmBasicInfoService.update(basicInfo);
                         }
                         plusProfitService.save(plusProfit);
+                        //判断当前订单是否分单，如果分单，判断分单用户是否需要升级
+                        if(order.getSplitFlag()!=null&&order.getSplitFlag()==1){
+                            List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",3));
+                            if(list!=null&&list.size()>0){
+                                for (ShopOrderSplit shopOrderSplit : list) {
+                                    shopOrderSplit.setStatus(1);
+                                    shopOrderSplit.setPaymentTime(new Date());
+                                    shopOrderSplit.setPeriodCode(periodCode);
+                                    shopOrderSplitService.update(shopOrderSplit);
+                                    upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                                }
+                            }
+                        }
                     }
                     newOrder.setPaymentTime(new Date());
                     String period = rdSysPeriodDao.getSysPeriodService(new Date());
@@ -5788,6 +6214,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
                     shopMemberMessageDao.insert(shopMemberMessage);
                 }
+                if(order.getOrderType()==8&&order.getSplitFlag()==1){
+                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",1));
+                    if(list!=null&&list.size()>0){
+                        for (ShopOrderSplit shopOrderSplit : list) {
+                            //判断分单会员取消订单后是否会降级
+                            rankControl(shopOrderSplit);
+                        }
+                    }
+                }
                 //************************************************************************************************************
                 //之前大于升级vip的价位 加上这个售后金额小于vip的价位
                 /*if ((aRetail.compareTo(vipMoney) == 1||aRetail.compareTo(vipMoney) == 0) && orderMoney.compareTo(vipMoney) == -1) {
@@ -5897,6 +6332,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     shopMemberMessage.setMsgId(msgId1);
                     shopMemberMessage.setUid(Long.parseLong(rdMmRelation.getMmCode()));
                     shopMemberMessageDao.insert(shopMemberMessage);
+                }
+                if(order.getOrderType()==8&&order.getSplitFlag()==1){
+                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",1));
+                    if(list!=null&&list.size()>0){
+                        for (ShopOrderSplit shopOrderSplit : list) {
+                            //判断分单会员取消订单后是否会降级
+                            rankControl(shopOrderSplit);
+                        }
+                    }
                 }
                 /*if (order.getPpv().compareTo(BigDecimal.ZERO) != 0) {
                     rdMmRelation.setAPpv(orderPpv);
@@ -7140,6 +7584,653 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     }
 
     @Override
+    public BigDecimal plusSaveMoney(Paramap paramap) {
+        return orderDao.plusSaveMoney(paramap);
+    }
+
+    /**
+     * 立即购买返回支付实体类
+     * @param goodsId 商品id
+     * @param count 购买数量
+     * @param specId 规格id
+     * @param activityId 活动id
+     * @param activityType 活动类型
+     * @param activityGoodsId 活动商品id
+     * @param activitySkuId 活动规格id
+     * @param mmCode 会员编号
+     * @param orderMsgMap 订单留言备注信息
+     * @param addressId 地址id
+     * @param couponId 优惠券id
+     * @param platform 平台类别
+     * @param shopOrderDiscountType 订单优惠类型
+     * @param logisticType 配送方式 快递 自提
+     * @param paymentType 支付方式：固定在线支付
+     * @param giftId 赠品id
+     * @param splitOrderFlag 是否分单 0：不分单 1：分单
+     * @param giftNum 赠品数量
+     * @param splitCodes 分单会员拼接字符串
+     * @return
+     */
+    @Override
+    public ShopOrderPay addImmediatelyOrderReturnPaySn(Long goodsId, Integer count, Long specId, Long activityId, Integer activityType, Long activityGoodsId, Long activitySkuId,
+                                                       String mmCode, Map<String, Object> orderMsgMap, Long addressId, Long couponId, int platform, ShopOrderDiscountType shopOrderDiscountType,
+                                                       Integer logisticType, Integer paymentType, Long giftId, Integer splitOrderFlag, Integer giftNum, String splitCodes) {
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", mmCode);
+        ShopCart cart = new ShopCart();
+        cart=buildCart(goodsId, mmCode,rdMmRelation.getRank(),
+                count, specId,
+                activityId, activityType, activityGoodsId,activitySkuId);
+        ArrayList<ShopCart> shopCarts = new ArrayList<>();
+        shopCarts.add(cart);
+
+        if(shopOrderDiscountType.getPreferentialType()==3){//如果是大单价，传递过来的优惠券也不予理会
+            couponId=null;
+        }
+        // 平台优惠券id
+        // 单个订单id
+        Long orderId = null;
+        //通过用户id查询用户信息
+        RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", mmCode);
+        //创建一个新的订单支付编号
+        String paySn = "P" + Dateutil.getDateString();
+        ShopOrderPay orderPay = new ShopOrderPay();
+        orderPay.setId(twiterIdService.getTwiterId());
+        orderPay.setPaySn(paySn);
+        orderPay.setBuyerId(Long.parseLong(mmCode));
+        orderPay.setApiPayState("0");//设置支付状态0
+        //保存订单支付表
+        orderPayDao.insert(orderPay);
+        //1快递 2自提
+        ShopOrderAddress orderAddress = new ShopOrderAddress();
+        RdMmAddInfo address = null;
+        if (logisticType == 1) {
+            /*********************保存发货地址*********************/
+            address = rdMmAddInfoService.find("aid", addressId);
+            if (address == null) {
+                throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXIT, "收货地址不能为空");
+            }
+            orderAddress.setIsDefault(Optional.ofNullable(address.getDefaultadd()).orElse(0).toString());
+            orderAddress.setId(twiterIdService.getTwiterId());
+            orderAddress.setMemberId(Long.parseLong(address.getMmCode()));
+            orderAddress.setTrueName(address.getConsigneeName());
+            orderAddress.setAddress(address.getAddDetial());
+            orderAddress.setMobPhone(address.getMobile());
+            orderAddress
+                    .setAreaInfo(address.getAddProvinceCode() + address.getAddCityCode() + address.getAddCountryCode());
+            if ("".equals(address.getAddCountryCode())){
+                ShopCommonArea shopCommonArea = areaService.find("areaName", address.getAddCityCode());
+                if (shopCommonArea==null) {
+                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                }
+                if (shopCommonArea.getExpressState()==1){//不配送
+                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址暂不配送");
+                }
+                orderAddress.setAreaId(shopCommonArea.getId());
+                orderAddress.setCityId(shopCommonArea.getId());
+                orderAddress.setProvinceId(shopCommonArea.getAreaParentId());
+                orderAddressDao.insert(orderAddress);
+            }else{
+                List<ShopCommonArea> shopCommonAreas = areaService.findByAreaName(address.getAddCountryCode());//区
+                if (CollectionUtils.isEmpty(shopCommonAreas)) {
+                    throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                }
+                if (shopCommonAreas.size()>1){
+                    List<ShopCommonArea> shopCommonCitys = areaService.findByAreaName(address.getAddCityCode());//市
+                    if (shopCommonCitys==null) {
+                        throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                    }
+                    if (shopCommonCitys.size()==1){
+                        ShopCommonArea shopCommonCity = shopCommonCitys.get(0);
+                        orderAddress.setCityId(shopCommonCity.getId());
+                        orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                        for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                            if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
+                                orderAddress.setAreaId(shopCommonArea.getId());
+                                if (shopCommonArea.getExpressState()==1){//不配送
+                                    throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                                }
+                            }
+                        }
+                    }else {
+                        ShopCommonArea shopCommonProvice = areaService.find("areaName", address.getAddProvinceCode());//省
+                        for (ShopCommonArea shopCommonCity : shopCommonCitys) {
+                            if (shopCommonCity.getAreaParentId().longValue()==shopCommonProvice.getId().longValue()){
+                                orderAddress.setCityId(shopCommonCity.getId());
+                                orderAddress.setProvinceId(shopCommonCity.getAreaParentId());
+                                for (ShopCommonArea shopCommonArea : shopCommonAreas) {
+                                    if (shopCommonArea.getAreaParentId().longValue()==shopCommonCity.getId().longValue()){
+                                        orderAddress.setAreaId(shopCommonArea.getId());
+                                        if (shopCommonArea.getExpressState()==1){//不配送
+                                            throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    orderAddressDao.insert(orderAddress);
+                }else{
+                    ShopCommonArea shopCommonArea = shopCommonAreas.get(0);
+                    if (shopCommonArea.getExpressState()==1){//不配送
+                        throw new StateResult(AppConstants.RECEIVED_ADDRESS_NOT_EXPRESS, "该收货地址不配送");
+                    }
+                    orderAddress.setAreaId(shopCommonArea.getId());
+                    //if ()
+                    orderAddress.setCityId(shopCommonArea.getAreaParentId());
+                    ShopCommonArea shopCommonArea2 = areaService.find(shopCommonArea.getAreaParentId());
+                    if (shopCommonArea2==null) {
+                        throw new RuntimeException("请检查APP是否最新版本，并重新添加地址");
+                    }
+                    orderAddress.setProvinceId(shopCommonArea2.getAreaParentId());
+                    orderAddressDao.insert(orderAddress);
+                }
+            }
+
+        }
+        if (logisticType == 2) {
+            /*********************保存发货地址*********************/
+            orderAddress.setMemberId(Long.parseLong(mmCode));
+            orderAddress.setIsDefault("0");
+            orderAddress.setTrueName((String) orderMsgMap.get("userName"));
+            orderAddress.setMobPhone((String) orderMsgMap.get("userPhone"));
+            orderAddress.setAreaInfo("自提没有保存收货地址");
+            orderAddress.setId(twiterIdService.getTwiterId());
+            orderAddress.setAreaId(-1L);
+            orderAddress.setCityId(-1L);
+            orderAddress.setProvinceId(-1L);
+            orderAddress.setAddress("");
+            orderAddress.setMentionId(addressId);
+            orderAddressDao.insert(orderAddress);
+
+        }
+        List<CartInfo> cartInfoList =new ArrayList<>();
+        /********************* 购物车计算信息 *********************/
+        CouponDetail couponDetail=null;
+        if(couponId!=null){//订单使用优惠券
+            List<Coupon> list = couponService.findList(Paramap.create().put("id",couponId).put("status",2));
+            if(list==null||list.size()==0){
+                throw new RuntimeException("订单支付选择优惠券异常");
+            }
+            List<CouponUser> list1 = couponUserService.findList(Paramap.create().put("mCode",mmCode).put("couponId",couponId));
+            if(list1==null||list1.size()==0){
+                throw new RuntimeException("您没有当前选择优惠券");
+            }
+            CouponUser couponUser = list1.get(0);
+            if(couponUser.getOwnNum()<=0){
+                throw new RuntimeException("您没有当前选择优惠券");
+            }
+            if(couponUser.getUseAbleNum()!=0&&couponUser.getUseNum()>=couponUser.getUseAbleNum()){
+                throw new RuntimeException("您当前选择的优惠券已到达使用数量上限");
+            }
+            //特殊优惠券限制使用等级 TODO 2020-02-02
+            if(couponUser.getCouponId().equals(6555008628095455330L)){
+                RdMmRelation mmRelation = rdMmRelationService.find("mmCode", mmCode);
+                if(mmRelation==null||mmRelation.getRank()==null){
+                    throw new RuntimeException("当前会员信息异常");
+                }
+                if(mmRelation.getRank()!=0){
+                    throw new RuntimeException("当前优惠券仅有普通会员可以使用");
+                }
+            }
+            //特殊优惠券限制使用等级 TODO
+            //处理couponUser数据
+            couponUser.setOwnNum(couponUser.getOwnNum()-1);//拥有数量减1
+            couponUser.setUseNum(couponUser.getUseNum()+1);//使用数量加1
+            couponUserService.update(couponUser);
+            //处理couponDetail数据
+            List<CouponDetail> couponDetails = couponDetailService.findList(Paramap.create().put("couponId",couponId).put("holdId",mmCode)
+                    .put("useState",2));
+            if(couponDetails==null||couponDetails.size()==0){
+                throw new RuntimeException("您没有当前选择优惠券");
+            }
+            couponDetail = couponDetails.get(0);//获得当前订单需要消费的优惠券
+            //cartInfoList = cartService.queryCartInfoList1(cartIds, shopOrderDiscountType, address, mmCode,couponId);
+            cartInfoList=cartService.queryCartInfoListImmediately(shopCarts,shopOrderDiscountType, address, mmCode,couponId);
+        }else {//订单不使用优惠券
+            cartInfoList = cartService.queryCartInfoListImmediately(shopCarts, shopOrderDiscountType, address, mmCode,null);
+        }
+        if (CollectionUtils.isEmpty(cartInfoList)) {
+            throw new RuntimeException("购物车不存在");
+        }
+        /*********************订单相关金额计算*********************/
+        OrderSettlement orderSettlement = getAmount(cartInfoList, null, null);
+        /*********************保存订单+订单项*********************/
+        //不分单  一次购买只能使用一张优惠券
+        Boolean flag=true;
+        for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
+            ShopOrder order = new ShopOrder();
+            //该项目只有自营
+            order.setStoreId(0L);
+            order.setLogisticType(logisticType);
+            order.setStoreName("自营商店");
+            order.setId(twiterIdService.getTwiterId());
+            orderId = order.getId();
+            order.setBrandId(orderVo.getBrandId());
+            order.setBrandName(orderVo.getBrandName());
+            order.setBuyerId(Long.parseLong(member.getMmCode()));
+            order.setBuyerName(member.getMmNickName());
+            order.setPredepositAmount(BigDecimal.ZERO);
+            //没有支付id 暂时为0L
+            order.setPaymentId(0L);
+            order.setPaymentCode("");
+            order.setShippingExpressId(0L);
+            order.setEvalsellerStatus(0L);
+            order.setOrderPointscount(0);
+            // 发货地址id,暂时写死
+            order.setDaddressId(0L);
+            order.setAddressId(orderAddress.getId());
+            //支付表id
+            order.setPayId(orderPay.getId());
+            //订单类型
+            order.setOrderType(shopOrderDiscountType.getPreferentialType());
+            //订单类型id
+            order.setShopOrderTypeId(shopOrderDiscountType.getId());
+            //若支付完成
+            if (orderSettlement.getOrderAmount().doubleValue() == 0) {//购物车集合计算所需支付金额为0 视为已经支付订单
+                if (logisticType==2){
+                    //order.setOrderState(OrderState.ORDER_STATE_NOT_RECEIVING);
+                    order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                }else {
+                    order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
+                }
+                order.setPaymentState(OrderState.PAYMENT_STATE_YES); //付款状态
+                order.setPaymentTime(new Date());
+                String period = rdSysPeriodDao.getSysPeriodService(new Date());
+                order.setCreationPeriod(period);
+
+            } //未支付完成
+            else if (orderSettlement.getOrderAmount().doubleValue() > 0) {
+                order.setOrderState(OrderState.ORDER_STATE_NO_PATMENT);
+                order.setPaymentState(OrderState.PAYMENT_STATE_NO);
+            } else {
+                throw new RuntimeException("订单计算出错");
+            }
+            SnowFlake snowFlake = new SnowFlake(0, 0);
+            if (platform == OrderState.PLATFORM_WECHAT) {
+                order.setOrderSn("WX" + snowFlake.nextId());
+            } else if (platform == OrderState.PLATFORM_APP) {
+                order.setOrderSn("AP" + snowFlake.nextId());
+            } else if (platform == OrderState.PLATFORM_PC) {
+                order.setOrderSn("PC" + snowFlake.nextId());
+            } else {
+                throw new IllegalStateException("创建订单平台错误");
+            }
+
+            order.setBuyerPhone(member.getMobile());
+            order.setIsDel(0);
+            order.setPaySn(paySn); //支付表编号
+            order.setLockState(OrderState.ORDER_LOCK_STATE_NO); //订单锁定状态:正常
+            if (paymentType == 1) {
+                order.setPaymentName("在线支付"); //支付方式名称
+            } else {
+                order.setPaymentName("货到付款"); //支付方式名称
+            }
+
+            order.setOrderPlatform(platform);
+            order.setEvaluationStatus(0);
+            order.setCreateTime(new Date()); //订单生成时间
+            order.setBarterState(OrderState.BARTER_STATE_NO);//无退货
+            order.setBarterNum(0);//换货数量初始化为0
+            order.setOrderMessage(Optional.ofNullable(orderMsgMap.get("orderMessages")).orElse("") + ""); //订单留言
+            // TODO 发送队列
+            // order.setGiftCoupon(JacksonUtil.toJson(cartVo.getGiftCoupons())); // 赠送优惠卷集合
+            /********************* 相关金额赋值 *********************/
+            /**********应付统计************/
+            // 无其他费用（运费等) 订单总价格=商品总价格
+            // 订单总价格
+            order.setOrderTotalPrice(orderVo.getOrderAmount());
+            //运费
+            order.setShippingFee(orderVo.getFreightAmount());
+            //优惠金额
+            order.setDiscount(orderVo.getCouponAmount());
+            // 商品总价格
+            order.setGoodsAmount(orderVo.getGoodsAmount());
+            //订单pv值
+            order.setPpv(orderVo.getPpv());
+            //订单运费优惠价格
+            order.setShippingPreferentialFee(orderVo.getPreferentialFreightAmount());
+            //订单等级优惠金额
+            order.setRankDiscount(orderVo.getRankAmount());
+            //订单使用优惠券金额
+            order.setCouponDiscount(orderVo.getUseCouponAmount());
+            //order.setOrderPlatform(2);
+            /**********支付统计************/
+            // 现金支付
+            order.setOrderAmount(orderVo.getOrderAmount());
+            // 使用积分抵扣金额
+            order.setPointRmbNum(Optional.ofNullable(orderVo.getRewardPointPrice()).orElse(BigDecimal.ZERO));
+            // 优惠券金额
+//            order.setCouponId(orderVo.getCouponId()); //优惠券id
+//            order.setCouponPrice(orderVo.getCouponPrice());
+            // 店铺优惠券（代金券）
+//            order.setVoucherId(orderVo.getVoucherId());
+//            order.setVoucherPrice(orderVo.getVoucherPrice());
+
+            //            // 优惠总金额
+            //            order.setDiscount(orderVo.getDiscount());
+            //            //促销优惠金额
+            //            order.setPromoPrice(orderVo.getPromoPrice());
+            if(splitOrderFlag!=null&&splitOrderFlag==1){
+                order.setSplitFlag(1);
+            }else {
+                order.setSplitFlag(0);
+            }
+            System.out.println(order);
+            orderDao.insertEntity(order);
+            //判断订单是否分单，如果分单，写入分单记录信息 TODO 分单
+            if (StringUtils.isNotEmpty(splitCodes) && !"null".equals(splitCodes)&&order.getOrderType()==8) {
+                String[] splitCodeList = splitCodes.split(",");
+                BigDecimal surplus = order.getPpv();
+                for (String s : splitCodeList) {
+                    ShopOrderSplit orderSplit = new ShopOrderSplit();
+                    orderSplit.setId(twiterIdService.getTwiterId());
+                    orderSplit.setOrderId(order.getId());
+                    orderSplit.setOrderSn(order.getOrderSn());
+                    orderSplit.setMmCode(s);
+                    RdMmBasicInfo splitMember = rdMmBasicInfoService.findByMCode(s);
+                    orderSplit.setMmNickName(splitMember.getMmNickName());
+                    orderSplit.setBuyFlag(2);
+                    orderSplit.setPv(new BigDecimal("50.00"));
+                    surplus=surplus.subtract(new BigDecimal("50.00"));
+                    orderSplit.setStatus(3);
+                    shopOrderSplitService.save(orderSplit);
+                }
+                ShopOrderSplit orderSplit = new ShopOrderSplit();
+                orderSplit.setId(twiterIdService.getTwiterId());
+                orderSplit.setOrderId(order.getId());
+                orderSplit.setOrderSn(order.getOrderSn());
+                orderSplit.setMmCode(mmCode);
+                orderSplit.setMmNickName(member.getMmNickName());
+                orderSplit.setBuyFlag(1);
+                orderSplit.setPv(surplus);
+                orderSplit.setStatus(3);
+                shopOrderSplitService.save(orderSplit);
+            }
+            // todo 推荐反拥
+            //扣除用户使用的优惠券
+            if(couponDetail!=null&&flag){//使用优惠券
+                couponDetail.setUseState(1);//已使用
+                couponDetail.setUseTime(new Date());//使用时间
+                couponDetail.setUseOrderId(orderId);
+                couponDetail.setUseOrderSn(order.getOrderSn());
+                couponDetail.setUseOrderPayStatus(0);//未支付
+                couponDetailService.update(couponDetail);
+                flag=false;
+            }
+            /*********************订单项*********************/
+            for (CartOrderVo cartOrderVo : orderVo.getCartOrderVoList()) {
+                ShopOrderGoods orderGoods = new ShopOrderGoods();
+                orderGoods.setId(twiterIdService.getTwiterId());
+                orderGoods.setGoodsId(cartOrderVo.getGoodsId());
+                orderGoods.setGoodsImage(cartOrderVo.getGoodsImages());
+                orderGoods.setGoodsName(cartOrderVo.getGoodsName());
+                orderGoods.setGoodsNum(cartOrderVo.getGoodsNum().intValue());
+                orderGoods.setSpecId(cartOrderVo.getSpecId());
+                orderGoods.setSpecInfo(cartOrderVo.getSpecInfo());
+                orderGoods.setBuyerId(order.getBuyerId() + "");
+                orderGoods.setOrderId(order.getId());
+                orderGoods.setEvaluationStatus(0);
+                orderGoods.setGoodsReturnnum(0);
+                orderGoods.setGoodsBarternum(0);
+                orderGoods.setShippingGoodsNum(0);
+                orderGoods.setGoodsType(cartOrderVo.getGoodsType());
+                orderGoods.setWeight(cartOrderVo.getWeight());
+                // TODO 金额总汇
+                //零售价
+                orderGoods.setMarketPrice(cartOrderVo.getGoodsRetailPrice());
+                //大单价
+                orderGoods.setGoodsPrice(cartOrderVo.getGoodsBigPrice());
+                //会员价
+                orderGoods.setVipPrice(cartOrderVo.getGoodsMemberPrice());
+                if (shopOrderDiscountType.getPreferentialType() == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_MEMBER) {
+                    orderGoods.setGoodsPayPrice(cartOrderVo.getGoodsMemberPrice());
+                } else if (shopOrderDiscountType.getPreferentialType()
+                        == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV) {
+                    orderGoods.setGoodsPayPrice(cartOrderVo.getGoodsBigPrice());
+                } else if (shopOrderDiscountType.getPreferentialType()
+                        == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PREFERENTIAL) {
+                    BigDecimal money = cartOrderVo.getGoodsRetailPrice()
+                            .subtract(shopOrderDiscountType.getPreferential());
+                    if (money.compareTo(new BigDecimal("0")) == -1) {
+                        money = new BigDecimal("0");
+                    }
+                    orderGoods.setGoodsPayPrice(money);
+                } else if(shopOrderDiscountType.getPreferentialType()
+                        == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS){
+                    orderGoods.setGoodsPayPrice(cartOrderVo.getGoodsBigPrice());
+                }else {
+                    orderGoods.setGoodsPayPrice(cartOrderVo.getGoodsRetailPrice());
+                }
+                orderGoods.setPpv(cartOrderVo.getPpv());
+                orderGoods.setBigPpv(cartOrderVo.getBigPpv());
+                orderGoods.setRewardPointPrice(cartOrderVo.getGoodsRewardPointPrice());
+                orderGoods.setActivityId(cartOrderVo.getActivityId());
+                orderGoods.setActivityType(cartOrderVo.getActivityType());
+                orderGoods.setStoresId(0L);
+
+                //默认0
+                orderGoods.setShippingExpressId(0L);
+                orderGoodsDao.insert(orderGoods);
+                //删除购物数据
+                cartService.delete(cartOrderVo.getId());
+                /*********************更新商品库存+销售数量*********************/
+                ShopGoodsSpec goodsSpec = new ShopGoodsSpec();
+                goodsSpec.setId(cartOrderVo.getSpecId());
+                goodsSpec.setGoodsId(cartOrderVo.getGoodsId());
+                goodsSpec.setSpecSalenum(cartOrderVo.getGoodsNum().intValue());
+                ShopGoods goods = goodsDao.find(cartOrderVo.getGoodsId());
+                ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find(cartOrderVo.getSpecId());
+                if (cartOrderVo.getGoodsNum() > shopGoodsSpec.getSpecGoodsStorage()) {
+                    throw new RuntimeException("购买数量大于库存");
+                }
+                productService.updateStorage(goodsSpec, goods);
+                //productService.updateStorageNew(goodsSpec, goods,logisticType);// TODO 上线改
+                if (cartOrderVo.getActivityId() != null) {
+                    List<ShopActivityGoodsSpec> shopActivityGoodsSpecList = shopActivityGoodsSpecService.findList(
+                            Paramap.create().put("activityId", cartOrderVo.getActivityId())
+                                    .put("specId", cartOrderVo.getSpecId()));
+                    if (shopActivityGoodsSpecList != null && shopActivityGoodsSpecList.size() > 0) {
+                        ShopActivityGoodsSpec shopActivityGoodsSpec = shopActivityGoodsSpecList.get(0);
+                        shopActivityGoodsSpec
+                                .setActivityStock(shopActivityGoodsSpec.getActivityStock() - cartOrderVo.getGoodsNum());
+                        shopActivityGoodsSpecService.update(shopActivityGoodsSpec);
+                    }
+                }
+
+            }
+
+            /*处理2019年双十一活动**********************开始*********************/ //TODO
+            if(giftId!=null){
+                ShopGoods shopGoods = shopGoodsService.find(giftId);
+                if(shopGoods==null){
+                    throw new RuntimeException("所选赠品不存在");
+                }
+                ShopGoodsSpec goodsSpec = shopGoodsSpecService.find("goodsId", giftId);
+                if(goodsSpec==null){
+                    throw new RuntimeException("所选赠品不存在");
+                }
+                if(goodsSpec.getSpecGoodsStorage()<giftNum){
+                    throw new RuntimeException("所选赠品已赠完，请选择其他类型赠品");
+                }
+                ShopOrderGoods orderGoods = new ShopOrderGoods();
+                orderGoods.setId(twiterIdService.getTwiterId());
+                orderGoods.setOrderId(order.getId());
+                orderGoods.setGoodsId(giftId);
+                orderGoods.setGoodsName(shopGoods.getGoodsName());
+                orderGoods.setSpecId(goodsSpec.getId());
+                //大单价
+                orderGoods.setGoodsPrice(goodsSpec.getSpecBigPrice());
+                orderGoods.setGoodsNum(giftNum);
+                orderGoods.setGoodsImage(shopGoods.getGoodsImage());
+                orderGoods.setGoodsReturnnum(0);
+                orderGoods.setGoodsType(shopGoods.getGoodsType());
+                orderGoods.setRefundAmount(BigDecimal.ZERO);
+                orderGoods.setStoresId(0L);
+                orderGoods.setEvaluationStatus(0);
+                orderGoods.setGoodsPayPrice(BigDecimal.ZERO);
+                orderGoods.setBuyerId(order.getBuyerId() + "");
+                orderGoods.setIsPresentation(1);
+                orderGoods.setMarketPrice(goodsSpec.getSpecRetailPrice());
+                orderGoods.setPpv(goodsSpec.getPpv());
+                orderGoods.setBigPpv(goodsSpec.getBigPpv());
+                orderGoods.setShippingExpressId(0L);
+                orderGoods.setVipPrice(goodsSpec.getSpecMemberPrice());
+                orderGoods.setWeight(goodsSpec.getWeight());
+                orderGoods.setShippingGoodsNum(0);
+                orderGoodsDao.insert(orderGoods);
+                ShopGoodsSpec goodsSpec1 = new ShopGoodsSpec();
+                goodsSpec1.setId(goodsSpec.getId());
+                goodsSpec1.setGoodsId(shopGoods.getId());
+                goodsSpec1.setSpecSalenum(giftNum);
+                productService.updateStorage(goodsSpec1, shopGoods);
+            }
+            /*处理2019年双十一活动**********************结束*********************/
+
+            /*********************保存日志*********************/
+            ShopOrderLog orderLog = new ShopOrderLog();
+            orderLog.setId(twiterIdService.getTwiterId());
+            orderLog.setOperator(member.getMmCode().toString());
+            orderLog.setChangeState(OrderState.ORDER_STATE_UNFILLED + "");
+            orderLog.setOrderId(order.getId());
+            orderLog.setOrderState(OrderState.ORDER_STATE_NO_PATMENT + "");
+            orderLog.setStateInfo("提交订单");
+            orderLog.setCreateTime(new Date());
+            orderLogDao.insert(orderLog);
+        }
+
+        //根据payId查询订单列表
+        orderPay.setOrderCreateTime(new Date());
+        orderPay.setPayAmount(orderSettlement.getOrderAmount());
+        orderPay.setOrderTotalPrice(orderSettlement.getGoodsAmount());
+        orderPay.setOrderId(orderId);
+        orderPay.setPaymentType(paymentType);
+        return orderPay;
+    }
+
+    private ShopCart buildCart(Long goodsId, String mmCode, Integer rank, Integer count, Long specId, Long activityId, Integer activityType, Long activityGoodsId, Long activitySkuId) {
+        //商品信息
+        ShopGoods goods = shopGoodsService.find(goodsId);
+        //商品规格信息
+        ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(specId);
+        if (goodsSpec.getSpecIsopen()!=1) {
+            throw new RuntimeException("该商品目前不能购买");
+        }
+        //判断是否有购买权限
+        if (!StringUtil.isEmpty(goods.getSalePopulationIds())){
+            if (!goods.getSalePopulationIds().contains(","+rank + ",")){
+                throw new RuntimeException(goods.getGoodsName()+"目前您的会员等级不能购买该商品");
+            }
+        }
+        // 能否修改购物车
+        canSaveOrUpdateCart(goods, goodsSpec, count);
+        //新建一个商品规格,通过GoodsUtils.getSepcMapAndColImgToGoodsSpec方法查询出规格的图片和值
+        GoodsUtils.getSepcMapAndColImgToGoodsSpec(goods, goodsSpec);
+        ShopCart cart = new ShopCart();
+        cart.setId(twiterIdService.getTwiterId());
+        cart.setMemberId(Long.parseLong(mmCode));
+        cart.setGoodsId(goodsSpec.getGoodsId());
+        cart.setGoodsName(goods.getGoodsName());
+        cart.setSpecId(goodsSpec.getId());
+        cart.setGoodsType(goods.getGoodsType());
+        //设置价格
+        cart.setGoodsMemberPrice(goodsSpec.getSpecMemberPrice());
+        cart.setGoodsBigPrice(goodsSpec.getSpecBigPrice());
+        if(activityId!=null && activitySkuId!=null){
+            List<ShopActivityGoodsSpec> shopActivityGoodsSpecList = shopActivityGoodsSpecService.findList(Paramap.create().put("activityId",activityId).put("specId",activitySkuId));
+            if (!shopActivityGoodsSpecList.isEmpty()){
+                cart.setGoodsRetailPrice(Optional.ofNullable(shopActivityGoodsSpecList.get(0).getActivityPrice()).orElse(goodsSpec.getSpecRetailPrice()));
+            }
+        }else{
+            cart.setGoodsRetailPrice(goodsSpec.getSpecRetailPrice());
+        }
+        cart.setBigPpv(goodsSpec.getBigPpv());
+        cart.setPpv(goodsSpec.getPpv());
+        cart.setGoodsState(goods.getGoodsType());
+        cart.setBrandId(goods.getBrandId());
+        ShopGoodsBrand shopGoodsBrand = shopGoodsBrandDao.find(goods.getBrandId());
+        cart.setBrandIcon(shopGoodsBrand.getBrandIcon());
+        cart.setBrandName(goods.getBrandName());
+        cart.setActivityId(activityId);
+        cart.setActivityType(activityType);
+        cart.setActivityGoodsId(activityGoodsId);
+        cart.setActivitySpecId(activitySkuId);
+        cart.setWeight(goodsSpec.getWeight());
+        cart.setActivityId(activityId);
+        // 图片信息
+        if (goods.getGoodsImage() != null) {
+            //存储商品默认图片
+            cart.setGoodsImages(goods.getGoodsImage().split(",")[0]);
+        } else {
+            //若商品没有默认图片存储空字段
+            cart.setGoodsImages("");
+        }
+        // 规格信息--新建一个字段存储新的规格格式
+        if (goods.getGoodsType()==3){
+            cart.setSpecInfo(goodsSpec.getSpecGoodsSerial());
+        }else{
+            String specInfo = "";
+            Map<String, String> map = goodsSpec.getSepcMap();
+            //遍历规格map,取出键值对,拼接specInfo
+            if (map != null) {
+                Set<String> set = map.keySet();
+                for (String str : set) {
+                    specInfo += str + ":" + map.get(str) + "、";
+                }
+                specInfo = specInfo.substring(0, specInfo.length() - 1);
+            }
+            cart.setSpecInfo(specInfo);
+        }
+        cart.setGoodsNum(count);
+        if (Optional.ofNullable(goodsSpec.getSpecIsopen()).orElse(0)==0){
+            goodsSpec.setSpecGoodsStorage(0);
+        }
+        if (cart.getGoodsNum()> goodsSpec.getSpecGoodsStorage()) {
+            throw new RuntimeException("购物车数量大于库存");
+        }
+        if (cart.getActivityId()!=null){
+            List<ShopActivityGoodsSpec> shopActivityGoodsSpecList=shopActivityGoodsSpecService.findList(Paramap.create().put("activityId",cart.getActivityId()).put("specId",goodsSpec.getId()));
+            if (shopActivityGoodsSpecList!=null && shopActivityGoodsSpecList.size()>0){
+                ShopActivityGoodsSpec shopActivityGoodsSpec=shopActivityGoodsSpecList.get(0);
+                if (cart.getGoodsNum()> shopActivityGoodsSpec.getActivityStock()) {
+                    throw new RuntimeException("购物车数量大于库存");
+                }
+            }
+        }
+        return cart;
+    }
+
+
+
+
+    /**
+     * 商品是否存在、是否下架、规格是否变动、库存是否足够判断
+     */
+    private void canSaveOrUpdateCart(ShopGoods goods, ShopGoodsSpec goodsSpec, int count) {
+        if (goods == null) {
+            throw new StateResult(AppConstants.GOODS_NOT_EXIST, "不存在商品");
+        }
+
+        if (goods.getState() != 1) {
+            throw new StateResult(AppConstants.GOODS_IN_AUDIT, "商品审核未通过");
+        }
+
+        if (goods.getIsDel() == 1) {
+            throw new StateResult(AppConstants.GOODS_IS_DEL, "商品不存在");
+        }
+
+        if (goods.getGoodsShow() != null && goods.getGoodsShow() == 2) {
+            throw new StateResult(AppConstants.GOODS_NOT_SHOW, "商品已下架");
+        }
+
+        if (goodsSpec == null) {
+            throw new StateResult(AppConstants.GOODS_SPEC_NOT_EXISTS, "商品规格变动, 请重新添加购物车");
+        }
+
+        if (goodsSpec.getSpecGoodsStorage() < count) {
+            throw new StateResult(AppConstants.GOODS_NO_MORE, "库存不足");
+        }
+    }
+
     public void updateOrderShipping(String orderSn, String trackSn, long expressId) {
         Map<String,Object> map = new HashMap<>();
         map.put("orderSn",orderSn);

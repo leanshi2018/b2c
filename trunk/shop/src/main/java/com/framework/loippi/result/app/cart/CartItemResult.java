@@ -1,5 +1,6 @@
 package com.framework.loippi.result.app.cart;
 
+import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.vo.cart.ShopCartExchangeVo;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -32,6 +33,11 @@ public class CartItemResult extends BaseGoodsResult {
     private BigDecimal ppv;
 
     /**
+     * 大单pv值
+     */
+    private BigDecimal bigPpv;
+
+    /**
      * 库存
      */
     private Integer stock;
@@ -60,6 +66,12 @@ public class CartItemResult extends BaseGoodsResult {
      * 会员价
      */
     private BigDecimal vipPrice;
+    /**
+     * 大单价
+     */
+    private BigDecimal bigPrice;
+    //是否为plus vip商品 0：不是 1：是
+    private Integer plusVipType;
 
     public static CartItemResult build(ShopCartVo cart) {
         Optional<ShopCartVo> optCart = Optional.ofNullable(cart);
@@ -82,6 +94,14 @@ public class CartItemResult extends BaseGoodsResult {
         // TODO: 2018/12/11 待补充
         itemResult.setPpv(optGoodsSpec.map(ShopGoodsSpec::getPpv).orElse(BigDecimal.ZERO));
         itemResult.setVipPrice(optGoodsSpec.map(ShopGoodsSpec::getSpecMemberPrice).orElse(BigDecimal.ZERO));
+        itemResult.setBigPpv(optGoodsSpec.map(ShopGoodsSpec::getBigPpv).orElse(BigDecimal.ZERO));
+        itemResult.setBigPrice(optGoodsSpec.map(ShopGoodsSpec::getSpecBigPrice).orElse(BigDecimal.ZERO));
+        ShopGoods goods = cart.getGoods();
+        if(goods!=null&&goods.getPlusVipType()!=null){
+            itemResult.setPlusVipType(goods.getPlusVipType());
+        }else {
+            itemResult.setPlusVipType(0);
+        }
         return itemResult;
     }
 
@@ -105,6 +125,14 @@ public class CartItemResult extends BaseGoodsResult {
                 .setDefaultImage(optCart.map(ShopCartExchangeVo::getGoodsImages).orElse(""));
         itemResult.setPpv(optGoodsSpec.map(ShopGoodsSpec::getPpv).orElse(BigDecimal.ZERO));
         itemResult.setVipPrice(optGoodsSpec.map(ShopGoodsSpec::getSpecMemberPrice).orElse(BigDecimal.ZERO));
+        itemResult.setBigPpv(optGoodsSpec.map(ShopGoodsSpec::getBigPpv).orElse(BigDecimal.ZERO));
+        itemResult.setBigPrice(optGoodsSpec.map(ShopGoodsSpec::getSpecBigPrice).orElse(BigDecimal.ZERO));
+        ShopGoods goods = cart.getGoods();
+        if(goods!=null&&goods.getPlusVipType()!=null){
+            itemResult.setPlusVipType(goods.getPlusVipType());
+        }else {
+            itemResult.setPlusVipType(0);
+        }
         return itemResult;
     }
 }

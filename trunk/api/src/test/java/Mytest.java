@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.JacksonUtil;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
@@ -103,8 +104,8 @@ public class Mytest {
         String encode = encoder.encode(Objects.requireNonNull(data));
         System.out.println(encode);*/
 /*        final YunRequest allInRequest = new YunRequest("MemberService", "sendVerificationCode");
-        allInRequest.put("bizUserId", "900014088");
-        allInRequest.put("phone", "15770801265");
+        allInRequest.put("bizUserId", "900013900");
+        allInRequest.put("phone", "15669093971");
         allInRequest.put("verificationCodeType", 6L);
         try {
             String s = YunClient.request(allInRequest);
@@ -122,8 +123,8 @@ public class Mytest {
         }*/
 /*
         final YunRequest allInRequest = new YunRequest("MemberService", "unbindPhone");
-        allInRequest.put("bizUserId", "900014088");
-        allInRequest.put("phone", "15770801265");
+        allInRequest.put("bizUserId", "900013900");
+        allInRequest.put("phone", "15669093971");
         allInRequest.put("verificationCode", "484451");
         try {
             String s = YunClient.request(allInRequest);
@@ -138,6 +139,13 @@ public class Mytest {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }*/
+        /*String splitCodes="900000011,900000012,900000013,900000014";
+        if (StringUtils.isNotEmpty(splitCodes) && !"null".equals(splitCodes)) {
+            String[] splitCodeList = splitCodes.split(",");
+            for (String s : splitCodeList) {
+                System.out.println(s);
+            }
         }*/
     }
 }

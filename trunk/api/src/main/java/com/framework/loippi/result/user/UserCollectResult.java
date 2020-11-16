@@ -27,6 +27,7 @@ public class UserCollectResult {
     private BigDecimal totalFee;
     private BigDecimal rental;
     private BigDecimal vipPrice;
+    private BigDecimal bigPrice;
     private String picPath;
     private Long goodsId;
     private Long id;
@@ -45,6 +46,8 @@ public class UserCollectResult {
      *好评率
      */
     private String appreciationRate="";
+    //是否为plus商品 0：不是 1：是
+    private Integer plusVipType;
 
     public static List<UserCollectResult> build(List<ShopMemberFavorites> favorites, HttpServletRequest request) {
         List<UserCollectResult> results = Lists.newArrayList();
@@ -115,6 +118,8 @@ public class UserCollectResult {
         result.setActivityType(Optional.ofNullable(favorite.getActivitType()).orElse(-1));
         result.setSpecId(Optional.ofNullable(favorite.getSpecId()).orElse(-1L));
         result.setGoodsType(Optional.ofNullable(shopGoods.getGoodsType()).orElse(1));
+        result.setBigPrice(Optional.ofNullable(shopGoods.getGoodsBigPrice()).orElse(BigDecimal.ZERO));
+        result.setPlusVipType(Optional.ofNullable(shopGoods.getPlusVipType()).orElse(0));
         //商品已下架或处于删除状态
         if (shopGoods.getGoodsShow() == 0 || shopGoods.getIsDel() == 1) {
             result.setStatus(2);

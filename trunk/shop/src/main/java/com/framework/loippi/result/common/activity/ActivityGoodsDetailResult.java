@@ -76,7 +76,14 @@ public class ActivityGoodsDetailResult {
      * 会员价格 高
      */
     private BigDecimal goodsMemberPriceHigh;
-
+    /**
+     * 大单价格
+     */
+    private BigDecimal goodsBigPrice;
+    /**
+     * 大单价格 高
+     */
+    private BigDecimal goodsBigPriceHigh;
     /**
      * ppv
      */
@@ -85,6 +92,14 @@ public class ActivityGoodsDetailResult {
      * ppv 高
      */
     private BigDecimal ppvHigh;
+    /**
+     * 大单ppv
+     */
+    private BigDecimal bigPpv;
+    /**
+     * 大单ppv 高
+     */
+    private BigDecimal bigPpvHigh;
     /**
      * 商品描述
      */
@@ -179,6 +194,11 @@ public class ActivityGoodsDetailResult {
     private Long activityId;
 
     /**
+     * 是否为plus vip商品 0：不是 1：是
+     */
+    private Integer plusVipType;
+
+    /**
      * 关键字集合
      */
     List<ShopGoodsEvaluateKeywords> shopGoodsEvaluateKeywordsList=new ArrayList<ShopGoodsEvaluateKeywords>();
@@ -195,14 +215,18 @@ public class ActivityGoodsDetailResult {
         result.setGoodsRetailPriceHigh(Optional.ofNullable(item.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
         result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));//销售价
         result.setGoodsMemberPriceHigh(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
+        result.setGoodsBigPrice(Optional.ofNullable(item.getGoodsBigPrice()).orElse(BigDecimal.ZERO));//大单价
+        result.setGoodsBigPriceHigh(Optional.ofNullable(item.getGoodsBigPrice()).orElse(BigDecimal.ZERO));
         result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));//ppv
         result.setPpvHigh(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
-
+        result.setBigPpv(Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO));//大单ppv
+        result.setBigPpvHigh(Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO));
         result.setGoodsType(Optional.ofNullable(item.getGoodsType()).orElse(1));
         result.setSpecId(Optional.ofNullable(item.getSpecId()).orElse(-1L));//规格id
         result.setListImage(Optional.ofNullable(prefix + item.getGoodsImageMore()).orElse(""));//轮播图
         result.setDefaultImage(Optional.ofNullable(prefix + item.getGoodsImage()).orElse(""));
         result.setEvaluateRate(Optional.ofNullable(item.getEvaluaterate()).orElse(1D));//好评率
+        result.setPlusVipType(Optional.ofNullable(item.getPlusVipType()).orElse(0));
         //手机端详情拼接
         String mobileBody = StringEscapeUtils.unescapeHtml4(item.getMobileBody());
         if (!StringUtil.isEmpty(mobileBody)) {
@@ -247,15 +271,23 @@ public class ActivityGoodsDetailResult {
             result.setGoodsRetailPriceHigh(Optional.ofNullable(item.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
             result.setGoodsMemberPrice(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));//销售价
             result.setGoodsMemberPriceHigh(Optional.ofNullable(item.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
+            result.setGoodsBigPrice(Optional.ofNullable(item.getGoodsBigPrice()).orElse(BigDecimal.ZERO));//大单价
+            result.setGoodsBigPriceHigh(Optional.ofNullable(item.getGoodsBigPrice()).orElse(BigDecimal.ZERO));
             result.setPpv(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));//ppv
             result.setPpvHigh(Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO));
+            result.setBigPpv(Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO));//大单ppv
+            result.setBigPpvHigh(Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO));
         }else {
             BigDecimal retailPrice = Optional.ofNullable(item.getGoodsRetailPrice()).orElse(BigDecimal.ZERO);
             BigDecimal retailPriceHigh = Optional.ofNullable(item.getGoodsRetailPrice()).orElse(BigDecimal.ZERO);
             BigDecimal memberPrice = Optional.ofNullable(item.getGoodsMemberPrice()).orElse(BigDecimal.ZERO);
             BigDecimal memberPriceHigh = Optional.ofNullable(item.getGoodsMemberPrice()).orElse(BigDecimal.ZERO);
+            BigDecimal bigPrice = Optional.ofNullable(item.getGoodsBigPrice()).orElse(BigDecimal.ZERO);
+            BigDecimal bigPriceHigh = Optional.ofNullable(item.getGoodsBigPrice()).orElse(BigDecimal.ZERO);
             BigDecimal ppv = Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO);
             BigDecimal ppvHigh = Optional.ofNullable(item.getPpv()).orElse(BigDecimal.ZERO);
+            BigDecimal bigPpv = Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO);
+            BigDecimal bigPpvHigh = Optional.ofNullable(item.getBigPpv()).orElse(BigDecimal.ZERO);
             for (ShopGoodsSpec shopGoodsSpec : shopGoodsSpecs) {
                 if (shopGoodsSpec.getSpecRetailPrice().compareTo(item.getGoodsRetailPrice())==1){//大于
                     retailPriceHigh = shopGoodsSpec.getSpecRetailPrice();
@@ -267,20 +299,32 @@ public class ActivityGoodsDetailResult {
                 }else if (shopGoodsSpec.getSpecMemberPrice().compareTo(item.getGoodsMemberPrice())==-1){//小于
                     memberPrice = shopGoodsSpec.getSpecMemberPrice();
                 }
+                if (shopGoodsSpec.getSpecBigPrice().compareTo(item.getGoodsBigPrice())==1){//大于
+                    bigPriceHigh = shopGoodsSpec.getSpecBigPrice();
+                }else if (shopGoodsSpec.getSpecBigPrice().compareTo(item.getGoodsBigPrice())==-1){//小于
+                    bigPrice = shopGoodsSpec.getSpecBigPrice();
+                }
                 if (shopGoodsSpec.getPpv().compareTo(item.getPpv())==1){//大于
                     ppvHigh = shopGoodsSpec.getPpv();
                 }else if (shopGoodsSpec.getPpv().compareTo(item.getPpv())==-1){//小于
                     ppv = shopGoodsSpec.getPpv();
+                }
+                if (shopGoodsSpec.getBigPpv().compareTo(item.getBigPpv())==1){//大于
+                    bigPpvHigh = shopGoodsSpec.getBigPpv();
+                }else if (shopGoodsSpec.getBigPpv().compareTo(item.getBigPpv())==-1){//小于
+                    bigPpv = shopGoodsSpec.getBigPpv();
                 }
             }
             result.setGoodsRetailPrice(retailPrice);//销售价
             result.setGoodsRetailPriceHigh(retailPriceHigh);
             result.setGoodsMemberPrice(memberPrice);//销售价
             result.setGoodsMemberPriceHigh(memberPriceHigh);
+            result.setGoodsBigPrice(bigPrice);
+            result.setGoodsBigPriceHigh(bigPriceHigh);
             result.setPpv(ppv);//ppv
             result.setPpvHigh(ppvHigh);
-
-
+            result.setBigPpvHigh(bigPpvHigh);
+            result.setBigPpv(bigPpv);
         }
 
         result.setGoodsType(Optional.ofNullable(item.getGoodsType()).orElse(1));
@@ -316,6 +360,7 @@ public class ActivityGoodsDetailResult {
         shareUrl.append(item.getId());
         shareUrl.append(".html");
         result.setShareUrl(shareUrl.toString());
+        result.setPlusVipType(Optional.ofNullable(item.getPlusVipType()).orElse(0));
         return result;
     }
 

@@ -2,6 +2,7 @@ package com.framework.loippi.service.product;
 
 import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
+import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 
 import com.framework.loippi.entity.user.RdRanks;
@@ -9,7 +10,8 @@ import com.framework.loippi.pojo.cart.CartInfo;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.vo.cart.ShopCartVo;
-import java.math.BigDecimal;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -80,4 +82,9 @@ public interface ShopCartService extends GenericService<ShopCart, Long> {
     List<CartInfo> queryCartInfoList1(String cartIds, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo address, String memberId, Long couponId);
 
     Map<String, Object> queryTotalPrice2(String cartIds, String mmCode, Long couponId, Long groupBuyActivityId, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr);
+
+    Map<String, Object> queryTotalPriceImmediately(ShopGoods goods, Long specId, Integer count, String mmCode, Long couponId, Long groupBuyActivityId, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr, Integer rankId, Long activityId
+            , Integer activitType,Long activityGoodsId,Long activityGoodsSpecId);
+
+    List<CartInfo> queryCartInfoListImmediately(ArrayList<ShopCart> shopCarts, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo address, String mmCode, Long couponId);
 }

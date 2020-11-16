@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.vo.user.UserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -1046,5 +1047,141 @@ public class CartAPIController extends BaseController {
             build = shopActivityGoodsService.findAndAddAtiInfo(shopGoods, prefix);
         }
         return ApiUtils.success(build);
+    }
+
+    /**
+     * 立即购买确认订单页
+     */
+    @RequestMapping(value = "/api/cart/immediately/checkout", method = RequestMethod.POST)
+    @ResponseBody
+    public String immediatelyCheckout(@Valid CartAddParam param, Long groupBuyActivityId, Long shopOrderTypeId,
+                               @RequestParam(defaultValue = "1") Integer logisticType,
+                               @RequestParam(required = false,value = "couponId") Long couponId,
+                               HttpServletRequest request, Long addressId) {
+        if(shopOrderTypeId==null){
+            return ApiUtils.error("订单类型错误");
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        Boolean plusFlag=false;
+        Long goodsId = param.getGoodsId();
+        ShopGoods goods = goodsService.find(goodsId);
+        if(goods==null||goods.getPlusVipType()==null){
+            return ApiUtils.error("商品属性异常");
+        }
+        if(goods.getPlusVipType()==1){
+            plusFlag=true;
+        }
+        //订单类型相关
+        RdMmBasicInfo rdMmBasicInfo = rdMmBasicInfoService.find("mmCode", member.getMmCode());
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        //查看该会员类型下 所有可选择的订单类型
+        ShopOrderDiscountType shopOrderDiscountType = new ShopOrderDiscountType();
+        if(shopOrderTypeId.equals(-1L)){
+            shopOrderDiscountType.setId(-1L);
+            Integer type = 1; //默认显示零售价
+            if (rdRanks != null && rdRanks.getRankClass() != null && rdRanks.getRankClass() > 0) {
+                type = 2;
+            }
+            shopOrderDiscountType.setPreferentialType(type);
+        }else {
+            shopOrderDiscountType.setId(shopOrderTypeId);
+            shopOrderDiscountType.setPreferentialType(shopOrderTypeId.intValue());
+        }
+        if(plusFlag){
+            shopOrderDiscountType.setPreferentialType(8);
+        }
+        // 获取收货地址
+        RdMmAddInfo addr = null;
+        if (addressId != null) {
+            addr = rdMmAddInfoService.find("aid", addressId);
+        } else {
+            List<RdMmAddInfo> addrList = rdMmAddInfoService.findList("mmCode", member.getMmCode());
+            if (CollectionUtils.isNotEmpty(addrList)) {
+                addr = addrList.stream()
+                        .filter(item -> item.getDefaultadd() != null && item.getDefaultadd() == 1)
+                        .findFirst()
+                        .orElse(addrList.get(0));
+            }
+        }
+        if (logisticType == 2) {
+            addr = null;
+        }
+        Map<String, Object> map = cartService
+                .queryTotalPriceImmediately(goods,param.getSpecId(),param.getCount(), member.getMmCode(),
+                        couponId, groupBuyActivityId, shopOrderDiscountType, addr,rdRanks.getRankId(),param.getActivityId(),
+                        param.getActivityType(), param.getActivityGoodsId(), param.getActivitySkuId());
+        // 购物车数据
+        if (map.get("error").equals("true")) {
+            return ApiUtils.error(map.get("message").toString());
+        }
+        CartCheckOutResult result = CartCheckOutResult
+                .buildNew(map, (List<ShopCart>) map.get("cartList"), addr, shopOrderTypeId, shopOrderDiscountType);
+        if (log.isDebugEnabled()) {
+            log.debug(JacksonUtil.toJson(result));
+        }
+        // TODO: 2018/12/14 自提地址 自提地址 id为-1 表示平台地址
+        RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", -1);
+        List<ShopOrderDiscountType> shopOrderDiscountTypeList =  shopOrderDiscountTypeService.findAll();
+        result = result.build2New(result, shopOrderDiscountTypeList, rdRanks, rdMmBasicInfo, shopMemberAddress);
+        //***************************************************************************************************************************
+        Integer flag=0;
+        Integer giftsNum=0;
+        ArrayList<ShopGoods> shopGoods = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date startTime = format.parse("2020-05-01 00:00:00");
+            Date endTime = format.parse("2020-06-10 23:59:59");
+            Date nowTime = new Date();
+            boolean b = belongCalendar(nowTime, startTime, endTime);
+            if(b){
+                if((rdMmRelation.getRank()==0&&(result.getNeedToPay().add(result.getUseCouponAmount())).compareTo(new BigDecimal("360"))!=-1)||
+                        (rdMmRelation.getRank()>0&&result.getActualTotalPpv().compareTo(new BigDecimal("25"))!=-1&&result.getActualTotalPpv().compareTo(new BigDecimal("50"))==-1)){
+                    //单笔订单满360或25mi，赠送护手霜一支
+                    ShopGoods goods1 = goodsService.find(6638361764952018944L);//护手霜
+                    //ShopGoods goods1 = goodsService.find(6659359562891530240L);//护手霜 formal
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                    ShopGoods goods2 = goodsService.find(6552746788883795968L);//护手霜
+                    if (goods2!=null){
+                        shopGoods.add(goods2);
+                    }
+                    flag=1;
+                }
+                if(rdMmRelation.getRank()>0&&(result.getActualTotalPpv().compareTo(new BigDecimal("50"))!=-1)){
+                    ShopGoods goods1 = goodsService.find(6661516062787375104L);//护手霜+护手霜组合套装
+                    //ShopGoods goods1 = goodsService.find(6661525543797657600L);//护手霜+护手霜组合套装 formal
+                    if (goods1!=null){
+                        shopGoods.add(goods1);
+                    }
+                    flag=1;
+                }
+                giftsNum=1;
+            }
+            result=result.build3(result,shopGoods,flag,giftsNum);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(result.getShopOrderTypeId()==8){
+            ArrayList<UserInfoVo> members=rdMmBasicInfoService.findMemberOneMobile(Paramap.create().put("mmCode",rdMmBasicInfo.getMmCode()).
+                    put("mobile",rdMmBasicInfo.getMobile()));
+            List<RdRanks> ranks = rdRanksService.findAll();
+            RdRanks rdRankVip = rdRanksService.find(1L);
+            HashMap<Integer, RdRanks> rankMap = new HashMap<>();
+            for (RdRanks rank : ranks) {
+                rankMap.put(rank.getRankId(),rank);
+            }
+            for (UserInfoVo userInfoVo : members) {
+                RdRanks rankResult = rankMap.get(userInfoVo.getRank());
+                if(userInfoVo.getRank()==2){
+                    userInfoVo.setRankName(rdRankVip.getRankName());
+                }else {
+                    userInfoVo.setRankName(rankResult.getRankName());
+                }
+            }
+            result.setCutUserInfoList(members);
+        }
+        return ApiUtils.success(result);
     }
 }

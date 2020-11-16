@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.order.*;
+import com.framework.loippi.service.order.*;
 import net.sf.json.JSONObject;
 
 import java.io.BufferedOutputStream;
@@ -50,13 +52,6 @@ import com.framework.loippi.entity.User;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.coupon.CouponDetail;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.order.ShopOrderAddress;
-import com.framework.loippi.entity.order.ShopOrderDiscountType;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.order.ShopOrderLog;
-import com.framework.loippi.entity.order.ShopOrderLogistics;
-import com.framework.loippi.entity.order.ShopSpiritOrderInfo;
 import com.framework.loippi.entity.product.ShopExpressSpecialGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
@@ -80,13 +75,6 @@ import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressNotAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressService;
 import com.framework.loippi.service.coupon.CouponDetailService;
-import com.framework.loippi.service.order.ShopOrderAddressService;
-import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
-import com.framework.loippi.service.order.ShopOrderGoodsService;
-import com.framework.loippi.service.order.ShopOrderLogService;
-import com.framework.loippi.service.order.ShopOrderLogisticsService;
-import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.order.ShopSpiritOrderInfoService;
 import com.framework.loippi.service.product.ShopExpressSpecialGoodsService;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsPresaleService;
@@ -172,6 +160,8 @@ public class OrderSysController extends GenericController {
     private ShopGoodsPresaleService shopGoodsPresaleService;
     @Resource
     private ShopSpiritOrderInfoService shopSpiritOrderInfoService;
+    @Resource
+    private ShopOrderSplitService shopOrderSplitService;
     @Resource
     private ShunFengJsonExpressService shunFengJsonExpressService;
     // 订单编辑中
@@ -1188,6 +1178,18 @@ public class OrderSysController extends GenericController {
         model.addAttribute("order", orderVo);
         model.addAttribute("areas", areas);
         model.addAttribute("shopMember", rdMmBasicInfo);
+        if(orderVo.getSplitFlag()!=null&&orderVo.getSplitFlag()==1){
+            List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",orderVo.getId()).put("buyFlag",2).put("status",1));
+            ArrayList<String> strings = new ArrayList<>();
+            for (ShopOrderSplit shopOrderSplit : list) {
+                strings.add(shopOrderSplit.getMmCode());
+            }
+            model.addAttribute("splitFlag", 1);
+            model.addAttribute("splitCodeList",strings);
+        }else {
+            model.addAttribute("splitFlag", 0);
+            model.addAttribute("splitCodeList", new ArrayList<String>());
+        }
         if (Optional.ofNullable(type).orElse(0)==1){
 
             return "/trade/shop_order/edit";

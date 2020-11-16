@@ -376,6 +376,35 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     ShopOrderPay addOrderReturnPaySnRedemption(String cartIds, String mmCode, Map<String, Object> orderMsgMap, Long addressId, Integer platformCode, Integer logisticType, Integer paymentType);
 
+
+    BigDecimal plusSaveMoney(Paramap buyerId);
+
+    /**
+     * 立即购买提交订单
+     * @param goodsId 商品id
+     * @param count 购买数量
+     * @param specId 规格id
+     * @param activityId 活动id
+     * @param activityType 活动类型
+     * @param activityGoodsId 活动商品id
+     * @param activitySkuId 活动规格id
+     * @param mmCode 会员编号
+     * @param orderMsgMap 订单留言备注信息
+     * @param addressId 地址id
+     * @param couponId 优惠券id
+     * @param platform 平台类别
+     * @param shopOrderDiscountType 订单优惠类型
+     * @param logisticType 配送方式 快递 自提
+     * @param paymentType 支付方式：固定在线支付
+     * @param giftId 赠品id
+     * @param splitOrderFlag 是否分单 0：不分单 1：分单
+     * @param giftNum 赠品数量
+     * @param splitCodes 分单会员拼接字符串
+     * @return
+     */
+    ShopOrderPay addImmediatelyOrderReturnPaySn(Long goodsId, Integer count, Long specId, Long activityId, Integer activityType, Long activityGoodsId, Long activitySkuId, String mmCode, Map<String, Object> orderMsgMap, Long addressId, Long couponId, int platform, ShopOrderDiscountType shopOrderDiscountType, Integer logisticType, Integer paymentType, Long giftId, Integer splitOrderFlag, Integer giftNum, String splitCodes);
+
+    /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 	void updateOrderShipping(String orderSn, String trackSn, long expressId);
 
 	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/

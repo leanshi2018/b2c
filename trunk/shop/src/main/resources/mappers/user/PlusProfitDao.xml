@@ -231,4 +231,25 @@
 			</if>
 		</where>
 	</select>
+
+	<select id="findPlusProfitVo" parameterType="string" resultType="com.framework.loippi.vo.user.PlusProfitVo">
+		select
+		a.id as id,
+		a.buyer_id as buyerId,
+		a.receiptor_id as receiptorId,
+		a.create_time as createTime,
+		a.expect_time as expectTime,
+		a.actual_time as actualTime,
+		a.profits as profits,
+		a.order_id as orderId,
+		a.order_sn as orderSn,
+		a.state as state,
+		a.remark as remark,
+		a.create_period as createPeriod,
+		a.expect_period as expectPeriod,
+		a.actual_period as actualPeriod,
+		b.MM_NICK_NAME as mmNickName,
+		b.MM_AVATAR as mmAvatar
+		from plus_profit a INNER JOIN rd_mm_basic_info b on a.buyer_id = b.MM_CODE WHERE a.receiptor_id = #{mmCode} and a.state in (0,1) ORDER BY a.create_time desc
+	</select>
 </mapper> 
