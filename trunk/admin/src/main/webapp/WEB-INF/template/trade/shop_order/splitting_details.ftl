@@ -65,6 +65,7 @@
                             <th class="align-center">会员名称</th>
                             <th class="align-center">分账金额（元）</th>
                             <th class="align-center">积分扣减</th>
+                            <th class="align-center">beiz</th>
                         </tr>
 <#--                        <#list detail.content as details>-->
                             <tr>
