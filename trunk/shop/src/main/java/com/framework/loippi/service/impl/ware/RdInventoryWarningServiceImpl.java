@@ -81,13 +81,13 @@ public class RdInventoryWarningServiceImpl extends GenericServiceImpl<RdInventor
 					mapGGs.put("goodId",inventoryWarning.getGoodsCode());
 					mapGGs.put("combineGoodsId",goodsId);
 					List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsDao.findGoodsGoodsList(mapGGs);
-					ShopGoodsGoods goodsGoods = new ShopGoodsGoods();
+					ShopGoodsGoods goodsGoods = null;
 					if (goodsGoodsList.size()>0){
 						if (goodsGoodsList.size()==1){
 							goodsGoods = goodsGoodsList.get(0);
 						}else {
 							for (ShopGoodsGoods shopGoodsGoods : goodsGoodsList) {
-								if (shopGoodsGoods.getGoodsSpec().equals(specId)){
+								if (shopGoodsGoods.getGoodsSpec().equals(specId.toString())){
 									goodsGoods = shopGoodsGoods;
 								}
 							}

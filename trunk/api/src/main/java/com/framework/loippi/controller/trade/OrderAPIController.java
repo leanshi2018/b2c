@@ -11,7 +11,14 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +49,8 @@ import com.framework.loippi.dao.ShopMemberMessageDao;
 import com.framework.loippi.entity.PayCommon;
 import com.framework.loippi.entity.ShopCommonMessage;
 import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.cart.ShopCart;
+import com.framework.loippi.entity.cart.ShopCartExchange;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.coupon.Coupon;
@@ -52,6 +61,11 @@ import com.framework.loippi.entity.order.ShopOrderAddress;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.order.ShopOrderPay;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
+import com.framework.loippi.entity.product.ShopGoodsEvaluate;
+import com.framework.loippi.entity.product.ShopGoodsFreightRule;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.user.MemberPrivilege;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -66,6 +80,11 @@ import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.param.cart.CartAddParam;
 import com.framework.loippi.param.order.OrderSubmitParam;
 import com.framework.loippi.param.order.RefundReturnParam;
+import com.framework.loippi.result.app.order.ApplyRefundReturnResult;
+import com.framework.loippi.result.app.order.OrderDetailResult;
+import com.framework.loippi.result.app.order.OrderResult;
+import com.framework.loippi.result.app.order.OrderSubmitResult;
+import com.framework.loippi.result.app.order.RedemptionOrderSubmitResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.evaluate.EvaluateOrderGoodsResult;
 import com.framework.loippi.result.order.AppletsPayTLResult;
@@ -83,6 +102,12 @@ import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderPayService;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsBrandService;
+import com.framework.loippi.service.product.ShopGoodsEvaluateService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.trade.ShopMemberPaymentTallyService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.union.UnionpayService;
@@ -98,8 +123,17 @@ import com.framework.loippi.service.wallet.RdBizPayService;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.GoodsUtils;
+import com.framework.loippi.utils.JacksonUtil;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.TongLianUtils;
+import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.order.ShopOrderVo;
 import com.framework.loippi.vo.refund.ReturnGoodsVo;
+import com.google.common.collect.Lists;
 
 /**
  * API - 订单模块接口
@@ -675,13 +709,16 @@ public class OrderAPIController extends BaseController {
         }
         if (results.getOrderState() == 30 || results.getOrderState() == 40 || (results.getShippingExpressCode() != null
             && !"".equals(results.getShippingExpressCode()))) {
-            ShopCommonExpress eCode = commonExpressService.find("eCode", results.getShippingExpressCode());
-            String kuaiInfo = kuaidiService.query(results.getShippingExpressCode(), results.getShippingCode());
+            //ShopCommonExpress eCode = commonExpressService.find("eCode", results.getShippingExpressCode());
+            ShopCommonExpress eCode = commonExpressService.find(results.getShippingExpressId());
+            String kuaiInfo = kuaidiService.query(eCode.getEAliCode(), results.getShippingCode());
             Map mapType = JacksonUtil.convertMap(kuaiInfo);
             if (StringUtils.isBlank(kuaiInfo)) {
                 return ApiUtils.error();
             }
-            List<Map<String, String>> datainfo = (List) mapType.get("data");
+            //List<Map<String, String>> datainfo = (List) mapType.get("data");//快递100的返回格式
+            Map<String, List<Map<String,String>>> result = (Map<String, List<Map<String,String>>>) mapType.get("result");
+            List<Map<String, String>> datainfo = result.get("list");
             //是否存在物流信息
             if (datainfo != null) {
                 Map<String, String> map=new HashMap<>();

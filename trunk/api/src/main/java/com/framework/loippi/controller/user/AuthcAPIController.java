@@ -1,13 +1,14 @@
 package com.framework.loippi.controller.user;
 
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.github.pagehelper.PageInfo;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -729,7 +730,7 @@ public class AuthcAPIController extends BaseController {
     @RequestMapping(value = "/verifyOldUser1", method = RequestMethod.POST)
     public String verifyOldUser1(HttpServletRequest request, String oMCode, String password) {
         String resultString = "";
-        Pageable pager = new Pageable();
+        /*Pageable pager = new Pageable();
         OldSysRelationship relationship = new OldSysRelationship();
         relationship.setNYnRegistered(0);
         pager.setParameter(relationship);
@@ -746,11 +747,11 @@ public class AuthcAPIController extends BaseController {
         raMember.setOPassword("");
         raMember.setMemStatus("3");
         redisService.save(sessionId, raMember);
-        return ApiUtils.success(raMember);
+        return ApiUtils.success(raMember);*/
 
 
         //验证正确,需要查询老用户信息
-/*        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("oMcode", oMCode.trim());
+        OldSysRelationship oldSysRelationship = oldSysRelationshipService.find("oMcode", oMCode.trim());
         //用户信息是否同步
         if (oldSysRelationship != null) {
             if (oldSysRelationship.getNYnRegistered() == 1) {
@@ -807,7 +808,7 @@ public class AuthcAPIController extends BaseController {
 
         } else {
             return ApiUtils.error("未找到该用户或该用户信息未同步，请核对信息，稍后再次尝试");
-        }*/
+        }
     }
     //@RequestMapping(value = "/selectOldUser", method = RequestMethod.POST)
     //public String selectOldUser(HttpServletRequest request, String oMCode, String password) {

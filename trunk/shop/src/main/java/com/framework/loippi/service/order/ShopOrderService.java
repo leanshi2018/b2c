@@ -376,6 +376,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     ShopOrderPay addOrderReturnPaySnRedemption(String cartIds, String mmCode, Map<String, Object> orderMsgMap, Long addressId, Integer platformCode, Integer logisticType, Integer paymentType);
 
+
     BigDecimal plusSaveMoney(Paramap buyerId);
 
     /**
@@ -404,4 +405,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
     ShopOrderPay addImmediatelyOrderReturnPaySn(Long goodsId, Integer count, Long specId, Long activityId, Integer activityType, Long activityGoodsId, Long activitySkuId, String mmCode, Map<String, Object> orderMsgMap, Long addressId, Long couponId, int platform, ShopOrderDiscountType shopOrderDiscountType, Integer logisticType, Integer paymentType, Long giftId, Integer splitOrderFlag, Integer giftNum, String splitCodes);
 
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
+	void updateOrderShipping(String orderSn, String trackSn, long expressId);
+
+	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

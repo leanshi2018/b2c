@@ -1514,6 +1514,18 @@
         order_sn = #{orderSn}
     </update>
 
+    <update id="updateOrderShipping" parameterType="java.util.Map" >
+        UPDATE shop_order
+        SET
+        shipping_express_id = #{shippingExpressId},
+        shipping_express_code = #{shippingExpressCode},
+        shipping_name = #{shippingName},
+        shipping_time = #{shippingTime},
+        shipping_code = #{shippingCode}
+        WHERE
+        order_sn = #{orderSn}
+    </update>
+
     <!--快递订单分账查询-->
     <select id="findNoCutOrder" parameterType="java.util.Map" resultMap="ShopOrderResultMap">
         select
@@ -1819,5 +1831,9 @@
         <if test="buyerId != null">
             and buyer_id = #{buyerId}
         </if>
+    </select>
+
+    <select id="findByOrderSn" parameterType="string" resultMap="ShopOrderResultMap">
+        SELECT * FROM shop_order WHERE order_sn = #{orderSn}
     </select>
 </mapper>

@@ -16,15 +16,16 @@
         <result property="eUrl" column="e_url"/>
         <result property="isDel" column="is_del"/>
         <result property="eSort" column="e_sort"/>
+        <result property="eAliCode" column="e_ali_code"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,e_name ,e_state ,e_code ,e_express_code ,e_letter ,e_order ,e_url ,is_del ,e_sort
+		 id ,e_name ,e_state ,e_code ,e_express_code ,e_letter ,e_order ,e_url ,is_del ,e_sort ,e_ali_code
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{eName},#{eState},#{eCode},#{eExpressCode},#{eLetter},#{eOrder},#{eUrl},#{isDel},#{eSort}
+		 #{id},#{eName},#{eState},#{eCode},#{eExpressCode},#{eLetter},#{eOrder},#{eUrl},#{isDel},#{eSort},#{eAliCode}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -64,6 +65,9 @@
         <if test="eSort != null">
             AND e_sort != #{eSort,jdbcType=INTEGER}
         </if>
+        <if test="eAliCode != null and eAliCode != ''">
+            AND e_ali_code = #{eAliCode,jdbcType=VARCHAR}
+        </if>
     </sql>
 
     <!-- 设置语句 -->
@@ -97,6 +101,9 @@
         </if>
         <if test="eSort != null">
             e_sort = #{eSort,jdbcType=INTEGER},
+        </if>
+        <if test="eAliCode != null and eAliCode != ''">
+            e_ali_code = #{eAliCode,jdbcType=VARCHAR},
         </if>
     </sql>
 

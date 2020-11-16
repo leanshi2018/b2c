@@ -95,6 +95,16 @@ import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
+import com.framework.loippi.entity.user.PlusProfit;
+import com.framework.loippi.entity.user.RdGoodsAdjustment;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.entity.user.RetailProfit;
+import com.framework.loippi.entity.user.ShopMemberPaymentTally;
 import com.framework.loippi.entity.walet.RdBizPay;
 import com.framework.loippi.entity.ware.RdInventoryWarning;
 import com.framework.loippi.entity.ware.RdWareAdjust;
@@ -137,6 +147,7 @@ import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.service.user.PlusProfitService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAccountLogService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
@@ -662,7 +673,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 retailProfitService.update(retailProfit);
             }
         }
-        if(order.getOrderType().equals(8)){
+        if(order.getOrderType().equals(8)&&order.getPaymentState()==1){
             PlusProfit plusProfit = plusProfitService.find("orderId",order.getId());
             if(plusProfit!=null){
                 plusProfit.setState(-1);
@@ -1709,6 +1720,18 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 orderGoods.setGoodsId(giftId);
                 orderGoods.setGoodsName(shopGoods.getGoodsName());
                 orderGoods.setSpecId(goodsSpec.getId());
+                GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
+                String specInfo = "";
+                Map<String, String> map = goodsSpec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                orderGoods.setSpecInfo(specInfo);
                 //大单价
                 orderGoods.setGoodsPrice(goodsSpec.getSpecBigPrice());
                 orderGoods.setGoodsNum(giftNum);
@@ -2163,6 +2186,18 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 orderGoods.setGoodsId(giftId);
                 orderGoods.setGoodsName(shopGoods.getGoodsName());
                 orderGoods.setSpecId(goodsSpec.getId());
+                GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
+                String specInfo = "";
+                Map<String, String> map = goodsSpec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                orderGoods.setSpecInfo(specInfo);
                 //大单价
                 orderGoods.setGoodsPrice(goodsSpec.getSpecBigPrice());
                 orderGoods.setGoodsNum(giftNum);
@@ -8194,5 +8229,17 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         if (goodsSpec.getSpecGoodsStorage() < count) {
             throw new StateResult(AppConstants.GOODS_NO_MORE, "库存不足");
         }
+    }
+
+    public void updateOrderShipping(String orderSn, String trackSn, long expressId) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderSn",orderSn);
+        map.put("shippingCode",trackSn);
+        ShopCommonExpress express = shopCommonExpressDao.find(29l);
+        map.put("shippingExpressCode",Optional.ofNullable(express.getECode()).orElse(""));
+        map.put("shippingExpressId",Optional.ofNullable(express.getId()).orElse(-1L));
+        map.put("shippingName",Optional.ofNullable(express.getEName()).orElse(""));
+        map.put("shippingTime",new Date());
+        orderDao.updateOrderShipping(map);
     }
 }
