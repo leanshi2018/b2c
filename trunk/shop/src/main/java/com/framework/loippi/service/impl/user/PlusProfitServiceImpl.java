@@ -69,6 +69,8 @@ public class PlusProfitServiceImpl extends GenericServiceImpl<PlusProfit, Long> 
                 plusProfit.setReceiptorId(rdMmRelation.getSponsorCode());
                 if(mmBasicInfo.getPlusVip()==0){
                     plusProfit.setProfits(new BigDecimal("500.00"));
+                    //如果推荐人为非plus 会员，则往上查找是plus会员的第一个人，发放另外500奖励
+                    grantOtherProfit(mmBasicInfo.getMmCode(),plusProfit);
                 }
                 if(mmBasicInfo.getPlusVip()==1){
                     plusProfit.setProfits(new BigDecimal("1000.00"));
@@ -131,6 +133,88 @@ public class PlusProfitServiceImpl extends GenericServiceImpl<PlusProfit, Long> 
             }
         }
         System.out.println("grant plusProfit over");
+    }
+
+    private void grantOtherProfit(String mmCode,PlusProfit plusProfit) {
+        Boolean flag=true;
+        String code=mmCode;
+        while (flag){
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", code);
+            RdMmBasicInfo info = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
+            if(info.getMmCode().equals("101000158")||info.getMmCode().equals("900000000")){
+                return;
+            }
+            if(info.getPlusVip()==1){
+                flag=false;
+                PlusProfit profit = new PlusProfit();
+                profit.setId(twiterIdService.getTwiterId());
+                profit.setBuyerId(plusProfit.getBuyerId());
+                profit.setReceiptorId(info.getMmCode());
+                profit.setCreateTime(plusProfit.getCreateTime());
+                profit.setExpectTime(plusProfit.getExpectTime());
+                profit.setActualTime(new Date());
+                profit.setProfits(new BigDecimal("500.00"));
+                profit.setOrderId(plusProfit.getOrderId());
+                profit.setOrderSn(plusProfit.getOrderSn());
+                profit.setState(1);
+                profit.setRemark("间接");
+                profit.setCreatePeriod(plusProfit.getCreatePeriod());
+                profit.setExpectPeriod(plusProfit.getExpectPeriod());
+                String period = rdSysPeriodDao.getSysPeriodService(new Date());
+                profit.setActualPeriod(period);
+                plusProfitDao.insert(profit);
+                RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", info.getMmCode());
+                List<RdMmIntegralRule> all = rdMmIntegralRuleDao.findAll();
+                RdMmIntegralRule rdMmIntegralRule = all.get(0);
+                //1.生成消息通知
+                ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                shopCommonMessage.setSendUid(info.getMmCode());
+                shopCommonMessage.setType(1);
+                shopCommonMessage.setOnLine(1);
+                shopCommonMessage.setCreateTime(new Date());
+                shopCommonMessage.setBizType(2);
+                shopCommonMessage.setIsTop(1);
+                shopCommonMessage.setCreateTime(new Date());
+                shopCommonMessage.setTitle("积分到账通知");
+                shopCommonMessage.setContent("您推荐的会员"+profit.getBuyerId()+"已购买PLUS VIP订单，奖励"+profit.getProfits()+"点积分，已加入奖励积分账户");
+                Long msgId = twiterIdService.getTwiterId();
+                shopCommonMessage.setId(msgId);
+                shopCommonMessageDao.insert(shopCommonMessage);
+                ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                shopMemberMessage.setBizType(2);
+                shopMemberMessage.setCreateTime(new Date());
+                shopMemberMessage.setId(twiterIdService.getTwiterId());
+                shopMemberMessage.setIsRead(0);
+                shopMemberMessage.setMsgId(msgId);
+                shopMemberMessage.setUid(Long.parseLong(info.getMmCode()));
+                shopMemberMessageDao.insert(shopMemberMessage);
+                //2.生成日志
+                RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
+                rdMmAccountLog.setMmCode(info.getMmCode());
+                rdMmAccountLog.setMmNickName(info.getMmNickName());
+                rdMmAccountLog.setTransTypeCode("BA");
+                rdMmAccountLog.setAccType("SBB");
+                rdMmAccountLog.setTrSourceType("CMP");
+                rdMmAccountLog.setTrOrderOid(plusProfit.getOrderId());
+                rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getBonusBlance());
+                BigDecimal amount = profit.getProfits().multiply(new BigDecimal(rdMmIntegralRule.getRsCountBonusPoint())).divide(new BigDecimal(100),2);
+                rdMmAccountLog.setAmount(amount);
+                rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getBonusBlance().add(amount));
+                rdMmAccountLog.setTransDate(new Date());
+                if(period!=null){
+                    rdMmAccountLog.setTransPeriod(period);
+                }
+                rdMmAccountLog.setTransDesc("推荐会员"+profit.getBuyerId()+"成为PLUS VIP会员奖励发放");
+                rdMmAccountLog.setAutohrizeDesc("推荐会员"+profit.getBuyerId()+"成为PLUS VIP会员奖励发放");
+                rdMmAccountLog.setStatus(3);
+                rdMmAccountLogService.save(rdMmAccountLog);
+                rdMmAccountInfo.setBonusBlance(rdMmAccountInfo.getBonusBlance().add(amount));
+                rdMmAccountInfoService.update(rdMmAccountInfo);
+            }
+            else {
+                code=info.getMmCode();
+            }
+        }
     }
 
     @Override

@@ -418,6 +418,11 @@ public class ShopOrder implements GenericEntity {
     @Column(name = "cut_time" )
     private Date cutTime;
 
+    /**
+     * 是否分单 0：不分单 1：分单
+     */
+    @Column(name = "split_flag" )
+    private Integer splitFlag;
 /*********************添加*********************/
     /**
      * 订单商品

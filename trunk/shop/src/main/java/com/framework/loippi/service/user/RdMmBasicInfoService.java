@@ -1,6 +1,7 @@
 package com.framework.loippi.service.user;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.framework.loippi.entity.user.RdMmAccountInfo;
@@ -8,6 +9,7 @@ import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.vo.user.UserInfoVo;
 
 /**
  * SERVICE - RdMmBasicInfo(会员基础信息)
@@ -58,4 +60,6 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
     void whetherFreeze();
 
     Integer findInvitePlusNum(String mmCode);
+
+    ArrayList<UserInfoVo> findMemberOneMobile(Paramap map);
 }

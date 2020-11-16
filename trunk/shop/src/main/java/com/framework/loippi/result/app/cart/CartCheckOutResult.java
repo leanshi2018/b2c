@@ -1,5 +1,6 @@
 package com.framework.loippi.result.app.cart;
 
+import com.framework.loippi.vo.user.UserInfoVo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -194,7 +195,10 @@ public class CartCheckOutResult {
      * 是否存在plus会员商品 1：不存在  2：存在
      */
     private Integer svipFlag;
-
+    /**
+     * 可分单会员列表
+     */
+    private ArrayList<UserInfoVo> cutUserInfoList=Lists.newArrayList();
 
 
     @Data

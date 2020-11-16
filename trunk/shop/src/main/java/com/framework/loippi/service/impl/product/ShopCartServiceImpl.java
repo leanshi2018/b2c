@@ -760,6 +760,266 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
         return map;
     }
 
+    @Override
+    public Map<String, Object> queryTotalPriceImmediately(ShopGoods goods, Long specId, Integer count, String mmCode, Long couponId, Long groupBuyActivityId, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo addr, Integer rankId, Long activityId, Integer activitType,Long activityGoodsId,Long activityGoodsSpecId) {
+        List<ShopOrderDiscountType> discountTypes = shopOrderDiscountTypeService.findList("preferentialType",3);
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", mmCode);
+        ShopOrderDiscountType discountType = discountTypes.get(0);
+        BigDecimal ppvNum = discountType.getPpv();
+        Map<String, Object> map = new HashMap<>(5);
+        map.put("error", "false");
+        BigDecimal pvTotal=BigDecimal.ZERO;
+        map.put("svipGoods", 1);
+        if(goods.getPlusVipType()!=null&&goods.getPlusVipType()==1){
+            map.put("svipGoods", 2);
+        }
+        //1.验证商品 审核通过 上架 未删除
+        boolean isShow = goods.getState() == GoodsState.GOODS_OPEN_STATE &&
+                goods.getGoodsShow() != null &&
+                goods.getGoodsShow() == GoodsState.GOODS_ON_SHOW &&
+                goods.getIsDel() != null &&
+                goods.getIsDel() == GoodsState.GOODS_NOT_DELETE;
+        if(goods.getState()==null||goods.getState() != GoodsState.GOODS_OPEN_STATE){
+            map.put("error", "true");
+            map.put("message", goods.getGoodsName() + "商品审核未通过，请删除后重新提交");
+            return map;
+        }
+        if(goods.getGoodsShow()==null||goods.getGoodsShow() != GoodsState.GOODS_ON_SHOW){
+            map.put("error", "true");
+            map.put("message", goods.getGoodsName() + "商品已下架，请删除后重新提交");
+            return map;
+        }
+        if(goods.getIsDel()==null||goods.getIsDel() != GoodsState.GOODS_NOT_DELETE){
+            map.put("error", "true");
+            map.put("message", goods.getGoodsName() + "商品不存在，请删除后重新提交");
+            return map;
+        }
+        if (!isShow) {
+            map.put("error", "true");
+            map.put("code","10001");
+            map.put("message", goods.getGoodsName() + "商品已下架");
+            return map;
+        }
+        //2.判断是否存在活动 生成购物车对象
+        ArrayList<ShopCart> cartList = new ArrayList<>();
+        ShopGoodsSpec shopGoodsSpec = goodsSpecService.find(specId);
+        if(shopGoodsSpec==null){
+            throw new RuntimeException("商品信息异常");
+        }
+        if (shopGoodsSpec.getSpecIsopen()!=1) {
+            throw new RuntimeException("该商品目前不能购买");
+        }
+        //判断是否有购买权限
+        if (!StringUtil.isEmpty(goods.getSalePopulationIds())){
+            if (!goods.getSalePopulationIds().contains(","+rankId + ",")){
+                throw new RuntimeException(goods.getGoodsName()+"目前您的会员等级不能购买该商品");
+            }
+        }
+        // 能否修改购物车
+        canSaveOrUpdateCart(goods, shopGoodsSpec, count);
+        //新建一个商品规格,通过GoodsUtils.getSepcMapAndColImgToGoodsSpec方法查询出规格的图片和值
+        GoodsUtils.getSepcMapAndColImgToGoodsSpec(goods, shopGoodsSpec);
+        ShopCart cart = new ShopCart();
+        cart.setId(twiterIdService.getTwiterId());
+        cart.setMemberId(Long.parseLong(mmCode));
+        cart.setGoodsId(shopGoodsSpec.getGoodsId());
+        cart.setGoodsName(goods.getGoodsName());
+        cart.setSpecId(specId);
+        cart.setGoodsType(goods.getGoodsType());
+        //设置价格
+        cart.setGoodsMemberPrice(shopGoodsSpec.getSpecMemberPrice());
+        cart.setGoodsBigPrice(shopGoodsSpec.getSpecBigPrice());
+        if(activityId!=null && activityGoodsSpecId!=null){
+            List<ShopActivityGoodsSpec> shopActivityGoodsSpecList = shopActivityGoodsSpecService.findList(Paramap.create().put("activityId",activityId).put("specId",activityGoodsSpecId));
+            if (!shopActivityGoodsSpecList.isEmpty()){
+                cart.setGoodsRetailPrice(Optional.ofNullable(shopActivityGoodsSpecList.get(0).getActivityPrice()).orElse(shopGoodsSpec.getSpecRetailPrice()));
+            }
+        }else{
+            cart.setGoodsRetailPrice(shopGoodsSpec.getSpecRetailPrice());
+        }
+        cart.setBigPpv(shopGoodsSpec.getBigPpv());
+        cart.setPpv(shopGoodsSpec.getPpv());
+        cart.setGoodsState(goods.getGoodsType());
+        cart.setBrandId(goods.getBrandId());
+        ShopGoodsBrand shopGoodsBrand = shopGoodsBrandDao.find(goods.getBrandId());
+        cart.setBrandIcon(shopGoodsBrand.getBrandIcon());
+        cart.setBrandName(goods.getBrandName());
+        cart.setActivityId(activityId);
+        cart.setActivityType(activitType);
+        cart.setActivityGoodsId(activityGoodsId);
+        cart.setActivitySpecId(activityGoodsSpecId);
+        cart.setWeight(shopGoodsSpec.getWeight());
+        cart.setActivityId(activityId);
+        cart.setActivityType(activitType);
+        // 图片信息
+        if (goods.getGoodsImage() != null) {
+            //存储商品默认图片
+            cart.setGoodsImages(goods.getGoodsImage().split(",")[0]);
+        } else {
+            //若商品没有默认图片存储空字段
+            cart.setGoodsImages("");
+        }
+        // 规格信息--新建一个字段存储新的规格格式
+        if (goods.getGoodsType()==3){
+            cart.setSpecInfo(shopGoodsSpec.getSpecGoodsSerial());
+        }else{
+            String specInfo = "";
+            Map<String, String> map1 = shopGoodsSpec.getSepcMap();
+            //遍历规格map,取出键值对,拼接specInfo
+            if (map1 != null) {
+                Set<String> set = map1.keySet();
+                for (String str : set) {
+                    specInfo += str + ":" + map1.get(str) + "、";
+                }
+                specInfo = specInfo.substring(0, specInfo.length() - 1);
+            }
+            cart.setSpecInfo(specInfo);
+        }
+        cart.setGoodsNum(count);
+        limitBuyQuantity(count, cart.getActivityId(), cart.getActivitySpecId());
+        if (Optional.ofNullable(shopGoodsSpec.getSpecIsopen()).orElse(0)==0){
+            shopGoodsSpec.setSpecGoodsStorage(0);
+        }
+        if (cart.getGoodsNum()> shopGoodsSpec.getSpecGoodsStorage()) {
+            throw new RuntimeException("购物车数量大于库存");
+        }
+        if (cart.getActivityId()!=null){
+            List<ShopActivityGoodsSpec> shopActivityGoodsSpecList=shopActivityGoodsSpecService.findList(Paramap.create().put("activityId",cart.getActivityId()).put("specId",shopGoodsSpec.getId()));
+            if (shopActivityGoodsSpecList!=null && shopActivityGoodsSpecList.size()>0){
+                ShopActivityGoodsSpec shopActivityGoodsSpec=shopActivityGoodsSpecList.get(0);
+                if (cart.getGoodsNum()> shopActivityGoodsSpec.getActivityStock()) {
+                    throw new RuntimeException("购物车数量大于库存");
+                }
+            }
+        }
+        pvTotal=pvTotal.add(cart.getPpv().multiply(new BigDecimal(Integer.toString(count))));
+        cartList.add(cart);
+        //3.判断限购数量
+        List<ShopGoodsStint> shopGoodsStintList = shopGoodsStintDao.findBySerial(shopGoodsSpec.getSpecGoodsSerial());
+        if (shopGoodsStintList.size()>0){
+            Integer countTotal = 0;//历史总购买数量
+            ShopGoodsStint shopGoodsStint = shopGoodsStintList.get(0);
+            Integer stintNum = shopGoodsStint.getStintNum();//限购数量
+            Long goodsId = shopGoodsStint.getGoodsId();
+            Map<String,Object> GSMap = new HashMap<String,Object>();
+            GSMap.put("goodsId",goodsId);
+            GSMap.put("specId",specId);
+            GSMap.put("buyerId",Long.parseLong(mmCode));
+            List<ShopOrderGoods> shopOrderGoodsList = shopOrderGoodsDao.findByGoodsIdAndSpecIdAndCode(GSMap);
+            if (shopOrderGoodsList.size()>0){
+                for (ShopOrderGoods orderGoods : shopOrderGoodsList) {
+                    Long orderId = orderGoods.getOrderId();
+                    ShopOrder shopOrder = shopOrderDao.find(orderId);
+                    if (shopOrder.getOrderState()!=0){//订单是有效的（排除取消订单，即使退款退货都算已购买数量）
+                        Integer goodsNum = orderGoods.getGoodsNum();//购买商品数量
+                        countTotal = countTotal + goodsNum;
+                        if (orderGoods.getIsPresentation()!=null && orderGoods.getIsPresentation() ==1){//是赠品
+                            countTotal = countTotal - goodsNum;
+                        }
+                    }
+                }
+            }
+            Integer goodsNum = cart.getGoodsNum();//当前订单购买数量
+            if (countTotal+goodsNum>stintNum){//超过购买限制数量
+                map.put("error", "true");
+                map.put("code","10002");
+                map.put("message", goods.getGoodsName() + "商品限购"+stintNum+"件");
+                return map;
+            }
+        }
+        //4.判断是否达到默认大单价要求
+        if(shopOrderDiscountType.getPreferentialType()!=8&&shopOrderDiscountType.getId().equals(-1L)&&rdMmRelation.getRank()>0){
+            if(pvTotal.compareTo(ppvNum)!=-1){
+                shopOrderDiscountType.setPreferentialType(3);
+            }
+        }
+        ArrayList<Long> activityIds = new ArrayList<>();
+        if(activityId!=null){
+            activityIds.add(activityId);
+        }
+        List<CartInfo> cartInfoList = getCartInfoList1(cartList, shopOrderDiscountType, addr, mmCode,activityIds,couponId);
+        if (CollectionUtils.isEmpty(cartInfoList)) {
+            throw new RuntimeException("购物车不存在");
+        }
+
+        // 新建一个商品总价
+        double totalGoodsPrice = cartInfoList.stream().mapToDouble(item -> item.getGoodsTotalPrice().doubleValue())
+                .sum();
+        // 需要付金额
+        double actotalGoodsPrice = cartInfoList.stream().mapToDouble(item -> item.getActualGoodsTotalPrice().doubleValue())
+                .sum();
+        // 需要运费
+        double freightAmount = cartInfoList.stream().mapToDouble(item -> item.getFreightAmount().doubleValue())
+                .sum();
+        // 运费优惠
+        double preferentialFreightAmount = cartInfoList.stream().mapToDouble(item -> item.getPreferentialFreightAmount().doubleValue())
+                .sum();
+        // 优惠金额
+        double couponAmount = cartInfoList.stream().mapToDouble(item -> item.getCouponAmount().doubleValue())
+                .sum();
+        // 等级优惠金额
+        double rankDiscount = cartInfoList.stream().mapToDouble(item -> item.getRankAmount().doubleValue())
+                .sum();
+        // 优惠券优惠金额
+        double useCouponAmount = cartInfoList.stream().mapToDouble(item -> item.getUseCouponAmount().doubleValue())
+                .sum();
+        // plus vip订单优惠金额
+        double plusVipAmount = cartInfoList.stream().mapToDouble(item -> item.getPlusVipPrice().doubleValue())
+                .sum();
+        BigDecimal needPay = BigDecimal.valueOf(actotalGoodsPrice);
+
+        // 商品总价
+        map.put("totalGoodsPrice", BigDecimal.valueOf(totalGoodsPrice));
+        /********************* 计算积分可抵扣金额 *********************/
+//        calcPayOfRewardPoint(member, needPay, map);
+        // 存储订单实际支付金额
+        map.put("totalPrice", needPay);
+        //存储订单实际运费
+        map.put("freightAmount", BigDecimal.valueOf(freightAmount));
+        //存储订单优惠运费
+        map.put("preferentialFreightAmount", BigDecimal.valueOf(preferentialFreightAmount));
+        //存储订单优惠金额
+        map.put("couponAmount", BigDecimal.valueOf(couponAmount));
+        //TODO add 2019-11-12
+        //自营商店不进行分单
+        CartInfo cartInfo = cartInfoList.get(0);
+        //存储优惠券id
+        map.put("couponId",Optional.ofNullable(cartInfo.getCouponId()).orElse(null) );
+        //存储优惠券map
+        map.put("couponList",Optional.ofNullable(cartInfo.getCouponList()).orElse(new ArrayList<Coupon>()));
+        //存储不可用优惠券map
+        map.put("noUseCouponList",Optional.ofNullable(cartInfo.getNoUseCouponList()).orElse(new ArrayList<Coupon>()));
+        //存储等级优惠金额
+        map.put("rankDiscount",BigDecimal.valueOf(rankDiscount));
+        //存储优惠券优惠金额
+        map.put("useCouponAmount",BigDecimal.valueOf(useCouponAmount));
+        //存储优惠券优惠金额
+        map.put("plusVipAmount",BigDecimal.valueOf(plusVipAmount));
+        ArrayList<Long> goodsIds = new ArrayList<>();
+        goodsIds.add(goods.getId());
+        map.put("goodsIds",goodsIds);
+        map.put("discountType",shopOrderDiscountType.getPreferentialType());
+        map.put("cartList",cartList);
+        return map;
+    }
+
+    @Override
+    public List<CartInfo> queryCartInfoListImmediately(ArrayList<ShopCart> cartList, ShopOrderDiscountType shopOrderDiscountType, RdMmAddInfo address, String mmCode, Long couponId) {
+        ArrayList<Long> activityIds = new ArrayList<>();
+        for (ShopCart shopCart : cartList) {
+            activityIds.add(shopCart.getActivityId());//购物车集合中存在活动id的集合
+        }
+        if (cartList.isEmpty()){
+            throw new StateResult(AppConstants.FAIL, "购物车不存在");
+        }
+        if(couponId!=null){
+            // 获取基本数据
+            return getCartInfoList1(cartList, shopOrderDiscountType, address, mmCode,activityIds,couponId);
+        }else {
+            return getCartInfoList(cartList, shopOrderDiscountType, address, mmCode,activityIds);
+        }
+    }
+
     /**
      * 购买数量限制
      */

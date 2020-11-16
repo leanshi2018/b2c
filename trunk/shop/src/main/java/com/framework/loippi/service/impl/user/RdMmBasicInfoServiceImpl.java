@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import com.framework.loippi.dao.user.*;
 import com.framework.loippi.entity.user.*;
+import com.framework.loippi.vo.user.UserInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -572,5 +573,10 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
     @Override
     public Integer findInvitePlusNum(String mmCode) {
         return rdMmBasicInfoDao.findInvitePlusNum(mmCode);
+    }
+
+    @Override
+    public ArrayList<UserInfoVo> findMemberOneMobile(Paramap map) {
+        return rdMmBasicInfoDao.findMemberOneMobile(map);
     }
 }

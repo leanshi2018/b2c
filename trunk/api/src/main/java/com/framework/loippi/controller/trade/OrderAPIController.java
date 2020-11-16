@@ -3,6 +3,7 @@ package com.framework.loippi.controller.trade;
 import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.cart.ShopCartExchange;
 import com.framework.loippi.entity.product.*;
+import com.framework.loippi.param.order.OrderImmediatelySubmitParam;
 import com.framework.loippi.result.app.order.*;
 import com.framework.loippi.service.product.*;
 import com.framework.loippi.utils.*;
@@ -527,6 +528,7 @@ public class OrderAPIController extends BaseController {
         if(plusOrderFlag!=null&&plusOrderFlag==1){
             shopOrderDiscountType.setId(-1L);
             shopOrderDiscountType.setPreferentialType(ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS);
+            /*return ApiUtils.error("请升级最新版本购买plus商品");//TODO*/
         }
         if(giftId!=null){
             if(giftNum==null){
@@ -2515,6 +2517,99 @@ public class OrderAPIController extends BaseController {
         }
     }
 
-
-
+    /**
+     * 立即购买提交订单返回订单支付实体类
+     * @param param
+     * @param vResult
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/order/immediately/submit")
+    @ResponseBody
+    public String immediatelyOrderSubmit(@Valid OrderImmediatelySubmitParam param, BindingResult vResult, HttpServletRequest request) {
+        if (vResult.hasErrors()) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        // 订单留言
+        Map<String, Object> orderMsgMap = new HashMap<>();
+        if (StringUtils.isNotBlank(param.getOrderMessages())) {//验证是否有留言信息
+            orderMsgMap.put("orderMessages", param.getOrderMessages());
+        }
+        if (param.getLogisticType() == 2) {//如果订单为自提 需要记录自提人姓名和电话
+            orderMsgMap.put("userName", param.getUserName());
+            orderMsgMap.put("userPhone", param.getUserPhone());
+        }
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", member.getMmCode());
+        RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+        Integer type = 1; //默认显示零售价  判断商品是按零售价还是会员价出售
+        if (rdRanks.getRankClass() > 0) {
+            type = 2;
+        }
+        ShopOrderDiscountType shopOrderDiscountType=new ShopOrderDiscountType();
+        shopOrderDiscountType.setId(-1L);
+        Long shopOrderTypeId = param.getShopOrderTypeId();
+        if(shopOrderTypeId==-1L){
+            shopOrderDiscountType.setPreferentialType(type);
+        }
+        if(shopOrderTypeId==1L&&rdRanks.getRankClass() > 0){
+            shopOrderDiscountType.setPreferentialType(2);
+        }
+        if(shopOrderTypeId==1L&&rdRanks.getRankClass() == 0){
+            shopOrderDiscountType.setPreferentialType(1);
+        }
+        if(shopOrderTypeId==2L&&rdRanks.getRankClass() == 0){
+            shopOrderDiscountType.setPreferentialType(1);
+        }
+        if(shopOrderTypeId==2L&&rdRanks.getRankClass() > 0){
+            shopOrderDiscountType.setPreferentialType(2);
+        }
+        if(shopOrderTypeId==3L&&rdRanks.getRankClass() > 0){
+            shopOrderDiscountType.setId(17L);
+            shopOrderDiscountType.setPreferentialType(3);
+        }
+        if(param.getPlusOrderFlag()!=null&&param.getPlusOrderFlag()==1){
+            shopOrderDiscountType.setId(-1L);
+            shopOrderDiscountType.setPreferentialType(ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS);
+        }
+        if(param.getGiftId()!=null){
+            if(param.getGiftNum()==null){
+                return ApiUtils.error("赠送数量不可以为空");
+            }
+            ShopGoods shopGoods = shopGoodsService.find(param.getGiftId());
+            if(shopGoods==null){
+                return ApiUtils.error("所选赠品不存在");
+            }
+            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find("goodsId", param.getGiftId());//TODO 暂针对单规格商品
+            if(goodsSpec==null){
+                return ApiUtils.error("所选赠品不存在");
+            }
+            if(goodsSpec.getSpecGoodsStorage()<param.getGiftNum()){
+                return ApiUtils.error("所选赠品已赠完，请选择其他类型赠品");
+            }
+        }
+        //提交订单,返回订单支付实体
+        ShopOrderPay orderPay = new ShopOrderPay();
+        if(param.getPlatform()!=null&&param.getPlatform().equals("weixinAppletsPaymentPlugin")){
+            orderPay = orderService.addImmediatelyOrderReturnPaySn(param.getGoodsId(),param.getCount(),param.getSpecId(),param.getActivityId(),
+                    param.getActivityType(), param.getActivityGoodsId(), param.getActivitySkuId(),member.getMmCode()
+                    , orderMsgMap, param.getAddressId()
+                    , param.getCouponId(),OrderState.PLATFORM_WECHAT,shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),param.getGiftId(),param.getGiftNum(),
+                    param.getSplitOrderFlag(),param.getSplitCodes());
+        }else{
+            orderPay = orderService.addImmediatelyOrderReturnPaySn(param.getGoodsId(),param.getCount(),param.getSpecId(),param.getActivityId(),
+                    param.getActivityType(), param.getActivityGoodsId(), param.getActivitySkuId(),member.getMmCode()
+                    , orderMsgMap, param.getAddressId()
+                    , param.getCouponId(),OrderState.PLATFORM_APP,shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),param.getGiftId(),param.getGiftNum(),
+                    param.getSplitOrderFlag(),param.getSplitCodes());
+        }
+        List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
+                .findList(Paramap.create().put("order", "RID desc"));
+        RdMmIntegralRule rdMmIntegralRule = new RdMmIntegralRule();
+        if (rdMmIntegralRuleList != null && rdMmIntegralRuleList.size() > 0) {
+            rdMmIntegralRule = rdMmIntegralRuleList.get(0);
+        }
+        return ApiUtils.success(OrderSubmitResult
+                .build(rdMmIntegralRule, orderPay, rdMmAccountInfoService.find("mmCode", member.getMmCode())));
+    }
 }
