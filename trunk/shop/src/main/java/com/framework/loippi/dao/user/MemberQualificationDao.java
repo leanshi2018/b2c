@@ -7,6 +7,7 @@ import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.mybatis.paginator.domain.PageBounds;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
+import com.framework.loippi.pojo.common.AddVipGrantTicketVo;
 import com.framework.loippi.result.sys.SelfPerformanceJob;
 import com.framework.loippi.utils.Paramap;
 
@@ -24,4 +25,8 @@ public interface MemberQualificationDao extends GenericDao<MemberQualification, 
 	Integer findVipNumByMCode(String mCode);
 
 	Integer countByMCode(String mCode);
+
+	List<AddVipGrantTicketVo> countAddVipNum();
+
+	List<MemberQualification> findPreIsNullCountAddVipNum();
 }

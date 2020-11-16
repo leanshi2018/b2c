@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.framework.loippi.dao.user.MemberQualificationDao;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
+import com.framework.loippi.pojo.common.AddVipGrantTicketVo;
 import com.framework.loippi.result.sys.SelfPerformanceJob;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.MemberQualificationService;
@@ -61,5 +62,15 @@ public class MemberQualificationServiceImpl extends GenericServiceImpl<MemberQua
     @Override
     public Integer countByMCode(String mCode) {
         return memberQualificationDao.countByMCode(mCode);
+    }
+
+    @Override
+    public List<AddVipGrantTicketVo> countAddVipNum() {
+        return memberQualificationDao.countAddVipNum();
+    }
+
+    @Override
+    public List<MemberQualification> findPreIsNullCountAddVipNum() {
+        return memberQualificationDao.findPreIsNullCountAddVipNum();
     }
 }

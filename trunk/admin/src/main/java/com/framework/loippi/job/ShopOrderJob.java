@@ -44,6 +44,8 @@ import com.framework.loippi.dao.integration.RdMmIntegralRuleDao;
 import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.product.ShopGoodsSpecDao;
 import com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao;
+import com.framework.loippi.dao.travel.RdTravelTicketDao;
+import com.framework.loippi.dao.travel.RdTravelTicketDetailDao;
 import com.framework.loippi.dao.user.RdMmAccountInfoDao;
 import com.framework.loippi.dao.user.RdMmAccountLogDao;
 import com.framework.loippi.dao.user.RdMmBasicInfoDao;
@@ -71,6 +73,7 @@ import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.travel.RdTourismCompliance;
 import com.framework.loippi.entity.travel.RdTravelTicket;
 import com.framework.loippi.entity.travel.RdTravelTicketDetail;
+import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdGoodsAdjustment;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
@@ -81,6 +84,7 @@ import com.framework.loippi.entity.ware.RdWareAdjust;
 import com.framework.loippi.entity.ware.RdWareOrder;
 import com.framework.loippi.entity.ware.RdWarehouse;
 import com.framework.loippi.enus.ShunFengOperation;
+import com.framework.loippi.pojo.common.AddVipGrantTicketVo;
 import com.framework.loippi.pojo.order.SpiritOrderVo;
 import com.framework.loippi.service.ShunFengJsonExpressService;
 import com.framework.loippi.service.TwiterIdService;
@@ -101,6 +105,7 @@ import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.travel.RdTourismComplianceService;
 import com.framework.loippi.service.travel.RdTravelTicketDetailService;
 import com.framework.loippi.service.travel.RdTravelTicketService;
+import com.framework.loippi.service.user.MemberQualificationService;
 import com.framework.loippi.service.user.PlusProfitService;
 import com.framework.loippi.service.user.RdGoodsAdjustmentService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
@@ -208,6 +213,12 @@ public class ShopOrderJob {
     private PlusProfitService plusProfitService;
     @Resource
     private ShunFengJsonExpressService shunFengJsonExpressService;
+    @Resource
+    private MemberQualificationService memberQualificationService;
+    @Resource
+    private RdTravelTicketDetailDao rdTravelTicketDetailDao;
+    @Resource
+    private RdTravelTicketDao rdTravelTicketDao;
 
     private static final Logger log = LoggerFactory.getLogger(ShopOrderJob.class);
 
@@ -652,6 +663,136 @@ public class ShopOrderJob {
     }
 
     /**
+     * 发放旅游券
+     * 6732910881870450688l  正式环境券
+     * @throws Exception
+     */
+    //@Scheduled(cron = "0 15 16 * * ?" )  //每天15点发货
+    public void addVipGrantTicket() throws Exception {
+        System.out.println("###############################执行定时发放优惠券#####################################");
+
+        RdTravelTicket rdTravelTicket = rdTravelTicketDao.find(6732910881870450688l);
+        Long issueNum = rdTravelTicket.getIssueNum();
+        if (issueNum==null){
+            issueNum = 0l;
+        }
+
+        if (rdTravelTicket==null){
+            System.out.println("优惠券不存在");
+        }else {
+            List<AddVipGrantTicketVo> list = memberQualificationService.countAddVipNum();
+            System.out.println("num="+list.size());
+            Long total = 0l;
+            for (AddVipGrantTicketVo vo : list) {
+                if (vo.getAddVipNum()==null){
+                    vo.setAddVipNum(0);
+                }
+                if (vo.getAddVipNum()>0){
+                    RdMmBasicInfo mmBasicInfo = rdMmBasicInfoDao.findByMCode(vo.getMCode());
+                    for (int i=0;i<vo.getAddVipNum();i++){
+                        RdTravelTicketDetail rdTravelTicketDetail = new RdTravelTicketDetail();
+                        rdTravelTicketDetail.setId(twiterIdService.getTwiterId());
+                        rdTravelTicketDetail.setTravelId(rdTravelTicket.getId());
+                        rdTravelTicketDetail.setTravelName(Optional.ofNullable(rdTravelTicket.getTravelName()).orElse(""));
+                        rdTravelTicketDetail.setTicketPrice(Optional.ofNullable(rdTravelTicket.getTicketPrice()).orElse(BigDecimal.ZERO));
+                        rdTravelTicketDetail.setTicketSn("T"+twiterIdService.getTwiterId());
+                        rdTravelTicketDetail.setStatus(0);
+                        rdTravelTicketDetail.setOwnCode(mmBasicInfo.getMmCode());
+                        rdTravelTicketDetail.setOwnNickName(mmBasicInfo.getMmNickName());
+                        rdTravelTicketDetail.setOwnTime(new Date());
+                        rdTravelTicketDetail.setImage(Optional.ofNullable(rdTravelTicket.getImage()).orElse(""));
+
+                        rdTravelTicketDetailDao.insert(rdTravelTicketDetail);
+                        total = total+1;
+                    }
+
+                    //4.生成通知消息
+                    ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                    shopCommonMessage.setSendUid(mmBasicInfo.getMmCode());
+                    shopCommonMessage.setType(1);
+                    shopCommonMessage.setOnLine(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setBizType(2);
+                    shopCommonMessage.setIsTop(1);
+                    shopCommonMessage.setCreateTime(new Date());
+                    shopCommonMessage.setTitle("双11推新旅游券赠送");
+                    shopCommonMessage.setContent("恭喜您在双11活动期间（10月-11月11日）推荐了"+vo.getAddVipNum()+"个新会员，赠送您"+vo.getAddVipNum()+"张100元的旅游券");
+                    Long msgId = twiterIdService.getTwiterId();
+                    shopCommonMessage.setId(msgId);
+                    shopCommonMessageDao.insert(shopCommonMessage);
+                    ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                    shopMemberMessage.setBizType(2);
+                    shopMemberMessage.setCreateTime(new Date());
+                    shopMemberMessage.setId(twiterIdService.getTwiterId());
+                    shopMemberMessage.setIsRead(0);
+                    shopMemberMessage.setMsgId(msgId);
+                    shopMemberMessage.setUid(Long.parseLong(mmBasicInfo.getMmCode()));
+                    shopMemberMessageDao.insert(shopMemberMessage);
+                }
+            }
+
+            List<MemberQualification> mqList = memberQualificationService.findPreIsNullCountAddVipNum();
+            if (mqList.size()>0){
+                for (MemberQualification qualification : mqList) {
+                    if (qualification.getDdNewVIPNumber()==null){
+                        qualification.setDdNewVIPNumber(0);
+                    }
+                    if (qualification.getDdNewVIPNumber()>0){
+
+                        RdMmBasicInfo mmBasicInfo = rdMmBasicInfoDao.findByMCode(qualification.getMCode());
+                        for (int i=0;i<qualification.getDdNewVIPNumber();i++){
+                            RdTravelTicketDetail rdTravelTicketDetail = new RdTravelTicketDetail();
+                            rdTravelTicketDetail.setId(twiterIdService.getTwiterId());
+                            rdTravelTicketDetail.setTravelId(rdTravelTicket.getId());
+                            rdTravelTicketDetail.setTravelName(Optional.ofNullable(rdTravelTicket.getTravelName()).orElse(""));
+                            rdTravelTicketDetail.setTicketPrice(Optional.ofNullable(rdTravelTicket.getTicketPrice()).orElse(BigDecimal.ZERO));
+                            rdTravelTicketDetail.setTicketSn("T"+twiterIdService.getTwiterId());
+                            rdTravelTicketDetail.setStatus(0);
+                            rdTravelTicketDetail.setOwnCode(mmBasicInfo.getMmCode());
+                            rdTravelTicketDetail.setOwnNickName(mmBasicInfo.getMmNickName());
+                            rdTravelTicketDetail.setOwnTime(new Date());
+                            rdTravelTicketDetail.setImage(Optional.ofNullable(rdTravelTicket.getImage()).orElse(""));
+
+                            rdTravelTicketDetailDao.insert(rdTravelTicketDetail);
+                            total = total+1;
+                        }
+
+                        //4.生成通知消息
+                        ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
+                        shopCommonMessage.setSendUid(mmBasicInfo.getMmCode());
+                        shopCommonMessage.setType(1);
+                        shopCommonMessage.setOnLine(1);
+                        shopCommonMessage.setCreateTime(new Date());
+                        shopCommonMessage.setBizType(2);
+                        shopCommonMessage.setIsTop(1);
+                        shopCommonMessage.setCreateTime(new Date());
+                        shopCommonMessage.setTitle("双11推新旅游券赠送");
+                        shopCommonMessage.setContent("恭喜您在双11活动期间（10月-11月11日）推荐了"+qualification.getDdNewVIPNumber()+"个新会员，赠送您"+qualification.getDdNewVIPNumber()+"张100元的旅游券");
+                        Long msgId = twiterIdService.getTwiterId();
+                        shopCommonMessage.setId(msgId);
+                        shopCommonMessageDao.insert(shopCommonMessage);
+                        ShopMemberMessage shopMemberMessage=new ShopMemberMessage();
+                        shopMemberMessage.setBizType(2);
+                        shopMemberMessage.setCreateTime(new Date());
+                        shopMemberMessage.setId(twiterIdService.getTwiterId());
+                        shopMemberMessage.setIsRead(0);
+                        shopMemberMessage.setMsgId(msgId);
+                        shopMemberMessage.setUid(Long.parseLong(mmBasicInfo.getMmCode()));
+                        shopMemberMessageDao.insert(shopMemberMessage);
+                    }
+                }
+            }
+
+            rdTravelTicket.setIssueNum(issueNum+total);
+            rdTravelTicketDao.update(rdTravelTicket);
+
+        }
+
+        System.out.println("完成");
+    }
+
+
+    /**
      * 白酒顺丰发货
      * @throws Exception
      */
@@ -917,10 +1058,11 @@ public class ShopOrderJob {
                         dmobile = a.getBuyerPhone();
                     }
                     if (a.getSpecName() != null && !"".equals(a.getSpecName())) {
+                        String[] split = a.getSpecName().split("·");
                         if ("".equals(remark)) {
-                            remark = remark + a.getSpecName() + a.getGoodsNum().toString() + "箱";
+                            remark = remark + split[1] + a.getGoodsNum().toString() + "箱";
                         } else {
-                            remark = remark + "," + a.getSpecName() + a.getGoodsNum().toString() + "箱";
+                            remark = remark + "," + split[1] + a.getGoodsNum().toString() + "箱";
                         }
                     }
                 }
