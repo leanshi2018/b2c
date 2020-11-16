@@ -1917,6 +1917,7 @@ public class OrderSysController extends GenericController {
                 detail.setFirmSplitAmount(firmSplitAmount);
                 detail.setCutAmount(Optional.ofNullable(order.getCutAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP));
                 detail.setCutGetId(Optional.ofNullable(order.getCutGetId()).orElse(""));
+                detail.setCutFailInfo("");
 
                 RdMmBasicInfo rdMmBasicInfo=rdMmBasicInfoService.find("mmCode",order.getCutGetId());
                 if (rdMmBasicInfo==null){
@@ -1932,17 +1933,61 @@ public class OrderSysController extends GenericController {
                 model.addAttribute("referer", request.getHeader("Referer"));
                 return Constants.MSG_URL;
             }else if (cutStatus==3){
-                model.addAttribute("msg", "分账失败:"+Optional.ofNullable(order.getCutFailInfo()).orElse(""));
+                BigDecimal orderAmount = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal cutAmount = Optional.ofNullable(order.getCutAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal firmSplitAmount = orderAmount.subtract(cutAmount).setScale(2,BigDecimal.ROUND_HALF_UP);
+                OrderSplitDetail detail = new OrderSplitDetail();
+                detail.setId(orderId);
+                detail.setOrderSn(order.getOrderSn());
+                detail.setOrderAmount(orderAmount);
+                detail.setFirmSplitAmount(firmSplitAmount);
+                detail.setCutAmount(Optional.ofNullable(order.getCutAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP));
+                detail.setCutGetId(Optional.ofNullable(order.getCutGetId()).orElse(""));
+                detail.setCutFailInfo(Optional.ofNullable(order.getCutFailInfo()).orElse(""));
+
+                RdMmBasicInfo rdMmBasicInfo=rdMmBasicInfoService.find("mmCode",order.getCutGetId());
+                if (rdMmBasicInfo==null){
+                    detail.setCutGetName("");
+                }else {
+                    detail.setCutGetName(Optional.ofNullable(rdMmBasicInfo.getMmName()).orElse(""));
+                }
+
+                detail.setCutAcc(Optional.ofNullable(order.getCutAcc()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP));
+                model.addAttribute("detail", detail);
+
+                /*model.addAttribute("msg", "分账失败:"+Optional.ofNullable(order.getCutFailInfo()).orElse(""));
                 model.addAttribute("referer", request.getHeader("Referer"));
-                return Constants.MSG_URL;
+                return Constants.MSG_URL*/;
             }else if (cutStatus==4){
                 model.addAttribute("msg", "分账进行中");
                 model.addAttribute("referer", request.getHeader("Referer"));
                 return Constants.MSG_URL;
             }else {
-                model.addAttribute("msg", "未分账");
+                BigDecimal orderAmount = Optional.ofNullable(order.getOrderAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal cutAmount = Optional.ofNullable(order.getCutAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal firmSplitAmount = orderAmount.subtract(cutAmount).setScale(2,BigDecimal.ROUND_HALF_UP);
+                OrderSplitDetail detail = new OrderSplitDetail();
+                detail.setId(orderId);
+                detail.setOrderSn(order.getOrderSn());
+                detail.setOrderAmount(orderAmount);
+                detail.setFirmSplitAmount(firmSplitAmount);
+                detail.setCutAmount(Optional.ofNullable(order.getCutAmount()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP));
+                detail.setCutGetId(Optional.ofNullable(order.getCutGetId()).orElse(""));
+                detail.setCutFailInfo(Optional.ofNullable(order.getCutFailInfo()).orElse(""));
+
+                RdMmBasicInfo rdMmBasicInfo=rdMmBasicInfoService.find("mmCode",order.getCutGetId());
+                if (rdMmBasicInfo==null){
+                    detail.setCutGetName("");
+                }else {
+                    detail.setCutGetName(Optional.ofNullable(rdMmBasicInfo.getMmName()).orElse(""));
+                }
+
+                detail.setCutAcc(Optional.ofNullable(order.getCutAcc()).orElse(BigDecimal.ZERO).setScale(2,BigDecimal.ROUND_HALF_UP));
+                model.addAttribute("detail", detail);
+
+                /*model.addAttribute("msg", "未分账");
                 model.addAttribute("referer", request.getHeader("Referer"));
-                return Constants.MSG_URL;
+                return Constants.MSG_URL;*/
             }
         }
 

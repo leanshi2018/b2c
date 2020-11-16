@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.framework.loippi.entity.user.MemberQualification;
+import com.framework.loippi.pojo.common.AddVipGrantTicketVo;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
@@ -23,4 +24,8 @@ public interface MemberQualificationService extends GenericService<MemberQualifi
 	Integer findVipNumByMCode(String mCode);
 
 	Integer countByMCode(String mmCode);
+
+	List<AddVipGrantTicketVo> countAddVipNum();
+
+	List<MemberQualification> findPreIsNullCountAddVipNum();
 }
