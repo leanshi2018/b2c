@@ -372,10 +372,10 @@
             AND barter_num = #{barterNum,jdbcType=INTEGER}
         </if>
         <if test="usePointNum != null and usePointNum != ''">
-            AND use_point_num = #{usePointNum,jdbcType=INTEGER}
+            AND use_point_num = #{usePointNum}
         </if>
         <if test="pointRmbNum != null and pointRmbNum != ''">
-            AND point_rmb_num = #{pointRmbNum,jdbcType=INTEGER}
+            AND point_rmb_num = #{pointRmbNum}
         </if>
         <if test="isDel != null">
             AND is_del = #{isDel,jdbcType=INTEGER}
@@ -655,10 +655,10 @@
             barter_num = #{barterNum,jdbcType=INTEGER},
         </if>
         <if test="usePointNum != null">
-            use_point_num = #{usePointNum,jdbcType=INTEGER},
+            use_point_num = #{usePointNum},
         </if>
         <if test="pointRmbNum != null">
-            point_rmb_num = #{pointRmbNum,jdbcType=INTEGER},
+            point_rmb_num = #{pointRmbNum},
         </if>
         <if test="isDel != null">
             is_del = #{isDel,jdbcType=INTEGER},

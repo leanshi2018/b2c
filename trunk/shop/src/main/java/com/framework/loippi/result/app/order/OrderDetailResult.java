@@ -269,7 +269,7 @@ public class OrderDetailResult {
                 .setFinnshedTime(Optional.ofNullable(DateUtil.dateToStr(order.getFinnshedTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))
                 //备注
                 .setOrderMessage(optOrder.map(ShopOrderVo::getOrderMessage).orElse(""))
-                .setUsePointNum(optOrder.map(ShopOrderVo::getUsePointNum).orElse(0).intValue())
+                .setUsePointNum(optOrder.map(ShopOrderVo::getUsePointNum).orElse(BigDecimal.ZERO).intValue())
                 //是否被后台修改
                 .setIsModify(optOrder.map(ShopOrderVo::getIsModify).orElse(0).intValue())
                 // 可用积分抵扣金额

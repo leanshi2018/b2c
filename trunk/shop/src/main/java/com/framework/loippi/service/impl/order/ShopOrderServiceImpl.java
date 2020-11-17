@@ -2,16 +2,6 @@ package com.framework.loippi.service.impl.order;
 
 
 
-import com.framework.loippi.consts.*;
-import com.framework.loippi.dao.product.ShopGoodsBrandDao;
-import com.framework.loippi.entity.cart.ShopCart;
-import com.framework.loippi.entity.cart.ShopCartExchange;
-import com.framework.loippi.entity.order.*;
-import com.framework.loippi.entity.product.ShopGoodsBrand;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.pojo.cart.CartExchangeInfo;
-import com.framework.loippi.service.order.ShopOrderSplitService;
-import com.framework.loippi.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -46,6 +36,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.framework.loippi.consts.AllInPayBillCutConstant;
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.CouponConstant;
+import com.framework.loippi.consts.IntegrationNameConsts;
+import com.framework.loippi.consts.NewVipConstant;
+import com.framework.loippi.consts.NotifyConsts;
+import com.framework.loippi.consts.OrderState;
+import com.framework.loippi.consts.PaymentTallyState;
+import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.controller.AppConstants;
 import com.framework.loippi.controller.StateResult;
 import com.framework.loippi.dao.ShopCommonMessageDao;
@@ -59,6 +58,7 @@ import com.framework.loippi.dao.order.ShopOrderLogDao;
 import com.framework.loippi.dao.order.ShopOrderLogisticsDao;
 import com.framework.loippi.dao.order.ShopOrderPayDao;
 import com.framework.loippi.dao.point.ShopPointsLogDao;
+import com.framework.loippi.dao.product.ShopGoodsBrandDao;
 import com.framework.loippi.dao.product.ShopGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsSpecDao;
 import com.framework.loippi.dao.trade.ShopRefundReturnDao;
@@ -83,6 +83,8 @@ import com.framework.loippi.entity.ShopMemberMessage;
 import com.framework.loippi.entity.TSystemPluginConfig;
 import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
+import com.framework.loippi.entity.cart.ShopCart;
+import com.framework.loippi.entity.cart.ShopCartExchange;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.coupon.Coupon;
@@ -90,7 +92,17 @@ import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
+import com.framework.loippi.entity.order.OrderFundFlow;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderAddress;
+import com.framework.loippi.entity.order.ShopOrderDiscountType;
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.order.ShopOrderLog;
+import com.framework.loippi.entity.order.ShopOrderLogistics;
+import com.framework.loippi.entity.order.ShopOrderPay;
+import com.framework.loippi.entity.order.ShopOrderSplit;
 import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnLog;
@@ -113,6 +125,7 @@ import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.enus.RefundReturnState;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.pojo.activity.ShopGoodSpec;
+import com.framework.loippi.pojo.cart.CartExchangeInfo;
 import com.framework.loippi.pojo.cart.CartInfo;
 import com.framework.loippi.pojo.cart.CartVo;
 import com.framework.loippi.pojo.common.CensusVo;
@@ -141,6 +154,7 @@ import com.framework.loippi.service.integration.RdMmIntegralRuleService;
 import com.framework.loippi.service.order.OrderFundFlowService;
 import com.framework.loippi.service.order.ShopOrderGoodsService;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.order.ShopOrderSplitService;
 import com.framework.loippi.service.product.ShopCartExchangeService;
 import com.framework.loippi.service.product.ShopCartService;
 import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
@@ -855,7 +869,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             }
 
         }
-        if(order.getPaymentState()==0&&null!=order.getUsePointNum()&&order.getUsePointNum()>0){
+        if(order.getPaymentState()==0&&null!=order.getUsePointNum()&&order.getUsePointNum().compareTo(new BigDecimal("0.00"))==1){
             //退回积分
             returnPoint(order.getBuyerId(), order,orderLog.getOperator());
         }
@@ -2668,7 +2682,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         order.setDiscount(zero);
         order.setShippingFee(zero);
         order.setPointRmbNum(zero);
-        order.setUsePointNum(0);
+        order.setUsePointNum(new BigDecimal("0.00"));
         order.setShippingPreferentialFee(zero);
         String period = rdSysPeriodDao.getSysPeriodService(new Date());
         order.setCreationPeriod(period);
@@ -2822,7 +2836,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             }
         }else {
             // 订单使用积分支付
-            if (order.getUsePointNum() != null && order.getUsePointNum() != 0) {
+            if (order.getUsePointNum() != null && order.getUsePointNum().compareTo(new BigDecimal("0.00"))==1) {
                 RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
 
                 BigDecimal available = BigDecimal.valueOf(0);
@@ -2833,14 +2847,14 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     rdMmAccountLog.setAccType("SRB");
                     rdMmAccountLog.setTrSourceType("ORB");
                     availableBefore = rdMmAccountInfo.getRedemptionBlance();
-                    available = rdMmAccountInfo.getRedemptionBlance().add(BigDecimal.valueOf(order.getUsePointNum()));
+                    available = rdMmAccountInfo.getRedemptionBlance().add(order.getUsePointNum());
                     rdMmAccountInfo.setRedemptionBlance(available);
                 } else {
                     rdMmAccountLog.setTransTypeCode("OT");
                     rdMmAccountLog.setAccType("SWB");
                     rdMmAccountLog.setTrSourceType("OWB");
                     availableBefore = rdMmAccountInfo.getWalletBlance();
-                    available = rdMmAccountInfo.getWalletBlance().add(BigDecimal.valueOf(order.getUsePointNum()));
+                    available = rdMmAccountInfo.getWalletBlance().add(order.getUsePointNum());
                     rdMmAccountInfo.setWalletBlance(available);
                 }
                 //用户更新积分
@@ -2849,7 +2863,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 rdMmAccountLog.setMmNickName(rdMmBasicInfo.getMmNickName());
                 rdMmAccountLog.setTrMmCode(rdMmBasicInfo.getMmCode());
                 rdMmAccountLog.setBlanceBefore(availableBefore);
-                rdMmAccountLog.setAmount(BigDecimal.valueOf(order.getUsePointNum()));
+                rdMmAccountLog.setAmount(order.getUsePointNum());
                 rdMmAccountLog.setBlanceAfter(available);
                 //无需审核直接成功
                 rdMmAccountLog.setStatus(3);
@@ -5110,10 +5124,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     }
 
     @Override
-    public void ProcessingIntegrals(String paysn, Integer integration, RdMmBasicInfo shopMember, ShopOrderPay pay,
+    public void ProcessingIntegrals(String paysn, BigDecimal integration, RdMmBasicInfo shopMember, ShopOrderPay pay,
         Integer shoppingPointSr) {//购物积分购物比例
         //第一步 判断积分是否正确
-        if (integration < 0) {
+        if (integration.compareTo(new BigDecimal("0.00")) == -1) {
             throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能小于0");
         }
         //积分
@@ -5126,11 +5140,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             throw new StateResult(AppConstants.GOODS_STATE_ERRO, "用户积分未激活或者已冻结 ");
         }
 
-        if (rdMmAccountInfo.getWalletBlance().compareTo(BigDecimal.valueOf(integration)) == -1) {
+        if (rdMmAccountInfo.getWalletBlance().compareTo(integration) == -1) {
             throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能大于拥有积分");
         }
 
-        BigDecimal shoppingPoints = new BigDecimal(integration * shoppingPointSr * 0.01);
+        BigDecimal shoppingPoints = integration.multiply(new BigDecimal(shoppingPointSr * 0.01)).setScale(2, BigDecimal.ROUND_HALF_UP);
         if (shoppingPoints.compareTo(pay.getPayAmount()) == 1) {
             throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要抵现的不能大于订单金额");
         }
@@ -5143,15 +5157,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单已支付");
                 }
                 orderId = order.getId();
-                int pointNum = 0;
+                BigDecimal pointNum = new BigDecimal("0.00");
                 pointNum = new BigDecimal(
-                    (order.getOrderAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration))
-                    .setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-                order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(0) + pointNum);//设置订单所用积分数量
+                    (order.getOrderAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration.doubleValue()))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+                order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(BigDecimal.ZERO) .add(pointNum));//设置订单所用积分数量
                 order.setPointRmbNum(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
-                    .add(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+                    .add(new BigDecimal((pointNum.doubleValue()) * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
                 order.setOrderAmount(order.getOrderAmount()
-                    .subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+                    .subtract(new BigDecimal((pointNum.doubleValue()) * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
                 orderDao.update(order);
                 ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
                 shopCommonMessage.setSendUid(shopMember.getMmCode());
@@ -5187,7 +5201,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
         rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
         rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
-        rdMmAccountLog.setAmount(BigDecimal.valueOf(integration));
+        rdMmAccountLog.setAmount(integration);
         rdMmAccountLog.setTransDate(new Date());
         String period = rdSysPeriodDao.getSysPeriodService(new Date());
         rdMmAccountLog.setTransPeriod(period);
@@ -5198,92 +5212,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         rdMmAccountLog.setCreationTime(new Date());
         rdMmAccountLog.setAutohrizeBy(shopMember.getMmNickName());
         rdMmAccountLog.setAutohrizeTime(new Date());
-        rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().subtract(BigDecimal.valueOf(integration)));
+        rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().subtract(integration));
         rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
         rdMmAccountInfoService.update(rdMmAccountInfo);
         rdMmAccountLogService.save(rdMmAccountLog);
     }
 
 
-    @Override
-    public void ProcessingIntegralsCoupon(String paysn, Integer integration, RdMmBasicInfo shopMember, ShopOrderPay pay,
-        Integer shoppingPointSr) {//购物积分购物比例
-        //第一步 判断积分是否正确
-        if (integration < 0) {
-            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能小于0");
-        }
-        //积分
-        RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", shopMember.getMmCode());
-
-        if (rdMmAccountInfo == null) {
-            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "用户积分不正确");
-        }
-        if (rdMmAccountInfo.getWalletStatus() != 0) {
-            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "用户积分未激活或者已冻结 ");
-        }
-
-        if (rdMmAccountInfo.getWalletBlance().compareTo(BigDecimal.valueOf(integration)) == -1) {
-            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能大于拥有积分");
-        }
-
-
-        BigDecimal shoppingPoints = new BigDecimal(integration * shoppingPointSr * 0.01);
-        if (shoppingPoints.compareTo(new BigDecimal("0")) == 1){//使用抵现积分大于0
-            if (shoppingPoints.compareTo(pay.getPayAmount()) == 1) {
-                throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要抵现的不能大于订单金额");
-            }
-            if (shoppingPoints.compareTo(pay.getPayAmount()) == -1) {
-                throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要抵现的不能小于订单金额");
-            }
-        }
-        //修改订单价格
-        List<ShopOrder> orderList = super.findList("paySn", paysn);
-        Long orderId = 0L;
-        if (orderList != null && orderList.size() > 0) {
-            for (ShopOrder order : orderList) {
-                if (order.getOrderState() != 10) {
-                    throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单已支付");
-                }
-                orderId = order.getId();
-                int pointNum = 0;
-                pointNum = new BigDecimal(
-                    (order.getOrderAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration))
-                    .setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-                order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(0) + pointNum);//设置订单所用积分数量
-                order.setPointRmbNum(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
-                    .add(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
-                order.setOrderAmount(order.getOrderAmount()
-                    .subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
-                orderDao.update(order);
-            }
-        } else {
-            throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单不存在");
-        }
-        //更新用户购物积分
-        RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
-        rdMmAccountLog.setTransTypeCode("OP");
-        rdMmAccountLog.setAccType("SWB");
-        rdMmAccountLog.setTrSourceType("SWB");
-        rdMmAccountLog.setMmCode(shopMember.getMmCode());
-        rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
-        rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
-        rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
-        rdMmAccountLog.setAmount(BigDecimal.valueOf(integration));
-        rdMmAccountLog.setTransDate(new Date());
-        String period = rdSysPeriodDao.getSysPeriodService(new Date());
-        rdMmAccountLog.setTransPeriod(period);
-        rdMmAccountLog.setTrOrderOid(orderId);
-        //无需审核直接成功
-        rdMmAccountLog.setStatus(3);
-        rdMmAccountLog.setCreationBy(shopMember.getMmNickName());
-        rdMmAccountLog.setCreationTime(new Date());
-        rdMmAccountLog.setAutohrizeBy(shopMember.getMmNickName());
-        rdMmAccountLog.setAutohrizeTime(new Date());
-        rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().subtract(BigDecimal.valueOf(integration)));
-        rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
-        rdMmAccountInfoService.update(rdMmAccountInfo);
-        rdMmAccountLogService.save(rdMmAccountLog);
-    }
 /*    @Override
     public void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay,
                                     int shoppingPointSr) {//购物积分购物比例

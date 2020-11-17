@@ -283,11 +283,11 @@ public class ShopOrder implements GenericEntity {
 
     /** 订单所用积分数量 */
     @Column(name = "use_point_num" )
-    private Integer usePointNum;
+    private BigDecimal usePointNum;
 
     /** 积分抵扣金额 */
     @Column(name = "point_rmb_num" )
-    private java.math.BigDecimal pointRmbNum;
+    private BigDecimal pointRmbNum;
 
     /**  */
     @Column(name = "is_del" )

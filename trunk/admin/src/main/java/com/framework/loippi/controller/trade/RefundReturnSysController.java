@@ -1,7 +1,5 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.entity.order.OrderFundFlow;
-import com.framework.loippi.service.order.OrderFundFlowService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -48,6 +46,7 @@ import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.coupon.CouponRefund;
 import com.framework.loippi.entity.coupon.CouponUser;
+import com.framework.loippi.entity.order.OrderFundFlow;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
@@ -68,6 +67,7 @@ import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponRefundService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.coupon.CouponUserService;
+import com.framework.loippi.service.order.OrderFundFlowService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.trade.ShopRefundReturnService;
 import com.framework.loippi.service.trade.ShopReturnOrderGoodsService;
@@ -337,7 +337,7 @@ public class RefundReturnSysController extends GenericController {
             model.addAttribute("remainingMoney", order.getOrderAmount().doubleValue()-money);
             model.addAttribute("totalPoint", order.getUsePointNum());
             model.addAttribute("totalPpv", totalPpv);
-            model.addAttribute("remainingPoint", BigDecimal.valueOf(Optional.ofNullable(order.getUsePointNum()).orElse(0)).subtract(point));
+            model.addAttribute("remainingPoint", BigDecimal.valueOf(Optional.ofNullable(order.getUsePointNum()).orElse(BigDecimal.ZERO).doubleValue()).subtract(point));
             return "/trade/shop_refund_return/refund_view";
         }
         return ERROR_VIEW;
