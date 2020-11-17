@@ -1,6 +1,5 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.vo.user.UserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -68,6 +67,7 @@ import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.Xerror;
 import com.framework.loippi.vo.cart.ShopCartVo;
 import com.framework.loippi.vo.goods.GoodsStatisticsVo;
+import com.framework.loippi.vo.user.UserInfoVo;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
@@ -1167,7 +1167,7 @@ public class CartAPIController extends BaseController {
             ArrayList<UserInfoVo> members=rdMmBasicInfoService.findMemberOneMobile(Paramap.create().put("mmCode",rdMmBasicInfo.getMmCode()).
                     put("mobile",rdMmBasicInfo.getMobile()));
             List<RdRanks> ranks = rdRanksService.findAll();
-            RdRanks rdRankVip = rdRanksService.find(1L);
+            RdRanks rdRankVip = rdRanksService.find("rankId",1L);
             HashMap<Integer, RdRanks> rankMap = new HashMap<>();
             for (RdRanks rank : ranks) {
                 rankMap.put(rank.getRankId(),rank);
