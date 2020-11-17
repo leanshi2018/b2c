@@ -539,7 +539,7 @@
 	</select>
 
 	<select id="findMemberOneMobile" parameterType="map" resultType="com.framework.loippi.vo.user.UserInfoVo">
-		SELECT a.mm_code as mmCode,a.MM_NICK_NAME as mmNickName,b.rank as rank FROM rd_mm_basic_info a INNER JOIN rd_mm_relation b on a.mm_code = b.mm_code
+		SELECT a.mm_code as mmCode,a.MM_NICK_NAME as mmNickName,b.rank as rank,a.MM_AVATAR as mmAvatar FROM rd_mm_basic_info a INNER JOIN rd_mm_relation b on a.mm_code = b.mm_code
 		WHERE a.mm_code != #{mmCode} and a.MOBILE = #{mobile} and b.mm_status = 0
 		ORDER BY b.rank
 	</select>

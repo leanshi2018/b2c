@@ -23,4 +23,8 @@ public class UserInfoVo {
      * 会员级别名称
      */
     private String rankName;
+    /**
+     * 会员头像
+     */
+    private String mmAvatar;
 }
