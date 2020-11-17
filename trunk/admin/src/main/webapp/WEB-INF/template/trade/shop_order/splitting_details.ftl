@@ -65,7 +65,7 @@
                             <th class="align-center">会员名称</th>
                             <th class="align-center">分账金额（元）</th>
                             <th class="align-center">积分扣减</th>
-                            <th class="align-center">beiz</th>
+                            <th class="align-center">分账失败备注</th>
                         </tr>
 <#--                        <#list detail.content as details>-->
                             <tr>
@@ -74,6 +74,7 @@
                                 <td class="w96 align-center">${detail.cutGetName}</td>
                                 <td class="w96 align-center">${detail.cutAmount}</td>
                                 <td class="w96 align-center">${detail.cutAcc}</td>
+                                <td class="w96 align-center">${detail.cutFailInfo}</td>
                             </tr>
 <#--                        </#list>-->
 
