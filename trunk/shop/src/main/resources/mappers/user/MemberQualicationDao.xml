@@ -574,4 +574,12 @@
 		SELECT COUNT(*) FROM rd_dis_qualification WHERE MM_CODE = #{mCode} AND PPV &gt;= 25 AND PERIOD_CODE IN ('202006','202007','202008','202009','202010','202011','202012')
 	</select>
 
+	<select id="countAddVipNum"  resultType="com.framework.loippi.pojo.common.AddVipGrantTicketVo">
+		SELECT a1.MM_CODE mCode,a1.DD_NEW_VIP_NUMBER+a2.DD_NEW_VIP_NUMBER addVipNum FROM rd_dis_qualification a1 RIGHT JOIN (SELECT * FROM rd_dis_qualification WHERE PERIOD_CODE = '202011') a2 ON a1.MM_CODE = a2.MM_CODE WHERE a1.PERIOD_CODE = '202010'
+	</select>
+
+	<select id="findPreIsNullCountAddVipNum" resultMap="MemberQualicationResultMap">
+		SELECT * FROM rd_dis_qualification  WHERE PERIOD_CODE = '202011' AND MM_CODE NOT IN(SELECT MM_CODE FROM rd_dis_qualification WHERE PERIOD_CODE = '202010')
+	</select>
+
 </mapper>

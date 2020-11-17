@@ -158,20 +158,20 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 		}else{
 			List<ShopOrder> shopOrderList=orderService.findList("orderSn",sn);
-			int totalPointNum=0;
+			BigDecimal totalPointNum=new BigDecimal("0.00");
 			if (shopOrderList!=null && shopOrderList.size()>0){
 				Long memberId=shopOrderList.get(0).getBuyerId();
 				for (ShopOrder item:shopOrderList) {
-					if (Optional.ofNullable(item.getUsePointNum()).orElse(0)!=0){
-						totalPointNum+=item.getUsePointNum();
-						item.setUsePointNum(0);
+					if (Optional.ofNullable(item.getUsePointNum()).orElse(BigDecimal.ZERO).compareTo(new BigDecimal("0.00"))==1){
+						totalPointNum= totalPointNum.add(item.getUsePointNum());
+						item.setUsePointNum(new BigDecimal("0.00"));
 						item.setOrderAmount(item.getOrderAmount().add(item.getPointRmbNum()));
 						item.setPointRmbNum(new BigDecimal("0"));
 						orderService.update(item);
 					}
 				}
 				RdMmAccountInfo rdMmAccountInfo=rdMmAccountInfoService.find("mmCode",memberId);
-				rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(BigDecimal.valueOf(totalPointNum)));
+				rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().add(totalPointNum));
 				rdMmAccountInfoService.update(rdMmAccountInfo);
 			}
 		}

@@ -29,5 +29,7 @@ public class OrderSplitDetail {
 	private BigDecimal cutAmount;
 	/** 分账扣减积分 */
 	private BigDecimal cutAcc;
+	/** 不满足分账条件或分账失败 原因备注 */
+	private String cutFailInfo;
 
 }
