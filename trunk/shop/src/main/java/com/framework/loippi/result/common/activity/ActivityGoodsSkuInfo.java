@@ -36,8 +36,14 @@ public class ActivityGoodsSkuInfo {
     //会员价格
     private String goodsMemberPrice;
 
+    //大单价
+    private String goodsBigrPrice;
+
     //ppv
     private BigDecimal ppv;
+
+    //大单pv
+    private BigDecimal bigPpv;
 
     //规格信息
     private String specInfo;
@@ -55,12 +61,17 @@ public class ActivityGoodsSkuInfo {
     //图片
     private String image;
 
+    //是否属于plus规格商品 0不是 1是
+    private Integer plusVipFlag;
+
     public static ActivityGoodsSkuInfo of(ShopGoodsSpec sku,ShopGoods shopGoods) {
         ActivityGoodsSkuInfo skuInfo = new ActivityGoodsSkuInfo();
         // 市场价不受活动影响
         skuInfo.setGoodsMemberPrice(sku.getSpecMemberPrice().setScale(2, BigDecimal.ROUND_HALF_DOWN).toString());
         skuInfo.setGoodsRetailPrice(sku.getSpecRetailPrice().setScale(2, BigDecimal.ROUND_HALF_DOWN).toString());
+        skuInfo.setGoodsBigrPrice(sku.getSpecBigPrice().setScale(2, BigDecimal.ROUND_HALF_DOWN).toString());
         skuInfo.setPpv(sku.getPpv());
+        skuInfo.setBigPpv(sku.getBigPpv());
         skuInfo.setSkuId(sku.getId());
         skuInfo.setSpecInfo(sku.getSpecGoodsSpec());
         if (shopGoods.getGoodsType()!=3){
@@ -75,6 +86,11 @@ public class ActivityGoodsSkuInfo {
             skuInfo.setStock(sku.getSpecGoodsStorage());
         }
         skuInfo.setImage(shopGoods.getGoodsImage());
+        if(shopGoods.getPlusVipType()!=null&&shopGoods.getPlusVipType()==1){
+            skuInfo.setPlusVipFlag(1);
+        }else {
+            skuInfo.setPlusVipFlag(0);
+        }
         return skuInfo;
     }
 
@@ -91,8 +107,9 @@ public class ActivityGoodsSkuInfo {
         // 市场价不受活动影响
         skuInfo.setGoodsMemberPrice(sku.getSpecMemberPrice().setScale(2, BigDecimal.ROUND_HALF_DOWN).toString());
         skuInfo.setGoodsRetailPrice(sku.getSpecRetailPrice().setScale(2, BigDecimal.ROUND_HALF_DOWN).toString());
+        skuInfo.setGoodsBigrPrice(sku.getSpecBigPrice().setScale(2, BigDecimal.ROUND_HALF_DOWN).toString());
         skuInfo.setPpv(sku.getPpv());
-
+        skuInfo.setBigPpv(sku.getBigPpv());
         skuInfo.setSkuId(sku.getId());
         skuInfo.setSpecInfo(sku.getSpecGoodsSpec());
         if (shopGoods.getGoodsType()!=3){
@@ -112,6 +129,11 @@ public class ActivityGoodsSkuInfo {
             skuInfo.setActivitySkuId(shopActivityGoodsSpec.getSpecId());
             skuInfo.setActivityGoodsId(shopActivityGoodsSpec.getActivityGoodsId());
             skuInfo.setGoodsRetailPrice(shopActivityGoodsSpec.getActivityPrice().setScale(2, RoundingMode.HALF_DOWN).toString());
+        }
+        if(shopGoods.getPlusVipType()!=null&&shopGoods.getPlusVipType()==1){
+            skuInfo.setPlusVipFlag(1);
+        }else {
+            skuInfo.setPlusVipFlag(0);
         }
         return skuInfo;
     }
