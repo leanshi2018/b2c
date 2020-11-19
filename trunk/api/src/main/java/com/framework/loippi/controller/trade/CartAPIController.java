@@ -907,6 +907,19 @@ public class CartAPIController extends BaseController {
             if(order.getOrderType()!=null&&order.getOrderType()==5){//换购订单不可以调用正常订单的购买
                 return ApiUtils.error("订单类型错误");
             }
+            if(order.getImmediatelyFlag()!=null&&order.getImmediatelyFlag()==1){
+                for (ShopOrderGoods item : order.getShopOrderGoodses()) {
+                    if(item.getIsPresentation()==null||item.getIsPresentation()!=1){
+                        CartAddParam param = new CartAddParam();
+                        param.setGoodsId(item.getGoodsId());
+                        param.setCount(item.getGoodsNum());
+                        param.setSpecId(item.getSpecId());
+                        param.setActivityId(item.getActivityId());
+                        param.setActivityType(item.getActivityType());
+                        return immediatelyCheckout(param,null,-1L,1,null,request,null);
+                    }
+                }
+            }
             List<ShopCart> cartList = new ArrayList<>();
             for (ShopOrderGoods item : order.getShopOrderGoodses()) {
                 ShopCart cart = new ShopCart();
