@@ -282,6 +282,7 @@ public class CartAPIController extends BaseController {
         }
         result = result.build2(result, shopOrderDiscountTypeList, rdRanks, rdMmBasicInfo, shopMemberAddress,
             orderDiscountTypeList);
+        result.setImmediatelyFlag(0);
         return ApiUtils.success(result);
     }
 
@@ -465,7 +466,7 @@ public class CartAPIController extends BaseController {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
+        result.setImmediatelyFlag(0);
         return ApiUtils.success(result);
     }
 
@@ -615,6 +616,7 @@ public class CartAPIController extends BaseController {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        result.setImmediatelyFlag(0);
         return ApiUtils.success(result);
     }
 
@@ -757,6 +759,7 @@ public class CartAPIController extends BaseController {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        result.setImmediatelyFlag(0);
         return ApiUtils.success(result);
     }
 
@@ -1195,6 +1198,19 @@ public class CartAPIController extends BaseController {
             }
             result.setCutUserInfoList(members);
         }
+        if(param.getActivityId()!=null){
+            result.setActivityId(param.getActivityId());
+        }
+        if(param.getActivityGoodsId()!=null){
+            result.setActivityGoodsId(param.getActivityGoodsId());
+        }
+        if(param.getActivitySkuId()!=null){
+            result.setActivitySkuId(param.getActivitySkuId());
+        }
+        if(param.getActivityType()!=null){
+            result.setActivityType(param.getActivityType());
+        }
+        result.setImmediatelyFlag(1);
         return ApiUtils.success(result);
     }
 }
