@@ -423,6 +423,12 @@ public class ShopOrder implements GenericEntity {
      */
     @Column(name = "split_flag" )
     private Integer splitFlag;
+
+    /**
+     * 0：购物车结算订单 1：立即购买订单
+     */
+    @Column(name = "immediately_flag" )
+    private Integer immediatelyFlag;
 /*********************添加*********************/
     /**
      * 订单商品

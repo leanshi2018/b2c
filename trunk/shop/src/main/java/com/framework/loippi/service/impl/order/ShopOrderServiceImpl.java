@@ -7735,6 +7735,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
             ShopOrder order = new ShopOrder();
             //该项目只有自营
+            order.setImmediatelyFlag(1);
             order.setStoreId(0L);
             order.setLogisticType(logisticType);
             order.setStoreName("自营商店");
