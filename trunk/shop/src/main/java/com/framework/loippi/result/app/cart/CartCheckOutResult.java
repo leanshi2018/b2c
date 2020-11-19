@@ -1,5 +1,6 @@
 package com.framework.loippi.result.app.cart;
 
+import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.vo.user.UserInfoVo;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -200,7 +201,27 @@ public class CartCheckOutResult {
      */
     private ArrayList<UserInfoVo> cutUserInfoList=Lists.newArrayList();
 
+    /**
+     * 0:购物车结算页  1：立即购买结算页
+     */
+    private Integer immediatelyFlag;
+    /**
+     * 活动id
+     */
+    private Long activityId;
 
+    //活动规格id
+    private Long activitySkuId;
+
+    //活动商品id
+    private Long activityGoodsId;
+
+    /**
+     * 活动类型
+     *
+     * @see ActivityTypeEnus
+     */
+    private Integer activityType;
     @Data
     public static class selectShopOrderType {
         Long shopOrderTypeId;

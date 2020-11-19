@@ -1182,6 +1182,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
             ShopOrder order = new ShopOrder();
             //该项目只有自营
+            order.setImmediatelyFlag(0);
             order.setStoreId(0L);
             order.setLogisticType(logisticType);
             order.setStoreName("自营商店");
@@ -1532,6 +1533,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
             ShopOrder order = new ShopOrder();
             //该项目只有自营
+            order.setImmediatelyFlag(0);
             order.setStoreId(0L);
             order.setLogisticType(logisticType);
             order.setStoreName("自营商店");
@@ -1975,6 +1977,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
             ShopOrder order = new ShopOrder();
             //该项目只有自营
+            order.setImmediatelyFlag(0);
             order.setStoreId(0L);
             order.setLogisticType(logisticType);
             order.setStoreName("自营商店");
@@ -2353,6 +2356,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         orderPayDao.insert(orderPay);
         ShopOrder order = new ShopOrder();
         //该项目只有自营
+        order.setImmediatelyFlag(1);
         order.setStoreId(0L);
         order.setStoreName("自营商店");
         Long orderId = twiterIdService.getTwiterId();
@@ -7369,6 +7373,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             throw new RuntimeException("购物车不存在");
         }
         ShopOrder order = new ShopOrder();
+        order.setImmediatelyFlag(0);
         order.setStoreId(0L);
         order.setLogisticType(logisticType);
         order.setStoreName("自营商店");
