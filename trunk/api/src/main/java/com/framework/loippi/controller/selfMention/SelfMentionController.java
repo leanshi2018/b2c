@@ -250,7 +250,9 @@ public class SelfMentionController extends BaseController {
 
                 wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
                 wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
+                wareGoodsVo.setGoodsBigPrice(Optional.ofNullable(shopGoods.getGoodsBigPrice()).orElse(BigDecimal.ZERO));
                 wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
+                wareGoodsVo.setBigPpv(Optional.ofNullable(shopGoods.getBigPpv()).orElse(BigDecimal.ZERO));
                 wareGoodsVo.setInventory(Optional.ofNullable(inventoryWarning.getInventory()).orElse(0));
                 Integer salesNum = shopOrderService.countMentionSales(warehouse.getMentionId(),inventoryWarning.getSpecificationId());//销量
                 if (salesNum==null){
@@ -386,7 +388,9 @@ public class SelfMentionController extends BaseController {
             }
             wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(shopGoods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(shopGoods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
+            wareGoodsVo.setGoodsBigPrice(Optional.ofNullable(shopGoods.getGoodsBigPrice()).orElse(BigDecimal.ZERO));
             wareGoodsVo.setPpv(Optional.ofNullable(shopGoods.getPpv()).orElse(BigDecimal.ZERO));
+            wareGoodsVo.setBigPpv(Optional.ofNullable(shopGoods.getBigPpv()).orElse(BigDecimal.ZERO));
             if (warning==null){
                 wareGoodsVo.setInventory(0);
             }else {
@@ -655,7 +659,9 @@ public class SelfMentionController extends BaseController {
         }
         wareGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goods.getGoodsRetailPrice()).orElse(BigDecimal.ZERO));
         wareGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goods.getGoodsMemberPrice()).orElse(BigDecimal.ZERO));
+        wareGoodsVo.setGoodsBigPrice(Optional.ofNullable(goods.getGoodsBigPrice()).orElse(BigDecimal.ZERO));
         wareGoodsVo.setPpv(Optional.ofNullable(goods.getPpv()).orElse(BigDecimal.ZERO));
+        wareGoodsVo.setBigPpv(Optional.ofNullable(goods.getBigPpv()).orElse(BigDecimal.ZERO));
         wareGoodsVo.setCostPrice(Optional.ofNullable(goodsSpec.getCostPrice()).orElse(new BigDecimal(100.00)));
         wareGoodsVo.setInventory(Optional.ofNullable(wareInventory.getInventory()).orElse(0));
         wareGoodsVo.setInventoryGc(Optional.ofNullable(companyInvenInventory).orElse(0));
@@ -723,12 +729,16 @@ public class SelfMentionController extends BaseController {
                 orderGoodsVo.setStockInto(Optional.ofNullable(rdGoodsAdjustment.getStockInto()).orElse(0l));
                 if (goodsSpec==null){
                     orderGoodsVo.setPpv(BigDecimal.ZERO);
+                    orderGoodsVo.setBigPpv(BigDecimal.ZERO);
                     orderGoodsVo.setGoodsRetailPrice(BigDecimal.ZERO);
                     orderGoodsVo.setGoodsMemberPrice(BigDecimal.ZERO);
+                    orderGoodsVo.setGoodsBigPrice(BigDecimal.ZERO);
                 }else {
                     orderGoodsVo.setPpv(Optional.ofNullable(goodsSpec.getPpv()).orElse(BigDecimal.ZERO));
+                    orderGoodsVo.setBigPpv(Optional.ofNullable(goodsSpec.getBigPpv()).orElse(BigDecimal.ZERO));
                     orderGoodsVo.setGoodsRetailPrice(Optional.ofNullable(goodsSpec.getSpecRetailPrice()).orElse(BigDecimal.ZERO));
                     orderGoodsVo.setGoodsMemberPrice(Optional.ofNullable(goodsSpec.getSpecMemberPrice()).orElse(BigDecimal.ZERO));
+                    orderGoodsVo.setGoodsBigPrice(Optional.ofNullable(goodsSpec.getSpecBigPrice()).orElse(BigDecimal.ZERO));
                 }
                 orderGoodsVo.setCostPrice(Optional.ofNullable(goodsSpec.getCostPrice()).orElse(new BigDecimal(100.00)));
                 orderGoodsVo.setOweInventory(Optional.ofNullable(rdGoodsAdjustment.getStockOwe().intValue()).orElse(0));//欠货数量

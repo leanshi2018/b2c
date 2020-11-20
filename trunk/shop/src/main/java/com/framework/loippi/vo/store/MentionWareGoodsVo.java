@@ -50,12 +50,19 @@ public class MentionWareGoodsVo {
 	 * 会员价（会员价）
 	 */
 	private BigDecimal goodsMemberPrice;
+	/**
+	 * 大单价格
+	 */
+	private BigDecimal goodsBigPrice;
 
 	/**
 	 * ppv（mi值）
 	 */
 	private BigDecimal ppv;
-
+	/**
+	 * 大单Ppv
+	 */
+	private BigDecimal bigPpv;
 	/**
 	 * 成本价
 	 */
