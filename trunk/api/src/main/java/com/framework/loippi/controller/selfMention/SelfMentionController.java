@@ -230,7 +230,8 @@ public class SelfMentionController extends BaseController {
                 wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
                 wareGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
                 wareGoodsVo.setSpecId(Optional.ofNullable(inventoryWarning.getSpecificationId()).orElse(0l));
-
+                wareGoodsVo.setPlusVipType(Optional.ofNullable(shopGoods.getPlusVipType()).orElse(0));
+                wareGoodsVo.setGoodsType(Optional.ofNullable(shopGoods.getGoodsType()).orElse(1));
                 if (shopGoods.getGoodsType()==3){
                     wareGoodsVo.setSpecGoodsSpec(goodsSpec.getSpecGoodsSerial());
                 }else{
@@ -366,7 +367,8 @@ public class SelfMentionController extends BaseController {
             wareGoodsVo.setGoodsName(Optional.ofNullable(shopGoods.getGoodsName()).orElse(""));
             wareGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
             wareGoodsVo.setSpecId(Optional.ofNullable(specId).orElse(0l));
-
+            wareGoodsVo.setGoodsType(Optional.ofNullable(shopGoods.getGoodsType()).orElse(1));
+            wareGoodsVo.setPlusVipType(Optional.ofNullable(shopGoods.getPlusVipType()).orElse(0));
             if (shopGoods.getGoodsType()==3){
                 wareGoodsVo.setSpecGoodsSpec(spec.getSpecGoodsSerial());
             }else{
@@ -634,6 +636,8 @@ public class SelfMentionController extends BaseController {
         wareGoodsVo.setGoodsName(Optional.ofNullable(goods.getGoodsName()).orElse(""));
         wareGoodsVo.setGoodsImage(Optional.ofNullable(goods.getGoodsImage()).orElse(""));
         wareGoodsVo.setSpecId(Optional.ofNullable(wareInventory.getSpecificationId()).orElse(0l));
+        wareGoodsVo.setGoodsType(Optional.ofNullable(goods.getGoodsType()).orElse(1));
+        wareGoodsVo.setPlusVipType(Optional.ofNullable(goods.getPlusVipType()).orElse(0));
         if (goods.getGoodsType()==3){
             wareGoodsVo.setSpecGoodsSpec(goodsSpec.getSpecGoodsSerial());
         }else{
@@ -699,6 +703,8 @@ public class SelfMentionController extends BaseController {
                 orderGoodsVo.setGoodId(Optional.ofNullable(rdGoodsAdjustment.getGoodId()).orElse(0l));
                 orderGoodsVo.setGoodsName(Optional.ofNullable(rdGoodsAdjustment.getGoodsName()).orElse(""));
                 orderGoodsVo.setGoodsImage(Optional.ofNullable(shopGoods.getGoodsImage()).orElse(""));
+                orderGoodsVo.setGoodsType(Optional.ofNullable(shopGoods.getGoodsType()).orElse(1));
+                orderGoodsVo.setPlusVipType(Optional.ofNullable(shopGoods.getPlusVipType()).orElse(0));
                 if (shopGoods.getGoodsType()==3){
                     orderGoodsVo.setGoodsSpec(goodsSpec.getSpecGoodsSerial());
                 }else{
