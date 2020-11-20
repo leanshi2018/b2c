@@ -35,7 +35,10 @@ public class OrderGoodsVo {
 	 * ppv
 	 */
 	private BigDecimal ppv;
-
+	/**
+	 * 大单Ppv
+	 */
+	private BigDecimal bigPpv;
 	/**
 	 * 零售价（普通价）
 	 */
@@ -44,7 +47,10 @@ public class OrderGoodsVo {
 	 * 会员价格
 	 */
 	private BigDecimal goodsMemberPrice;
-
+	/**
+	 * 大单价格
+	 */
+	private BigDecimal goodsBigPrice;
 	/**
 	 * 成本价
 	 */
