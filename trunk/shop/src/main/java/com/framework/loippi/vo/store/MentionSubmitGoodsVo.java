@@ -55,4 +55,6 @@ public class MentionSubmitGoodsVo {
 	/** 补货数量 */
 	private Integer comeInventory;
 
+	/** 商品类型1-普通2-换购3-组合 */
+	private Integer goodsType;
 }
