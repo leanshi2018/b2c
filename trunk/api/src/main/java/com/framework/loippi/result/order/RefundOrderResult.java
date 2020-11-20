@@ -146,7 +146,10 @@ public class RefundOrderResult {
          * pv
          */
         private BigDecimal ppv;
-
+        /**
+         * 商品类型 1-普通2-换购3-组合
+         */
+        public Integer goodsType;
     }
 
     public static RefundOrderResult buildList(List<ReturnGoodsVo> returnGoodsVoList, RdMmAddInfo shopMemberAddress) {
@@ -168,6 +171,7 @@ public class RefundOrderResult {
                 // TODO: 2018/12/6   等待判断登录用户是否是vip 显示不同价格
                 goodsInfo.setPrice(Optional.ofNullable(orderGoods.getPrice()).orElse(new BigDecimal(0)));
                 goodsInfo.setQuantity(Optional.ofNullable(orderGoods.getGoodsNum()).orElse(0));
+                goodsInfo.setGoodsType(Optional.ofNullable(orderGoods.getGoodsType()).orElse(0));
                 goodsInfo.setPpv(Optional.ofNullable(orderGoods.getPpv()).orElse(BigDecimal.ZERO));
                 goodsInfoList.add(goodsInfo);
             }
