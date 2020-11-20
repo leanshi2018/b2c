@@ -41,7 +41,10 @@ public class ApplyRefundReturnResult {
         private Long orderGoodsId;
         //该商品是否可以进行售后 1可以 0不可以
         private int isRefundReturn;
-
+        /**
+         * 商品类型 1-普通2-换购3-组合
+         */
+        public Integer goodsType;
         public static List<ApplyItem> buildList(ShopOrderVo orderVo, Map<String, ShopRefundReturn> map)
             throws Exception {
             List<ShopOrderGoods> orderGoodsList = orderVo.getShopOrderGoods();
@@ -50,6 +53,7 @@ public class ApplyRefundReturnResult {
                     .setIsRefundReturn(
                         map.get(result.getOrderId() + "") != null && result.getGoodsNum() != (result.getGoodsReturnnum()
                             + result.getGoodsBarternum()) ? 1 : 0)
+                    .setGoodsType(result.getGoodsType())
 
             );
         }

@@ -65,7 +65,10 @@ public class EvaluateOrderGoodsResult {
      * 是否已评价
      */
     private int typeStatus;
-
+    /**
+     * 商品类型 1-普通2-换购3-组合
+     */
+    public Integer goodsType;
 
     public static List<EvaluateOrderGoodsResult> build(List<ShopOrderGoods> shopOrderGoodsList,ShopOrder shopOrder) {
         List<EvaluateOrderGoodsResult> results = new ArrayList<>();
@@ -85,6 +88,7 @@ public class EvaluateOrderGoodsResult {
                 }else{
                     evaluateOrderGoodsResult.setPpv(item.getPpv());
                 }
+                evaluateOrderGoodsResult.setGoodsType(item.getGoodsType());
                 results.add(evaluateOrderGoodsResult);
             }
         }
@@ -117,6 +121,7 @@ public class EvaluateOrderGoodsResult {
                         evaluateOrderGoodsResult.setTypeStatus(0);
                     }
                 }
+                evaluateOrderGoodsResult.setGoodsType(item.getGoodsType());
                 results.add(evaluateOrderGoodsResult);
             }
         }
