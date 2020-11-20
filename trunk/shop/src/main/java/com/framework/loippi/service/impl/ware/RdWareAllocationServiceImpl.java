@@ -597,6 +597,7 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 			goodsVo.setGoodsName(shopGoods.getGoodsName());
 			goodsVo.setGoodsImage(shopGoods.getGoodsImage());
 			goodsVo.setSpecId(goodsSpec.getId());
+			goodsVo.setGoodsType(shopGoods.getGoodsType());
 			if (shopGoods.getGoodsType()==3){
 				goodsVo.setSpecGoodsSpec(goodsSpec.getSpecGoodsSerial());
 			}else{
