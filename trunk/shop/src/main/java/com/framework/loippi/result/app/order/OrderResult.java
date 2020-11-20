@@ -158,6 +158,8 @@ public class OrderResult {
          */
         public BigDecimal price;
 
+        //商品类型 1-普通2-换购3-组合
+        private Integer goodsType;
     }
 
     public static List<OrderResult> buildList(List<ShopOrderVo> shopOrderVos) {
@@ -182,6 +184,7 @@ public class OrderResult {
                 // TODO: 2018/12/6   等待判断登录用户是否是vip 显示不同价格
                 goodsInfo.setPrice(Optional.ofNullable(orderGoods.getGoodsPayPrice()).orElse(new BigDecimal(0)));
                 goodsInfo.setQuantity(Optional.ofNullable(orderGoods.getGoodsNum()).orElse(0));
+                goodsInfo.setGoodsType(Optional.ofNullable(orderGoods.getGoodsType()).orElse(1));
                 /*if (orderGoods.getOrderId() == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PPV||orderGoods.getOrderId() == ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_PLUS) {
                     goodsInfo.setPpv(Optional.ofNullable(orderGoods.getBigPpv()).orElse(BigDecimal.ZERO));
                 }*/
@@ -271,6 +274,7 @@ public class OrderResult {
                 // TODO: 2018/12/6   等待判断登录用户是否是vip 显示不同价格
                 goodsInfo.setPrice(Optional.ofNullable(orderGoods.getPrice()).orElse(BigDecimal.ZERO));
                 goodsInfo.setQuantity(Optional.ofNullable(orderGoods.getGoodsNum()).orElse(0));
+                goodsInfo.setGoodsType(Optional.ofNullable(orderGoods.getGoodsType()).orElse(0));
                 goodsInfoList.add(goodsInfo);
             }
             Optional<ReturnGoodsVo> optionalReturnGoodsVo = Optional.ofNullable(returnGoodsVo);

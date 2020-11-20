@@ -215,6 +215,9 @@ public class OrderDetailResult {
         private BigDecimal ppv;
         //是否发货 0没发货 1已发货
         private Integer isShipment;
+
+        //商品类型 1-普通2-换购3-组合
+        private Integer goodsType;
         public static List<OrderGoods> buildList(List<ShopOrderGoods> orderGoodsList) throws Exception {
             return BaseGoodsResult.buildList(orderGoodsList,
                     result -> new OrderGoods()
@@ -223,7 +226,8 @@ public class OrderDetailResult {
                             )
                             .setPpv(Optional.ofNullable(result.getPpv()).orElse(BigDecimal.ZERO))
                             .setActivityId(Optional.ofNullable(result.getActivityId()).orElse(0L))
-                            .setActivityType(Optional.ofNullable(result.getActivityType()).orElse(0)));
+                            .setActivityType(Optional.ofNullable(result.getActivityType()).orElse(0))
+                            .setGoodsType(Optional.ofNullable(result.getGoodsType()).orElse(1)));
         }
 
         public static List<OrderGoods>  buildList1(List<ShopOrderGoods> orderGoodsList,Integer orderType) throws Exception {
@@ -234,7 +238,8 @@ public class OrderDetailResult {
                             )
                             .setPpv(Optional.ofNullable(result.getPpv()).orElse(BigDecimal.ZERO))
                             .setActivityId(Optional.ofNullable(result.getActivityId()).orElse(0L))
-                            .setActivityType(Optional.ofNullable(result.getActivityType()).orElse(0)));
+                            .setActivityType(Optional.ofNullable(result.getActivityType()).orElse(0))
+                            .setGoodsType(Optional.ofNullable(result.getGoodsType()).orElse(1)));
         }
     }
 
