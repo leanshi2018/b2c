@@ -660,11 +660,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     }
                 }
                 if(order.getOrderType()==8&&order.getSplitFlag()==1){
-                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",1));
+                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",1));
                     if(list!=null&&list.size()>0){
                         for (ShopOrderSplit shopOrderSplit : list) {
-                            //判断分单会员取消订单后是否会降级
-                            rankControl(shopOrderSplit);
+                            if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                //判断分单会员取消订单后是否会降级
+                                rankControl(shopOrderSplit);
+                            }
+                            shopOrderSplit.setStatus(2);
+                            shopOrderSplitService.update(shopOrderSplit);
                         }
                     }
                 }
@@ -3714,14 +3718,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     plusProfitService.save(plusProfit);
                     //判断当前订单是否分单，如果分单，判断分单用户是否需要升级
                     if(order.getSplitFlag()!=null&&order.getSplitFlag()==1){
-                        List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",3));
+                        List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",3));
                         if(list!=null&&list.size()>0){
                             for (ShopOrderSplit shopOrderSplit : list) {
                                 shopOrderSplit.setStatus(1);
                                 shopOrderSplit.setPaymentTime(new Date());
                                 shopOrderSplit.setPeriodCode(periodCode);
                                 shopOrderSplitService.update(shopOrderSplit);
-                                upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                                if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                    upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                                }
                             }
                         }
                     }
@@ -5424,14 +5430,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         plusProfitService.save(plusProfit);
                         //判断当前订单是否分单，如果分单，判断分单用户是否需要升级
                         if(order.getSplitFlag()!=null&&order.getSplitFlag()==1){
-                            List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",3));
+                            List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",3));
                             if(list!=null&&list.size()>0){
                                 for (ShopOrderSplit shopOrderSplit : list) {
                                     shopOrderSplit.setStatus(1);
                                     shopOrderSplit.setPaymentTime(new Date());
                                     shopOrderSplit.setPeriodCode(periodCode);
                                     shopOrderSplitService.update(shopOrderSplit);
-                                    upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                                    if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                        upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                                    }
                                 }
                             }
                         }
@@ -6154,11 +6162,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     shopMemberMessageDao.insert(shopMemberMessage);
                 }
                 if(order.getOrderType()==8&&order.getSplitFlag()==1){
-                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",1));
+                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",1));
                     if(list!=null&&list.size()>0){
                         for (ShopOrderSplit shopOrderSplit : list) {
-                            //判断分单会员取消订单后是否会降级
-                            rankControl(shopOrderSplit);
+                            shopOrderSplit.setStatus(2);
+                            shopOrderSplitService.update(shopOrderSplit);
+                            if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                //判断分单会员取消订单后是否会降级
+                                rankControl(shopOrderSplit);
+                            }
                         }
                     }
                 }
@@ -6273,11 +6285,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     shopMemberMessageDao.insert(shopMemberMessage);
                 }
                 if(order.getOrderType()==8&&order.getSplitFlag()==1){
-                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",1));
+                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",1));
                     if(list!=null&&list.size()>0){
                         for (ShopOrderSplit shopOrderSplit : list) {
-                            //判断分单会员取消订单后是否会降级
-                            rankControl(shopOrderSplit);
+                            shopOrderSplit.setStatus(2);
+                            shopOrderSplitService.update(shopOrderSplit);
+                            if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                //判断分单会员取消订单后是否会降级
+                                rankControl(shopOrderSplit);
+                            }
                         }
                     }
                 }
