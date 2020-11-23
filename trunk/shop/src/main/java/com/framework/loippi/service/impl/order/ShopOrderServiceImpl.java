@@ -7546,15 +7546,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
      * @param logisticType 配送方式 快递 自提
      * @param paymentType 支付方式：固定在线支付
      * @param giftId 赠品id
-     * @param splitOrderFlag 是否分单 0：不分单 1：分单
      * @param giftNum 赠品数量
+     * @param splitOrderFlag 是否分单 0：不分单 1：分单
      * @param splitCodes 分单会员拼接字符串
      * @return
      */
     @Override
     public ShopOrderPay addImmediatelyOrderReturnPaySn(Long goodsId, Integer count, Long specId, Long activityId, Integer activityType, Long activityGoodsId, Long activitySkuId,
                                                        String mmCode, Map<String, Object> orderMsgMap, Long addressId, Long couponId, int platform, ShopOrderDiscountType shopOrderDiscountType,
-                                                       Integer logisticType, Integer paymentType, Long giftId, Integer splitOrderFlag, Integer giftNum, String splitCodes) {
+                                                       Integer logisticType, Integer paymentType, Long giftId, Integer giftNum, Integer splitOrderFlag, String splitCodes) {
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", mmCode);
         ShopCart cart = new ShopCart();
         cart=buildCart(goodsId, mmCode,rdMmRelation.getRank(),
