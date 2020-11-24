@@ -175,7 +175,7 @@
     </select>
 
     <select id="findSplitPpv" parameterType="java.util.Map" resultType="java.math.BigDecimal">
-        SELECT * FROM shop_order_split WHERE mm_code = #{mmCode} AND status = 1 AND period_code = #{periodCode}
+        SELECT sum(pv) FROM shop_order_split WHERE mm_code = #{mmCode} AND status = 1 AND period_code = #{periodCode}
     </select>
 
 </mapper>

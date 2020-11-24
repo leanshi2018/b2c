@@ -1,22 +1,8 @@
 package com.framework.loippi.controller.travel;
 
 
-import jxl.Workbook;
-import jxl.format.Alignment;
-import jxl.format.Colour;
-import jxl.format.UnderlineStyle;
-import jxl.format.VerticalAlignment;
-import jxl.write.Label;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -27,7 +13,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -39,8 +24,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.entity.Principal;
@@ -1021,7 +1004,7 @@ public class TravelController {
 	 * 旅游团价格表
 	 *
 	 */
-	@RequestMapping("/travel/upload")
+	/*@RequestMapping("/travel/upload")
 	public String downloadTicketDetail(ModelMap model) {
 		System.out.println("*************************导出未使用旅游券***************************");
 		ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -1158,14 +1141,14 @@ public class TravelController {
 		try {
 
 			// 1.弹出下载框，并处理中文
-			/** 如果是从jsp页面传过来的话，就要进行中文处理，在这里action里面产生的直接可以用
+			*//** 如果是从jsp页面传过来的话，就要进行中文处理，在这里action里面产生的直接可以用
 			 * String filename = request.getParameter("filename");
-			 */
-			/**
+			 *//*
+			*//**
 			 if (request.getMethod().equalsIgnoreCase("GET")) {
 			 filename = new String(filename.getBytes("iso8859-1"), "utf-8");
 			 }
-			 */
+			 *//*
 
 			response.addHeader("content-disposition", "attachment;filename="
 					+ java.net.URLEncoder.encode(filename, "utf-8"));
@@ -1193,5 +1176,5 @@ public class TravelController {
 		System.out.println("导出成功");
 		model.addAttribute("msg", "导出成功");
 		return Constants.MSG_URL;//TODO
-	}
+	}*/
 }
