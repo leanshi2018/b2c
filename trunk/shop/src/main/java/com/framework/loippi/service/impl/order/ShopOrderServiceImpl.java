@@ -8177,4 +8177,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         map.put("shippingTime",new Date());
         orderDao.updateOrderShipping(map);
     }
+
+    @Override
+    public BigDecimal countOrderPPVByNorSplitFlag(String mmCode, String period) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("creationPeriod",period);
+        map.put("buyerId",mmCode);
+        return orderDao.countOrderPPVByNorSplitFlag(map);
+    }
 }
