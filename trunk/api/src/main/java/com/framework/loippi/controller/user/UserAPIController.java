@@ -16,12 +16,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.pojo.activity.PictureVio;
-import com.framework.loippi.result.common.index.HomeAndADPictureResult;
-import com.framework.loippi.result.user.*;
-import com.framework.loippi.service.user.*;
-import com.framework.loippi.vo.user.PlusProfitVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -69,6 +63,7 @@ import com.framework.loippi.result.common.index.HomeAndADPictureResult;
 import com.framework.loippi.result.user.BankCardsListResult;
 import com.framework.loippi.result.user.MemberBasicResult;
 import com.framework.loippi.result.user.PersonCenterResult;
+import com.framework.loippi.result.user.PlusCenterResult;
 import com.framework.loippi.result.user.SelfPerformanceResult;
 import com.framework.loippi.result.user.SelfWalletResult;
 import com.framework.loippi.result.user.SubordinateUserInformationResult;
@@ -82,6 +77,7 @@ import com.framework.loippi.service.common.ShopAppService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.common.ShopHomePictureService;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.order.ShopOrderSplitService;
 import com.framework.loippi.service.product.ShopGoodsBrowseService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateSensitivityService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateService;
@@ -121,6 +117,7 @@ import com.framework.loippi.utils.qiniu.QiniuConfig;
 import com.framework.loippi.vo.address.MemberAddresVo;
 import com.framework.loippi.vo.order.CountOrderStatusVo;
 import com.framework.loippi.vo.order.OrderSumPpv;
+import com.framework.loippi.vo.user.PlusProfitVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
@@ -193,6 +190,8 @@ public class UserAPIController extends BaseController {
     private ShopHomePictureService shopHomePictureService;
     @Resource
     private PlusProfitService plusProfitService;
+    @Resource
+    private ShopOrderSplitService shopOrderSplitService;
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -325,12 +324,17 @@ public class UserAPIController extends BaseController {
             SimpleDateFormat starForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             endDate = starForm.format(eDate);
             //本期的已达成MI
-            periodMi = shopOrderService.countOrderPPVByMCodeAndPeriod(member.getMmCode(), period);
+            //periodMi = shopOrderService.countOrderPPVByMCodeAndPeriod(member.getMmCode(), period);
+            periodMi = shopOrderService.countOrderPPVByNorSplitFlag(member.getMmCode(), period);//(不分单pv)
+            BigDecimal splitPpv = shopOrderSplitService.findSplitPpv(member.getMmCode(), period);//(分单pv)
             if (periodMi==null||"".equals(periodMi)){
                 periodMi = new BigDecimal("0.00");
-            }else {
-                periodMi = periodMi.setScale(2);//保留两位小数
             }
+            if (splitPpv==null||"".equals(splitPpv)){
+                splitPpv = new BigDecimal("0.00");
+            }
+
+            periodMi = periodMi.add(splitPpv).setScale(2);//保留两位小数
         }else{
             period = "业务期未开始";
             endDate = "业务期未开始";
@@ -1750,10 +1754,16 @@ public class UserAPIController extends BaseController {
         }
         profits2 = profits2.add(profits0);
 
-        BigDecimal bugMi = shopOrderService.countOrderPPVByMCodeAndPeriod(mCode, periodCode);
+        //BigDecimal bugMi = shopOrderService.countOrderPPVByMCodeAndPeriod(mCode, periodCode);
+        BigDecimal bugMi = shopOrderService.countOrderPPVByNorSplitFlag(mCode, periodCode);//(不分单pv)
+        BigDecimal splitPpv = shopOrderSplitService.findSplitPpv(mCode, periodCode);//(分单pv)
         if (bugMi==null){
             bugMi = new BigDecimal("0.00");
         }
+        if (splitPpv==null){
+            splitPpv = new BigDecimal("0.00");
+        }
+        bugMi = bugMi.add(splitPpv).setScale(2);
         List<String> SysPeriodCode =new ArrayList<String>();
         String prePeriod = period.getPrePeriod();//上一周期
         if (prePeriod==null){
@@ -2304,10 +2314,16 @@ public class UserAPIController extends BaseController {
                 MemberBasicResult result=new MemberBasicResult();
                 BigDecimal periodMi=BigDecimal.ZERO;
                 if(periodCode!=null){
-                    BigDecimal mi = shopOrderService.countOrderPPVByMCodeAndPeriod(mmCode, periodCode);
-                    if(mi!=null){
-                        periodMi=mi;
+                    //BigDecimal mi = shopOrderService.countOrderPPVByMCodeAndPeriod(mmCode, periodCode);
+                    BigDecimal mi =shopOrderService.countOrderPPVByNorSplitFlag(mmCode, periodCode);//(不分单pv)
+                    BigDecimal splitPpv = shopOrderSplitService.findSplitPpv(mmCode, periodCode);//(分单pv)
+                    if(mi==null){
+                        mi=new BigDecimal("0.00");
                     }
+                    if(splitPpv==null){
+                        splitPpv=new BigDecimal("0.00");
+                    }
+                    periodMi = mi.add(splitPpv).setScale(2);
                 }
                 result = MemberBasicResult.build(basicInfo, rdMmRelation, periodMi,map,member.getMmCode());
                 results.add(result);

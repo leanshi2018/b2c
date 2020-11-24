@@ -233,4 +233,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
 	ShopOrder findByOrderSn(String orderSn);
 
 	void updateOrderShipping(Map<String, Object> map);
+
+	BigDecimal countOrderPPVByNorSplitFlag(Map<String, Object> map);
 }

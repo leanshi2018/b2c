@@ -1467,6 +1467,10 @@
         SELECT sum(ppv-ifnull(refund_ppv, 0 )) FROM shop_order WHERE buyer_id = #{buyerId} AND payment_state = 1 AND creation_period = #{creationPeriod} and order_state != 0
     </select>
 
+    <select id="countOrderPPVByNorSplitFlag" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        SELECT sum(ppv-ifnull(refund_ppv, 0 )) FROM shop_order WHERE buyer_id = #{buyerId} AND payment_state = 1 AND creation_period = #{creationPeriod} and order_state != 0 and split_flag !=1
+    </select>
+
     <!-- 统计某用户指定周期的ppv值 -->
     <select id="findByPeriod" resultType="com.framework.loippi.vo.order.OrderSumPpv" parameterType="java.util.Map">
         SELECT SUM(so.ppv-ifnull( so.refund_ppv, 0 )) as totalPpv,
