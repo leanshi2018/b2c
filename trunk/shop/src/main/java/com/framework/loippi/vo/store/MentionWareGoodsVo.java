@@ -50,12 +50,19 @@ public class MentionWareGoodsVo {
 	 * 会员价（会员价）
 	 */
 	private BigDecimal goodsMemberPrice;
+	/**
+	 * 大单价格
+	 */
+	private BigDecimal goodsBigPrice;
 
 	/**
 	 * ppv（mi值）
 	 */
 	private BigDecimal ppv;
-
+	/**
+	 * 大单Ppv
+	 */
+	private BigDecimal bigPpv;
 	/**
 	 * 成本价
 	 */
@@ -82,4 +89,9 @@ public class MentionWareGoodsVo {
 	/** 单品实际库存 */
 	private Integer productInventory;
 
+	/** 商品类型1-普通2-换购3-组合 */
+	private Integer goodsType;
+
+	/** 是否为plus vip商品 0：不是 1：是 */
+	private Integer plusVipType;
 }

@@ -141,7 +141,7 @@ public class PlusProfitServiceImpl extends GenericServiceImpl<PlusProfit, Long> 
         while (flag){
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", code);
             RdMmBasicInfo info = rdMmBasicInfoService.findByMCode(rdMmRelation.getSponsorCode());
-            if(info.getMmCode().equals("101000158")||info.getMmCode().equals("900000000")){
+            if(info==null||info.getMmCode().equals("101000158")||info.getMmCode().equals("900000000")){
                 return;
             }
             if(info.getPlusVip()==1){

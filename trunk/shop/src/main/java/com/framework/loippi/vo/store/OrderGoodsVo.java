@@ -35,7 +35,10 @@ public class OrderGoodsVo {
 	 * ppv
 	 */
 	private BigDecimal ppv;
-
+	/**
+	 * 大单Ppv
+	 */
+	private BigDecimal bigPpv;
 	/**
 	 * 零售价（普通价）
 	 */
@@ -44,7 +47,10 @@ public class OrderGoodsVo {
 	 * 会员价格
 	 */
 	private BigDecimal goodsMemberPrice;
-
+	/**
+	 * 大单价格
+	 */
+	private BigDecimal goodsBigPrice;
 	/**
 	 * 成本价
 	 */
@@ -57,4 +63,9 @@ public class OrderGoodsVo {
 	/** 补货数量 */
 	private Integer comeInventory;
 
+	/** 商品类型1-普通2-换购3-组合 */
+	private Integer goodsType;
+
+	/** 是否为plus vip商品 0：不是 1：是 */
+	private Integer plusVipType;
 }

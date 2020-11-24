@@ -660,11 +660,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     }
                 }
                 if(order.getOrderType()==8&&order.getSplitFlag()==1){
-                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",1));
+                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",1));
                     if(list!=null&&list.size()>0){
                         for (ShopOrderSplit shopOrderSplit : list) {
-                            //判断分单会员取消订单后是否会降级
-                            rankControl(shopOrderSplit);
+                            if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                //判断分单会员取消订单后是否会降级
+                                rankControl(shopOrderSplit);
+                            }
+                            shopOrderSplit.setStatus(2);
+                            shopOrderSplitService.update(shopOrderSplit);
                         }
                     }
                 }
@@ -1182,6 +1186,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
             ShopOrder order = new ShopOrder();
             //该项目只有自营
+            order.setImmediatelyFlag(0);
             order.setStoreId(0L);
             order.setLogisticType(logisticType);
             order.setStoreName("自营商店");
@@ -1532,6 +1537,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
             ShopOrder order = new ShopOrder();
             //该项目只有自营
+            order.setImmediatelyFlag(0);
             order.setStoreId(0L);
             order.setLogisticType(logisticType);
             order.setStoreName("自营商店");
@@ -1975,6 +1981,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
             ShopOrder order = new ShopOrder();
             //该项目只有自营
+            order.setImmediatelyFlag(0);
             order.setStoreId(0L);
             order.setLogisticType(logisticType);
             order.setStoreName("自营商店");
@@ -2353,6 +2360,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         orderPayDao.insert(orderPay);
         ShopOrder order = new ShopOrder();
         //该项目只有自营
+        order.setImmediatelyFlag(1);
         order.setStoreId(0L);
         order.setStoreName("自营商店");
         Long orderId = twiterIdService.getTwiterId();
@@ -3710,14 +3718,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     plusProfitService.save(plusProfit);
                     //判断当前订单是否分单，如果分单，判断分单用户是否需要升级
                     if(order.getSplitFlag()!=null&&order.getSplitFlag()==1){
-                        List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",3));
+                        List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",3));
                         if(list!=null&&list.size()>0){
                             for (ShopOrderSplit shopOrderSplit : list) {
                                 shopOrderSplit.setStatus(1);
                                 shopOrderSplit.setPaymentTime(new Date());
                                 shopOrderSplit.setPeriodCode(periodCode);
                                 shopOrderSplitService.update(shopOrderSplit);
-                                upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                                if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                    upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                                }
                             }
                         }
                     }
@@ -5420,14 +5430,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         plusProfitService.save(plusProfit);
                         //判断当前订单是否分单，如果分单，判断分单用户是否需要升级
                         if(order.getSplitFlag()!=null&&order.getSplitFlag()==1){
-                            List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",3));
+                            List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",3));
                             if(list!=null&&list.size()>0){
                                 for (ShopOrderSplit shopOrderSplit : list) {
                                     shopOrderSplit.setStatus(1);
                                     shopOrderSplit.setPaymentTime(new Date());
                                     shopOrderSplit.setPeriodCode(periodCode);
                                     shopOrderSplitService.update(shopOrderSplit);
-                                    upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                                    if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                        upgrade(shopOrderSplit.getMmCode(),order,periodCode);
+                                    }
                                 }
                             }
                         }
@@ -6150,11 +6162,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     shopMemberMessageDao.insert(shopMemberMessage);
                 }
                 if(order.getOrderType()==8&&order.getSplitFlag()==1){
-                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",1));
+                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",1));
                     if(list!=null&&list.size()>0){
                         for (ShopOrderSplit shopOrderSplit : list) {
-                            //判断分单会员取消订单后是否会降级
-                            rankControl(shopOrderSplit);
+                            shopOrderSplit.setStatus(2);
+                            shopOrderSplitService.update(shopOrderSplit);
+                            if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                //判断分单会员取消订单后是否会降级
+                                rankControl(shopOrderSplit);
+                            }
                         }
                     }
                 }
@@ -6269,11 +6285,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     shopMemberMessageDao.insert(shopMemberMessage);
                 }
                 if(order.getOrderType()==8&&order.getSplitFlag()==1){
-                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("buyFlag",2).put("status",1));
+                    List<ShopOrderSplit> list = shopOrderSplitService.findList(Paramap.create().put("orderId",order.getId()).put("status",1));
                     if(list!=null&&list.size()>0){
                         for (ShopOrderSplit shopOrderSplit : list) {
-                            //判断分单会员取消订单后是否会降级
-                            rankControl(shopOrderSplit);
+                            shopOrderSplit.setStatus(2);
+                            shopOrderSplitService.update(shopOrderSplit);
+                            if(shopOrderSplit.getBuyFlag()!=null&&shopOrderSplit.getBuyFlag()==2){
+                                //判断分单会员取消订单后是否会降级
+                                rankControl(shopOrderSplit);
+                            }
                         }
                     }
                 }
@@ -7369,6 +7389,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             throw new RuntimeException("购物车不存在");
         }
         ShopOrder order = new ShopOrder();
+        order.setImmediatelyFlag(0);
         order.setStoreId(0L);
         order.setLogisticType(logisticType);
         order.setStoreName("自营商店");
@@ -7541,15 +7562,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
      * @param logisticType 配送方式 快递 自提
      * @param paymentType 支付方式：固定在线支付
      * @param giftId 赠品id
-     * @param splitOrderFlag 是否分单 0：不分单 1：分单
      * @param giftNum 赠品数量
+     * @param splitOrderFlag 是否分单 0：不分单 1：分单
      * @param splitCodes 分单会员拼接字符串
      * @return
      */
     @Override
     public ShopOrderPay addImmediatelyOrderReturnPaySn(Long goodsId, Integer count, Long specId, Long activityId, Integer activityType, Long activityGoodsId, Long activitySkuId,
                                                        String mmCode, Map<String, Object> orderMsgMap, Long addressId, Long couponId, int platform, ShopOrderDiscountType shopOrderDiscountType,
-                                                       Integer logisticType, Integer paymentType, Long giftId, Integer splitOrderFlag, Integer giftNum, String splitCodes) {
+                                                       Integer logisticType, Integer paymentType, Long giftId, Integer giftNum, Integer splitOrderFlag, String splitCodes) {
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", mmCode);
         ShopCart cart = new ShopCart();
         cart=buildCart(goodsId, mmCode,rdMmRelation.getRank(),
@@ -7735,6 +7756,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         for (OrderVo orderVo : orderSettlement.getOrderVoList()) {
             ShopOrder order = new ShopOrder();
             //该项目只有自营
+            order.setImmediatelyFlag(1);
             order.setStoreId(0L);
             order.setLogisticType(logisticType);
             order.setStoreName("自营商店");
