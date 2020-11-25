@@ -2246,8 +2246,8 @@ public class ShopOrderJob {
     /**
      * 执行定时发放plus会员积分奖励
      */
-    //@Scheduled(cron = "0 40 1 * * ? " )  //每隔一小时执行一次 每天1点40分执行定时任务
-    @Scheduled(cron = "0/45 * * * * ? " )  //每隔45秒执行一次
+    @Scheduled(cron = "0 40 1 * * ? " )  //每隔一小时执行一次 每天1点40分执行定时任务
+    //@Scheduled(cron = "0/45 * * * * ? " )  //每隔45秒执行一次
     public void grantPlusProfit(){
         System.out.println("plus奖励发放开始");
         plusProfitService.grantPlusProfit();
