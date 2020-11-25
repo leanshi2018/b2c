@@ -4,11 +4,14 @@ import com.framework.loippi.dao.travel.RdTravelTicketDetailDao;
 import com.framework.loippi.entity.travel.RdTravelTicketDetail;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.travel.RdTravelTicketDetailService;
+import com.framework.loippi.utils.Paramap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -35,5 +38,4 @@ public class RdTravelTicketDetailServiceImpl extends GenericServiceImpl<RdTravel
         }
         rdTravelTicketDetailDao.update(ticketDetail);
     }
-
 }
