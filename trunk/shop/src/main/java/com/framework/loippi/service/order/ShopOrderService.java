@@ -406,5 +406,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 	void updateOrderShipping(String orderSn, String trackSn, long expressId);
 
+	BigDecimal countOrderPPVByNorSplitFlag(String mmCode, String period);
+
 	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

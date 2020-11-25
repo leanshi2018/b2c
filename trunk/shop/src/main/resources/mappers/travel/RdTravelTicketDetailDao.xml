@@ -231,4 +231,11 @@
             <include refid="where_column"/>
         </where>
     </select>
+
+    <select id="findNotUseTravelTicket" resultMap="rdTravelTicketDetailResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_travel_ticket_detail
+        WHERE status = 0
+    </select>
 </mapper> 

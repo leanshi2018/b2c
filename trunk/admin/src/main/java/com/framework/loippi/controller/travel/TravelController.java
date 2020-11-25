@@ -999,4 +999,182 @@ public class TravelController {
 		model.addAttribute("msg", "导出成功");
 		return Constants.MSG_URL;//TODO
 	}
+
+	/**
+	 * 旅游团价格表
+	 *
+	 */
+	/*@RequestMapping("/travel/upload")
+	public String downloadTicketDetail(ModelMap model) {
+		System.out.println("*************************导出未使用旅游券***************************");
+		ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpServletResponse response = requestAttributes.getResponse();
+		HttpServletRequest request = requestAttributes.getRequest();
+
+		// 文件名
+		String filename = "未使用旅游券列表.xls";
+
+		try {
+
+			// 写到服务器上
+			String path = request.getSession().getServletContext().getRealPath("") + "/" + filename;
+			//‪C:\Users\LDQ\Desktop\excel
+			//String path = "C:\\Users\\LDQ\\Desktop" + "/" + filename;
+
+			// 写到服务器上（这种测试过，在本地可以，放到linux服务器就不行）
+			//String path =  this.getClass().getClassLoader().getResource("").getPath()+"/"+filename;
+
+			File name = new File(path);
+			// 创建写工作簿对象
+			WritableWorkbook workbook = Workbook.createWorkbook(name);
+			// 工作表
+			WritableSheet sheet = workbook.createSheet("未使用旅游券列表", 0);
+			// 设置字体;
+			//WritableFont font = new WritableFont(WritableFont.ARIAL, 14, WritableFont.BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+			WritableFont font = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+
+			WritableCellFormat cellFormat = new WritableCellFormat(font);
+			// 设置背景颜色;
+			//cellFormat.setBackground(Colour.WHITE);
+			// 设置边框;
+			//cellFormat.setBorder(Border.ALL, BorderLineStyle.DASH_DOT);
+			// 设置文字居中对齐方式;
+			cellFormat.setAlignment(Alignment.CENTRE);
+			// 设置垂直居中;
+			cellFormat.setVerticalAlignment(VerticalAlignment.CENTRE);
+			// 分别给1,5,6列设置不同的宽度;
+			//sheet.setColumnView(0, 15);
+			//sheet.setColumnView(4, 60);
+			//sheet.setColumnView(5, 35);
+			// 给sheet电子版中所有的列设置默认的列的宽度;
+			sheet.getSettings().setDefaultColumnWidth(20);
+			// 给sheet电子版中所有的行设置默认的高度，高度的单位是1/20个像素点,但设置这个貌似就不能自动换行了
+			// sheet.getSettings().setDefaultRowHeight(30 * 20);
+			// 设置自动换行;
+			cellFormat.setWrap(true);
+
+			// 单元格
+			Label label0 = new Label(0, 0, "会员编号", cellFormat);
+			Label label1 = new Label(1, 0, "会员昵称", cellFormat);
+			Label label2 = new Label(2, 0, "旅游券面值", cellFormat);
+			Label label3 = new Label(3, 0, "旅游券名称", cellFormat);
+
+			sheet.addCell(label0);
+			sheet.addCell(label1);
+			sheet.addCell(label2);
+			sheet.addCell(label3);
+
+			// 给第二行设置背景、字体颜色、对齐方式等等;
+			//WritableFont font2 = new WritableFont(WritableFont.ARIAL, 14, WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+			WritableFont font2 = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+			WritableCellFormat cellFormat2 = new WritableCellFormat(font2);
+			// 设置文字居中对齐方式;
+			cellFormat2.setAlignment(Alignment.CENTRE);
+			// 设置垂直居中;
+			cellFormat2.setVerticalAlignment(VerticalAlignment.CENTRE);
+			//cellFormat2.setBackground(Colour.WHITE);
+			//cellFormat2.setBorder(Border.ALL, BorderLineStyle.THIN);
+			cellFormat2.setWrap(true);
+
+			// 记录行数
+			int n = 1;
+
+			// 查找所有未提交订单
+			Map<String, List<RdTravelTicketDetail>> travelTicketMap = ticketDetailService.findNotUseTravelTicket();
+
+			if (travelTicketMap != null && travelTicketMap.size() > 0) {
+
+				// 遍历
+				for (Map.Entry<String, List<RdTravelTicketDetail>> entry : travelTicketMap.entrySet()){
+
+					List<RdTravelTicketDetail> orderExcelList = entry.getValue();
+					for (RdTravelTicketDetail a : orderExcelList) {
+						Label lt0 = new Label(0, n, a.getOwnCode(), cellFormat2);
+						Label lt1 = new Label(1, n, a.getOwnNickName(), cellFormat2);
+						Label lt2 = new Label(2, n, a.getTicketPrice()+"", cellFormat2);
+						Label lt3 = new Label(3, n, a.getTravelName()+"", cellFormat2);
+
+						sheet.addCell(lt0);
+						sheet.addCell(lt1);
+						sheet.addCell(lt2);
+						sheet.addCell(lt3);
+
+						n++;
+					}
+					//添加一行空白
+					Label lt0 = new Label(0, n, "");
+					Label lt1 = new Label(1, n, "");
+					Label lt2 = new Label(2, n, "");
+					Label lt3 = new Label(3, n, "");
+
+					sheet.addCell(lt0);
+					sheet.addCell(lt1);
+					sheet.addCell(lt2);
+					sheet.addCell(lt3);
+
+					n++;
+				}
+
+				//添加一行空白
+				Label lt0 = new Label(0, n, "人数=");
+				Label lt1 = new Label(1, n, travelTicketMap.size()+"");
+				Label lt2 = new Label(2, n, "");
+				Label lt3 = new Label(3, n, "");
+
+				sheet.addCell(lt0);
+				sheet.addCell(lt1);
+				sheet.addCell(lt2);
+				sheet.addCell(lt3);
+			}
+
+			//开始执行写入操作
+			workbook.write();
+			//关闭流
+			workbook.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 第六步，下载excel
+
+		OutputStream out = null;
+		try {
+
+			// 1.弹出下载框，并处理中文
+			*//** 如果是从jsp页面传过来的话，就要进行中文处理，在这里action里面产生的直接可以用
+			 * String filename = request.getParameter("filename");
+			 *//*
+			*//**
+			 if (request.getMethod().equalsIgnoreCase("GET")) {
+			 filename = new String(filename.getBytes("iso8859-1"), "utf-8");
+			 }
+			 *//*
+
+			response.addHeader("content-disposition", "attachment;filename="
+					+ java.net.URLEncoder.encode(filename, "utf-8"));
+
+			// 2.下载
+			out = response.getOutputStream();
+			String path3 = request.getSession().getServletContext().getRealPath("") + "/" + filename;
+			//String path3 = "C:\\Users\\LDQ\\Desktop" + "/" + filename;
+
+			// inputStream：读文件，前提是这个文件必须存在，要不就会报错
+			InputStream is = new FileInputStream(path3);
+
+			byte[] b = new byte[4096];
+			int size = is.read(b);
+			while (size > 0) {
+				out.write(b, 0, size);
+				size = is.read(b);
+			}
+			out.close();
+			is.close();
+			System.out.println("导出成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("导出成功");
+		model.addAttribute("msg", "导出成功");
+		return Constants.MSG_URL;//TODO
+	}*/
 }
