@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-
 import org.springframework.stereotype.Service;
-
 import com.framework.loippi.dao.travel.RdTravelTicketDetailDao;
 import com.framework.loippi.entity.travel.RdTravelTicketDetail;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.travel.RdTravelTicketDetailService;
+
+
 
 @Slf4j
 @Service
@@ -42,7 +42,6 @@ public class RdTravelTicketDetailServiceImpl extends GenericServiceImpl<RdTravel
         }
         rdTravelTicketDetailDao.update(ticketDetail);
     }
-
     @Override
     public Map<String, List<RdTravelTicketDetail>> findNotUseTravelTicket() {
 
@@ -75,5 +74,4 @@ public class RdTravelTicketDetailServiceImpl extends GenericServiceImpl<RdTravel
 
         return excelMap;
     }
-
 }

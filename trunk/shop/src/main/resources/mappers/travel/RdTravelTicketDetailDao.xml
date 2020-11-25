@@ -176,6 +176,18 @@
         VALUES (<include refid="base_value_column"/>)
     </insert>
 
+    <insert id="insertList" parameterType="java.util.List">
+        INSERT rd_travel_ticket_detail
+        (
+        <include refid="base_column"/>
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.travelId},#{item.travelName},#{item.ticketPrice},#{item.ticketSn},#{item.status},#{item.ownCode},
+            #{item.ownNickName},#{item.ownTime},#{item.useTime},#{item.useActivityId},#{item.useActivityCode},#{item.confirmTime},#{item.confirmCode},#{item.image})
+        </foreach>
+    </insert>
+
     <!-- 修改 -->
     <update id="update" parameterType="com.framework.loippi.entity.travel.RdTravelTicketDetail">
         UPDATE rd_travel_ticket_detail
