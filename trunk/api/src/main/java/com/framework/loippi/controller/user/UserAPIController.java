@@ -1662,8 +1662,26 @@ public class UserAPIController extends BaseController {
             RdSysPeriod sysPeriod=periodService.findLastPeriod();
             periodStr=sysPeriod.getPeriodCode();
             periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",sysPeriod.getPeriodCode()));
+            BigDecimal bugMi = shopOrderService.countOrderPPVByNorSplitFlag(memeberId, sysPeriod.getPeriodCode());//(不分单pv)
+            BigDecimal splitPpv = shopOrderSplitService.findSplitPpv(memeberId, sysPeriod.getPeriodCode());//(分单pv)
+            if (bugMi==null){
+                bugMi = new BigDecimal("0.00");
+            }
+            if (splitPpv==null){
+                splitPpv = new BigDecimal("0.00");
+            }
+            periodSumPpv.setTotalPpv(bugMi.add(splitPpv).setScale(2));
         }else {
             periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",periodStr));
+            BigDecimal bugMi = shopOrderService.countOrderPPVByNorSplitFlag(memeberId, periodStr);//(不分单pv)
+            BigDecimal splitPpv = shopOrderSplitService.findSplitPpv(memeberId, periodStr);//(分单pv)
+            if (bugMi==null){
+                bugMi = new BigDecimal("0.00");
+            }
+            if (splitPpv==null){
+                splitPpv = new BigDecimal("0.00");
+            }
+            periodSumPpv.setTotalPpv(bugMi.add(splitPpv).setScale(2));
         }
         BigDecimal retail = new BigDecimal("0.00");
         BigDecimal buyerId = shopOrderService.findOrderRetail(Paramap.create().put("buyerId", memeberId).put("creationPeriod",periodStr));//查询出零售订单总额
