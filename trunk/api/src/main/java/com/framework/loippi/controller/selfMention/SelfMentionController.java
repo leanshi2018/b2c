@@ -1135,7 +1135,7 @@ public class SelfMentionController extends BaseController {
         if (wareOrder==null){
             return ApiUtils.error("未找到该订单");
         }
-        if (wareOrder.getUsePointNum()==null||wareOrder.getUsePointNum()==0){
+        if (wareOrder.getUsePointNum()==null||wareOrder.getUsePointNum().compareTo(new BigDecimal("0.00"))==0){
             wareOrder.setUsePointFlag(0);
         }else {
             wareOrder.setUsePointFlag(1);
@@ -1188,15 +1188,20 @@ public class SelfMentionController extends BaseController {
         if(integration==null&&"".equals(integration)){
             return ApiUtils.error("请输入支付的积分金额");
         }
-        int i = 0;
-        try {
+        BigDecimal i = new BigDecimal("0.00");
+        if (integration==null||"".equals(integration)){
+            i = new BigDecimal("0.00");
+        }else {
+            i = new BigDecimal(integration).setScale(2, BigDecimal.ROUND_HALF_UP);
+        }
+        /*try {
             String[] strings = integration.split("\\.");
             String string = strings[0];
             i = Integer.parseInt(string);
         } catch (NumberFormatException e) {
             e.printStackTrace();
             return ApiUtils.error("输入积分数额有误");
-        }
+        }*/
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
@@ -1220,7 +1225,7 @@ public class SelfMentionController extends BaseController {
         }
 
         //if (integration != 0) {
-        if (i != 0) {
+        if (i.compareTo(new BigDecimal("0.00")) != 0) {
             if (rdMmAccountInfo.getPaymentPwd() == null) {
                 return ApiUtils.error("你还未设置支付密码");
             }

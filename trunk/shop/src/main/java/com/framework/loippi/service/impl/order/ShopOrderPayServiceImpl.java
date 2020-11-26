@@ -75,7 +75,7 @@ public class ShopOrderPayServiceImpl extends GenericServiceImpl<ShopOrderPay, Lo
                         paymentType=2;
                     }
                 }
-                if(order.getUsePointNum()!=null&&order.getUsePointNum()>0){
+                if(order.getUsePointNum()!=null&&order.getUsePointNum().compareTo(new BigDecimal("0.00"))==1){
                     usePointFlag=false;
                 }
             }

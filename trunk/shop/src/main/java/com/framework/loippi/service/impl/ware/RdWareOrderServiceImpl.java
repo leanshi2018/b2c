@@ -109,9 +109,9 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 	}
 
 	@Override
-	public void ProcessingIntegrals(String paysn, int integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr) {
+	public void ProcessingIntegrals(String paysn, BigDecimal integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr) {
 		//第一步 判断积分是否正确
-		if (integration < 0) {
+		if (integration.compareTo(new BigDecimal("0.00")) == -1) {
 			throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能小于0");
 		}
 		//积分
@@ -124,11 +124,11 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 			throw new StateResult(AppConstants.GOODS_STATE_ERRO, "用户积分未激活或者已冻结 ");
 		}
 
-		if (rdMmAccountInfo.getWalletBlance().compareTo(BigDecimal.valueOf(integration)) == -1) {
+		if (rdMmAccountInfo.getWalletBlance().compareTo(integration) == -1) {
 			throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能大于拥有积分");
 		}
 
-		BigDecimal shoppingPoints = new BigDecimal(integration * shoppingPointSr * 0.01);
+		BigDecimal shoppingPoints = integration.multiply(new BigDecimal(shoppingPointSr * 0.01)).setScale(2, BigDecimal.ROUND_HALF_UP);
 		if (shoppingPoints.compareTo(pay.getPayAmount()) == 1) {
 			throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要抵现的不能大于订单金额");
 		}
@@ -143,9 +143,9 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 				orderId = order.getId();
 				int pointNum = 0;
 				pointNum = new BigDecimal(
-						(order.getOrderAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration))
+						(order.getOrderAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration.doubleValue()))
 						.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-				order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(0) + pointNum);//设置订单所用积分数量
+				order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(BigDecimal.ZERO).add(BigDecimal.valueOf(pointNum)));//设置订单所用积分数量
 				order.setPointRmbNum(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
 						.add(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
 				System.out.println("o1="+order.getOrderAmount());
@@ -186,7 +186,7 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 		rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
 		rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
 		rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
-		rdMmAccountLog.setAmount(BigDecimal.valueOf(integration));
+		rdMmAccountLog.setAmount(integration);
 		rdMmAccountLog.setTransDate(new Date());
 		String period = rdSysPeriodDao.getSysPeriodService(new Date());
 		rdMmAccountLog.setTransPeriod(period);
@@ -197,7 +197,7 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 		rdMmAccountLog.setCreationTime(new Date());
 		rdMmAccountLog.setAutohrizeBy(shopMember.getMmNickName());
 		rdMmAccountLog.setAutohrizeTime(new Date());
-		rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().subtract(BigDecimal.valueOf(integration)));
+		rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().subtract(integration));
 		rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
 		rdMmAccountInfoDao.update(rdMmAccountInfo);
 		rdMmAccountLogDao.insert(rdMmAccountLog);
@@ -342,15 +342,15 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 			List<RdMmAccountInfo> rdMmAccountInfoList = rdMmAccountInfoDao.findByMCode(memberId);
 			RdMmBasicInfo rdMmBasicInfo=rdMmBasicInfoService.find("mmCode", memberId);
 			RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoList.get(0);
-			if (wareOrder.getUsePointNum() != null && wareOrder.getUsePointNum() != 0) {
+			if (wareOrder.getUsePointNum() != null && wareOrder.getUsePointNum().compareTo(new BigDecimal("0.00")) != 0) {
 				RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
 				rdMmAccountLog.setTransTypeCode("OT");
 				rdMmAccountLog.setAccType("SWB");
 				rdMmAccountLog.setTrSourceType("OWB");
 
 				BigDecimal availableBefore = rdMmAccountInfo.getWalletBlance();//原购物积分
-				BigDecimal available = rdMmAccountInfo.getWalletBlance().add(BigDecimal.valueOf(wareOrder.getUsePointNum())).setScale(2, BigDecimal.ROUND_HALF_UP);//退后购物积分
-				refundPoint = refundPoint.add(BigDecimal.valueOf(wareOrder.getUsePointNum())).setScale(2, BigDecimal.ROUND_HALF_UP);
+				BigDecimal available = rdMmAccountInfo.getWalletBlance().add(wareOrder.getUsePointNum()).setScale(2, BigDecimal.ROUND_HALF_UP);//退后购物积分
+				refundPoint = refundPoint.add(wareOrder.getUsePointNum()).setScale(2, BigDecimal.ROUND_HALF_UP);
 				rdMmAccountInfo.setWalletBlance(available);
 				//用户更新积分
 				rdMmAccountLog.setTrOrderOid(wareOrder.getId());
@@ -358,7 +358,7 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 				rdMmAccountLog.setMmNickName(rdMmBasicInfo.getMmNickName());
 				rdMmAccountLog.setTrMmCode(rdMmBasicInfo.getMmCode());
 				rdMmAccountLog.setBlanceBefore(availableBefore);
-				rdMmAccountLog.setAmount(BigDecimal.valueOf(wareOrder.getUsePointNum()));
+				rdMmAccountLog.setAmount(wareOrder.getUsePointNum());
 				rdMmAccountLog.setBlanceAfter(available);
 				//无需审核直接成功
 				rdMmAccountLog.setStatus(3);

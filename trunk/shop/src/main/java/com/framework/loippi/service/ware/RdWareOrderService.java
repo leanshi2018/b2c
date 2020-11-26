@@ -1,5 +1,6 @@
 package com.framework.loippi.service.ware;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public interface RdWareOrderService extends GenericService<RdWareOrder, Long> {
 
 	List<RdWareOrder> findByPaySn(String paysn);
 
-	void ProcessingIntegrals(String paysn, int i, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);
+	void ProcessingIntegrals(String paysn, BigDecimal i, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);
 
 	void updateByPaySn(String paysn, Long paymentId);
 

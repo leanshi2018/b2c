@@ -1,8 +1,22 @@
 package com.framework.loippi.controller.travel;
 
 
+import jxl.Workbook;
+import jxl.format.Alignment;
+import jxl.format.Colour;
+import jxl.format.UnderlineStyle;
+import jxl.format.VerticalAlignment;
+import jxl.write.Label;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -10,9 +24,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -24,6 +40,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.entity.Principal;
@@ -1004,7 +1022,7 @@ public class TravelController {
 	 * 旅游团价格表
 	 *
 	 */
-	/*@RequestMapping("/travel/upload")
+	@RequestMapping("/travel/upload")
 	public String downloadTicketDetail(ModelMap model) {
 		System.out.println("*************************导出未使用旅游券***************************");
 		ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -1012,14 +1030,14 @@ public class TravelController {
 		HttpServletRequest request = requestAttributes.getRequest();
 
 		// 文件名
-		String filename = "未使用旅游券列表.xls";
+		String filename = "旅游券列表.xls";
 
 		try {
 
 			// 写到服务器上
-			String path = request.getSession().getServletContext().getRealPath("") + "/" + filename;
+			//String path = request.getSession().getServletContext().getRealPath("") + "/" + filename;
 			//‪C:\Users\LDQ\Desktop\excel
-			//String path = "C:\\Users\\LDQ\\Desktop" + "/" + filename;
+			String path = "C:\\Users\\LDQ\\Desktop" + "/" + filename;
 
 			// 写到服务器上（这种测试过，在本地可以，放到linux服务器就不行）
 			//String path =  this.getClass().getClassLoader().getResource("").getPath()+"/"+filename;
@@ -1028,7 +1046,7 @@ public class TravelController {
 			// 创建写工作簿对象
 			WritableWorkbook workbook = Workbook.createWorkbook(name);
 			// 工作表
-			WritableSheet sheet = workbook.createSheet("未使用旅游券列表", 0);
+			WritableSheet sheet = workbook.createSheet("旅游券列表", 0);
 			// 设置字体;
 			//WritableFont font = new WritableFont(WritableFont.ARIAL, 14, WritableFont.BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
 			WritableFont font = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
@@ -1054,15 +1072,35 @@ public class TravelController {
 			cellFormat.setWrap(true);
 
 			// 单元格
-			Label label0 = new Label(0, 0, "会员编号", cellFormat);
-			Label label1 = new Label(1, 0, "会员昵称", cellFormat);
+			Label label0 = new Label(0, 0, "id", cellFormat);
+			Label label1 = new Label(1, 0, "旅游券id", cellFormat);
 			Label label2 = new Label(2, 0, "旅游券面值", cellFormat);
 			Label label3 = new Label(3, 0, "旅游券名称", cellFormat);
+			Label label4 = new Label(4, 0, "旅游券详情编号", cellFormat);
+			Label label5 = new Label(5, 0, "旅游券详情状态", cellFormat);
+			Label label6 = new Label(6, 0, "持有人会员编号", cellFormat);
+			Label label7 = new Label(7, 0, "持有人昵称", cellFormat);
+			Label label8 = new Label(8, 0, "持有（获取）时间", cellFormat);
+			Label label9 = new Label(9, 0, "使用时间", cellFormat);
+			Label label10 = new Label(10, 0, "关联旅游活动id", cellFormat);
+			Label label11 = new Label(11, 0, "使用于旅游活动编号", cellFormat);
+			Label label12 = new Label(12, 0, "核销时间", cellFormat);
+			Label label13 = new Label(13, 0, "核销人", cellFormat);
 
 			sheet.addCell(label0);
 			sheet.addCell(label1);
 			sheet.addCell(label2);
 			sheet.addCell(label3);
+			sheet.addCell(label4);
+			sheet.addCell(label5);
+			sheet.addCell(label6);
+			sheet.addCell(label7);
+			sheet.addCell(label8);
+			sheet.addCell(label9);
+			sheet.addCell(label10);
+			sheet.addCell(label11);
+			sheet.addCell(label12);
+			sheet.addCell(label13);
 
 			// 给第二行设置背景、字体颜色、对齐方式等等;
 			//WritableFont font2 = new WritableFont(WritableFont.ARIAL, 14, WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
@@ -1089,15 +1127,44 @@ public class TravelController {
 
 					List<RdTravelTicketDetail> orderExcelList = entry.getValue();
 					for (RdTravelTicketDetail a : orderExcelList) {
-						Label lt0 = new Label(0, n, a.getOwnCode(), cellFormat2);
-						Label lt1 = new Label(1, n, a.getOwnNickName(), cellFormat2);
+						Label lt0 = new Label(0, n, a.getId()+"", cellFormat2);
+						Label lt1 = new Label(1, n, a.getTravelId()+"", cellFormat2);
 						Label lt2 = new Label(2, n, a.getTicketPrice()+"", cellFormat2);
-						Label lt3 = new Label(3, n, a.getTravelName()+"", cellFormat2);
+						Label lt3 = new Label(3, n, a.getTravelName(), cellFormat2);
+						Label lt4 = new Label(4, n, a.getTicketSn(), cellFormat2);
+						Label lt5 = new Label(5, n, "", cellFormat2);
+						if (a.getStatus()==0){
+							lt5 = new Label(5, n, "未使用", cellFormat2);
+						}else if (a.getStatus()==1){
+							lt5 = new Label(5, n, "报名占用", cellFormat2);
+						}else if (a.getStatus()==2){
+							lt5 = new Label(5, n, "已核销", cellFormat2);
+						}else {
+							lt5 = new Label(5, n, "已过期", cellFormat2);
+						}
+						Label lt6 = new Label(6, n, a.getOwnCode(), cellFormat2);
+						Label lt7 = new Label(7, n, a.getOwnNickName(), cellFormat2);
+						Label lt8 = new Label(8, n, a.getOwnTime()+"", cellFormat2);
+						Label lt9 = new Label(9, n, Optional.ofNullable(a.getUseTime()+"").orElse(""), cellFormat2);
+						Label lt10 = new Label(10, n, Optional.ofNullable(a.getUseActivityId()+"").orElse(""), cellFormat2);
+						Label lt11 = new Label(11, n, Optional.ofNullable(a.getUseActivityCode()+"").orElse(""), cellFormat2);
+						Label lt12 = new Label(12, n, Optional.ofNullable(a.getConfirmTime()+"").orElse(""), cellFormat2);
+						Label lt13 = new Label(13, n, Optional.ofNullable(a.getConfirmCode()+"").orElse(""), cellFormat2);
 
 						sheet.addCell(lt0);
 						sheet.addCell(lt1);
 						sheet.addCell(lt2);
 						sheet.addCell(lt3);
+						sheet.addCell(lt4);
+						sheet.addCell(lt5);
+						sheet.addCell(lt6);
+						sheet.addCell(lt7);
+						sheet.addCell(lt8);
+						sheet.addCell(lt9);
+						sheet.addCell(lt10);
+						sheet.addCell(lt11);
+						sheet.addCell(lt12);
+						sheet.addCell(lt13);
 
 						n++;
 					}
@@ -1106,11 +1173,31 @@ public class TravelController {
 					Label lt1 = new Label(1, n, "");
 					Label lt2 = new Label(2, n, "");
 					Label lt3 = new Label(3, n, "");
+					Label lt4 = new Label(4, n, "");
+					Label lt5 = new Label(5, n, "");
+					Label lt6 = new Label(6, n, "");
+					Label lt7 = new Label(7, n, "");
+					Label lt8 = new Label(8, n, "");
+					Label lt9 = new Label(9, n, "");
+					Label lt10 = new Label(10, n, "");
+					Label lt11 = new Label(11, n, "");
+					Label lt12 = new Label(12, n, "");
+					Label lt13 = new Label(13, n, "");
 
 					sheet.addCell(lt0);
 					sheet.addCell(lt1);
 					sheet.addCell(lt2);
 					sheet.addCell(lt3);
+					sheet.addCell(lt4);
+					sheet.addCell(lt5);
+					sheet.addCell(lt6);
+					sheet.addCell(lt7);
+					sheet.addCell(lt8);
+					sheet.addCell(lt9);
+					sheet.addCell(lt10);
+					sheet.addCell(lt11);
+					sheet.addCell(lt12);
+					sheet.addCell(lt13);
 
 					n++;
 				}
@@ -1141,22 +1228,21 @@ public class TravelController {
 		try {
 
 			// 1.弹出下载框，并处理中文
-			*//** 如果是从jsp页面传过来的话，就要进行中文处理，在这里action里面产生的直接可以用
-			 * String filename = request.getParameter("filename");
-			 *//*
-			*//**
-			 if (request.getMethod().equalsIgnoreCase("GET")) {
-			 filename = new String(filename.getBytes("iso8859-1"), "utf-8");
-			 }
-			 *//*
+			 //如果是从jsp页面传过来的话，就要进行中文处理，在这里action里面产生的直接可以用
+			//String filename = request.getParameter("filename");
+
+			 //if (request.getMethod().equalsIgnoreCase("GET")) {
+			 //filename = new String(filename.getBytes("iso8859-1"), "utf-8");
+			 //}
+
 
 			response.addHeader("content-disposition", "attachment;filename="
 					+ java.net.URLEncoder.encode(filename, "utf-8"));
 
 			// 2.下载
 			out = response.getOutputStream();
-			String path3 = request.getSession().getServletContext().getRealPath("") + "/" + filename;
-			//String path3 = "C:\\Users\\LDQ\\Desktop" + "/" + filename;
+			//String path3 = request.getSession().getServletContext().getRealPath("") + "/" + filename;
+			String path3 = "C:\\Users\\LDQ\\Desktop" + "/" + filename;
 
 			// inputStream：读文件，前提是这个文件必须存在，要不就会报错
 			InputStream is = new FileInputStream(path3);
@@ -1169,12 +1255,11 @@ public class TravelController {
 			}
 			out.close();
 			is.close();
-			System.out.println("导出成功");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.out.println("导出成功");
 		model.addAttribute("msg", "导出成功");
 		return Constants.MSG_URL;//TODO
-	}*/
+	}
 }
