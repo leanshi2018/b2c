@@ -76,6 +76,14 @@ public class CartCheckOutResult {
     private String receiveAddrInfo;
 
     /**
+     * 收货地址省市区
+     */
+    private String receiveProvice;
+    /**
+     * 收货地址详情
+     */
+    private String receiveDetail;
+    /**
      * 收货地址id
      */
     @JsonSerialize(using = ToStringSerializer.class)
@@ -329,6 +337,10 @@ public class CartCheckOutResult {
                         optAddress.map(RdMmAddInfo::getAddCityCode).orElse("")+
                         optAddress.map(RdMmAddInfo::getAddCountryCode).orElse("")+
                         optAddress.map(RdMmAddInfo::getAddDetial).orElse(""))
+                .setReceiveProvice(optAddress.map(RdMmAddInfo::getAddProvinceCode).orElse("") +
+                        optAddress.map(RdMmAddInfo::getAddCityCode).orElse("")+
+                        optAddress.map(RdMmAddInfo::getAddCountryCode).orElse(""))
+                .setReceiveDetail(optAddress.map(RdMmAddInfo::getAddDetial).orElse(""))
                 .setShopOrderTypeId(Optional.ofNullable(shopOrderTypeId).orElse(-1L));
 
         // 购物车总数量
@@ -400,6 +412,10 @@ public class CartCheckOutResult {
                         optAddress.map(RdMmAddInfo::getAddCityCode).orElse("")+
                         optAddress.map(RdMmAddInfo::getAddCountryCode).orElse("")+
                         optAddress.map(RdMmAddInfo::getAddDetial).orElse(""))
+                .setReceiveProvice(optAddress.map(RdMmAddInfo::getAddProvinceCode).orElse("") +
+                        optAddress.map(RdMmAddInfo::getAddCityCode).orElse("")+
+                        optAddress.map(RdMmAddInfo::getAddCountryCode).orElse(""))
+                .setReceiveDetail(optAddress.map(RdMmAddInfo::getAddDetial).orElse(""))
                 .setShopOrderTypeId(Optional.ofNullable(shopOrderTypeId).orElse(-1L));
 
         // 购物车总数量
