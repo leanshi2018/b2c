@@ -243,7 +243,11 @@ public class SelfMentionController extends BaseController {
                         for (String str : set) {
                             specInfo += str + ":" + map.get(str) + "、";
                         }
-                        specInfo = specInfo.substring(0, specInfo.length() - 1);
+                        if(specInfo.length()==0){
+                            specInfo = goodsSpec.getSpecGoodsSerial();
+                        }else{
+                            specInfo = specInfo.substring(0, specInfo.length() - 1);
+                        }
                     }
                     wareGoodsVo.setSpecGoodsSpec(specInfo);
                 }
@@ -382,7 +386,11 @@ public class SelfMentionController extends BaseController {
                     for (String str : set) {
                         specInfo += str + ":" + map.get(str) + "、";
                     }
-                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                    if(specInfo.length()==0){
+                        specInfo = spec.getSpecGoodsSerial();
+                    }else{
+                        specInfo = specInfo.substring(0, specInfo.length() - 1);
+                    }
                 }
                 wareGoodsVo.setSpecGoodsSpec(specInfo);
             }
@@ -481,7 +489,11 @@ public class SelfMentionController extends BaseController {
                     for (String str : set) {
                         specInfo += str + ":" + map.get(str) + "、";
                     }
-                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                    if(specInfo.length()==0){
+                        specInfo = goodsSpec.getSpecGoodsSerial();
+                    }else{
+                        specInfo = specInfo.substring(0, specInfo.length() - 1);
+                    }
                 }
                 wareGoodsVo.setSpecGoodsSpec(specInfo);
             }
@@ -726,7 +738,11 @@ public class SelfMentionController extends BaseController {
                         for (String str : set) {
                             specInfo += str + ":" + map.get(str) + "、";
                         }
-                        specInfo = specInfo.substring(0, specInfo.length() - 1);
+                        if(specInfo.length()==0){
+                            specInfo = goodsSpec.getSpecGoodsSerial();
+                        }else{
+                            specInfo = specInfo.substring(0, specInfo.length() - 1);
+                        }
                     }
                     orderGoodsVo.setGoodsSpec(specInfo);
                 }
@@ -805,7 +821,11 @@ public class SelfMentionController extends BaseController {
                     for (String str : set) {
                         specInfo += str + ":" + map.get(str) + "、";
                     }
-                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                    if(specInfo.length()==0){
+                        specInfo = goodsSpec.getSpecGoodsSerial();
+                    }else{
+                        specInfo = specInfo.substring(0, specInfo.length() - 1);
+                    }
                 }
                 orderGoodsVo.setGoodsSpec(specInfo);
             }
