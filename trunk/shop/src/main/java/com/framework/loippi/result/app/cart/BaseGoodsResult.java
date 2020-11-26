@@ -77,6 +77,10 @@ public class BaseGoodsResult {
      * 大单pv价格
      */
     private BigDecimal bigPpvPrice;
+    /**
+     * 商品类型 1-普通2-换购3-组合
+     */
+    private Integer goodsType;
 
 //    //是否发货 0没发货 1已发货
 //    private Integer isShipment;
@@ -108,6 +112,7 @@ public class BaseGoodsResult {
                 baseGoodsResult.setPpv(optOrderGoods.map(ShopOrderGoods::getPpv).orElse(BigDecimal.ZERO));
                 baseGoodsResult.setVipPrice(optOrderGoods.map(ShopOrderGoods::getVipPrice).orElse(BigDecimal.ZERO));
                 baseGoodsResult.setBigPpvPrice(optOrderGoods.map(ShopOrderGoods::getGoodsPrice).orElse(BigDecimal.ZERO));
+                baseGoodsResult.setGoodsType(optOrderGoods.map(ShopOrderGoods::getGoodsType).orElse(1));
 //            if (shopOrderGood.getShippingExpressId()!=null && shopOrderGood.getShippingCode()!=null && !"".equals(shopOrderGood.getShippingCode())){
 //                baseGoodsResult.setIsShipment(1);
 //            }else{
