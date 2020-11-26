@@ -141,15 +141,15 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 					throw new StateResult(AppConstants.GOODS_STATE_ERRO, "订单已支付");
 				}
 				orderId = order.getId();
-				int pointNum = 0;
+				BigDecimal pointNum = new BigDecimal("0.00");
 				pointNum = new BigDecimal(
 						(order.getOrderAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration.doubleValue()))
-						.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-				order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(BigDecimal.ZERO).add(BigDecimal.valueOf(pointNum)));//设置订单所用积分数量
+						.setScale(0, BigDecimal.ROUND_HALF_UP);
+				order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(BigDecimal.ZERO).add(pointNum));//设置订单所用积分数量
 				order.setPointRmbNum(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
-						.add(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+						.add(new BigDecimal((pointNum.doubleValue()) * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
 				System.out.println("o1="+order.getOrderAmount());
-				order.setOrderAmount(order.getOrderAmount().subtract(new BigDecimal(pointNum * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
+				order.setOrderAmount(order.getOrderAmount().subtract(new BigDecimal((pointNum.doubleValue()) * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
 				System.out.println("o2="+order.getOrderAmount());
 				rdWareOrderDao.update(order);
 				ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
