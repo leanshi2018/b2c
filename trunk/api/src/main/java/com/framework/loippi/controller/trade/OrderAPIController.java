@@ -1338,6 +1338,8 @@ public class OrderAPIController extends BaseController {
         String contactName = "";
         String contactPhone = "";
         String contactAddrInfo = "";
+        String contactAddrProvice = "";
+        String contactAddrDetail = "";
         if (shopMemberAddress != null) {
             contactName = (Optional.ofNullable(shopMemberAddress.getConsigneeName()).orElse("后台还未设置"));
             contactPhone = (Optional.ofNullable(shopMemberAddress.getMobile()).orElse("后台还未设置"));
@@ -1345,10 +1347,16 @@ public class OrderAPIController extends BaseController {
                     shopMemberAddress.getAddProvinceCode() + shopMemberAddress.getAddCityCode() + shopMemberAddress
                             .getAddCountryCode()).orElse("后台还未设置") + Optional.ofNullable(shopMemberAddress.getAddDetial())
                     .orElse(""));
+            contactAddrProvice = (Optional.ofNullable(
+                    shopMemberAddress.getAddProvinceCode() + shopMemberAddress.getAddCityCode() + shopMemberAddress
+                            .getAddCountryCode()).orElse("后台还未设置"));
+            contactAddrDetail=Optional.ofNullable(shopMemberAddress.getAddDetial()).orElse("");
         } else {
             contactName = ("后台还未设置");
             contactPhone = ("后台还未设置");
             contactAddrInfo = ("后台还未设置");
+            contactAddrProvice = ("后台还未设置");
+            contactAddrDetail = ("");
         }
         List<RdMmAddInfo> addrList = rdMmAddInfoService.findList("mmCode", member.getMmCode());
         RdMmAddInfo addr = new RdMmAddInfo();
@@ -1423,7 +1431,8 @@ public class OrderAPIController extends BaseController {
             .put("orderId", orderPay.getOrderId()).put("addr", addr).put("hadReceiveAddr",hadReceiveAddr)
         .put("shippingFee",orderPay.getShippingFee().subtract(orderPay.getShippingPreferentialFee())).put("goodsNum",param.getCount())
         .put("goodsTotal",orderPay.getPayAmount().subtract(orderPay.getShippingFee()).add(orderPay.getShippingPreferentialFee()))
-        .put("goodsInfo",cart).put("packageAmount",shopGoodsFreightRule.getMinimumOrderAmount()).put("specInfo",goodsSpec));
+        .put("goodsInfo",cart).put("packageAmount",shopGoodsFreightRule.getMinimumOrderAmount()).put("specInfo",goodsSpec)
+        .put("contactAddrProvice",contactAddrProvice).put("contactAddrDetail",contactAddrDetail));
     }
 
     /**
