@@ -367,7 +367,7 @@ public class RefundReturnSysController extends GenericController {
                          @RequestParam(required = false, value = "orderpaytype", defaultValue = "") String orderpaytype,//订单支付类型
                          @RequestParam(required = false, value = "refundAmount", defaultValue = "0") String refundAmount,//退款金额
                          @RequestParam(required = false, value = "refundPpv", defaultValue = "0") String refundPpv,//退款pv
-                         @RequestParam(required = false, value = "refundPoint", defaultValue = "0") Integer refundPoint,//退款积分
+                         @RequestParam(required = false, value = "refundPoint", defaultValue = "0") String refundPoint,//退款积分
                          HttpServletRequest request, HttpServletResponse response) {
         Principal principal = userService.getPrincipal();
         User user = userService.find(principal.getId());
@@ -425,7 +425,7 @@ public class RefundReturnSysController extends GenericController {
             refundReturn.setRefundAmount(money);
             //refundReturn.setPpv(BigDecimal.valueOf(refundPpv));
             refundReturn.setPpv(new BigDecimal(refundPpv));
-            refundReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+            refundReturn.setRewardPointAmount(new BigDecimal(refundPoint));
             //处理积分,pv值
             if (refundReturn.getBatchNo()==null){
                 orderService.addRefundPoint(refundReturn);
@@ -443,7 +443,7 @@ public class RefundReturnSysController extends GenericController {
                         updateReturn.setId(id); //记录ID
                         updateReturn.setBatchNo(bathno); //退款批次号
                         updateReturn.setRefundAmount(money);
-                        updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                        updateReturn.setRewardPointAmount(new BigDecimal(refundPoint));
                         refundReturnService.update(updateReturn);//将批次号存入退款表
                         AliPayRefund aliPayRefund = new AliPayRefund();
                         //支付宝交易号 ，退款金额，退款理由
@@ -465,7 +465,7 @@ public class RefundReturnSysController extends GenericController {
                         updateReturn.setId(id); //记录ID
                         updateReturn.setBatchNo(bathno); //退款批次号
                         updateReturn.setRefundAmount(money);
-                        updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                        updateReturn.setRewardPointAmount(new BigDecimal(refundPoint));
                         refundReturnService.update(updateReturn);//将批次号存入退款表
                         weiRefund.setOutrefundno(bathno);//微信交易号
                         weiRefund.setOuttradeno(order.getPaySn());//订单号
@@ -482,7 +482,7 @@ public class RefundReturnSysController extends GenericController {
                         updateReturn.setId(id); //记录ID
                         //updateReturn.setBatchNo(bathno); //退款批次号
                         updateReturn.setRefundAmount(money);
-                        updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                        updateReturn.setRewardPointAmount(new BigDecimal(refundPoint));
                         //refundReturnService.update(updateReturn);//将批次号存入退款表
                         weiRefund.setOutrefundno(bathno);//微信交易号
                         weiRefund.setOuttradeno(order.getPaySn());//订单号
@@ -503,7 +503,7 @@ public class RefundReturnSysController extends GenericController {
                         updateReturn.setId(id); //记录ID
                         updateReturn.setBatchNo(bathno); //退款批次号
                         updateReturn.setRefundAmount(money);
-                        updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                        updateReturn.setRewardPointAmount(new BigDecimal(refundPoint));
                         refundReturnService.update(updateReturn);//将批次号存入退款表
                         weiRefund.setOutrefundno(bathno);//微信交易号
                         weiRefund.setOuttradeno(order.getPaySn());//订单号
@@ -522,7 +522,7 @@ public class RefundReturnSysController extends GenericController {
                             updateReturn.setId(id); //记录ID
                             updateReturn.setBatchNo(bathno); //退款批次号
                             updateReturn.setRefundAmount(money);
-                            updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                            updateReturn.setRewardPointAmount(new BigDecimal(refundPoint));
                             refundReturnService.update(updateReturn);//将批次号存入退款表
                         }
                         refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype, user.getUsername());
@@ -537,7 +537,7 @@ public class RefundReturnSysController extends GenericController {
                 updateReturn.setId(id); //记录ID
                 updateReturn.setBatchNo(bathno); //退款批次号
                 updateReturn.setRefundAmount(money);
-                updateReturn.setRewardPointAmount(BigDecimal.valueOf(refundPoint));
+                updateReturn.setRewardPointAmount(new BigDecimal(refundPoint));
                 refundReturnService.update(updateReturn);//将批次号存入退款表
                 refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,orderpaytype, user.getUsername());
                 model.addAttribute("msg", "退款成功");

@@ -3,6 +3,7 @@ package com.framework.loippi.controller.user;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -276,6 +277,8 @@ public class UserIntegrationAPIController extends BaseController {
             return ApiUtils.error("提现积分不合理");
         }
 
+        BigDecimal i = new BigDecimal(integration).setScale(2, RoundingMode.HALF_UP);
+        integration = i.doubleValue();
 
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
@@ -288,7 +291,9 @@ public class UserIntegrationAPIController extends BaseController {
             return ApiUtils.error("支付密码错误");
         }
 
-        if (rdMmAccountInfo.getBonusBlance().compareTo(new BigDecimal(integration))==-1) {
+        System.out.println("1="+rdMmAccountInfo.getBonusBlance());
+        System.out.println("2="+integration);
+        if (rdMmAccountInfo.getBonusBlance().compareTo(new BigDecimal(integration).setScale(2,RoundingMode.HALF_UP))==-1) {
             return ApiUtils.error("积分不足，不可提现");
         }
 
