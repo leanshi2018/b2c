@@ -39,6 +39,15 @@ public class CartExchangeCheckOutResult {
      * 收货地址【广东省广州市天河区棠安路188号乐天大厦8楼808-812】
      */
     private String receiveAddrInfo;
+
+    /**
+     * 收货地址省市区
+     */
+    private String receiveProvice;
+    /**
+     * 收货地址详情
+     */
+    private String receiveDetail;
     /**
      * 商品件数
      */
@@ -96,6 +105,10 @@ public class CartExchangeCheckOutResult {
                 .setAddressId(optAddress.map(RdMmAddInfo::getAid).orElse(-1))
                 .setReceiveName(optAddress.map(RdMmAddInfo::getConsigneeName).orElse(""))
                 .setReceivePhone(optAddress.map(RdMmAddInfo::getMobile).orElse(""))
+                .setReceiveProvice(optAddress.map(RdMmAddInfo::getAddProvinceCode).orElse("") +
+                        optAddress.map(RdMmAddInfo::getAddCityCode).orElse("")+
+                        optAddress.map(RdMmAddInfo::getAddCountryCode).orElse(""))
+                .setReceiveDetail(optAddress.map(RdMmAddInfo::getAddDetial).orElse(""))
                 .setReceiveAddrInfo(optAddress.map(RdMmAddInfo::getAddProvinceCode).orElse("") +
                         optAddress.map(RdMmAddInfo::getAddCityCode).orElse("")+
                         optAddress.map(RdMmAddInfo::getAddCountryCode).orElse("")+
