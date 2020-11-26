@@ -282,7 +282,8 @@ public class CartCheckOutResult {
                                 .setQuantity(optCart.map(ShopCart::getGoodsNum).orElse(0))
                                 .setSpecId(optCart.map(ShopCart::getSpecId).orElse(0L))
                                 .setSpecInfo(optCart.map(ShopCart::getSpecInfo).orElse(""))
-                                .setPpv(optCart.map(ShopCart::getPpv).orElse(BigDecimal.ZERO));
+                                .setPpv(optCart.map(ShopCart::getPpv).orElse(BigDecimal.ZERO))
+                                .setGoodsType(optCart.map(ShopCart::getGoodsType).orElse(1));
                         Integer type=shopOrderDiscountType.getPreferentialType();
                         goodsResult.setGoodsMarketPrice(cart.getGoodsRetailPrice());
                         goodsResult.setVipPrice(cart.getGoodsMemberPrice());
