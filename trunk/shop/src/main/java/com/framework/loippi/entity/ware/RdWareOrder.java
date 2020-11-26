@@ -94,7 +94,7 @@ public class RdWareOrder implements GenericEntity {
 	 * */
 	private String tradeSn;
 	/** 订单所用积分数量 */
-	private Integer usePointNum;
+	private BigDecimal usePointNum;
 
 	/** 积分抵扣金额 */
 	private BigDecimal pointRmbNum;

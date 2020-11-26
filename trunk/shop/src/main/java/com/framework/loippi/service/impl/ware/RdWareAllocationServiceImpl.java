@@ -609,7 +609,11 @@ public class RdWareAllocationServiceImpl extends GenericServiceImpl<RdWareAlloca
 					for (String str : set) {
 						specInfo += str + ":" + map.get(str) + "、";
 					}
-					specInfo = specInfo.substring(0, specInfo.length() - 1);
+					if(specInfo.length()==0){
+						specInfo = goodsSpec.getSpecGoodsSerial();
+					}else{
+						specInfo = specInfo.substring(0, specInfo.length() - 1);
+					}
 				}
 				goodsVo.setSpecGoodsSpec(specInfo);
 			}
