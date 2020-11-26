@@ -144,7 +144,8 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 				BigDecimal pointNum = new BigDecimal("0.00");
 				pointNum = new BigDecimal(
 						(order.getOrderAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration.doubleValue()))
-						.setScale(0, BigDecimal.ROUND_HALF_UP);
+						.setScale(2, BigDecimal.ROUND_HALF_UP);
+				System.out.println("point="+pointNum);
 				order.setUsePointNum(Optional.ofNullable(order.getUsePointNum()).orElse(BigDecimal.ZERO).add(pointNum));//设置订单所用积分数量
 				order.setPointRmbNum(Optional.ofNullable(order.getPointRmbNum()).orElse(BigDecimal.ZERO)
 						.add(new BigDecimal((pointNum.doubleValue()) * shoppingPointSr * 0.01).setScale(2, BigDecimal.ROUND_HALF_UP)));
