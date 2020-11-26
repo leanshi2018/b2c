@@ -257,7 +257,7 @@ public class TravelController extends BaseController {
             map.put("num",0);
             map.put("travelId",-1L);
         }
-        map.put("price",500);
+        map.put("price",100);
         return ApiUtils.success(map);
     }
 }

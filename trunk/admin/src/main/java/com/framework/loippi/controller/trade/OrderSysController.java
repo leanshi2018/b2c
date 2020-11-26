@@ -1,7 +1,5 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.entity.order.*;
-import com.framework.loippi.service.order.*;
 import net.sf.json.JSONObject;
 
 import java.io.BufferedOutputStream;
@@ -52,6 +50,14 @@ import com.framework.loippi.entity.User;
 import com.framework.loippi.entity.common.ShopCommonArea;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.entity.order.ShopOrder;
+import com.framework.loippi.entity.order.ShopOrderAddress;
+import com.framework.loippi.entity.order.ShopOrderDiscountType;
+import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.order.ShopOrderLog;
+import com.framework.loippi.entity.order.ShopOrderLogistics;
+import com.framework.loippi.entity.order.ShopOrderSplit;
+import com.framework.loippi.entity.order.ShopSpiritOrderInfo;
 import com.framework.loippi.entity.product.ShopExpressSpecialGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsGoods;
@@ -75,6 +81,14 @@ import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressNotAreaService;
 import com.framework.loippi.service.common.ShopCommonExpressService;
 import com.framework.loippi.service.coupon.CouponDetailService;
+import com.framework.loippi.service.order.ShopOrderAddressService;
+import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
+import com.framework.loippi.service.order.ShopOrderGoodsService;
+import com.framework.loippi.service.order.ShopOrderLogService;
+import com.framework.loippi.service.order.ShopOrderLogisticsService;
+import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.order.ShopOrderSplitService;
+import com.framework.loippi.service.order.ShopSpiritOrderInfoService;
 import com.framework.loippi.service.product.ShopExpressSpecialGoodsService;
 import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsPresaleService;
