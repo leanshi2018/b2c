@@ -225,6 +225,17 @@ public class CartCheckOutResult {
     private Long activityGoodsId;
 
     /**
+     * 活动id String
+     */
+    private String activityIdStr;
+
+    //活动规格id String
+    private String activitySkuIdStr;
+
+    //活动商品id String
+    private String activityGoodsIdStr;
+
+    /**
      * 活动类型
      *
      * @see ActivityTypeEnus

@@ -1200,12 +1200,15 @@ public class CartAPIController extends BaseController {
         }
         if(param.getActivityId()!=null){
             result.setActivityId(param.getActivityId());
+            result.setActivityIdStr(param.getActivityId().toString());
         }
         if(param.getActivityGoodsId()!=null){
             result.setActivityGoodsId(param.getActivityGoodsId());
+            result.setActivityGoodsIdStr(param.getActivityGoodsId().toString());
         }
         if(param.getActivitySkuId()!=null){
             result.setActivitySkuId(param.getActivitySkuId());
+            result.setActivitySkuIdStr(param.getActivitySkuId().toString());
         }
         if(param.getActivityType()!=null){
             result.setActivityType(param.getActivityType());
