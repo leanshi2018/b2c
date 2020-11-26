@@ -170,6 +170,7 @@ public class BaseGoodsResult {
                 }
                 baseGoodsResult.setVipPrice(optOrderGoods.map(ShopOrderGoods::getVipPrice).orElse(BigDecimal.ZERO));
                 baseGoodsResult.setBigPpvPrice(optOrderGoods.map(ShopOrderGoods::getGoodsPrice).orElse(BigDecimal.ZERO));
+                baseGoodsResult.setGoodsType(optOrderGoods.map(ShopOrderGoods::getGoodsType).orElse(1));
 //            if (shopOrderGood.getShippingExpressId()!=null && shopOrderGood.getShippingCode()!=null && !"".equals(shopOrderGood.getShippingCode())){
 //                baseGoodsResult.setIsShipment(1);
 //            }else{
