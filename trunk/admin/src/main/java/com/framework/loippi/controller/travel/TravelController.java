@@ -706,14 +706,12 @@ public class TravelController {
 	 *
 	 */
 	@RequestMapping("/travelTicketDetail/list")
-	public String detailList(ModelMap model,
-					   @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
-					   @RequestParam(required = false, value = "pageSize", defaultValue = "10") int pageSize,
+	public String detailList(ModelMap model, Pageable pager,
 					   @ModelAttribute RdTravelTicketDetail detail) {
 		//参数整理
-		Pageable pager = new Pageable();
+		/*Pageable pager = new Pageable();
 		pager.setPageNumber(pageNo);
-		pager.setPageSize(pageSize);
+		pager.setPageSize(pageSize);*/
 		pager.setOrderProperty("own_time");
 		pager.setOrderDirection(Order.Direction.DESC);
 		pager.setParameter(detail);
