@@ -1670,6 +1670,9 @@ public class UserAPIController extends BaseController {
             if (splitPpv==null){
                 splitPpv = new BigDecimal("0.00");
             }
+            if (periodSumPpv==null){
+                periodSumPpv = new OrderSumPpv();
+            }
             periodSumPpv.setTotalPpv(bugMi.add(splitPpv).setScale(2));
         }else {
             periodSumPpv=shopOrderService.findByPeriod(Paramap.create().put("buyerId", memeberId).put("creationPeriod",periodStr));
@@ -1680,6 +1683,9 @@ public class UserAPIController extends BaseController {
             }
             if (splitPpv==null){
                 splitPpv = new BigDecimal("0.00");
+            }
+            if (periodSumPpv==null){
+                periodSumPpv = new OrderSumPpv();
             }
             periodSumPpv.setTotalPpv(bugMi.add(splitPpv).setScale(2));
         }

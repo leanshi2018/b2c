@@ -145,9 +145,13 @@
                                     <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
                                 </#if>
                                 <#if picture!=null>
-                                    <option value="活动页面" id=""<#if picture.jumpName == '活动页面'>selected="selected"</#if>>跳转商品活动页</option>
-                                    <option value="跳转路径" id=""<#if picture.jumpName == "推荐页面">selected="selected" </#if>>跳转路径</option>
-                                    <option value="跳转链接" id=""<#if picture.jumpInterface!= "">selected="selected" </#if>>跳转链接</option>
+                                    <option value="活动页面" <#if picture.jumpName == '活动页面'>selected="selected"</#if>>跳转商品活动页</option>
+                                    <option value="跳转路径" <#if picture.jumpName == "凑单页面"||picture.jumpName == "推荐页面"||picture.jumpName == "辑"
+                                    ||picture.jumpName == "消息中心"||picture.jumpName == "商品详情"||picture.jumpName == "我"||picture.jumpName == "个人业绩"
+                                    ||picture.jumpName == "我的订单"||picture.jumpName == "我的积分"||picture.jumpName == "奖励积分"||picture.jumpName == "换购积分"
+                                    ||picture.jumpName == "购物积分"||picture.jumpName == "我的银行卡"||picture.jumpName == "学堂"||picture.jumpName == "学堂文章详情"
+                                    ||picture.jumpName == "我的邀请"||picture.jumpName == "优惠券购买详情">selected="selected" </#if>>跳转路径</option>
+                                    <option value="跳转链接" <#if picture.jumpInterface!= "">selected="selected" </#if>>跳转链接</option>
                                 </#if>
                             </select>
                             <span class="error-message"></span>
@@ -195,7 +199,8 @@
                                     <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
                                     <input type="hidden" class="text w500" value="${article.id}" name="id" >
                                     <#--选择活动-->
-                                    <input name="activityname" type="text" id="activityname" value="${shopActivity.name}"/>
+                                    <#--选择活动的名称显示-->
+                                    <input name="activityname" type="text" id="activityname" value="${picture.pictureName}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
                                     <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
                                     <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>
@@ -232,7 +237,7 @@
                             <div class="col-sm-9">
                                 <div class="col-lg-1" STYLE="width: 90%;">
                                     <#--选择跳转链接-->
-                                    <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" class="w200"style="display: none;"/>
+                                    <input name="jumpInterface" id="jumpInterface" type="text" value="${picture.jumpInterface}" style="display: none;width:353px;"/>
                                     <#--选择跳转路径-->
                                     <select name="openPage" class="w200" id="openPage"style="display: none;">
                                         <option value="" selected="selected">请选择</option>
@@ -250,7 +255,7 @@
                                         <option value="buyintegralpage" <#if picture.activityUrl == "buyintegralpage">selected="selected" </#if>>换购积分</option>
                                         <option value="bankcardpage" <#if picture.activityUrl == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
                                         <option value="learnpage" <#if picture.activityUrl == "learnpage">selected="selected" </#if>>学堂</option>
-                                        <option value="learnarticlepage" <#if picture.activityUrl == "learnarticlcepage">selected="selected" </#if>>学堂文章详情</option>
+                                        <option value="learnarticlepage" <#if picture.activityUrl == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
                                         <option value="invitationpage" <#if picture.activityUrl == "invitationpage">selected="selected" </#if>>我的邀请</option>
                                         <option value="buyCouponspage"  <#if picture.activityUrl == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
@@ -259,10 +264,10 @@
                                     <input type="hidden" class="text w500" value="${article.id}" name="id" >
                                     <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" >
                                     <#--选择活动-->
-                                    <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
+                                    <input name="name" type="text" id="activityname" value="${picture.pictureName}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
                                     <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
-                                    <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>
+                                    <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>subordinateUserInformationNew
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -340,6 +345,10 @@
                 $("#activityname").show();
                 $("#openPage").attr("name","");
                 $("#searchactivity").css("display","");
+                $("#couponName").css("display","none");
+                $("#recommendationName").css("display","none");
+                $("#goodsName").css("display","none");
+                $("#articleTitle").css("display","none");
                 $("#openName").val("活动页面");
             }else{
                 $("#activityname").css("display","none");
