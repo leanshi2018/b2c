@@ -1,7 +1,5 @@
 package com.framework.loippi.service.impl.coupon;
 
-import com.framework.loippi.entity.order.OrderFundFlow;
-import com.framework.loippi.service.order.OrderFundFlowService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -37,6 +35,7 @@ import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
 import com.framework.loippi.entity.coupon.CouponPayLog;
 import com.framework.loippi.entity.coupon.CouponUser;
+import com.framework.loippi.entity.order.OrderFundFlow;
 import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.user.RdMmAccountInfo;
 import com.framework.loippi.entity.user.RdMmAccountLog;
@@ -46,6 +45,7 @@ import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.coupon.CouponPayDetailService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
+import com.framework.loippi.service.order.OrderFundFlowService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAccountLogService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
@@ -175,10 +175,10 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 	}
 
 	@Override
-	public void ProcessingIntegralsCoupon(String paysn, Integer integration, RdMmBasicInfo shopMember, ShopOrderPay pay,
+	public void ProcessingIntegralsCoupon(String paysn, BigDecimal integration, RdMmBasicInfo shopMember, ShopOrderPay pay,
 										  Integer shoppingPointSr) {//购物积分购物比例
 		//第一步 判断积分是否正确
-		if (integration < 0) {
+		if (integration.compareTo(new BigDecimal("0.00")) == -1) {
 			throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能小于0");
 		}
 		//积分
@@ -191,12 +191,12 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 			throw new StateResult(AppConstants.GOODS_STATE_ERRO, "用户积分未激活或者已冻结 ");
 		}
 
-		if (rdMmAccountInfo.getWalletBlance().compareTo(BigDecimal.valueOf(integration)) == -1) {
+		if (rdMmAccountInfo.getWalletBlance().compareTo(integration) == -1) {
 			throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要使用的积分不能大于拥有积分");
 		}
 
 
-		BigDecimal shoppingPoints = new BigDecimal(integration * shoppingPointSr * 0.01);
+		BigDecimal shoppingPoints = integration.multiply(new BigDecimal(shoppingPointSr * 0.01)).setScale(2, BigDecimal.ROUND_HALF_UP);
 		if (shoppingPoints.compareTo(new BigDecimal("0")) == 1){//使用抵现积分大于0
 			if (shoppingPoints.compareTo(pay.getPayAmount()) == 1) {
 				throw new StateResult(AppConstants.GOODS_STATE_ERRO, "要抵现的不能大于订单金额");
@@ -217,7 +217,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 				payDetailId = couponPayDetail.getId();
 				int pointNum = 0;
 				pointNum = new BigDecimal(
-						(couponPayDetail.getCouponAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration))
+						(couponPayDetail.getCouponAmount().doubleValue() / pay.getPayAmount().doubleValue()) * (integration.doubleValue()))
 						.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
 				couponPayDetail.setUsePointNum(Optional.ofNullable(couponPayDetail.getUsePointNum()).orElse(new BigDecimal(0.00)).add(new BigDecimal(pointNum)));//设置订单所用积分数量
 				couponPayDetail.setPointAmount(Optional.ofNullable(couponPayDetail.getPointAmount()).orElse(BigDecimal.ZERO)
@@ -238,7 +238,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
 		rdMmAccountLog.setTrMmCode(shopMember.getMmCode());
 		rdMmAccountLog.setBlanceBefore(rdMmAccountInfo.getWalletBlance());
-		rdMmAccountLog.setAmount(BigDecimal.valueOf(integration));
+		rdMmAccountLog.setAmount(integration);
 		rdMmAccountLog.setTransDate(new Date());
 		String period = rdSysPeriodDao.getSysPeriodService(new Date());
 		rdMmAccountLog.setTransPeriod(period);
@@ -249,7 +249,7 @@ public class CouponPayDetailServiceImpl  extends GenericServiceImpl<CouponPayDet
 		rdMmAccountLog.setCreationTime(new Date());
 		rdMmAccountLog.setAutohrizeBy(shopMember.getMmNickName());
 		rdMmAccountLog.setAutohrizeTime(new Date());
-		rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().subtract(BigDecimal.valueOf(integration)));
+		rdMmAccountInfo.setWalletBlance(rdMmAccountInfo.getWalletBlance().subtract(integration));
 		rdMmAccountLog.setBlanceAfter(rdMmAccountInfo.getWalletBlance());
 		rdMmAccountInfoService.update(rdMmAccountInfo);
 		rdMmAccountLogService.save(rdMmAccountLog);
