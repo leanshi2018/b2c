@@ -1280,19 +1280,15 @@ public class RefundReturnSysController extends GenericController {
         BigDecimal fee = orderAmount.subtract(cutAmount);
 
         BigDecimal refundAmount = updateReturn.getRefundAmount();
-        Double b = refundAmount.doubleValue()*100;
-        BigDecimal fd= new BigDecimal(b);
-        Double g = fd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        Long oAmount = new Double(g).longValue();
+        BigDecimal fd= refundAmount.multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
+        Long oAmount = fd.longValue();
 
         BigDecimal feeAmountBig = new BigDecimal("0");
         if (cutAmount.compareTo(refundAmount)==-1){//退款金额大于分账金额
             feeAmountBig = refundAmount.subtract(cutAmount);
         }
-        double f = feeAmountBig.doubleValue()*100;
-        BigDecimal bd= new BigDecimal(f);
-        Double e = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        Long feeAmount = new Double(e).longValue();
+        BigDecimal bd= feeAmountBig.multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
+        Long feeAmount = bd.longValue();
 
 
         String paySn = shopOrder.getPaySn();
