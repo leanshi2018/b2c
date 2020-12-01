@@ -307,9 +307,11 @@ public class SelfMentionController extends BaseController {
                 Set<String> keyGoods = goodsMap.keySet();
                 Iterator<String> itSpec = keySpec.iterator();
                 Iterator<String> itGoods = keyGoods.iterator();
-                while (itSpec.hasNext() && itGoods.hasNext()) {
+                while (itSpec.hasNext() ) {
                     String specId = itSpec.next();//单品的规格id
-                    String goodsId = itGoods.next();//单品的商品id
+                    //String goodsId = itGoods.next();//单品的商品id
+                    ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(new Long(specId));
+                    Long goodsId = goodsSpec.getGoodsId();
                     //拿到组合的具体数量情况
                     int joinNum=1;
                     Map<String,Object> mapGGs= new HashMap<>();

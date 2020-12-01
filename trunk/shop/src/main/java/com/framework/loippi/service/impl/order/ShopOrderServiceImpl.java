@@ -3049,28 +3049,18 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         System.out.println("order="+shopOrder);
         BigDecimal cutAmount = shopOrder.getCutAmount();//分账人金额
 
-        /*BigDecimal orderAmount = shopOrder.getOrderAmount();
-        double b = orderAmount.doubleValue()*100;
-        Long oAmount = new Double(b).longValue();*/
 
         BigDecimal orderAmount = shopOrder.getOrderAmount();
-        Double b = orderAmount.doubleValue()*100;
-        BigDecimal bd= new BigDecimal(b);
-        Double g = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        Long oAmount = new Double(g).longValue();
+        BigDecimal bd= orderAmount.multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
+        Long oAmount = bd.longValue();
 
         String paySn = shopOrder.getPaySn();
 
-        /*BigDecimal feeAmountBig = orderAmount.subtract(cutAmount);//公司的抽佣
-        double f = feeAmountBig.doubleValue()*100;
-        Long feeAmount = new Double(f).longValue();*/
 
 
         BigDecimal feeAmountBig = orderAmount.subtract(cutAmount);//公司的抽佣
-        Double f = feeAmountBig.doubleValue()*100;
-        BigDecimal fd= new BigDecimal(f);
-        Double e = fd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        Long feeAmount = new Double(e).longValue();
+        BigDecimal fd= feeAmountBig.multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
+        Long feeAmount = fd.longValue();
 
         System.out.println("cutAmount="+cutAmount);
         System.out.println("feeAmountBig="+feeAmountBig);

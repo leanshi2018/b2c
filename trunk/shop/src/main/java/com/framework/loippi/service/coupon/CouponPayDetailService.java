@@ -1,5 +1,6 @@
 package com.framework.loippi.service.coupon;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import com.framework.loippi.service.GenericService;
 public interface CouponPayDetailService extends GenericService<CouponPayDetail, Long> {
 	ShopOrderPay addOrderReturnPaySn(String mmCode, Long couponId, Integer couponNumber);
 
-	void ProcessingIntegralsCoupon(String paysn, Integer integration, RdMmBasicInfo shopMember, ShopOrderPay pay, Integer shoppingPointSr);
+	void ProcessingIntegralsCoupon(String paysn, BigDecimal integration, RdMmBasicInfo shopMember, ShopOrderPay pay, Integer shoppingPointSr);
 
 	void updateByPaySn(String paysn, Long paymentId);
 

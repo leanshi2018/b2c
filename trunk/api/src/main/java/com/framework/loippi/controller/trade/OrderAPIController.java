@@ -1892,8 +1892,10 @@ public class OrderAPIController extends BaseController {
 
         ShopOrder shopOrder = orderList.get(0);
         BigDecimal orderAmount = shopOrder.getOrderAmount();
-        double b = orderAmount.doubleValue()*100;
-        Long oAmount = new Double(b).longValue();
+        //double b = orderAmount.doubleValue()*100;
+        //Long oAmount = new Double(b).longValue();
+        BigDecimal b= orderAmount.multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
+        Long oAmount = b.longValue();
         //收款列表
         Map<String, Object> reciever = new LinkedHashMap<>();
         //查询一个满足条件的收款人，扣除积分，返回用户编号以及分账金额
@@ -1904,11 +1906,11 @@ public class OrderAPIController extends BaseController {
         HashMap<String,Object> map=getCutNumber(shopOrder);
         RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");
         BigDecimal acc = (BigDecimal) map.get("acc");
-        double accdouble = acc.doubleValue() * 100;
+        BigDecimal ac= acc.multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
         //reciever.put("bizUserId", TongLianUtils.BIZ_USER_ID);//TODO
         reciever.put("bizUserId", accountInfo.getMmCode());//TODO
         //reciever.put("amount",shopOrder.getOrderAmount().longValue()*100); //TODO 正式
-        reciever.put("amount",new Double(accdouble).longValue());
+        reciever.put("amount",ac.longValue());
         List<Map<String, Object>> recieverList = new ArrayList<Map<String, Object>>();
         /*HashMap<String,Object> map=getCutNumber(shopOrder);
         RdMmAccountInfo accountInfo = (RdMmAccountInfo) map.get("accountInfo");

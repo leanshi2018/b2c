@@ -72,9 +72,11 @@ public class RdInventoryWarningServiceImpl extends GenericServiceImpl<RdInventor
 				Set<String> keyGoods = goodsMap.keySet();
 				Iterator<String> itSpec = keySpec.iterator();
 				Iterator<String> itGoods = keyGoods.iterator();
-				while (itSpec.hasNext() && itGoods.hasNext()) {
+				while (itSpec.hasNext() ) {
 					Long specId = Long.valueOf(itSpec.next());//单品的规格id
-					Long goodsId = Long.valueOf(itGoods.next());//单品的商品id
+					//Long goodsId = Long.valueOf(itGoods.next());//单品的商品id
+					ShopGoodsSpec goodsSpec = shopGoodsSpecDao.find(specId);
+					Long goodsId = goodsSpec.getGoodsId();
 					//拿到组合的具体数量情况
 					int joinNum=1;
 					Map<String,Object> mapGGs= new HashMap<>();

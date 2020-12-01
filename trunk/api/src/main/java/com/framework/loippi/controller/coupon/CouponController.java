@@ -348,7 +348,7 @@ public class CouponController extends BaseController {
 	public String payOrderCoupon(@RequestParam(value = "paysn") String paysn,
 								 @RequestParam(defaultValue = "pointsPaymentPlugin") String paymentCode,
 								 @RequestParam(defaultValue = "0") String paymentId,
-								 @RequestParam(defaultValue = "0") Integer integration,
+								 @RequestParam(defaultValue = "0") String integration,
 								 @RequestParam(defaultValue = "0") String paypassword,
 								 @RequestParam(defaultValue = "0") String openId,
 								 @RequestParam(defaultValue = "0") Integer type,
@@ -366,6 +366,16 @@ public class CouponController extends BaseController {
 			return ApiUtils.error("订单已取消或已完成");
 		}
 
+		if(integration==null&&"".equals(integration)){
+			return ApiUtils.error("请输入支付的积分金额");
+		}
+		BigDecimal i = new BigDecimal("0.00");
+		if (integration==null||"".equals(integration)){
+			i = new BigDecimal("0.00");
+		}else {
+			i = new BigDecimal(integration).setScale(2, BigDecimal.ROUND_HALF_UP);
+		}
+
 		//处理购物积分
 		//获取购物积分购物比例
 		List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
@@ -375,7 +385,7 @@ public class CouponController extends BaseController {
 			rdMmIntegralRule = rdMmIntegralRuleList.get(0);
 		}
 		int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
-		if (integration != 0) {
+		if (i.compareTo(new BigDecimal("0.00")) != 0) {
 			if (rdMmAccountInfo.getPaymentPwd() == null) {
 				return ApiUtils.error("你还未设置支付密码");
 			}
@@ -387,7 +397,7 @@ public class CouponController extends BaseController {
 			}
 			ShopOrderPay pay = orderPayService.findCouponBySn(paysn);
 			//处理积分支付
-			couponPayDetailService.ProcessingIntegralsCoupon(paysn, integration, shopMember, pay, shoppingPointSr);
+			couponPayDetailService.ProcessingIntegralsCoupon(paysn, i, shopMember, pay, shoppingPointSr);
 		}
 
 		System.out.println("##########################################");
