@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.framework.loippi.dao.coupon.CouponDao;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponUser;
 import com.framework.loippi.entity.travel.RdTicketSendLog;
@@ -40,7 +41,7 @@ public class CouponDetailServiceImpl extends GenericServiceImpl<CouponDetail, Lo
     @Resource
     private CouponUserService couponUserService;
     @Resource
-    private CouponService couponService;
+    private CouponDao couponDao;
     @Resource
     private RdTicketSendLogService rdTicketSendLogService;
 
@@ -120,7 +121,7 @@ public class CouponDetailServiceImpl extends GenericServiceImpl<CouponDetail, Lo
         //3.如果优惠券有发放数量限制，修改优惠券已发放数量
         if(coupon.getTotalLimitNum()!=null&&coupon.getTotalLimitNum()!=-1){
             coupon.setReceivedNum(coupon.getReceivedNum()+num);
-            couponService.update(coupon);
+            couponDao.update(coupon);
         }
         //4.生成发放日志
         RdTicketSendLog log = new RdTicketSendLog();
