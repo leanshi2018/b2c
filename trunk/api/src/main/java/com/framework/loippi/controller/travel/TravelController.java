@@ -260,4 +260,15 @@ public class TravelController extends BaseController {
         map.put("price",100);
         return ApiUtils.success(map);
     }
+
+    @RequestMapping(value = "/ticketAll", method = RequestMethod.POST)
+    public String ticketAll(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.utils.Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("请登录后进行操作");
+        }
+        List<RdTravelTicketDetail> list = rdTravelTicketDetailService.findList(Paramap.create().put("ownCode", member.getMmCode()).put("status", 0));
+
+        return ApiUtils.success();
+    }
 }

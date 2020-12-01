@@ -361,7 +361,7 @@ public class ShopCouponController extends GenericController {
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setParameter(coupon);
         Page<Coupon> page = couponService.findByPage(pager);
-        model.addAttribute("couponList", page);
+        model.addAttribute("page", page);
         return "/activity/shop_activity/coupon_list";
     }
 
@@ -382,7 +382,7 @@ public class ShopCouponController extends GenericController {
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setParameter(couponTransLog);
         Page<CouponTransLog> page = couponTransLogService.findByPage(pager);
-        model.addAttribute("couponTransLogList", page);
+        model.addAttribute("page", page);
         return "activity/shop_activity/transfer _list";
     }
 

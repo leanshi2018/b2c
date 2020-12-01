@@ -685,7 +685,7 @@ public class TravelController {
 		pager.setOrderDirection(Order.Direction.DESC);
 		pager.setParameter(travelTicket);
 		Page<RdTravelTicket> page = rdTravelTicketService.findByPage(pager);
-		model.addAttribute("travelTicketList", page);
+		model.addAttribute("page", page);
 		return "/common/travelTicket/index/list";//TODO
 	}
 
@@ -704,7 +704,7 @@ public class TravelController {
 		pager.setOrderDirection(Order.Direction.DESC);
 		pager.setParameter(detail);
 		Page<RdTravelTicketDetail> page = ticketDetailService.findByPage(pager);
-		model.addAttribute("travelTicketDetailList", page);
+		model.addAttribute("page", page);
 		return "/common/travelTicket/record/list";//TODO
 	}
 
@@ -799,7 +799,7 @@ public class TravelController {
 		pager.setOrderDirection(Order.Direction.DESC);
 		pager.setParameter(activity);
 		Page<RdTravelActivity> page = rdTravelActivityService.findByPage(pager);
-		model.addAttribute("rdTravelActivityList", page);
+		model.addAttribute("page", page);
 		return "/common/travelTicket/activity/list";//TODO
 	}
 
@@ -820,7 +820,7 @@ public class TravelController {
 		pager.setOrderDirection(Order.Direction.DESC);
 		pager.setParameter(activity);
 		Page<RdTravelActivity> page = rdTravelActivityService.findByPage(pager);
-		model.addAttribute("rdTravelActivityList", page);
+		model.addAttribute("page", page);
 		return "/common/travelTicket/record/select";
 	}
 
@@ -950,7 +950,7 @@ public class TravelController {
 		pager.setOrderDirection(Order.Direction.DESC);
 		pager.setParameter(memInfo);
 		Page<RdTravelMemInfo> page = rdTravelMemInfoService.findByPage(pager);
-		model.addAttribute("rdTravelMemInfoList", page);
+		model.addAttribute("page", page);
 		return "/common/travelTicket/join/list";//TODO
 	}
 
@@ -971,7 +971,7 @@ public class TravelController {
 		pager.setOrderDirection(Order.Direction.DESC);
 		pager.setParameter(costInfo);
 		Page<RdTravelCost> page = rdTravelCostService.findByPage(pager);
-		model.addAttribute("rdTravelCostList", page);
+		model.addAttribute("page", page);
 		return "/common/travelTicket/price/list";//TODO
 	}
 
