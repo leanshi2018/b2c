@@ -99,7 +99,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list travelTicketDetailList.content as list>
+                <#list page.content as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
@@ -160,9 +160,9 @@
                 </tbody>
                 <tfoot class="tfoot">
                 <tr>
-<#--                    <td colspan="16">-->
-<#--                        <@layout.pager page/>-->
-<#--                    </td>-->
+                    <td colspan="16">
+                        <@layout.pager page/>
+                    </td>
                 </tr>
                 </tfoot>
             </table>

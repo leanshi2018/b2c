@@ -67,20 +67,20 @@
 
         <!-- 搜索栏 -->
         <form method="post" name="formSearch" id="formSearch" action="${base}/admin/travel/travelTicket/list.jhtml">
-            <input type="hidden" name="pageNumber" value="${1}">
+            <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">旅游劵ID</th>
-                    <td class="w160"><input type="text" class="text w150" name="id" value="${rdTravelTicket.id}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="id" value="${rdTravelCost.id}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">旅游券名称</th>
-                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${rdTravelTicket.travelLikeName}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${rdTravelCost.travelLikeName}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a id="shopPMansongSubmit" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
-                        <#if rdTravelTicket.travelLikeName != '' || rdTravelTicket.id != '' >
+                        <#if rdTravelCost.travelLikeName != '' || rdTravelCost.id != '' >
                         <a href="${base}/admin/travel/travelTicket/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
                         </#if>
                     </td>
@@ -119,7 +119,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list travelTicketList.content as list>
+                <#list page.content as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
@@ -154,6 +154,7 @@
                         </td>
                         <td>
                             <a href="javascript:detail('${list.id}');">编 辑</a>
+                            <a href="">发 放</a>
                         </td>
                     </tr>
                 </#list>
