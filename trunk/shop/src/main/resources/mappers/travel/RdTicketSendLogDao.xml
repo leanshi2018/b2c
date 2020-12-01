@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.travel.RdTicketSendLogDao">
+
+    <resultMap id="rdTicketSendLogResultMap" type="com.framework.loippi.entity.travel.RdTicketSendLog">
+        <id property="id" column="id"  />
+        <result property="ticketType" column="ticket_type" />
+        <result property="ticketId" column="ticket_id" />
+        <result property="ticketName" column="ticket_name" />
+        <result property="mmCode" column="mm_code" />
+        <result property="mmNickName" column="mm_nick_name" />
+        <result property="num" column="num" />
+        <result property="operationCode" column="operation_code" />
+        <result property="sendTime" column="send_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,ticket_type,ticket_id ,ticket_name ,mm_code,mm_nick_name ,num ,operation_code ,send_time,remark
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{ticketType},#{ticketId},#{ticketName},#{mmCode},#{mmNickName},#{num},#{operationCode},#{sendTime},#{remark}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id}
+        </if>
+        <if test="ticketType != null and ticketType != ''">
+            AND ticket_type = #{ticketType}
+        </if>
+        <if test="ticketId != null and ticketId != ''">
+            AND ticket_id = #{ticketId}
+        </if>
+        <if test="ticketName != null and ticketName != ''">
+            AND ticket_name = #{ticketName,jdbcType=VARCHAR}
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+            AND mm_code = #{mmCode,jdbcType=VARCHAR}
+        </if>
+        <if test="mmNickName != null and mmNickName != ''">
+            AND mm_nick_name = #{mmNickName,jdbcType=VARCHAR}
+        </if>
+        <if test="num != null and num != ''">
+            AND num = #{num}
+        </if>
+        <if test="operationCode != null and operationCode != ''">
+            AND operation_code = #{operationCode}
+        </if>
+        <if test="sendTime != null">
+            AND send_time = #{sendTime}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark}
+        </if>
+        <if test="sendTimeLeft != null">
+            AND send_time >= #{sendTimeLeft}
+        </if>
+        <if test="sendTimeRight != null">
+            AND send_time &lt;= #{sendTimeRight}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null and id != ''">
+             id = #{id},
+        </if>
+        <if test="ticketType != null and ticketType != ''">
+             ticket_type = #{ticketType},
+        </if>
+        <if test="ticketId != null and ticketId != ''">
+             ticket_id = #{ticketId},
+        </if>
+        <if test="ticketName != null and ticketName != ''">
+             ticket_name = #{ticketName,jdbcType=VARCHAR},
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+             mm_code = #{mmCode,jdbcType=VARCHAR},
+        </if>
+        <if test="mmNickName != null and mmNickName != ''">
+             mm_nick_name = #{mmNickName,jdbcType=VARCHAR},
+        </if>
+        <if test="num != null and num != ''">
+             num = #{num},
+        </if>
+        <if test="operationCode != null and operationCode != ''">
+             operation_code = #{operationCode},
+        </if>
+        <if test="sendTime != null">
+             send_time = #{sendTime},
+        </if>
+        <if test="remark != null and remark != ''">
+             remark = #{remark},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="rdTicketSendLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_ticket_send_log
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="rdTicketSendLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_ticket_send_log
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_ticket_send_log
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.travel.RdTicketSendLog">
+        INSERT rd_ticket_send_log
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.travel.RdTicketSendLog">
+        UPDATE rd_ticket_send_log
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM rd_ticket_send_log
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_ticket_send_log
+        WHERE ID IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="rdTicketSendLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_ticket_send_log
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="rdTicketSendLogResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_ticket_send_log
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+</mapper> 

@@ -1,15 +1,13 @@
 package com.framework.loippi.controller.travel;
 
 
+import com.framework.loippi.entity.travel.*;
+import com.framework.loippi.service.travel.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -27,24 +25,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.entity.Principal;
-import com.framework.loippi.entity.travel.RdTourismCompliance;
-import com.framework.loippi.entity.travel.RdTravelActivity;
-import com.framework.loippi.entity.travel.RdTravelCost;
-import com.framework.loippi.entity.travel.RdTravelMemInfo;
-import com.framework.loippi.entity.travel.RdTravelTicket;
-import com.framework.loippi.entity.travel.RdTravelTicketDetail;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.travel.RdTravelActivityResult;
 import com.framework.loippi.service.TwiterIdService;
-import com.framework.loippi.service.travel.RdTourismComplianceService;
-import com.framework.loippi.service.travel.RdTravelActivityService;
-import com.framework.loippi.service.travel.RdTravelCostService;
-import com.framework.loippi.service.travel.RdTravelMemInfoService;
-import com.framework.loippi.service.travel.RdTravelTicketDetailService;
-import com.framework.loippi.service.travel.RdTravelTicketService;
 import com.framework.loippi.service.user.MemberQualificationService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
@@ -78,6 +64,8 @@ public class TravelController {
 	private RdTravelMemInfoService rdTravelMemInfoService;
 	@Resource
 	private RdTravelCostService rdTravelCostService;
+	@Resource
+	private RdTicketSendLogService rdTicketSendLogService;
 
 	/**
 	 * 周期计算达标送券
@@ -1242,4 +1230,78 @@ public class TravelController {
 		model.addAttribute("msg", "导出成功");
 		return Constants.MSG_URL;//TODO
 	}*/
+
+	/**
+	 * 后台发放旅游券
+	 * @param request
+	 * @param model
+	 * @param ticketId 旅游券id
+	 * @param num 发放数量
+	 * @param mmCode 会员编号
+	 * @param remark 备注
+	 * @return
+	 */
+	@RequestMapping(value = "/travelTicket/send",method = RequestMethod.POST)
+	public String sendTravelTicket(HttpServletRequest request, ModelMap model,Long ticketId,Integer num,String mmCode,String remark) {
+		Subject subject = SecurityUtils.getSubject();
+		String username="";
+		if(subject!=null){
+			Principal principal = (Principal) subject.getPrincipal();
+			if (principal != null && principal.getId() != null) {
+				Long id = principal.getId();
+				username = principal.getUsername();
+			}else {
+				model.addAttribute("msg", "请登录后进行操作");
+				return Constants.MSG_URL;
+			}
+		}else {
+			model.addAttribute("msg", "请登录后进行操作");
+			return Constants.MSG_URL;
+		}
+		if(ticketId==null){
+			model.addAttribute("msg", "请选择需要赠送的旅游券id");
+			return Constants.MSG_URL;
+		}
+		if(StringUtil.isEmpty(mmCode)){
+			model.addAttribute("msg", "请选择需要赠送会员编号");
+			return Constants.MSG_URL;
+		}
+		if(num==null){
+			model.addAttribute("msg", "请选择需要赠送的旅游券张数");
+			return Constants.MSG_URL;
+		}
+		RdTravelTicket travelTicket = rdTravelTicketService.find(ticketId);
+		if(travelTicket==null){
+			model.addAttribute("msg", "当前选择的旅游券不存在");
+			return Constants.MSG_URL;
+		}
+		if(num<1){
+			model.addAttribute("msg", "请选择正确的旅游券赠送数量");
+			return Constants.MSG_URL;
+		}
+		RdMmBasicInfo basicInfo = rdMmBasicInfoService.findByMCode(mmCode);
+		if(basicInfo==null){
+			model.addAttribute("msg", "当前选择的会员不存在");
+			return Constants.MSG_URL;
+		}
+		ticketDetailService.sendTravelTicket(travelTicket,num,basicInfo,remark,username);
+		model.addAttribute("msg", "旅游券发放成功");
+		return Constants.MSG_URL;
+	}
+
+	/**
+	 * 查询后台优惠券旅游券发放记录
+	 * @param pageable
+	 * @param model
+	 * @param param
+	 * @return
+	 */
+	@RequestMapping(value = "/ticketSendLog/list",method = RequestMethod.POST)
+	public String ticketSendLogList(Pageable pageable, ModelMap model,@ModelAttribute RdTicketSendLog param) {
+		pageable.setParameter(param);
+		pageable.setOrderProperty("send_time");
+		pageable.setOrderDirection(Order.Direction.DESC);
+		model.addAttribute("page", rdTicketSendLogService.findByPage(pageable));
+		return "";
+	}
 }
