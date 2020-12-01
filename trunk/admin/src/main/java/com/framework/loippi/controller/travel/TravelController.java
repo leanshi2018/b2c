@@ -1302,6 +1302,28 @@ public class TravelController {
 		pageable.setOrderProperty("send_time");
 		pageable.setOrderDirection(Order.Direction.DESC);
 		model.addAttribute("page", rdTicketSendLogService.findByPage(pageable));
-		return "";
+		return "/common/travelTicket/grantCoupons/index";
+	}
+
+	/**
+	 * 获取旅游券信息跳转后台发放旅游券
+	 * @param model
+	 * @param ticketId
+	 * @return
+	 */
+	@RequestMapping("/travelTicket/findById")
+	public String findTicketById(ModelMap model, @RequestParam(required = true, value = "ticketId") Long ticketId) {
+		if(ticketId==null){
+			model.addAttribute("msg", "旅游券id不可以为空");
+			return Constants.MSG_URL;
+		}
+		RdTravelTicket rdTravelTicket = rdTravelTicketService.find(ticketId);
+		if(rdTravelTicket==null){
+			model.addAttribute("msg", "旅游券信息异常");
+			return Constants.MSG_URL;
+		}
+		model.addAttribute("data", rdTravelTicket);
+		model.addAttribute("flag", 2);
+		return "/common/travelTicket/grantCoupons/edit";
 	}
 }
