@@ -4,6 +4,7 @@ import com.framework.loippi.entity.travel.RdTicketSendLog;
 import com.framework.loippi.entity.travel.RdTravelTicket;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.result.app.travel.TravelTicketDetailListResult;
+import com.framework.loippi.result.travel.RdTravelTicketResult;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.travel.RdTicketSendLogService;
 import lombok.extern.slf4j.Slf4j;
@@ -122,5 +123,15 @@ public class RdTravelTicketDetailServiceImpl extends GenericServiceImpl<RdTravel
             log.setRemark(remark);
         }
         rdTicketSendLogService.save(log);
+    }
+
+    /**
+     * 查询会员可用旅游券种类及其数量
+     * @param mmCode
+     * @return
+     */
+    @Override
+    public List<RdTravelTicketResult> findTypeAll(String mmCode) {
+        return rdTravelTicketDetailDao.findTypeAll(mmCode);
     }
 }

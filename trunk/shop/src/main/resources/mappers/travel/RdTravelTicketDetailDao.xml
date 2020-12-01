@@ -235,4 +235,10 @@
     <select id="findNotUseTravelTicket" resultMap="rdTravelTicketDetailResultMap">
         SELECT * FROM rd_travel_ticket_detail WHERE  own_time BETWEEN '2020-09-11 17:00:00' AND '2020-09-11 17:10:00'
     </select>
+
+    <select id="findTypeAll" parameterType="string" resultType="com.framework.loippi.result.travel.RdTravelTicketResult">
+        SELECT travel_id as travelId,travel_name as travelName,ticket_price as ticketPrice,COUNT(1) as ownNum FROM rd_travel_ticket_detail
+        WHERE own_code = #{mmCode} and status = 0
+        GROUP BY travel_id
+    </select>
 </mapper> 

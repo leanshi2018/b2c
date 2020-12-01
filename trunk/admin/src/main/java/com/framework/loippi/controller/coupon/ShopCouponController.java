@@ -556,4 +556,26 @@ public class ShopCouponController extends GenericController {
         model.addAttribute("msg", "优惠券发放成功");
         return Constants.MSG_URL;
     }
+
+    /**
+     * 获取优惠券信息跳转后台发放优惠券
+     * @param model
+     * @param couponId
+     * @return
+     */
+    @RequestMapping("/couponTicket/findById")
+    public String findTicketById(ModelMap model, @RequestParam(required = true, value = "couponId") Long couponId) {
+        if(couponId==null){
+            model.addAttribute("msg", "优惠券id不可以为空");
+            return Constants.MSG_URL;
+        }
+        Coupon coupon = couponService.find(couponId);
+        if(coupon==null){
+            model.addAttribute("msg", "优惠券信息异常");
+            return Constants.MSG_URL;
+        }
+        model.addAttribute("data", coupon);
+        model.addAttribute("flag", 1);
+        return "/common/travelTicket/grantCoupons/edit";
+    }
 }
