@@ -25,7 +25,7 @@
 
         <!-- 搜索栏 -->
         <form method="post" name="formSearch" id="formSearch" action="${base}/admin/travel/travelTicketDetail/list.jhtml">
-            <input type="hidden" name="pageNo" value="${1}">
+            <input type="hidden" name="pageNumber" value="${1}">
             <input type="hidden" id="status" value="">
             <input type="hidden" id="ticketSn" value="">
             <table class="tb-type1 noborder search">

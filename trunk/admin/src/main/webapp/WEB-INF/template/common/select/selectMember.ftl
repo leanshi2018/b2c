@@ -16,14 +16,13 @@
     <div class="layout">
         <div class="wrap" style="padding: 20px">
             <!-- 搜索栏 -->
-            <form method="get" name="formSearch" id="formSearch" action="${base}/admin/jpush/findMember.jhtml">
+            <form method="" name="formSearch" id="formSearch" action="${base}/admin/rd_mm_basic_info/listDialog.jhtml">
                 <input type="hidden" name="pageNo" value="${1}">
-                <input type="hidden" name="id" value="${id}"/>
                 <table class="tb-type1 noborder search">
                     <tbody>
                     <tr>
                         <td>
-                            <input name="info" id="info" type="text" value="${info}" placeholder="请输入活动名称"/>
+                            <input name="info" id="info" type="text" value="" placeholder="会员号，手机号，昵称"/>
                             <a href="javascript:$('#formSearch').submit();" class="btn-search " title="查询">
                             </a>
                         </td>
@@ -36,24 +35,28 @@
                 <thead>
                 <tr>
                     <th>&nbsp;</th>
-                    <th><b>用户ID</b></th>
+                    <th><b>会员号</b></th>
                     <th><b>手机号</b></th>
+                    <th><b>昵称</b></th>
                     <th><b>操作</b></th>
                 </tr>
                 </thead>
                 <tbody>
-                <#list RdMmBasicInfo.content as users>
+                <#list page.content as users>
                     <tr>
                         <td><input type="checkbox" name="id" value="${users.id}" class="checkitem"></td>
                         <td style="text-align: left">
-                            ${users.mmId}
+                            ${users.mmCode}
                         </td>
                         <td style="text-align: left">
-                            ${users.verificationMobile}
+                            ${users.mobile}
+                        </td>
+                        <td style="text-align: left">
+                            ${users.mmNickName}
                         </td>
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpeccoupons('${users.info}')">选择</a>
+                               onclick="selSpeccoupons('${users.mmCode}','${coupons.mmNickName}')">选择</a>
                         </td>
                     </tr>
                 </#list>
@@ -69,16 +72,13 @@
         </div>
     </div>
     <script>
-        function selSpeccoupons(info,id, verificationMobile,verificationNickName) {
+        function selSpeccoupons(mmCode, mmNickName) {
             //$(obj).parent().parent().remove();
-            //调用父级窗
-            parent.appendGoods(info,id,verificationMobile,verificationNickName);
+            //调用父级窗口
+            parent.selSource(mmCode, mmNickName);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);
         }
-        <#--var infos=$("#info").val();-->
-        <#--var urls="${base}/admin/jpush/findMember.jhtml?info="+infos;-->
-        <#--$("#formSearch").attr("action", urls);-->
     </script>
 </@layout.body>

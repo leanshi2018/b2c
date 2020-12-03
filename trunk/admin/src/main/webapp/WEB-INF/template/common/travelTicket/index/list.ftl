@@ -154,7 +154,7 @@
                         </td>
                         <td>
                             <a href="javascript:detail('${list.id}');">编 辑</a>
-                            <a href="">发 放</a>
+                            <a  href="${base}/admin/travel/travelTicket/findById.jhtml?ticketId=${list.id}">发 放</a>
                         </td>
                     </tr>
                 </#list>
