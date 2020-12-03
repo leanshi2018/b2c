@@ -3,7 +3,6 @@ package com.framework.loippi.controller.trade;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,6 +31,8 @@ import com.framework.loippi.consts.GatherAreaConstant;
 import com.framework.loippi.consts.ShopOrderDiscountTypeConsts;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.cart.ShopCart;
+import com.framework.loippi.entity.gift.ShopGiftActivity;
+import com.framework.loippi.entity.gift.ShopGiftGoods;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
@@ -45,9 +46,12 @@ import com.framework.loippi.mybatis.paginator.domain.Order.Direction;
 import com.framework.loippi.param.cart.CartAddParam;
 import com.framework.loippi.result.app.cart.CartCheckOutResult;
 import com.framework.loippi.result.app.cart.CartResult;
+import com.framework.loippi.result.app.cart.GiftResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
 import com.framework.loippi.result.common.goods.GoodsListResult;
 import com.framework.loippi.service.activity.ShopActivityGoodsService;
+import com.framework.loippi.service.gift.ShopGiftActivityService;
+import com.framework.loippi.service.gift.ShopGiftGoodsService;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
@@ -102,6 +106,10 @@ public class CartAPIController extends BaseController {
     private ShopGoodsFreightRuleService shopGoodsFreightRuleService;
     @Resource
     private ShopActivityGoodsService shopActivityGoodsService;
+    @Resource
+    private ShopGiftActivityService shopGiftActivityService;
+    @Resource
+    private ShopGiftGoodsService shopGiftGoodsService;
     /**
      * 购物车列表
      */
@@ -380,9 +388,9 @@ public class CartAPIController extends BaseController {
         Integer flag=0;
         Integer giftsNum=0;
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date startTime = format.parse("2019-11-01 00:00:00");
+            /*Date startTime = format.parse("2019-11-01 00:00:00");
             Date endTime = format.parse("2019-11-12 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
@@ -461,9 +469,10 @@ public class CartAPIController extends BaseController {
                         shopGoods.add(goods3);
                     }
                 }
-            }
-            result=result.build3(result,shopGoods,flag,giftsNum);
-        } catch (ParseException e) {
+            }*/
+            GiftResult gift = getGift(result.getActualTotalPpv(), shopGoods, flag, giftsNum);
+            result=result.build3(result,gift.getShopGoods(),gift.getFlag(),gift.getGiftsNum());
+        } catch (Exception e) {
             e.printStackTrace();
         }
         result.setImmediatelyFlag(0);
@@ -581,9 +590,9 @@ public class CartAPIController extends BaseController {
         Integer flag=0;
         Integer giftsNum=0;
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date startTime = format.parse("2020-05-01 00:00:00");
+            /*Date startTime = format.parse("2020-05-01 00:00:00");
             Date endTime = format.parse("2020-06-10 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
@@ -611,9 +620,10 @@ public class CartAPIController extends BaseController {
                     flag=1;
                 }
                 giftsNum=1;
-            }
-            result=result.build3(result,shopGoods,flag,giftsNum);
-        } catch (ParseException e) {
+            }*/
+            GiftResult gift = getGift(result.getActualTotalPpv(), shopGoods, flag, giftsNum);
+            result=result.build3(result,gift.getShopGoods(),gift.getFlag(),gift.getGiftsNum());
+        } catch (Exception e) {
             e.printStackTrace();
         }
         result.setImmediatelyFlag(0);
@@ -724,9 +734,9 @@ public class CartAPIController extends BaseController {
         Integer flag=0;
         Integer giftsNum=0;
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date startTime = format.parse("2020-05-01 00:00:00");
+            /*Date startTime = format.parse("2020-05-01 00:00:00");
             Date endTime = format.parse("2020-06-10 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
@@ -754,14 +764,103 @@ public class CartAPIController extends BaseController {
                     flag=1;
                 }
                 giftsNum=1;
-            }
-            result=result.build3(result,shopGoods,flag,giftsNum);
-        } catch (ParseException e) {
+            }*/
+            //赠品
+            GiftResult gift = getGift(result.getActualTotalPpv(), shopGoods, flag, giftsNum);
+            result=result.build3(result,gift.getShopGoods(),gift.getFlag(),gift.getGiftsNum());
+        } catch (Exception e) {
             e.printStackTrace();
         }
         result.setImmediatelyFlag(0);
         return ApiUtils.success(result);
     }
+
+    public GiftResult getGift(BigDecimal totalPpv, ArrayList<ShopGoods> shopGoods, Integer flag, Integer giftsNum) {
+        GiftResult result = new GiftResult();
+        List<ShopGiftActivity> giftActivityList = shopGiftActivityService.findByState(0);
+        if (giftActivityList.size()==1){
+            ShopGiftActivity giftActivity = giftActivityList.get(0);
+            Date startTime = giftActivity.getStartTime();
+            Date endTime = giftActivity.getEndTime();
+            Date nowTime = new Date();
+            boolean b = belongCalendar(nowTime, startTime, endTime);
+            if(b){
+                if (giftActivity.getPpv1()==null){
+                    flag=0;
+                    giftsNum = 0;
+                }else {
+                    BigDecimal ppv1 = giftActivity.getPpv1();
+                    List<ShopGiftGoods> giftGoodsList1 = shopGiftGoodsService.findByGiftIdAndWRule(giftActivity.getId(),1);
+                    if (giftGoodsList1.size()==0){
+                        flag=0;
+                        giftsNum = 0;
+                    }else {
+                        if (giftActivity.getPpv2()==null||giftActivity.getPpv2().compareTo(new BigDecimal("0.00"))==0){
+                            shopGoods = getGoods1(totalPpv, shopGoods, ppv1, giftGoodsList1);
+                        }else {
+                            BigDecimal ppv2 = giftActivity.getPpv2();
+                            shopGoods = getGoods2(totalPpv, shopGoods, ppv1,ppv2,giftGoodsList1);
+                            List<ShopGiftGoods> giftGoodsList2 = shopGiftGoodsService.findByGiftIdAndWRule(giftActivity.getId(),2);
+                            if (giftGoodsList2.size()==0){
+                                shopGoods = getGoods1(totalPpv, shopGoods, ppv1,giftGoodsList1);
+                            }else {
+                                if (giftActivity.getPpv3()==null||giftActivity.getPpv3().compareTo(new BigDecimal("0.00"))==0){
+                                    shopGoods = getGoods1(totalPpv, shopGoods, ppv2,giftGoodsList2);
+                                }else {
+                                    BigDecimal ppv3 = giftActivity.getPpv3();
+                                    shopGoods = getGoods2(totalPpv, shopGoods, ppv2,ppv3,giftGoodsList2);
+                                    List<ShopGiftGoods> giftGoodsList3 = shopGiftGoodsService.findByGiftIdAndWRule(giftActivity.getId(),3);
+                                    if (giftGoodsList3.size()==0){
+                                        shopGoods = getGoods1(totalPpv, shopGoods, ppv2,giftGoodsList2);
+                                    }else {
+                                        shopGoods = getGoods1(totalPpv, shopGoods, ppv3,giftGoodsList3);
+                                    }
+                                }
+                            }
+                        }
+                        flag=1;
+                        if (giftActivity.getGiftNum()==null||giftActivity.getGiftNum()==0){
+                            giftsNum=1;
+                        }else {
+                            giftsNum=giftActivity.getGiftNum();
+                        }
+                    }
+                }
+
+            }
+        }
+        result.setFlag(flag);
+        result.setGiftsNum(giftsNum);
+        result.setShopGoods(shopGoods);
+        return result;
+    }
+
+    public ArrayList<ShopGoods> getGoods1(BigDecimal totalPpv,ArrayList<ShopGoods> shopGoods,BigDecimal ppv,List<ShopGiftGoods> giftGoodsList) {
+                if(totalPpv.compareTo(ppv)!=-1){//大于等于ppv1
+                    for (ShopGiftGoods giftGoods : giftGoodsList) {
+                        ShopGoods goods = goodsService.find(giftGoods.getGoodsId());
+                        if (goods!=null){
+                            goods.setGiftSpecId(giftGoods.getSpecId());
+                            shopGoods.add(goods);
+                        }
+                    }
+                }
+        return shopGoods;
+    }
+    public ArrayList<ShopGoods> getGoods2(BigDecimal totalPpv,ArrayList<ShopGoods> shopGoods,BigDecimal ppv1,BigDecimal ppv2,List<ShopGiftGoods> giftGoodsList) {
+
+                if(totalPpv.compareTo(ppv1)!=-1&&totalPpv.compareTo(ppv2)==-1){//大于等于ppv1 小于ppv2
+                    for (ShopGiftGoods giftGoods : giftGoodsList) {
+                        ShopGoods goods = goodsService.find(giftGoods.getGoodsId());
+                        if (goods!=null){
+                            goods.setGiftSpecId(giftGoods.getSpecId());
+                            shopGoods.add(goods);
+                        }
+                    }
+                }
+        return shopGoods;
+    }
+
 
     public static boolean belongCalendar(Date nowTime, Date beginTime, Date endTime) {
         //设置当前时间
@@ -1144,9 +1243,9 @@ public class CartAPIController extends BaseController {
         Integer flag=0;
         Integer giftsNum=0;
         ArrayList<ShopGoods> shopGoods = new ArrayList<>();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            Date startTime = format.parse("2020-05-01 00:00:00");
+            /*Date startTime = format.parse("2020-05-01 00:00:00");
             Date endTime = format.parse("2020-06-10 23:59:59");
             Date nowTime = new Date();
             boolean b = belongCalendar(nowTime, startTime, endTime);
@@ -1174,9 +1273,10 @@ public class CartAPIController extends BaseController {
                     flag=1;
                 }
                 giftsNum=1;
-            }
-            result=result.build3(result,shopGoods,flag,giftsNum);
-        } catch (ParseException e) {
+            }*/
+            GiftResult gift = getGift(result.getActualTotalPpv(), shopGoods, flag, giftsNum);
+            result=result.build3(result,gift.getShopGoods(),gift.getFlag(),gift.getGiftsNum());
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if(result.getShopOrderTypeId()==8){
