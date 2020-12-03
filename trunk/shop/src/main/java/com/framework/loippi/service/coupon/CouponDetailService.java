@@ -3,7 +3,9 @@ package com.framework.loippi.service.coupon;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.Paramap;
@@ -19,4 +21,6 @@ public interface CouponDetailService extends GenericService<CouponDetail, Long> 
     void recycleNoMoney(Paramap paramap);
 
 	List<CouponDetail> findListByBuyOrderId(Long id);
+
+    void sendCouponTicket(Coupon coupon, Integer num, RdMmBasicInfo basicInfo, String remark, String username);
 }

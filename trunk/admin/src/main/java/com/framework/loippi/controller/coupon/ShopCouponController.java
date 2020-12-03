@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
@@ -56,6 +58,8 @@ public class ShopCouponController extends GenericController {
     private CouponTransLogService couponTransLogService;
     @Resource
     private TwiterIdService twiterIdService;
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
 
     /**
      * 优惠券列表
@@ -357,7 +361,7 @@ public class ShopCouponController extends GenericController {
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setParameter(coupon);
         Page<Coupon> page = couponService.findByPage(pager);
-        model.addAttribute("couponList", page);
+        model.addAttribute("page", page);
         return "/activity/shop_activity/coupon_list";
     }
 
@@ -378,7 +382,7 @@ public class ShopCouponController extends GenericController {
         pager.setOrderDirection(Order.Direction.DESC);
         pager.setParameter(couponTransLog);
         Page<CouponTransLog> page = couponTransLogService.findByPage(pager);
-        model.addAttribute("couponTransLogList", page);
+        model.addAttribute("page", page);
         return "activity/shop_activity/transfer _list";
     }
 
@@ -493,5 +497,85 @@ public class ShopCouponController extends GenericController {
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", couponService.findByPage(pageable));
         return "/activity/shop_activity/coupon_select";
+    }
+
+    /**
+     * 后台发放优惠券
+     * @param request
+     * @param model
+     * @param ticketId 优券id
+     * @param num 发放数量
+     * @param mmCode 会员编号
+     * @param remark 备注
+     * @return
+     */
+    @RequestMapping(value = "/couponTicket/send",method = RequestMethod.POST)
+    public String sendCouponTicket(HttpServletRequest request, ModelMap model,Long ticketId,Integer num,String mmCode,String remark) {
+        Subject subject = SecurityUtils.getSubject();
+        String username="";
+        if(subject!=null){
+            Principal principal = (Principal) subject.getPrincipal();
+            if (principal != null && principal.getId() != null) {
+                Long id = principal.getId();
+                username = principal.getUsername();
+            }else {
+                model.addAttribute("msg", "请登录后进行操作");
+                return Constants.MSG_URL;
+            }
+        }else {
+            model.addAttribute("msg", "请登录后进行操作");
+            return Constants.MSG_URL;
+        }
+        if(ticketId==null){
+            model.addAttribute("msg", "请选择需要赠送的优惠券id");
+            return Constants.MSG_URL;
+        }
+        if(StringUtil.isEmpty(mmCode)){
+            model.addAttribute("msg", "请选择需要赠送会员编号");
+            return Constants.MSG_URL;
+        }
+        if(num==null){
+            model.addAttribute("msg", "请选择需要赠送的优惠券张数");
+            return Constants.MSG_URL;
+        }
+        Coupon coupon = couponService.find(ticketId);
+        if(coupon==null){
+            model.addAttribute("msg", "当前选择的优惠券不存在");
+            return Constants.MSG_URL;
+        }
+        if(num<1){
+            model.addAttribute("msg", "请选择正确的优惠券赠送数量");
+            return Constants.MSG_URL;
+        }
+        RdMmBasicInfo basicInfo = rdMmBasicInfoService.findByMCode(mmCode);
+        if(basicInfo==null){
+            model.addAttribute("msg", "当前选择的会员不存在");
+            return Constants.MSG_URL;
+        }
+        couponDetailService.sendCouponTicket(coupon,num,basicInfo,remark,username);
+        model.addAttribute("msg", "优惠券发放成功");
+        return Constants.MSG_URL;
+    }
+
+    /**
+     * 获取优惠券信息跳转后台发放优惠券
+     * @param model
+     * @param couponId
+     * @return
+     */
+    @RequestMapping("/couponTicket/findById")
+    public String findTicketById(ModelMap model, @RequestParam(required = true, value = "couponId") Long couponId) {
+        if(couponId==null){
+            model.addAttribute("msg", "优惠券id不可以为空");
+            return Constants.MSG_URL;
+        }
+        Coupon coupon = couponService.find(couponId);
+        if(coupon==null){
+            model.addAttribute("msg", "优惠券信息异常");
+            return Constants.MSG_URL;
+        }
+        model.addAttribute("data", coupon);
+        model.addAttribute("flag", 1);
+        return "/common/travelTicket/grantCoupons/edit";
     }
 }

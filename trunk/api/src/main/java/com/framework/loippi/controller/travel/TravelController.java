@@ -14,10 +14,12 @@ import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.param.order.OrderSubmitParam;
 import com.framework.loippi.param.travel.TravelMemSubmitParam;
+import com.framework.loippi.param.travel.TravelTicketSubmitParam;
 import com.framework.loippi.result.app.coupon.CouponDetailListResult;
 import com.framework.loippi.result.app.travel.TravelActivityResult;
 import com.framework.loippi.result.app.travel.TravelTicketDetailListResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.travel.RdTravelTicketResult;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.travel.RdTravelActivityService;
 import com.framework.loippi.service.travel.RdTravelTicketDetailService;
@@ -259,5 +261,113 @@ public class TravelController extends BaseController {
         }
         map.put("price",100);
         return ApiUtils.success(map);
+    }
+
+    /**
+     * 获取当前登录用户可使用旅游券信息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/ticketAll", method = RequestMethod.POST)
+    public String ticketAll(HttpServletRequest request) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(com.framework.loippi.utils.Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error("请登录后进行操作");
+        }
+        List<RdTravelTicketResult> list = rdTravelTicketDetailService.findTypeAll(member.getMmCode());
+        if(list==null){
+            return ApiUtils.success(new ArrayList<RdTravelTicketResult>());
+        }
+        return ApiUtils.success(list);
+    }
+
+    /**
+     *
+     * @param memInfoJson 旅游活动参团报名人信息
+     * @param travelJson 旅游券使用信息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/tuxedoNew.json", method = RequestMethod.POST)
+    public String tuxedoNew(String memInfoJson, HttpServletRequest request,String travelJson) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(member==null){
+            return ApiUtils.error(Xerror.USER_UNLOGIN_JSON_CODE);
+        }
+        if(StringUtil.isEmpty(memInfoJson)){
+            return ApiUtils.error("请传入参团游客身份信息");
+        }
+        if(StringUtil.isEmpty(travelJson)){
+            return ApiUtils.error("请传入旅游券使用信息");
+        }
+        List<TravelMemSubmitParam> param = com.alibaba.fastjson.JSONArray
+                .parseArray(memInfoJson, TravelMemSubmitParam.class);
+        List<TravelTicketSubmitParam> travelInfos = com.alibaba.fastjson.JSONArray
+                .parseArray(memInfoJson, TravelTicketSubmitParam.class);
+        if(param==null||param.size()==0){
+            return ApiUtils.error("请填入参团游客身份信息");
+        }
+        if(param.size()>2){
+            return ApiUtils.error("一次只能填入最多2个参团人信息");
+        }
+        if(travelInfos==null||travelInfos.size()==0){
+            return ApiUtils.error("请选择使用旅游券");
+        }
+        TravelMemSubmitParam submitParam = param.get(0);
+        //1.查询旅游活动状态，判断是否还可以报名
+        RdTravelActivity rdTravelActivity = rdTravelActivityService.find(submitParam.getActivityId());
+        if(rdTravelActivity==null){
+            return ApiUtils.error("旅游活动不存在");
+        }
+        if(rdTravelActivity.getStartTime().getTime()>new Date().getTime()){//不在报名时间区域内
+            return ApiUtils.error("旅游活动尚未达到开始报名时间");
+        }
+        if(rdTravelActivity.getEndTime().getTime()<new Date().getTime()){//不在报名时间区域内
+            return ApiUtils.error("报名已截止，请关注下次旅游活动");
+        }
+        if(rdTravelActivity.getStatus()==null||rdTravelActivity.getStatus()!=1){
+            return ApiUtils.error("当前旅游活动无法进行报名");
+        }
+        if(rdTravelActivity.getNumCeiling()!=null&&rdTravelActivity.getNumCeiling()!=0&&rdTravelActivity.getNumTuxedo()!=null&&(rdTravelActivity.getNumTuxedo()+param.size())>rdTravelActivity.getNumCeiling()){
+            return ApiUtils.error("此团报名已满，请关注下次旅游活动");
+        }
+        //2.校验会员是否已经报名过该旅游活动
+        List<RdTravelTicketDetail> useList = rdTravelTicketDetailService.findList(Paramap.create().put("status",1)
+                .put("ownCode",member.getMmCode()).put("useActivityId",rdTravelActivity.getId()));
+        if(useList!=null&&useList.size()>0){
+            return ApiUtils.error("您已报名，无需重复报名");
+        }
+        //3.查找会员拥有的可以使用的旅游券
+        HashMap<Long, Integer> map = new HashMap<>();
+        for (TravelTicketSubmitParam travelInfo : travelInfos) {
+            map.put(travelInfo.getTravelId(),travelInfo.getUseTicketNum());
+            List<RdTravelTicketDetail> list = rdTravelTicketDetailService.findList(Paramap.create().put("travelId",travelInfo.getTravelId()).put("status",0)
+                    .put("ownCode",member.getMmCode()));
+            if((list==null||list.size()==0)&&travelInfo.getUseTicketNum()>0){
+                return ApiUtils.error("您的旅游券信息有变化，请退出后重新提交");
+            }
+            if((list!=null&&list.size()>0)&&list.size()<travelInfo.getUseTicketNum()){
+                return ApiUtils.error("您的旅游券信息有变化，请退出后重新提交");
+            }
+        }
+        //3.扣除用户旅游券，修改旅游活动相关参数，存储报名参团人个人信息
+        try {
+            ArrayList<RdTravelMemInfo> memInfos = new ArrayList<>();
+            for (TravelMemSubmitParam travelMemSubmitParam : param) {
+                RdTravelMemInfo memInfo = new RdTravelMemInfo();
+                memInfo.setId(twiterIdService.getTwiterId());
+                memInfo.setMmCode(member.getMmCode());
+                memInfo.setActivityId(rdTravelActivity.getId());
+                memInfo.setName(travelMemSubmitParam.getName());
+                memInfo.setIdCard(travelMemSubmitParam.getIdCard());
+                memInfo.setMobile(travelMemSubmitParam.getMobile());
+                memInfos.add(memInfo);
+            }
+            rdTravelActivityService.tuxedoNew(memInfos,map,rdTravelActivity,member.getMmCode(),member.getNickname());
+            return ApiUtils.success("旅游参团报名成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiUtils.error("旅游参团报名失败");
+        }
     }
 }
