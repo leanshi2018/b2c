@@ -53,15 +53,15 @@ public class ShopGiftController extends GenericController {
 	}
 
 	/**
-	 * 添加赠品活动
+	 * 添加或编辑赠品活动
 	 * @param request
 	 * @param shopGiftActivity
 	 * @param model
 	 * @param attr
 	 * @return
 	 */
-	@RequestMapping(value = "/saveGiftActivity",method = RequestMethod.POST)
-	public String saveGiftActivity(HttpServletRequest request, @ModelAttribute ShopGiftActivity shopGiftActivity, ModelMap model, RedirectAttributes attr ){
+	@RequestMapping(value = "/saveOrEditGiftActivity",method = RequestMethod.POST)
+	public String saveOrEditGiftActivity(HttpServletRequest request, @ModelAttribute ShopGiftActivity shopGiftActivity, ModelMap model, RedirectAttributes attr ){
 
 		if(StringUtil.isEmpty(shopGiftActivity.getActivityName())){
 			model.addAttribute("msg", "活动名称不可以为空");
