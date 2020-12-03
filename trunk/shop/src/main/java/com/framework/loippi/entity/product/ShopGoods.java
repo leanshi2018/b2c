@@ -382,4 +382,7 @@ public class ShopGoods implements GenericEntity {
     private BigDecimal lowPrice;
     private BigDecimal lowMi;
     private String noExchange;
+
+    //赠品规则Id
+    private Long giftSpecId;
 }

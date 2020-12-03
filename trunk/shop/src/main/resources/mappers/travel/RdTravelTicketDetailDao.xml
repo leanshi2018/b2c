@@ -233,6 +233,6 @@
     </select>
 
     <select id="findNotUseTravelTicket" resultMap="rdTravelTicketDetailResultMap">
-        SELECT * FROM rd_travel_ticket_detail WHERE  own_time BETWEEN '2020-09-11 17:00:00' AND '2020-09-11 17:10:00'
+        SELECT * FROM rd_travel_ticket_detail WHERE  status = 0
     </select>
 </mapper> 
