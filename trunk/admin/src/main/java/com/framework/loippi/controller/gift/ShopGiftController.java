@@ -49,7 +49,7 @@ public class ShopGiftController extends GenericController {
 		pageable.setOrderProperty("creation_time");
 		pageable.setOrderDirection(Order.Direction.DESC);
 		model.addAttribute("page", shopGiftActivityService.findByPage(pageable));
-		return "";
+		return "/common/buyFree/index";
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class ShopGiftController extends GenericController {
 	@RequestMapping(value = "/findGiftInfo")
 	public String findGiftInfo(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "id") Long id) {
 		model.addAttribute("page",shopGiftActivityService.findById(id));
-		return "";
+		return "/common/buyFree/edit";
 	}
 
 }
