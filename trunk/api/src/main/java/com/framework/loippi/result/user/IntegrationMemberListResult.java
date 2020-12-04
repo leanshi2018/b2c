@@ -88,7 +88,7 @@ public class IntegrationMemberListResult {
      */
     private BigDecimal retailProfit;
 
-    public static List<IntegrationMemberListResult> build(List<RdMmBasicInfo> shopMemberList,List<RdMmRelation> rdMmRelationList, List<RdRanks> shopMemberGradeList) {
+    public static List<IntegrationMemberListResult> build(List<RdMmBasicInfo> shopMemberList,List<RdMmRelation> rdMmRelationList, List<RdRanks> shopMemberGradeList,Map<String,String> remarkMap) {
         List<IntegrationMemberListResult> userIntegrationListResultList=new ArrayList<>();
         Map<Integer,String> map=new HashMap<>();
         for (RdRanks item:shopMemberGradeList) {
@@ -99,7 +99,12 @@ public class IntegrationMemberListResult {
             for (RdMmBasicInfo item:shopMemberList) {
                 IntegrationMemberListResult integrationMemberListResult=new IntegrationMemberListResult();
                 integrationMemberListResult.setMemberMobile(Optional.ofNullable(item.getMobile()).orElse(""));
-                integrationMemberListResult.setMemberName(Optional.ofNullable(item.getMmNickName()).orElse(""));
+                if (!remarkMap.isEmpty()&&remarkMap.containsKey(item.getMmCode())){
+                    integrationMemberListResult.setMemberName(Optional.ofNullable(remarkMap.get(item.getMmCode())).orElse(""));
+                }else {
+                    integrationMemberListResult.setMemberName(Optional.ofNullable(item.getMmNickName()).orElse(""));
+                }
+
                 integrationMemberListResult.setId( Optional.ofNullable(item.getMmCode()).orElse("-1"));
                 integrationMemberListResult.setMemberAvatar(Optional.ofNullable(item.getMmAvatar()).orElse(""));
                 integrationMemberListResult.setJoinTime(Optional.ofNullable(item.getCreationDate()).orElse(null));
@@ -459,7 +464,7 @@ public class IntegrationMemberListResult {
     }
 
     public static List<IntegrationMemberListResult> build5(List<RdMmBasicInfo> rdMmBasicInfoList, List<RdMmRelation> rdMmRelationList, List<RdRanks> shopMemberGradeList,
-                                                           Integer sorting, HashMap<String, BigDecimal> hashMap,List<MemberQualification> memberQualificationList) {
+                                                           Integer sorting, HashMap<String, BigDecimal> hashMap,List<MemberQualification> memberQualificationList,Map<String,String> remarkMap) {
         List<IntegrationMemberListResult> userIntegrationListResultList=new ArrayList<>();
         Map<Integer,String> map=new HashMap<>();
         for (RdRanks item:shopMemberGradeList) {
@@ -471,7 +476,11 @@ public class IntegrationMemberListResult {
             memberInfo.setRaSpoStatus(rdMmRelation.getRaSponsorStatus());
             for (RdMmBasicInfo rdMmBasicInfo : rdMmBasicInfoList) {
                 if(rdMmBasicInfo.getMmCode().equals(rdMmRelation.getMmCode())){
-                    memberInfo.setMemberName(rdMmBasicInfo.getMmNickName());
+                    if (!remarkMap.isEmpty()&&remarkMap.containsKey(rdMmBasicInfo.getMmCode())){
+                        memberInfo.setMemberName(remarkMap.get(rdMmBasicInfo.getMmCode()));
+                    }else {
+                        memberInfo.setMemberName(rdMmBasicInfo.getMmNickName());
+                    }
                     memberInfo.setMemberAvatar(rdMmBasicInfo.getMmAvatar());
                     memberInfo.setMemberMobile(rdMmBasicInfo.getMobile());
                     memberInfo.setJoinTime(rdMmBasicInfo.getCreationDate());

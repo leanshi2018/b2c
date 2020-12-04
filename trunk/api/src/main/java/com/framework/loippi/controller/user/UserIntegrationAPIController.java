@@ -39,6 +39,7 @@ import com.framework.loippi.entity.user.RdMmAccountLog;
 import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdMmRemark;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -58,6 +59,7 @@ import com.framework.loippi.service.user.RdMmAccountLogService;
 import com.framework.loippi.service.user.RdMmBankService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdMmRemarkService;
 import com.framework.loippi.service.user.RdNewVipDetailService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RetailProfitService;
@@ -112,6 +114,8 @@ public class UserIntegrationAPIController extends BaseController {
     private ShopOrderService shopOrderService;
     @Resource
     private CompanyLicenseService companyLicenseService;
+    @Resource
+    private RdMmRemarkService rdMmRemarkService;
     //积分列表
     @RequestMapping(value = "/list.json")
     public String list(HttpServletRequest request) {
@@ -439,8 +443,18 @@ public class UserIntegrationAPIController extends BaseController {
             rdMmBasicInfoList = rdMmBasicInfoService.findList("mmCodes", mmCodes);
         }
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
+
+        //备注名
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(member.getMmCode());
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+
         List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
-                .build(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList);
+                .build(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,remarkMap);
         return ApiUtils.success(Paramap.create().put("memberList", integrationMemberListResultList));
     }
     private ArrayList<String> findTreePeriod(String periodCode){
@@ -645,8 +659,18 @@ public class UserIntegrationAPIController extends BaseController {
             }
         }
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
+
+        //备注名
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(member.getMmCode());
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+
         List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
-                .build5(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap,list);
+                .build5(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,sorting,hashMap,list,remarkMap);
         paramap.put("memberList", integrationMemberListResultList);
         return ApiUtils.success(paramap);
     }
@@ -696,8 +720,17 @@ public class UserIntegrationAPIController extends BaseController {
 
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
 
+        //备注名
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(member.getMmCode());
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+
         List<IntegrationMemberListResult> integrationMemberListResult = IntegrationMemberListResult
-            .build(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList);
+            .build(rdMmBasicInfoList, rdMmRelationList, shopMemberGradeList,remarkMap);
 
         return ApiUtils.success(Paramap.create().put("member", integrationMemberListResult));
     }
