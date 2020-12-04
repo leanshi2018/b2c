@@ -408,5 +408,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
 	BigDecimal countOrderPPVByNorSplitFlag(String mmCode, String period);
 
+	ShopOrder findByOrderSn(String orderSn);
+
 	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

@@ -8194,4 +8194,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         map.put("buyerId",mmCode);
         return orderDao.countOrderPPVByNorSplitFlag(map);
     }
+
+    @Override
+    public ShopOrder findByOrderSn(String orderSn) {
+        return orderDao.findByOrderSn(orderSn);
+    }
 }
