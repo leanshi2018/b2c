@@ -25,7 +25,7 @@
 
         <!-- 搜索栏 -->
         <form method="post" name="formSearch" id="formSearch" action="${base}/admin/travel/travelCost/list.jhtml">
-            <input type="hidden" name="pageNumber" value="${1}">
+            <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
@@ -40,7 +40,7 @@
                         <a href="javascript:document.formSearch.submit();" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
                         <a href="${base}/admin/travel/travelCost/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
                         <a class="btn btn-outline btn-info btn-xs" id="btn-add-loippi exportExcell" href="javascript:void(0)"
-                           onclick="exportExcell('${rdTravelCostList.pageNumber}')"><i class="fa fa-plus"></i>导出Excel</a>
+                           onclick="exportExcell('${page.pageNumber}')"><i class="fa fa-plus"></i>导出Excel</a>
                     </td>
                 </tr>
                 </tbody>
@@ -60,7 +60,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list rdTravelCostList.content as list>
+                <#list page.content as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
@@ -86,9 +86,9 @@
                 </tbody>
                 <tfoot class="tfoot">
                 <tr>
-<#--                    <td colspan="16">-->
-<#--                        <@layout.pager page/>-->
-<#--                    </td>-->
+                    <td colspan="16">
+                        <@layout.pager page/>
+                    </td>
                 </tr>
                 </tfoot>
             </table>

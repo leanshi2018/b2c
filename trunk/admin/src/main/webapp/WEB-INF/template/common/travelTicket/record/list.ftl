@@ -25,7 +25,7 @@
 
         <!-- 搜索栏 -->
         <form method="post" name="formSearch" id="formSearch" action="${base}/admin/travel/travelTicketDetail/list.jhtml">
-            <input type="hidden" name="pageNo" value="${1}">
+            <input type="hidden" name="pageNumber" value="${1}">
             <input type="hidden" id="status" value="">
             <input type="hidden" id="ticketSn" value="">
             <table class="tb-type1 noborder search">
@@ -99,7 +99,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list travelTicketDetailList.content as list>
+                <#list page.content as list>
                     <tr>
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
@@ -160,9 +160,9 @@
                 </tbody>
                 <tfoot class="tfoot">
                 <tr>
-<#--                    <td colspan="16">-->
-<#--                        <@layout.pager page/>-->
-<#--                    </td>-->
+                    <td colspan="16">
+                        <@layout.pager page/>
+                    </td>
                 </tr>
                 </tfoot>
             </table>
