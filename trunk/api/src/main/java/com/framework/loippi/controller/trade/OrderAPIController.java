@@ -2520,6 +2520,12 @@ public class OrderAPIController extends BaseController {
                 return ApiUtils.error("所选赠品已赠完，请选择其他类型赠品");
             }
         }
+        //************************兼容ios错误***************************
+        Integer splitOrderFlag=param.getSplitOrderFlag();
+        if(param.getSplitCodes()==null||param.getSplitCodes().equals("")){
+            splitOrderFlag=0;
+        }
+        //************************兼容ios错误***************************
         //提交订单,返回订单支付实体
         ShopOrderPay orderPay = new ShopOrderPay();
         if(param.getPlatform()!=null&&param.getPlatform().equals("weixinAppletsPaymentPlugin")){
@@ -2527,13 +2533,13 @@ public class OrderAPIController extends BaseController {
                     param.getActivityType(), param.getActivityGoodsId(), param.getActivitySkuId(),member.getMmCode()
                     , orderMsgMap, param.getAddressId()
                     , param.getCouponId(),OrderState.PLATFORM_WECHAT,shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),param.getGiftId(),param.getGiftNum(),
-                    param.getSplitOrderFlag(),param.getSplitCodes());
+                    splitOrderFlag,param.getSplitCodes());
         }else{
             orderPay = orderService.addImmediatelyOrderReturnPaySn(param.getGoodsId(),param.getCount(),param.getSpecId(),param.getActivityId(),
                     param.getActivityType(), param.getActivityGoodsId(), param.getActivitySkuId(),member.getMmCode()
                     , orderMsgMap, param.getAddressId()
                     , param.getCouponId(),OrderState.PLATFORM_APP,shopOrderDiscountType, param.getLogisticType(), param.getPaymentType(),param.getGiftId(),param.getGiftNum(),
-                    param.getSplitOrderFlag(),param.getSplitCodes());
+                    splitOrderFlag,param.getSplitCodes());
         }
         List<RdMmIntegralRule> rdMmIntegralRuleList = rdMmIntegralRuleService
                 .findList(Paramap.create().put("order", "RID desc"));
