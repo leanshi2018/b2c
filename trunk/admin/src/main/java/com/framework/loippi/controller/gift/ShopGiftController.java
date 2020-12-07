@@ -126,6 +126,10 @@ public class ShopGiftController extends GenericController {
 	 */
 	@RequestMapping(value = "/findGiftInfo")
 	public String findGiftInfo(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "id") Long id) {
+
+		if (id==null){
+			return "/common/buyFree/edit";
+		}
 		model.addAttribute("page",shopGiftActivityService.findById(id));
 		return "/common/buyFree/edit";
 	}
