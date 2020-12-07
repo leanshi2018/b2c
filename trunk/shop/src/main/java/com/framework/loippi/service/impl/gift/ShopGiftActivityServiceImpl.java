@@ -163,4 +163,9 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 		activity.setGiftGoodsList3(shopGiftGoodsDao.findByGiftIdAndWRule(map));
 		return activity;
 	}
+
+	@Override
+	public void updateByEState(Integer eState) {
+		shopGiftActivityDao.updateByEState(eState);
+	}
 }

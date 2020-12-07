@@ -17,4 +17,6 @@ public interface ShopGiftActivityService extends GenericService<ShopGiftActivity
 	Map<String, String> saveOrEditGift(ShopGiftActivity shopGiftActivity, Long id, String username);
 
 	ShopGiftActivity findById(Long id);
+
+	void updateByEState(Integer eState);
 }

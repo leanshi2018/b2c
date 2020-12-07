@@ -134,4 +134,39 @@ public class ShopGiftController extends GenericController {
 		return "/common/buyFree/edit";
 	}
 
+	/**
+	 * 上下架
+	 * @param request
+	 * @param model
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/updateGiftEState")
+	public String updateGiftEState(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "id") Long id) {
+
+		if (id==null){
+			model.addAttribute("msg", "未找到该活动");
+			return Constants.MSG_URL;
+		}
+
+		ShopGiftActivity activity = shopGiftActivityService.find(id);
+		if (activity==null){
+			model.addAttribute("msg", "未找到该活动");
+			return Constants.MSG_URL;
+		}
+
+		if (activity.getEState()==0){//原状态：上
+			activity.setEState(1);//下
+			shopGiftActivityService.update(activity);
+		}else {//原状态：下
+			//其他活动下
+			shopGiftActivityService.updateByEState(1);
+
+			activity.setEState(0);//上
+			shopGiftActivityService.update(activity);
+		}
+
+		return "redirect:findGiftList.jhtml";
+	}
+
 }
