@@ -44,6 +44,7 @@ import com.framework.loippi.entity.user.RdMmBank;
 import com.framework.loippi.entity.user.RdMmBankDiscern;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdMmRemark;
 import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.entity.user.RdRanksNextMessage;
 import com.framework.loippi.entity.user.RdSysPeriod;
@@ -91,6 +92,7 @@ import com.framework.loippi.service.user.RdMmBankDiscernService;
 import com.framework.loippi.service.user.RdMmBankService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdMmRemarkService;
 import com.framework.loippi.service.user.RdRaBindingService;
 import com.framework.loippi.service.user.RdRanksNextMessageService;
 import com.framework.loippi.service.user.RdRanksService;
@@ -192,6 +194,9 @@ public class UserAPIController extends BaseController {
     private PlusProfitService plusProfitService;
     @Resource
     private ShopOrderSplitService shopOrderSplitService;
+    @Resource
+    private RdMmRemarkService rdMmRemarkService;
+
     @Value("#{properties['wap.server']}")
     private String wapServer;
 
@@ -1709,12 +1714,22 @@ public class UserAPIController extends BaseController {
         }
         boolean flag = member.getMmCode().equals(rdMmRelation.getSponsorCode());
         paramap.put("showFlag",flag);
+
+        //备注名
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(member.getMmCode());
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+
         if(memberQualification==null){
             if (Optional.ofNullable(rdMmRelation.getRank()).orElse(-1) != -1) {
                 shopMemberGrade = rdRanksService.find("rankId", rdMmRelation.getRank());
             }
             SubordinateUserInformationResult subordinateUserInformationResult = SubordinateUserInformationResult
-                    .build4(rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay,periodStr);
+                    .build4(rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay,periodStr,remarkMap);
             paramap.put("data",subordinateUserInformationResult);
             return ApiUtils.success(paramap);
             //return ApiUtils.error("当前筛选条件下尚未统计出会员信息");
@@ -1723,7 +1738,7 @@ public class UserAPIController extends BaseController {
                 shopMemberGrade = rdRanksService.find("rankId", rdMmRelation.getRank());
             }
             SubordinateUserInformationResult subordinateUserInformationResult = SubordinateUserInformationResult
-                    .build3(memberQualification,rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay);
+                    .build3(memberQualification,rdMmBasicInfo,rdMmRelation,periodSumPpv,shopMemberGrade,retail,pay,nopay,remarkMap);
             paramap.put("data",subordinateUserInformationResult);
             return ApiUtils.success(paramap);
         }
@@ -2449,4 +2464,59 @@ public class UserAPIController extends BaseController {
         PlusCenterResult result=PlusCenterResult.build(shopMember,rdMmRelation,rdRanks,rdRankVip,yetReward,waitReward,saveMoney,inviteNum,profitVos);
         return ApiUtils.success(result);
     }
+
+    /**
+     * 修改分销用户备注名
+     *
+     * @param spCode 分销用户会员编号
+     * @param remarkName 备注名
+     */
+    @RequestMapping(value = "/editRemarkName.json", method = RequestMethod.POST)
+    public String editRemarkName(HttpServletRequest request, String spCode,String remarkName) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        //用户未登录或者登录失效
+        if (member == null) {
+            return ApiUtils.error("当前用户尚未登录");
+        }
+        String mmCode = member.getMmCode();
+        RdMmBasicInfo mmBasicInfo = rdMmBasicInfoService.findByMCode(mmCode);
+        if (spCode == null || "".equals(spCode)) {
+            return ApiUtils.error("分销用户不存在");
+        }
+        if (remarkName == null || "".equals(remarkName)) {
+            //return ApiUtils.success();
+            return ApiUtils.error("备注名不能为空");
+        }
+        if (remarkName.length()>20) {
+            //return ApiUtils.success();
+            return ApiUtils.error("备注名过于长，请修改成合适长度");
+        }
+
+        List<RdMmRemark> remark = rdMmRemarkService.findByMmCodeAndSpCode(mmCode,spCode);
+        if (remark.size()==0){//未存在
+            RdMmRemark rdMmRemark = new RdMmRemark();
+            rdMmRemark.setId(twiterIdService.getTwiterId());
+            rdMmRemark.setMmCode(mmCode);
+            rdMmRemark.setSpCode(spCode);
+            rdMmRemark.setRemarkName(remarkName);
+            rdMmRemarkService.save(rdMmRemark);
+        }else {
+            if (remark.size()==1){
+                RdMmRemark rdMmRemark = remark.get(0);
+                rdMmRemark.setRemarkName(remarkName);
+                rdMmRemarkService.update(rdMmRemark);
+            }else {
+                rdMmRemarkService.deleteByMmCodeAndSpCode(mmCode,spCode);
+                RdMmRemark rdMmRemark = new RdMmRemark();
+                rdMmRemark.setId(twiterIdService.getTwiterId());
+                rdMmRemark.setMmCode(mmCode);
+                rdMmRemark.setSpCode(spCode);
+                rdMmRemark.setRemarkName(remarkName);
+                rdMmRemarkService.save(rdMmRemark);
+            }
+        }
+
+        return ApiUtils.success();
+    }
+
 }

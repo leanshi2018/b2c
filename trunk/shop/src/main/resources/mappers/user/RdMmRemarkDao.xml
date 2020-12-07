@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.loippi.dao.user.RdMmRemarkDao">
+
+    <resultMap id="RdMmRemarkMap" type="com.framework.loippi.entity.user.RdMmRemark">
+        <id property="id" column="id"/>
+        <result property="mmCode" column="mm_code"/>
+        <result property="spCode" column="sp_code"/>
+        <result property="remarkName" column="remark_name"/>
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+        id ,mm_code ,sp_code ,remark_name
+    </sql>
+
+    <sql id="base_value_column">
+        #{id},#{mmCode},#{spCode},#{remarkName}
+    </sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+            AND mm_code = #{mmCode}
+        </if>
+        <if test="spCode != null and spCode != ''">
+            AND sp_code = #{spCode}
+        </if>
+        <if test="remarkName != null and remarkName != ''">
+            AND remark_name = #{remarkName}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="mmCode != null and mmCode != ''">
+            mm_code = #{mmCode},
+        </if>
+        <if test="spCode != null and spCode != ''">
+            sp_code = #{spCode},
+        </if>
+        <if test="remarkName != null and remarkName != ''">
+            remark_name = #{remarkName},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="RdMmRemarkMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mm_remark
+        WHERE ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="RdMmRemarkMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mm_remark
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM rd_mm_remark
+        <where>
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.user.RdMmRemark">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT rd_mm_remark
+        (
+        <include refid="base_column"/>
+        )
+        VALUES (<include refid="base_value_column"/>)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.user.RdMmRemark">
+        UPDATE rd_mm_remark
+        <set>
+            <include refid="set_column"/>
+        </set>
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+        DELETE FROM rd_mm_remark
+        WHERE ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE FROM rd_mm_remark
+        WHERE ID IN
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="RdMmRemarkMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mm_remark
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="RdMmRemarkMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mm_remark
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
+    <select id="findByMmCodeAndSpCode" parameterType="map" resultMap="RdMmRemarkMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mm_remark
+        WHERE mm_code = #{mmCode} AND sp_code = #{spCode}
+    </select>
+
+    <delete id="deleteByMmCodeAndSpCode" parameterType="map">
+        DELETE FROM rd_mm_remark
+        WHERE mm_code = #{mmCode} AND sp_code = #{spCode}
+    </delete>
+
+    <select id="findByMmCode" parameterType="string" resultMap="RdMmRemarkMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM rd_mm_remark
+        WHERE mm_code = #{mmCode}
+    </select>
+</mapper>

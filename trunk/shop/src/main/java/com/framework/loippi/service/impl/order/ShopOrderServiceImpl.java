@@ -2736,8 +2736,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     orderDao.update(updateOrder);//将批次号存入退款表
                     weiRefund.setOutrefundno(bathno);//微信交易号
                     weiRefund.setOuttradeno(order.getPaySn());//订单号
-                     weiRefund.setTotalfee((int) ((order.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
-                     weiRefund.setRefundfee((int) ((order.getOrderAmount().doubleValue()) * 100));
+                     //weiRefund.setTotalfee((int) ((order.getOrderAmount().doubleValue()) * 100));//单位，整数微信里以分为单位
+                     //weiRefund.setRefundfee((int) ((order.getOrderAmount().doubleValue()) * 100));
+                     weiRefund.setTotalfee(order.getOrderAmount().multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP).intValue());//单位，整数微信里以分为单位
+                     weiRefund.setRefundfee(order.getOrderAmount().multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP).intValue());
                     //weiRefund.setRefundfee(1);
                     //weiRefund.setTotalfee(1);
                     toweichatrefund(weiRefund, "open_weichatpay");
@@ -8193,5 +8195,10 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         map.put("creationPeriod",period);
         map.put("buyerId",mmCode);
         return orderDao.countOrderPPVByNorSplitFlag(map);
+    }
+
+    @Override
+    public ShopOrder findByOrderSn(String orderSn) {
+        return orderDao.findByOrderSn(orderSn);
     }
 }

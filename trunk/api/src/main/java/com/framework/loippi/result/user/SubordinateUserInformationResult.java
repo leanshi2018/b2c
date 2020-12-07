@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 import com.framework.loippi.entity.user.MemberQualification;
@@ -183,7 +184,8 @@ public class SubordinateUserInformationResult {
         return result;
     }
 
-    public static SubordinateUserInformationResult build3(MemberQualification memberQualification, RdMmBasicInfo rdMmBasicInfo, RdMmRelation rdMmRelation, OrderSumPpv periodSumPpv, RdRanks shopMemberGrade,BigDecimal retail,BigDecimal pay,BigDecimal nopay) {
+    public static SubordinateUserInformationResult build3(MemberQualification memberQualification, RdMmBasicInfo rdMmBasicInfo, RdMmRelation rdMmRelation,
+                                                          OrderSumPpv periodSumPpv, RdRanks shopMemberGrade,BigDecimal retail,BigDecimal pay,BigDecimal nopay,Map<String,String> remarkMap) {
         SubordinateUserInformationResult result = new SubordinateUserInformationResult();
         result.setAvatar(Optional.ofNullable(rdMmBasicInfo.getMmAvatar()).orElse(""));//设置头像
         result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
@@ -274,10 +276,15 @@ public class SubordinateUserInformationResult {
         return result;
     }
 
-    public static SubordinateUserInformationResult build4(RdMmBasicInfo rdMmBasicInfo, RdMmRelation rdMmRelation, OrderSumPpv periodSumPpv, RdRanks shopMemberGrade, BigDecimal retail, BigDecimal pay, BigDecimal nopay, String periodStr) {
+    public static SubordinateUserInformationResult build4(RdMmBasicInfo rdMmBasicInfo, RdMmRelation rdMmRelation, OrderSumPpv periodSumPpv, RdRanks shopMemberGrade,
+                                                          BigDecimal retail, BigDecimal pay, BigDecimal nopay, String periodStr, Map<String,String> remarkMap) {
         SubordinateUserInformationResult result = new SubordinateUserInformationResult();
         result.setAvatar(Optional.ofNullable(rdMmBasicInfo.getMmAvatar()).orElse(""));//设置头像
-        result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
+        if (!remarkMap.isEmpty()&&remarkMap.containsKey(rdMmBasicInfo.getMmCode())){
+            result.setNickname(Optional.ofNullable(remarkMap.get(rdMmBasicInfo.getMmCode())).orElse(""));
+        }else {
+            result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
+        }
         if(shopMemberGrade.getRankId()==2){
             result.setMemberGradeName("VIP会员");//设置会员级别
         }else {
