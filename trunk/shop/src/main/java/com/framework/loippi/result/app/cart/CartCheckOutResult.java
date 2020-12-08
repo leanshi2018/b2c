@@ -1,9 +1,5 @@
 package com.framework.loippi.result.app.cart;
 
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.enus.ActivityTypeEnus;
-import com.framework.loippi.utils.GoodsUtils;
-import com.framework.loippi.vo.user.UserInfoVo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -22,10 +18,14 @@ import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.enus.ActivityTypeEnus;
+import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.vo.gifts.Gifts;
+import com.framework.loippi.vo.user.UserInfoVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -671,6 +671,7 @@ public class CartCheckOutResult {
                 }
                 goodsSpec.setSpecInfo(specInfo);
             }
+            gift.setGoodsSpec(goodsSpec);
             gifts.add(gift);
             giftsApplet.add(gift);
         }
