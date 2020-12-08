@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.service.product.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -54,10 +56,6 @@ import com.framework.loippi.service.gift.ShopGiftActivityService;
 import com.framework.loippi.service.gift.ShopGiftGoodsService;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderService;
-import com.framework.loippi.service.product.ShopCartService;
-import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
-import com.framework.loippi.service.product.ShopGoodsFreightService;
-import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
@@ -110,6 +108,8 @@ public class CartAPIController extends BaseController {
     private ShopGiftActivityService shopGiftActivityService;
     @Resource
     private ShopGiftGoodsService shopGiftGoodsService;
+    @Resource
+    private ShopGoodsSpecService shopGoodsSpecService;
     /**
      * 购物车列表
      */
@@ -841,6 +841,8 @@ public class CartAPIController extends BaseController {
                         ShopGoods goods = goodsService.find(giftGoods.getGoodsId());
                         if (goods!=null){
                             goods.setGiftSpecId(giftGoods.getSpecId());
+                            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(giftGoods.getSpecId());
+                            goods.setShopGoodsSpec(goodsSpec);
                             shopGoods.add(goods);
                         }
                     }
@@ -854,6 +856,8 @@ public class CartAPIController extends BaseController {
                         ShopGoods goods = goodsService.find(giftGoods.getGoodsId());
                         if (goods!=null){
                             goods.setGiftSpecId(giftGoods.getSpecId());
+                            ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(giftGoods.getSpecId());
+                            goods.setShopGoodsSpec(goodsSpec);
                             shopGoods.add(goods);
                         }
                     }
