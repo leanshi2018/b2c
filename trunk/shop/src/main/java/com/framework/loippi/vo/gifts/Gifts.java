@@ -1,5 +1,6 @@
 package com.framework.loippi.vo.gifts;
 
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,4 +37,8 @@ public class Gifts implements GenericEntity {
      * 商品库存数量
      */
     private Long stock;
+    /**
+     * 规格商品
+     */
+    private ShopGoodsSpec goodsSpec;
 }
