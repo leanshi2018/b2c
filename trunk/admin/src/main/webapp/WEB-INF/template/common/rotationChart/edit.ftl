@@ -267,7 +267,7 @@
                                     <input name="name" type="text" id="activityname" value="${picture.pictureName}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
                                     <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
-                                    <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>subordinateUserInformationNew
+                                    <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -547,7 +547,7 @@
                     $("#searchbuys").css("display","");
                     $("#openName").val("优惠券购买详情");
                     var couponId = jsonstr.replace(/[^0-9]/ig,"");
-                    $("#jsons").val("{\"couponId\":\"" + id + "\"}");
+                    $("#jsons").val("{\"couponId\":\"" + couponId + "\"}");
                 }
             }
 
