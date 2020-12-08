@@ -1,7 +1,5 @@
 package com.framework.loippi.result.app.cart;
 
-import com.framework.loippi.enus.ActivityTypeEnus;
-import com.framework.loippi.vo.user.UserInfoVo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -20,10 +18,14 @@ import com.framework.loippi.entity.cart.ShopCart;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdRanks;
+import com.framework.loippi.enus.ActivityTypeEnus;
+import com.framework.loippi.utils.GoodsUtils;
 import com.framework.loippi.vo.gifts.Gifts;
+import com.framework.loippi.vo.user.UserInfoVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -652,6 +654,24 @@ public class CartCheckOutResult {
             gift.setGoodsImage(goods.getGoodsImage());
             gift.setStock(goods.getStock());
             gift.setGiftsNum(giftsNum);
+            ShopGoodsSpec goodsSpec = goods.getShopGoodsSpec();
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(goods, goodsSpec);
+            if (goods.getGoodsType()==3){
+                goodsSpec.setSpecInfo(goodsSpec.getSpecGoodsSerial());
+            }else{
+                String specInfo = "";
+                Map<String, String> map = goodsSpec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                goodsSpec.setSpecInfo(specInfo);
+            }
+            gift.setGoodsSpec(goodsSpec);
             gifts.add(gift);
             giftsApplet.add(gift);
         }

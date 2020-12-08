@@ -150,6 +150,7 @@ public class ShopGoodsSpec implements GenericEntity {
      * 当前商品的 规格名称 对应的规格值
      */
     private Map<String, String> sepcMap;
+    private String specInfo;
     private Map<String, String> specValueMap;
     //查询条件
     private Long combinationIndex;
