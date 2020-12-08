@@ -1,9 +1,9 @@
 package com.framework.loippi.utils;
 
-import com.google.common.collect.Maps;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 /**
  * Created by Administrator on 2017/6/19.
@@ -38,6 +38,8 @@ public class ApiUtils {
         MESSAGE.put("50001"," 订单处理失败，请重试");
         MESSAGE.put("10004"," 用户已存在");
         MESSAGE.put("60001"," 库存不足");
+        MESSAGE.put("80001"," 支付密码错误");
+        MESSAGE.put("80002"," 支付密码错误");
         //直播相关错误码7开头
         MESSAGE.put("70001"," 直播结束");
         MESSAGE.put("70002"," 禁止进入直播间");
