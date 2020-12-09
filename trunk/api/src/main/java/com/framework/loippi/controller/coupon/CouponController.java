@@ -387,10 +387,10 @@ public class CouponController extends BaseController {
 		int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
 		if (i.compareTo(new BigDecimal("0.00")) != 0) {
 			if (rdMmAccountInfo.getPaymentPwd() == null) {
-				return ApiUtils.error("你还未设置支付密码");
+				return ApiUtils.error(80002,"你还未设置支付密码");
 			}
 			if (!Digests.validatePassword(paypassword, rdMmAccountInfo.getPaymentPwd())) {
-				return ApiUtils.error("支付密码错误");
+				return ApiUtils.error(80001,"支付密码错误");
 			}
 			if (rdMmAccountInfo.getWalletStatus() != 0) {
 				return ApiUtils.error("购物积分账户状态未激活或者已被冻结");
