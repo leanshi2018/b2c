@@ -109,7 +109,7 @@ public class IntegrationBuildResult extends RdMmAccountLog {
     public static RdMmAccountLog WalletTT(RdMmBasicInfo shopMember,RdMmAccountInfo rdMmAccountInfo,Double integration,RdMmBasicInfo accentMember) {
         RdMmAccountLog rdMmAccountLog=new RdMmAccountLog();
         rdMmAccountLog.setTransTypeCode("TT");
-        rdMmAccountLog.setAccType("");
+        rdMmAccountLog.setAccType("SWB");
         rdMmAccountLog.setTrSourceType("OWB");
         rdMmAccountLog.setMmCode(shopMember.getMmCode());
         rdMmAccountLog.setMmNickName(shopMember.getMmNickName());
