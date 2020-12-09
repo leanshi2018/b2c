@@ -3,6 +3,7 @@ package com.framework.loippi.service.order;
 import java.util.List;
 import java.util.Map;
 
+import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.service.GenericService;
 
@@ -38,4 +39,6 @@ public interface ShopOrderGoodsService extends GenericService<ShopOrderGoods, Lo
     void updateBatchForShipmentNum(List<ShopOrderGoods> shopOrderGoodsList);
 
     List<ShopOrderGoods> listByOrderId(Long id);
+
+	void updateOrderShipping(Long orderId, String trackSn, ShopCommonExpress express);
 }

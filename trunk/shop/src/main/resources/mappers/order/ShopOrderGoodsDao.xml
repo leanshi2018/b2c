@@ -507,4 +507,14 @@
         where goods_id = #{goodsId} and spec_id = #{specId} and buyer_id = #{buyerId}
     </select>
 
+    <update id="updateOrderShipping" parameterType="map">
+        UPDATE SHOP_ORDER_GOODS
+        SET
+            shipping_express_code = #{shippingExpressCode},
+            shipping_express_id = #{shippingExpressId},
+            shipping_express_name = #{shippingExpressName},
+            shipping_code = #{shippingCode}
+        WHERE order_id = #{orderId}
+    </update>
+
 </mapper>

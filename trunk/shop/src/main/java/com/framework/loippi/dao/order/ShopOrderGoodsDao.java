@@ -39,4 +39,6 @@ public interface ShopOrderGoodsDao extends GenericDao<ShopOrderGoods, Long> {
 	List<ShopOrderGoods> listByOrderId(Long orderId);
 
 	List<ShopOrderGoods> findByGoodsIdAndSpecIdAndCode(Map<String, Object> gsMap);
+
+	void updateOrderShipping(Map<String, Object> map);
 }
