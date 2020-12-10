@@ -354,6 +354,8 @@ public class OrderDetailResult {
 
 
         orderDetailResult.setCoupons(orderDetailResult1.getCoupons());
+        orderDetailResult.setSplitFlag(orderDetailResult1.getSplitFlag());
+        orderDetailResult.setSplitMmCodes(orderDetailResult1.getSplitMmCodes());
         return orderDetailResult;
     }
     public static OrderDetailResult build2(ArrayList<Coupon> coupons, OrderDetailResult orderDetailResult) throws Exception {
