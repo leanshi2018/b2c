@@ -1652,6 +1652,9 @@ public class ShopOrderJob {
                                 map.put("shippingName", Optional.ofNullable(express.getEName()).orElse(""));
                                 map.put("shippingTime", new Date());
                                 orderService.updateOrderShipping(orderSn, trackSn, 29l);
+
+                                ShopOrder order = orderService.findByOrderSn(orderSn);
+                                shopOrderGoodsService.updateOrderShipping(order.getId(),trackSn,express);
                             }
                         }
 
