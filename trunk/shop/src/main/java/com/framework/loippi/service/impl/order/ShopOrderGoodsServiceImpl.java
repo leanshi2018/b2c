@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.framework.loippi.consts.OrderState;
 import com.framework.loippi.dao.order.ShopOrderDao;
 import com.framework.loippi.dao.order.ShopOrderGoodsDao;
 import com.framework.loippi.dao.product.ShopGoodsDao;
+import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.service.impl.GenericServiceImpl;
@@ -98,6 +100,17 @@ public class ShopOrderGoodsServiceImpl extends GenericServiceImpl<ShopOrderGoods
     @Override
     public List<ShopOrderGoods> listByOrderId(Long id) {
         return shopOrderGoodsDao.listByOrderId(id);
+    }
+
+    @Override
+    public void updateOrderShipping(Long orderId, String trackSn, ShopCommonExpress express) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderId", orderId);
+        map.put("shippingCode", trackSn);
+        map.put("shippingExpressCode", Optional.ofNullable(express.getECode()).orElse(""));
+        map.put("shippingExpressId", Optional.ofNullable(express.getId()).orElse(-1L));
+        map.put("shippingExpressName", Optional.ofNullable(express.getEName()).orElse(""));
+        shopOrderGoodsDao.updateOrderShipping(map);
     }
 
 }
