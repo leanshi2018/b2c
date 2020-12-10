@@ -199,6 +199,14 @@ public class OrderDetailResult {
      */
     private Integer isRemind;
     /**
+     * 是否分单标识 0：未分单 1：分单
+     */
+    private Integer splitFlag;
+    /**
+     * 分单会员编号
+     */
+    private ArrayList<String> splitMmCodes=Lists.newArrayList();
+    /**
      * 当前订单使用优惠券集合  olomi商城默认订单只能使用一张优惠券
      */
     private ArrayList<Coupon> coupons= Lists.newArrayList();

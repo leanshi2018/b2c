@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.order.*;
+import com.framework.loippi.service.order.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -48,11 +50,6 @@ import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.integration.RdMmIntegralRule;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.order.ShopOrderAddress;
-import com.framework.loippi.entity.order.ShopOrderDiscountType;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.order.ShopOrderPay;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.product.ShopGoodsEvaluate;
@@ -90,11 +87,6 @@ import com.framework.loippi.service.common.ShopCommonExpressService;
 import com.framework.loippi.service.coupon.CouponDetailService;
 import com.framework.loippi.service.coupon.CouponService;
 import com.framework.loippi.service.integration.RdMmIntegralRuleService;
-import com.framework.loippi.service.order.ShopOrderAddressService;
-import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
-import com.framework.loippi.service.order.ShopOrderGoodsService;
-import com.framework.loippi.service.order.ShopOrderPayService;
-import com.framework.loippi.service.order.ShopOrderService;
 import com.framework.loippi.service.product.ShopCartService;
 import com.framework.loippi.service.product.ShopGoodsBrandService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateService;
@@ -206,6 +198,8 @@ public class OrderAPIController extends BaseController {
     private ShopGoodsFreightRuleService shopGoodsFreightRuleService;
     @Resource
     private ShopCartService shopCartService;
+    @Resource
+    private ShopOrderSplitService shopOrderSplitService;
     /**
      * 提交订单
      */
@@ -689,6 +683,19 @@ public class OrderAPIController extends BaseController {
         }
         List LogisticsInformation = new ArrayList();
         OrderDetailResult orderDetailResult=new OrderDetailResult();
+        if(results.getSplitFlag()==1){
+            List<ShopOrderSplit> orderSplits = shopOrderSplitService.findList(Paramap.create().put("orderId",results.getId()).put("buyFlag",2));
+            ArrayList<String> strings = new ArrayList<>();
+            if(orderSplits!=null&&orderSplits.size()>0){
+                for (ShopOrderSplit orderSplit : orderSplits) {
+                    strings.add(orderSplit.getMmCode());
+                }
+            }
+            orderDetailResult.setSplitFlag(1);
+            orderDetailResult.setSplitMmCodes(strings);
+        }else {
+            orderDetailResult.setSplitFlag(0);
+        }
         //查询当前订单是否使用了优惠券
         List<CouponDetail> couponDetails = couponDetailService.findList(Paramap.create().put("useOrderId",results.getId()).put("holdId",results.getBuyerId()));
         if(couponDetails!=null&&couponDetails.size()>0){
