@@ -92,6 +92,8 @@ public class ShopGiftController extends GenericController {
 			return Constants.MSG_URL;
 		}
 
+		System.out.println("all="+shopGiftActivity);
+
 		Subject subject = SecurityUtils.getSubject();
 		if(subject!=null){
 			Principal principal = (Principal) subject.getPrincipal();
