@@ -1,14 +1,15 @@
 package com.framework.loippi.entity.order;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 订单商品表
@@ -209,6 +210,9 @@ public class ShopOrderGoods implements GenericEntity {
     private String[] Ids;
     private String[] goodIds;
     private List<Long> specIds;
+
+    //是否发货 0没发货 1已发货
+    private Integer isShipment;
 
 
 
