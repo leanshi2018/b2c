@@ -322,7 +322,7 @@ public class OrderDetailResult {
                 orderDetailResult.setReceiverAddress(Optional.ofNullable(
                         shopMemberAddress.getAddProvinceCode()+shopMemberAddress.getAddCityCode()+shopMemberAddress.getAddCountryCode()
                 ).orElse("后台还未设置")+Optional.ofNullable(shopMemberAddress.getAddDetial()).orElse(""));
-                orderDetailResult.setAddressDetail(optAddr.map(ShopOrderAddress::getAddress).orElse(""));
+                orderDetailResult.setAddressDetail(Optional.ofNullable(shopMemberAddress.getAddDetial()).orElse(""));
             }else{
                 orderDetailResult.setReceiverName("后台还未设置");
                 orderDetailResult.setReceiverMobile("后台还未设置");
