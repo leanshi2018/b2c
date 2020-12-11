@@ -1,22 +1,16 @@
 package com.framework.loippi.result.order;
 
-import com.framework.loippi.consts.OrderState;
-import com.framework.loippi.entity.order.ShopOrder;
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.order.ShopOrderLogistics;
-import com.framework.loippi.result.app.order.OrderResult;
-import com.framework.loippi.utils.validator.DateUtils;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.framework.loippi.entity.order.ShopOrderLogistics;
 
 /**
  * 订单商品分物流--返回app数据
@@ -58,6 +52,11 @@ public class ShippingResult {
          * 商品图片
          */
         public String goodsImg;
+
+        /**
+         * 商品名称
+         */
+        public String goodsName;
 
         /**
          * 商品数量
@@ -106,6 +105,7 @@ public class ShippingResult {
         for (ShopOrderLogistics item:shopOrderGoodslist) {
             goodsInfo goodsInfo=new goodsInfo();
             goodsInfo.setGoodsId(item.getGoodsId());
+            goodsInfo.setGoodsName(item.getGoodsName());
             goodsInfo.setGoodsImg(item.getGoodsImage());
             goodsInfo.setQuantity(item.getGoodsNum());
             goodsInfo.setSpecId(item.getSpecId());
