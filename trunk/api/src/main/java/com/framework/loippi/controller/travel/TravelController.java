@@ -1,21 +1,30 @@
 package com.framework.loippi.controller.travel;
 
-import com.allinpay.yunst.sdk.YunClient;
-import com.allinpay.yunst.sdk.bean.YunRequest;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.BaseController;
-import com.framework.loippi.entity.coupon.Coupon;
-import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.travel.RdTravelActivity;
 import com.framework.loippi.entity.travel.RdTravelMemInfo;
 import com.framework.loippi.entity.travel.RdTravelTicket;
 import com.framework.loippi.entity.travel.RdTravelTicketDetail;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.param.order.OrderSubmitParam;
 import com.framework.loippi.param.travel.TravelMemSubmitParam;
 import com.framework.loippi.param.travel.TravelTicketSubmitParam;
-import com.framework.loippi.result.app.coupon.CouponDetailListResult;
 import com.framework.loippi.result.app.travel.TravelActivityResult;
 import com.framework.loippi.result.app.travel.TravelTicketDetailListResult;
 import com.framework.loippi.result.auths.AuthsLoginResult;
@@ -27,19 +36,10 @@ import com.framework.loippi.service.travel.RdTravelTicketService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.*;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.*;
+import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.StringUtil;
+import com.framework.loippi.utils.Xerror;
 
 /**
  * 旅游活动控制层
@@ -303,7 +303,7 @@ public class TravelController extends BaseController {
         List<TravelMemSubmitParam> param = com.alibaba.fastjson.JSONArray
                 .parseArray(memInfoJson, TravelMemSubmitParam.class);
         List<TravelTicketSubmitParam> travelInfos = com.alibaba.fastjson.JSONArray
-                .parseArray(memInfoJson, TravelTicketSubmitParam.class);
+                .parseArray(travelJson, TravelTicketSubmitParam.class);
         if(param==null||param.size()==0){
             return ApiUtils.error("请填入参团游客身份信息");
         }
