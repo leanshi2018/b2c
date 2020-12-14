@@ -1879,7 +1879,7 @@ public class UserAPIController extends BaseController {
         }
 
         if (qualification.getComplianceStatus()==1){
-            return ApiUtils.success("达标了提示用户：您已达标连续3月满25MI的任务，本月消费金额的15%下月会赠送相应的换购积分进行换购商品。本月多买多返，赶紧去购物吧");
+            return ApiUtils.success("您已达标连续3月满25MI的任务，本月消费金额的15%下月会赠送相应的换购积分进行换购商品。本月多买多返，赶紧去购物吧");
         }else{
             return ApiUtils.error("该会员还未生成业绩信息！");
         }

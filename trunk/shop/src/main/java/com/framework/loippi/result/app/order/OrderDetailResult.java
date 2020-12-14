@@ -48,6 +48,10 @@ public class OrderDetailResult {
     private String receiverMobile;
 
     /**
+     * 收货人地址(省市区)
+     */
+    private String areaAddress;
+    /**
      * 收货人地址
      */
     private String receiverAddress;
@@ -302,6 +306,7 @@ public class OrderDetailResult {
         if (order.getLogisticType()==1){
             orderDetailResult.setLogisticType(1);
             orderDetailResult.setReceiverName(optAddr.map(ShopOrderAddress::getTrueName).orElse(""));
+            orderDetailResult.setAreaAddress(optAddr.map(ShopOrderAddress::getAreaInfo).orElse(""));
             orderDetailResult.setReceiverAddress(optAddr.map(ShopOrderAddress::getAreaInfo).orElse("")
                     + optAddr.map(ShopOrderAddress::getAddress).orElse(""));
             /*orderDetailResult.setAddressPCD(optAddr.map(ShopOrderAddress::getAreaInfo).orElse(""));
@@ -317,7 +322,7 @@ public class OrderDetailResult {
                 orderDetailResult.setReceiverAddress(Optional.ofNullable(
                         shopMemberAddress.getAddProvinceCode()+shopMemberAddress.getAddCityCode()+shopMemberAddress.getAddCountryCode()
                 ).orElse("后台还未设置")+Optional.ofNullable(shopMemberAddress.getAddDetial()).orElse(""));
-                orderDetailResult.setAddressDetail(optAddr.map(ShopOrderAddress::getAddress).orElse(""));
+                orderDetailResult.setAddressDetail(Optional.ofNullable(shopMemberAddress.getAddDetial()).orElse(""));
             }else{
                 orderDetailResult.setReceiverName("后台还未设置");
                 orderDetailResult.setReceiverMobile("后台还未设置");
@@ -347,6 +352,7 @@ public class OrderDetailResult {
         List<ShopOrderGoods> shopOrderGoods = order.getShopOrderGoods();
         for (ShopOrderGoods shopOrderGood : shopOrderGoods) {
             if(shopOrderGood.getIsPresentation()!=null&&shopOrderGood.getIsPresentation()==1){
+                shopOrderGood.setIsShipment(order.getShippingExpressId()!=null && order.getShippingCode()!=null && !"".equals(order.getShippingCode())?1:0);
                 giftsGoods.add(shopOrderGood);
             }
         }
