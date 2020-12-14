@@ -95,6 +95,7 @@
         <result property="rankDiscount" column="rank_discount"/>
         <result property="splitFlag" column="split_flag"/>
         <result property="immediatelyFlag" column="immediately_flag"/>
+        <result property="retailAmount" column="retail_amount"/>
     </resultMap>
 
     <resultMap id="OrderViewResultMap" type="com.framework.loippi.result.sys.OrderView">
@@ -166,7 +167,7 @@
 		 address_id ,pay_id ,pay_sn ,balance_state ,balance_time ,shipping_express_code ,predeposit_amount ,cancel_cause ,lock_state ,barter_state ,barter_num ,
 		 use_point_num ,point_rmb_num ,is_del ,batch_no ,is_remind ,is_modify ,brand_id ,brand_name ,ppv ,shipping_preferential_fee ,remind_time,shop_order_type_id ,
 		 creation_period ,logistic_type ,refund_point ,refund_ppv,cancel_time,submit_status,fail_info,cut_status,cut_fail_info,cut_get_id,cut_amount,cut_acc,cut_time,rank_discount,split_flag,
-		 immediately_flag
+		 immediately_flag,retail_amount
 	</sql>
 
     <sql id="base_value_column">
@@ -178,7 +179,7 @@
 		 #{addressId},#{payId},#{paySn},#{balanceState},#{balanceTime},#{shippingExpressCode},#{predepositAmount},#{cancelCause},#{lockState},#{barterState},#{barterNum},
 		 #{usePointNum},#{pointRmbNum},#{isDel},#{batchNo},#{isRemind},#{isModify},#{brandId},#{brandName},#{ppv},#{shippingPreferentialFee},#{remindTime},
 		 #{shopOrderTypeId},#{creationPeriod} ,#{logisticType} ,#{refundPoint},#{refundPpv},#{cancelTime},#{submitStatus},#{failInfo},#{cutStatus},#{cutFailInfo},
-		 #{cutGetId},#{cutAmount},#{cutAcc},#{cutTime},#{rankDiscount},#{splitFlag},#{immediatelyFlag}
+		 #{cutGetId},#{cutAmount},#{cutAcc},#{cutTime},#{rankDiscount},#{splitFlag},#{immediatelyFlag},#{retailAmount}
 	</sql>
 
 
@@ -466,6 +467,9 @@
         <if test="immediatelyFlag != null">
             AND immediately_flag = #{immediatelyFlag,jdbcType=INTEGER}
         </if>
+        <if test="retailAmount != null">
+            AND retail_amount = #{retailAmount}
+        </if>
     </sql>
 
     <!-- 设置语句 -->
@@ -737,6 +741,9 @@
         </if>
         <if test="immediatelyFlag != null">
             immediately_flag = #{immediatelyFlag,jdbcType=INTEGER},
+        </if>
+        <if test="retailAmount != null">
+            retail_amount = #{retailAmount},
         </if>
     </sql>
 

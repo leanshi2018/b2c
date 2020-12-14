@@ -60,4 +60,10 @@ public class ShopOrderSplit implements GenericEntity {
     /** 状态  1：正常 2：取消  3：未支付 */
     @Column(name = "status" )
     private Integer status;
+
+    /**
+     * plus vip订单记入零售购买额，用于周期结算
+     */
+    @Column(name = "retail_amount" )
+    private BigDecimal retailAmount;
 }
