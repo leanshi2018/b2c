@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 import java.util.Optional;
 
 import com.cloopen.rest.sdk.utils.DateUtil;
@@ -103,7 +104,7 @@ public class IntegrationDetailResult {
     private String autohrizeDesc;
     /** 比例 */
     private Integer backWithdrawals;
-    public static IntegrationDetailResult build(RdMmAccountLog rdMmAccountLog, RdMmBasicInfo shopMember, RdMmIntegralRule rdMmIntegralRule, Integer type) {
+    public static IntegrationDetailResult build(RdMmAccountLog rdMmAccountLog, RdMmBasicInfo shopMember, RdMmIntegralRule rdMmIntegralRule, Integer type, Map<String,String> remarkMap) {
         IntegrationDetailResult integrationListResult=new IntegrationDetailResult();
 
 //             Optional.ofNullable(rdMmIntegralRule.getBonusPointShopping()).orElse(0)
@@ -118,7 +119,11 @@ public class IntegrationDetailResult {
          integrationListResult.setTrMmCode(Optional.ofNullable(rdMmAccountLog.getTrMmCode()).orElse(""));
          integrationListResult.setTransDesc(Optional.ofNullable(rdMmAccountLog.getTransDesc()).orElse(""));
          if (rdMmAccountLog.getTrMmCode()!=null){
-             integrationListResult.setTrMmName(shopMember.getMmNickName());
+             if (!remarkMap.isEmpty()&&remarkMap.containsKey(rdMmAccountLog.getTrMmCode())){
+                 integrationListResult.setTrMmName(Optional.ofNullable(remarkMap.get(rdMmAccountLog.getTrMmCode())).orElse(""));
+             }else {
+                 integrationListResult.setTrMmName(Optional.ofNullable(shopMember.getMmNickName()).orElse(""));
+             }
          }else{
              integrationListResult.setTrMmName("");
          }
