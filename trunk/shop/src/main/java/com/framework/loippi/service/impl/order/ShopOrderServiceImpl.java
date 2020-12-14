@@ -7769,6 +7769,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             order.setPayId(orderPay.getId());
             //订单类型
             order.setOrderType(shopOrderDiscountType.getPreferentialType());
+            if(order.getOrderType()==8&&rdMmRelation.getRank()==0){//TODO plus订单构建虚拟零售利润
+                order.setRetailAmount(new BigDecimal("360.00"));
+            }else {
+                order.setRetailAmount(BigDecimal.ZERO);
+            }
             //订单类型id
             order.setShopOrderTypeId(shopOrderDiscountType.getId());
             //若支付完成
@@ -7861,7 +7866,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
             }else {
                 order.setSplitFlag(0);
             }
-            System.out.println(order);
             orderDao.insertEntity(order);
             //判断订单是否分单，如果分单，写入分单记录信息 TODO 分单
             if (StringUtils.isNotEmpty(splitCodes) && !"null".equals(splitCodes)&&order.getOrderType()==8) {
@@ -7874,6 +7878,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     orderSplit.setOrderSn(order.getOrderSn());
                     orderSplit.setMmCode(s);
                     RdMmBasicInfo splitMember = rdMmBasicInfoService.findByMCode(s);
+                    RdMmRelation relationSplit = rdMmRelationService.find("mmCode", s);
+                    if(relationSplit.getRank()==0){
+                        orderSplit.setRetailAmount(new BigDecimal("360.00"));
+                    }else {
+                        orderSplit.setRetailAmount(BigDecimal.ZERO);
+                    }
                     orderSplit.setMmNickName(splitMember.getMmNickName());
                     orderSplit.setBuyFlag(2);
                     orderSplit.setPv(new BigDecimal("50.00"));
@@ -7890,6 +7900,11 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 orderSplit.setBuyFlag(1);
                 orderSplit.setPv(surplus);
                 orderSplit.setStatus(3);
+                if(rdMmRelation.getRank()==0){
+                    orderSplit.setRetailAmount(new BigDecimal("360.00"));
+                }else {
+                    orderSplit.setRetailAmount(BigDecimal.ZERO);
+                }
                 shopOrderSplitService.save(orderSplit);
             }
             // todo 推荐反拥
