@@ -140,7 +140,7 @@ public class IntegrationMemberListResult {
 
         return userIntegrationListResultList;
     }
-    public static List<IntegrationMemberListResult> build2(List<RdMmBasicInfo> shopMemberList, List<RdRanks> shopMemberGradeList, List<RdMmAccountLog> rdMmAccountLogList,List<RdMmRelation> rdMmRelationList) {
+    public static List<IntegrationMemberListResult> build2(List<RdMmBasicInfo> shopMemberList, List<RdRanks> shopMemberGradeList, List<RdMmAccountLog> rdMmAccountLogList,List<RdMmRelation> rdMmRelationList,Map<String,String> remarkMap) {
         List<IntegrationMemberListResult> userIntegrationListResultList=new ArrayList<>();
         Map<Integer,String> map=new HashMap<>();
         Map<String,String> RdMmAccountLogMap=new HashMap<>();
@@ -156,7 +156,12 @@ public class IntegrationMemberListResult {
                 if (RdMmAccountLogMap.get(item.getMmCode())!=null && !"".equals(RdMmAccountLogMap.get(item.getMmCode()))){
                     IntegrationMemberListResult integrationMemberListResult=new IntegrationMemberListResult();
                     integrationMemberListResult.setMemberMobile(Optional.ofNullable(item.getMobile()).orElse(""));
-                    integrationMemberListResult.setMemberName(Optional.ofNullable(item.getMmNickName()).orElse(""));
+
+                    if (!remarkMap.isEmpty()&&remarkMap.containsKey(item.getMmCode())){
+                        integrationMemberListResult.setMemberName(Optional.ofNullable(remarkMap.get(item.getMmCode())).orElse(""));
+                    }else {
+                        integrationMemberListResult.setMemberName(Optional.ofNullable(item.getMmNickName()).orElse(""));
+                    }
                     integrationMemberListResult.setId( Optional.ofNullable(item.getMmCode()).orElse("-1"));
                     integrationMemberListResult.setMemberAvatar(Optional.ofNullable(item.getMmAvatar()).orElse(""));
                     RdMmRelation rdMmRelation=rdMmRelationList.get(flag);

@@ -422,9 +422,19 @@ public class UserIntegrationAPIController extends BaseController {
             rdMmBasicInfoList = rdMmBasicInfoService.findList("mmCodes", mmCodes);
             rdMmRelationList = rdMmRelationService.findList("mmCodes", mmCodes);
         }
+
+        //备注名
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(member.getMmCode());
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
         List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
-            .build2(rdMmBasicInfoList, shopMemberGradeList, rdMmAccountLogList, rdMmRelationList);
+            .build2(rdMmBasicInfoList, shopMemberGradeList, rdMmAccountLogList, rdMmRelationList,remarkMap);
         return ApiUtils.success(Paramap.create()
             .put("walletBlance", Optional.ofNullable(rdMmAccountInfo.getWalletBlance()).orElse(BigDecimal.valueOf(0)))
             .put("memberList", integrationMemberListResultList));
