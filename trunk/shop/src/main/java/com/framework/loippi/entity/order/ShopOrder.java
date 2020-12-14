@@ -429,6 +429,12 @@ public class ShopOrder implements GenericEntity {
      */
     @Column(name = "immediately_flag" )
     private Integer immediatelyFlag;
+
+    /**
+     * plus vip订单记入零售购买额，用于周期结算
+     */
+    @Column(name = "retail_amount" )
+    private BigDecimal retailAmount;
 /*********************添加*********************/
     /**
      * 订单商品

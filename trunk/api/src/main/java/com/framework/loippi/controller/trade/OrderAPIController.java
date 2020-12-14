@@ -693,7 +693,7 @@ public class OrderAPIController extends BaseController {
         }
         List LogisticsInformation = new ArrayList();
         OrderDetailResult orderDetailResult=new OrderDetailResult();
-        if(results.getSplitFlag()==1){
+        if(results.getSplitFlag()!=null&&results.getSplitFlag()==1){
             List<ShopOrderSplit> orderSplits = shopOrderSplitService.findList(Paramap.create().put("orderId",results.getId()).put("buyFlag",2));
             ArrayList<String> strings = new ArrayList<>();
             if(orderSplits!=null&&orderSplits.size()>0){
