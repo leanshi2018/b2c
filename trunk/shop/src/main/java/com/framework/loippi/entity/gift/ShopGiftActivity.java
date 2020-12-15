@@ -82,9 +82,9 @@ public class ShopGiftActivity implements GenericEntity {
 	private String startTimeS;//开始时间
 	private String endTimeS;//结束时间
 	//商品规格Id
-	List<Long> specIdList1;//规则1商品
-	List<Long> specIdList2;//规则2商品
-	List<Long> specIdList3;//规则3商品
+	List<String> specIdList1;//规则1商品
+	List<String> specIdList2;//规则2商品
+	List<String> specIdList3;//规则3商品
 
 	//详情展示
 	List<ShopGiftGoods> giftGoodsList1;//规则1商品
