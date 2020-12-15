@@ -553,8 +553,9 @@ public class ShopCouponController extends GenericController {
             return Constants.MSG_URL;
         }
         couponDetailService.sendCouponTicket(coupon,num,basicInfo,remark,username);
-        model.addAttribute("msg", "优惠券发放成功");
-        return Constants.MSG_URL;
+        /*model.addAttribute("msg", "优惠券发放成功");
+        return Constants.MSG_URL;*/
+        return "redirect:coupon/list.jhtml";
     }
 
     /**
