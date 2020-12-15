@@ -2487,7 +2487,7 @@ public class UserAPIController extends BaseController {
             //return ApiUtils.success();
             return ApiUtils.error("备注名不能为空");
         }
-        if (remarkName.length()>20) {
+        if (remarkName.length()>40) {
             //return ApiUtils.success();
             return ApiUtils.error("备注名过于长，请修改成合适长度");
         }
