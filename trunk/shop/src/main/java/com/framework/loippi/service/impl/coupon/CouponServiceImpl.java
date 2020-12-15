@@ -1,34 +1,56 @@
 package com.framework.loippi.service.impl.coupon;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.framework.loippi.dao.coupon.CouponPayDetailDao;
-import com.framework.loippi.entity.AliPayRefund;
-import com.framework.loippi.entity.TSystemPluginConfig;
-import com.framework.loippi.entity.WeiRefund;
-import com.framework.loippi.entity.coupon.*;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.service.TSystemPluginConfigService;
-import com.framework.loippi.service.alipay.AlipayRefundService;
-import com.framework.loippi.service.coupon.*;
-import com.framework.loippi.service.user.*;
-import com.framework.loippi.service.wechat.WechatMobileRefundService;
-import com.framework.loippi.service.wechat.WechatRefundService;
-import com.framework.loippi.utils.NumberUtils;
-import com.framework.loippi.utils.validator.DateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.framework.loippi.dao.coupon.CouponDao;
 import com.framework.loippi.dao.coupon.CouponDetailDao;
+import com.framework.loippi.dao.coupon.CouponPayDetailDao;
 import com.framework.loippi.dao.coupon.CouponUserDao;
+import com.framework.loippi.dao.user.RdMmRemarkDao;
+import com.framework.loippi.entity.AliPayRefund;
+import com.framework.loippi.entity.TSystemPluginConfig;
+import com.framework.loippi.entity.WeiRefund;
+import com.framework.loippi.entity.coupon.Coupon;
+import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.entity.coupon.CouponPayDetail;
+import com.framework.loippi.entity.coupon.CouponTransLog;
+import com.framework.loippi.entity.coupon.CouponUser;
+import com.framework.loippi.entity.user.RdMmAccountInfo;
+import com.framework.loippi.entity.user.RdMmAccountLog;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdMmRemark;
+import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.result.common.coupon.CouponTransferResult;
+import com.framework.loippi.service.TSystemPluginConfigService;
 import com.framework.loippi.service.TwiterIdService;
+import com.framework.loippi.service.alipay.AlipayRefundService;
+import com.framework.loippi.service.coupon.CouponDetailService;
+import com.framework.loippi.service.coupon.CouponService;
+import com.framework.loippi.service.coupon.CouponTransLogService;
+import com.framework.loippi.service.coupon.CouponUserService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
+import com.framework.loippi.service.user.RdMmAccountInfoService;
+import com.framework.loippi.service.user.RdMmAccountLogService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdSysPeriodService;
+import com.framework.loippi.service.wechat.WechatMobileRefundService;
+import com.framework.loippi.service.wechat.WechatRefundService;
+import com.framework.loippi.utils.NumberUtils;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.validator.DateUtils;
 
 /**
  * 优惠券业务层
@@ -70,6 +92,8 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
     private RdSysPeriodService rdSysPeriodService;
     @Resource
     private RdMmRelationService rdMmRelationService;
+    @Resource
+    private RdMmRemarkDao rdMmRemarkDao;
 
     /**
      *  添加/编辑优惠券
@@ -197,6 +221,15 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         }else {//接收人insert操作
             couponUserService.save(recipientCouponUser);
         }
+
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkDao.findByMmCode(mmCode);
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+
         couponUser.setOwnNum(couponUser.getOwnNum()-transNum);
         couponUserService.update(couponUser);
         //4.批量修改修改优惠券详情表
@@ -209,8 +242,13 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         result.setTransNum(transNum);
         result.setResidueNum(couponUser.getOwnNum());
         result.setReceiveCode(recipienter.getMmCode());
+        if (!remarkMap.isEmpty()&&remarkMap.containsKey(recipienter.getMmCode())){
+            result.setReceiveNickName(Optional.ofNullable(remarkMap.get(recipienter.getMmCode())).orElse(""));
+        }else {
+            result.setReceiveNickName(recipienter.getMmNickName());
+        }
+
         result.setReceiveName(recipienter.getMmName());
-        result.setReceiveNickName(recipienter.getMmNickName());
         result.setCouponId(coupon.getId());
         map.put("object",result);
         return map;
