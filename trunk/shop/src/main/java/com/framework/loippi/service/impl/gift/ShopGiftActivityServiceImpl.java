@@ -73,15 +73,15 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 			shopGiftActivity.setCreationTime(new Date());
 			Long flag = shopGiftActivityDao.insert(shopGiftActivity);
 
-			List<Long> specIdList1 = shopGiftActivity.getSpecIdList1();
+			List<String> specIdList1 = shopGiftActivity.getSpecIdList1();
 			insetGiftGoods(specIdList1,shopGiftActivity.getId(),1);
 
 			if (shopGiftActivity.getSpecIdList2()!=null){
-				List<Long> specIdList2 = shopGiftActivity.getSpecIdList2();
+				List<String> specIdList2 = shopGiftActivity.getSpecIdList2();
 				insetGiftGoods(specIdList2,shopGiftActivity.getId(),2);
 			}
 			if (shopGiftActivity.getSpecIdList3()!=null){
-				List<Long> specIdList3 = shopGiftActivity.getSpecIdList3();
+				List<String> specIdList3 = shopGiftActivity.getSpecIdList3();
 				insetGiftGoods(specIdList3,shopGiftActivity.getId(),3);
 			}
 
@@ -101,15 +101,15 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 			//删除以前的商品
 			shopGiftGoodsDao.deleteByGiftId(shopGiftActivity.getId());
 
-			List<Long> specIdList1 = shopGiftActivity.getSpecIdList1();
+			List<String> specIdList1 = shopGiftActivity.getSpecIdList1();
 			insetGiftGoods(specIdList1,shopGiftActivity.getId(),1);
 
 			if (shopGiftActivity.getSpecIdList2()!=null){
-				List<Long> specIdList2 = shopGiftActivity.getSpecIdList2();
+				List<String> specIdList2 = shopGiftActivity.getSpecIdList2();
 				insetGiftGoods(specIdList2,shopGiftActivity.getId(),2);
 			}
 			if (shopGiftActivity.getSpecIdList3()!=null){
-				List<Long> specIdList3 = shopGiftActivity.getSpecIdList3();
+				List<String> specIdList3 = shopGiftActivity.getSpecIdList3();
 				insetGiftGoods(specIdList3,shopGiftActivity.getId(),3);
 			}
 			if(falg==1){
@@ -120,15 +120,15 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 		return resultMap;
 	}
 
-	public void insetGiftGoods(List<Long> specIdList1,Long giftId,Integer flag){
-		for (Long specId : specIdList1) {
-			ShopGoodsSpec spec = shopGoodsSpecDao.find(specId);
+	public void insetGiftGoods(List<String> specIdList1,Long giftId,Integer flag){
+		for (String specId : specIdList1) {
+			ShopGoodsSpec spec = shopGoodsSpecDao.find(new Long(specId));
 			ShopGoods shopGoods = shopGoodsDao.find(spec.getGoodsId());
 			ShopGiftGoods giftGoods = new ShopGiftGoods();
 			giftGoods.setId(twiterIdService.getTwiterId());
 			giftGoods.setGiftId(giftId);
 			giftGoods.setGoodsName(shopGoods.getGoodsName());
-			giftGoods.setSpecId(specId);
+			giftGoods.setSpecId(new Long(specId));
 			GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, spec);
 				String specInfo = "";
 				Map<String, String> map = spec.getSepcMap();
