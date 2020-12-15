@@ -122,11 +122,13 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 
 	public void insetGiftGoods(List<String> specIdList1,Long giftId,Integer flag){
 		for (String specId : specIdList1) {
+			System.out.println("sp="+specId);
 			ShopGoodsSpec spec = shopGoodsSpecDao.find(new Long(specId));
 			ShopGoods shopGoods = shopGoodsDao.find(spec.getGoodsId());
 			ShopGiftGoods giftGoods = new ShopGiftGoods();
 			giftGoods.setId(twiterIdService.getTwiterId());
 			giftGoods.setGiftId(giftId);
+			giftGoods.setGoodsId(shopGoods.getId());
 			giftGoods.setGoodsName(shopGoods.getGoodsName());
 			giftGoods.setSpecId(new Long(specId));
 			GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, spec);
