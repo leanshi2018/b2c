@@ -1301,8 +1301,9 @@ public class TravelController {
 			return Constants.MSG_URL;
 		}
 		ticketDetailService.sendTravelTicket(travelTicket,num,basicInfo,remark,username);
-		model.addAttribute("msg", "旅游券发放成功");
-		return Constants.MSG_URL;
+		/*model.addAttribute("msg", "旅游券发放成功");
+		return Constants.MSG_URL;*/
+		return "redirect:travelTicket/list.jhtml";
 	}
 
 	/**
