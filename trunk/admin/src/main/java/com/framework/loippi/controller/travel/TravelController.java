@@ -1303,7 +1303,7 @@ public class TravelController {
 		ticketDetailService.sendTravelTicket(travelTicket,num,basicInfo,remark,username);
 		/*model.addAttribute("msg", "旅游券发放成功");
 		return Constants.MSG_URL;*/
-		return "redirect:travelTicket/list.jhtml";
+		return "redirect:list.jhtml";
 	}
 
 	/**
