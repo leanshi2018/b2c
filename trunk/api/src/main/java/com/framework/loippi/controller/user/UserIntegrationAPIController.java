@@ -422,9 +422,19 @@ public class UserIntegrationAPIController extends BaseController {
             rdMmBasicInfoList = rdMmBasicInfoService.findList("mmCodes", mmCodes);
             rdMmRelationList = rdMmRelationService.findList("mmCodes", mmCodes);
         }
+
+        //备注名
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(member.getMmCode());
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+
         List<RdRanks> shopMemberGradeList = rdRanksService.findAll();
         List<IntegrationMemberListResult> integrationMemberListResultList = IntegrationMemberListResult
-            .build2(rdMmBasicInfoList, shopMemberGradeList, rdMmAccountLogList, rdMmRelationList);
+            .build2(rdMmBasicInfoList, shopMemberGradeList, rdMmAccountLogList, rdMmRelationList,remarkMap);
         return ApiUtils.success(Paramap.create()
             .put("walletBlance", Optional.ofNullable(rdMmAccountInfo.getWalletBlance()).orElse(BigDecimal.valueOf(0)))
             .put("memberList", integrationMemberListResultList));
@@ -845,7 +855,20 @@ public class UserIntegrationAPIController extends BaseController {
         Integer transNumber = rdMmAccountInfoService
             .saveAccountInfoNew(rdMmAccountInfo, integration, IntegrationNameConsts.SHP, rdMmAccountLogList,
                 accentMmAccountInfo, shopCommonMessages, shopMemberMessages);
-        // TODO: 2018/12/28 待实现 
+        // TODO: 2018/12/28 待实现
+
+        //备注名
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(member.getMmCode());
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+        if (!remarkMap.isEmpty()&&remarkMap.containsKey(accentMember.getMmCode())){
+            accentMember.setMmNickName(Optional.ofNullable(remarkMap.get(accentMember.getMmCode())).orElse(""));
+        }
+
         return ApiUtils.success(Paramap.create().put("transNumber", transNumber).put("transferOutPoints", integration)
             .put("memberName", accentMember.getMmNickName()).put("memberMobile", accentMember.getMobile())
             .put("shpIntegration", rdMmAccountInfo.getWalletBlance().setScale(2,BigDecimal.ROUND_HALF_UP)));
@@ -920,7 +943,16 @@ public class UserIntegrationAPIController extends BaseController {
             }
         }
 
-        return ApiUtils.success(IntegrationDetailResult.build(rdMmAccountLog, shopMember, rdMmIntegralRule, type));
+        //备注名
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(rdMmAccountLog.getMmCode());
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+
+        return ApiUtils.success(IntegrationDetailResult.build(rdMmAccountLog, shopMember, rdMmIntegralRule, type,remarkMap));
     }
 
     //积分提现绑卡查询
@@ -1090,7 +1122,17 @@ public class UserIntegrationAPIController extends BaseController {
             relationMap.put(rdMmRelation.getMmCode(),rdMmRelation);
 
         }
-        return ApiUtils.success(BopTransMemResult.build(infos,relationMap,rankMap));
+
+        //备注名
+        Map<String,String> remarkMap = new HashMap<String,String>();
+        List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(member.getMmCode());
+        if (remarkList.size()>0){
+            for (RdMmRemark remark : remarkList) {
+                remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+            }
+        }
+
+        return ApiUtils.success(BopTransMemResult.build(infos,relationMap,rankMap,remarkMap));
     }
 
     //进入转给主/分店页面
@@ -1164,7 +1206,20 @@ public class UserIntegrationAPIController extends BaseController {
             if(acceptAccountInfo==null){
                 return ApiUtils.error("接收人积分账户异常");
             }
+            //备注名
+            Map<String,String> remarkMap = new HashMap<String,String>();
+            List<RdMmRemark> remarkList = rdMmRemarkService.findByMmCode(member.getMmCode());
+            if (remarkList.size()>0){
+                for (RdMmRemark remark : remarkList) {
+                    remarkMap.put(remark.getSpCode(),remark.getRemarkName());
+                }
+            }
             HashMap<String,Object> map=rdMmAccountInfoService.bopTransSure(rdMmAccountInfo,acceptAccountInfo,total,pwd,message);
+
+            if (!remarkMap.isEmpty()&&remarkMap.containsKey(member.getMmCode())){
+                map.put("acceptNickName",Optional.ofNullable(remarkMap.get(acceptCode)).orElse(""));
+            }
+
             return ApiUtils.success(map);
         } catch (Exception e) {
             e.printStackTrace();

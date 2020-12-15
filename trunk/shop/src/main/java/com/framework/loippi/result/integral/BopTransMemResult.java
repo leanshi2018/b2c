@@ -1,7 +1,5 @@
 package com.framework.loippi.result.integral;
 
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +7,11 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
 
 /**
  * @author zc
@@ -32,12 +35,16 @@ public class BopTransMemResult{
 
     private Integer rank;//级别
 
-    public static List<BopTransMemResult> build(ArrayList<RdMmBasicInfo> infos, HashMap<String, RdMmRelation> relationMap, HashMap<Integer, String> rankMap) {
+    public static List<BopTransMemResult> build(ArrayList<RdMmBasicInfo> infos, HashMap<String, RdMmRelation> relationMap, HashMap<Integer, String> rankMap, Map<String,String> remarkMap) {
         ArrayList<BopTransMemResult> results = new ArrayList<>();
         for (RdMmBasicInfo info : infos) {
             BopTransMemResult result = new BopTransMemResult();
             result.setMmCode(info.getMmCode());
-            result.setMmNickName(info.getMmNickName());
+            if (!remarkMap.isEmpty()&&remarkMap.containsKey(info.getMmCode())){
+                result.setMmNickName(Optional.ofNullable(remarkMap.get(info.getMmCode())).orElse(""));
+            }else {
+                result.setMmNickName(Optional.ofNullable(info.getMmNickName()).orElse(""));
+            }
             result.setMmAvatar(info.getMmAvatar());
             result.setMobile(info.getMobile());
             RdMmRelation rdMmRelation = relationMap.get(info.getMmCode());
