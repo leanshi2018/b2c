@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
@@ -57,11 +56,10 @@ public class ShopGiftController extends GenericController {
 	 * @param request
 	 * @param shopGiftActivity
 	 * @param model
-	 * @param attr
 	 * @return
 	 */
 	@RequestMapping(value = "/saveOrEditGiftActivity",method = RequestMethod.POST)
-	public String saveOrEditGiftActivity(HttpServletRequest request, @ModelAttribute ShopGiftActivity shopGiftActivity, ModelMap model, RedirectAttributes attr ){
+	public String saveOrEditGiftActivity(HttpServletRequest request, @ModelAttribute ShopGiftActivity shopGiftActivity, ModelMap model ){
 
 		if(StringUtil.isEmpty(shopGiftActivity.getActivityName())){
 			model.addAttribute("msg", "活动名称不可以为空");
