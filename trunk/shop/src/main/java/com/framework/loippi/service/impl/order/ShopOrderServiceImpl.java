@@ -2,6 +2,7 @@ package com.framework.loippi.service.impl.order;
 
 
 
+import com.cloopen.rest.sdk.utils.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -3390,10 +3391,12 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         if (order == null) {
             throw new RuntimeException("订单不存在或异常");
         }
+        if (order.getOrderState() == OrderState.ORDER_STATE_UNFILLED&&!"".equals(Optional.ofNullable(DateUtil.dateToStr(order.getShippingTime(),"yyyy-MM-dd HH:mm:ss")).orElse(""))) {
+            throw new RuntimeException("部分商品未发货，暂不能确认收货");
+        }
         if (order.getOrderState() != OrderState.ORDER_STATE_NOT_RECEIVING) {
             throw new RuntimeException("订单状态错误");
         }
-
         /*********************订单状态修改*********************/
         ShopOrder updateOrder = new ShopOrder();
         updateOrder.setId(order.getId());
