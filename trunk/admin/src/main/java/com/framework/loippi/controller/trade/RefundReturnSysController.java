@@ -408,7 +408,7 @@ public class RefundReturnSysController extends GenericController {
                 return backurl;
             }
 
-            if (shopOrder.getShippingTime()!=null){//TODO 2020.3.30
+            /*if (shopOrder.getShippingTime()!=null){//TODO 2020.3.30
                 Date shippingTime = shopOrder.getShippingTime();
 
                 Calendar calendar = Calendar.getInstance();
@@ -420,7 +420,7 @@ public class RefundReturnSysController extends GenericController {
                     model.addAttribute("msg", "超过15天内可售后时间");
                     return backurl;
                 }
-            }
+            }*/
 
             refundReturn.setRefundAmount(money);
             //refundReturn.setPpv(BigDecimal.valueOf(refundPpv));
