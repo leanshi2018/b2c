@@ -188,7 +188,11 @@ public class SubordinateUserInformationResult {
                                                           OrderSumPpv periodSumPpv, RdRanks shopMemberGrade,BigDecimal retail,BigDecimal pay,BigDecimal nopay,Map<String,String> remarkMap) {
         SubordinateUserInformationResult result = new SubordinateUserInformationResult();
         result.setAvatar(Optional.ofNullable(rdMmBasicInfo.getMmAvatar()).orElse(""));//设置头像
-        result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
+        if (!remarkMap.isEmpty()&&remarkMap.containsKey(rdMmBasicInfo.getMmCode())){
+            result.setNickname(Optional.ofNullable(remarkMap.get(rdMmBasicInfo.getMmCode())).orElse(""));
+        }else {
+            result.setNickname(Optional.ofNullable(rdMmBasicInfo.getMmNickName()).orElse(""));//设置昵称
+        }
         if(shopMemberGrade.getRankId()==2){
             result.setMemberGradeName("VIP会员");//设置会员级别
         }else {
