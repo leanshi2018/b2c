@@ -63,6 +63,10 @@ public class OrderDetailResult {
      * 订单所用积分数量
      */
     private Integer usePointNum;
+    /**
+     * 订单所用积分数量
+     */
+    private BigDecimal usePointNumB;
 
     /**
      * 积分抵扣金额
@@ -287,6 +291,7 @@ public class OrderDetailResult {
                 //备注
                 .setOrderMessage(optOrder.map(ShopOrderVo::getOrderMessage).orElse(""))
                 .setUsePointNum(optOrder.map(ShopOrderVo::getUsePointNum).orElse(BigDecimal.ZERO).intValue())
+                .setUsePointNumB(optOrder.map(ShopOrderVo::getUsePointNum).orElse(BigDecimal.ZERO))
                 //是否被后台修改
                 .setIsModify(optOrder.map(ShopOrderVo::getIsModify).orElse(0).intValue())
                 // 可用积分抵扣金额

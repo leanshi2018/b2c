@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.gift;
 
+import java.util.Calendar;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
@@ -23,6 +23,7 @@ import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.service.gift.ShopGiftActivityService;
 import com.framework.loippi.service.gift.ShopGiftGoodsService;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.DateConverter;
 import com.framework.loippi.utils.StringUtil;
 
 @Controller("ShopGiftController")
@@ -57,11 +58,10 @@ public class ShopGiftController extends GenericController {
 	 * @param request
 	 * @param shopGiftActivity
 	 * @param model
-	 * @param attr
 	 * @return
 	 */
 	@RequestMapping(value = "/saveOrEditGiftActivity",method = RequestMethod.POST)
-	public String saveOrEditGiftActivity(HttpServletRequest request, @ModelAttribute ShopGiftActivity shopGiftActivity, ModelMap model, RedirectAttributes attr ){
+	public String saveOrEditGiftActivity(HttpServletRequest request, @ModelAttribute ShopGiftActivity shopGiftActivity, ModelMap model ){
 
 		if(StringUtil.isEmpty(shopGiftActivity.getActivityName())){
 			model.addAttribute("msg", "活动名称不可以为空");
@@ -100,6 +100,25 @@ public class ShopGiftController extends GenericController {
 			if (principal != null && principal.getId() != null) {
 				Long id = principal.getId();
 				String username = principal.getUsername();
+
+				Calendar calendar = Calendar.getInstance();
+				DateConverter converter = new DateConverter();
+				if (!"".equals(shopGiftActivity.getStartTimeS())){
+					calendar.setTime(converter.convert(shopGiftActivity.getStartTimeS()));
+					calendar.set(Calendar.HOUR_OF_DAY,00);
+					calendar.set(Calendar.MINUTE,00);
+					calendar.set(Calendar.SECOND,00);
+					calendar.set(Calendar.MILLISECOND,0);
+					shopGiftActivity.setStartTime(calendar.getTime());
+				}
+				if (!"".equals(shopGiftActivity.getEndTimeS())){
+					calendar.setTime(converter.convert(shopGiftActivity.getEndTimeS()));
+					calendar.set(Calendar.HOUR_OF_DAY,23);
+					calendar.set(Calendar.MINUTE,59);
+					calendar.set(Calendar.SECOND,59);
+					calendar.set(Calendar.MILLISECOND,0);
+					shopGiftActivity.setEndTime(calendar.getTime());
+				}
 				Map<String, String> map =shopGiftActivityService.saveOrEditGift(shopGiftActivity,id,username);
 				if (map == null || StringUtil.isEmpty(map.get("code"))) {
 					model.addAttribute("msg", "保存活动信息失败！");
