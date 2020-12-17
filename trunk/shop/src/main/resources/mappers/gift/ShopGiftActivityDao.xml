@@ -139,7 +139,7 @@
     <!-- 插入 -->
     <insert id="insert" parameterType="com.framework.loippi.entity.gift.ShopGiftActivity">
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
-            SELECT LAST_INSERT_ID() AS ID
+            SELECT LAST_INSERT_ID() AS id
         </selectKey>
         INSERT shop_gift_activity
         (
