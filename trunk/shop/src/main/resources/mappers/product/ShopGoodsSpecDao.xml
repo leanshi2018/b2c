@@ -392,10 +392,10 @@
         left join rd_inventory_warning ri on sp.id = ri.SPECIFICATION_ID
         WHERE ri.WARE_CODE = '20192514' AND sg.goods_type != 2
         <if test="goodsId !=null and goodsId != ''">
-            AND so.order_sn = #{goodsId}
+            AND sp.goods_id = #{goodsId}
         </if>
         <if test="goodsName !=null and goodsName != ''">
-            AND so.order_sn = #{goodsName}
+            AND sg.goods_name = #{goodsName}
         </if>
     </select>
 
