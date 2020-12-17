@@ -226,12 +226,19 @@ public class ShopGoodsRecommendController extends GenericController {
     @RequestMapping("/selectSpec")
     public String listGoodsSpec(Model model,
                             @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
-                            @RequestParam(required = false, value = "goodsId") String goodsId,
-                            @RequestParam(required = false, value = "goodsName")String goodsName) {
+                            @RequestParam(required = false, value = "goodsId", defaultValue = "") String goodsId,
+                            @RequestParam(required = false, value = "goodsName", defaultValue = "")String goodsName) {
         Pageable pager = new Pageable();
         pager.setPageNumber(pageNo);
         SelectGoodsSpec selectGoodsSpec = new SelectGoodsSpec();
-        selectGoodsSpec.setGoodsId(new Long(goodsId));
+        /*if (goodsId==null||!"".equals(goodsId)){
+            System.out.println("");
+        }else {
+            selectGoodsSpec.setGoodsId(new Long(goodsId));
+        }*/
+        if (goodsId!=null){
+            selectGoodsSpec.setGoodsId(new Long(goodsId));
+        }
         selectGoodsSpec.setGoodsName(goodsName);
         pager.setParameter(selectGoodsSpec);
         pager.setPageSize(20);
@@ -241,7 +248,7 @@ public class ShopGoodsRecommendController extends GenericController {
         model.addAttribute("pageNo", pager.getPageNumber());    // 当前页
         model.addAttribute("pageSize", pager.getPageSize());// 每页显示条数
         model.addAttribute("goodsId", goodsId);
-        return "/shop_goods/goods_select";
+        return "/common/buyFree/selsetgoods";
 
 
     }

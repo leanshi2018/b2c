@@ -136,11 +136,13 @@
         </where>
     </select>
 
-    <!-- 插入 -->
-    <insert id="insert" parameterType="com.framework.loippi.entity.gift.ShopGiftActivity" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
-        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+    <!-- 插入
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID() AS id
         </selectKey>
+    -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.gift.ShopGiftActivity" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+
         INSERT shop_gift_activity
         (
         <include refid="base_column"/>
