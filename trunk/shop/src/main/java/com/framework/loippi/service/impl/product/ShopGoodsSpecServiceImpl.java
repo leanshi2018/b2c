@@ -14,6 +14,7 @@ import com.framework.loippi.dao.product.ShopGoodsSpecDao;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.result.sys.GoodsStocksListView;
+import com.framework.loippi.result.sys.SelectGoodsSpec;
 import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.support.Page;
@@ -122,6 +123,12 @@ public class ShopGoodsSpecServiceImpl extends GenericServiceImpl<ShopGoodsSpec, 
     @Override
     public List<ShopGoodsSpec> findListBySpecGoodsSerial(String specGoodsSerial) {
         return shopGoodsSpecDao.findListBySpecGoodsSerial(specGoodsSerial);
+    }
+
+    @Override
+    public Page<SelectGoodsSpec> listGoodsView(Pageable pageable) {
+        PageList<SelectGoodsSpec> result = shopGoodsSpecDao.listGoodsView(pageable.getParameter(), pageable.getPageBounds());
+        return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
     }
 
 }

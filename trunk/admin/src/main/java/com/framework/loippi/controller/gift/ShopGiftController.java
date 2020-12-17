@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.controller.GenericController;
@@ -198,13 +197,15 @@ public class ShopGiftController extends GenericController {
 	 * @param model
 	 * @return
 	 */
-	@ResponseBody
+	//@ResponseBody
 	@RequestMapping(value = "/findHaveStateUp")
 	public String findHaveStateUp(HttpServletRequest request, ModelMap model) {
 		List<ShopGiftActivity> giftActivities = shopGiftActivityService.findByState(0);
 		if (giftActivities.size()>0){//有上架活动
+			model.addAttribute("msg", "有");
 			return "有";
 		}else {
+			model.addAttribute("msg", "无");
 			return "无";
 		}
 	}

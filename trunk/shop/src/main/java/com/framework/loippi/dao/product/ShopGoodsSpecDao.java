@@ -8,6 +8,7 @@ import com.framework.loippi.mybatis.dao.GenericDao;
 import com.framework.loippi.mybatis.paginator.domain.PageBounds;
 import com.framework.loippi.mybatis.paginator.domain.PageList;
 import com.framework.loippi.result.sys.GoodsStocksListView;
+import com.framework.loippi.result.sys.SelectGoodsSpec;
 
 /**
  * DAO - ShopGoodsSpec(商品规格表)
@@ -40,4 +41,6 @@ public interface ShopGoodsSpecDao extends GenericDao<ShopGoodsSpec, Long> {
 	void updateSpecSaleNum(ShopGoodsSpec goodsSpec);
 
 	List<ShopGoodsSpec> findListBySpecGoodsSerial(String specGoodsSerial);
+
+	PageList<SelectGoodsSpec> listGoodsView(Object parameter, PageBounds pageBounds);
 }
