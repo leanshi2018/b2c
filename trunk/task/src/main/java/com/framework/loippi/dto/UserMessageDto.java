@@ -76,4 +76,5 @@ public class UserMessageDto {
 
     private String url = "";
 
+    private Integer orderType;
 }

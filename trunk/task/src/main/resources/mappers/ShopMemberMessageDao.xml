@@ -185,6 +185,7 @@
         <result property="isTop" column="is_top"/>
         <result property="mmId" column="mmId"/>
         <result property="isRead" column="isRead"/>
+        <result property="orderType" column="orderType"/>
     </resultMap>
 
     <!-- 分页查询-->
@@ -220,7 +221,7 @@
         ,SHOP_COMMON_MESSAGE.create_time,SHOP_COMMON_MESSAGE.type,SHOP_COMMON_MESSAGE.u_type,
         SHOP_COMMON_MESSAGE.on_line,SHOP_COMMON_MESSAGE.is_top ,
         SHOP_MEMBER_MESSAGE.id as mmId,SHOP_MEMBER_MESSAGE.is_read as
-        isRead,SHOP_ORDER.payment_state,SHOP_MEMBER_MESSAGE.uid
+        isRead,SHOP_ORDER.payment_state,SHOP_MEMBER_MESSAGE.uid,SHOP_ORDER.order_type as orderType
         FROM SHOP_MEMBER_MESSAGE
         LEFT JOIN SHOP_COMMON_MESSAGE ON SHOP_COMMON_MESSAGE.id=SHOP_MEMBER_MESSAGE.msg_id
         LEFT JOIN SHOP_ORDER ON SHOP_COMMON_MESSAGE.biz_id=SHOP_ORDER.id
