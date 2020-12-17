@@ -11,7 +11,7 @@
         <result property="giftNum" column="gift_num"/>
         <result property="startTime" column="start_time"/>
         <result property="endTime" column="end_time"/>
-        <result property="eState" column="e_state"/>
+        <result property="estate" column="e_state"/>
         <result property="creationBy" column="creation_by"/>
         <result property="creationTime" column="creation_time"/>
         <result property="updateBy" column="update_by"/>
@@ -24,7 +24,7 @@
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{activityName},#{ppv1},#{ppv2},#{ppv3},#{giftNum},#{startTime},#{endTime},#{eState},#{creationBy},#{creationTime},#{updateBy},#{updateTime}
+        #{id},#{activityName},#{ppv1},#{ppv2},#{ppv3},#{giftNum},#{startTime},#{endTime},#{estate},#{creationBy},#{creationTime},#{updateBy},#{updateTime}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -53,8 +53,8 @@
         <if test="endTime != null">
             AND end_time = #{endTime}
         </if>
-        <if test="eState != null">
-            AND e_state = #{eState,jdbcType=INTEGER}
+        <if test="estate != null">
+            AND e_state = #{estate,jdbcType=INTEGER}
         </if>
         <if test="creationBy != null and creationBy != ''">
             AND creation_by = #{creationBy,jdbcType=VARCHAR}
@@ -96,8 +96,8 @@
         <if test="endTime != null">
             end_time = #{endTime},
         </if>
-        <if test="eState != null">
-            e_state = #{eState,jdbcType=INTEGER},
+        <if test="estate != null">
+            e_state = #{estate,jdbcType=INTEGER},
         </if>
         <if test="creationBy != null and creationBy != ''">
             creation_by = #{creationBy,jdbcType=VARCHAR},
@@ -196,12 +196,12 @@
         SELECT
         <include refid="base_column"/>
         FROM shop_gift_activity
-        WHERE e_state = #{eState}
+        WHERE e_state = #{estate}
     </select>
 
     <update id="updateByEState" parameterType="java.lang.Integer">
         UPDATE shop_gift_activity
-        SET e_state = #{eState}
+        SET e_state = #{estate}
         WHERE e_state = 0
     </update>
 

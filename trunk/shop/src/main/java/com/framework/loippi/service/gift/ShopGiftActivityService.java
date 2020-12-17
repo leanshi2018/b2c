@@ -12,11 +12,11 @@ import com.framework.loippi.service.GenericService;
  * @description:dubbo com.framework.loippi.service.gift
  */
 public interface ShopGiftActivityService extends GenericService<ShopGiftActivity, Long> {
-	List<ShopGiftActivity> findByState(Integer eState);
+	List<ShopGiftActivity> findByState(Integer estate);
 
 	Map<String, String> saveOrEditGift(ShopGiftActivity shopGiftActivity, Long id, String username);
 
 	ShopGiftActivity findById(Long id);
 
-	void updateByEState(Integer eState);
+	void updateByEState(Integer estate);
 }

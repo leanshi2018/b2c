@@ -176,14 +176,14 @@ public class ShopGiftController extends GenericController {
 			return Constants.MSG_URL;
 		}
 
-		if (activity.getEState()==0){//原状态：上
-			activity.setEState(1);//下
+		if (activity.getEstate()==0){//原状态：上
+			activity.setEstate(1);//下
 			shopGiftActivityService.update(activity);
 		}else {//原状态：下
 			//其他活动下
 			shopGiftActivityService.updateByEState(1);
 
-			activity.setEState(0);//上
+			activity.setEstate(0);//上
 			shopGiftActivityService.update(activity);
 		}
 
