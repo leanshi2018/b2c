@@ -226,7 +226,8 @@ public class ShopGoodsRecommendController extends GenericController {
     @RequestMapping("/selectSpec")
     public String listGoodsSpec(Model model,
                             @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
-                            String goodsId, String goodsName) {
+                            @RequestParam(required = false, value = "goodsId") String goodsId,
+                            @RequestParam(required = false, value = "goodsName")String goodsName) {
         Pageable pager = new Pageable();
         pager.setPageNumber(pageNo);
         SelectGoodsSpec selectGoodsSpec = new SelectGoodsSpec();
