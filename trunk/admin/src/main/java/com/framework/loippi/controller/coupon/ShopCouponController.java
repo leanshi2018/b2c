@@ -553,9 +553,11 @@ public class ShopCouponController extends GenericController {
             return Constants.MSG_URL;
         }
         couponDetailService.sendCouponTicket(coupon,num,basicInfo,remark,username);
-        /*model.addAttribute("msg", "优惠券发放成功");
-        return Constants.MSG_URL;*/
-        return "redirect:/admin/plarformShopCoupon/coupon/list.jhtml";
+        model.addAttribute("msg", "优惠券发放成功");
+        model.addAttribute("flag", 1);
+        //return Constants.MSG_URL;
+        return "/common/travelTicket/grantCoupons/back_message";
+        /*return "redirect:/admin/plarformShopCoupon/coupon/list.jhtml";*/
     }
 
     /**

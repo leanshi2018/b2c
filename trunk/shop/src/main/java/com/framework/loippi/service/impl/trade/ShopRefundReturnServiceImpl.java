@@ -221,7 +221,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                 returnLog.setReturnState(RefundReturnState.SELLER_STATE_DISAGREE + ""); //退款状态信息
                 returnLog.setChangeState(""); //下一步退款状态信息
                  returnLog.setStateInfo("卖家已拒绝"); //退款状态描述
-                shareUrl.append("<li><p>已拒绝</p></li>");
+                shareUrl.append("<li><p>您的售后申请已被拒绝，如有疑问，请联系客服</p></li>");
                 shareUrl.append("<li><p>理由："+sellerMessage+"</p></li>");
 
             } else if (sellerState == RefundReturnState.SELLER_STATE_AGREE) {

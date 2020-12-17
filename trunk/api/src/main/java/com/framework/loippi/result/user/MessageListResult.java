@@ -31,7 +31,10 @@ public class MessageListResult {
      * 业务id（对于订单来讲为订单id）
      */
     private Long bizId;
-
+    /**
+     * 订单类型 1 零售订单 2 会员订单 3 pv订单 4 优惠订单 5 换购订单 6换货订单 7新会员启动包订单 8plus订单
+     */
+    private Integer orderType;
 
     public static List<MessageListResult> build(List<UserMessageDto> memberMessageList) {
         List<MessageListResult> messageListResultList=new ArrayList<>();
@@ -43,6 +46,9 @@ public class MessageListResult {
                messageListResult.setCreateTime(item.getCreateTime());
                messageListResult.setTitle(item.getTitle());
                messageListResult.setBizId(Optional.ofNullable(item.getBizId()).orElse(0L));
+               if(item.getOrderType()!=null){
+                   messageListResult.setOrderType(item.getOrderType());
+               }
                messageListResultList.add(messageListResult);
            }
        }
