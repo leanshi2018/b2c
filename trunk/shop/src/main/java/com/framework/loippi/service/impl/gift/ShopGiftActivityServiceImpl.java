@@ -51,8 +51,8 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 	}
 
 	@Override
-	public List<ShopGiftActivity> findByState(Integer eState) {
-		return shopGiftActivityDao.findByState(eState);
+	public List<ShopGiftActivity> findByState(Integer estate) {
+		return shopGiftActivityDao.findByState(estate);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 		if(shopGiftActivity.getId()==null){//新建
 			shopGiftActivity.setId(twiterIdService.getTwiterId());
 			shopGiftActivity.setGiftNum(1);
-			if (shopGiftActivity.getEState()==0){
+			if (shopGiftActivity.getEstate()==0){
 				//下架其他赠品活动
 				shopGiftActivityDao.updateByEState(1);
 			}
@@ -90,7 +90,7 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 				return resultMap;
 			}
 		}else {//编辑
-			if (shopGiftActivity.getEState()==0){
+			if (shopGiftActivity.getEstate()==0){
 				//下架其他赠品活动
 				shopGiftActivityDao.updateByEState(1);
 			}
@@ -167,7 +167,7 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 	}
 
 	@Override
-	public void updateByEState(Integer eState) {
-		shopGiftActivityDao.updateByEState(eState);
+	public void updateByEState(Integer estate) {
+		shopGiftActivityDao.updateByEState(estate);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.result.sys.GoodsStocksListView;
+import com.framework.loippi.result.sys.SelectGoodsSpec;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
@@ -40,6 +41,8 @@ public interface ShopGoodsSpecService extends GenericService<ShopGoodsSpec, Long
 	void updateSpecSaleNum(ShopGoodsSpec goodsSpec);
 
 	List<ShopGoodsSpec> findListBySpecGoodsSerial(String specGoodsSerial);
+
+	Page<SelectGoodsSpec> listGoodsView(Pageable pageable);
 
 	//Map<String, Object> getGoodsSpecBySpecId(Long goodsId, Long goodsSpecId);
 }

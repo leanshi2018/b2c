@@ -379,4 +379,24 @@
         from shop_goods_spec where spec_goods_serial=#{specGoodsSerial}
     </select>
 
+    <select id="listGoodsView" resultType="com.framework.loippi.result.sys.SelectGoodsSpec"
+            parameterType="com.framework.loippi.result.sys.SelectGoodsSpec">
+        select
+        sp.goods_id goodsId,
+        sp.id specId,
+        sg.goods_name goodsName,
+        sp.spec_goods_spec specInfo,
+        IFNULL(ri.INVENTORY,0) num
+        from
+        (shop_goods_spec sp left join shop_goods sg on sp.goods_id = sg.id)
+        left join rd_inventory_warning ri on sp.id = ri.SPECIFICATION_ID
+        WHERE ri.WARE_CODE = '20192514' AND sg.goods_type != 2
+        <if test="goodsId !=null and goodsId != ''">
+            AND sp.goods_id = #{goodsId}
+        </if>
+        <if test="goodsName !=null and goodsName != ''">
+            AND sg.goods_name = #{goodsName}
+        </if>
+    </select>
+
 </mapper> 

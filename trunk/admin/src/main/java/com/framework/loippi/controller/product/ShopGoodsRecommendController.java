@@ -1,39 +1,42 @@
 package com.framework.loippi.controller.product;
 
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.consts.DocumentConsts;
-import com.framework.loippi.consts.GoodsState;
-import com.framework.loippi.controller.GenericController;
-import com.framework.loippi.entity.common.ShopCommonDocument;
-import com.framework.loippi.entity.product.ShopGoods;
-import com.framework.loippi.entity.product.ShopGoodsBrand;
-import com.framework.loippi.entity.product.ShopGoodsClass;
-import com.framework.loippi.entity.product.ShopGoodsRecommend;
-import com.framework.loippi.mybatis.paginator.domain.Order;
-import com.framework.loippi.mybatis.paginator.domain.Order.Direction;
-import com.framework.loippi.service.product.ShopGoodsBrandService;
-import com.framework.loippi.service.product.ShopGoodsClassService;
-import com.framework.loippi.service.product.ShopGoodsRecommendService;
-import com.framework.loippi.service.product.ShopGoodsService;
-import com.framework.loippi.support.Page;
-import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.Paramap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
-import java.util.*;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.RequestContext;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.GoodsState;
+import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.entity.product.ShopGoods;
+import com.framework.loippi.entity.product.ShopGoodsBrand;
+import com.framework.loippi.entity.product.ShopGoodsClass;
+import com.framework.loippi.entity.product.ShopGoodsRecommend;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
+import com.framework.loippi.mybatis.paginator.domain.Order.Direction;
+import com.framework.loippi.result.sys.SelectGoodsSpec;
+import com.framework.loippi.service.product.ShopGoodsBrandService;
+import com.framework.loippi.service.product.ShopGoodsClassService;
+import com.framework.loippi.service.product.ShopGoodsRecommendService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
+import com.framework.loippi.support.Page;
+import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.GoodsUtils;
+import com.framework.loippi.utils.Paramap;
+import com.google.common.collect.Lists;
 
 /**
  * Controller - 商品推荐
@@ -49,6 +52,8 @@ public class ShopGoodsRecommendController extends GenericController {
     private ShopGoodsRecommendService shopGoodsRecommendService;
     @Resource
     private ShopGoodsService shopGoodsService;
+    @Resource
+    private ShopGoodsSpecService shopGoodsSpecService;
     @Resource
     private ShopGoodsClassService shopGoodsClassService;
     @Resource
@@ -218,6 +223,63 @@ public class ShopGoodsRecommendController extends GenericController {
         }else{
             return "/shop_goods/goods_select";
         }
+
+    }
+
+    @RequestMapping("/selectSpec")
+    public String listGoodsSpec(Model model,
+                            @RequestParam(required = false, value = "pageNo", defaultValue = "1") int pageNo,
+                            @RequestParam(required = false, value = "goodsId", defaultValue = "") String goodsId,
+                            @RequestParam(required = false, value = "goodsName", defaultValue = "")String goodsName) {
+        Pageable pager = new Pageable();
+        pager.setPageNumber(pageNo);
+        SelectGoodsSpec selectGoodsSpec = new SelectGoodsSpec();
+        /*if (goodsId==null||!"".equals(goodsId)){
+            System.out.println("");
+        }else {
+            selectGoodsSpec.setGoodsId(new Long(goodsId));
+        }*/
+        if (goodsId!=null){
+            selectGoodsSpec.setGoodsId(new Long(goodsId));
+        }
+        selectGoodsSpec.setGoodsName(goodsName);
+        pager.setParameter(selectGoodsSpec);
+        pager.setPageSize(20);
+        Page<SelectGoodsSpec> byPage = shopGoodsSpecService.listGoodsView(pager);
+        List<SelectGoodsSpec> content = byPage.getContent();
+        List<SelectGoodsSpec> list = new ArrayList<SelectGoodsSpec>();
+        for (SelectGoodsSpec goodsSpec : content) {
+            ShopGoodsSpec goodsSpec1 = shopGoodsSpecService.find(goodsSpec.getSpecId());
+            ShopGoods shopGoods = shopGoodsService.find(goodsSpec.getGoodsId());
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec1);
+            if (shopGoods.getGoodsType()==3){
+                goodsSpec.setSpecInfo(goodsSpec1.getSpecGoodsSerial());
+            }else{
+                String specInfo = "";
+                Map<String, String> map = goodsSpec1.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    if(specInfo.length()==0){
+                        specInfo = goodsSpec1.getSpecGoodsSerial();
+                    }else{
+                        specInfo = specInfo.substring(0, specInfo.length() - 1);
+                    }
+                }
+                goodsSpec.setSpecInfo(specInfo);
+            }
+            list.add(goodsSpec);
+        }
+        model.addAttribute("pager", byPage);
+        model.addAttribute("list", list);
+        model.addAttribute("pageNo", pager.getPageNumber());    // 当前页
+        model.addAttribute("pageSize", pager.getPageSize());// 每页显示条数
+        model.addAttribute("goodsId", goodsId);
+        return "/common/buyFree/selsetgoods";
+
 
     }
 

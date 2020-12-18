@@ -60,7 +60,7 @@ public class ShopGiftActivity implements GenericEntity {
 	/**
 	 * 状态 0上架  1下架（仅此一条上架）
 	 * */
-	private Integer eState;
+	private Integer estate;
 	/**
 	 * 创建人
 	 */

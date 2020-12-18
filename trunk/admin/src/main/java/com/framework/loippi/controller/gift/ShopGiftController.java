@@ -1,6 +1,7 @@
 package com.framework.loippi.controller.gift;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -176,18 +177,37 @@ public class ShopGiftController extends GenericController {
 			return Constants.MSG_URL;
 		}
 
-		if (activity.getEState()==0){//原状态：上
-			activity.setEState(1);//下
+		if (activity.getEstate()==0){//原状态：上
+			activity.setEstate(1);//下
 			shopGiftActivityService.update(activity);
 		}else {//原状态：下
 			//其他活动下
 			shopGiftActivityService.updateByEState(1);
 
-			activity.setEState(0);//上
+			activity.setEstate(0);//上
 			shopGiftActivityService.update(activity);
 		}
 
 		return "redirect:findGiftList.jhtml";
+	}
+
+	/**
+	 * 查询是否有上架活动
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	//@ResponseBody
+	@RequestMapping(value = "/findHaveStateUp")
+	public String findHaveStateUp(HttpServletRequest request, ModelMap model) {
+		List<ShopGiftActivity> giftActivities = shopGiftActivityService.findByState(0);
+		if (giftActivities.size()>0){//有上架活动
+			model.addAttribute("msg", "有");
+			return "有";
+		}else {
+			model.addAttribute("msg", "无");
+			return "无";
+		}
 	}
 
 }
