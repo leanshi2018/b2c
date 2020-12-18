@@ -84,9 +84,10 @@ public class CouponDetailServiceImpl extends GenericServiceImpl<CouponDetail, Lo
         List<CouponUser> list = couponUserService.findList(Paramap.create().put("mCode",basicInfo.getMmCode()).put("couponId",coupon.getId()));
         //1.修改会员优惠券拥有记录表
         CouponUser couponUser=null;
+        Long twiterId = twiterIdService.getTwiterId();
         if(list==null||list.size()==0){
             couponUser = new CouponUser();
-            couponUser.setId(twiterIdService.getTwiterId());
+            couponUser.setId(twiterId);
             couponUser.setMCode(basicInfo.getMmCode());
             couponUser.setCouponId(coupon.getId());
             couponUser.setHaveCouponNum(0);
@@ -103,7 +104,7 @@ public class CouponDetailServiceImpl extends GenericServiceImpl<CouponDetail, Lo
         for (int i = 0; i < num; i++) {
             CouponDetail couponDetail = new CouponDetail();
             couponDetail.setId(twiterIdService.getTwiterId());
-            couponDetail.setRdCouponUserId(couponUser.getId());
+            couponDetail.setRdCouponUserId(twiterId);
             couponDetail.setCouponId(coupon.getId());
             couponDetail.setCouponSn("YH"+twiterIdService.getTwiterId());
             couponDetail.setCouponName(coupon.getCouponName());
