@@ -2,7 +2,6 @@ package com.framework.loippi.service.impl.order;
 
 
 
-import com.cloopen.rest.sdk.utils.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -37,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.cloopen.rest.sdk.utils.DateUtil;
 import com.framework.loippi.consts.AllInPayBillCutConstant;
 import com.framework.loippi.consts.Constants;
 import com.framework.loippi.consts.CouponConstant;
@@ -5971,7 +5971,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         });
         //创建CouponUser记录
         CouponUser couponUser = new CouponUser();
-        couponUser.setId(twiterIdService.getTwiterId());
+        Long couponUserId = twiterIdService.getTwiterId();
+        couponUser.setId(couponUserId);
         couponUser.setMCode(rdMmRelation.getMmCode());
         couponUser.setCouponId(couponId);
         couponUser.setHaveCouponNum(1);
@@ -5982,7 +5983,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         //创建优惠券记录
         CouponDetail couponDetail = new CouponDetail();
         couponDetail.setId(twiterIdService.getTwiterId());
-        couponDetail.setRdCouponUserId(couponUser.getId());
+        couponDetail.setRdCouponUserId(couponUserId);
         couponDetail.setCouponId(coupon.getId());
         couponDetail.setCouponSn("YH"+twiterIdService.getTwiterId());
         couponDetail.setCouponName(coupon.getCouponName());
