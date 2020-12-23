@@ -20,6 +20,7 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.activity.ShopActivity;
 import com.framework.loippi.entity.activity.ShopActivityGoods;
 import com.framework.loippi.entity.activity.ShopActivityGoodsSpec;
+import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.product.ShopGoodsBrowse;
@@ -38,6 +39,7 @@ import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.activity.ShopActivityGoodsService;
 import com.framework.loippi.service.activity.ShopActivityGoodsSpecService;
 import com.framework.loippi.service.activity.ShopActivityService;
+import com.framework.loippi.service.common.ShopHomePictureService;
 import com.framework.loippi.service.product.ShopGoodsBrandService;
 import com.framework.loippi.service.product.ShopGoodsBrowseService;
 import com.framework.loippi.service.product.ShopGoodsEvaluateKeywordsService;
@@ -92,6 +94,8 @@ public class GoodsDetailController extends BaseController {
     private ShopGoodsEvaluateKeywordsService shopGoodsEvaluateKeywordsService;
     @Resource
     private ShopGoodsFreightRuleService shopGoodsFreightRuleService;
+    @Resource
+    private ShopHomePictureService shopHomePictureService;
 
     /**
      * 商品详情,合并秒杀,促销,普通商品
@@ -139,6 +143,12 @@ public class GoodsDetailController extends BaseController {
             ShopActivity shopActivity = shopActivityService.find(activityId);
             resultMap.put("activityInfo", ActivityDetailResult.build(shopActivity));
         }
+
+        List<ShopHomePicture> homePictures = shopHomePictureService.findListByTypeAndStutus( 4,1);
+        if (homePictures.size()>0){
+            resultMap.put("jumpInfo",homePictures.get(0));
+        }
+
         return ApiUtils.success(resultMap);
     }
 
