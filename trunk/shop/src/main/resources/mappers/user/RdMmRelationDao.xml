@@ -68,7 +68,7 @@
 		<if test="pwdInitYn != null and pwdInitYn != ''">
 			AND PWD_INIT_YN = #{pwdInitYn,jdbcType=INTEGER}
 		</if>
-		<if test="mmStatus != null and mmStatus != ''">
+		<if test="mmStatus != null">
 			AND MM_STATUS = #{mmStatus,jdbcType=INTEGER}
 		</if>
 		<if test="mmPointStatus != null and mmPointStatus != ''">
@@ -336,5 +336,9 @@
 	<select id="findFreezeMem" resultMap="RdMmRelationResultMap">
 		SELECT a.* from rd_mm_relation a INNER JOIN rd_mm_basic_info b on a.mm_code = b.mm_code and b.CREATION_DATE &lt; DATE_SUB(CURDATE(), INTERVAL 3 MONTH) and b.OLD_SYS_STATUS = 1
 		and a.a_ppv &lt; 150 and a.MM_STATUS = 0
+	</select>
+
+	<select id="findBySponsorCodeRuleOut" parameterType="string" resultMap="RdMmRelationResultMap">
+		select * from RD_MM_RELATION where SPONSOR_CODE = #{sponsorCode} and (MM_STATUS = 0 or MM_STATUS = 9)
 	</select>
 </mapper> 

@@ -140,13 +140,11 @@
                             <select name="openType" class="w200" id="openType">
                                 <#if picture=="">
                                     <option value="" selected="selected">请选择</option>
-                                    <option value="活动页面" id=""<#if picture.openType == '活动页面'>selected="selected"</#if>>跳转商品活动页</option>
                                     <option value="跳转路径" id=""<#if picture.openType == "跳转路径">selected="selected" </#if>>跳转路径</option>
                                     <option value="跳转链接" id=""<#if picture.openType == "跳转链接">selected="selected" </#if>>跳转链接</option>
                                 </#if>
                                 <#if picture!=null>
-                                    <option value="活动页面" <#if picture.jumpName == '活动页面'>selected="selected"</#if>>跳转商品活动页</option>
-                                    <option value="跳转路径" <#if picture.jumpName == "凑单页面"||picture.jumpName == "推荐页面"||picture.jumpName == "辑"
+                                    <option value="跳转路径" <#if picture.jumpName == "凑单页面"||picture.jumpName == "推荐页面"||picture.jumpName == '活动页面'||picture.jumpName == "辑"
                                     ||picture.jumpName == "消息中心"||picture.jumpName == "商品详情"||picture.jumpName == "我"||picture.jumpName == "个人业绩"
                                     ||picture.jumpName == "我的订单"||picture.jumpName == "我的积分"||picture.jumpName == "奖励积分"||picture.jumpName == "换购积分"
                                     ||picture.jumpName == "购物积分"||picture.jumpName == "我的银行卡"||picture.jumpName == "学堂"||picture.jumpName == "学堂文章详情"
@@ -177,6 +175,7 @@
                                         <option value="" selected="selected">请选择</option>
                                         <option value="gatherGoodspage" <#if picture.openPage == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
                                         <option value="recommendGoodspage" <#if picture.openPage == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
+                                        <option value="activityGoodsListpage" <#if picture.openPage == 'activityGoodsListpage'>selected="selected"</#if>>商品活动页面</option>
                                         <option value="homepage" <#if picture.openPage == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.openPage == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.openPage == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -203,7 +202,6 @@
                                     <input name="activityname" type="text" id="activityname" value="${picture.pictureName}"/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
                                     <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
-                                    <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>
                                     <#-- 选择推荐页 -->
                                     <input name="recommendationName" type="text" id="recommendationName" value="${recommendationName}"/>
                                     <input  id="rId" type="hidden" value="${id}"/>
@@ -243,6 +241,7 @@
                                         <option value="" selected="selected">请选择</option>
                                         <option value="gatherGoodspage" <#if picture.activityUrl == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
                                         <option value="recommendGoodspage" <#if picture.activityUrl == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
+                                        <option value="activityGoodsListpage" <#if picture.activityUrl == 'activityGoodsListpage'>selected="selected"</#if>>商品活动页面</option>
                                         <option value="homepage" <#if picture.activityUrl == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.activityUrl == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.activityUrl == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -264,10 +263,9 @@
                                     <input type="hidden" class="text w500" value="${article.id}" name="id" >
                                     <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" >
                                     <#--选择活动-->
-                                    <input name="name" type="text" id="activityname" value="${picture.pictureName}"/>
+                                    <input name="name" type="text" id="activityname" value=""/>
                                     <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
                                     <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
-                                    <input name="openPage" id="openpages" type="hidden" value="activityGoodsListpage"/>
                                     <#--选择商品-->
                                     <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
                                         <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
@@ -341,30 +339,39 @@
         /*判断是否选择打开方式*/
         $('#openType').change(function() {
             var value = $(this).children('option:selected').val();
-            if (value == "活动页面") {
-                $("#activityname").show();
-                $("#openPage").attr("name","");
-                $("#searchactivity").css("display","");
-                $("#couponName").css("display","none");
-                $("#recommendationName").css("display","none");
-                $("#goodsName").css("display","none");
-                $("#articleTitle").css("display","none");
-                $("#openName").val("活动页面");
-            }else{
-                $("#activityname").css("display","none");
-                $("#searchactivity").css("display","none");
-            }
+            // if (value == "活动页面") {
+            //     $("#activityname").show();
+            //     $("#openPage").attr("name","");
+            //     $("#searchactivity").css("display","");
+            //     $("#couponName").css("display","none");
+            //     $("#recommendationName").css("display","none");
+            //     $("#goodsName").css("display","none");
+            //     $("#articleTitle").css("display","none");
+            //     $("#openName").val("活动页面");
+            // }else{
+            //     $("#activityname").css("display","none");
+            //     $("#searchactivity").css("display","none");
+            // }
             if (value == "跳转路径") {
                 $("#openPage").css("display","");
-                $("#openpages").attr("name","");
-            }else{
-                $("#openPage").css("display","none");
+                $("#openPage").attr("name","openPage");
+                $("#openName").attr("name","openName");
+                $("#jumpInterface").attr("name","");
+                $("#jumpInterface").css("display", "none");
+                $("#jsons").attr("name","jumpJson");
             }
             if (value == "跳转链接") {
+                console.log(value)
+                $("#jumpInterface").attr("name","jumpInterface");
                 $("#jumpInterface").css("display","");
-                $("#openpages").attr("name","");
-            }else{
-                $("#jumpInterface").css("display","none");
+                $("#openPage").css("display","none");
+                $("#openPage").attr("name","");
+                $("#activityname").css("display","none");
+                $("#searchactivity").css("display","none");
+                $("#openName").attr("name","");
+                $("#recommendationName").css("display","none");
+                $("#jsons").attr("name","");
+
             }
         })
         /*判断是否选择跳转路径*/
@@ -381,6 +388,14 @@
             }else{
                 $("#recommendationName").css("display","none");
                 $("#searchrecommend").css("display","none");
+            }
+            if(value=="recommendGoodspage"){
+                $("#openName").val("活动页面");
+                $("#activityname").show();
+                $("#searchactivity").css("display","");
+            }else{
+                $("#activityname").css("display","none");
+                $("#searchactivity").css("display","none");
             }
             if(value=="homepage"){
                 $("#openName").val("辑");
@@ -452,27 +467,36 @@
         $(function () {
             var value =  $('#openType option:selected').val();
             console.log(value);
-            if (value == "活动页面") {
-                $("#activityname").show();
-                $("#openPage").attr("name","");
-                $("#searchactivity").css("display","");
-                $("#openName").val("活动页面");
-            }else{
-                $("#activityname").css("display","none");
-                $("#searchactivity").css("display","none");
-            }
+            // if (value == "活动页面") {
+            //     $("#activityname").show();
+            //     $("#openPage").attr("name","");
+            //     $("#searchactivity").css("display","");
+            //     $("#openName").val("活动页面");
+            //     $("#jsons").attr("name","");
+            // }else{
+            //     $("#activityname").css("display","none");
+            //     $("#searchactivity").css("display","none");
+            // }
             if (value == "跳转路径") {
                 $("#openPage").css("display","");
-                $("#openpages").attr("name","");
-            }else{
-                $("#openPage").css("display","none");
+                $("#openPage").attr("name","openPage");
+                $("#openName").attr("name","openName");
+                $("#jumpInterface").attr("name","");
+                $("#jumpInterface").css("display", "none");
+                $("#jsons").attr("name","jumpJson");
             }
             if (value == "跳转链接") {
+                $("#jumpInterface").attr("name","jumpInterface");
                 $("#jumpInterface").css("display","");
-                $("#openpages").attr("name","");
-            }else{
-                $("#jumpInterface").css("display","none");
+                $("#openPage").css("display","none");
+                $("#openPage").attr("name","");
+                $("#activityname").css("display","none");
+                $("#searchactivity").css("display","none");
+                $("#openName").attr("name","");
+                $("#recommendationName").css("display","none");
+                $("#jsons").attr("name","");
             }
+
 
             //取jsons编辑页面不修改状态默认传过来的参数
             var jsonstr=$("#pictureJson").html();
@@ -531,6 +555,7 @@
                     $("#articleTitle").show();
                     $("#searchlearnarticle").css("display","");
                     $("#openName").val("学堂文章详情");
+                    // $("#jsons").val("{\"url\":\"" + articleContent + "\",\"title\":\"" + title + "\"}");
                 }
                 if(vals=="invitationpage"){
                     $("#openName").val("我的邀请");
@@ -589,7 +614,7 @@
             $("#contents").val(content);
             var articleContent=$("#contents").val();
             var title=$("#articleTitle").val();
-            // console.log(articleContent);
+            console.log(articleContent);
             $("#jsons").val("{\"url\":\"" + articleContent + "\",\"title\":\"" + title + "\"}");
 
         }

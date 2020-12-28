@@ -75,7 +75,7 @@
         <if test="detailLink != null and detailLink != ''">
             AND detail_link = #{detailLink}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status}
         </if>
         <if test="numCeiling != null and numCeiling != ''">
@@ -133,7 +133,7 @@
         <if test="detailLink != null and detailLink != ''">
              detail_link = #{detailLink},
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
              status = #{status},
         </if>
         <if test="numCeiling != null and numCeiling != ''">

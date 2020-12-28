@@ -56,8 +56,7 @@
 <#--                        </td>-->
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="
-                                       ('${article.articleTitle}','${article.url}','${article.info}')">选择</a>
+                               onclick="selSpeccoupons('${article.articleTitle}','${article.articleUrl}','${article.info}')">选择</a>
                         </td>
                     </tr>
                 </#list>
