@@ -41,4 +41,6 @@ public interface ShopOrderGoodsService extends GenericService<ShopOrderGoods, Lo
     List<ShopOrderGoods> listByOrderId(Long id);
 
 	void updateOrderShipping(Long orderId, String trackSn, ShopCommonExpress express);
+
+	List<ShopOrderGoods> selectGoodsName(String buyerId, String goodsName);
 }

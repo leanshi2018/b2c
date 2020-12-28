@@ -1472,6 +1472,7 @@ public class OrderSysController extends GenericController {
 
                             ShopOrder order = orderService.findByOrderSn(orderSn);
                             shopOrderGoodsService.updateOrderShipping(order.getId(),trackSn,express);
+                            shopOrderLogisticsService.updateOrderShipping(order.getId(),trackSn,express);
                         }
                     }
 

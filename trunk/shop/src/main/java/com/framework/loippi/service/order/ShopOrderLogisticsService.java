@@ -1,6 +1,7 @@
 package com.framework.loippi.service.order;
 
 
+import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.order.ShopOrderLogistics;
 import com.framework.loippi.service.GenericService;
 
@@ -13,4 +14,6 @@ import com.framework.loippi.service.GenericService;
 public interface ShopOrderLogisticsService  extends GenericService<ShopOrderLogistics, Long> {
 
 	void insert(ShopOrderLogistics shopOrderLogistics);
+
+	void updateOrderShipping(Long orderId, String trackSn, ShopCommonExpress express);
 }

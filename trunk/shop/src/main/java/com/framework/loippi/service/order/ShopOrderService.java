@@ -410,5 +410,7 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
 	ShopOrder findByOrderSn(String orderSn);
 
+	Page selectListWithGoods(Pageable pageable);
+
 	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

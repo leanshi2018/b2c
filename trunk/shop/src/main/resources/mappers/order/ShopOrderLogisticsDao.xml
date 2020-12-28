@@ -196,5 +196,14 @@
 			<include refid="where_column" />
 		</where>
 	</select>
+
+	<update id="updateOrderShipping" parameterType="map">
+        UPDATE SHOP_ORDER_LOGISTICS
+        SET
+            shipping_express_code = #{shippingExpressCode},
+            shipping_express_id = #{shippingExpressId},
+            shipping_code = #{shippingCode}
+        WHERE order_id = #{orderId}
+    </update>
 	
 </mapper> 

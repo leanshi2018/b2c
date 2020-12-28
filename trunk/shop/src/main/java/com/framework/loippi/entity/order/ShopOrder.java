@@ -289,7 +289,7 @@ public class ShopOrder implements GenericEntity {
     @Column(name = "point_rmb_num" )
     private BigDecimal pointRmbNum;
 
-    /**  */
+    /** 订单删除 默认未删：0  已删：1 */
     @Column(name = "is_del" )
     private Integer isDel;
 
