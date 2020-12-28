@@ -31,4 +31,6 @@ public interface RdMmRelationService  extends GenericService<RdMmRelation, Long>
     void updatePassword(String mobile, String newpassword);
 
     void cancellation(RdMmBasicInfo rdMmBasicInfo);
+
+    List<RdMmRelation> findBySponsorCodeRuleOut(String mmCode);
 }

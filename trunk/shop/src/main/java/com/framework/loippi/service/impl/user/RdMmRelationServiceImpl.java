@@ -192,6 +192,11 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 		}
 	}
 
+	@Override
+	public List<RdMmRelation> findBySponsorCodeRuleOut(String mmCode) {
+		return rdMmRelationDao.findBySponsorCodeRuleOut(mmCode);
+	}
+
 	/**
 	 * 注销操作
 	 * @param rdMmBasicInfo 会员信息

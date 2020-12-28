@@ -693,4 +693,9 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         rdMmEditDao.insert(edit);
         memberRelationLogDao.insert(relationLog);
     }
+
+    @Override
+    public List<RdMmBasicInfo> findBasicAndStatusNormal(String info) {
+        return rdMmBasicInfoDao.findBasicAndStatusNormal(info);
+    }
 }

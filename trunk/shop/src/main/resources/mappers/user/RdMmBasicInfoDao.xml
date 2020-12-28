@@ -548,4 +548,8 @@
 	<select id="findNoninductiveMem" parameterType="string" resultMap="RdMmBasicInfoResultMap">
 		SELECT a.* FROM rd_mm_basic_info a INNER JOIN rd_mm_relation b on a.mm_code = b.mm_code WHERE a.mobile = #{mobile} and b.mm_status = 9
 	</select>
+
+	<select id="findBasicAndStatusNormal" parameterType="string" resultMap="RdMmBasicInfoResultMap">
+		SELECT a.* FROM rd_mm_basic_info a INNER JOIN rd_mm_relation b on a.mm_code = b.mm_code WHERE b.MM_STATUS = 0 AND (a.MOBILE like CONCAT('%',#{info},'%') or a.MM_NICK_NAME like CONCAT('%',#{info},'%')or a.MM_CODE like CONCAT('%',#{info},'%'))
+	</select>
 </mapper> 

@@ -641,7 +641,8 @@ public class UserIntegrationAPIController extends BaseController {
         //}
         //List<RdMmBasicInfo> rdMmBasicInfoList = new ArrayList<>();
         //List<RdMmRelation> rdMmRelationList = rdMmRelationService.findList("sponsorCode", member.getMmCode());
-        List<RdMmRelation> rdMmRelationList = rdMmRelationService.findBySponsorCode( member.getMmCode());
+        List<RdMmRelation> rdMmRelationList = rdMmRelationService.findBySponsorCodeRuleOut(member.getMmCode());//查询会员状态为正常以及无感注册的会员，排除冻结和注销 TODO 3.1.6版本
+        //List<RdMmRelation> rdMmRelationList = rdMmRelationService.findBySponsorCode( member.getMmCode());
         ArrayList<String> mmCodes = new ArrayList<>();
         if(rdMmRelationList!=null&&rdMmRelationList.size()>0){
             for (RdMmRelation rdMmRelation : rdMmRelationList) {
@@ -704,7 +705,8 @@ public class UserIntegrationAPIController extends BaseController {
         List<RdMmBasicInfo> rdMmBasicInfoList = new ArrayList<>();
         List<RdMmRelation> rdMmRelationList = new ArrayList<>();
         if (type == 2) {
-            rdMmRelationList = rdMmRelationService.findList("sponsorCode", member.getMmCode());
+            //rdMmRelationList = rdMmRelationService.findList("sponsorCode", member.getMmCode());
+            rdMmRelationList = rdMmRelationService.findList(Paramap.create().put("sponsorCode",member.getMmCode()).put("mmStatus",0));
             List<String> mmCodes = new ArrayList();
             for (RdMmRelation item : rdMmRelationList) {
                 mmCodes.add(item.getMmCode());
@@ -717,7 +719,7 @@ public class UserIntegrationAPIController extends BaseController {
             }
 
         } else {
-            rdMmBasicInfoList = rdMmBasicInfoService.findList(Paramap.create().put("info", info));
+            rdMmBasicInfoList = rdMmBasicInfoService.findBasicAndStatusNormal(info);
             List<String> mmCodes = new ArrayList();
             for (RdMmBasicInfo item : rdMmBasicInfoList) {
                 mmCodes.add(item.getMmCode());
@@ -777,7 +779,10 @@ public class UserIntegrationAPIController extends BaseController {
         }
         //对方信息
         RdMmBasicInfo accentMember = rdMmBasicInfoService.find("mmCode", accentMemberId);
-
+        RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", accentMemberId);
+        if(rdMmRelation==null||rdMmRelation.getMmStatus()==null||rdMmRelation.getMmStatus()==9){
+            return ApiUtils.error("对方用户未注册");
+        }
         if (accentMember == null) {
             return ApiUtils.error("对方不存在");
         }
