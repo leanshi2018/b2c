@@ -1,14 +1,12 @@
 package com.framework.loippi.controller.user;
 
+import com.framework.loippi.entity.user.*;
+import com.framework.loippi.param.auths.AuthsNoninductiveRegisterParam;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -30,12 +28,6 @@ import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.activity.ActivityGuide;
 import com.framework.loippi.entity.common.SceneActivity;
 import com.framework.loippi.entity.common.VenueInfo;
-import com.framework.loippi.entity.user.OldSysRelationship;
-import com.framework.loippi.entity.user.RaMember;
-import com.framework.loippi.entity.user.RdMmAccountInfo;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.entity.user.RdRanks;
 import com.framework.loippi.param.auths.AuthsRegisterParam;
 import com.framework.loippi.param.auths.AuthsResetPasswordParam;
 import com.framework.loippi.result.auths.AuthsLoginResult;
@@ -288,6 +280,9 @@ public class AuthcAPIController extends BaseController {
             if (Optional.ofNullable(rdMmRelation.getMmStatus()).orElse(0) == 2) {
                 return ApiUtils.error(Xerror.LOGIN_ACCOUNT_DISABLED, "你的账号已被注销");
             }
+            if (Optional.ofNullable(rdMmRelation.getMmStatus()).orElse(0) == 9) {
+                return ApiUtils.error(Xerror.LOGIN_ACCOUNT_DISABLED, "该账号需要注册方可登录");
+            }
             // 验证密码是否正确
             if (!Digests.validatePassword(password, rdMmRelation.getLoginPwd())) {
                 return ApiUtils.error(Xerror.LOGIN_PASSWORD_ERROR, "密码错误");
@@ -436,28 +431,82 @@ public class AuthcAPIController extends BaseController {
             rdMmBasicInfo.setMmNickName(param.getName());
         }
         rdMmBasicInfo.setCreationIp(request.getRemoteAddr());
-        List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("mobile", param.getMobile()));
-        if(verificationMobile!=null&&verificationMobile.size()>0){
-            return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "手机号码已经注册");
-        }
-        if(param.getName()!=null){
-            List<RdMmBasicInfo> rdMmBasicInfoList = rdMmBasicInfoService
-                    .findList(Paramap.create().put("mmNickName", param.getName()));
-            if (rdMmBasicInfoList != null && rdMmBasicInfoList.size() > 0) {
-                return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "昵称已被占用");
+        //*******************************无感注册会员判定****************************************
+        Integer noninductiveFlag=0;
+        RdMmBasicInfo noninductiveMem=null;
+        if(param.getRegisterType()==1){//新会员注册，需要判断是否有无感会员注册进来，如果有，绑定，没有，注册
+            noninductiveMem = rdMmBasicInfoService.findNoninductiveMem(param.getMobile());
+            if(noninductiveMem!=null){
+                noninductiveFlag=1;
+            }else {
+                List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("mobile", param.getMobile()));
+                if(verificationMobile!=null&&verificationMobile.size()>0){
+                    return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "手机号码已经注册");
+                }
+            }
+        }else {
+            List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("mobile", param.getMobile()));
+            if(verificationMobile!=null&&verificationMobile.size()>0){
+                return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "手机号码已经注册");
             }
         }
-        /**
-         * 证件类型 1.身份证2.护照3.军官证4.回乡证
-         */
-        Integer type = param.getType();
-        String openid = param.getOpenid();
-        rdMmBasicInfo.setIdType(type);
-        rdMmBasicInfo.setCreationSource("1");
-        RdMmAccountInfo rdMmAccountInfo = new RdMmAccountInfo();
-        RdMmRelation rdMmRelation = new RdMmRelation();
-        initRdMmBasicInfo(rdMmBasicInfo, param, rdMmAccountInfo, rdMmRelation);//TODO
-        /*try {*/
+        if(noninductiveFlag==1) {
+            //处理无感用户基础信息，以填入注册信息覆盖，修改关系表中会员状态类别
+            MemberRelationLog relationLog = new MemberRelationLog();
+            RdMmEdit edit = new RdMmEdit();
+            edit.setMmCode(noninductiveMem.getMmCode());
+            edit.setMmCode(noninductiveMem.getMmCode());
+            edit.setMmNameBefore(noninductiveMem.getMmName());
+            edit.setMmNickNameBefore(noninductiveMem.getMmNickName());
+            RdMmRelation noninductiveRelation = rdMmRelationService.find("mmCode", noninductiveMem.getMmCode());
+            String sponsorCode = noninductiveRelation.getSponsorCode();
+            if(!sponsorCode.equals("900000001")){
+                if(!sponsorCode.equals(param.getInvitCode())){
+                    return ApiUtils.error("推荐人关系有误，请联系客服处理");
+                }
+            }else {
+                edit.setSponsorCodeBefore(noninductiveRelation.getSponsorCode());
+                edit.setSponsorCodeAfter(param.getInvitCode());
+                noninductiveRelation.setSponsorCode(param.getInvitCode());
+            }
+            relationLog.setMStatusBefore(noninductiveRelation.getMmStatus());
+            noninductiveRelation.setLoginPwd(Digests.entryptPassword(param.getPassword()));
+            noninductiveRelation.setMmStatus(0);
+            noninductiveMem.setMmName(noninductiveMem.getMmCode());
+            noninductiveMem.setMmNickName(noninductiveMem.getMmCode());
+            edit.setMmNameAfter(noninductiveMem.getMmCode());
+            edit.setMmNickNameAfter(noninductiveMem.getMmCode());
+            edit.setUpdateType(0);
+            edit.setUpdateTime(new Date());
+            edit.setReviewStatus(3);
+            relationLog.setMStatusAfter(0);
+            relationLog.setCategory(4);
+            relationLog.setCreateTime(new Date());
+            relationLog.setMCode(noninductiveRelation.getMmCode());
+            relationLog.setRemark("无感会员绑定注册");
+            rdMmBasicInfoService.bindingNoninductive(noninductiveMem,noninductiveRelation,edit,relationLog);
+            return ApiUtils.success(handlerLoginNew(noninductiveMem, request, noninductiveRelation,0));//TODO
+        }
+        //*******************************无感注册会员判定****************************************
+        else {
+            if(param.getName()!=null){
+                List<RdMmBasicInfo> rdMmBasicInfoList = rdMmBasicInfoService
+                        .findList(Paramap.create().put("mmNickName", param.getName()));
+                if (rdMmBasicInfoList != null && rdMmBasicInfoList.size() > 0) {
+                    return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "昵称已被占用");
+                }
+            }
+            /**
+             * 证件类型 1.身份证2.护照3.军官证4.回乡证
+             */
+            Integer type = param.getType();
+            String openid = param.getOpenid();
+            rdMmBasicInfo.setIdType(type);
+            rdMmBasicInfo.setCreationSource("1");
+            RdMmAccountInfo rdMmAccountInfo = new RdMmAccountInfo();
+            RdMmRelation rdMmRelation = new RdMmRelation();
+            initRdMmBasicInfo(rdMmBasicInfo, param, rdMmAccountInfo, rdMmRelation);//TODO
+            /*try {*/
             rdMmBasicInfoService.addUser(rdMmBasicInfo, rdMmAccountInfo, rdMmRelation, param.getRegisterType());
             redisService.delete(param.getMobile());
             /*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -475,6 +524,7 @@ public class AuthcAPIController extends BaseController {
             redisService.delete(param.getMobile());
             return ApiUtils.error("网络异常，请稍后重试");
         }*/
+        }
     }
 
     /**
@@ -880,5 +930,113 @@ public class AuthcAPIController extends BaseController {
         }else {
             return ApiUtils.success(false);
         }
+    }
+
+    /**
+     * 无感用户注册
+     */
+    @RequestMapping(value = "/noninductiveRegister", method = RequestMethod.POST)
+    public String noninductiveRegister(@Valid AuthsNoninductiveRegisterParam param, BindingResult vResult, HttpServletRequest request) {
+        if (vResult.hasErrors()) {
+            return ApiUtils.error(Xerror.PARAM_INVALID);
+        }
+        if(param.getValidationType()==2){
+            if(StringUtil.isEmpty(param.getCode())){
+                return ApiUtils.error("验证码不存在");
+            }
+            if (!valicodeIstrue(param.getMobile(), param.getCode())) {
+                return ApiUtils.error(Xerror.VALID_CODE_ERROR);
+            }
+        }
+        //初始化会员基础信息表
+        RdMmBasicInfo rdMmBasicInfo = new RdMmBasicInfo();
+        rdMmBasicInfo.setMobile(param.getMobile());
+        rdMmBasicInfo.setCreationIp(request.getRemoteAddr());
+        List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("mobile", param.getMobile()));
+        if(verificationMobile!=null&&verificationMobile.size()>0){
+            return ApiUtils.error(Xerror.OBJECT_IS_EXIST, "手机号码已经注册");
+        }
+        rdMmBasicInfo.setCreationSource("5");
+        rdMmBasicInfo.setGender(0);//默认性别
+        rdMmBasicInfo.setCreationDate(new Date());
+        rdMmBasicInfo.setMmAvatar(StringUtil.formatImg(prefix, "http://rdnmall.com/FoUi8VoKhZJRUnFxhfyQ3Ib50ySa"));//会员头像
+        rdMmBasicInfo.setPushStatus(1);
+        rdMmBasicInfo.setAllInPayPhoneStatus(0);
+        rdMmBasicInfo.setAllInContractStatus(0);
+        rdMmBasicInfo.setMainFlag(1);//设置主店
+        rdMmBasicInfo.setOldSysStatus(0);
+        rdMmBasicInfo.setPlusVip(0);
+        //初始化会员积分信息表
+        RdMmAccountInfo rdMmAccountInfo = new RdMmAccountInfo();
+        rdMmAccountInfo.setBonusStatus(2);
+        rdMmAccountInfo.setBonusBlance(BigDecimal.ZERO);
+        rdMmAccountInfo.setWalletStatus(2);
+        rdMmAccountInfo.setWalletBlance(BigDecimal.ZERO);
+        rdMmAccountInfo.setRedemptionStatus(2);
+        rdMmAccountInfo.setRedemptionBlance(BigDecimal.ZERO);
+        rdMmAccountInfo.setAutomaticWithdrawal(0);
+        rdMmAccountInfo.setLastWithdrawalTime(new Date());//注册时生成最后一次提现时间为当前注册时间
+        rdMmAccountInfo.setWithdrawalLine(new BigDecimal("500"));
+        //初始化会员关系表
+        RdMmRelation rdMmRelation = new RdMmRelation();
+        rdMmRelation.setARetail(BigDecimal.ZERO);
+        rdMmRelation.setLoginPwd(Digests.entryptPassword("666666"));//TODO 无感注册虚拟会员默认密码666666
+        if(!StringUtil.isEmpty(param.getInvitCode())){
+            rdMmRelation.setSponsorCode(param.getInvitCode());
+        }else {
+            rdMmRelation.setSponsorCode("900000001");
+        }
+        rdMmRelation.setRaBindingDate(new Date());
+        rdMmRelation.setIsVip(0);
+        rdMmRelation.setMmPointStatus(2);
+        rdMmRelation.setMmStatus(9);
+        rdMmRelation.setPopupFlag(0);
+        rdMmRelation.setLastPayTime(new Date());
+        rdMmBasicInfoService.addNoninductiveUser(rdMmBasicInfo, rdMmAccountInfo, rdMmRelation);
+        if(param.getValidationType()==2){
+            redisService.delete(param.getMobile());
+        }
+        return ApiUtils.success(handlerLoginNew(rdMmBasicInfo, request, rdMmRelation,0));
+    }
+
+    /**
+     * 获取本机手机号，验证该手机号是否存在无感注册用户
+     */
+    @RequestMapping("/noninductive/login.json")
+    public String noninductiveLogin(HttpServletRequest request ,HttpServletResponse response ,String mobile) throws Exception {
+        if(StringUtil.isEmpty(mobile)){
+            return ApiUtils.error("无法获取到手机号码");
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        //判断用户是否为无感用户，如果为无感用户，直接给登录
+        RdMmBasicInfo basicInfo=rdMmBasicInfoService.findNoninductiveMem(mobile);
+        if(basicInfo==null){
+            map.put("flag",0);
+        }else {
+            RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", basicInfo.getMmCode());
+            String sessionId = twiterIdService.getSessionId();
+            AuthsLoginResult authsLoginResult = new AuthsLoginResult();
+            authsLoginResult.setSessionid(sessionId);
+            RdRanks rdRanks = rdRanksService.find("rankId", rdMmRelation.getRank());
+            authsLoginResult.setRankId(rdRanks.getRankId());
+            authsLoginResult.setLookPpv(0);
+            authsLoginResult.setLookVip(0);
+            if (rdRanks != null) {
+                if (Optional.ofNullable(rdRanks.getRankClass()).orElse(0) > 0) {
+                    authsLoginResult.setLookPpv(1);
+                    authsLoginResult.setLookVip(1);
+                }
+            }
+            authsLoginResult=AuthsLoginResult.of(basicInfo, authsLoginResult, prefix);
+            try {
+                redisService.save(sessionId, authsLoginResult);
+                redisService.save("user_name" + basicInfo.getMmCode(), sessionId);
+            } catch (JedisException e) {
+                throw new JedisException(e.getMessage());
+            }
+            map.put("flag",1);
+            map.put("authsLoginResult",authsLoginResult);
+        }
+        return ApiUtils.success(map);
     }
 }
