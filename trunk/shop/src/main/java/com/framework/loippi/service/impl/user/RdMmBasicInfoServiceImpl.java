@@ -10,8 +10,11 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.allinpay.yunst.sdk.YunClient;
+import com.allinpay.yunst.sdk.bean.YunRequest;
 import com.framework.loippi.dao.user.*;
 import com.framework.loippi.entity.user.*;
+import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.vo.user.UserInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -594,5 +597,100 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
     @Override
     public ArrayList<UserInfoVo> findMemberOneMobile(Paramap map) {
         return rdMmBasicInfoDao.findMemberOneMobile(map);
+    }
+
+    @Override
+    public void addNoninductiveUser(RdMmBasicInfo rdMmBasicInfo, RdMmAccountInfo rdMmAccountInfo, RdMmRelation rdMmRelation) {
+        String newMmCode = "";
+        String oldMmCode = rdMmBasicInfoDao.getMaxMmCode();
+        newMmCode = (Long.parseLong(oldMmCode) + 1) + "";
+        if (newMmCode.endsWith("4")) {
+            newMmCode = (Long.parseLong(newMmCode) + 1) + "";
+        }
+        rdMmBasicInfo.setMmNickName("未注册"+rdMmBasicInfo.getMobile());
+        rdMmBasicInfo.setMmName("未注册"+rdMmBasicInfo.getMobile());
+        rdMmBasicInfo.setMmCode(newMmCode);
+        rdMmAccountInfo.setMmCode(newMmCode);
+        rdMmAccountInfo.setPaymentPhone(rdMmBasicInfo.getMobile());
+        rdMmRelation.setMmCode(newMmCode);
+        rdMmRelation.setAPpv(BigDecimal.ZERO);
+        rdMmRelation.setATotal(BigDecimal.ZERO);
+        //会员等级相关
+        List<RdRanks> rdRanksList = rdRanksDao.findByParams(Paramap.create().put("rankClass", 0));
+        if (rdRanksList != null && rdRanksList.size() > 0) {
+            rdMmRelation.setRank(rdRanksList.get(0).getRankId());
+        }
+        List<RdMmBasicInfo> oldRdMmBasicInfoList = rdMmBasicInfoDao
+                .findByParams(Paramap.create().put("mmCode", rdMmRelation.getSponsorCode()));
+        if (oldRdMmBasicInfoList == null || oldRdMmBasicInfoList.size() != 1) {
+            throw new RuntimeException("邀请码不存在！");
+        }
+        rdMmRelation.setSponsorName(oldRdMmBasicInfoList.get(0).getMmName());
+        rdMmRelation.setRaSponsorStatus(1);
+        rdMmRelation.setNOFlag(1);
+        rdMmRelation.setRaStatus(0);
+        rdMmRelation.setRaShopYn(0);
+        //获取当前时间设置的业务周期
+        String period = rdSysPeriodDao.getSysPeriodService(new Date());
+        rdMmBasicInfo.setCreationPeriod(period);
+        RdMmEdit memberEditReview = new RdMmEdit();
+        memberEditReview.setMmCode(rdMmBasicInfo.getMmCode());
+        memberEditReview.setMmNameAfter(rdMmBasicInfo.getMmName());
+        memberEditReview.setMmNickNameAfter(rdMmBasicInfo.getMmNickName());
+        memberEditReview.setMobileAfter(rdMmBasicInfo.getMobile());
+        memberEditReview.setUpdateType(0);
+        memberEditReview.setUpdateTime(new Date());
+        memberEditReview.setReviewStatus(3);
+        rdMmBasicInfoDao.insert(rdMmBasicInfo);
+        rdMmEditDao.insert(memberEditReview);
+        rdMmRelationDao.insert(rdMmRelation);
+        rdMmAccountInfoDao.insert(rdMmAccountInfo);
+    }
+
+    /**
+     * 根据手机号查询是否存在无感用户注册
+     * @param mobile 手机号码
+     * @return
+     */
+    @Override
+    public RdMmBasicInfo findNoninductiveMem(String mobile) {
+        return rdMmBasicInfoDao.findNoninductiveMem(mobile);
+    }
+
+    /**
+     * 无感用户绑定app用户
+     * @param noninductiveMem 无感用户会员基础信息
+     * @param noninductiveRelation 无感用户关系表
+     * @param edit 修改记录表
+     * @param relationLog 关系表变更记录
+     */
+    @Override
+    public void bindingNoninductive(RdMmBasicInfo noninductiveMem, RdMmRelation noninductiveRelation, RdMmEdit edit, MemberRelationLog relationLog) {
+        /*final YunRequest request = new YunRequest("MemberService", "createMember");
+        request.put("bizUserId", noninductiveMem.getMmCode());
+        request.put("memberType", 3);
+        request.put("source", 1);
+        try {
+            String s = YunClient.request(request);
+            Map<String, Object> map = JacksonUtil.convertMap(s);
+            if(map.get("status").equals("OK")){
+                String jsonStr = (String) map.get("signedValue");
+                Map<String, Object> stringObjectMap = JacksonUtil.convertMap(jsonStr);
+                String userId = (String) stringObjectMap.get("userId");
+                noninductiveMem.setTongLianId(userId);
+            }else if(map.get("status").equals("error")){
+                String message = (String) map.get("message");
+                throw new RuntimeException(message);
+            } else {
+                throw new RuntimeException("通联支付注册异常");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("通联支付注册异常");
+        }*/
+        rdMmBasicInfoDao.update(noninductiveMem);
+        rdMmRelationDao.update(noninductiveRelation);
+        rdMmEditDao.insert(edit);
+        memberRelationLogDao.insert(relationLog);
     }
 }

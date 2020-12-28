@@ -45,4 +45,6 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
     Integer findInvitePlusNum(String mmCode);
 
     ArrayList<UserInfoVo> findMemberOneMobile(Paramap map);
+
+    RdMmBasicInfo findNoninductiveMem(String mobile);
 }

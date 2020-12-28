@@ -543,4 +543,9 @@
 		WHERE a.mm_code != #{mmCode} and a.MOBILE = #{mobile} and b.mm_status = 0
 		ORDER BY b.rank
 	</select>
+
+	<!--根据手机号码查询无感注册用户-->
+	<select id="findNoninductiveMem" parameterType="string" resultMap="RdMmBasicInfoResultMap">
+		SELECT a.* FROM rd_mm_basic_info a INNER JOIN rd_mm_relation b on a.mm_code = b.mm_code WHERE a.mobile = #{mobile} and b.mm_status = 9
+	</select>
 </mapper> 
