@@ -1,7 +1,5 @@
 package com.framework.loippi.controller.trade;
 
-import com.framework.loippi.entity.product.ShopGoodsSpec;
-import com.framework.loippi.service.product.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -40,6 +38,7 @@ import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsFreightRule;
+import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.entity.user.RdMmRelation;
@@ -56,6 +55,11 @@ import com.framework.loippi.service.gift.ShopGiftActivityService;
 import com.framework.loippi.service.gift.ShopGiftGoodsService;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopCartService;
+import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
+import com.framework.loippi.service.product.ShopGoodsFreightService;
+import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
 import com.framework.loippi.service.user.RdMmAddInfoService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
@@ -824,9 +828,13 @@ public class CartAPIController extends BaseController {
                         }else {
                             giftsNum=giftActivity.getGiftNum();
                         }
+
+                        if (shopGoods.size()==0){
+                            flag=0;
+                            giftsNum = 0;
+                        }
                     }
                 }
-
             }
         }
         result.setFlag(flag);
