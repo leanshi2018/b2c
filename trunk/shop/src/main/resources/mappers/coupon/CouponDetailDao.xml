@@ -354,7 +354,7 @@
         <if test="useState !=null">
             AND a.use_state = #{useState}
         </if>
-        <if test="receiveTime !=null and receiveTime !=null">
+        <if test="receiveTime !=null">
             AND a.receive_time = #{receiveTime}
         </if>
         <if test="receiveId !=null and receiveId != ''">
@@ -371,6 +371,9 @@
         </if>
         <if test="useOrderId !=null">
             AND a.use_order_id = #{useOrderId}
+        </if>
+        <if test="receiveTimeStar !=null and receiveTimeEnd !=null">
+            AND a.receive_time between #{receiveTimeStar} and #{receiveTimeEnd}
         </if>
         order by a.receive_time desc
     </select>
