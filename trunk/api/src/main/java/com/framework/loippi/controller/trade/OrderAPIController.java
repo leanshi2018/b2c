@@ -2567,4 +2567,87 @@ public class OrderAPIController extends BaseController {
         return ApiUtils.success(OrderSubmitResult
                 .build(rdMmIntegralRule, orderPay, rdMmAccountInfoService.find("mmCode", member.getMmCode())));
     }
+
+
+    /**
+     * 订单搜索(根据商品名称搜)
+     */
+    @RequestMapping(value = "/api/order/selectOrder", method = RequestMethod.POST)
+    @ResponseBody
+    public String selectOrder(@RequestParam(required = false,value = "goodsName",defaultValue = "") String goodsName, HttpServletRequest request) throws Exception {
+
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (member==null) {
+            return ApiUtils.error(Xerror.SYSTEM_ILLEGALITY);
+        }
+
+        List<ShopOrderGoods> goodsList = orderGoodsService.selectGoodsName(member.getMmCode(),goodsName);
+        return ApiUtils.success(goodsList);
+    }
+
+
+    /**
+     * 订单删除
+     */
+    @RequestMapping(value = "/api/order/delOrder", method = RequestMethod.POST)
+    @ResponseBody
+    public String delOrder(@RequestParam(required = false,value = "id") Long id, HttpServletRequest request) throws Exception {
+
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if (member==null) {
+            return ApiUtils.error(Xerror.SYSTEM_ILLEGALITY);
+        }
+
+        if (id==null){
+            return ApiUtils.error("删除订单发生错误,id未存在");
+        }
+        ShopOrder order = orderService.find(id);
+        if (order==null){
+            return ApiUtils.error("删除订单发生错误,该订单不存在");
+        }
+
+        //删除
+        order.setIsDel(1);
+        orderService.update(order);
+
+        return ApiUtils.success("删除成功");
+    }
+
+    /**
+     * 订单搜索列表
+     */
+    @RequestMapping(value = "/api/order/selectList", method = RequestMethod.POST)
+    @ResponseBody
+    public String selectList(HttpServletRequest request, Long specId, Pageable pager) {
+        AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+
+        if (specId==null){
+            return ApiUtils.error("规格ID不存在");
+        }
+        Paramap paramap = Paramap.create();
+        paramap.put("buyerId", member.getMmCode());
+        paramap.put("isDel", 0);
+        paramap.put("specId", specId);
+        // -1 查询所有订单
+        //Integer orderStatus = -1;
+        /*if (orderStatus != null && orderStatus != -1 && orderStatus != 80) {//0:已取消;5待审核;10:待付款;20:待发货;30:待收货;40:交易完成;50:已提交;60:已确认
+            // 0:已取消;10:待付款;20:待发货;30:待收货;40:交易完成;50:已提交;60:已确认;
+            paramap.put("orderState", orderStatus);
+            paramap.put("lockState", 0);
+        }*/
+        pager.setOrderDirection(Order.Direction.DESC);
+        pager.setOrderProperty("create_time");
+        /*if (orderStatus != null && orderStatus == 40) {
+            //已评价状态
+            paramap.put("evaluationStatus", "0");
+            pager.setOrderDirection(Order.Direction.DESC);
+            pager.setOrderProperty("finnshed_time");
+        }*/
+        pager.setParameter(paramap);
+        Page<ShopOrderVo> orderPage = orderService.selectListWithGoods(pager);
+        return ApiUtils.success(OrderResult.buildList(orderPage.getContent()));
+
+
+    }
+
 }

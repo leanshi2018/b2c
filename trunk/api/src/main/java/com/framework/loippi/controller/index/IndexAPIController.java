@@ -302,6 +302,153 @@ public class IndexAPIController extends BaseController {
     }
 
     /**
+     * 首页商品查询列表
+     * @param categoryId 商品分类id
+     * @param goodsType 商品类型 1-普通2-积分3-组合
+     * @param pageSize
+     * @param sortField 排序字段
+     * @param pageNumber
+     * @param orderBy 升序或者降序
+     * @param keyword 关键字
+     * @param categoryIds 商品分类集合
+     * @param brandIds 品牌集合
+     * @param minPrice 最低价格
+     * @param maxPrice 最大价格
+     * @param activityId 活动id
+     * @param rId 推荐页id
+     * @param hType 类型 0首页
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/api/index/homeSearch.json", method = RequestMethod.POST)
+    @ResponseBody
+    public String homeSearch(
+        Long categoryId,
+        @RequestParam(required = false, value = "goodsType") Integer goodsType,
+        @RequestParam(required = false, value = "pageSize", defaultValue = "10") Integer pageSize,
+        String sortField,
+        @RequestParam(required = false, value = "pageNumber", defaultValue = "1") Integer pageNumber,
+        @RequestParam(required = false, value = "orderBy", defaultValue = "1") Integer orderBy,
+        String keyword, Long[] categoryIds, Long[] brandIds, BigDecimal minPrice,
+        BigDecimal maxPrice, Long activityId,Long rId,Integer hType, HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        Pageable pager = new Pageable();
+        Map<String, Object> shopGoodsVo = new HashMap<>();
+        pager.setPageNumber(pageNumber);
+        pager.setPageSize(pageSize);
+        pager.setOrderDirection(orderBy.equals(1) ? Order.Direction.ASC : Order.Direction.DESC);
+        if (brandIds != null && brandIds.length > 0) {
+            List<Long> brandList = Arrays.asList(brandIds);
+            shopGoodsVo.put("brandIds", brandList);
+        }
+        if (categoryId != null) {
+            shopGoodsVo.put("gcId", categoryId);
+        }
+        if (categoryIds != null && categoryIds.length > 0) {
+            List<Long> classList = Arrays.asList(categoryIds);
+            //查询所有子节点
+            List<Long> longList = shopGoodsClassService.findIdsByParentIds(classList);
+            longList.addAll(classList);
+            if (longList != null && longList.size() > 0) {
+                shopGoodsVo.put("classIds", longList);
+            }
+
+        }
+        if (goodsType != null) {
+            if (goodsType == 1) {
+                shopGoodsVo.put("goodsType", 1);
+            } else {
+                shopGoodsVo.put("goodsType", 2);
+            }
+        } else {
+            shopGoodsVo.put("noGoodsType", 2);
+        }
+
+        shopGoodsVo.put("isDels", GoodsState.GOODS_NOT_DELETE);
+        shopGoodsVo.put("goodsShow", GoodsState.GOODS_ON_SHOW);
+        shopGoodsVo.put("state", GoodsState.GOODS_OPEN_STATE);
+        if (!StringUtil.isEmpty(sortField)) {
+            if ("orderPrice".equals(sortField)) {
+                pager.setOrderProperty("goods_retail_price");
+            }
+            if ("evaluaterate".equals(sortField)) {
+                shopGoodsVo.put("goodsEvaluaterate", "goodsEvaluaterate");
+            }
+            if ("salenum".equals(sortField)) {
+                shopGoodsVo.put("goodsSalenum", "goodsSalenum");
+            }
+        } else {
+            if (hType==0&&StringUtil.isEmpty(keyword)){
+                shopGoodsVo.put("hType", "hType");
+            }else {
+                shopGoodsVo.put("orderAll", GoodsState.DEFAULT_ORDER);
+            }
+        }
+        if (minPrice != null) {
+            shopGoodsVo.put("minPrice", minPrice);
+        }
+        if (maxPrice != null) {
+            shopGoodsVo.put("maxPrice", maxPrice);
+        }
+        if (!StringUtil.isEmpty(keyword)) {
+            shopGoodsVo.put("goodsListKeywords", keyword);
+        }
+        if (activityId != null) {
+            List<ShopActivityGoods> shopActivityGoodsList = shopActivityGoodsService.findList("activityId", activityId);
+            List<Long> longList = new ArrayList<>();
+            for (int i = 0; i < shopActivityGoodsList.size(); i++) {
+                longList.add(shopActivityGoodsList.get(i).getObjectId());
+            }
+            if (longList.size() > 0) {
+                shopGoodsVo.put("ids", longList);
+            } else {
+                longList.add(-1L);
+                shopGoodsVo.put("ids", longList);
+            }
+        }
+        if (rId != null) {
+            List<ShopRecommendationGoods> shopRecommendationGoodsList = shopRecommendationGoodsService.findList("rId", rId);
+            List<Long> longList = new ArrayList<>();
+            for (int i = 0; i < shopRecommendationGoodsList.size(); i++) {
+                longList.add(shopRecommendationGoodsList.get(i).getGoodsId());
+            }
+            if (longList.size() > 0) {
+                shopGoodsVo.put("ids", longList);
+            } else {
+                longList.add(-1L);
+                shopGoodsVo.put("ids", longList);
+            }
+        }
+        shopGoodsVo.put("noBrandIds", "1");
+        shopGoodsVo.put("showCommentNum",1);
+        pager.setParameter(shopGoodsVo);
+        Page<ShopGoods> byPage = shopGoodsService.findByPage(pager);// 结果集
+        //填充活动信息/推荐页信息
+        List<GoodsListResult> build = new ArrayList<>();
+        if (rId!=null){
+            build = GoodsListResult.buildGoodsRecommendListNew(byPage.getContent(), prefix);
+        }else {
+            build = shopActivityGoodsService.findAndAddAtiInfo(byPage.getContent(), prefix);
+        }
+        List<GoodsListResult> build1 = new ArrayList<>();
+        if (hType==0){
+            if (StringUtil.isEmpty(keyword)) {
+                if (build.size()>10){
+                    build1 = build.subList(0,9);
+                }else {
+                    build1 = build;
+                }
+            }else {
+                build1 = build;
+            }
+            map.put("GoodsList", build1);
+        }else {
+            map.put("GoodsList", build);
+        }
+        return ApiUtils.success(map);
+    }
+
+    /**
      * plus vip 商品列表
      * @param categoryId 商品分类id
      * @param goodsType 商品类型 1-普通2-积分3-组合

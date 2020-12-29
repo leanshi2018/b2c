@@ -73,14 +73,14 @@
                 <tr>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">旅游劵ID</th>
-                    <td class="w160"><input type="text" class="text w150" name="id" value="${rdTravelCost.id}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="id" value="${rdTravelTicket.id}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <th class="w110">旅游券名称</th>
-                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${rdTravelCost.travelLikeName}"></td>
+                    <td class="w160"><input type="text" class="text w150" name="travelLikeName" value="${rdTravelTicket.travelLikeName}"></td>
                     <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a id="shopPMansongSubmit" class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
-                        <#if rdTravelCost.travelLikeName != '' || rdTravelCost.id != '' >
+                        <#if rdTravelTicket.travelLikeName != '' || rdTravelCost.id != '' >
                         <a href="${base}/admin/travel/travelTicket/list.jhtml" class="btns "><span><@spring.message "search.cancel"/></span></a>
                         </#if>
                     </td>

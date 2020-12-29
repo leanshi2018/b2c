@@ -517,4 +517,15 @@
         WHERE order_id = #{orderId}
     </update>
 
+    <select id="selectGoodsName" parameterType="map" resultMap="ShopOrderGoodsResultMap">
+
+        SELECT * FROM shop_order_goods
+        WHERE buyer_id = #{buyerId}
+        <if test="goodsName != null and goodsName != ''">
+            AND goods_name LIKE CONCAT('%',#{goodsName},'%')
+        </if>
+        group by spec_id
+    </select>
+
+
 </mapper>

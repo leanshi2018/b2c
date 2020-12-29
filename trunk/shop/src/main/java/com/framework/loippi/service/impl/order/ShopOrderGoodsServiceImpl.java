@@ -113,4 +113,12 @@ public class ShopOrderGoodsServiceImpl extends GenericServiceImpl<ShopOrderGoods
         shopOrderGoodsDao.updateOrderShipping(map);
     }
 
+    @Override
+    public List<ShopOrderGoods> selectGoodsName(String buyerId, String goodsName) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("buyerId", buyerId);
+        map.put("goodsName", goodsName);
+        return shopOrderGoodsDao.selectGoodsName(map);
+    }
+
 }

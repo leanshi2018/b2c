@@ -609,6 +609,9 @@
     <if test="goodsSalenum != null and goodsSalenum != ''">
       ORDER BY sort asc,salenum desc
     </if>
+    <if test="hType != null and hType != ''">
+      ORDER BY salenum desc
+    </if>
     <if test="orderAll != null and orderAll != ''">
       ORDER BY sort asc ,salenum DESC,evaluaterate DESC
     </if>

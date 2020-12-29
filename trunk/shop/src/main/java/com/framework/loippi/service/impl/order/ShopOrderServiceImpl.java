@@ -4921,6 +4921,13 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     }
 
     @Override
+    public Page selectListWithGoods(Pageable pageable) {
+        PageList<ShopOrderVo> result = orderDao
+            .selectListShopOrderVoWithGoods(pageable.getParameter(), pageable.getPageBounds());
+        return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
+    }
+
+    @Override
     public Page listWithGoodsAndAddr(Pageable pageable) {
         PageList<ShopOrderVo> result = orderDao
             .listShopOrderVoWithGoodsAndAddr(pageable.getParameter(), pageable.getPageBounds());

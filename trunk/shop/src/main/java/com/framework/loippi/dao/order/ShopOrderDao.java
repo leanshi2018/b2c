@@ -235,4 +235,6 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
 	void updateOrderShipping(Map<String, Object> map);
 
 	BigDecimal countOrderPPVByNorSplitFlag(Map<String, Object> map);
+
+	PageList<ShopOrderVo> selectListShopOrderVoWithGoods(Object parameter, PageBounds pageBounds);
 }

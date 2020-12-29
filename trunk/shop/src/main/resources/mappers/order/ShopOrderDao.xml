@@ -1103,6 +1103,14 @@
         </where>
     </select>
 
+    <select id="selectListShopOrderVoWithGoods" resultMap="ShopOrderVoWithGoodsResultMap">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_ORDER
+        WHERE is_del = 0 AND buyer_id =#{buyerId}
+        AND id IN(SELECT distinct order_id FROM shop_order_goods WHERE buyer_id =#{buyerId} AND  spec_id =#{specId})
+    </select>
+
     <!--查询订单列表（包括商品信息+收货地址)-->
     <select id="listShopOrderVoWithGoodsAndAddr" resultMap="ShopOrderVoWithGoodsAndAddressResultMap">
         SELECT
