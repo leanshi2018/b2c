@@ -441,6 +441,7 @@ public class IndexAPIController extends BaseController {
             }else {
                 build1 = build;
             }
+            map.put("GoodsList", build1);
         }else {
             map.put("GoodsList", build);
         }
