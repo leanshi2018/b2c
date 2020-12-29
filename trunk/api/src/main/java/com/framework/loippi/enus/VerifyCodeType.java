@@ -7,6 +7,7 @@ public enum VerifyCodeType {
 	VERIFY_MOBILE(2, "验证手机号"),
 	RESET_MOBILE(3, "修改手机号"),
 	PC_LOGIN(4,"pc端登录"),
+	NONINDUCTIVE_REGISTER(6,"无感用户注册获取验证码"),
 	BankCards_MOBILE(5, "银行卡验证"),;
 	public final int code;
 	public final String alias;

@@ -204,7 +204,12 @@ public class CommonController extends BaseController {
             }
         } else if (msgType == VerifyCodeType.BankCards_MOBILE.code) {
             //银行卡预留手机发送验证码
-        } else {
+        } else if(msgType==VerifyCodeType.NONINDUCTIVE_REGISTER.code){
+            if (account.size() > 0) {
+                return ApiUtils.error("该手机已被注册，请直接登录");
+            }
+        }
+        else {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
 
