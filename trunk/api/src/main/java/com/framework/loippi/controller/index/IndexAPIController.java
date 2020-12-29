@@ -378,10 +378,11 @@ public class IndexAPIController extends BaseController {
                 shopGoodsVo.put("goodsSalenum", "goodsSalenum");
             }
         } else {
-            shopGoodsVo.put("orderAll", GoodsState.DEFAULT_ORDER);
-        }
-        if (hType==0&&StringUtil.isEmpty(keyword)){
-            shopGoodsVo.put("hType", "hType");
+            if (hType==0&&StringUtil.isEmpty(keyword)){
+                shopGoodsVo.put("hType", "hType");
+            }else {
+                shopGoodsVo.put("orderAll", GoodsState.DEFAULT_ORDER);
+            }
         }
         if (minPrice != null) {
             shopGoodsVo.put("minPrice", minPrice);
