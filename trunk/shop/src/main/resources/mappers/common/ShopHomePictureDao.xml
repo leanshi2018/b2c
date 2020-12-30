@@ -83,7 +83,7 @@
         <if test="pSort != null">
             p_sort = #{pSort,jdbcType=INTEGER},
         </if>
-        <if test="activityUrl != null and activityUrl != ''">
+        <if test="activityUrl != null ">
             activity_url = #{activityUrl,jdbcType=VARCHAR},
         </if>
         <if test="jumpInterface != null">

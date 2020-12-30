@@ -329,6 +329,9 @@ public class ActivityCommonController extends GenericController {
                 if (shopHomePicture.getPictureJson()==null){
                     shopHomePicture.setPictureJson("");
                 }
+                if (shopHomePicture.getActivityUrl()==null){
+                    shopHomePicture.setActivityUrl("");
+                }
                 shopHomePictureService.update(shopHomePicture);
                 return "redirect:findHomePictureList.jhtml";
             }else if (shopHomePicture.getPictureType()==1){//广告位图
@@ -356,6 +359,10 @@ public class ActivityCommonController extends GenericController {
                 if (shopHomePicture.getPictureJson()==null){
                     shopHomePicture.setPictureJson("");
                 }
+                if (shopHomePicture.getActivityUrl()==null){
+                    shopHomePicture.setActivityUrl("");
+                }
+                System.out.println("t=="+shopHomePicture);
                 shopHomePictureService.update(shopHomePicture);
                 return "redirect:findAD2PictureList.jhtml";
             }else {
@@ -377,6 +384,16 @@ public class ActivityCommonController extends GenericController {
                         }
                     }
                 }*/
+                if (shopHomePicture.getJumpInterface()==null){
+                    shopHomePicture.setJumpInterface("");
+                }
+                if (shopHomePicture.getPictureJson()==null){
+                    shopHomePicture.setPictureJson("");
+                }
+                if (shopHomePicture.getActivityUrl()==null){
+                    shopHomePicture.setActivityUrl("");
+                }
+                System.out.println("t=="+shopHomePicture);
                 shopHomePictureService.update(shopHomePicture);
                 return "redirect:findAD2PictureList.jhtml";
             }
