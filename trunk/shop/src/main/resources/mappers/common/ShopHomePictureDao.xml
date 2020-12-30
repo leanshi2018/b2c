@@ -71,7 +71,7 @@
         <if test="pictureName != null and pictureName != ''">
             picture_name = #{pictureName,jdbcType=VARCHAR},
         </if>
-        <if test="pictureJson != null and pictureJson != ''">
+        <if test="pictureJson != null">
             picture_json = #{pictureJson,jdbcType=VARCHAR},
         </if>
         <if test="pictureUrl != null and pictureUrl != ''">
@@ -86,7 +86,7 @@
         <if test="activityUrl != null and activityUrl != ''">
             activity_url = #{activityUrl,jdbcType=VARCHAR},
         </if>
-        <if test="jumpInterface != null and jumpInterface != ''">
+        <if test="jumpInterface != null">
             jump_interface = #{jumpInterface,jdbcType=VARCHAR},
         </if>
         <if test="auditStatus != null">
