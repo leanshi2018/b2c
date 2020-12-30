@@ -610,13 +610,14 @@
                 area: ['800px', '600px']
             })
         }
-        function appendInfo(name,content,info) {
+        function appendInfo(name,content) {
+            console.log(content);
             $("#articleTitle").val(name);
             $("#contents").val(content);
             var articleContent=$("#contents").val();
             var title=$("#articleTitle").val();
             console.log(articleContent);
-            $("#jsons").val("{\"url\":\"" + articleContent + "\",\"title\":\"" + title + "\"}");
+            $("#jsons").val("{\"url\":\"" + content + "\",\"title\":\"" + title + "\"}");
 
         }
         /*选择推荐页*/
