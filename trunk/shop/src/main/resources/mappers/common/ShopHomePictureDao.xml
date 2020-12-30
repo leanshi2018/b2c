@@ -15,15 +15,16 @@
         <result property="pictureType" column="picture_type"/>
         <result property="pictureType" column="picture_type"/>
         <result property="content" column="content"/>
+        <result property="descName" column="desc_name"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,picture_name ,picture_url ,picture_json ,jump_name ,p_sort ,activity_url ,jump_interface ,audit_status ,picture_type ,content
+        id ,picture_name ,picture_url ,picture_json ,jump_name ,p_sort ,activity_url ,jump_interface ,audit_status ,picture_type ,content ,desc_name
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{pictureName},#{pictureUrl},#{pictureJson},#{jumpName},#{pSort},#{activityUrl},#{jumpInterface},#{auditStatus},#{pictureType},#{content}
+        #{id},#{pictureName},#{pictureUrl},#{pictureJson},#{jumpName},#{pSort},#{activityUrl},#{jumpInterface},#{auditStatus},#{pictureType},#{content},#{descName}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -61,6 +62,9 @@
         <if test="content != null and content != ''">
             AND content = #{content}
         </if>
+        <if test="descName != null">
+            AND desc_name = #{descName}
+        </if>
     </sql>
 
     <!-- 设置语句 -->
@@ -97,6 +101,9 @@
         </if>
         <if test="content != null and content != ''">
             content = #{content},
+        </if>
+        <if test="descName != null">
+            desc_name = #{descName},
         </if>
     </sql>
 
