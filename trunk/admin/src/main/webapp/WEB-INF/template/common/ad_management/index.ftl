@@ -94,9 +94,7 @@
                                 <#if list.activityUrl == 'recommendGoodspage'>推荐页面</#if>
                                 <#if list.activityUrl == 'gatherGoodspage'>凑单页面</#if>
                             </#if>
-<#--                            <#if list.jumpInterface??>${list.jumpInterface}</#if>-->
-
-
+                            <#if list.jumpInterface??>${list.jumpInterface}</#if>
                         </td>
                         <td style="text-align: left">
                             ${list.PSort}

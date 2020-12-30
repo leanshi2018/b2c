@@ -458,6 +458,7 @@
                 $("#couponName").show();
                 $("#searchbuys").css("display","");
                 $("#openName").val("优惠券购买详情");
+                $("#recommendationName").css("display","none");
             }else{
                 $("#searchbuys").css("display","none");
                 $("#couponName").css("display","");

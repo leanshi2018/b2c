@@ -51,9 +51,6 @@
                         <td style="text-align: left">
                             ${article.articleTitle}
                         </td>
-<#--                        <td style="text-align: left">-->
-<#--                            ${article}-->
-<#--                        </td>-->
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
                                onclick="selSpeccoupons('${article.articleTitle}','${article.articleUrl}','${article.info}')">选择</a>
