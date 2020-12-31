@@ -284,6 +284,8 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
                         condition.setSpecGoodsSpec(specGoodsSpec);
                         ShopGoodsSpec gs = shopGoodsSpecService.findByCondition(condition);
                         if (gs==null){
+                            goodsSpec.setId(twiterIdService.getTwiterId());
+                            goodsSpec.setGoodsId(goodsId);
                             shopGoodsSpecService.save(goodsSpec);
                         }
                         if (gs != null) {
