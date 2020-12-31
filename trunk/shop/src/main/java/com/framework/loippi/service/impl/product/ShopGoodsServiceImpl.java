@@ -286,6 +286,7 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
                         if (gs==null){
                             goodsSpec.setId(twiterIdService.getTwiterId());
                             goodsSpec.setGoodsId(goodsId);
+                            goodsSpec.setShelfLife(0);
                             shopGoodsSpecService.save(goodsSpec);
                         }
                         if (gs != null) {
