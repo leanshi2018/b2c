@@ -863,7 +863,11 @@ public class ShopOrderJob {
                     continue;
                 }
                 orderSn = Optional.ofNullable(rdWareOrder.getOrderSn()).orElse("");
-                mCode = Optional.ofNullable(new Long(rdWareOrder.getMCode())).orElse(0l);
+                if (rdWareOrder.getMCode()==null){
+                    mCode = 0l;
+                }else {
+                    mCode = Optional.ofNullable(new Long(rdWareOrder.getMCode())).orElse(0l);
+                }
                 trueName = Optional.ofNullable(rdWareOrder.getConsigneeName()).orElse("");
                 provinced = Optional.ofNullable(rdWareOrder.getProvinceCode()).orElse("");
                 city = Optional.ofNullable(rdWareOrder.getCityCode()).orElse("");
@@ -1370,7 +1374,11 @@ public class ShopOrderJob {
                         continue;
                     }
                     orderSn = Optional.ofNullable(rdWareOrder.getOrderSn()).orElse("");
-                    mCode = Optional.ofNullable(new Long(rdWareOrder.getMCode())).orElse(0l);
+                    if (rdWareOrder.getMCode()==null){
+                        mCode = 0l;
+                    }else {
+                        mCode = Optional.ofNullable(new Long(rdWareOrder.getMCode())).orElse(0l);
+                    }
                     trueName = Optional.ofNullable(rdWareOrder.getConsigneeName()).orElse("");
                     provinced = Optional.ofNullable(rdWareOrder.getProvinceCode()).orElse("");
                     city = Optional.ofNullable(rdWareOrder.getCityCode()).orElse("");
