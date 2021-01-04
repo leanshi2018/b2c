@@ -125,7 +125,7 @@ public class HomeAndADPictureResult {
 				}
 
 
-				if (adPicture.getPictureJson()!=null){
+				if (adPicture.getPictureJson()!=null && !"".equals(adPicture.getPictureJson())){
 					Map<String, String> jsonMap = JacksonUtil.readJsonToMap(adPicture.getPictureJson());
 					Set<String> strings = jsonMap.keySet();
 					Iterator<String> iterator = strings.iterator();
