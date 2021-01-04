@@ -72,5 +72,9 @@ public class ShopHomePicture  implements GenericEntity{
 	 * 活动内容（4:商品详情页文字链才有）
 	 */
 	private String content;
+	/**
+	 * 详情名
+	 */
+	private String descName;
 
 }

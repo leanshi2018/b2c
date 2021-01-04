@@ -297,10 +297,46 @@ public class ShopCouponController extends GenericController {
      */
     @RequestMapping(value = "/Coupon/findCouponPayDetailList")
     public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponPayDetail param) {
+        if (param.getPaymentTimeStar()!=null&&param.getPaymentTimeEnd()!=null){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(param.getPaymentTimeStar());
+            calendar.set(Calendar.HOUR_OF_DAY,00);
+            calendar.set(Calendar.MINUTE,00);
+            calendar.set(Calendar.SECOND,01);
+            calendar.set(Calendar.MILLISECOND,0);
+            param.setPaymentTimeStar(calendar.getTime());
+            calendar.setTime(param.getPaymentTimeEnd());
+            calendar.set(Calendar.HOUR_OF_DAY,23);
+            calendar.set(Calendar.MINUTE,59);
+            calendar.set(Calendar.SECOND,59);
+            calendar.set(Calendar.MILLISECOND,0);
+            param.setPaymentTimeEnd(calendar.getTime());
+            System.out.println("pstar="+param.getPaymentTimeStar());
+            System.out.println("pend="+param.getPaymentTimeEnd());
+        }
+        if (param.getCreateTimeStar()!=null&&param.getCreateTimeEnd()!=null){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(param.getCreateTimeStar());
+            calendar.set(Calendar.HOUR_OF_DAY,00);
+            calendar.set(Calendar.MINUTE,00);
+            calendar.set(Calendar.SECOND,01);
+            calendar.set(Calendar.MILLISECOND,0);
+            param.setCreateTimeStar(calendar.getTime());
+            calendar.setTime(param.getCreateTimeEnd());
+            calendar.set(Calendar.HOUR_OF_DAY,23);
+            calendar.set(Calendar.MINUTE,59);
+            calendar.set(Calendar.SECOND,59);
+            calendar.set(Calendar.MILLISECOND,0);
+            param.setCreateTimeEnd(calendar.getTime());
+            System.out.println("cstar="+param.getCreateTimeStar());
+            System.out.println("cend="+param.getCreateTimeEnd());
+        }
         pageable.setParameter(param);
         pageable.setOrderProperty("create_time");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", couponPayDetailService.findByPage(pageable));
+        Page<CouponPayDetail> byPage = couponPayDetailService.findByPage(pageable);
+        System.out.println("ss="+byPage.getContent());
+        model.addAttribute("page", byPage);
         return "/activity/shop_activity/couponbuy_list";
     }
 
@@ -337,10 +373,29 @@ public class ShopCouponController extends GenericController {
      */
     @RequestMapping(value = "/Coupon/findCouponUserLogList")
     public String findCouponUseLogList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponUserLogResult param) {
+        if (param.getReceiveTimeStar()!=null&&param.getReceiveTimeEnd()!=null){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(param.getReceiveTimeStar());
+            calendar.set(Calendar.HOUR_OF_DAY,00);
+            calendar.set(Calendar.MINUTE,00);
+            calendar.set(Calendar.SECOND,01);
+            calendar.set(Calendar.MILLISECOND,0);
+            param.setReceiveTimeStar(calendar.getTime());
+            calendar.setTime(param.getReceiveTimeEnd());
+            calendar.set(Calendar.HOUR_OF_DAY,23);
+            calendar.set(Calendar.MINUTE,59);
+            calendar.set(Calendar.SECOND,59);
+            calendar.set(Calendar.MILLISECOND,0);
+            param.setReceiveTimeEnd(calendar.getTime());
+        System.out.println("star="+param.getReceiveTimeStar());
+        System.out.println("end="+param.getReceiveTimeEnd());
+        }
         pageable.setParameter(param);
         pageable.setOrderProperty("receive_time");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", couponDetailService.findLogResultByPage(pageable));
+        Object result = couponDetailService.findLogResultByPage(pageable);
+        System.out.println("ss="+result);
+        model.addAttribute("page", result);
         return "/activity/shop_activity/couponuse_list";
     }
 

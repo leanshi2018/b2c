@@ -34,4 +34,7 @@ public class CouponUserLogResult {
 	private Integer refundState;//退款状态 0：无需退款（非交易性优惠券）1：未退款 2：已退款
 
 
+	//查询
+	private Date receiveTimeStar;//领取开始时间
+	private Date receiveTimeEnd;//领取结束时间
 }

@@ -131,7 +131,12 @@
         <if test="updateTime != null">
             AND update_time = #{updateTime}
         </if>
-
+        <if test="createTimeStar != null and createTimeEnd != null">
+            AND create_time between #{createTimeStar} and #{createTimeEnd}
+        </if>
+        <if test="paymentTimeStar != null and paymentTimeEnd != null">
+            AND payment_time between #{paymentTimeStar} and #{paymentTimeEnd}
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">

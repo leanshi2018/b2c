@@ -51,12 +51,9 @@
                         <td style="text-align: left">
                             ${article.articleTitle}
                         </td>
-<#--                        <td style="text-align: left">-->
-<#--                            ${article}-->
-<#--                        </td>-->
                         <td class="w100 tc">
                             <a href="javascript:void(0);" id="selectIds" class="sc-btn sc-btn-green mt5"
-                               onclick="selSpeccoupons('${article.articleTitle}','${article.articleUrl}','${article.info}')">选择</a>
+                               onclick="selSpeccoupons('${article.articleTitle}','${article.pagePath}')">选择</a>
                         </td>
                     </tr>
                 </#list>
@@ -72,10 +69,10 @@
         </div>
     </div>
     <script>
-        function selSpeccoupons(name,content,infos) {
+        function selSpeccoupons(name,content) {
             //$(obj).parent().parent().remove();
             //调用父级窗口
-            parent.appendInfo(name,content,infos);
+            parent.appendInfo(name,content);
             //关闭当前窗口
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);

@@ -1,11 +1,15 @@
 package com.framework.loippi.controller.goods;
 
+import net.sf.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -146,7 +150,29 @@ public class GoodsDetailController extends BaseController {
 
         List<ShopHomePicture> homePictures = shopHomePictureService.findListByTypeAndStutus( 4,1);
         if (homePictures.size()>0){
-            resultMap.put("jumpInfo",homePictures.get(0));
+            ShopHomePicture homePicture = homePictures.get(0);
+
+            Map<String,Object> map = new HashMap<String,Object>();
+            if (homePicture.getActivityUrl()!=null){
+                map.put("page",homePicture.getActivityUrl());
+            }else {
+                map.put("page","");
+            }
+
+            if (homePicture.getPictureJson()!=null){
+                Map<String, String> jsonMap = JacksonUtil.readJsonToMap(homePicture.getPictureJson());
+                Set<String> strings = jsonMap.keySet();
+                Iterator<String> iterator = strings.iterator();
+                while (iterator.hasNext()){
+                    String key = iterator.next();
+                    String value = jsonMap.get(key);
+                    map.put(key,value);
+                }
+            }
+
+            JSONObject activityUrlJson = JSONObject.fromObject(map);
+            homePicture.setActivityUrl(activityUrlJson.toString());
+            resultMap.put("jumpInfo",homePicture);
         }
 
         return ApiUtils.success(resultMap);

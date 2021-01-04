@@ -141,5 +141,10 @@ public class CouponPayDetail implements GenericEntity {
 	private Integer prevOrderState;
 
 
+	//查询
+	private Date createTimeStar;//下单开始时间
+	private Date createTimeEnd;//下单结束时间
 
+	private Date paymentTimeStar;//支付开始时间
+	private Date paymentTimeEnd;//支付结束时间
 }

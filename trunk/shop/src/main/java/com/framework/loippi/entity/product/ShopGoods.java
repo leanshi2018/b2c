@@ -387,4 +387,6 @@ public class ShopGoods implements GenericEntity {
     private Long giftSpecId;
     //赠品规格
     private ShopGoodsSpec shopGoodsSpec;
+
+    private Integer hType;
 }

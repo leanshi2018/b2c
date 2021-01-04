@@ -124,7 +124,7 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
      */
     private void saveToGoodsSpec(ShopGoods goods, String goodsSpecJson) {
         //在保存之前首先删除goodsSpec表中关于这个goodsId的数据
-        shopGoodsSpecService.deleteGoodsSpecByGoodsId(goods.getId());
+        shopGoodsSpecService.deleteGoodsSpecByGoodsId(goods.getId());// TODO 这里只是修改了状态
         if (goodsSpecJson != null && !goodsSpecJson.trim().equals("")) {
             //准备创建表shop_goods_sepc的实体类对象
             List<ShopGoodsSpec> goodsSpecs = JacksonUtil.convertList(goodsSpecJson, ShopGoodsSpec.class);
@@ -283,6 +283,18 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
                         condition.setGoodsId(goodsId);
                         condition.setSpecGoodsSpec(specGoodsSpec);
                         ShopGoodsSpec gs = shopGoodsSpecService.findByCondition(condition);
+                        if (gs==null){
+                            goodsSpec.setId(twiterIdService.getTwiterId());
+                            goodsSpec.setGoodsId(goodsId);
+                            if (goodsSpec.getShelfLife()==null){
+                                goodsSpec.setShelfLife(0);
+                            }
+                            if (goodsSpec.getSpecSalenum()==null){
+                                goodsSpec.setSpecSalenum(0);
+                            }
+
+                            shopGoodsSpecService.save(goodsSpec);
+                        }
                         if (gs != null) {
                             gs.setSpecGoodsSerial(goodsSpec.getSpecGoodsSerial());
                             gs.setSpecIsopen(goodsSpec.getSpecIsopen());

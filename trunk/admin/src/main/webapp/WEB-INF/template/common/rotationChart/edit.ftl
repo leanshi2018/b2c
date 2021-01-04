@@ -148,7 +148,7 @@
                                     ||picture.jumpName == "消息中心"||picture.jumpName == "商品详情"||picture.jumpName == "我"||picture.jumpName == "个人业绩"
                                     ||picture.jumpName == "我的订单"||picture.jumpName == "我的积分"||picture.jumpName == "奖励积分"||picture.jumpName == "换购积分"
                                     ||picture.jumpName == "购物积分"||picture.jumpName == "我的银行卡"||picture.jumpName == "学堂"||picture.jumpName == "学堂文章详情"
-                                    ||picture.jumpName == "我的邀请"||picture.jumpName == "优惠券购买详情">selected="selected" </#if>>跳转路径</option>
+                                    ||picture.jumpName == "我的邀请"||picture.jumpName == "优惠券购买详情"||picture.jumpName == "PLUS会员中心">selected="selected" </#if>>跳转路径</option>
                                     <option value="跳转链接" <#if picture.jumpInterface!= "">selected="selected" </#if>>跳转链接</option>
                                 </#if>
                             </select>
@@ -176,6 +176,7 @@
                                         <option value="gatherGoodspage" <#if picture.openPage == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
                                         <option value="recommendGoodspage" <#if picture.openPage == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
                                         <option value="activityGoodsListpage" <#if picture.openPage == 'activityGoodsListpage'>selected="selected"</#if>>商品活动页面</option>
+                                        <option value="plusCenterpage" <#if picture.openPage == 'plusCenterpage'>selected="selected"</#if>>PLUS会员中心</option>
                                         <option value="homepage" <#if picture.openPage == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.openPage == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.openPage == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -193,6 +194,8 @@
                                         <option value="activityGoodsListpage" <#if picture.openPage =="activityGoodsListpage">selected="selected" </#if>>活动页面</option>
                                         <option value="buyCouponspage" id="buyCouponspage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
+                                    <#--选择的名称-->
+                                    <input type="hidden" id="descName" name="descName" value="">
                                     <#--选择文章-->
                                     <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" id="contents">
                                     <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
@@ -242,6 +245,7 @@
                                         <option value="gatherGoodspage" <#if picture.activityUrl == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
                                         <option value="recommendGoodspage" <#if picture.activityUrl == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
                                         <option value="activityGoodsListpage" <#if picture.activityUrl == 'activityGoodsListpage'>selected="selected"</#if>>商品活动页面</option>
+                                        <option value="plusCenterpage" <#if picture.activityUrl == 'plusCenterpage'>selected="selected"</#if>>PLUS会员中心</option>
                                         <option value="homepage" <#if picture.activityUrl == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.activityUrl == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.activityUrl == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -258,6 +262,8 @@
                                         <option value="invitationpage" <#if picture.activityUrl == "invitationpage">selected="selected" </#if>>我的邀请</option>
                                         <option value="buyCouponspage"  <#if picture.activityUrl == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
+                                    <#--选择的名称-->
+                                    <input type="hidden" id="descName" name="descName" value="${picture.descName}">
                                     <#--选择文章-->
                                     <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
                                     <input type="hidden" class="text w500" value="${article.id}" name="id" >
@@ -339,19 +345,6 @@
         /*判断是否选择打开方式*/
         $('#openType').change(function() {
             var value = $(this).children('option:selected').val();
-            // if (value == "活动页面") {
-            //     $("#activityname").show();
-            //     $("#openPage").attr("name","");
-            //     $("#searchactivity").css("display","");
-            //     $("#couponName").css("display","none");
-            //     $("#recommendationName").css("display","none");
-            //     $("#goodsName").css("display","none");
-            //     $("#articleTitle").css("display","none");
-            //     $("#openName").val("活动页面");
-            // }else{
-            //     $("#activityname").css("display","none");
-            //     $("#searchactivity").css("display","none");
-            // }
             if (value == "跳转路径") {
                 $("#openPage").css("display","");
                 $("#openPage").attr("name","openPage");
@@ -397,6 +390,9 @@
                 $("#activityname").css("display","none");
                 $("#searchactivity").css("display","none");
             }
+            if(value=="plusCenterpage"){
+                $("#openName").val("PLUS会员中心");
+            }
             if(value=="homepage"){
                 $("#openName").val("辑");
             }
@@ -407,6 +403,7 @@
                 $("#goodsName").show();
                 $("#searchgoods").css("display","");
                 $("#openName").val("商品详情");
+                $("#recommendationName").css("display","none");
             }else {
                 $("#searchgoods").css("display","none");
                 $("#goodsName").css("display","none");
@@ -439,6 +436,7 @@
                 $("#articleTitle").show();
                 $("#searchlearnarticle").css("display","");
                 $("#openName").val("学堂文章详情");
+                $("#recommendationName").css("display","none");
             }else{
                 $("#articleTitle").css("display","none");
                 $("#searchlearnarticle").css("display","none");
@@ -450,6 +448,7 @@
                 $("#activityname").show();
                 $("#searchactivity").css("display","");
                 $("#openName").val("活动页面");
+                $("#recommendationName").css("display","none");
             }else{
                 $("#activityname").css("display","");
                 $("#searchs").attr("onclick","");
@@ -458,6 +457,7 @@
                 $("#couponName").show();
                 $("#searchbuys").css("display","");
                 $("#openName").val("优惠券购买详情");
+                $("#recommendationName").css("display","none");
             }else{
                 $("#searchbuys").css("display","none");
                 $("#couponName").css("display","");
@@ -467,16 +467,6 @@
         $(function () {
             var value =  $('#openType option:selected').val();
             console.log(value);
-            // if (value == "活动页面") {
-            //     $("#activityname").show();
-            //     $("#openPage").attr("name","");
-            //     $("#searchactivity").css("display","");
-            //     $("#openName").val("活动页面");
-            //     $("#jsons").attr("name","");
-            // }else{
-            //     $("#activityname").css("display","none");
-            //     $("#searchactivity").css("display","none");
-            // }
             if (value == "跳转路径") {
                 $("#openPage").css("display","");
                 $("#openPage").attr("name","openPage");
@@ -504,15 +494,23 @@
             if(jsonstr!=""){
                 var vals = $('#openPage option:selected').val();
                 console.log(vals);
+                var descName=$('#descName').val();
+                console.log(descName);
                 if(vals=="recommendGoodspage"){
+                    $("#recommendationName").val(descName);
                     $("#openName").val("推荐页面");
                     $("#recommendationName").show();
                     $("#searchrecommend").css("display","");
                     var rId = jsonstr.replace(/[^0-9]/ig,"");
                     $("#jsons").val("{\"rId\":\"" + rId + "\"}");
+                }else{
+                    $("#recommendationName").css("display","none");
                 }
                 if(vals=="gatherGoodspage"){
                     $("#openName").val("凑单页面");
+                }
+                if(value=="plusCenterpage"){
+                    $("#openName").val("PLUS会员中心");
                 }
                 if(vals=="homepage"){
                     $("#openName").val("辑");
@@ -521,6 +519,7 @@
                     $("#openName").val("消息中心");
                 }
                 if (vals=="goodsdetailspage"){
+                    $("#goodsName").val(descName);
                     $("#goodsName").show();
                     $("#searchgoods").css("display","");
                     $("#openName").val("商品详情");
@@ -552,6 +551,7 @@
                     $("#openName").val("学堂");
                 }
                 if(vals=="learnarticlepage"){
+                    $("#articleTitle").val(descName);
                     $("#articleTitle").show();
                     $("#searchlearnarticle").css("display","");
                     $("#openName").val("学堂文章详情");
@@ -561,6 +561,7 @@
                     $("#openName").val("我的邀请");
                 }
                 if(vals=="activityGoodsListpage"){
+                    $("#activityname").val(descName);
                     $("#activityname").show();
                     $("#searchactivity").css("display","");
                     $("#openName").val("活动页面");
@@ -568,6 +569,7 @@
                     $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
                 }
                 if (vals=="buyCouponspage"){
+                    $("#couponName").val(descName);
                     $("#couponName").show();
                     $("#searchbuys").css("display","");
                     $("#openName").val("优惠券购买详情");
@@ -616,6 +618,7 @@
             var title=$("#articleTitle").val();
             console.log(articleContent);
             $("#jsons").val("{\"url\":\"" + articleContent + "\",\"title\":\"" + title + "\"}");
+            $("#descName").val(name);
 
         }
         /*选择推荐页*/
@@ -634,6 +637,7 @@
             $("#rId").val(id);
             var rId=$("#rId").val();
             $("#jsons").val("{\"rId\":\"" + rId + "\"}");
+            $("#descName").val(name);
 
         }
         /*选择活动*/
@@ -656,6 +660,7 @@
             var activityId=$("#activityId").val();
 
             $("#jsons").val("{\"activityId\":\"" + activityId + "\"}");
+            $("#descName").val(name);
 
         }
         /*选择商品*/
@@ -677,6 +682,7 @@
             var goodsId=$("#goodsId").val();
             console.log("商品"+goodsId);
             $("#jsons").val("{\"goodsId\":\"" + goodsId + "\"}");
+            $("#descName").val(goodsName);
 
         }
         /*选择优惠券*/
@@ -687,16 +693,18 @@
                 move: false,
                 shade: [0.3, '#393D49'],//开启遮罩层
                 title: '选择优惠券',
-                content: ['${base}/admin/plarformShopCoupon/coupon/select.jhtml?status=2&couponName=' + couponName, 'yes'],
+                content: ['${base}/admin/plarformShopCoupon/coupon/select.jhtml?status=2', 'yes'],
                 area: ['800px', '600px']
             });
         }
         function selSource(id,couponName) {
             $("#couponId").val(id);
             $("#couponName").val(couponName);
+            console.log($("#couponName").val());
             var id= $("#couponId").val();
             console.log("优惠券"+id);
             $("#jsons").val("{\"couponId\":\"" + id + "\"}");
+            $("#descName").val(couponName);
         }
 
     </script>
