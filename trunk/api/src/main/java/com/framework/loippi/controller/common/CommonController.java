@@ -177,8 +177,8 @@ public class CommonController extends BaseController {
         // 添加手机号相关业务逻辑判断
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", mobile);
-        List<RdMmBasicInfo> account = rdMmBasicInfoService.findList(params);
-
+        //List<RdMmBasicInfo> account = rdMmBasicInfoService.findList(params);
+        List<RdMmBasicInfo> account =rdMmBasicInfoService.findNoNoninductiveMem(mobile);
         if (msgType == VerifyCodeType.REGISTER.code) {
             if (account.size() > 0) {
                 return ApiUtils.error("该手机已被注册");

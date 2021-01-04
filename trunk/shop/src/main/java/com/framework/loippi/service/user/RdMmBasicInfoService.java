@@ -63,9 +63,11 @@ public interface RdMmBasicInfoService  extends GenericService<RdMmBasicInfo, Lon
 
     void addNoninductiveUser(RdMmBasicInfo rdMmBasicInfo, RdMmAccountInfo rdMmAccountInfo, RdMmRelation rdMmRelation);
 
-    RdMmBasicInfo findNoninductiveMem(String mobile);
+    List<RdMmBasicInfo> findNoninductiveMem(String mobile);
 
     void bindingNoninductive(RdMmBasicInfo noninductiveMem, RdMmRelation noninductiveRelation, RdMmEdit edit, MemberRelationLog relationLog);
 
     List<RdMmBasicInfo> findBasicAndStatusNormal(String info);
+
+    List<RdMmBasicInfo> findNoNoninductiveMem(String mobile);
 }

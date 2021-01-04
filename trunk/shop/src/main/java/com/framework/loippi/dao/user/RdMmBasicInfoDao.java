@@ -46,7 +46,9 @@ public interface RdMmBasicInfoDao  extends GenericDao<RdMmBasicInfo, Long> {
 
     ArrayList<UserInfoVo> findMemberOneMobile(Paramap map);
 
-    RdMmBasicInfo findNoninductiveMem(String mobile);
+    List<RdMmBasicInfo> findNoninductiveMem(String mobile);
 
     List<RdMmBasicInfo> findBasicAndStatusNormal(String info);
+
+    List<RdMmBasicInfo> findNoNoninductiveMem(String mobile);
 }
