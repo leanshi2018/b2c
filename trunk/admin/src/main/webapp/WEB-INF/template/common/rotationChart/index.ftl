@@ -76,7 +76,7 @@
                             ${list.pictureName}
                         </td>
                         <td style="text-align: left">
-
+                             <#if list.activityUrl??>
                                 <#if list.activityUrl == 'homepage'>辑</#if>
                                 <#if list.activityUrl == "messagepage">消息中心</#if>
                                 <#if list.activityUrl == "goodsdetailspage">商品详情</#if>
@@ -95,8 +95,9 @@
                                 <#if list.activityUrl == 'buyCouponspage'>优惠券购买详情</#if>
                                 <#if list.activityUrl == 'recommendGoodspage'>推荐页面</#if>
                                 <#if list.activityUrl == 'gatherGoodspage'>凑单页面</#if>
-
-                            <#if list.jumpInterface??>${list.jumpInterface}</#if>
+                                <#if list.activityUrl == 'plusCenterpage'>PLUS会员中心</#if>
+                             </#if>
+                             <#if list.jumpInterface??>${list.jumpInterface}</#if>
                         </td>
                         <td>
                             ${list.PSort}

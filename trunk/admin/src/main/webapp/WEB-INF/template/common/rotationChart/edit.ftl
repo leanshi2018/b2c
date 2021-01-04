@@ -148,7 +148,7 @@
                                     ||picture.jumpName == "消息中心"||picture.jumpName == "商品详情"||picture.jumpName == "我"||picture.jumpName == "个人业绩"
                                     ||picture.jumpName == "我的订单"||picture.jumpName == "我的积分"||picture.jumpName == "奖励积分"||picture.jumpName == "换购积分"
                                     ||picture.jumpName == "购物积分"||picture.jumpName == "我的银行卡"||picture.jumpName == "学堂"||picture.jumpName == "学堂文章详情"
-                                    ||picture.jumpName == "我的邀请"||picture.jumpName == "优惠券购买详情">selected="selected" </#if>>跳转路径</option>
+                                    ||picture.jumpName == "我的邀请"||picture.jumpName == "优惠券购买详情"||picture.jumpName == "PLUS会员中心">selected="selected" </#if>>跳转路径</option>
                                     <option value="跳转链接" <#if picture.jumpInterface!= "">selected="selected" </#if>>跳转链接</option>
                                 </#if>
                             </select>
@@ -176,6 +176,7 @@
                                         <option value="gatherGoodspage" <#if picture.openPage == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
                                         <option value="recommendGoodspage" <#if picture.openPage == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
                                         <option value="activityGoodsListpage" <#if picture.openPage == 'activityGoodsListpage'>selected="selected"</#if>>商品活动页面</option>
+                                        <option value="plusCenterpage" <#if picture.openPage == 'plusCenterpage'>selected="selected"</#if>>PLUS会员中心</option>
                                         <option value="homepage" <#if picture.openPage == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.openPage == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.openPage == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -244,6 +245,7 @@
                                         <option value="gatherGoodspage" <#if picture.activityUrl == 'gatherGoodspage'>selected="selected"</#if>>凑单页面</option>
                                         <option value="recommendGoodspage" <#if picture.activityUrl == 'recommendGoodspage'>selected="selected"</#if>>推荐页面</option>
                                         <option value="activityGoodsListpage" <#if picture.activityUrl == 'activityGoodsListpage'>selected="selected"</#if>>商品活动页面</option>
+                                        <option value="plusCenterpage" <#if picture.activityUrl == 'plusCenterpage'>selected="selected"</#if>>PLUS会员中心</option>
                                         <option value="homepage" <#if picture.activityUrl == 'homepage'>selected="selected"</#if>>辑</option>
                                         <option value="messagepage"<#if picture.activityUrl == "messagepage">selected="selected" </#if>>消息中心</option>
                                         <option value="goodsdetailspage" id="goodsdetailspage" <#if picture.activityUrl == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
@@ -388,6 +390,9 @@
                 $("#activityname").css("display","none");
                 $("#searchactivity").css("display","none");
             }
+            if(value=="plusCenterpage"){
+                $("#openName").val("PLUS会员中心");
+            }
             if(value=="homepage"){
                 $("#openName").val("辑");
             }
@@ -503,6 +508,9 @@
                 }
                 if(vals=="gatherGoodspage"){
                     $("#openName").val("凑单页面");
+                }
+                if(value=="plusCenterpage"){
+                    $("#openName").val("PLUS会员中心");
                 }
                 if(vals=="homepage"){
                     $("#openName").val("辑");
