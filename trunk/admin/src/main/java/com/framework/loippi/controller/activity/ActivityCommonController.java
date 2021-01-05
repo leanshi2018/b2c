@@ -129,7 +129,7 @@ public class ActivityCommonController extends GenericController {
      */
     @RequestMapping(value = "/findAD2PictureList")
     public String findAD2PictureList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopHomePicture param) {
-        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",2));
+        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureTypeS",2));
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopHomePictureService.findByPage(pageable));
