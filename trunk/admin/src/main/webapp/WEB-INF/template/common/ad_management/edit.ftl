@@ -71,6 +71,20 @@
                             <span class="error-message"></span>
                         </td>
                     </tr>
+                <tr class="noborder">
+                    <td class="required">
+                        <em class="pngFix"></em>商品详情活动入口
+                    </td>
+                    <td>
+                        <#if picture=="">
+                            <input name="" type="checkbox" id="checkboxID"><br>
+                            <input name="content" type="text" id="contentss" style="display: none;" class="w300">
+                        <#else>
+                            <input name="" type="checkbox" id="checkboxID" value="${picture.pictureType}"<#if picture.pictureType==4>checked</#if>>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
+                </tr>
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>名称
@@ -462,6 +476,7 @@
         });
         //提交参数和判断选择方式及传参
         $(function () {
+
             var value =  $('#openType option:selected').val();
             console.log(value);
             if (value == "跳转路径") {
@@ -591,6 +606,18 @@
                 if (num == "") {
                     alert("请输入排序数字！");
                     return false;
+                }
+                var tf=$("input[type='checkbox']").is(':checked');
+                if(tf==true){
+                    $("#pictureType").val("4");
+                    console.log("checkbox is checked");
+                    $("#contentss").css("display","");
+                    var contents = $("#contentss").val();
+                    if (contents == "") {
+                        alert("请输入商品详情活动入口标题！");
+                        return false;
+                    }
+
                 }
                 $('#add_form').submit();
             })
