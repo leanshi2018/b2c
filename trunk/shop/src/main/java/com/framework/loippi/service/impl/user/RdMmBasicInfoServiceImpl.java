@@ -653,7 +653,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
      * @return
      */
     @Override
-    public RdMmBasicInfo findNoninductiveMem(String mobile) {
+    public List<RdMmBasicInfo> findNoninductiveMem(String mobile) {
         return rdMmBasicInfoDao.findNoninductiveMem(mobile);
     }
 
@@ -697,5 +697,10 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
     @Override
     public List<RdMmBasicInfo> findBasicAndStatusNormal(String info) {
         return rdMmBasicInfoDao.findBasicAndStatusNormal(info);
+    }
+
+    @Override
+    public List<RdMmBasicInfo> findNoNoninductiveMem(String mobile) {
+        return rdMmBasicInfoDao.findNoNoninductiveMem(mobile);
     }
 }

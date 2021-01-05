@@ -177,8 +177,9 @@ public class CommonController extends BaseController {
         // 添加手机号相关业务逻辑判断
         Map<String, Object> params = new HashMap<>();
         params.put("mobile", mobile);
-        List<RdMmBasicInfo> account = rdMmBasicInfoService.findList(params);
-
+        //List<RdMmBasicInfo> account = rdMmBasicInfoService.findList(params);
+        List<RdMmBasicInfo> account =rdMmBasicInfoService.findNoNoninductiveMem(mobile);
+        List<RdMmBasicInfo> noninductiveAccount =rdMmBasicInfoService.findNoninductiveMem(mobile);
         if (msgType == VerifyCodeType.REGISTER.code) {
             if (account.size() > 0) {
                 return ApiUtils.error("该手机已被注册");
@@ -205,7 +206,7 @@ public class CommonController extends BaseController {
         } else if (msgType == VerifyCodeType.BankCards_MOBILE.code) {
             //银行卡预留手机发送验证码
         } else if(msgType==VerifyCodeType.NONINDUCTIVE_REGISTER.code){
-            if (account.size() > 0) {
+            if (noninductiveAccount.size() > 0) {
                 return ApiUtils.error("该手机已被注册，请直接登录");
             }
         }

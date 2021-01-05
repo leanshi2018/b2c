@@ -433,10 +433,10 @@ public class AuthcAPIController extends BaseController {
         rdMmBasicInfo.setCreationIp(request.getRemoteAddr());
         //*******************************无感注册会员判定****************************************
         Integer noninductiveFlag=0;
-        RdMmBasicInfo noninductiveMem=null;
+        List<RdMmBasicInfo> noninductiveMem=null;
         if(param.getRegisterType()==1){//新会员注册，需要判断是否有无感会员注册进来，如果有，绑定，没有，注册
             noninductiveMem = rdMmBasicInfoService.findNoninductiveMem(param.getMobile());
-            if(noninductiveMem!=null){
+            if(noninductiveMem!=null&&noninductiveMem.size()>0){
                 noninductiveFlag=1;
             }else {
                 List<RdMmBasicInfo> verificationMobile = rdMmBasicInfoService.findList(Paramap.create().put("mobile", param.getMobile()));
@@ -451,14 +451,15 @@ public class AuthcAPIController extends BaseController {
             }
         }
         if(noninductiveFlag==1) {
+            RdMmBasicInfo noninductive = noninductiveMem.get(0);
             //处理无感用户基础信息，以填入注册信息覆盖，修改关系表中会员状态类别
             MemberRelationLog relationLog = new MemberRelationLog();
             RdMmEdit edit = new RdMmEdit();
-            edit.setMmCode(noninductiveMem.getMmCode());
-            edit.setMmCode(noninductiveMem.getMmCode());
-            edit.setMmNameBefore(noninductiveMem.getMmName());
-            edit.setMmNickNameBefore(noninductiveMem.getMmNickName());
-            RdMmRelation noninductiveRelation = rdMmRelationService.find("mmCode", noninductiveMem.getMmCode());
+            edit.setMmCode(noninductive.getMmCode());
+            edit.setMmCode(noninductive.getMmCode());
+            edit.setMmNameBefore(noninductive.getMmName());
+            edit.setMmNickNameBefore(noninductive.getMmNickName());
+            RdMmRelation noninductiveRelation = rdMmRelationService.find("mmCode", noninductive.getMmCode());
             String sponsorCode = noninductiveRelation.getSponsorCode();
             if(!sponsorCode.equals("900000001")){
                 if(!sponsorCode.equals(param.getInvitCode())){
@@ -472,10 +473,10 @@ public class AuthcAPIController extends BaseController {
             relationLog.setMStatusBefore(noninductiveRelation.getMmStatus());
             noninductiveRelation.setLoginPwd(Digests.entryptPassword(param.getPassword()));
             noninductiveRelation.setMmStatus(0);
-            noninductiveMem.setMmName(noninductiveMem.getMmCode());
-            noninductiveMem.setMmNickName(noninductiveMem.getMmCode());
-            edit.setMmNameAfter(noninductiveMem.getMmCode());
-            edit.setMmNickNameAfter(noninductiveMem.getMmCode());
+            noninductive.setMmName(noninductive.getMmCode());
+            noninductive.setMmNickName(noninductive.getMmCode());
+            edit.setMmNameAfter(noninductive.getMmCode());
+            edit.setMmNickNameAfter(noninductive.getMmCode());
             edit.setUpdateType(0);
             edit.setUpdateTime(new Date());
             edit.setReviewStatus(3);
@@ -484,8 +485,8 @@ public class AuthcAPIController extends BaseController {
             relationLog.setCreateTime(new Date());
             relationLog.setMCode(noninductiveRelation.getMmCode());
             relationLog.setRemark("无感会员绑定注册");
-            rdMmBasicInfoService.bindingNoninductive(noninductiveMem,noninductiveRelation,edit,relationLog);
-            return ApiUtils.success(handlerLoginNew(noninductiveMem, request, noninductiveRelation,0));//TODO
+            rdMmBasicInfoService.bindingNoninductive(noninductive,noninductiveRelation,edit,relationLog);
+            return ApiUtils.success(handlerLoginNew(noninductive, request, noninductiveRelation,0));//TODO
         }
         //*******************************无感注册会员判定****************************************
         else {
@@ -1009,10 +1010,11 @@ public class AuthcAPIController extends BaseController {
         }
         HashMap<String, Object> map = new HashMap<>();
         //判断用户是否为无感用户，如果为无感用户，直接给登录
-        RdMmBasicInfo basicInfo=rdMmBasicInfoService.findNoninductiveMem(mobile);
-        if(basicInfo==null){
+        List<RdMmBasicInfo> noninductiveMem = rdMmBasicInfoService.findNoninductiveMem(mobile);
+        if(noninductiveMem==null||noninductiveMem.size()==0){
             map.put("flag",0);
         }else {
+            RdMmBasicInfo basicInfo = noninductiveMem.get(0);
             RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", basicInfo.getMmCode());
             String sessionId = twiterIdService.getSessionId();
             AuthsLoginResult authsLoginResult = new AuthsLoginResult();
