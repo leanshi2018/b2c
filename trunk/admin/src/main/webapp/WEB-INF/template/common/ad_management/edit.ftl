@@ -78,9 +78,12 @@
                     <td>
                         <#if picture=="">
                             <input name="" type="checkbox" id="checkboxID"><br>
-                            <input name="content" type="text" id="contentss" style="display: none;" class="w300">
+                            <input name="content" type="text" id="contentss"  class="w300">
+                            <p style="color: #BBB;line-height: 20px;">*商品详情活动入口标题</p>
                         <#else>
-                            <input name="" type="checkbox" id="checkboxID" value="${picture.pictureType}"<#if picture.pictureType==4>checked</#if>>
+                            <input name="" type="checkbox" id="checkboxID" value="${picture.pictureType}"<#if picture.pictureType==4>checked</#if>><br>
+                            <input name="content" type="text" id="contentss"  class="w300">
+                            <p style="color: #BBB;line-height: 20px;">*商品详情活动入口标题</p>
                         </#if>
                         <span class="error-message"></span>
                     </td>
@@ -611,13 +614,11 @@
                 if(tf==true){
                     $("#pictureType").val("4");
                     console.log("checkbox is checked");
-                    $("#contentss").css("display","");
                     var contents = $("#contentss").val();
                     if (contents == "") {
                         alert("请输入商品详情活动入口标题！");
                         return false;
                     }
-
                 }
                 $('#add_form').submit();
             })
