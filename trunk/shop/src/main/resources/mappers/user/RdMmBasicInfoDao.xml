@@ -550,7 +550,7 @@
 	</select>
 
 	<!--根据手机号码查询不是无感注册用户-->
-	<select id="findNoninductiveMem" parameterType="string" resultMap="RdMmBasicInfoResultMap">
+	<select id="findNoNoninductiveMem" parameterType="string" resultMap="RdMmBasicInfoResultMap">
 		SELECT a.* FROM rd_mm_basic_info a INNER JOIN rd_mm_relation b on a.mm_code = b.mm_code WHERE a.mobile = #{mobile} and b.mm_status != 9
 	</select>
 
