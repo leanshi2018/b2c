@@ -37,4 +37,6 @@ public class CouponUserLogResult {
 	//查询
 	private Date receiveTimeStar;//领取开始时间
 	private Date receiveTimeEnd;//领取结束时间
+	private String receiveTimeStarS;//领取开始时间
+	private String receiveTimeEndS;//领取结束时间
 }

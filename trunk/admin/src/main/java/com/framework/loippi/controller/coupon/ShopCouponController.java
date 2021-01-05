@@ -42,6 +42,7 @@ import com.framework.loippi.service.coupon.CouponTransLogService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.utils.DateConverter;
 import com.framework.loippi.utils.StringUtil;
 
 @Controller("shopCouponController")
@@ -297,39 +298,45 @@ public class ShopCouponController extends GenericController {
      */
     @RequestMapping(value = "/Coupon/findCouponPayDetailList")
     public String findCouponPayDetailList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponPayDetail param) {
-        if (param.getPaymentTimeStar()!=null&&param.getPaymentTimeEnd()!=null){
+            DateConverter converter = new DateConverter();
+        if (param.getPaymentTimeStarS()!=null&&param.getPaymentTimeEndS()!=null&&!"".equals(param.getPaymentTimeStarS())&&!"".equals(param.getPaymentTimeEndS())){
+            Date dateStar = converter.convert(param.getPaymentTimeStarS());
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(param.getPaymentTimeStar());
+            calendar.setTime(dateStar);
             calendar.set(Calendar.HOUR_OF_DAY,00);
             calendar.set(Calendar.MINUTE,00);
             calendar.set(Calendar.SECOND,01);
             calendar.set(Calendar.MILLISECOND,0);
             param.setPaymentTimeStar(calendar.getTime());
-            calendar.setTime(param.getPaymentTimeEnd());
+
+            Date dateEnd = converter.convert(param.getPaymentTimeEndS());
+            calendar.setTime(dateEnd);
             calendar.set(Calendar.HOUR_OF_DAY,23);
             calendar.set(Calendar.MINUTE,59);
             calendar.set(Calendar.SECOND,59);
             calendar.set(Calendar.MILLISECOND,0);
             param.setPaymentTimeEnd(calendar.getTime());
-            System.out.println("pstar="+param.getPaymentTimeStar());
-            System.out.println("pend="+param.getPaymentTimeEnd());
+            System.out.println("pstar="+param.getPaymentTimeStarS());
+            System.out.println("pend="+param.getPaymentTimeEndS());
         }
-        if (param.getCreateTimeStar()!=null&&param.getCreateTimeEnd()!=null){
+        if (param.getCreateTimeStarS()!=null&&param.getCreateTimeEndS()!=null&&!"".equals(param.getCreateTimeStarS())&&!"".equals(param.getCreateTimeEndS())){
+            Date dateStar = converter.convert(param.getCreateTimeStarS());
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(param.getCreateTimeStar());
+            calendar.setTime(dateStar);
             calendar.set(Calendar.HOUR_OF_DAY,00);
             calendar.set(Calendar.MINUTE,00);
             calendar.set(Calendar.SECOND,01);
             calendar.set(Calendar.MILLISECOND,0);
             param.setCreateTimeStar(calendar.getTime());
-            calendar.setTime(param.getCreateTimeEnd());
+            Date dateEnd = converter.convert(param.getCreateTimeEndS());
+            calendar.setTime(dateEnd);
             calendar.set(Calendar.HOUR_OF_DAY,23);
             calendar.set(Calendar.MINUTE,59);
             calendar.set(Calendar.SECOND,59);
             calendar.set(Calendar.MILLISECOND,0);
             param.setCreateTimeEnd(calendar.getTime());
-            System.out.println("cstar="+param.getCreateTimeStar());
-            System.out.println("cend="+param.getCreateTimeEnd());
+            System.out.println("cstar="+param.getCreateTimeStarS());
+            System.out.println("cend="+param.getCreateTimeEndS());
         }
         pageable.setParameter(param);
         pageable.setOrderProperty("create_time");
@@ -373,22 +380,26 @@ public class ShopCouponController extends GenericController {
      */
     @RequestMapping(value = "/Coupon/findCouponUserLogList")
     public String findCouponUseLogList(HttpServletRequest request,Pageable pageable,ModelMap model,@ModelAttribute CouponUserLogResult param) {
-        if (param.getReceiveTimeStar()!=null&&param.getReceiveTimeEnd()!=null){
+        DateConverter converter = new DateConverter();
+        if (param.getReceiveTimeStarS()!=null&&param.getReceiveTimeEndS()!=null&&!"".equals(param.getReceiveTimeStarS())&&!"".equals(param.getReceiveTimeEndS())){
+            Date dateStar = converter.convert(param.getReceiveTimeStarS());
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(param.getReceiveTimeStar());
+            calendar.setTime(dateStar);
             calendar.set(Calendar.HOUR_OF_DAY,00);
             calendar.set(Calendar.MINUTE,00);
             calendar.set(Calendar.SECOND,01);
             calendar.set(Calendar.MILLISECOND,0);
             param.setReceiveTimeStar(calendar.getTime());
-            calendar.setTime(param.getReceiveTimeEnd());
+
+            Date dateEnd = converter.convert(param.getReceiveTimeEndS());
+            calendar.setTime(dateEnd);
             calendar.set(Calendar.HOUR_OF_DAY,23);
             calendar.set(Calendar.MINUTE,59);
             calendar.set(Calendar.SECOND,59);
             calendar.set(Calendar.MILLISECOND,0);
             param.setReceiveTimeEnd(calendar.getTime());
-        System.out.println("star="+param.getReceiveTimeStar());
-        System.out.println("end="+param.getReceiveTimeEnd());
+        System.out.println("star="+param.getReceiveTimeStarS());
+        System.out.println("end="+param.getReceiveTimeEndS());
         }
         pageable.setParameter(param);
         pageable.setOrderProperty("receive_time");
