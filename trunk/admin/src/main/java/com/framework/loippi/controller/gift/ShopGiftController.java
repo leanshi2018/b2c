@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.gift;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -76,21 +77,25 @@ public class ShopGiftController extends GenericController {
 			model.addAttribute("msg", "活动规则1不可以为空");
 			return Constants.MSG_URL;
 		}
-		if (shopGiftActivity.getPpv1()!=null&&shopGiftActivity.getPpv2()!=null&&shopGiftActivity.getPpv1().compareTo(shopGiftActivity.getPpv2())!=-1){
-			model.addAttribute("msg", "活动规则1不可以大于等于活动规则2mi值");
-			return Constants.MSG_URL;
+		if (shopGiftActivity.getPpv2()!=null&&shopGiftActivity.getPpv2().compareTo(new BigDecimal("0.00"))==1){
+			if (shopGiftActivity.getPpv1()!=null&&shopGiftActivity.getPpv1().compareTo(shopGiftActivity.getPpv2())!=-1){
+				model.addAttribute("msg", "活动规则1不可以大于等于活动规则2mi值");
+				return Constants.MSG_URL;
+			}
+			if(shopGiftActivity.getSpecIdList2().size()==0){
+				model.addAttribute("msg", "活动规则2商品不可以为空");
+				return Constants.MSG_URL;
+			}
 		}
-		if(shopGiftActivity.getPpv2()!=null&&shopGiftActivity.getSpecIdList2().size()==0){
-			model.addAttribute("msg", "活动规则2商品不可以为空");
-			return Constants.MSG_URL;
-		}
-		if (shopGiftActivity.getPpv2()!=null&&shopGiftActivity.getPpv3()!=null&&shopGiftActivity.getPpv2().compareTo(shopGiftActivity.getPpv3())!=-1){
-			model.addAttribute("msg", "活动规则2不可以大于等于活动规则3mi值");
-			return Constants.MSG_URL;
-		}
-		if(shopGiftActivity.getPpv3()!=null&&shopGiftActivity.getSpecIdList3().size()==0){
-			model.addAttribute("msg", "活动规则3商品不可以为空");
-			return Constants.MSG_URL;
+		if (shopGiftActivity.getPpv3()!=null&&shopGiftActivity.getPpv3().compareTo(new BigDecimal("0.00"))==1){
+			if (shopGiftActivity.getPpv2()!=null&&shopGiftActivity.getPpv2().compareTo(shopGiftActivity.getPpv3())!=-1){
+				model.addAttribute("msg", "活动规则2不可以大于等于活动规则3mi值");
+				return Constants.MSG_URL;
+			}
+			if(shopGiftActivity.getSpecIdList3().size()==0){
+				model.addAttribute("msg", "活动规则3商品不可以为空");
+				return Constants.MSG_URL;
+			}
 		}
 
 		System.out.println("all="+shopGiftActivity);
