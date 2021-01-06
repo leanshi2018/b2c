@@ -82,7 +82,7 @@
                             <p style="color: #BBB;line-height: 20px;">*商品详情活动入口标题</p>
                         <#else>
                             <input name="" type="checkbox" id="checkboxID" value="${picture.pictureType}"<#if picture.pictureType==4>checked</#if>><br>
-                            <input name="content" type="text" id="contentss"  class="w300">
+                            <input name="content" type="text" id="contentss" value="${picture.content}"  class="w300">
                             <p style="color: #BBB;line-height: 20px;">*商品详情活动入口标题</p>
                         </#if>
                         <span class="error-message"></span>
