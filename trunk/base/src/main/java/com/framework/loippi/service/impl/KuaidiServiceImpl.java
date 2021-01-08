@@ -58,6 +58,9 @@ public class KuaidiServiceImpl implements KuaidiService {
      * @param no 查询的快递单号
      */
     public String query(String type, String no) {
+        if (type.equals("SFEXPRESS")){
+            no = no+":2384";
+        }
 
         String host = "https://kdwlcxf.market.alicloudapi.com";// 【1】请求地址 支持http 和 https 及 WEBSOCKET
         String path = "/kdwlcx";// 【2】后缀
