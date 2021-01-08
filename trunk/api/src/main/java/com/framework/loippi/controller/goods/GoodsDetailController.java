@@ -159,7 +159,7 @@ public class GoodsDetailController extends BaseController {
                 map.put("page","");
             }
 
-            if (homePicture.getPictureJson()!=null){
+            if (homePicture.getPictureJson()!=null&&!"".equals(homePicture.getPictureJson())){
                 Map<String, String> jsonMap = JacksonUtil.readJsonToMap(homePicture.getPictureJson());
                 Set<String> strings = jsonMap.keySet();
                 Iterator<String> iterator = strings.iterator();
