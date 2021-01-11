@@ -137,7 +137,7 @@ public class ShunFengJsonExpressServiceImpl implements ShunFengJsonExpressServic
 		req.setBspType(2);
 		req.setReturnType("其他");
 		req.setDoOrderNow("1");
-		req.setInsureAmount(100000);
+		//req.setInsureAmount(100000);
 		// 寄件基本信息
 		req.setProductName("白酒");
 		// 寄件人信息
