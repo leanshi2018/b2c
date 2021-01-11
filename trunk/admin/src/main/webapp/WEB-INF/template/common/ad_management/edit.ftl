@@ -71,6 +71,23 @@
                             <span class="error-message"></span>
                         </td>
                     </tr>
+                <tr class="noborder">
+                    <td class="required">
+                        <em class="pngFix"></em>商品详情活动入口
+                    </td>
+                    <td>
+                        <#if picture=="">
+                            <input name="" type="checkbox" id="checkboxID"><br>
+                            <input name="content" type="text" id="contentss"  class="w300">
+                            <p style="color: #BBB;line-height: 20px;">*商品详情活动入口标题</p>
+                        <#else>
+                            <input name="" type="checkbox" id="checkboxID" value="${picture.pictureType}"<#if picture.pictureType==4>checked</#if>><br>
+                            <input name="content" type="text" id="contentss" value="${picture.content}"  class="w300">
+                            <p style="color: #BBB;line-height: 20px;">*商品详情活动入口标题</p>
+                        </#if>
+                        <span class="error-message"></span>
+                    </td>
+                </tr>
                     <tr class="noborder">
                         <td class="required">
                             <em class="pngFix"></em>名称
@@ -189,7 +206,6 @@
                                         <option value="learnpage" <#if picture.openPage == "learnpage">selected="selected" </#if>>学堂</option>
                                         <option value="learnarticlepage" <#if picture.openPage == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
                                         <option value="invitationpage" <#if picture.openPage == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                        <option value="activityGoodsListpage" <#if picture.openPage =="activityGoodsListpage">selected="selected" </#if>>活动页面</option>
                                         <option value="buyCouponspage" id="buyCouponspage" <#if picture.openPage == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
                                     <#--选择文章-->
@@ -462,6 +478,7 @@
         });
         //提交参数和判断选择方式及传参
         $(function () {
+
             var value =  $('#openType option:selected').val();
             console.log(value);
             if (value == "跳转路径") {
@@ -591,6 +608,16 @@
                 if (num == "") {
                     alert("请输入排序数字！");
                     return false;
+                }
+                var tf=$("input[type='checkbox']").is(':checked');
+                if(tf==true){
+                    $("#pictureType").val("4");
+                    console.log("checkbox is checked");
+                    var contents = $("#contentss").val();
+                    if (contents == "") {
+                        alert("请输入商品详情活动入口标题！");
+                        return false;
+                    }
                 }
                 $('#add_form').submit();
             })

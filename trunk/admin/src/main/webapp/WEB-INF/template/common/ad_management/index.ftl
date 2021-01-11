@@ -61,6 +61,7 @@
                 <tr class="thead">
                     <th class="w24"><input type="checkbox" id="idsAll" class="checkitem"></th>
                     <th class="align-center">活动图名称</th>
+                    <th>类型</th>
                     <th class="align-center">跳转页面</th>
                     <th class="align-center">排序</th>
                     <th class="align-center"><@spring.message "operation"/></th>
@@ -72,6 +73,10 @@
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
                             ${list.pictureName}
+                        </td>
+                        <td>
+                            <#if list.pictureType ==2>广告位</#if>
+                            <#if list.pictureType ==4>商品详情活动入口</#if>
                         </td>
                         <td style="text-align: left">
                             <#if list.activityUrl??>

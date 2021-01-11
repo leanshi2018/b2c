@@ -65,6 +65,9 @@
         <if test="descName != null">
             AND desc_name = #{descName}
         </if>
+        <if test="pictureTypeS != null">
+            AND picture_type IN (2,4)
+        </if>
     </sql>
 
     <!-- 设置语句 -->

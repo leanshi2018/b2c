@@ -133,6 +133,8 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
                 ShopGoodsSpec goodsSpec = (ShopGoodsSpec) goodsSpecs.get(i);
                 //保存goodsspecs
                 if (Optional.ofNullable(goodsSpec.getId()).orElse(0L)!=0L){
+                    ShopGoodsSpec spec = shopGoodsSpecService.find(goodsSpec.getId());
+                    goodsSpec.setSpecGoodsStorage(spec.getSpecGoodsStorage());
                     shopGoodsSpecService.update(goodsSpec);
                 }else {
                     //设置商品id
@@ -306,7 +308,7 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
                             gs.setPpv(goodsSpec.getPpv());
                             gs.setBigPpv(goodsSpec.getBigPpv());
 
-                            gs.setSpecGoodsStorage(goodsSpec.getSpecGoodsStorage());
+                            //gs.setSpecGoodsStorage(goodsSpec.getSpecGoodsStorage());
                             gs.setSpecBarCode(goodsSpec.getSpecBarCode());
                             gs.setSpecPic(goodsSpec.getSpecPic());
                             //更新goodsspecs

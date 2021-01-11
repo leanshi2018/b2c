@@ -144,7 +144,11 @@ public class CouponPayDetail implements GenericEntity {
 	//查询
 	private Date createTimeStar;//下单开始时间
 	private Date createTimeEnd;//下单结束时间
+	private String createTimeStarS;//下单开始时间
+	private String createTimeEndS;//下单结束时间
 
 	private Date paymentTimeStar;//支付开始时间
 	private Date paymentTimeEnd;//支付结束时间
+	private String paymentTimeStarS;//支付开始时间
+	private String paymentTimeEndS;//支付结束时间
 }

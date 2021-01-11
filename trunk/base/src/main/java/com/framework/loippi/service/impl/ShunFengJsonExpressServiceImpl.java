@@ -143,7 +143,7 @@ public class ShunFengJsonExpressServiceImpl implements ShunFengJsonExpressServic
 		// 寄件人信息
 		req.setJcompany("广东乐安士电子商务有限公司");
 		req.setJcontact("蜗米商城");
-		req.setJmobile("13378412484");
+		req.setJmobile("13378412384");
 		req.setJprovince("贵州省");
 		req.setJcity("遵义市");
 		req.setJcounty("仁怀市");

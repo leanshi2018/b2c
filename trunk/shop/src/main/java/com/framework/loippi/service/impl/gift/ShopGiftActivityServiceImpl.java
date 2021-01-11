@@ -1,5 +1,6 @@
 package com.framework.loippi.service.impl.gift;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -90,12 +91,19 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 				return resultMap;
 			}
 		}else {//编辑
+			ShopGiftActivity giftActivity = shopGiftActivityDao.find(shopGiftActivity.getId());
 			if (shopGiftActivity.getEstate()==0){
 				//下架其他赠品活动
 				shopGiftActivityDao.updateByEState(1);
 			}
 			shopGiftActivity.setUpdateBy(username);
 			shopGiftActivity.setUpdateTime(new Date());
+			if (giftActivity.getPpv2()!=null && shopGiftActivity.getPpv2()==null){
+				shopGiftActivity.setPpv2(new BigDecimal("0.00"));
+			}
+			if (giftActivity.getPpv3()!=null && shopGiftActivity.getPpv3()==null){
+				shopGiftActivity.setPpv3(new BigDecimal("0.00"));
+			}
 			Long falg = shopGiftActivityDao.update(shopGiftActivity);
 
 			//删除以前的商品
