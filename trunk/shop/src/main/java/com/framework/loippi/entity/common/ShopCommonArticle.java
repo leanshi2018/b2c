@@ -142,6 +142,12 @@ public class ShopCommonArticle implements GenericEntity {
     @Column(name = "page_path")
     private String pagePath;
 
+    /**
+     * 跳转路径回显信息
+     */
+    @Column(name = "echo_info")
+    private String echoInfo;
+
     private String acName;
 
     private Long[] ids;

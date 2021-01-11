@@ -27,19 +27,20 @@
         <result property="likeNum" column="like_num"/>
         <result property="pageType" column="page_type"/>
         <result property="pagePath" column="page_path"/>
+        <result property="echoInfo" column="echo_info"/>
     </resultMap>
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
 		 id ,ac_id ,article_url ,article_show ,article_sort ,article_title,article_info ,article_content ,is_del ,create_time ,update_time ,article_time,article_image,article_author,is_top,page_views
 
-		 ,status,article_video,like_num,page_type,page_path
+		 ,status,article_video,like_num,page_type,page_path,echo_info
 	</sql>
 
     <sql id="base_value_column">
 		 #{id},#{acId},#{articleUrl},#{articleShow},#{articleSort},#{articleTitle},#{articleInfo},#{articleContent},#{isDel},#{createTime},#{updateTime},#{articleTime},#{articleImage},#{articleAuthor},#{isTop},#{pageViews}
 
-		 ,#{status},#{articleVideo},#{likeNum},#{pageType},#{pagePath}
+		 ,#{status},#{articleVideo},#{likeNum},#{pageType},#{pagePath},#{echoInfo}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -101,11 +102,14 @@
         <if test="likeNum != null">
             AND SHOP_COMMON_ARTICLE.like_num = #{likeNum}
         </if>
-        <if test="pageType != null and pageType != ''">
+        <if test="pageType != null">
             AND SHOP_COMMON_ARTICLE.page_type = #{pageType}
         </if>
-        <if test="pagePath != null and pagePath != ''">
+        <if test="pagePath != null">
             AND SHOP_COMMON_ARTICLE.page_path = #{pagePath}
+        </if>
+        <if test="echoInfo != null">
+            AND SHOP_COMMON_ARTICLE.echo_info = #{echoInfo}
         </if>
         <if test="key != null and key != ''">
             and (
@@ -184,11 +188,14 @@
         <if test="likeNum != null">
              SHOP_COMMON_ARTICLE.like_num = #{likeNum},
         </if>
-        <if test="pageType != null and pageType != ''">
+        <if test="pageType != null">
              SHOP_COMMON_ARTICLE.page_type = #{pageType},
         </if>
-        <if test="pagePath != null and pagePath != ''">
+        <if test="pagePath != null">
              SHOP_COMMON_ARTICLE.page_path = #{pagePath},
+        </if>
+        <if test="echoInfo != null">
+             SHOP_COMMON_ARTICLE.echo_info = #{echoInfo},
         </if>
     </sql>
 
