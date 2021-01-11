@@ -311,6 +311,8 @@ public class ShopGoodsServiceImpl extends GenericServiceImpl<ShopGoods, Long> im
                             //gs.setSpecGoodsStorage(goodsSpec.getSpecGoodsStorage());
                             gs.setSpecBarCode(goodsSpec.getSpecBarCode());
                             gs.setSpecPic(goodsSpec.getSpecPic());
+                            gs.setWeight(goodsSpec.getWeight());
+                            gs.setCostPrice(goodsSpec.getCostPrice());
                             //更新goodsspecs
                             shopGoodsSpecService.update(gs);
                         }
