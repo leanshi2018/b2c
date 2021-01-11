@@ -102,13 +102,13 @@
         <if test="likeNum != null">
             AND SHOP_COMMON_ARTICLE.like_num = #{likeNum}
         </if>
-        <if test="pageType != null and pageType != ''">
+        <if test="pageType != null">
             AND SHOP_COMMON_ARTICLE.page_type = #{pageType}
         </if>
-        <if test="pagePath != null and pagePath != ''">
+        <if test="pagePath != null">
             AND SHOP_COMMON_ARTICLE.page_path = #{pagePath}
         </if>
-        <if test="echoInfo != null and echoInfo != ''">
+        <if test="echoInfo != null">
             AND SHOP_COMMON_ARTICLE.echo_info = #{echoInfo}
         </if>
         <if test="key != null and key != ''">
@@ -188,13 +188,13 @@
         <if test="likeNum != null">
              SHOP_COMMON_ARTICLE.like_num = #{likeNum},
         </if>
-        <if test="pageType != null and pageType != ''">
+        <if test="pageType != null">
              SHOP_COMMON_ARTICLE.page_type = #{pageType},
         </if>
-        <if test="pagePath != null and pagePath != ''">
+        <if test="pagePath != null">
              SHOP_COMMON_ARTICLE.page_path = #{pagePath},
         </if>
-        <if test="echoInfo != null and echoInfo != ''">
+        <if test="echoInfo != null">
              SHOP_COMMON_ARTICLE.echo_info = #{echoInfo},
         </if>
     </sql>
