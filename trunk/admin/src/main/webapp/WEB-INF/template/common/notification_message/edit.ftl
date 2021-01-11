@@ -236,22 +236,22 @@
                                     <span >跳转路径</span>
                                     <select name="jumpPath" class="w150" id="jumpPath">
                                         <option value="" selected="selected">请选择</option>
-                                        <option value="homepage" <#if message.jumpPath == 'homepage'>selected="selected"</#if>>辑</option>
-                                        <option value="messagepage"<#if message.jumpPath == "messagepage">selected="selected" </#if>>消息中心</option>
-                                        <option value="goodsdetailspage" id="goodsdetailspage" <#if message.jumpPath == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
-                                        <option value="mypage"  <#if message.jumpPath == "mypage">selected="selected" </#if>>我</option>
-                                        <option value="myresultspage" <#if message.jumpPath == "myresultspage">selected="selected" </#if>>个人业绩</option>
-                                        <option value="orderpage"    <#if message.jumpPath == "orderpage">selected="selected" </#if>>我的订单</option>
-                                        <option value="myintegralpage" <#if message.jumpPath == "myintegralpage">selected="selected" </#if>>我的积分</option>
-                                        <option value="rewardintegralpage" <#if message.jumpPath == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>
-                                        <option value="shoppingintegralpage" <#if message.jumpPath == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>
-                                        <option value="buyintegralpage" <#if message.jumpPath == "buyintegralpage">selected="selected" </#if>>换购积分</option>
-                                        <option value="bankcardpage" <#if message.jumpPath == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
-                                        <option value="learnpage" <#if message.jumpPath == "learnpage">selected="selected" </#if>>学堂</option>
-                                        <option value="learnarticlepage" <#if message.jumpPath == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
-                                        <option value="invitationpage" <#if message.jumpPath == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                        <option value="activityGoodsListpage" <#if message.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
-                                        <option value="buyCouponspage" id="buyCouponspage" <#if message.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
+                                        <option value="-1" <#if message.jumpPath == 'homepage'>selected="selected"</#if>>辑</option>
+                                        <option value="-1"<#if message.jumpPath == "messagepage">selected="selected" </#if>>消息中心</option>
+                                        <option value="-1" id="goodsdetailspage" <#if message.jumpPath == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
+                                        <option value="-1"  <#if message.jumpPath == "mypage">selected="selected" </#if>>我</option>
+                                        <option value="-1" <#if message.jumpPath == "myresultspage">selected="selected" </#if>>个人业绩</option>
+                                        <option value="-1"    <#if message.jumpPath == "orderpage">selected="selected" </#if>>我的订单</option>
+                                        <option value="-1" <#if message.jumpPath == "myintegralpage">selected="selected" </#if>>我的积分</option>
+                                        <option value="-1" <#if message.jumpPath == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>
+                                        <option value="-1" <#if message.jumpPath == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>
+                                        <option value="-1" <#if message.jumpPath == "buyintegralpage">selected="selected" </#if>>换购积分</option>
+                                        <option value="-1" <#if message.jumpPath == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
+                                        <option value="-1" <#if message.jumpPath == "learnpage">selected="selected" </#if>>学堂</option>
+                                        <option value="-1" <#if message.jumpPath == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
+                                        <option value="-1" <#if message.jumpPath == "invitationpage">selected="selected" </#if>>我的邀请</option>
+                                        <option value="-1" <#if message.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
+                                        <option value="-1" id="buyCouponspage" <#if message.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
                                     </select>
                                     <#--选择文章-->
                                     <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
@@ -361,6 +361,7 @@
             }
             if (value == "跳转链接") {
                 $("#jumpInterface").css("display","");
+                $("#jumpPath").val(" ");
             }else{
                 $("#jumpInterface").css("display","none");
             }
@@ -402,6 +403,10 @@
                     return false;
                 }
 
+                console.log($("#jumpPath").val())
+                $("#jumpPath").val("");
+
+
                 $('#add_form').submit();
             })
 
@@ -414,7 +419,6 @@
                 $("#openName").val("辑");
             }
             if(value=="messagepage"){
-
                 $("#openName").val("消息中心");
             }
             if (value=="goodsdetailspage"){
@@ -452,6 +456,7 @@
             if(value=="learnarticlepage"){
                 $("#articleTitle").show();
                 $("#searchlearnarticle").css("display","");
+                $("#goodsName").show()
                 $("#openName").val("学堂文章详情");
             }else{
                 $("#articleTitle").css("display","none");
