@@ -105,6 +105,12 @@ public class ShopCommonMessage implements GenericEntity {
     @Column(name = "jump_url")
     private String jumpUrl;
 
+    /**
+     * 跳转路径回显信息
+     */
+    @Column(name = "echo_info")
+    private String echoInfo;
+
     private String groupName;
 
     private String userName;
