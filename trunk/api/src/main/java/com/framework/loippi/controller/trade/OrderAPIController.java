@@ -1024,6 +1024,7 @@ public class OrderAPIController extends BaseController {
                               //@RequestParam(defaultValue = "0") Integer integration,
                               @RequestParam(defaultValue = "0") String paypassword,
                               @RequestParam(defaultValue = "1") Integer paymentType,
+                              @RequestParam(defaultValue = "0") String openId,
                               @RequestParam(defaultValue = "0") Integer type,
                            HttpServletRequest request) {
         if(integration==null&&"".equals(integration)){
@@ -1125,6 +1126,9 @@ public class OrderAPIController extends BaseController {
             orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
             //保存支付流水记录
             paymentTallyService.savePaymentTally(paymentCode, "微信支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            if (type==1){
+                payCommon.setOpenId(openId);
+            }
             String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
             model.put("tocodeurl", tocodeurl);
             model.put("orderSn", pay.getOrderSn());
