@@ -1005,7 +1005,7 @@ public class OrderAPIController extends BaseController {
     }
 
 
-/*    *//**
+    /**
      * 去付款
      *
      * @param paysn 支付订单编码
@@ -1014,16 +1014,28 @@ public class OrderAPIController extends BaseController {
      * @param integration 积分
      * @param paypassword 支付密码
      * @param paymentType 1在线支付 2货到付款
-     *//*
+     */
     @RequestMapping("/api/order/payNew")
     @ResponseBody
     public String payOrderNew(@RequestParam(value = "paysn") String paysn,
-                           @RequestParam(defaultValue = "pointsPaymentPlugin") String paymentCode,
-                           @RequestParam(defaultValue = "0") String paymentId,
-                           @RequestParam(defaultValue = "0") Double integration,
-                           @RequestParam(defaultValue = "0") String paypassword,
-                           @RequestParam(defaultValue = "1") Integer paymentType,
+                              @RequestParam(defaultValue = "pointsPaymentPlugin") String paymentCode,
+                              @RequestParam(defaultValue = "0") String paymentId,
+                              @RequestParam(defaultValue = "0") String integration,
+                              //@RequestParam(defaultValue = "0") Integer integration,
+                              @RequestParam(defaultValue = "0") String paypassword,
+                              @RequestParam(defaultValue = "1") Integer paymentType,
+                              @RequestParam(defaultValue = "0") Integer type,
                            HttpServletRequest request) {
+        if(integration==null&&"".equals(integration)){
+            return ApiUtils.error("请输入支付的积分金额");
+        }
+        BigDecimal i = new BigDecimal("0.00");
+        if (integration==null||"".equals(integration)){
+            i = new BigDecimal("0.00");
+        }else {
+            i = new BigDecimal(integration).setScale(2, BigDecimal.ROUND_HALF_UP);
+        }
+
         AuthsLoginResult member = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         RdMmBasicInfo shopMember = rdMmBasicInfoService.find("mmCode", member.getMmCode());
         RdMmAccountInfo rdMmAccountInfo = rdMmAccountInfoService.find("mmCode", member.getMmCode());
@@ -1036,26 +1048,30 @@ public class OrderAPIController extends BaseController {
             rdMmIntegralRule = rdMmIntegralRuleList.get(0);
         }
         int shoppingPointSr = Optional.ofNullable(rdMmIntegralRule.getShoppingPointSr()).orElse(0);
-        if (integration != 0) {
+        //if (integration != 0) {
+        if (i.compareTo(new BigDecimal("0.00")) != 0) {
             if (rdMmAccountInfo.getPaymentPwd() == null) {
-                return ApiUtils.error("你还未设置支付密码");
+                return ApiUtils.error(80002,"你还未设置支付密码");
             }
             if (!Digests.validatePassword(paypassword, rdMmAccountInfo.getPaymentPwd())) {
-                return ApiUtils.error("支付密码错误");
+                return ApiUtils.error(80001,"支付密码错误");
             }
             if (rdMmAccountInfo.getWalletStatus() != 0) {
                 return ApiUtils.error("购物积分账户状态未激活或者已被冻结");
             }
             ShopOrderPay pay = orderPayService.findBySn(paysn);
             //处理积分支付
-            orderService.ProcessingIntegralsNew(paysn, integration, shopMember, pay, shoppingPointSr);
+            orderService.ProcessingIntegrals(paysn, i, shopMember, pay, shoppingPointSr);
+            //orderService.ProcessingIntegrals(paysn, integration, shopMember, pay, shoppingPointSr);
         }
-
         List<ShopOrder> orderList = orderService.findList("paySn", paysn);
         if (CollectionUtils.isEmpty(orderList)) {
             return ApiUtils.error("订单不存在");
         }
-
+        ShopOrder shopOrder = orderList.get(0);
+        if(shopOrder.getOrderState()==0){//避免系统定时任务取消订单 订单可以继续支付
+            return ApiUtils.error("订单已超时");
+        }
         System.out.println("##########################################");
         System.out
                 .println("###  订单支付编号：" + paysn + "  |  支付方式名称：" + paymentCode + " |  支付方式索引id：" + paymentId + "#########");
@@ -1078,8 +1094,13 @@ public class OrderAPIController extends BaseController {
         }
         payCommon.setTitle("订单支付");
         payCommon.setBody(pay.getPaySn() + "订单支付");
-        payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
+        if (paymentCode.equals("alipayMobilePaymentPlugin")){
+            payCommon.setNotifyUrl(NotifyConsts.ADMIN_NOTIFY_FILE+ "/admin/paynotify/alipayNotify/"+paysn+".jhtml");
+        }else {
+            payCommon.setNotifyUrl(server + "/api/paynotify/notifyMobile/" + paymentCode + "/" + paysn + ".json");
+        }
         payCommon.setReturnUrl(server + "/payment/payfront");
+        payCommon.setType(type);
         String sHtmlText = "";
         Map<String, Object> model = new HashMap<String, Object>();
         if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("alipayMobilePaymentPlugin")) {
@@ -1107,6 +1128,14 @@ public class OrderAPIController extends BaseController {
             String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
             model.put("tocodeurl", tocodeurl);
             model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("weixinAppletsPaymentPlugin")) {
+            //修改订单付款信息
+            orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            paymentTallyService.savePaymentTally(paymentCode, "微信小程序支付", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            //String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
+            model.put("tocodeurl", "");
+            model.put("orderSn", pay.getOrderSn());
         } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("balancePaymentPlugin")) {//余额支付
 //            Map<String, Object> data = orderService.payWallet(payCommon, member.getMmCode());
 //            model.putAll(data);
@@ -1131,7 +1160,7 @@ public class OrderAPIController extends BaseController {
         }
 
         return ApiUtils.success(model);
-    }*/
+    }
 
     /**
      * TODO 要更新 跳转到申请售后
