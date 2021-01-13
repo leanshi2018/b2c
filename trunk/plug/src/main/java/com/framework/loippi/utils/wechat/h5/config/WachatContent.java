@@ -22,6 +22,7 @@ public class WachatContent {
     //public static String appid = "wxd52948077ee73da4";//公众账号ID
     //public static String appsecret = "22e786adfadbb81973d0c36f1e4d3ead";//应用密钥
     public static String appid = "wxd3739077659b39ae";//公众账号ID
+    public static String appidH5 = "wx6e94bb18bedf3c4c";//公众账号ID
     public static String appsecret = "996268a39241c54007e8fa6da58b9f30";//应用密钥
     //public static String appid = "wx6e94bb18bedf3c4c";//公众账号ID
     //public static String appsecret = "a8729cb3fa0b5edbcef7be7cb904e41f";//应用密钥
