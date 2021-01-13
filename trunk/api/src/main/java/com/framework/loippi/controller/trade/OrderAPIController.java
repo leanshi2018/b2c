@@ -115,6 +115,7 @@ import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.RdRanksService;
 import com.framework.loippi.service.user.RdSysPeriodService;
 import com.framework.loippi.service.wallet.RdBizPayService;
+import com.framework.loippi.service.wechat.WechatH5Service;
 import com.framework.loippi.service.wechat.WechatMobileService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
@@ -160,6 +161,8 @@ public class OrderAPIController extends BaseController {
     private UnionpayService unionpayService;
     @Resource
     private WechatMobileService wechatMobileService;
+    @Resource
+    private WechatH5Service wechatH5Service;
     @Resource
     private ShopOrderDiscountTypeService shopOrderDiscountTypeService;
     @Resource
@@ -1130,6 +1133,17 @@ public class OrderAPIController extends BaseController {
                 payCommon.setOpenId(openId);
             }
             String tocodeurl = wechatMobileService.toPay(payCommon);//微信扫码url
+            model.put("tocodeurl", tocodeurl);
+            model.put("orderSn", pay.getOrderSn());
+        } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("weixinH5PaymentPlugin")) {
+            //修改订单付款信息
+            orderService.updateByPaySn(paysn, Long.valueOf(paymentId));
+            //保存支付流水记录
+            paymentTallyService.savePaymentTally(paymentCode, "微信公众号", pay, PaymentTallyState.PAYMENTTALLY_TREM_MB, 1);
+            if (type==1){
+                payCommon.setOpenId(openId);
+            }
+            String tocodeurl = wechatH5Service.toPay(payCommon);// todo 小程序H5
             model.put("tocodeurl", tocodeurl);
             model.put("orderSn", pay.getOrderSn());
         } else if (StringUtils.isNotEmpty(paysn) && paymentCode.equals("weixinAppletsPaymentPlugin")) {

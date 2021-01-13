@@ -1,5 +1,25 @@
 package com.framework.loippi.service.wechat.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Service;
+
 import com.framework.loippi.entity.PayCommon;
 import com.framework.loippi.entity.SNSUserINfo;
 import com.framework.loippi.entity.WeiXinOauth2Token;
@@ -9,22 +29,9 @@ import com.framework.loippi.utils.JacksonUtil;
 import com.framework.loippi.utils.wechat.h5.config.WachatContent;
 import com.framework.loippi.utils.wechat.h5.pojo.AccessToken;
 import com.framework.loippi.utils.wechat.h5.util.WeixinUtil;
+import com.framework.loippi.utils.wechat.mobile.config.WXpayConfig;
 import com.framework.loippi.utils.wechat.mobile.util.WeixinUtils;
 import com.framework.loippi.utils.wechat.mobile.util.component.ResponseHandler;
-import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.*;
 
 /**
  * Created by longbh on 2017/8/28.
@@ -45,7 +52,7 @@ public class WechatH5ServiceImpl implements WechatH5Service {
 
     @Override
     public String toPay(PayCommon payCommon) {
-        Map<String, String> parameters = getParameterMap(payCommon, WachatContent.appid, WachatContent.partner, WachatContent.apikey);
+        Map<String, String> parameters = getParameterMap(payCommon, WachatContent.appidH5, WXpayConfig.MCH_ID, WXpayConfig.API_KEY);
         StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("<xml>");
         Set<String> objSet = parameters.keySet();
@@ -73,7 +80,7 @@ public class WechatH5ServiceImpl implements WechatH5Service {
         if (org.apache.commons.lang.StringUtils.isNotEmpty(xml) && xml.indexOf("SUCCESS") != -1) {
             if (xml.indexOf("prepay_id") != -1) {
                 String prepayid = WeixinUtils.getJsonValue(xml, "prepay_id");
-                Map<String, String> clientMap = makeClientMap(prepayid, WachatContent.appid, WachatContent.apikey, parameters.get("nonce_str"));
+                Map<String, String> clientMap = makeClientMap(prepayid, WachatContent.appidH5, WXpayConfig.API_KEY, parameters.get("nonce_str"));
                 return JacksonUtil.toJson(clientMap);
             }
         }
@@ -84,7 +91,7 @@ public class WechatH5ServiceImpl implements WechatH5Service {
     public String notifyCheck(HttpServletRequest request, HttpServletResponse response, String sn) {
         // 创建支付应答对象
         ResponseHandler resHandler = new ResponseHandler(request, response);
-        resHandler.setKey(WachatContent.apikey);
+        resHandler.setKey(WXpayConfig.API_KEY);
         resHandler.getAllParameters();
         try {
             //签名验证
