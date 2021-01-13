@@ -641,6 +641,28 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
         memberEditReview.setUpdateType(0);
         memberEditReview.setUpdateTime(new Date());
         memberEditReview.setReviewStatus(3);
+/*        final YunRequest request = new YunRequest("MemberService", "createMember");
+        request.put("bizUserId", rdMmBasicInfo.getMmCode());
+        request.put("memberType", 3);
+        request.put("source", 1);
+        try {
+            String s = YunClient.request(request);
+            Map<String, Object> map = JacksonUtil.convertMap(s);
+            if(map.get("status").equals("OK")){
+                String jsonStr = (String) map.get("signedValue");
+                Map<String, Object> stringObjectMap = JacksonUtil.convertMap(jsonStr);
+                String userId = (String) stringObjectMap.get("userId");
+                rdMmBasicInfo.setTongLianId(userId);
+            }else if(map.get("status").equals("error")){
+                String message = (String) map.get("message");
+                throw new RuntimeException(message);
+            } else {
+                throw new RuntimeException("通联支付注册异常");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("通联支付注册异常");
+        }*/
         rdMmBasicInfoDao.insert(rdMmBasicInfo);
         rdMmEditDao.insert(memberEditReview);
         rdMmRelationDao.insert(rdMmRelation);
@@ -666,7 +688,7 @@ public class RdMmBasicInfoServiceImpl extends GenericServiceImpl<RdMmBasicInfo, 
      */
     @Override
     public void bindingNoninductive(RdMmBasicInfo noninductiveMem, RdMmRelation noninductiveRelation, RdMmEdit edit, MemberRelationLog relationLog) {
-        /*final YunRequest request = new YunRequest("MemberService", "createMember");
+        /*final YunRequest request = new YunRequest("MemberService", "createMember");// TODO 删除
         request.put("bizUserId", noninductiveMem.getMmCode());
         request.put("memberType", 3);
         request.put("source", 1);
