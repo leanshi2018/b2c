@@ -8,6 +8,7 @@
         <result property="ppv1" column="ppv1"/>
         <result property="ppv2" column="ppv2"/>
         <result property="ppv3" column="ppv3"/>
+        <result property="plusType" column="plus_type"/>
         <result property="giftNum" column="gift_num"/>
         <result property="startTime" column="start_time"/>
         <result property="endTime" column="end_time"/>
@@ -20,11 +21,11 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-        id ,activity_name ,ppv1 ,ppv2 ,ppv3 ,gift_num ,start_time ,end_time ,e_state ,creation_by ,creation_time ,update_by ,update_time
+        id ,activity_name ,ppv1 ,ppv2 ,ppv3 ,plus_type ,gift_num ,start_time ,end_time ,e_state ,creation_by ,creation_time ,update_by ,update_time
     </sql>
 
     <sql id="base_value_column">
-        #{id},#{activityName},#{ppv1},#{ppv2},#{ppv3},#{giftNum},#{startTime},#{endTime},#{estate},#{creationBy},#{creationTime},#{updateBy},#{updateTime}
+        #{id},#{activityName},#{ppv1},#{ppv2},#{ppv3},#{plusType},#{giftNum},#{startTime},#{endTime},#{estate},#{creationBy},#{creationTime},#{updateBy},#{updateTime}
     </sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -43,6 +44,9 @@
         </if>
         <if test="ppv3 != null">
             AND ppv3 = #{ppv3}
+        </if>
+        <if test="plusType != null">
+            AND plus_type = #{plusType}
         </if>
         <if test="giftNum != null">
             AND gift_num = #{giftNum}
@@ -86,6 +90,9 @@
         </if>
         <if test="ppv3 != null">
             ppv3 = #{ppv3},
+        </if>
+        <if test="plusType != null">
+            plus_type = #{plusType},
         </if>
         <if test="giftNum != null">
             gift_num = #{giftNum},
