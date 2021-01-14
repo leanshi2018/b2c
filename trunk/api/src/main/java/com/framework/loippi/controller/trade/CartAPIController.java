@@ -841,22 +841,71 @@ public class CartAPIController extends BaseController {
                         }
                     }
                 }else {
-                    List<ShopGiftGoods> giftGoodsList = shopGiftGoodsService.findByGiftIdAndWRule(giftActivity.getId(),4);
-                    if (giftGoodsList.size()>0){
-                        for (ShopGiftGoods giftGoods : giftGoodsList) {
-                            ShopGoods goods = goodsService.find(giftGoods.getGoodsId());
-                            if (goods!=null){
-                                goods.setGiftSpecId(giftGoods.getSpecId());
-                                ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(giftGoods.getSpecId());
-                                goods.setShopGoodsSpec(goodsSpec);
-                                shopGoods.add(goods);
+                    if (plusFlag){
+                        List<ShopGiftGoods> giftGoodsList = shopGiftGoodsService.findByGiftIdAndWRule(giftActivity.getId(),4);
+                        if (giftGoodsList.size()>0){
+                            for (ShopGiftGoods giftGoods : giftGoodsList) {
+                                ShopGoods goods = goodsService.find(giftGoods.getGoodsId());
+                                if (goods!=null){
+                                    goods.setGiftSpecId(giftGoods.getSpecId());
+                                    ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(giftGoods.getSpecId());
+                                    goods.setShopGoodsSpec(goodsSpec);
+                                    shopGoods.add(goods);
+                                }
+                            }
+                            flag=1;
+                            if (giftActivity.getGiftNum()==null||giftActivity.getGiftNum()==0){
+                                giftsNum=1;
+                            }else {
+                                giftsNum=giftActivity.getGiftNum();
                             }
                         }
-                        flag=1;
-                        if (giftActivity.getGiftNum()==null||giftActivity.getGiftNum()==0){
-                            giftsNum=1;
+                    }else {
+                        if (giftActivity.getPpv1()==null){
+                            flag=0;
+                            giftsNum = 0;
                         }else {
-                            giftsNum=giftActivity.getGiftNum();
+                            BigDecimal ppv1 = giftActivity.getPpv1();
+                            List<ShopGiftGoods> giftGoodsList1 = shopGiftGoodsService.findByGiftIdAndWRule(giftActivity.getId(),1);
+                            if (giftGoodsList1.size()==0){
+                                flag=0;
+                                giftsNum = 0;
+                            }else {
+                                if (giftActivity.getPpv2()==null||giftActivity.getPpv2().compareTo(new BigDecimal("0.00"))==0){
+                                    shopGoods = getGoods1(totalPpv, shopGoods, ppv1, giftGoodsList1);
+                                }else {
+                                    BigDecimal ppv2 = giftActivity.getPpv2();
+                                    shopGoods = getGoods2(totalPpv, shopGoods, ppv1,ppv2,giftGoodsList1);
+                                    List<ShopGiftGoods> giftGoodsList2 = shopGiftGoodsService.findByGiftIdAndWRule(giftActivity.getId(),2);
+                                    if (giftGoodsList2.size()==0){
+                                        shopGoods = getGoods1(totalPpv, shopGoods, ppv1,giftGoodsList1);
+                                    }else {
+                                        if (giftActivity.getPpv3()==null||giftActivity.getPpv3().compareTo(new BigDecimal("0.00"))==0){
+                                            shopGoods = getGoods1(totalPpv, shopGoods, ppv2,giftGoodsList2);
+                                        }else {
+                                            BigDecimal ppv3 = giftActivity.getPpv3();
+                                            shopGoods = getGoods2(totalPpv, shopGoods, ppv2,ppv3,giftGoodsList2);
+                                            List<ShopGiftGoods> giftGoodsList3 = shopGiftGoodsService.findByGiftIdAndWRule(giftActivity.getId(),3);
+                                            if (giftGoodsList3.size()==0){
+                                                shopGoods = getGoods1(totalPpv, shopGoods, ppv2,giftGoodsList2);
+                                            }else {
+                                                shopGoods = getGoods1(totalPpv, shopGoods, ppv3,giftGoodsList3);
+                                            }
+                                        }
+                                    }
+                                }
+                                flag=1;
+                                if (giftActivity.getGiftNum()==null||giftActivity.getGiftNum()==0){
+                                    giftsNum=1;
+                                }else {
+                                    giftsNum=giftActivity.getGiftNum();
+                                }
+
+                                if (shopGoods.size()==0){
+                                    flag=0;
+                                    giftsNum = 0;
+                                }
+                            }
                         }
                     }
                 }
