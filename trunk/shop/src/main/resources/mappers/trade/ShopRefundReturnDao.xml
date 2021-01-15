@@ -70,8 +70,8 @@
                     select="com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao.listByReturnOrderId">
         </collection>
         <collection property="backAdd" ofType="com.framework.loippi.entity.ware.ShopAfterSaleAddress"
-                    column="backAddId"
-                    select="com.framework.loippi.dao.ware.ShopAfterSaleAddressDao.findBackAddByReturn">
+                    column="{id=back_add_id}" javaType="arraylist"
+                    select="com.framework.loippi.dao.ware.ShopAfterSaleAddressDao.findByParams">
         </collection>
     </resultMap>
 

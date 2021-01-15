@@ -25,5 +25,5 @@ public class ReturnGoodsVo extends ShopRefundReturn {
     /**
      * 售后寄回地址
      */
-    private ShopAfterSaleAddress backAdd;
+    private List<ShopAfterSaleAddress> backAdd;
 }
