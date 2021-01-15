@@ -1280,6 +1280,7 @@ public class OrderAPIController extends BaseController {
         Pageable pager = new Pageable();
         pager.setParameter(Paramap.create().put("id", orderId));
         Page<ReturnGoodsVo> refundReturnPage = refundReturnService.listWithGoods1(pager);
+        System.out.println(refundReturnPage.getContent());
         //Page<ReturnGoodsVo> refundReturnPage = refundReturnService.listWithGoods(pager);
         RdMmAddInfo shopMemberAddress = rdMmAddInfoService.find("aid", 0);
         return ApiUtils.success(RefundOrderResult.buildList(refundReturnPage.getContent(), shopMemberAddress));
