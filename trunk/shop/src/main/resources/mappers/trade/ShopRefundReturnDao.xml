@@ -62,6 +62,19 @@
                     select="com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao.listByReturnOrderId">
         </collection>
     </resultMap>
+
+    <resultMap id="shopRefundReturnGoodsVoResultMap1" type="com.framework.loippi.vo.refund.ReturnGoodsVo"
+               extends="shopRefundReturnResultMap">
+        <collection property="shopReturnOrderGoodsList" ofType="com.framework.loippi.entity.trade.ShopReturnOrderGoods"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao.listByReturnOrderId">
+        </collection>
+        <collection property="backAdd" ofType="com.framework.loippi.entity.ware.ShopAfterSaleAddress"
+                    column="backAddId"
+                    select="com.framework.loippi.dao.ware.ShopAfterSaleAddressDao.findBackAddByReturn">
+        </collection>
+    </resultMap>
+
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
 		 id ,order_id ,order_sn ,refund_sn ,store_id ,store_name ,buyer_id ,buyer_name ,goods_num ,reward_point_amount ,refund_amount  ,order_goods_type ,refund_type ,seller_state ,refund_state ,return_type,brand_name
@@ -437,6 +450,17 @@
             <include refid="where_column"/>
         </where>
     </select>
+
+    <!--查询订单列表（包括商品信息)-->
+    <select id="listRefundReturnVoWithGoods1" resultMap="shopRefundReturnGoodsVoResultMap1">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_REFUND_RETURN
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
     <!-- 分页查询-->
     <select id="findByPage" resultMap="shopRefundReturnResultMap">
         SELECT

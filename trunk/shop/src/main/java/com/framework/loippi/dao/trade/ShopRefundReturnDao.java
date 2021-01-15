@@ -37,6 +37,11 @@ public interface ShopRefundReturnDao extends GenericDao<ShopRefundReturn, Long> 
      */
     PageList<ReturnGoodsVo> listRefundReturnVoWithGoods(Object parameter, PageBounds pageBounds);
 
+    /**
+     * 分页查找订单+商品
+     */
+    PageList<ReturnGoodsVo> listRefundReturnVoWithGoods1(Object parameter, PageBounds pageBounds);
+
     List<ShopRefundReturn> findByOrderId(long orderId);
 
 	void updateTlStatusById(Map<String, Object> map);

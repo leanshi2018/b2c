@@ -176,7 +176,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
 
     @Override
     public void updateAuditPass(Long refundId, Long storeId, Integer sellerState, String operator, String processInfo,
-        String sellerMessage) {
+                                String sellerMessage, Long addId) {
         ShopRefundReturn refundReturn = shopRefundReturnDao.find(refundId);
         if (!refundReturn.getStoreId().equals(storeId)) {
             throw new RuntimeException("不能操作其他商家售后单");
@@ -525,6 +525,13 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
     }
 
     @Override
+    public Page<ReturnGoodsVo> listWithGoods1(Pageable pageable) {
+        PageList<ReturnGoodsVo> result = shopRefundReturnDao
+                .listRefundReturnVoWithGoods1(pageable.getParameter(), pageable.getPageBounds());
+        return new Page<>(result, result.getPaginator().getTotalCount(), pageable);
+    }
+
+    @Override
     public List<ShopRefundReturn> findByOrderId(long orderId) {
         return shopRefundReturnDao.findByOrderId(orderId);
     }
@@ -537,6 +544,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
         map.put("adminMessage",msg);
         shopRefundReturnDao.updateTlStatusById(map);
     }
+
 
 //    @Override
 //    public Page findOrderGoodsAdminVoList(Pageable pageable) {
