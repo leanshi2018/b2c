@@ -46,6 +46,10 @@ public class ShopGiftActivity implements GenericEntity {
 	 */
 	private BigDecimal ppv3;
 	/**
+	 * plus商品是否送赠品 0：不是 1：是
+	 */
+	private Integer plusType;
+	/**
 	 * 赠品数量
 	 */
 	private Integer giftNum;
