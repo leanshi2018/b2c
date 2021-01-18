@@ -91,4 +91,16 @@ public class ShopOrderDailyReport implements GenericEntity {
      */
     @Column(name = "total")
     private BigDecimal total;
+
+
+
+    /**
+     * 查询时间左 yyyy-MM-dd
+     */
+    private String searchTimeLeft;
+
+    /**
+     * 查询时间右 yyyy-MM-dd
+     */
+    private String searchTimeRight;
 }

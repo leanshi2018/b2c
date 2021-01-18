@@ -67,6 +67,15 @@
     <if test="total != null and total != ''">
       AND total = #{total}
     </if>
+    <if test="total != null and total != ''">
+      AND total = #{total}
+    </if>
+    <if test="searchTimeLeft != null and searchTimeLeft != ''">
+      AND report_time >= #{searchTimeLeft}
+    </if>
+    <if test="searchTimeRight != null and searchTimeRight != ''">
+      AND report_time &lt;= #{searchTimeRight}
+    </if>
   </sql>
 
   <!-- 设置语句 -->
