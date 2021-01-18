@@ -2,6 +2,10 @@ package com.framework.loippi.job;
 
 import javax.annotation.Resource;
 
+import com.framework.loippi.entity.report.ShopOrderDailyReport;
+import com.framework.loippi.entity.report.ShopOrderMonthReport;
+import com.framework.loippi.service.report.ShopOrderDailyReportService;
+import com.framework.loippi.service.report.ShopOrderMonthReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -30,6 +34,10 @@ public class ReportJob {
     private MemberIndicatorService memberIndicatorService;
     @Resource
     private MemberShippingBehaviorService memberShippingBehaviorService;
+    @Resource
+    private ShopOrderDailyReportService shopOrderDailyReportService;
+    @Resource
+    private ShopOrderMonthReportService shopOrderMonthReportService;
 
     private static final Logger log = LoggerFactory.getLogger(ReportJob.class);
 
@@ -104,5 +112,17 @@ public class ReportJob {
         log.info("###############  定时任务执行生成Excel文件   ###################");
         log.info("#################################################################");
         dailyOrderCensusService.getExcelByTime("2020-06-01 00:00:00","2020-06-30 23:59:59");
+    }
+
+    /**
+     * 定时任务统计前一日会员订单信息数据
+     */
+    //@Scheduled(cron = "0/30 * * * * ? ")  //每5秒执行一次
+    @Scheduled(cron = "0 13 0 * * ? " )  //每天0点13分执行一次
+    public void getShopOrderDailyReport() {
+        log.info("#################################################################");
+        log.info("##############  定时任务执行统计前一日订单收入详情 ################");
+        log.info("#################################################################");
+        //shopOrderDailyReportService.getDailyReport();
     }
 }

@@ -176,18 +176,24 @@ public class RefundOrderResult {
                 goodsInfo.setPpv(Optional.ofNullable(orderGoods.getPpv()).orElse(BigDecimal.ZERO));
                 goodsInfoList.add(goodsInfo);
             }
-            for (ShopAfterSaleAddress add : returnGoodsVo.getBackAdd()) {
-                if(add!=null){
-                    result.setReceiverName(Optional.ofNullable(add.getProfile()).orElse("后台还未设置"));
-                    result.setReceiverMobile(Optional.ofNullable(add.getMobile()).orElse("后台还未设置"));
-                    result.setReceiverAddress(Optional.ofNullable(
-                            add.getProvince()+add.getCity()+add.getCountry()
-                    ).orElse("后台还未设置")+Optional.ofNullable(add.getDetail()).orElse(""));
-                }else{
-                    result.setReceiverName("后台还未设置");
-                    result.setReceiverMobile("后台还未设置");
-                    result.setReceiverAddress("后台还未设置");
+            if(returnGoodsVo.getBackAdd()!=null){
+                for (ShopAfterSaleAddress add : returnGoodsVo.getBackAdd()) {
+                    if(add!=null){
+                        result.setReceiverName(Optional.ofNullable(add.getProfile()).orElse("后台还未设置"));
+                        result.setReceiverMobile(Optional.ofNullable(add.getMobile()).orElse("后台还未设置"));
+                        result.setReceiverAddress(Optional.ofNullable(
+                                add.getProvince()+add.getCity()+add.getCountry()
+                        ).orElse("后台还未设置")+Optional.ofNullable(add.getDetail()).orElse(""));
+                    }else{
+                        result.setReceiverName("后台还未设置");
+                        result.setReceiverMobile("后台还未设置");
+                        result.setReceiverAddress("后台还未设置");
+                    }
                 }
+            }else {
+                result.setReceiverName("后台还未设置");
+                result.setReceiverMobile("后台还未设置");
+                result.setReceiverAddress("后台还未设置");
             }
             Optional<ReturnGoodsVo> optionalReturnGoodsVo = Optional.ofNullable(returnGoodsVo);
 
