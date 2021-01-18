@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 /**
  * 订单报表控制类
  */
-@Controller("adminShopRefundReturnController")
+@Controller("adminOrderReportController")
 @Slf4j
 public class OrderReportController extends GenericController {
 }

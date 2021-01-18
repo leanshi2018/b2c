@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.report.ShopOrderDailyReportDao">
+
+  <resultMap id="ShopOrderDailyReportResultMap" type="com.framework.loippi.entity.report.ShopOrderDailyReport">
+    <id property="id" column="id"/>
+    <result property="reportCode" column="report_code"/>
+    <result property="reportTime" column="report_time"/>
+    <result property="createTime" column="create_time"/>
+    <result property="payNum" column="pay_num"/>
+    <result property="refundNum" column="refund_num"/>
+    <result property="wechatIncome" column="wechat_income"/>
+    <result property="alipayIncome" column="alipay_income"/>
+    <result property="allinpayIncome" column="allinpay_income"/>
+    <result property="pointIncome" column="point_income"/>
+    <result property="cashTotal" column="cash_total"/>
+    <result property="total" column="total"/>
+  </resultMap>
+  <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+  <sql id="base_column">
+        id ,report_code ,report_time ,create_time ,pay_num ,refund_num ,wechat_income ,alipay_income ,allinpay_income ,point_income ,
+        cash_total ,total
+    </sql>
+
+  <sql id="base_value_column">
+        #{id},#{reportCode},#{reportTime},#{createTime},#{payNum},#{refundNum},#{wechatIncome},#{alipayIncome},#{allinpayIncome},#{pointIncome},#{cashTotal},#{total}
+    </sql>
+
+  <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+  <sql id="where_column">
+    <if test="id != null and id != ''">
+      AND id = #{id,jdbcType=BIGINT}
+    </if>
+    <if test="reportCode != null and reportCode != ''">
+      AND report_code = #{reportCode,jdbcType=VARCHAR}
+    </if>
+    <if test="reportTime != null and reportTime != ''">
+      AND report_time = #{reportTime}
+    </if>
+    <if test="createTime != null and createTime != ''">
+      AND create_time = #{createTime}
+    </if>
+    <if test="payNum != null">
+      AND pay_num = #{payNum}
+    </if>
+    <if test="refundNum != null">
+      AND refund_num = #{refundNum}
+    </if>
+    <if test="wechatIncome != null and wechatIncome != ''">
+      AND wechat_income = #{wechatIncome}
+    </if>
+    <if test="alipayIncome != null and alipayIncome != ''">
+      AND alipay_income = #{alipayIncome}
+    </if>
+    <if test="allinpayIncome != null and allinpayIncome != ''">
+      AND allinpay_income = #{allinpayIncome}
+    </if>
+    <if test="pointIncome != null and pointIncome != ''">
+      AND point_income = #{pointIncome}
+    </if>
+    <if test="cashTotal != null and cashTotal != ''">
+      AND cash_total = #{cashTotal}
+    </if>
+    <if test="total != null and total != ''">
+      AND total = #{total}
+    </if>
+  </sql>
+
+  <!-- 设置语句 -->
+  <sql id="set_column">
+    <if test="id != null and id != ''">
+       id = #{id,jdbcType=BIGINT},
+    </if>
+    <if test="reportCode != null and reportCode != ''">
+       report_code = #{reportCode,jdbcType=VARCHAR},
+    </if>
+    <if test="reportTime != null and reportTime != ''">
+       report_time = #{reportTime},
+    </if>
+    <if test="createTime != null and createTime != ''">
+       create_time = #{createTime},
+    </if>
+    <if test="payNum != null">
+       pay_num = #{payNum},
+    </if>
+    <if test="refundNum != null">
+       refund_num = #{refundNum},
+    </if>
+    <if test="wechatIncome != null and wechatIncome != ''">
+       wechat_income = #{wechatIncome},
+    </if>
+    <if test="alipayIncome != null and alipayIncome != ''">
+       alipay_income = #{alipayIncome},
+    </if>
+    <if test="allinpayIncome != null and allinpayIncome != ''">
+       allinpay_income = #{allinpayIncome},
+    </if>
+    <if test="pointIncome != null and pointIncome != ''">
+       point_income = #{pointIncome},
+    </if>
+    <if test="cashTotal != null and cashTotal != ''">
+       cash_total = #{cashTotal},
+    </if>
+    <if test="total != null and total != ''">
+       total = #{total},
+    </if>
+  </sql>
+
+  <!-- 根据ID查询 -->
+  <select id="find" resultMap="ShopOrderDailyReportResultMap">
+    SELECT
+    <include refid="base_column"/>
+    FROM shop_order_daily_report
+    WHERE ID=#{id,jdbcType=BIGINT}
+  </select>
+
+  <!-- 查询所有 -->
+  <select id="findAll" resultMap="ShopOrderDailyReportResultMap">
+    SELECT
+    <include refid="base_column"/>
+    FROM shop_order_daily_report
+  </select>
+
+  <!-- 统计记录数 -->
+  <select id="count" resultType="long">
+    SELECT COUNT(*) FROM shop_order_daily_report
+    <where>
+      <include refid="where_column"/>
+    </where>
+  </select>
+
+
+  <!-- 插入 -->
+  <insert id="insert" parameterType="com.framework.loippi.entity.report.ShopOrderDailyReport">
+    INSERT shop_order_daily_report
+    (
+    <include refid="base_column"/>
+    )
+    VALUES (<include refid="base_value_column"/>)
+  </insert>
+
+  <!-- 修改 -->
+  <update id="update" parameterType="com.framework.loippi.entity.report.ShopOrderDailyReport">
+    UPDATE shop_order_daily_report
+    <set>
+      <include refid="set_column"/>
+    </set>
+    WHERE ID = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <!-- 删除单条记录 -->
+  <delete id="delete">
+		DELETE	FROM shop_order_daily_report
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+  <!-- 删除多条记录-->
+  <delete id="deleteAll">
+    DELETE FROM shop_order_daily_report
+    WHERE ID IN
+    <foreach item="ShopOrderReportId" index="index" collection="ids" open="(" separator="," close=")">
+      #{ShopOrderReportId}
+    </foreach>
+  </delete>
+
+  <!-- 根据参数查询列表-->
+  <select id="findByParams" resultMap="ShopOrderDailyReportResultMap">
+    SELECT
+    <include refid="base_column"/>
+    FROM shop_order_daily_report
+    <where>1=1
+      <include refid="where_column"/>
+    </where>
+  </select>
+
+  <!-- 分页查询-->
+  <select id="findByPage" resultMap="ShopOrderDailyReportResultMap">
+    SELECT
+    <include refid="base_column"/>
+    FROM shop_order_daily_report
+    <where>1=1
+      <include refid="where_column"/>
+    </where>
+  </select>
+
+</mapper>
