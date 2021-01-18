@@ -229,6 +229,8 @@ public class RefundReturnSysController extends GenericController {
             return Constants.MSG_URL;
         }
         List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsService.findList("returnOrderId",refundId);
+        List<ShopAfterSaleAddress> list = shopAfterSaleAddressService.findAll();
+        model.addAttribute("backAddList", list);
         model.addAttribute("shopReturnOrderGoodsList", shopReturnOrderGoodsList);
         model.addAttribute("refundReturn", shopRefundReturn);
         model.addAttribute("sellerState", sellerState);
@@ -1509,7 +1511,7 @@ public class RefundReturnSysController extends GenericController {
     }
 
     /**
-     * 订单退款--审核通过/审核不通过
+     * 售后商品寄回地址集合
      *
      */
     @RequestMapping(value = "/admin/refundreturn/backAddList")
