@@ -1,5 +1,6 @@
 package com.framework.loippi.service.impl.report;
 
+import com.framework.loippi.dao.report.ShopOrderDailyReportDao;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.report.ShopOrderDailyReport;
 import com.framework.loippi.service.TwiterIdService;
@@ -21,7 +22,7 @@ public class ShopOrderDailyReportServiceImpl extends GenericServiceImpl<ShopOrde
     @Resource
     private ShopOrderService shopOrderService;
     @Resource
-    private ShopOrderDailyReportService shopOrderDailyReportService;
+    private ShopOrderDailyReportDao shopOrderDailyReportDao;
     @Resource
     private ShopRefundReturnService shopRefundReturnService;
     @Resource
@@ -73,6 +74,6 @@ public class ShopOrderDailyReportServiceImpl extends GenericServiceImpl<ShopOrde
         dailyReport.setPointIncome(pointIncome);
         dailyReport.setCashTotal(wechatIncome.add(alipayIncome).add(allinpayIncome));
         dailyReport.setTotal(wechatIncome.add(alipayIncome).add(allinpayIncome).add(pointIncome));
-        shopOrderDailyReportService.save(dailyReport);
+        shopOrderDailyReportDao.insert(dailyReport);
     }
 }
