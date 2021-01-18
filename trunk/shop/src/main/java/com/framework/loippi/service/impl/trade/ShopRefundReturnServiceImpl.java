@@ -532,6 +532,11 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
     }
 
     @Override
+    public Integer findAfterSaleYesterday(HashMap<String, Object> map) {
+        return shopRefundReturnDao.findAfterSaleYesterday(map);
+    }
+
+    @Override
     public List<ShopRefundReturn> findByOrderId(long orderId) {
         return shopRefundReturnDao.findByOrderId(orderId);
     }

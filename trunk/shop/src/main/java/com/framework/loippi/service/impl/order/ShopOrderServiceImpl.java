@@ -4812,6 +4812,26 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     }
 
     @Override
+    public Integer findPayNumYesterday(HashMap<String, Object> map) {
+        return orderDao.findPayNumYesterday(map);
+    }
+
+    @Override
+    public Integer findCancelNumYesterday(HashMap<String, Object> map) {
+        return orderDao.findCancelNumYesterday(map);
+    }
+
+    @Override
+    public BigDecimal getSumPoint(HashMap<String, Object> map) {
+        return orderDao.getSumPoint(map);
+    }
+
+    @Override
+    public BigDecimal getSumIncome(HashMap<String, Object> map) {
+        return orderDao.getSumIncome(map);
+    }
+
+    @Override
     public Page listWithGoodsAndAddr(Pageable pageable) {
         PageList<ShopOrderVo> result = orderDao
             .listShopOrderVoWithGoodsAndAddr(pageable.getParameter(), pageable.getPageBounds());

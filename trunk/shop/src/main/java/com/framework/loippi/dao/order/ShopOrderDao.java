@@ -237,4 +237,12 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
 	BigDecimal countOrderPPVByNorSplitFlag(Map<String, Object> map);
 
 	PageList<ShopOrderVo> selectListShopOrderVoWithGoods(Object parameter, PageBounds pageBounds);
+
+    Integer findPayNumYesterday(HashMap<String, Object> map);
+
+    Integer findCancelNumYesterday(HashMap<String, Object> map);
+
+    BigDecimal getSumPoint(HashMap<String, Object> map);
+
+    BigDecimal getSumIncome(HashMap<String, Object> map);
 }

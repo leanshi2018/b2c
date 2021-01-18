@@ -1,5 +1,6 @@
 package com.framework.loippi.dao.trade;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,4 +46,6 @@ public interface ShopRefundReturnDao extends GenericDao<ShopRefundReturn, Long> 
     List<ShopRefundReturn> findByOrderId(long orderId);
 
 	void updateTlStatusById(Map<String, Object> map);
+
+    Integer findAfterSaleYesterday(HashMap<String, Object> map);
 }

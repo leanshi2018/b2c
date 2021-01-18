@@ -123,6 +123,18 @@ public class ReportJob {
         log.info("#################################################################");
         log.info("##############  定时任务执行统计前一日订单收入详情 ################");
         log.info("#################################################################");
-        //shopOrderDailyReportService.getDailyReport();
+        shopOrderDailyReportService.getDailyReport();
+    }
+
+    /**
+     * 定时任务统计前一月会员订单信息数据
+     */
+    //@Scheduled(cron = "0/30 * * * * ? ")  //每5秒执行一次
+    @Scheduled(cron = "0 20 0 1 * ? " )  //每月1号凌晨0点20分执行
+    public void getShopOrderMonthReport() {
+        log.info("#################################################################");
+        log.info("##############  定时任务执行统计前一月订单收入详情 ################");
+        log.info("#################################################################");
+        shopOrderMonthReportService.getMonthReport();
     }
 }

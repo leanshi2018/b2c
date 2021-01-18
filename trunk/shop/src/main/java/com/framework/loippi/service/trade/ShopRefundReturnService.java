@@ -1,5 +1,6 @@
 package com.framework.loippi.service.trade;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.framework.loippi.entity.trade.ShopRefundReturn;
@@ -72,4 +73,6 @@ public interface ShopRefundReturnService extends GenericService<ShopRefundReturn
 	void updateTlStatusById(String refundSn, Integer tlRefundStatus, String msg);
 
     Page<ReturnGoodsVo> listWithGoods1(Pageable pager);
+
+    Integer findAfterSaleYesterday(HashMap<String, Object> map);
 }
