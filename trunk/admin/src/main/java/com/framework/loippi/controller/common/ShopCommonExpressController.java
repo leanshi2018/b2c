@@ -309,11 +309,12 @@ public class ShopCommonExpressController extends GenericController {
      * @return
      */
     @RequestMapping(value = "/findExpressList")
-    public String findExpressList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopCommonExpress param) {
+    @ResponseBody
+    public List<ShopCommonExpress> findExpressList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopCommonExpress param) {
         pageable.setParameter(Paramap.create().put("name", param.getEName()).put("eState",1).put("isDel",0));
         pageable.setOrderProperty("e_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", shopCommonExpressService.findByPage(pageable));
-        return "";
+        //model.addAttribute("page", shopCommonExpressService.findByPage(pageable));
+        return shopCommonExpressService.findByPage(pageable).getContent();
     }
 }
