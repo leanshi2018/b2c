@@ -183,6 +183,8 @@ public class OrderSysController extends GenericController {
     private ShunFengJsonExpressService shunFengJsonExpressService;
     @Resource
     private RdWareOrderService rdWareOrderService;
+    @Resource
+    private ShopCommonExpressService shopCommonExpressService;
     // 订单编辑中
     private static final int ORDER_EDITING = 0;
     // 订单编辑完成
@@ -256,10 +258,14 @@ public class OrderSysController extends GenericController {
      * @throws Exception
      */
     @RequestMapping(value = {"/admin/order/expressOrder"}, method = RequestMethod.POST)
-    public void expressOrder(HttpServletRequest request, HttpServletResponse response, Long[] ids, String typeExperss) throws Exception{
-       /* Long[] ids = new Long[1];
-        ids[0] = 6562977106358177792l;//,Long[] ids
-*/
+    public void expressOrder(HttpServletRequest request, HttpServletResponse response, ModelMap model, Long[] ids, String typeExperss,Long eId) throws Exception{
+
+        ShopCommonExpress express = shopCommonExpressService.find(eId);
+        /*if (express==null){
+            model.addAttribute("msg", "找不到该快递");
+            //return Constants.MSG_URL;
+        }*/
+
         if (typeExperss.equals("1")){//选择发货
             System.out.println("进来了选择发货");
             if (ids.length>0){
@@ -325,7 +331,7 @@ public class OrderSysController extends GenericController {
                                     }
                                 }else {
                                     System.out.println("不只有白酒");
-                                    Map<String, Object> resMap = orderShip(id);//发货返回信息
+                                    Map<String, Object> resMap = orderShip(id,express);//发货返回信息
                                     String resultS = (String) resMap.get("res");
                                     if (!"".equals(resultS)) {
                                         if(resultS.substring(0,1).equals("{")){
@@ -362,7 +368,7 @@ public class OrderSysController extends GenericController {
 
                                                     List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
                                                     List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
-                                                    List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo,44l);//需要修改订单商品信息
+                                                    List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo,express.getId());//需要修改订单商品信息
                                                     shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
                                                 }
 
@@ -450,7 +456,7 @@ public class OrderSysController extends GenericController {
                         }
                     }else {
                         System.out.println("不只有白酒");
-                        Map<String, Object> resMap = orderShip(shopOrder.getId());//发货返回信息
+                        Map<String, Object> resMap = orderShip(shopOrder.getId(),express);//发货返回信息
                         String resultS = (String)resMap.get("res");
                         if (!"".equals(resultS)){
                             if(resultS.substring(0,1).equals("{")){
@@ -486,7 +492,7 @@ public class OrderSysController extends GenericController {
 
                                         List<ShopOrderGoods> shopOrderGoodsList = new ArrayList<>();
                                         List<ShopOrderGoods> orderGoodsList = (List<ShopOrderGoods>) resMap.get("orderGoods");
-                                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo,44l);//需要修改订单商品信息
+                                        List<ShopOrderGoods> shopOrderGoods = updateOrderGoods(shopOrderGoodsList, orderGoodsList, trackingNo,express.getId());//需要修改订单商品信息
                                         shopOrderGoodsService.updateBatchForShipmentNum(shopOrderGoods);//修改订单商品信息
                                     }
                                 }
@@ -599,7 +605,7 @@ public class OrderSysController extends GenericController {
      * @param id
      * @return
      */
-    public Map<String,Object> orderShip(Long id) throws Exception {
+    public Map<String,Object> orderShip(Long id,ShopCommonExpress shopCommonExpress) throws Exception {
         Map<String,Object> map = new HashMap<String,Object>();//strorderinfo参数
         map.put("Style","1");
         map.put("CustomerID",customerID);
@@ -816,7 +822,7 @@ public class OrderSysController extends GenericController {
         map.put("Products",productListss);*/
 
 /**************************************选择快递********************************************************/
-        String eExpressCode = "CNZT-B";//第三方物流单号
+        String eExpressCode = shopCommonExpress.getEExpressCode();//第三方物流单号
         //最大级数
         /*Integer macSort = commonExpressService.macSort();
         for (int i=1;i<=macSort;i++){
@@ -926,9 +932,11 @@ public class OrderSysController extends GenericController {
             }*/
 
             //查看是否是特殊快递渠道商品
-            String sku = (String)product.get("SKU");
-            if (specialGoodsMap.containsKey(sku)){//存在
-                eExpressCode = specialGoodsMap.get(sku);
+            if (eExpressCode.equals("10294CNZT")){
+                String sku = (String)product.get("SKU");
+                if (specialGoodsMap.containsKey(sku)){//存在
+                    eExpressCode = specialGoodsMap.get(sku);
+                }
             }
 
             /************************************预售商品（有的话跳过该订单不发）*********************************************/

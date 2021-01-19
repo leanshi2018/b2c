@@ -1992,7 +1992,7 @@ public class ShopOrderJob {
         map.put("Products",productListss);*/
 
 /**************************************选择快递********************************************************/
-        String eExpressCode = "CNZT-B";//第三方物流单号
+        String eExpressCode = "10294CNZT";//第三方物流单号
         //最大级数
         /*Integer macSort = commonExpressService.macSort();
         for (int i=1;i<=macSort;i++){

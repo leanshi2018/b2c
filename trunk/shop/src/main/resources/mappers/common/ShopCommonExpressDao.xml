@@ -68,6 +68,9 @@
         <if test="eAliCode != null and eAliCode != ''">
             AND e_ali_code = #{eAliCode,jdbcType=VARCHAR}
         </if>
+        <if test="name != null and name != ''">
+            AND e_name like concat('%',#{name},'%')
+        </if>
     </sql>
 
     <!-- 设置语句 -->
