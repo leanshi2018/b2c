@@ -1,5 +1,7 @@
 package com.framework.loippi.controller.trade;
 
+import com.framework.loippi.entity.ware.ShopAfterSaleAddress;
+import com.framework.loippi.service.ware.ShopAfterSaleAddressService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -146,7 +148,8 @@ public class RefundReturnSysController extends GenericController {
     private ShopMemberMessageService shopMemberMessageService;
     @Resource
     private OrderFundFlowService orderFundFlowService;
-
+    @Resource
+    private ShopAfterSaleAddressService shopAfterSaleAddressService;
 
     /**
      * 列表查询
@@ -226,6 +229,8 @@ public class RefundReturnSysController extends GenericController {
             return Constants.MSG_URL;
         }
         List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsService.findList("returnOrderId",refundId);
+        List<ShopAfterSaleAddress> list = shopAfterSaleAddressService.findAll();
+        model.addAttribute("backAddList", list);
         model.addAttribute("shopReturnOrderGoodsList", shopReturnOrderGoodsList);
         model.addAttribute("refundReturn", shopRefundReturn);
         model.addAttribute("sellerState", sellerState);
@@ -265,7 +270,26 @@ public class RefundReturnSysController extends GenericController {
     @RequestMapping(value = "/admin/refundreturn/passAudit")
     @ResponseBody
     public String passAudit(@RequestParam long refundId, @RequestParam int sellerState, String processInfo,
-                            String sellerMessage) {
+                            String sellerMessage,@RequestParam Long addId) {
+        String operator="";
+        Subject subject = SecurityUtils.getSubject();
+        if(subject!=null){
+            Principal principal = (Principal) subject.getPrincipal();
+            if (principal != null && principal.getId() != null) {
+                operator = principal.getUsername();
+            }else {
+                showErrorJson("请登录后进行审核操作");
+                return json;
+            }
+        }else {
+            showErrorJson("请登录后进行审核操作");
+            return json;
+        }
+        ShopRefundReturn refundReturn = refundReturnService.find(refundId);
+        if(refundReturn==null){
+            showErrorJson("售后申请不存在");
+            return json;
+        }
         if (StringUtil.isEmpty(processInfo)) {
             showErrorJson("处理进度不能为空");
             return json;
@@ -281,7 +305,11 @@ public class RefundReturnSysController extends GenericController {
             showErrorJson("审核状态错误");
             return json;
         }
-        refundReturnService.updateAuditPass(refundId, 0L, sellerState, "平台自营", processInfo, sellerMessage);
+        if(sellerState == RefundReturnState.SELLER_STATE_AGREE&&addId==null&&refundReturn.getRefundType()!=1){
+            showErrorJson("请选择商品寄回地址");
+            return json;
+        }
+        refundReturnService.updateAuditPass(refundId, 0L, sellerState, operator, processInfo, sellerMessage,addId);
         showSuccessJson("审核成功");
         return json;
     }
@@ -1482,4 +1510,15 @@ public class RefundReturnSysController extends GenericController {
         return Constants.MSG_URL;
     }
 
+    /**
+     * 售后商品寄回地址集合
+     *
+     */
+    @RequestMapping(value = "/admin/refundreturn/backAddList")
+    @ResponseBody
+    public String backAddList(Model modelMap) {
+        List<ShopAfterSaleAddress> list = shopAfterSaleAddressService.findAll();
+        modelMap.addAttribute("backAddList", list);
+        return "";//TODO 集合地址集合
+    }
 }

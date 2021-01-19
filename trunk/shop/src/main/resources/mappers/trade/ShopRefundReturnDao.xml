@@ -47,6 +47,7 @@
         <result property="buyerMobile" column="buyer_mobile" />
         <result property="ppv" column="ppv" />
         <result property="tlRefundStatus" column="tl_refund_status" />
+        <result property="backAddId" column="back_add_id" />
     </resultMap>
 
     <resultMap id="shopRefundReturnVoResultMap" type="com.framework.loippi.vo.refund.ShopRefundReturnVo">
@@ -62,15 +63,28 @@
                     select="com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao.listByReturnOrderId">
         </collection>
     </resultMap>
+
+    <resultMap id="shopRefundReturnGoodsVoResultMap1" type="com.framework.loippi.vo.refund.ReturnGoodsVo"
+               extends="shopRefundReturnResultMap">
+        <collection property="shopReturnOrderGoodsList" ofType="com.framework.loippi.entity.trade.ShopReturnOrderGoods"
+                    column="id" javaType="arraylist"
+                    select="com.framework.loippi.dao.trade.ShopReturnOrderGoodsDao.listByReturnOrderId">
+        </collection>
+        <collection property="backAdd" ofType="com.framework.loippi.entity.ware.ShopAfterSaleAddress"
+                    column="{id=back_add_id}" javaType="arraylist"
+                    select="com.framework.loippi.dao.ware.ShopAfterSaleAddressDao.findByParams">
+        </collection>
+    </resultMap>
+
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
 		 id ,order_id ,order_sn ,refund_sn ,store_id ,store_name ,buyer_id ,buyer_name ,goods_num ,reward_point_amount ,refund_amount  ,order_goods_type ,refund_type ,seller_state ,refund_state ,return_type,brand_name
-		 ,order_lock ,goods_state ,create_time ,seller_time ,admin_time ,reason_id ,reason_info ,pic_info ,buyer_message ,seller_message ,admin_message ,express_id ,invoice_no ,ship_time ,delay_time ,receive_time ,receive_message ,commis_rate ,express_name ,batch_no,express_code,buyer_mobile,ppv,tl_refund_status
+		 ,order_lock ,goods_state ,create_time ,seller_time ,admin_time ,reason_id ,reason_info ,pic_info ,buyer_message ,seller_message ,admin_message ,express_id ,invoice_no ,ship_time ,delay_time ,receive_time ,receive_message ,commis_rate ,express_name ,batch_no,express_code,buyer_mobile,ppv,tl_refund_status,back_add_id
 	</sql>
 
     <sql id="base_value_column">
 		 #{id},#{orderId},#{orderSn},#{refundSn},#{storeId},#{storeName},#{buyerId},#{buyerName},#{goodsNum},#{rewardPointAmount},#{refundAmount},#{orderGoodsType},#{refundType},#{sellerState},#{refundState}
-		 ,#{returnType},#{brandName},#{orderLock},#{goodsState},#{createTime},#{sellerTime},#{adminTime},#{reasonId},#{reasonInfo},#{picInfo},#{buyerMessage},#{sellerMessage},#{adminMessage},#{expressId},#{invoiceNo},#{shipTime},#{delayTime},#{receiveTime},#{receiveMessage},#{commisRate},#{expressName},#{batchNo},#{expressCode},#{buyerMobile},#{ppv},#{tlRefundStatus}
+		 ,#{returnType},#{brandName},#{orderLock},#{goodsState},#{createTime},#{sellerTime},#{adminTime},#{reasonId},#{reasonInfo},#{picInfo},#{buyerMessage},#{sellerMessage},#{adminMessage},#{expressId},#{invoiceNo},#{shipTime},#{delayTime},#{receiveTime},#{receiveMessage},#{commisRate},#{expressName},#{batchNo},#{expressCode},#{buyerMobile},#{ppv},#{tlRefundStatus},#{backAddId}
 	</sql>
 
     <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -206,6 +220,9 @@
         </if>
         <if test="tlRefundStatus != null">
             AND tl_refund_status = #{tlRefundStatus}
+        </if>
+        <if test="backAddId != null">
+            AND back_add_id = #{backAddId}
         </if>
         <if test="keyWordMobile != null and keyWordMobile != ''">
             AND buyer_mobile like CONCAT('%',#{keyWordMobile},'%')
@@ -346,6 +363,9 @@
         <if test="tlRefundStatus != null">
             tl_refund_status = #{tlRefundStatus},
         </if>
+        <if test="backAddId != null">
+             back_add_id = #{backAddId},
+        </if>
         <if test="specName != null and specName != ''">
             spec_name = #{specName,jdbcType=VARCHAR},
         </if>
@@ -437,6 +457,17 @@
             <include refid="where_column"/>
         </where>
     </select>
+
+    <!--查询订单列表（包括商品信息)-->
+    <select id="listRefundReturnVoWithGoods1" resultMap="shopRefundReturnGoodsVoResultMap1">
+        SELECT
+        <include refid="base_column"/>
+        FROM SHOP_REFUND_RETURN
+        <where>1=1
+            <include refid="where_column"/>
+        </where>
+    </select>
+
     <!-- 分页查询-->
     <select id="findByPage" resultMap="shopRefundReturnResultMap">
         SELECT
@@ -502,4 +533,8 @@
         tl_refund_status = #{tlRefundStatus}
         WHERE id = #{id}
     </update>
-</mapper> 
+
+    <select id="findAfterSaleYesterday" parameterType="map" resultType="java.lang.Integer">
+        SELECT COUNT(1) from SHOP_REFUND_RETURN where admin_time >= #{start} and admin_time &lt;= #{end} and refund_state = 3 and refund_type != 3
+    </select>
+</mapper>

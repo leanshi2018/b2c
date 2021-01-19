@@ -3,6 +3,7 @@ package com.framework.loippi.result.order;
 import com.framework.loippi.entity.order.ShopOrderGoods;
 import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
 import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.ware.ShopAfterSaleAddress;
 import com.framework.loippi.mybatis.ext.annotation.Column;
 import com.framework.loippi.result.app.order.OrderResult;
 import com.framework.loippi.vo.refund.ReturnGoodsVo;
@@ -175,6 +176,25 @@ public class RefundOrderResult {
                 goodsInfo.setPpv(Optional.ofNullable(orderGoods.getPpv()).orElse(BigDecimal.ZERO));
                 goodsInfoList.add(goodsInfo);
             }
+            if(returnGoodsVo.getBackAdd()!=null){
+                for (ShopAfterSaleAddress add : returnGoodsVo.getBackAdd()) {
+                    if(add!=null){
+                        result.setReceiverName(Optional.ofNullable(add.getProfile()).orElse("后台还未设置"));
+                        result.setReceiverMobile(Optional.ofNullable(add.getMobile()).orElse("后台还未设置"));
+                        result.setReceiverAddress(Optional.ofNullable(
+                                add.getProvince()+add.getCity()+add.getCountry()
+                        ).orElse("后台还未设置")+Optional.ofNullable(add.getDetail()).orElse(""));
+                    }else{
+                        result.setReceiverName("后台还未设置");
+                        result.setReceiverMobile("后台还未设置");
+                        result.setReceiverAddress("后台还未设置");
+                    }
+                }
+            }else {
+                result.setReceiverName("后台还未设置");
+                result.setReceiverMobile("后台还未设置");
+                result.setReceiverAddress("后台还未设置");
+            }
             Optional<ReturnGoodsVo> optionalReturnGoodsVo = Optional.ofNullable(returnGoodsVo);
 
             result.setOrderId(optionalReturnGoodsVo.map(ReturnGoodsVo::getId).orElse(-1L));
@@ -194,7 +214,7 @@ public class RefundOrderResult {
             }else {
                 result.setRefundFlag(1);
             }
-            if (shopMemberAddress!=null){
+            /*if (shopMemberAddress!=null){
                 result.setReceiverName(Optional.ofNullable(shopMemberAddress.getConsigneeName()).orElse("后台还未设置"));
                 result.setReceiverMobile(Optional.ofNullable(shopMemberAddress.getMobile()).orElse("后台还未设置"));
                 result.setReceiverAddress(Optional.ofNullable(
@@ -204,7 +224,7 @@ public class RefundOrderResult {
                 result.setReceiverName("后台还未设置");
                 result.setReceiverMobile("后台还未设置");
                 result.setReceiverAddress("后台还未设置");
-            }
+            }*/
 // 卖家处理状态:0为待审核,1审核确认,2为同意,3为不同意,默认为0
             if (returnGoodsVo.getSellerState() == 0 || returnGoodsVo.getSellerState() == 1 || returnGoodsVo.getSellerState() == 3 || returnGoodsVo.getSellerState() == 4) {
                 result.setState(returnGoodsVo.getSellerState() + 80);

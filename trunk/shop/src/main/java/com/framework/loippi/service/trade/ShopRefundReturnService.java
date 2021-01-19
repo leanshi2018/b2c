@@ -1,11 +1,13 @@
 package com.framework.loippi.service.trade;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.framework.loippi.entity.trade.ShopRefundReturn;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
+import com.framework.loippi.vo.refund.ReturnGoodsVo;
 import com.framework.loippi.vo.refund.ShopRefundReturnVo;
 
 /**
@@ -28,13 +30,13 @@ public interface ShopRefundReturnService extends GenericService<ShopRefundReturn
 
     /**
      * 审核通过/不通过
-     *
-     * @param refundId 记录ID
+     *  @param refundId 记录ID
      * @param sellerState 卖家处理状态 【同意/不同意】
      * @param operator 操作人
+     * @param addId 商品寄回地址信息id
      */
     void updateAuditPass(Long refundId, Long storeId, Integer sellerState, String operator, String processInfo,
-        String sellerMessage);
+                         String sellerMessage, Long addId);
 
 //    /**
 //     * 获取页面所需退款项信息
@@ -69,4 +71,8 @@ public interface ShopRefundReturnService extends GenericService<ShopRefundReturn
     List<ShopRefundReturn> findByOrderId(long orderId);
 
 	void updateTlStatusById(String refundSn, Integer tlRefundStatus, String msg);
+
+    Page<ReturnGoodsVo> listWithGoods1(Pageable pager);
+
+    Integer findAfterSaleYesterday(HashMap<String, Object> map);
 }

@@ -412,5 +412,13 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
 	Page selectListWithGoods(Pageable pageable);
 
-	/*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
+    Integer findPayNumYesterday(HashMap<String, Object> map);
+
+    Integer findCancelNumYesterday(HashMap<String, Object> map);
+
+    BigDecimal getSumPoint(HashMap<String, Object> map);
+
+    BigDecimal getSumIncome(HashMap<String, Object> map);
+
+    /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

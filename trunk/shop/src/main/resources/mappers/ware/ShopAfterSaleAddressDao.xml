@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.ware.ShopAfterSaleAddressDao">
+	
+	<resultMap id="ShopAfterSaleAddressResultMap" type="com.framework.loippi.entity.ware.ShopAfterSaleAddress">
+		<result property="id" column="id" />
+		<result property="profile" column="profile" />
+		<result property="province" column="province" />
+		<result property="city" column="city" />
+		<result property="country" column="country" />
+		<result property="detail" column="detail" />
+		<result property="name" column="name" />
+		<result property="mobile" column="mobile" />
+	</resultMap>
+	
+	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+	<sql id="base_column">
+		 id ,profile ,province ,city ,country ,detail ,name ,mobile
+	</sql>
+	
+	<sql id="base_value_column">
+		 #{id},#{profile},#{province},#{city},#{country},#{detail},#{name},#{mobile}
+	</sql>
+	
+	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+	<sql id="where_column">
+		<if test="id != null and id != ''">
+			AND id = #{id,jdbcType=BIGINT}
+		</if>
+		<if test="profile != null and profile != ''">
+			AND profile = #{profile,jdbcType=VARCHAR}
+		</if>
+		<if test="province != null and province != ''">
+			AND province = #{province,jdbcType=VARCHAR}
+		</if>
+		<if test="city != null and city != ''">
+			AND city = #{city,jdbcType=VARCHAR}
+		</if>
+		<if test="country != null and country != ''">
+			AND country = #{country}
+		</if>
+		<if test="detail != null and detail != ''">
+			AND detail = #{detail,jdbcType=VARCHAR}
+		</if>
+		<if test="name != null and name != ''">
+			AND name = #{name,jdbcType=INTEGER}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND mobile = #{mobile,jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<!-- 设置语句 -->
+	<sql id="set_column">
+		<if test="id != null and id != ''">
+			 id = #{id,jdbcType=BIGINT},
+		</if>
+		<if test="profile != null and profile != ''">
+			 profile = #{profile,jdbcType=VARCHAR},
+		</if>
+		<if test="province != null and province != ''">
+			 province = #{province,jdbcType=VARCHAR},
+		</if>
+		<if test="city != null and city != ''">
+			 city = #{city,jdbcType=VARCHAR},
+		</if>
+		<if test="country != null and country != ''">
+			 country = #{country},
+		</if>
+		<if test="detail != null and detail != ''">
+			 detail = #{detail,jdbcType=VARCHAR},
+		</if>
+		<if test="name != null and name != ''">
+			 name = #{name,jdbcType=INTEGER},
+		</if>
+		<if test="mobile != null and mobile != ''">
+			 mobile = #{mobile,jdbcType=INTEGER},
+		</if>
+	</sql>
+
+	<!-- 根据ID查询 -->
+	<select id="find" resultMap="ShopAfterSaleAddressResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	shop_after_sale_address
+		WHERE	id = #{id}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="ShopAfterSaleAddressResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	shop_after_sale_address
+	</select>
+	
+	<!-- 统计记录数 -->
+	<select id="count" resultType="long">
+		SELECT COUNT(*) FROM shop_after_sale_address
+		<where> 
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.framework.loippi.entity.ware.RdInventoryWarning">
+		INSERT shop_after_sale_address
+				(<include refid="base_column" /> )
+		VALUES	(<include refid="base_value_column" />)
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.framework.loippi.entity.ware.RdInventoryWarning">
+		UPDATE	shop_after_sale_address
+		<set>
+			<include refid="set_column" />
+		</set>
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 删除单条记录 -->
+	<delete id="delete">
+		DELETE	FROM shop_after_sale_address
+		WHERE	id = #{id}
+	</delete>
+	
+	<!-- 删除多条记录-->
+	<delete id="deleteAll">
+		DELETE	FROM shop_after_sale_address
+		WHERE	ID	IN
+    	<foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+	  		#{id}
+		</foreach>
+	</delete>
+	
+	<!-- 根据参数查询列表-->
+	<select id="findByParams" resultMap="ShopAfterSaleAddressResultMap">
+		SELECT	<include refid="base_column" />
+		FROM 	shop_after_sale_address
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+	
+	<!-- 分页查询-->
+	<select id="findByPage" resultMap="ShopAfterSaleAddressResultMap">
+		SELECT
+		<include refid="base_column" />
+		FROM shop_after_sale_address
+		<where> 1=1
+			<include refid="where_column" />
+		</where>
+	</select>
+
+	<select id="findBackAddByReturn" resultMap="ShopAfterSaleAddressResultMap">
+		SELECT	<include refid="base_column" />
+		FROM	shop_after_sale_address
+		WHERE	id = #{backAddId}
+	</select>
+</mapper>

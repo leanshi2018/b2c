@@ -267,6 +267,11 @@ public class ShopRefundReturn implements GenericEntity {
      */
     @Column(name = "tl_refund_status")
     private Integer tlRefundStatus;
+    /**
+     *  通联退款状态 0.失败（默认） 1.进行中 2.成功
+     */
+    @Column(name = "back_add_id")
+    private Long backAddId;
 
     /*********************
      * 添加
