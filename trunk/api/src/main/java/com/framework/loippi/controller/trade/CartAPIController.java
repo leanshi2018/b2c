@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +38,10 @@ import com.framework.loippi.entity.gift.ShopGiftGoods;
 import com.framework.loippi.entity.order.ShopOrder;
 import com.framework.loippi.entity.order.ShopOrderDiscountType;
 import com.framework.loippi.entity.order.ShopOrderGoods;
+import com.framework.loippi.entity.product.ShopBundledGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsFreightRule;
+import com.framework.loippi.entity.product.ShopGoodsGoods;
 import com.framework.loippi.entity.product.ShopGoodsSpec;
 import com.framework.loippi.entity.user.RdMmAddInfo;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
@@ -55,9 +59,11 @@ import com.framework.loippi.service.gift.ShopGiftActivityService;
 import com.framework.loippi.service.gift.ShopGiftGoodsService;
 import com.framework.loippi.service.order.ShopOrderDiscountTypeService;
 import com.framework.loippi.service.order.ShopOrderService;
+import com.framework.loippi.service.product.ShopBundledGoodsService;
 import com.framework.loippi.service.product.ShopCartService;
 import com.framework.loippi.service.product.ShopGoodsFreightRuleService;
 import com.framework.loippi.service.product.ShopGoodsFreightService;
+import com.framework.loippi.service.product.ShopGoodsGoodsService;
 import com.framework.loippi.service.product.ShopGoodsService;
 import com.framework.loippi.service.product.ShopGoodsSpecService;
 import com.framework.loippi.service.user.RdMmAccountInfoService;
@@ -114,6 +120,10 @@ public class CartAPIController extends BaseController {
     private ShopGiftGoodsService shopGiftGoodsService;
     @Resource
     private ShopGoodsSpecService shopGoodsSpecService;
+    @Resource
+    private ShopGoodsGoodsService shopGoodsGoodsService;
+    @Resource
+    private ShopBundledGoodsService shopBundledGoodsService;
     /**
      * 购物车列表
      */
@@ -646,7 +656,7 @@ public class CartAPIController extends BaseController {
     public String checkoutNew2(@RequestParam String cartIds, Long groupBuyActivityId, Long shopOrderTypeId,
                                @RequestParam(defaultValue = "1") Integer logisticType,
                                @RequestParam(required = false,value = "couponId") Long couponId,
-                               HttpServletRequest request, Long addressId) {
+                               HttpServletRequest request, Long addressId) throws Exception {
         if (StringUtils.isBlank(cartIds)) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
@@ -779,6 +789,121 @@ public class CartAPIController extends BaseController {
             e.printStackTrace();
         }
         result.setImmediatelyFlag(0);
+
+        //附赠商品（这里只是计算给app端查看，添加在提交订单接口）
+        List<ShopBundledGoods> bundledGoodsList = shopBundledGoodsService.findAll();
+        Map<Long,ShopBundledGoods> bundledMap = new HashMap<Long,ShopBundledGoods>();
+        if(bundledGoodsList.size()>0){
+            for (ShopBundledGoods bundledGoods : bundledGoodsList) {
+                bundledMap.put(bundledGoods.getSpecId(),bundledGoods);
+            }
+        }
+        Map<Long,ShopGoods> bGoodsMap = new HashMap<Long,ShopGoods>();
+        for (ShopCart shopCart : cartList) {
+            Integer goodsNum = 1;
+            if (shopCart.getGoodsNum()==null){
+                goodsNum=1;
+            }else {
+                goodsNum=shopCart.getGoodsNum();
+            }
+            Long goodsId = shopCart.getGoodsId();
+            ShopGoods goods = goodsService.find(goodsId);
+            ShopGoodsSpec spec = shopGoodsSpecService.find(shopCart.getSpecId());
+            if (goods.getGoodsType() != 3) {//非组合
+                if(bundledMap.containsKey(spec.getId())){//购物车有附赠商品
+                    ShopBundledGoods shopBundledGoods = bundledMap.get(spec.getId());
+                    Integer num = 1;
+                    if (shopBundledGoods.getBNum()==null){
+                        num=1;
+                    }else {
+                        num=shopBundledGoods.getBNum();
+                    }
+                    if (bGoodsMap.containsKey(shopBundledGoods.getBSpecId())){
+                        Integer n = num*goodsNum;
+                        ShopGoods shopGoodsB = bGoodsMap.get(shopBundledGoods.getBSpecId());
+                        if (shopGoodsB.getBNum()==null){
+                            shopGoodsB.setBNum(n);
+                        }else {
+                            Integer bNum = shopGoodsB.getBNum();
+                            shopGoodsB.setBNum(bNum+n);
+                        }
+                        bGoodsMap.put(shopBundledGoods.getBSpecId(),shopGoodsB);
+                    }else {
+                        ShopGoods bShopGoods = goodsService.find(shopBundledGoods.getBGoodsId());
+                        ShopGoodsSpec bGoodsSpec = shopGoodsSpecService.find(shopBundledGoods.getBSpecId());
+                        bShopGoods.setShopGoodsSpec(bGoodsSpec);
+                        bShopGoods.setBNum(num*goodsNum);
+                        bGoodsMap.put(shopBundledGoods.getBSpecId(),bShopGoods);
+                    }
+                }
+
+            } else {
+                Map<String, String> specMap = JacksonUtil.readJsonToMap(spec.getSpecGoodsSpec());
+                Set<String> keySpec = specMap.keySet();
+                Iterator<String> itSpec = keySpec.iterator();
+                while (itSpec.hasNext()) {
+                    String specId1 = itSpec.next();//单品的规格id
+                    ShopGoodsSpec spec1 = shopGoodsSpecService.find(new Long(specId1));
+                    ShopGoods shopGoods1 = goodsService.find(spec1.getGoodsId());
+
+                    if(bundledMap.containsKey(spec1.getId())) {//购物车有附赠商品
+                        ShopBundledGoods shopBundledGoods = bundledMap.get(spec1.getId());
+                        Integer num = 1;
+                        if (shopBundledGoods.getBNum()==null){
+                            num=1;
+                        }else {
+                            num=shopBundledGoods.getBNum();
+                        }
+
+                        HashMap<String, Object> ggMap = new HashMap<>();
+                        ggMap.put("goodId", goods.getId());
+                        ggMap.put("combineGoodsId", shopGoods1.getId());
+                        List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsService.findGoodsGoodsList(ggMap);
+                        ShopGoodsGoods goodsGoods = null;
+                        if (goodsGoodsList.size() > 0) {
+                            if (goodsGoodsList.size() == 1) {
+                                goodsGoods = goodsGoodsList.get(0);
+                            } else {
+                                for (ShopGoodsGoods shopGoodsGoods : goodsGoodsList) {
+                                    if (shopGoodsGoods.getGoodsSpec().equals(specId1)) {
+                                        goodsGoods = shopGoodsGoods;
+                                    }
+                                }
+                            }
+                            if (goodsGoods == null) {
+                                throw new Exception("组合数据不全");
+                            }
+                        } else {
+                            throw new Exception("组合数据不全");
+                        }
+
+                        //参与组合数
+                        Integer joinNum = goodsGoods.getJoinNum();//组合商品里商品数量
+
+                        Integer totalNum= goodsNum*joinNum*num;
+                        if (bGoodsMap.containsKey(shopBundledGoods.getBSpecId())){
+                            ShopGoods shopGoodsB = bGoodsMap.get(shopBundledGoods.getBSpecId());
+                            if (shopGoodsB.getBNum()==null){
+                                shopGoodsB.setBNum(totalNum);
+                            }else {
+                                Integer bNum = shopGoodsB.getBNum();
+                                shopGoodsB.setBNum(bNum+totalNum);
+                            }
+                            bGoodsMap.put(shopBundledGoods.getBSpecId(),shopGoodsB);
+                        }else {
+                            ShopGoods bShopGoods = goodsService.find(shopBundledGoods.getBGoodsId());
+                            ShopGoodsSpec bGoodsSpec = shopGoodsSpecService.find(shopBundledGoods.getBSpecId());
+                            bShopGoods.setShopGoodsSpec(bGoodsSpec);
+                            bShopGoods.setBNum(totalNum);
+                            bGoodsMap.put(shopBundledGoods.getBSpecId(),bShopGoods);
+                        }
+                    }
+                }
+            }
+        }
+
+        result=result.build4(result,bGoodsMap);
+
         return ApiUtils.success(result);
     }
 

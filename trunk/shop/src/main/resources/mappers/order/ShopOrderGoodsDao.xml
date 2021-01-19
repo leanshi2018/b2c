@@ -25,6 +25,7 @@
         <result property="gcId" column="gc_id" />
         <result property="goodsBarternum" column="goods_barternum" />
         <result property="isPresentation" column="is_presentation" />
+        <result property="isBundled" column="is_bundled" />
         <result property="daddressId" column="daddress_id" />
         <result property="activityType" column="activity_type" />
         <result property="activityId" column="activity_id" />
@@ -47,14 +48,14 @@
 
     <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
     <sql id="base_column">
-		 id ,order_id ,goods_id ,goods_name ,spec_id ,spec_info ,goods_price ,goods_num ,goods_image ,goods_returnnum ,refund_amount ,stores_id ,evaluation_status ,evaluation_time ,goods_pay_price ,buyer_id ,gc_id ,goods_barternum ,is_presentation ,daddress_id ,activity_type ,activity_id ,spec_goods_serial ,goods_shipping_fee ,reward_point_price ,market_price ,goods_subname ,ppv ,big_ppv ,shipping_express_id ,shipping_code,shipping_express_code ,vip_price,weight,goods_type,shipping_goods_num,shipping_express_name
+		 id ,order_id ,goods_id ,goods_name ,spec_id ,spec_info ,goods_price ,goods_num ,goods_image ,goods_returnnum ,refund_amount ,stores_id ,evaluation_status ,evaluation_time ,goods_pay_price ,buyer_id ,gc_id ,goods_barternum ,is_presentation ,is_bundled ,daddress_id ,activity_type ,activity_id ,spec_goods_serial ,goods_shipping_fee ,reward_point_price ,market_price ,goods_subname ,ppv ,big_ppv ,shipping_express_id ,shipping_code,shipping_express_code ,vip_price,weight,goods_type,shipping_goods_num,shipping_express_name
 	</sql>
 
     <sql id="base_value_column">
-		 #{id},#{orderId},#{goodsId},#{goodsName},#{specId},#{specInfo},#{goodsPrice},#{goodsNum},#{goodsImage},#{goodsReturnnum},#{refundAmount},#{storesId},#{evaluationStatus},#{evaluationTime},#{goodsPayPrice},#{buyerId},#{gcId},#{goodsBarternum},#{isPresentation},#{daddressId},#{activityType},#{activityId},#{specGoodsSerial},#{goodsShippingFee},#{rewardPointPrice},#{marketPrice},#{goodsSubname},#{ppv},#{bigPpv},#{shippingExpressId},#{shippingCode},#{shippingExpressCode},#{vipPrice},#{weight},#{goodsType},#{shippingGoodsNum},#{shippingExpressName}
+		 #{id},#{orderId},#{goodsId},#{goodsName},#{specId},#{specInfo},#{goodsPrice},#{goodsNum},#{goodsImage},#{goodsReturnnum},#{refundAmount},#{storesId},#{evaluationStatus},#{evaluationTime},#{goodsPayPrice},#{buyerId},#{gcId},#{goodsBarternum},#{isPresentation},#{isBundled},#{daddressId},#{activityType},#{activityId},#{specGoodsSerial},#{goodsShippingFee},#{rewardPointPrice},#{marketPrice},#{goodsSubname},#{ppv},#{bigPpv},#{shippingExpressId},#{shippingCode},#{shippingExpressCode},#{vipPrice},#{weight},#{goodsType},#{shippingGoodsNum},#{shippingExpressName}
 	</sql>
     <sql id="base_list_value_column">
-		 #{item.id},#{item.orderId},#{item.goodsId},#{item.goodsName},#{item.specId},#{item.specInfo},#{item.goodsPrice},#{item.goodsNum},#{item.goodsImage},#{item.goodsReturnnum},#{item.refundAmount},#{item.storesId},#{item.evaluationStatus},#{item.evaluationTime},#{item.goodsPayPrice},#{item.buyerId},#{item.gcId},#{item.goodsBarternum},#{item.isPresentation},#{item.daddressId},#{item.activityType},#{item.activityId},#{item.specGoodsSerial},#{item.goodsShippingFee},#{item.rewardPointPrice},#{item.marketPrice}
+		 #{item.id},#{item.orderId},#{item.goodsId},#{item.goodsName},#{item.specId},#{item.specInfo},#{item.goodsPrice},#{item.goodsNum},#{item.goodsImage},#{item.goodsReturnnum},#{item.refundAmount},#{item.storesId},#{item.evaluationStatus},#{item.evaluationTime},#{item.goodsPayPrice},#{item.buyerId},#{item.gcId},#{item.goodsBarternum},#{item.isPresentation},#{item.isBundled},#{item.daddressId},#{item.activityType},#{item.activityId},#{item.specGoodsSerial},#{item.goodsShippingFee},#{item.rewardPointPrice},#{item.marketPrice}
 		 ,#{item.goodsSubname},#{item.ppv},#{item.bigPpv},#{item.shippingExpressId},#{item.shippingCode},#{item.shippingExpressCode},#{item.vipPrice},#{item.weight},#{item.goodsType},#{item.shippingGoodsNum},#{item.shippingExpressName}
 	</sql>
 
@@ -142,6 +143,9 @@
         <!--</if>-->
         <if test="isPresentation != null and isPresentation != ''">
             AND is_presentation = #{isPresentation,jdbcType=INTEGER}
+        </if>
+        <if test="isBundled != null and isBundled != ''">
+            AND is_bundled = #{isBundled,jdbcType=INTEGER}
         </if>
         <if test="activityType != null">
             AND activity_type = #{activityType,jdbcType=INTEGER}
@@ -281,6 +285,9 @@
         <!--</if>-->
         <if test="isPresentation != null">
             is_presentation = #{isPresentation,jdbcType=INTEGER},
+        </if>
+        <if test="isBundled != null">
+            is_bundled = #{isBundled,jdbcType=INTEGER},
         </if>
         <if test="daddressId != null and daddressId != ''">
             daddress_id = #{daddressId,jdbcType=VARCHAR},

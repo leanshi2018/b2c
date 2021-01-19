@@ -395,7 +395,7 @@ public class OrderAPIController extends BaseController {
     @RequestMapping(value = "/api/order/submitNew1")
     @ResponseBody
     public String submitOrderNew1(@Valid OrderSubmitParam param, BindingResult vResult, HttpServletRequest request,
-                                  @RequestParam(required = false,value = "giftId")Long giftId,Integer giftNum,Long couponId,@RequestParam(required = false,value = "platform")String platform) {
+                                  @RequestParam(required = false,value = "giftId")Long giftId,Integer giftNum,Long couponId,@RequestParam(required = false,value = "platform")String platform) throws Exception {
         if (vResult.hasErrors()) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }
@@ -502,7 +502,7 @@ public class OrderAPIController extends BaseController {
     @ResponseBody
     public String submitOrderNew2(@Valid OrderSubmitParam param, BindingResult vResult, HttpServletRequest request,
                                   @RequestParam(required = false,value = "giftId")Long giftId,Integer giftNum,Long couponId,@RequestParam(required = false,value = "platform")String platform,
-                                    Integer plusOrderFlag) {
+                                    Integer plusOrderFlag) throws Exception {
         if (vResult.hasErrors()) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }

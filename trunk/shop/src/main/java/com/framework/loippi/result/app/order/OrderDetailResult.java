@@ -117,10 +117,13 @@ public class OrderDetailResult {
      */
     List<OrderGoods> orderGoodsList;
     /**
-     * 2019-10-24 准备双11用
      * 赠品列表
      */
     List<ShopOrderGoods> giftOrderGoodsList;
+    /**
+     * 赠品列表
+     */
+    List<ShopOrderGoods> bundledGoodsList;
 
     /**
      * 支付表编号
@@ -354,14 +357,20 @@ public class OrderDetailResult {
         orderDetailResult.setOrderTypeStr(ShopOrderDiscountTypeConsts.convert(order.getOrderType()));
         //********************************************************************
         ArrayList<ShopOrderGoods> giftsGoods = new ArrayList<>();
+        ArrayList<ShopOrderGoods> bundledGoods = new ArrayList<>();
         List<ShopOrderGoods> shopOrderGoods = order.getShopOrderGoods();
         for (ShopOrderGoods shopOrderGood : shopOrderGoods) {
             if(shopOrderGood.getIsPresentation()!=null&&shopOrderGood.getIsPresentation()==1){
                 shopOrderGood.setIsShipment(order.getShippingExpressId()!=null && order.getShippingCode()!=null && !"".equals(order.getShippingCode())?1:0);
                 giftsGoods.add(shopOrderGood);
             }
+            if(shopOrderGood.getIsBundled()!=null&&shopOrderGood.getIsBundled()==1){
+                shopOrderGood.setIsShipment(order.getShippingExpressId()!=null && order.getShippingCode()!=null && !"".equals(order.getShippingCode())?1:0);
+                bundledGoods.add(shopOrderGood);
+            }
         }
         orderDetailResult.setGiftOrderGoodsList(giftsGoods);
+        orderDetailResult.setBundledGoodsList(bundledGoods);
 
 
         orderDetailResult.setCoupons(orderDetailResult1.getCoupons());

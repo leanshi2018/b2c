@@ -389,4 +389,5 @@ public class ShopGoods implements GenericEntity {
     private ShopGoodsSpec shopGoodsSpec;
 
     private Integer hType;
+    private Integer bNum;
 }

@@ -42,6 +42,11 @@ public class CartCheckOutResult {
     private Integer showFlag;
 
     /**
+     * 是否显示赠品 0：不显示 1：显示
+     */
+    private Integer bShowFlag;
+
+    /**
      * 赠品集合
      */
     public List<Gifts> gifts;
@@ -51,6 +56,17 @@ public class CartCheckOutResult {
      */
     @JsonSerialize(using = ToStringSerializer.class)
     public List<Gifts> giftsApplet;
+
+    /**
+     * 附赠商品集合
+     */
+    public List<Gifts> bundledGoods;
+
+    /**
+     * 附赠商品集合(小程序)
+     */
+    @JsonSerialize(using = ToStringSerializer.class)
+    public List<Gifts> bundledGoodsApplet;
     /*************************************2019双11用********************************************/
     /**
      * 有没有收货地址
@@ -677,6 +693,47 @@ public class CartCheckOutResult {
         }
         result.setGifts(gifts);
         result.setGiftsApplet(giftsApplet);
+        return result;
+    }
+
+    public static CartCheckOutResult build4(CartCheckOutResult result, Map<Long,ShopGoods> bGoodsMap) {
+        if (bGoodsMap.size()>0){
+            result.setBShowFlag(1);
+        }
+        ArrayList<Gifts> bundledGoods = new ArrayList<>();
+        ArrayList<Gifts> bundledGoodsApplet = new ArrayList<>();
+        for (Map.Entry<Long,ShopGoods> entry : bGoodsMap.entrySet()) {
+            //System.out.println("key= " + entry.getKey() + " and value= " + entry.getValue());
+            ShopGoods goods = entry.getValue();
+            Gifts gift = new Gifts();
+            gift.setGoodsId(goods.getId());
+            gift.setGoodsName(goods.getGoodsName());
+            gift.setGoodsImage(goods.getGoodsImage());
+            gift.setStock(goods.getStock());
+            gift.setGiftsNum(goods.getBNum());
+            ShopGoodsSpec goodsSpec = goods.getShopGoodsSpec();
+            GoodsUtils.getSepcMapAndColImgToGoodsSpec(goods, goodsSpec);
+            if (goods.getGoodsType()==3){
+                goodsSpec.setSpecInfo(goodsSpec.getSpecGoodsSerial());
+            }else{
+                String specInfo = "";
+                Map<String, String> map = goodsSpec.getSepcMap();
+                //遍历规格map,取出键值对,拼接specInfo
+                if (map != null) {
+                    Set<String> set = map.keySet();
+                    for (String str : set) {
+                        specInfo += str + ":" + map.get(str) + "、";
+                    }
+                    specInfo = specInfo.substring(0, specInfo.length() - 1);
+                }
+                goodsSpec.setSpecInfo(specInfo);
+            }
+            gift.setGoodsSpec(goodsSpec);
+            bundledGoods.add(gift);
+            bundledGoodsApplet.add(gift);
+        }
+        result.setBundledGoods(bundledGoods);
+        result.setBundledGoodsApplet(bundledGoodsApplet);
         return result;
     }
 }

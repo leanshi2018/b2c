@@ -101,6 +101,10 @@ public class ShopOrderGoods implements GenericEntity {
     @Column(name = "is_presentation" )
     private Integer isPresentation;
 
+    /** 是否赠送商品 */
+    @Column(name = "is_bundled" )
+    private Integer isBundled;
+
     /** 发货地址id */
     @Column(name = "daddress_id" )
     private String daddressId;

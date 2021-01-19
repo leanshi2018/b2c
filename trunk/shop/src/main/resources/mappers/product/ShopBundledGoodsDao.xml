@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.framework.loippi.dao.product.ShopBundledGoodsDao">
+
+    <resultMap id="ShopBundledGoodsMap" type="com.framework.loippi.entity.product.ShopBundledGoods">
+        <result property="id" column="id" />
+        <result property="goodsId" column="goods_id" />
+        <result property="specId" column="spec_id" />
+        <result property="bGoodsId" column="b_goods_id" />
+        <result property="bSpecId" column="b_spec_id" />
+        <result property="bNum" column="b_num" />
+    </resultMap>
+
+    <!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
+    <sql id="base_column">
+		 id ,goods_id ,spec_id ,b_goods_id ,b_spec_id ,b_num
+	</sql>
+
+    <sql id="base_value_column">
+		 #{id},#{goodsId},#{specId},#{bGoodsId},#{bSpecId},#{bNum}
+	</sql>
+
+    <!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
+    <sql id="where_column">
+        <if test="id != null and id != ''">
+            AND id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="goodsId != null">
+            AND goods_id = #{goodsId,jdbcType=BIGINT}
+        </if>
+        <if test="specId != null">
+            AND spec_id = #{specId,jdbcType=BIGINT}
+        </if>
+        <if test="bGoodsId != null">
+            AND b_goods_id = #{bGoodsId,jdbcType=BIGINT}
+        </if>
+        <if test="bSpecId != null">
+            AND b_spec_id = #{bSpecId,jdbcType=BIGINT}
+        </if>
+        <if test="bNum != null">
+            AND b_num = #{bNum,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <!-- 设置语句 -->
+    <sql id="set_column">
+        <if test="id != null">
+            id = #{id,jdbcType=BIGINT},
+        </if>
+        <if test="goodsId != null">
+            goods_id = #{goodsId,jdbcType=BIGINT},
+        </if>
+        <if test="specId != null">
+            spec_id = #{specId,jdbcType=BIGINT},
+        </if>
+        <if test="bGoodsId != null">
+            b_goods_id = #{bGoodsId,jdbcType=BIGINT},
+        </if>
+        <if test="bSpecId != null">
+            b_spec_id = #{bSpecId,jdbcType=BIGINT},
+        </if>
+        <if test="bNum != null">
+            b_num = #{bNum,jdbcType=INTEGER},
+        </if>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="find" resultMap="ShopBundledGoodsMap">
+        SELECT	<include refid="base_column" />
+        FROM	shop_bundled_goods
+        WHERE	ID=#{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultMap="ShopBundledGoodsMap">
+        SELECT	<include refid="base_column" />
+        FROM	shop_bundled_goods
+    </select>
+
+    <!-- 统计记录数 -->
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM shop_bundled_goods
+        <where>
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.framework.loippi.entity.product.ShopBundledGoods">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+        INSERT shop_bundled_goods
+        (<include refid="base_column" /> )
+        VALUES	(<include refid="base_value_column" />)
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.framework.loippi.entity.product.ShopBundledGoods">
+        UPDATE	shop_bundled_goods
+        <set>
+            <include refid="set_column" />
+        </set>
+        WHERE	ID = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除单条记录 -->
+    <delete id="delete">
+		DELETE	FROM shop_bundled_goods
+		WHERE	ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 删除多条记录-->
+    <delete id="deleteAll">
+        DELETE	FROM shop_bundled_goods
+        WHERE	ID	IN
+        <foreach item="ShopBundledGoodsIds" index="index" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据参数查询列表-->
+    <select id="findByParams" resultMap="ShopBundledGoodsMap">
+        SELECT	<include refid="base_column" />
+        FROM shop_bundled_goods
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+    <!-- 分页查询-->
+    <select id="findByPage" resultMap="ShopBundledGoodsMap">
+        SELECT
+        <include refid="base_column" />
+        FROM shop_bundled_goods
+        <where> 1=1
+            <include refid="where_column" />
+        </where>
+    </select>
+
+</mapper>
