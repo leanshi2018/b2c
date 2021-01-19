@@ -74,8 +74,19 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 			shopGiftActivity.setCreationTime(new Date());
 			Long flag = shopGiftActivityDao.insert(shopGiftActivity);
 
-			List<String> specIdList1 = shopGiftActivity.getSpecIdList1();
-			insetGiftGoods(specIdList1,shopGiftActivity.getId(),1);
+			if (shopGiftActivity.getPlusType()==null||shopGiftActivity.getPlusType()==0){
+				List<String> specIdList1 = shopGiftActivity.getSpecIdList1();
+				insetGiftGoods(specIdList1,shopGiftActivity.getId(),1);
+			}else {
+				List<String> specIdList4 = shopGiftActivity.getSpecIdList4();
+				insetGiftGoods(specIdList4,shopGiftActivity.getId(),4);
+
+				if (shopGiftActivity.getSpecIdList1()!=null){
+					List<String> specIdList1 = shopGiftActivity.getSpecIdList1();
+					insetGiftGoods(specIdList1,shopGiftActivity.getId(),1);
+				}
+			}
+
 
 			if (shopGiftActivity.getSpecIdList2()!=null){
 				List<String> specIdList2 = shopGiftActivity.getSpecIdList2();
@@ -109,8 +120,18 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 			//删除以前的商品
 			shopGiftGoodsDao.deleteByGiftId(shopGiftActivity.getId());
 
-			List<String> specIdList1 = shopGiftActivity.getSpecIdList1();
-			insetGiftGoods(specIdList1,shopGiftActivity.getId(),1);
+			if (shopGiftActivity.getPlusType()==null||shopGiftActivity.getPlusType()==0){
+				List<String> specIdList1 = shopGiftActivity.getSpecIdList1();
+				insetGiftGoods(specIdList1,shopGiftActivity.getId(),1);
+			}else {
+				List<String> specIdList4 = shopGiftActivity.getSpecIdList4();
+				insetGiftGoods(specIdList4,shopGiftActivity.getId(),4);
+
+				if (shopGiftActivity.getSpecIdList1()!=null){
+					List<String> specIdList1 = shopGiftActivity.getSpecIdList1();
+					insetGiftGoods(specIdList1,shopGiftActivity.getId(),1);
+				}
+			}
 
 			if (shopGiftActivity.getSpecIdList2()!=null){
 				List<String> specIdList2 = shopGiftActivity.getSpecIdList2();

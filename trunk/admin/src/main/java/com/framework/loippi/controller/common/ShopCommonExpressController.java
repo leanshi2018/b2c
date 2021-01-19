@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.framework.loippi.controller.GenericController;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.common.ShopCommonExpress;
+import com.framework.loippi.entity.common.ShopHomePicture;
 import com.framework.loippi.entity.product.ShopExpressSpecialGoods;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.common.goods.ExpressSpecialGoodsResult;
@@ -298,5 +299,22 @@ public class ShopCommonExpressController extends GenericController {
     @ResponseBody
     public String autoComNum(@RequestParam String text) {
         return kuaidiService.queryCom(text);
+    }
+
+    /**
+     * 轮播图列表
+     * @param request
+     * @param pageable
+     * @param model
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/findExpressList")
+    public String findHomePictureList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopHomePicture param) {
+        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureType",0));
+        pageable.setOrderProperty("p_sort");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", shopCommonExpressService.findByPage(pageable));
+        return "/common/rotationChart/index";
     }
 }

@@ -89,10 +89,12 @@ public class ShopGiftActivity implements GenericEntity {
 	List<String> specIdList1;//规则1商品
 	List<String> specIdList2;//规则2商品
 	List<String> specIdList3;//规则3商品
+	List<String> specIdList4;//plus商品
 
 	//详情展示
 	List<ShopGiftGoods> giftGoodsList1;//规则1商品
 	List<ShopGiftGoods> giftGoodsList2;//规则2商品
 	List<ShopGiftGoods> giftGoodsList3;//规则3商品
+	List<ShopGiftGoods> giftGoodsList4;//plus商品
 
 }

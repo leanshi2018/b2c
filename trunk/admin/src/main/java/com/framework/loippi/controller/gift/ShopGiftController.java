@@ -73,9 +73,11 @@ public class ShopGiftController extends GenericController {
 			model.addAttribute("msg", "请选择活动开始时间或者结束时间");
 			return Constants.MSG_URL;
 		}
-		if(shopGiftActivity.getPpv1()==null||shopGiftActivity.getSpecIdList1().size()==0){
-			model.addAttribute("msg", "活动规则1不可以为空");
-			return Constants.MSG_URL;
+		if (shopGiftActivity.getPlusType()==null||shopGiftActivity.getPlusType()==0){//无plus规则
+			if(shopGiftActivity.getPpv1()==null||shopGiftActivity.getSpecIdList1().size()==0){
+				model.addAttribute("msg", "活动规则1不可以为空");
+				return Constants.MSG_URL;
+			}
 		}
 		if (shopGiftActivity.getPpv2()!=null&&shopGiftActivity.getPpv2().compareTo(new BigDecimal("0.00"))==1){
 			if (shopGiftActivity.getPpv1()!=null&&shopGiftActivity.getPpv1().compareTo(shopGiftActivity.getPpv2())!=-1){
