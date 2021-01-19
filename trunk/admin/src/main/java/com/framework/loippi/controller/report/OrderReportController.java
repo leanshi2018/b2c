@@ -59,7 +59,7 @@ public class OrderReportController extends GenericController {
         pager.setParameter(shopOrderDailyReport);
         Page<ShopOrderDailyReport> page = shopOrderDailyReportService.findByPage(pager);
         model.addAttribute("page", page);
-        return "";
+        return "/statisc/income/dailysReport";
     }
 
     /**
@@ -100,6 +100,6 @@ public class OrderReportController extends GenericController {
         pager.setParameter(shopOrderMonthReport);
         Page<ShopOrderMonthReport> page = shopOrderMonthReportService.findByPage(pager);
         model.addAttribute("page", page);
-        return "";
+        return "/statisc/income/monthlyReport";
     }
 }
