@@ -193,7 +193,7 @@ public class ShopGiftActivityServiceImpl extends GenericServiceImpl<ShopGiftActi
 		map.put("wRule",3);
 		activity.setGiftGoodsList3(shopGiftGoodsDao.findByGiftIdAndWRule(map));
 		map.put("wRule",4);
-		activity.setGiftGoodsList3(shopGiftGoodsDao.findByGiftIdAndWRule(map));
+		activity.setGiftGoodsList4(shopGiftGoodsDao.findByGiftIdAndWRule(map));
 		return activity;
 	}
 
