@@ -61,19 +61,32 @@ public class ShopOrderDailyReportServiceImpl extends GenericServiceImpl<ShopOrde
         BigDecimal alipayIncome = BigDecimal.ZERO;
         BigDecimal allinpayIncome = BigDecimal.ZERO;
         BigDecimal pointIncome = BigDecimal.ZERO;
-        pointIncome=shopOrderService.getSumPoint(map);
+        BigDecimal decimalpointIncome=shopOrderService.getSumPoint(map);
+        if(decimalpointIncome!=null){
+            pointIncome=pointIncome.add(decimalpointIncome);
+        }
         map.put("paymentCode","weixinMobilePaymentPlugin");
-        wechatIncome=shopOrderService.getSumIncome(map);
+        BigDecimal decimalwechatIncome=shopOrderService.getSumIncome(map);
+        if(decimalwechatIncome!=null){
+            wechatIncome=wechatIncome.add(decimalwechatIncome);
+        }
         map.put("paymentCode","alipayMobilePaymentPlugin");
-        alipayIncome=shopOrderService.getSumIncome(map);
+        BigDecimal decimalalipayIncome=shopOrderService.getSumIncome(map);
+        if(decimalalipayIncome!=null){
+            alipayIncome=alipayIncome.add(decimalalipayIncome);
+        }
         map.put("paymentCode","weixinAppletsPaymentPlugin");
-        allinpayIncome=shopOrderService.getSumIncome(map);
+        BigDecimal decimalallinpayIncome=shopOrderService.getSumIncome(map);
+        if(decimalallinpayIncome!=null){
+            allinpayIncome=allinpayIncome.add(decimalallinpayIncome);
+        }
         dailyReport.setWechatIncome(wechatIncome);
         dailyReport.setAlipayIncome(alipayIncome);
         dailyReport.setAllinpayIncome(allinpayIncome);
         dailyReport.setPointIncome(pointIncome);
         dailyReport.setCashTotal(wechatIncome.add(alipayIncome).add(allinpayIncome));
         dailyReport.setTotal(wechatIncome.add(alipayIncome).add(allinpayIncome).add(pointIncome));
+        System.out.println(dailyReport);
         shopOrderDailyReportDao.insert(dailyReport);
     }
 }

@@ -30,7 +30,7 @@ public class ShopOrderMonthReportServiceImpl extends GenericServiceImpl<ShopOrde
     private TwiterIdService twiterIdService;
 
     /**
-     * 统计平台订单月交易量
+     * 统计平台订单月交易量 ceshi
      */
     @Override
     public void getMonthReport() {
@@ -69,13 +69,25 @@ public class ShopOrderMonthReportServiceImpl extends GenericServiceImpl<ShopOrde
         BigDecimal alipayIncome = BigDecimal.ZERO;
         BigDecimal allinpayIncome = BigDecimal.ZERO;
         BigDecimal pointIncome = BigDecimal.ZERO;
-        pointIncome=shopOrderService.getSumPoint(map);
+        BigDecimal decimalpointIncome=shopOrderService.getSumPoint(map);
+        if(decimalpointIncome!=null){
+            pointIncome=pointIncome.add(decimalpointIncome);
+        }
         map.put("paymentCode","weixinMobilePaymentPlugin");
-        wechatIncome=shopOrderService.getSumIncome(map);
+        BigDecimal decimalwechatIncome=shopOrderService.getSumIncome(map);
+        if(decimalwechatIncome!=null){
+            wechatIncome=wechatIncome.add(decimalwechatIncome);
+        }
         map.put("paymentCode","alipayMobilePaymentPlugin");
-        alipayIncome=shopOrderService.getSumIncome(map);
+        BigDecimal decimalalipayIncome=shopOrderService.getSumIncome(map);
+        if(decimalalipayIncome!=null){
+            alipayIncome=alipayIncome.add(decimalalipayIncome);
+        }
         map.put("paymentCode","weixinAppletsPaymentPlugin");
-        allinpayIncome=shopOrderService.getSumIncome(map);
+        BigDecimal decimalallinpayIncome=shopOrderService.getSumIncome(map);
+        if(decimalallinpayIncome!=null){
+            allinpayIncome=allinpayIncome.add(decimalallinpayIncome);
+        }
         monthReport.setWechatIncome(wechatIncome);
         monthReport.setAlipayIncome(alipayIncome);
         monthReport.setAllinpayIncome(allinpayIncome);
