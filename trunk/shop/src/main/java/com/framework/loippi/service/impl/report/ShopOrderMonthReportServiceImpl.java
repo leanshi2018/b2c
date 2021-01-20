@@ -30,7 +30,7 @@ public class ShopOrderMonthReportServiceImpl extends GenericServiceImpl<ShopOrde
     private TwiterIdService twiterIdService;
 
     /**
-     * 统计平台订单月交易量
+     * 统计平台订单月交易量 ceshi
      */
     @Override
     public void getMonthReport() {
