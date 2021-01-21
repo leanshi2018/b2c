@@ -1,28 +1,25 @@
 package com.framework.loippi.interceptor;
 
-import com.framework.loippi.consts.Constants;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-
-import com.framework.loippi.entity.user.RdMmRelation;
-import com.framework.loippi.result.auths.AuthsLoginResult;
-import com.framework.loippi.service.RedisService;
-import com.framework.loippi.service.user.RdMmAccountInfoService;
-import com.framework.loippi.service.user.RdMmBasicInfoService;
-
-import com.framework.loippi.service.user.RdMmRelationService;
-import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Xerror;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.Optional;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
+
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.service.RedisService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
 
 public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 
@@ -44,6 +41,8 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         freeset.add(Pattern.compile("/api/shopActivity/*"));
         freeset.add(Pattern.compile("/api/article/*"));
         freeset.add(Pattern.compile("/api/user/fixedArticles/*"));
+        freeset.add(Pattern.compile("/api/cart/gatherArea/*"));
+        freeset.add(Pattern.compile("/api/cart/hotSaleGoods/*"));
     }
 
     private Set<String> interceptset = new HashSet <>();
