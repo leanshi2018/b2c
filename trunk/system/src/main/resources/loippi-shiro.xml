@@ -25,6 +25,8 @@
                 /admin/paynotify/alipayNotify/** = anon
                 /admin/api/** = anon
                 /resources/** = anon
+                /api/cart/gatherArea.json = anon
+                /api/cart/hotSaleGoods.json = anon
                 /api/** = anon
                 /admin/** = authc
             </value>
