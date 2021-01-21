@@ -1,5 +1,6 @@
 package com.framework.loippi.controller.common;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.controller.GenericController;
+import com.framework.loippi.dto.ExpressDto;
 import com.framework.loippi.entity.Principal;
 import com.framework.loippi.entity.common.ShopCommonExpress;
 import com.framework.loippi.entity.product.ShopExpressSpecialGoods;
@@ -310,10 +312,20 @@ public class ShopCommonExpressController extends GenericController {
      */
     @RequestMapping(value = "/findExpressList")
     public String findExpressList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopCommonExpress param) {
-        pageable.setParameter(Paramap.create().put("name", param.getEName()).put("eState",1).put("isDel",0));
+        /*pageable.setParameter(Paramap.create().put("name", param.getEName()).put("eState",1).put("isDel",0));
         pageable.setOrderProperty("e_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
-        model.addAttribute("page", shopCommonExpressService.findByPage(pageable));
+        model.addAttribute("page", shopCommonExpressService.findByPage(pageable));*/
+        List<ShopCommonExpress> content = shopCommonExpressService.findAll();
+        List<ExpressDto> list = new ArrayList<ExpressDto>();
+        for (ShopCommonExpress express : content) {
+            ExpressDto expressDto = new ExpressDto();
+            expressDto.setId(express.getId());
+            expressDto.setName(express.getEName());
+            expressDto.setExpressCode(express.getEExpressCode());
+            list.add(expressDto);
+        }
+        model.addAttribute("page", list);
         return "/trade/shop_order/shopExpress_view";
     }
 }
