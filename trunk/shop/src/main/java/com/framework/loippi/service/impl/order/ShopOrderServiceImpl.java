@@ -3474,7 +3474,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     .add(Optional.ofNullable(orderGoods.getRewardPointPrice()).orElse(BigDecimal.valueOf(0)));
             } else if (applyType == RefundReturnState.TYPE_EXCHANGE) {
                 //换货 不涉及退款
-                refundNum += orderGoods.getGoodsNum();
+                refundNum += goodsNum;
             }
             refundReturn.setOrderId(orderGoods.getOrderId()); //订单id
             refundReturn.setOrderSn(order.getOrderSn()); //订单编号
