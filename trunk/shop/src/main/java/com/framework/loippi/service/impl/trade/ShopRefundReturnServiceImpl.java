@@ -200,6 +200,9 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
             msgMap.put(sellerState.toString(), sellerMessage);
             refundReturn.setSellerMessage(JacksonUtil.toJson(msgMap));
             refundReturn.setReasonInfo(sellerMessage);
+            if(addId!=null){
+                refundReturn.setBackAddId(addId);
+            }
             shopRefundReturnDao.update(refundReturn);
             //进行用户订单通知
             ShopCommonMessage message=new ShopCommonMessage();

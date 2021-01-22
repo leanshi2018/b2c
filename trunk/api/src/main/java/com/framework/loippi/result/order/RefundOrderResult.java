@@ -1,25 +1,20 @@
 package com.framework.loippi.result.order;
 
-import com.framework.loippi.entity.order.ShopOrderGoods;
-import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
-import com.framework.loippi.entity.user.RdMmAddInfo;
-import com.framework.loippi.entity.ware.ShopAfterSaleAddress;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.result.app.order.OrderResult;
-import com.framework.loippi.vo.refund.ReturnGoodsVo;
-import com.google.common.collect.Lists;
-import javolution.util.internal.table.ReversedTableImpl;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.collections.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+
+import com.framework.loippi.entity.trade.ShopReturnOrderGoods;
+import com.framework.loippi.entity.user.RdMmAddInfo;
+import com.framework.loippi.entity.ware.ShopAfterSaleAddress;
+import com.framework.loippi.vo.refund.ReturnGoodsVo;
 
 /**
  * 订单商品分物流--返回app数据
@@ -179,7 +174,7 @@ public class RefundOrderResult {
             if(returnGoodsVo.getBackAdd()!=null){
                 for (ShopAfterSaleAddress add : returnGoodsVo.getBackAdd()) {
                     if(add!=null){
-                        result.setReceiverName(Optional.ofNullable(add.getProfile()).orElse("后台还未设置"));
+                        result.setReceiverName(Optional.ofNullable(add.getName()).orElse("后台还未设置"));
                         result.setReceiverMobile(Optional.ofNullable(add.getMobile()).orElse("后台还未设置"));
                         result.setReceiverAddress(Optional.ofNullable(
                                 add.getProvince()+add.getCity()+add.getCountry()

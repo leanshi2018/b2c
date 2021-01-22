@@ -419,7 +419,7 @@ public class RefundReturnSysController extends GenericController {
         if (refundReturn.getRefundType()==3 && "2".equals(returntype)){
             // TODO: 2019/1/5 换单
             List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsService.findList("returnOrderId",id);
-             orderService.addExchangeOrderReturnOrderId(shopReturnOrderGoodsList,refundReturn.getOrderId());
+             orderService.addExchangeOrderReturnOrderId(shopReturnOrderGoodsList,refundReturn.getOrderId(),refundReturn);
             refundReturnService.updateRefundReturnAudiReturn(id, adminMessage,"1", user.getUsername());
             model.addAttribute("msg", "换货成功");
             model.addAttribute("referer", "list.jhtml");

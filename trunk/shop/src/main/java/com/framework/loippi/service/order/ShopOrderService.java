@@ -268,9 +268,10 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
      * 后台生成换货订单
      * @param shopReturnOrderGoodsList
      * @param orderId
+     * @param refundReturn
      * @return
      */
-    Long addExchangeOrderReturnOrderId(List<ShopReturnOrderGoods> shopReturnOrderGoodsList, Long orderId);
+    Long addExchangeOrderReturnOrderId(List<ShopReturnOrderGoods> shopReturnOrderGoodsList, Long orderId, ShopRefundReturn refundReturn);
 
     /**
      * 后台生售后进行积分,pv,处理
