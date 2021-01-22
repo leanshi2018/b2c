@@ -272,6 +272,11 @@ public class ShopRefundReturn implements GenericEntity {
      */
     @Column(name = "back_add_id")
     private Long backAddId;
+    /**
+     *  关联换购订单订单编号
+     */
+    @Column(name = "redemption_sn")
+    private String redemptionSn;
 
     /*********************
      * 添加

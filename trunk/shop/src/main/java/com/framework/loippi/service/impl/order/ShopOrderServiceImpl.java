@@ -2780,7 +2780,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     }
 
     @Override
-    public Long addExchangeOrderReturnOrderId(List<ShopReturnOrderGoods> shopReturnOrderGoodsList, Long orderId) {
+    public Long addExchangeOrderReturnOrderId(List<ShopReturnOrderGoods> shopReturnOrderGoodsList, Long orderId, ShopRefundReturn refundReturn) {
         ShopOrder order = orderDao.find(orderId);
         Long newOrderId = twiterIdService.getTwiterId();
         order.setId(newOrderId);
@@ -2788,7 +2788,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         order.setOrderSn("PC" + snowFlake.nextId());
         order.setOrderState(OrderState.ORDER_STATE_UNFILLED);
         order.setOrderType(ShopOrderDiscountTypeConsts.DISCOUNT_TYPE_RETRANSMISSION);
-
+        refundReturn.setRedemptionSn(order.getOrderSn());
+        refundReturnDao.update(refundReturn);
         // todo 推荐反拥
         BigDecimal orderAmount = new BigDecimal(0);
         /***********************换货订单修改库存***************************/
