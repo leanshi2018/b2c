@@ -97,7 +97,7 @@ public class BaseGoodsResult {
 
         List<T> results = Lists.newArrayList();
         for (ShopOrderGoods shopOrderGood : shopOrderGoods) {
-            if(shopOrderGood.getIsPresentation()==null||shopOrderGood.getIsPresentation()==0){
+            if((shopOrderGood.getIsPresentation()==null||shopOrderGood.getIsPresentation()==0)&&(shopOrderGood.getIsBundled()==null||shopOrderGood.getIsBundled()==0)){
                 Optional<ShopOrderGoods> optOrderGoods = Optional.ofNullable(shopOrderGood);
                 T baseGoodsResult = fun.callback(shopOrderGood);
                 baseGoodsResult.setGoodsId(optOrderGoods.map(ShopOrderGoods::getGoodsId).orElse(-1L));
@@ -151,7 +151,7 @@ public class BaseGoodsResult {
 
         List<T> results = Lists.newArrayList();
         for (ShopOrderGoods shopOrderGood : shopOrderGoods) {
-            if(shopOrderGood.getIsPresentation()==null||shopOrderGood.getIsPresentation()==0){
+            if((shopOrderGood.getIsPresentation()==null||shopOrderGood.getIsPresentation()==0)&&(shopOrderGood.getIsBundled()==null||shopOrderGood.getIsBundled()==0)){
                 Optional<ShopOrderGoods> optOrderGoods = Optional.ofNullable(shopOrderGood);
                 T baseGoodsResult = fun.callback(shopOrderGood);
                 baseGoodsResult.setGoodsId(optOrderGoods.map(ShopOrderGoods::getGoodsId).orElse(-1L));
