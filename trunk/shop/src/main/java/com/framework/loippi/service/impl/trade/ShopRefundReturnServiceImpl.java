@@ -183,6 +183,10 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
         }
 
         if (refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_CONFIRM_AUDIT||refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_AGREE) {
+            Boolean flag=false;
+            if(refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_AGREE){
+                flag=true;
+            }
             if (refundReturn.getRefundType() == RefundReturnState.TYPE_REFUND) {
                 refundReturn.setGoodsState(RefundReturnState.GOODS_STATE_UNSHIP);
             }
@@ -220,7 +224,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
             ShopReturnLog returnLog = new ShopReturnLog();
             returnLog.setReturnId(refundReturn.getId()); //退款表id
             //判断卖家同意或拒绝
-            if(refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_AGREE){
+            if(flag){
                 if (sellerState == RefundReturnState.SELLER_STATE_DISAGREE) {
                     returnLog.setReturnState(RefundReturnState.SELLER_STATE_DISAGREE + ""); //退款状态信息
                     returnLog.setChangeState(""); //下一步退款状态信息

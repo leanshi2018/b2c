@@ -101,7 +101,7 @@
         <if test="goodsImage != null and goodsImage != ''">
             AND goods_image = #{goodsImage,jdbcType=VARCHAR}
         </if>
-        <if test="goodsReturnnum != null and goodsReturnnum != ''">
+        <if test="goodsReturnnum != null">
             AND goods_returnnum = #{goodsReturnnum,jdbcType=INTEGER}
         </if>
         <if test="refundAmount != null and refundAmount != ''">
@@ -134,7 +134,7 @@
         <if test="gcId != null and gcId != ''">
             AND gc_id = #{gcId,jdbcType=VARCHAR}
         </if>
-        <if test="goodsBarternum != null and goodsBarternum != ''">
+        <if test="goodsBarternum != null">
             AND goods_barternum = #{goodsBarternum,jdbcType=INTEGER}
         </if>
 
