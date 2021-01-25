@@ -2524,7 +2524,7 @@ public class OrderAPIController extends BaseController {
      */
     @RequestMapping(value = "/api/order/immediately/submit")
     @ResponseBody
-    public String immediatelyOrderSubmit(@Valid OrderImmediatelySubmitParam param, BindingResult vResult, HttpServletRequest request) {
+    public String immediatelyOrderSubmit(@Valid OrderImmediatelySubmitParam param, BindingResult vResult, HttpServletRequest request) throws Exception {
         if (vResult.hasErrors()) {
             return ApiUtils.error(Xerror.PARAM_INVALID);
         }

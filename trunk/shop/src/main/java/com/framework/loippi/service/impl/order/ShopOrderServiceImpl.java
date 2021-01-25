@@ -7598,7 +7598,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     @Override
     public ShopOrderPay addImmediatelyOrderReturnPaySn(Long goodsId, Integer count, Long specId, Long activityId, Integer activityType, Long activityGoodsId, Long activitySkuId,
                                                        String mmCode, Map<String, Object> orderMsgMap, Long addressId, Long couponId, int platform, ShopOrderDiscountType shopOrderDiscountType,
-                                                       Integer logisticType, Integer paymentType, Long giftId, Integer giftNum, Integer splitOrderFlag, String splitCodes) {
+                                                       Integer logisticType, Integer paymentType, Long giftId, Integer giftNum, Integer splitOrderFlag, String splitCodes) throws Exception {
         RdMmRelation rdMmRelation = rdMmRelationService.find("mmCode", mmCode);
         ShopCart cart = new ShopCart();
         cart=buildCart(goodsId, mmCode,rdMmRelation.getRank(),
@@ -7958,6 +7958,15 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 flag=false;
             }
             /*********************订单项*********************/
+            //附赠商品
+            List<ShopBundledGoods> bundledGoodsList = shopBundledGoodsService.findAll();
+            Map<Long,ShopBundledGoods> bundledMap = new HashMap<Long,ShopBundledGoods>();
+            if(bundledGoodsList.size()>0){
+                for (ShopBundledGoods bundledGoods : bundledGoodsList) {
+                    bundledMap.put(bundledGoods.getSpecId(),bundledGoods);
+                }
+            }
+            Map<Long,ShopGoods> bGoodsMap = new HashMap<Long,ShopGoods>();
             for (CartOrderVo cartOrderVo : orderVo.getCartOrderVoList()) {
                 ShopOrderGoods orderGoods = new ShopOrderGoods();
                 orderGoods.setId(twiterIdService.getTwiterId());
@@ -8011,6 +8020,109 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 //默认0
                 orderGoods.setShippingExpressId(0L);
                 orderGoodsDao.insert(orderGoods);
+
+                ShopGoods goods = goodsDao.find(cartOrderVo.getGoodsId());
+                ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find(cartOrderVo.getSpecId());
+
+                //计算附赠商品
+                Integer goodsNum = 1;
+                if (cartOrderVo.getGoodsNum()==null){
+                    goodsNum=1;
+                }else {
+                    goodsNum=cartOrderVo.getGoodsNum();
+                }
+                if (goods.getGoodsType() != 3) {//非组合
+                    if(bundledMap.containsKey(shopGoodsSpec.getId())){//购物车有附赠商品
+                        ShopBundledGoods shopBundledGoods = bundledMap.get(shopGoodsSpec.getId());
+                        Integer num = 1;
+                        if (shopBundledGoods.getBNum()==null){
+                            num=1;
+                        }else {
+                            num=shopBundledGoods.getBNum();
+                        }
+                        if (bGoodsMap.containsKey(shopBundledGoods.getBSpecId())){
+                            Integer n = num*goodsNum;
+                            ShopGoods shopGoodsB = bGoodsMap.get(shopBundledGoods.getBSpecId());
+                            if (shopGoodsB.getBNum()==null){
+                                shopGoodsB.setBNum(n);
+                            }else {
+                                Integer bNum = shopGoodsB.getBNum();
+                                shopGoodsB.setBNum(bNum+n);
+                            }
+                            bGoodsMap.put(shopBundledGoods.getBSpecId(),shopGoodsB);
+                        }else {
+                            ShopGoods bShopGoods = goodsDao.find(shopBundledGoods.getBGoodsId());
+                            ShopGoodsSpec bGoodsSpec = goodsSpecDao.find(shopBundledGoods.getBSpecId());
+                            bShopGoods.setShopGoodsSpec(bGoodsSpec);
+                            bShopGoods.setBNum(num*goodsNum);
+                            bGoodsMap.put(shopBundledGoods.getBSpecId(),bShopGoods);
+                        }
+                    }
+
+                } else {
+                    Map<String, String> specMap = JacksonUtil.readJsonToMap(shopGoodsSpec.getSpecGoodsSpec());
+                    Set<String> keySpec = specMap.keySet();
+                    Iterator<String> itSpec = keySpec.iterator();
+                    while (itSpec.hasNext()) {
+                        String specId1 = itSpec.next();//单品的规格id
+                        ShopGoodsSpec spec1 = goodsSpecDao.find(new Long(specId1));
+                        ShopGoods shopGoods1 = goodsDao.find(spec1.getGoodsId());
+
+                        if(bundledMap.containsKey(spec1.getId())) {//购物车有附赠商品
+                            ShopBundledGoods shopBundledGoods = bundledMap.get(spec1.getId());
+                            Integer num = 1;
+                            if (shopBundledGoods.getBNum()==null){
+                                num=1;
+                            }else {
+                                num=shopBundledGoods.getBNum();
+                            }
+
+                            HashMap<String, Object> ggMap = new HashMap<>();
+                            ggMap.put("goodId", goods.getId());
+                            ggMap.put("combineGoodsId", shopGoods1.getId());
+                            List<ShopGoodsGoods> goodsGoodsList = shopGoodsGoodsService.findGoodsGoodsList(ggMap);
+                            ShopGoodsGoods goodsGoods = null;
+                            if (goodsGoodsList.size() > 0) {
+                                if (goodsGoodsList.size() == 1) {
+                                    goodsGoods = goodsGoodsList.get(0);
+                                } else {
+                                    for (ShopGoodsGoods shopGoodsGoods : goodsGoodsList) {
+                                        if (shopGoodsGoods.getGoodsSpec().equals(specId1)) {
+                                            goodsGoods = shopGoodsGoods;
+                                        }
+                                    }
+                                }
+                                if (goodsGoods == null) {
+                                    throw new Exception("组合数据不全");
+                                }
+                            } else {
+                                throw new Exception("组合数据不全");
+                            }
+
+                            //参与组合数
+                            Integer joinNum = goodsGoods.getJoinNum();//组合商品里商品数量
+
+                            Integer totalNum= goodsNum*joinNum*num;
+                            if (bGoodsMap.containsKey(shopBundledGoods.getBSpecId())){
+                                ShopGoods shopGoodsB = bGoodsMap.get(shopBundledGoods.getBSpecId());
+                                if (shopGoodsB.getBNum()==null){
+                                    shopGoodsB.setBNum(totalNum);
+                                }else {
+                                    Integer bNum = shopGoodsB.getBNum();
+                                    shopGoodsB.setBNum(bNum+totalNum);
+                                }
+                                bGoodsMap.put(shopBundledGoods.getBSpecId(),shopGoodsB);
+                            }else {
+                                ShopGoods bShopGoods = goodsDao.find(shopBundledGoods.getBGoodsId());
+                                ShopGoodsSpec bGoodsSpec = goodsSpecDao.find(shopBundledGoods.getBSpecId());
+                                bShopGoods.setShopGoodsSpec(bGoodsSpec);
+                                bShopGoods.setBNum(totalNum);
+                                bGoodsMap.put(shopBundledGoods.getBSpecId(),bShopGoods);
+                            }
+                        }
+                    }
+                }
+
                 //删除购物数据
                 cartService.delete(cartOrderVo.getId());
                 /*********************更新商品库存+销售数量*********************/
@@ -8018,8 +8130,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                 goodsSpec.setId(cartOrderVo.getSpecId());
                 goodsSpec.setGoodsId(cartOrderVo.getGoodsId());
                 goodsSpec.setSpecSalenum(cartOrderVo.getGoodsNum().intValue());
-                ShopGoods goods = goodsDao.find(cartOrderVo.getGoodsId());
-                ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find(cartOrderVo.getSpecId());
                 if (cartOrderVo.getGoodsNum() > shopGoodsSpec.getSpecGoodsStorage()) {
                     throw new RuntimeException("购买数量大于库存");
                 }
@@ -8039,7 +8149,75 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
 
             }
 
-            /*处理2019年双十一活动**********************开始*********************/ //TODO
+
+            //附赠商品
+            if (bGoodsMap.size()>0){
+                for (Map.Entry<Long,ShopGoods> entry : bGoodsMap.entrySet()) {
+                    ShopGoods shopGoods = entry.getValue();
+                    if(shopGoods==null){
+                        throw new RuntimeException("附赠商品不存在");
+                    }
+                    ShopGoodsSpec goodsSpec = shopGoods.getShopGoodsSpec();
+                    if(goodsSpec==null){
+                        throw new RuntimeException("附赠商品不存在");
+                    }
+                    if(goodsSpec.getSpecGoodsStorage()<shopGoods.getBNum()){
+                        throw new RuntimeException("附赠商品已赠完，请联系客服");
+                    }
+                    ShopOrderGoods orderGoods = new ShopOrderGoods();
+                    orderGoods.setId(twiterIdService.getTwiterId());
+                    orderGoods.setOrderId(order.getId());
+                    orderGoods.setGoodsId(shopGoods.getId());
+                    orderGoods.setGoodsName(shopGoods.getGoodsName());
+                    orderGoods.setSpecId(goodsSpec.getId());
+
+                    GoodsUtils.getSepcMapAndColImgToGoodsSpec(shopGoods, goodsSpec);
+                    if (shopGoods.getGoodsType()==3){
+                        orderGoods.setSpecInfo(goodsSpec.getSpecGoodsSerial());
+                    }else{
+                        String specInfo = "";
+                        Map<String, String> map = goodsSpec.getSepcMap();
+                        //遍历规格map,取出键值对,拼接specInfo
+                        if (map != null) {
+                            Set<String> set = map.keySet();
+                            for (String str : set) {
+                                specInfo += str + ":" + map.get(str) + "、";
+                            }
+                            specInfo = specInfo.substring(0, specInfo.length() - 1);
+                        }
+                        orderGoods.setSpecInfo(specInfo);
+                    }
+
+                    //大单价
+                    orderGoods.setGoodsPrice(goodsSpec.getSpecBigPrice());
+                    orderGoods.setGoodsNum(shopGoods.getBNum());
+                    orderGoods.setGoodsImage(shopGoods.getGoodsImage());
+                    orderGoods.setGoodsReturnnum(0);
+                    orderGoods.setGoodsType(shopGoods.getGoodsType());
+                    orderGoods.setRefundAmount(BigDecimal.ZERO);
+                    orderGoods.setStoresId(0L);
+                    orderGoods.setEvaluationStatus(0);
+                    orderGoods.setGoodsPayPrice(BigDecimal.ZERO);
+                    orderGoods.setBuyerId(order.getBuyerId() + "");
+                    orderGoods.setIsBundled(1);
+                    orderGoods.setMarketPrice(goodsSpec.getSpecRetailPrice());
+                    orderGoods.setPpv(goodsSpec.getPpv());
+                    orderGoods.setBigPpv(goodsSpec.getBigPpv());
+                    orderGoods.setShippingExpressId(0L);
+                    orderGoods.setVipPrice(goodsSpec.getSpecMemberPrice());
+                    orderGoods.setWeight(goodsSpec.getWeight());
+                    orderGoods.setShippingGoodsNum(0);
+                    orderGoodsDao.insert(orderGoods);
+                    ShopGoodsSpec goodsSpec1 = new ShopGoodsSpec();
+                    goodsSpec1.setId(goodsSpec.getId());
+                    goodsSpec1.setGoodsId(shopGoods.getId());
+                    goodsSpec1.setSpecSalenum(shopGoods.getBNum());
+                    productService.updateStorage(goodsSpec1, shopGoods);
+
+                }
+            }
+
+            //赠品
             if(giftId!=null){
                 ShopGoods shopGoods = shopGoodsService.find(giftId);
                 if(shopGoods==null){
