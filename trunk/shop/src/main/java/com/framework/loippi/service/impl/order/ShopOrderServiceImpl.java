@@ -3847,6 +3847,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                             if(shopOrderGoods.getIsPresentation()!=null&&shopOrderGoods.getIsPresentation()==1){
                                 continue;
                             }
+                            if(shopOrderGoods.getIsBundled()!=null&&shopOrderGoods.getIsBundled()==1){
+                                continue;
+                            }
                             //ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
                             ShopGoodsSpec shopGoodsSpec = goodsSpecDao.find( shopOrderGoods.getSpecId());
                             profit=profit.add(shopGoodsSpec.getSpecRetailProfit().multiply(new BigDecimal(shopOrderGoods.getGoodsNum())));
@@ -5468,6 +5471,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         if(shopOrderGoodsList!=null&&shopOrderGoodsList.size()>0){
                             for (ShopOrderGoods shopOrderGoods : shopOrderGoodsList) {
                                 if(shopOrderGoods.getIsPresentation()!=null&&shopOrderGoods.getIsPresentation()==1){
+                                    continue;
+                                }
+                                if(shopOrderGoods.getIsBundled()!=null&&shopOrderGoods.getIsBundled()==1){
                                     continue;
                                 }
                                 //ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
