@@ -226,7 +226,17 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
                  returnLog.setStateInfo("卖家已拒绝"); //退款状态描述
                 shareUrl.append("<li><p>您的售后申请已被拒绝，如有疑问，请联系客服</p></li>");
                 shareUrl.append("<li><p>理由："+sellerMessage+"</p></li>");
-
+                List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",refundId));
+                //换货还是别的
+                for (ShopReturnOrderGoods item:shopReturnOrderGoodsList) {
+                    ShopOrderGoods shopOrderGoods=orderGoodsDao.findByParams(Paramap.create().put("orderId",refundReturn.getOrderId()).put("specId",item.getSpecId())).get(0);
+                    if (refundReturn.getRefundState()==3){
+                        shopOrderGoods.setGoodsBarternum(Optional.ofNullable(shopOrderGoods.getGoodsBarternum()).orElse(0)-item.getGoodsNum());
+                    }else{
+                        shopOrderGoods.setGoodsReturnnum(Optional.ofNullable(shopOrderGoods.getGoodsReturnnum()).orElse(0)-item.getGoodsNum());
+                    }
+                    orderGoodsDao.update(shopOrderGoods);
+                }
             } else if (sellerState == RefundReturnState.SELLER_STATE_AGREE) {
                 returnLog.setReturnState(RefundReturnState.SELLER_STATE_AGREE + ""); //退款状态信息
                 returnLog.setChangeState(RefundReturnState.SELLER_STATE_FINISH + ""); //下一步退款状态信息
