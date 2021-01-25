@@ -182,7 +182,7 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
             throw new RuntimeException("不能操作其他商家售后单");
         }
 
-        if (refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_CONFIRM_AUDIT) {
+        if (refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_CONFIRM_AUDIT||refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_AGREE) {
             if (refundReturn.getRefundType() == RefundReturnState.TYPE_REFUND) {
                 refundReturn.setGoodsState(RefundReturnState.GOODS_STATE_UNSHIP);
             }
