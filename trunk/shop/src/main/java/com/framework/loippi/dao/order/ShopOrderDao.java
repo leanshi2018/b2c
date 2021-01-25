@@ -245,4 +245,8 @@ public interface ShopOrderDao extends GenericDao<ShopOrder, Long> {
     BigDecimal getSumPoint(HashMap<String, Object> map);
 
     BigDecimal getSumIncome(HashMap<String, Object> map);
+
+    BigDecimal getSumCancelPoint(HashMap<String, Object> map);
+
+    BigDecimal getSumCancelAmount(HashMap<String, Object> map);
 }

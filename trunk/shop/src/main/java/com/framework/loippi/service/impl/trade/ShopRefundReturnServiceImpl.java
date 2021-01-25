@@ -540,6 +540,16 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
     }
 
     @Override
+    public BigDecimal getSumRefundPoint(HashMap<String, Object> map) {
+        return shopRefundReturnDao.getSumRefundPoint(map);
+    }
+
+    @Override
+    public BigDecimal getSumRefundAmount(HashMap<String, Object> map) {
+        return shopRefundReturnDao.getSumRefundAmount(map);
+    }
+
+    @Override
     public List<ShopRefundReturn> findByOrderId(long orderId) {
         return shopRefundReturnDao.findByOrderId(orderId);
     }

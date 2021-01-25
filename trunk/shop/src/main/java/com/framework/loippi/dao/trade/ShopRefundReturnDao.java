@@ -1,5 +1,6 @@
 package com.framework.loippi.dao.trade;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,4 +49,8 @@ public interface ShopRefundReturnDao extends GenericDao<ShopRefundReturn, Long> 
 	void updateTlStatusById(Map<String, Object> map);
 
     Integer findAfterSaleYesterday(HashMap<String, Object> map);
+
+    BigDecimal getSumRefundPoint(HashMap<String, Object> map);
+
+    BigDecimal getSumRefundAmount(HashMap<String, Object> map);
 }

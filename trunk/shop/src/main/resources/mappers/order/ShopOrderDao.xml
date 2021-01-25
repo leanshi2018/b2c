@@ -1879,4 +1879,12 @@
     <select id="getSumIncome" parameterType="map" resultType="java.math.BigDecimal">
         SELECT sum(order_amount) from shop_order where payment_time >= #{start} and payment_time &lt;= #{end} and payment_state = 1 and payment_code = #{paymentCode}
     </select>
+
+    <select id="getSumCancelPoint" parameterType="map" resultType="java.math.BigDecimal">
+        SELECT sum(use_point_num) from shop_order where cancel_time >= #{start} and cancel_time &lt;= #{end} and order_state = 0 and payment_state = 1
+    </select>
+
+    <select id="getSumIncome" parameterType="map" resultType="java.math.BigDecimal">
+        SELECT sum(order_amount) from shop_order where cancel_time >= #{start} and cancel_time &lt;= #{end} and payment_state = 1 and payment_code = #{paymentCode} and order_state = 0
+    </select>
 </mapper>

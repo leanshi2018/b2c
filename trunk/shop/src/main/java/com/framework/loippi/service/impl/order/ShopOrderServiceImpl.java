@@ -5017,6 +5017,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     }
 
     @Override
+    public BigDecimal getSumCancelPoint(HashMap<String, Object> map) {
+        return orderDao.getSumCancelPoint(map);
+    }
+
+    @Override
+    public BigDecimal getSumCancelAmount(HashMap<String, Object> map) {
+        return orderDao.getSumCancelAmount(map);
+    }
+
+    @Override
     public Page listWithGoodsAndAddr(Pageable pageable) {
         PageList<ShopOrderVo> result = orderDao
             .listShopOrderVoWithGoodsAndAddr(pageable.getParameter(), pageable.getPageBounds());

@@ -74,23 +74,55 @@ public class ShopOrderMonthReportServiceImpl extends GenericServiceImpl<ShopOrde
             BigDecimal allinpayIncome = BigDecimal.ZERO;
             BigDecimal pointIncome = BigDecimal.ZERO;
             BigDecimal decimalpointIncome=shopOrderService.getSumPoint(map);
+            BigDecimal decimalpointOut=shopOrderService.getSumCancelPoint(map);
+            BigDecimal decimalpointRefund=shopRefundReturnService.getSumRefundPoint(map);
             if(decimalpointIncome!=null){
                 pointIncome=pointIncome.add(decimalpointIncome);
             }
+            if(decimalpointOut!=null){
+                pointIncome=pointIncome.subtract(decimalpointOut);
+            }
+            if(decimalpointRefund!=null){
+                pointIncome=pointIncome.subtract(decimalpointRefund);
+            }
             map.put("paymentCode","weixinMobilePaymentPlugin");
             BigDecimal decimalwechatIncome=shopOrderService.getSumIncome(map);
+            BigDecimal decimalwechatOut=shopOrderService.getSumCancelAmount(map);
+            BigDecimal decimalwechatRefund=shopRefundReturnService.getSumRefundAmount(map);
             if(decimalwechatIncome!=null){
                 wechatIncome=wechatIncome.add(decimalwechatIncome);
             }
+            if(decimalwechatOut!=null){
+                wechatIncome=wechatIncome.subtract(decimalwechatOut);
+            }
+            if(decimalwechatRefund!=null){
+                wechatIncome=wechatIncome.subtract(decimalwechatRefund);
+            }
             map.put("paymentCode","alipayMobilePaymentPlugin");
             BigDecimal decimalalipayIncome=shopOrderService.getSumIncome(map);
+            BigDecimal decimalalipayOut=shopOrderService.getSumCancelAmount(map);
+            BigDecimal decimalalipayRefund=shopRefundReturnService.getSumRefundAmount(map);
             if(decimalalipayIncome!=null){
                 alipayIncome=alipayIncome.add(decimalalipayIncome);
             }
+            if(decimalalipayOut!=null){
+                alipayIncome=alipayIncome.subtract(decimalalipayOut);
+            }
+            if(decimalalipayRefund!=null){
+                alipayIncome=alipayIncome.subtract(decimalalipayRefund);
+            }
             map.put("paymentCode","weixinAppletsPaymentPlugin");
             BigDecimal decimalallinpayIncome=shopOrderService.getSumIncome(map);
+            BigDecimal decimalallinpayOut=shopOrderService.getSumCancelAmount(map);
+            BigDecimal decimalallinpayRefund=shopRefundReturnService.getSumRefundAmount(map);
             if(decimalallinpayIncome!=null){
                 allinpayIncome=allinpayIncome.add(decimalallinpayIncome);
+            }
+            if(decimalallinpayOut!=null){
+                allinpayIncome=allinpayIncome.subtract(decimalallinpayOut);
+            }
+            if(decimalallinpayRefund!=null){
+                allinpayIncome=allinpayIncome.subtract(decimalallinpayRefund);
             }
             shopOrderMonthReport.setWechatIncome(wechatIncome);
             shopOrderMonthReport.setAlipayIncome(alipayIncome);
@@ -116,23 +148,55 @@ public class ShopOrderMonthReportServiceImpl extends GenericServiceImpl<ShopOrde
             BigDecimal allinpayIncome = BigDecimal.ZERO;
             BigDecimal pointIncome = BigDecimal.ZERO;
             BigDecimal decimalpointIncome=shopOrderService.getSumPoint(map);
+            BigDecimal decimalpointOut=shopOrderService.getSumCancelPoint(map);
+            BigDecimal decimalpointRefund=shopRefundReturnService.getSumRefundPoint(map);
             if(decimalpointIncome!=null){
                 pointIncome=pointIncome.add(decimalpointIncome);
             }
+            if(decimalpointOut!=null){
+                pointIncome=pointIncome.subtract(decimalpointOut);
+            }
+            if(decimalpointRefund!=null){
+                pointIncome=pointIncome.subtract(decimalpointRefund);
+            }
             map.put("paymentCode","weixinMobilePaymentPlugin");
             BigDecimal decimalwechatIncome=shopOrderService.getSumIncome(map);
+            BigDecimal decimalwechatOut=shopOrderService.getSumCancelAmount(map);
+            BigDecimal decimalwechatRefund=shopRefundReturnService.getSumRefundAmount(map);
             if(decimalwechatIncome!=null){
                 wechatIncome=wechatIncome.add(decimalwechatIncome);
             }
+            if(decimalwechatOut!=null){
+                wechatIncome=wechatIncome.subtract(decimalwechatOut);
+            }
+            if(decimalwechatRefund!=null){
+                wechatIncome=wechatIncome.subtract(decimalwechatRefund);
+            }
             map.put("paymentCode","alipayMobilePaymentPlugin");
             BigDecimal decimalalipayIncome=shopOrderService.getSumIncome(map);
+            BigDecimal decimalalipayOut=shopOrderService.getSumCancelAmount(map);
+            BigDecimal decimalalipayRefund=shopRefundReturnService.getSumRefundAmount(map);
             if(decimalalipayIncome!=null){
                 alipayIncome=alipayIncome.add(decimalalipayIncome);
             }
+            if(decimalalipayOut!=null){
+                alipayIncome=alipayIncome.subtract(decimalalipayOut);
+            }
+            if(decimalalipayRefund!=null){
+                alipayIncome=alipayIncome.subtract(decimalalipayRefund);
+            }
             map.put("paymentCode","weixinAppletsPaymentPlugin");
             BigDecimal decimalallinpayIncome=shopOrderService.getSumIncome(map);
+            BigDecimal decimalallinpayOut=shopOrderService.getSumCancelAmount(map);
+            BigDecimal decimalallinpayRefund=shopRefundReturnService.getSumRefundAmount(map);
             if(decimalallinpayIncome!=null){
                 allinpayIncome=allinpayIncome.add(decimalallinpayIncome);
+            }
+            if(decimalallinpayOut!=null){
+                allinpayIncome=allinpayIncome.subtract(decimalallinpayOut);
+            }
+            if(decimalallinpayRefund!=null){
+                allinpayIncome=allinpayIncome.subtract(decimalallinpayRefund);
             }
             monthReport.setWechatIncome(wechatIncome);
             monthReport.setAlipayIncome(alipayIncome);
