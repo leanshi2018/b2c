@@ -1778,6 +1778,9 @@ public class ShopOrderJob {
      * @return
      */
     public Map<String,Object> orderShip(Long id) throws Exception {
+
+        String eExpressCode = "10294CNZT";//第三方物流单号
+
         Map<String,Object> map = new HashMap<String,Object>();//strorderinfo参数
         map.put("Style","1");
         map.put("CustomerID",customerID);
@@ -1825,6 +1828,16 @@ public class ShopOrderJob {
         map.put("BillQty","");
         map.put("WarehouseId","5200");
 
+        //特殊快递渠道商品
+        List<ShopExpressSpecialGoods> specialGoodsList = shopExpressSpecialGoodsService.findByState(0);
+        Map<String,String> specialGoodsMap = new HashMap<String,String>();
+        for (ShopExpressSpecialGoods specialGoods : specialGoodsList) {
+            String specGoodsSerial = specialGoods.getSpecGoodsSerial();
+            ShopCommonExpress express = commonExpressService.findById(specialGoods.getExpressId());
+            String expressCode = express.getEExpressCode();
+            specialGoodsMap.put(specGoodsSerial,expressCode);
+        }
+
         List<ShopOrderGoods> orderGoodsList = shopOrderGoodsService.listByOrderId(id);//订单所有商品
         List<Map<String,Object>> productLists = new ArrayList<Map<String,Object>>();//商品list
         List<Long> gIdList = new ArrayList<Long>();
@@ -1834,6 +1847,12 @@ public class ShopOrderJob {
             Long specId = orderGoods.getSpecId();//商品规格索引id
 
             ShopGoodsSpec goodsSpec = shopGoodsSpecService.find(specId);//订单里商品的规格
+
+            String sku = goodsSpec.getSpecGoodsSerial();
+            if (specialGoodsMap.containsKey(sku)){//存在
+                eExpressCode = specialGoodsMap.get(sku);
+            }
+
             String specGoodsSpec = goodsSpec.getSpecGoodsSpec();
             //{"6544521286435999744":"24g"}
             String[] specs = specGoodsSpec.split(",");
@@ -1992,7 +2011,7 @@ public class ShopOrderJob {
         map.put("Products",productListss);*/
 
 /**************************************选择快递********************************************************/
-        String eExpressCode = "10294CNZT";//第三方物流单号
+        //String eExpressCode = "10294CNZT";//第三方物流单号
         //最大级数
         /*Integer macSort = commonExpressService.macSort();
         for (int i=1;i<=macSort;i++){
@@ -2002,15 +2021,6 @@ public class ShopOrderJob {
         }*/
 
 
-        //特殊快递渠道商品
-        List<ShopExpressSpecialGoods> specialGoodsList = shopExpressSpecialGoodsService.findByState(0);
-        Map<String,String> specialGoodsMap = new HashMap<String,String>();
-        for (ShopExpressSpecialGoods specialGoods : specialGoodsList) {
-            String specGoodsSerial = specialGoods.getSpecGoodsSerial();
-            ShopCommonExpress express = commonExpressService.findById(specialGoods.getExpressId());
-            String expressCode = express.getEExpressCode();
-            specialGoodsMap.put(specGoodsSerial,expressCode);
-        }
 /*******************************添加清洁剂瓶盖（6972190330202-1）*************************************/
         List<Map<String,Object>> productListss = new ArrayList<Map<String,Object>>();//商品list
         int cupNum = 0;
