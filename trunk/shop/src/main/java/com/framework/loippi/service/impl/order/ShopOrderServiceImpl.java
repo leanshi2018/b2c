@@ -2886,7 +2886,6 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         order.setBalanceTime(null);
         order.setShippingName("");
         order.setShippingExpressId(0L);
-        order.setShippingCode("");
         order.setShippingExpressCode("");
         orderDao.insertEntity(order);
 
