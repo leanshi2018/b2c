@@ -1,5 +1,6 @@
 package com.framework.loippi.service.trade;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -75,4 +76,8 @@ public interface ShopRefundReturnService extends GenericService<ShopRefundReturn
     Page<ReturnGoodsVo> listWithGoods1(Pageable pager);
 
     Integer findAfterSaleYesterday(HashMap<String, Object> map);
+
+    BigDecimal getSumRefundPoint(HashMap<String, Object> map);
+
+    BigDecimal getSumRefundAmount(HashMap<String, Object> map);
 }

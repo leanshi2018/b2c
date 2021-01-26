@@ -182,7 +182,11 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
             throw new RuntimeException("不能操作其他商家售后单");
         }
 
-        if (refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_CONFIRM_AUDIT) {
+        if (refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_CONFIRM_AUDIT||refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_AGREE) {
+            Boolean flag=false;
+            if(refundReturn.getSellerState() == RefundReturnState.SELLER_STATE_AGREE){
+                flag=true;
+            }
             if (refundReturn.getRefundType() == RefundReturnState.TYPE_REFUND) {
                 refundReturn.setGoodsState(RefundReturnState.GOODS_STATE_UNSHIP);
             }
@@ -220,33 +224,75 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
             ShopReturnLog returnLog = new ShopReturnLog();
             returnLog.setReturnId(refundReturn.getId()); //退款表id
             //判断卖家同意或拒绝
-            if (sellerState == RefundReturnState.SELLER_STATE_DISAGREE) {
-                returnLog.setReturnState(RefundReturnState.SELLER_STATE_DISAGREE + ""); //退款状态信息
-                returnLog.setChangeState(""); //下一步退款状态信息
-                 returnLog.setStateInfo("卖家已拒绝"); //退款状态描述
-                shareUrl.append("<li><p>您的售后申请已被拒绝，如有疑问，请联系客服</p></li>");
-                shareUrl.append("<li><p>理由："+sellerMessage+"</p></li>");
-
-            } else if (sellerState == RefundReturnState.SELLER_STATE_AGREE) {
-                returnLog.setReturnState(RefundReturnState.SELLER_STATE_AGREE + ""); //退款状态信息
-                returnLog.setChangeState(RefundReturnState.SELLER_STATE_FINISH + ""); //下一步退款状态信息
-                     returnLog.setStateInfo("卖家已同意"); //退款状态描述
-                shareUrl.append("<li><p>已同意</p></li>");
-                if (refundReturn.getRefundState()==3){
-                    shareUrl.append("<li><p>72小时内会进行换货处理</p></li>");
-                }else{
-                    shareUrl.append("<li><p>72小时内会退款到您的账号里</p></li>");
-                }
-                List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",refundId));
-                //换货还是别的
-                for (ShopReturnOrderGoods item:shopReturnOrderGoodsList) {
-                    ShopOrderGoods shopOrderGoods=orderGoodsDao.findByParams(Paramap.create().put("orderId",refundReturn.getOrderId()).put("specId",item.getSpecId())).get(0);
-                    if (refundReturn.getRefundState()==3){
-                        shopOrderGoods.setGoodsBarternum(Optional.ofNullable(shopOrderGoods.getGoodsBarternum()).orElse(0)+item.getGoodsNum());
-                    }else{
-                        shopOrderGoods.setGoodsReturnnum(Optional.ofNullable(shopOrderGoods.getGoodsReturnnum()).orElse(0)+item.getGoodsNum());
+            if(flag){
+                if (sellerState == RefundReturnState.SELLER_STATE_DISAGREE) {
+                    returnLog.setReturnState(RefundReturnState.SELLER_STATE_DISAGREE + ""); //退款状态信息
+                    returnLog.setChangeState(""); //下一步退款状态信息
+                    returnLog.setStateInfo("卖家已拒绝"); //退款状态描述
+                    shareUrl.append("<li><p>您的售后申请已被拒绝，如有疑问，请联系客服</p></li>");
+                    shareUrl.append("<li><p>理由："+sellerMessage+"</p></li>");
+                    List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",refundId));
+                    //换货还是别的
+                    for (ShopReturnOrderGoods item:shopReturnOrderGoodsList) {
+                        ShopOrderGoods shopOrderGoods=orderGoodsDao.findByParams(Paramap.create().put("orderId",refundReturn.getOrderId()).put("specId",item.getSpecId())).get(0);
+                        if (refundReturn.getRefundType()==3){
+                            shopOrderGoods.setGoodsBarternum(Optional.ofNullable(shopOrderGoods.getGoodsBarternum()).orElse(0)-item.getGoodsNum());
+                        }else{
+                            shopOrderGoods.setGoodsReturnnum(Optional.ofNullable(shopOrderGoods.getGoodsReturnnum()).orElse(0)-item.getGoodsNum());
+                        }
+                        orderGoodsDao.update(shopOrderGoods);
                     }
-                    orderGoodsDao.update(shopOrderGoods);
+                } else if (sellerState == RefundReturnState.SELLER_STATE_AGREE) {
+                    returnLog.setReturnState(RefundReturnState.SELLER_STATE_AGREE + ""); //退款状态信息
+                    returnLog.setChangeState(RefundReturnState.SELLER_STATE_FINISH + ""); //下一步退款状态信息
+                    returnLog.setStateInfo("卖家已同意"); //退款状态描述
+                    shareUrl.append("<li><p>已同意</p></li>");
+                    if (refundReturn.getRefundState()==3){
+                        shareUrl.append("<li><p>72小时内会进行换货处理</p></li>");
+                    }else{
+                        shareUrl.append("<li><p>72小时内会退款到您的账号里</p></li>");
+                    }
+                    List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",refundId));
+                    //换货还是别的
+                    for (ShopReturnOrderGoods item:shopReturnOrderGoodsList) {
+                        ShopOrderGoods shopOrderGoods=orderGoodsDao.findByParams(Paramap.create().put("orderId",refundReturn.getOrderId()).put("specId",item.getSpecId())).get(0);
+                        if (refundReturn.getRefundType()==3){
+                            shopOrderGoods.setGoodsBarternum(Optional.ofNullable(shopOrderGoods.getGoodsBarternum()).orElse(0)+item.getGoodsNum());
+                        }else{
+                            shopOrderGoods.setGoodsReturnnum(Optional.ofNullable(shopOrderGoods.getGoodsReturnnum()).orElse(0)+item.getGoodsNum());
+                        }
+                        orderGoodsDao.update(shopOrderGoods);
+                    }
+                }
+            }else {
+                if (sellerState == RefundReturnState.SELLER_STATE_DISAGREE) {
+                    returnLog.setReturnState(RefundReturnState.SELLER_STATE_DISAGREE + ""); //退款状态信息
+                    returnLog.setChangeState(""); //下一步退款状态信息
+                    returnLog.setStateInfo("卖家已拒绝"); //退款状态描述
+                    shareUrl.append("<li><p>您的售后申请已被拒绝，如有疑问，请联系客服</p></li>");
+                    shareUrl.append("<li><p>理由："+sellerMessage+"</p></li>");
+                    List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",refundId));
+                } else if (sellerState == RefundReturnState.SELLER_STATE_AGREE) {
+                    returnLog.setReturnState(RefundReturnState.SELLER_STATE_AGREE + ""); //退款状态信息
+                    returnLog.setChangeState(RefundReturnState.SELLER_STATE_FINISH + ""); //下一步退款状态信息
+                    returnLog.setStateInfo("卖家已同意"); //退款状态描述
+                    shareUrl.append("<li><p>已同意</p></li>");
+                    if (refundReturn.getRefundState()==3){
+                        shareUrl.append("<li><p>72小时内会进行换货处理</p></li>");
+                    }else{
+                        shareUrl.append("<li><p>72小时内会退款到您的账号里</p></li>");
+                    }
+                    List<ShopReturnOrderGoods> shopReturnOrderGoodsList=shopReturnOrderGoodsDao.findByParams(Paramap.create().put("returnOrderId",refundId));
+                    //换货还是别的
+                    for (ShopReturnOrderGoods item:shopReturnOrderGoodsList) {
+                        ShopOrderGoods shopOrderGoods=orderGoodsDao.findByParams(Paramap.create().put("orderId",refundReturn.getOrderId()).put("specId",item.getSpecId())).get(0);
+                        if (refundReturn.getRefundType()==3){
+                            shopOrderGoods.setGoodsBarternum(Optional.ofNullable(shopOrderGoods.getGoodsBarternum()).orElse(0)+item.getGoodsNum());
+                        }else{
+                            shopOrderGoods.setGoodsReturnnum(Optional.ofNullable(shopOrderGoods.getGoodsReturnnum()).orElse(0)+item.getGoodsNum());
+                        }
+                        orderGoodsDao.update(shopOrderGoods);
+                    }
                 }
             }
             message.setContent(shareUrl.toString());
@@ -537,6 +583,16 @@ public class ShopRefundReturnServiceImpl extends GenericServiceImpl<ShopRefundRe
     @Override
     public Integer findAfterSaleYesterday(HashMap<String, Object> map) {
         return shopRefundReturnDao.findAfterSaleYesterday(map);
+    }
+
+    @Override
+    public BigDecimal getSumRefundPoint(HashMap<String, Object> map) {
+        return shopRefundReturnDao.getSumRefundPoint(map);
+    }
+
+    @Override
+    public BigDecimal getSumRefundAmount(HashMap<String, Object> map) {
+        return shopRefundReturnDao.getSumRefundAmount(map);
     }
 
     @Override

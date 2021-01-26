@@ -499,7 +499,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         // 更新订单
         ShopOrder newOrder = new ShopOrder();
         newOrder.setId(order.getId());
-        if (order.getShippingCode() == null) {
+        if (order.getShippingCode() == null||"".equals(order.getShippingCode())) {
             // 更新
             newOrder.setShippingTime(new Date());
             newOrder.setShippingExpressCode(Optional.ofNullable(express.getECode()).orElse(""));
@@ -2886,8 +2886,8 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         order.setBalanceTime(null);
         order.setShippingName("");
         order.setShippingExpressId(0L);
-        order.setShippingCode("");
         order.setShippingExpressCode("");
+        order.setShippingCode(null);
         orderDao.insertEntity(order);
 
         /*********************保存日志*********************/
@@ -3845,6 +3845,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                     if(shopOrderGoodsList!=null&&shopOrderGoodsList.size()>0){
                         for (ShopOrderGoods shopOrderGoods : shopOrderGoodsList) {
                             if(shopOrderGoods.getIsPresentation()!=null&&shopOrderGoods.getIsPresentation()==1){
+                                continue;
+                            }
+                            if(shopOrderGoods.getIsBundled()!=null&&shopOrderGoods.getIsBundled()==1){
                                 continue;
                             }
                             //ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());
@@ -5014,6 +5017,16 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
     }
 
     @Override
+    public BigDecimal getSumCancelPoint(HashMap<String, Object> map) {
+        return orderDao.getSumCancelPoint(map);
+    }
+
+    @Override
+    public BigDecimal getSumCancelAmount(HashMap<String, Object> map) {
+        return orderDao.getSumCancelAmount(map);
+    }
+
+    @Override
     public Page listWithGoodsAndAddr(Pageable pageable) {
         PageList<ShopOrderVo> result = orderDao
             .listShopOrderVoWithGoodsAndAddr(pageable.getParameter(), pageable.getPageBounds());
@@ -5468,6 +5481,9 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
                         if(shopOrderGoodsList!=null&&shopOrderGoodsList.size()>0){
                             for (ShopOrderGoods shopOrderGoods : shopOrderGoodsList) {
                                 if(shopOrderGoods.getIsPresentation()!=null&&shopOrderGoods.getIsPresentation()==1){
+                                    continue;
+                                }
+                                if(shopOrderGoods.getIsBundled()!=null&&shopOrderGoods.getIsBundled()==1){
                                     continue;
                                 }
                                 //ShopGoods shopGoods = goodsDao.find(shopOrderGoods.getGoodsId());

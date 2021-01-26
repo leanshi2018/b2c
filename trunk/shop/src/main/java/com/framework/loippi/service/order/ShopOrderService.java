@@ -421,5 +421,9 @@ public interface ShopOrderService extends GenericService<ShopOrder, Long> {
 
     BigDecimal getSumIncome(HashMap<String, Object> map);
 
+    BigDecimal getSumCancelPoint(HashMap<String, Object> map);
+
+    BigDecimal getSumCancelAmount(HashMap<String, Object> map);
+
     /*void ProcessingIntegralsNew(String paysn, Double integration, RdMmBasicInfo shopMember, ShopOrderPay pay, int shoppingPointSr);*/
 }

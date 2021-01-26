@@ -544,4 +544,12 @@
     <select id="findAfterSaleYesterday" parameterType="map" resultType="java.lang.Integer">
         SELECT COUNT(1) from SHOP_REFUND_RETURN where admin_time >= #{start} and admin_time &lt;= #{end} and refund_state = 3 and refund_type != 3
     </select>
+
+    <select id="getSumRefundPoint" parameterType="map" resultType="java.math.BigDecimal">
+        SELECT sum(reward_point_amount) from SHOP_REFUND_RETURN where admin_time >= #{start} and admin_time &lt;= #{end} and refund_state = 3 and refund_type != 3
+    </select>
+
+    <select id="getSumRefundAmount" parameterType="map" resultType="java.math.BigDecimal">
+        SELECT sum(a.refund_amount) from SHOP_REFUND_RETURN a inner join shop_order b on a.order_id = b.id where a.admin_time >= #{start} and a.admin_time &lt;= #{end} and a.refund_state = 3 and a.refund_type != 3 and b.payment_code = #{paymentCode}
+    </select>
 </mapper>
