@@ -499,7 +499,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         // 更新订单
         ShopOrder newOrder = new ShopOrder();
         newOrder.setId(order.getId());
-        if (order.getShippingCode() == null) {
+        if (order.getShippingCode() == null||"".equals(order.getShippingCode())) {
             // 更新
             newOrder.setShippingTime(new Date());
             newOrder.setShippingExpressCode(Optional.ofNullable(express.getECode()).orElse(""));
@@ -2887,6 +2887,7 @@ public class ShopOrderServiceImpl extends GenericServiceImpl<ShopOrder, Long> im
         order.setShippingName("");
         order.setShippingExpressId(0L);
         order.setShippingExpressCode("");
+        order.setShippingCode(null);
         orderDao.insertEntity(order);
 
         /*********************保存日志*********************/
