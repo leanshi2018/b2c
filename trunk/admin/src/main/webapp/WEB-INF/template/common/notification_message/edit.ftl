@@ -65,126 +65,7 @@
                         </td>
                     </tr>
 
-                    <#if message=="">
-                        <tr class="noborder">
-                            <td class="required" width="80px">
-                                <em class="pngFix"></em>消息标题
-                            </td>
-                            <td>
-                                <input name="title" id="title" type="text" value="${message.title}" />
-
-                                <span class="error-message"></span>
-                            </td>
-                        </tr>
-                        <tr class="noborder">
-                            <td class="required">
-                                <em class="pngFix"></em>图文详情
-                            </td>
-
-                        </tr>
-                        <tr class="noborder">
-                            <td class="required">
-                                <em class="pngFix"></em>
-                            </td>
-                            <td colspan="4" class="vatop rowform">
-                                <div class="span10">
-                                    <script id="ueditor" name="content"  type="text"style="height:250px;width:100%;max-width:540px;">${message.content}</script>
-                                    <script type="text/javascript">
-                                        //实例化编辑器
-                                        //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
-                                        var ueditor = UE.getEditor('ueditor');
-                                    </script>
-                                </div>
-                            </td>
-
-                            <span class="error-message"></span>
-
-                        </tr>
-
-                        <tr class="noborder">
-                            <td class="required" width="150px">
-                                <em class="pngFix"></em>
-                            </td>
-                            <td>
-                                <div class="col-sm-9">
-                                    <div class="col-lg-1" STYLE="width: 90%;">
-                                        <input type="radio" name="jump" value=""  checked>
-                                        <span >跳转路径</span>
-                                        <select name="jumpPath" class="w150" id="jumpPath">
-                                            <option value="" selected="selected">请选择</option>
-                                            <option value="homepage" <#if message.jumpPath == 'homepage'>selected="selected"</#if>>辑</option>
-                                            <option value="messagepage"<#if message.jumpPath == "messagepage">selected="selected" </#if>>消息中心</option>
-                                            <option value="goodsdetailspage" id="goodsdetailspage" <#if message.jumpPath == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
-                                            <option value="mypage"  <#if message.jumpPath == "mypage">selected="selected" </#if>>我</option>
-                                            <option value="myresultspage" <#if message.jumpPath == "myresultspage">selected="selected" </#if>>个人业绩</option>
-                                            <option value="orderpage"    <#if message.jumpPath == "orderpage">selected="selected" </#if>>我的订单</option>
-                                            <option value="myintegralpage" <#if message.jumpPath == "myintegralpage">selected="selected" </#if>>我的积分</option>
-                                            <option value="rewardintegralpage" <#if message.jumpPath == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>
-                                            <option value="shoppingintegralpage" <#if message.jumpPath == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>
-                                            <option value="buyintegralpage" <#if message.jumpPath == "buyintegralpage">selected="selected" </#if>>换购积分</option>
-                                            <option value="bankcardpage" <#if message.jumpPath == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
-                                            <option value="learnpage" <#if message.jumpPath == "learnpage">selected="selected" </#if>>学堂</option>
-                                            <option value="learnarticlepage" <#if message.jumpPath == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
-                                            <option value="invitationpage" <#if message.jumpPath == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                            <option value="activityGoodsListpage" <#if message.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
-                                            <option value="buyCouponspage" id="buyCouponspage" <#if message.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
-                                        </select>
-                                        <#--选择文章-->
-                                        <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
-                                        <input type="hidden" class="text w500" value="${article.id}" name="id" >
-                                        <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" >
-                                        <#--选择活动-->
-                                        <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
-                                        <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
-                                        <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
-                                        <#--选择商品-->
-                                        <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
-                                            <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
-                                            <input class="pins" type="text" value="<#if shopGoods??>${shopGoods.goodsName}</#if>" name="goodsName" id="goodsName">
-                                            <input class="pins" type="hidden" value="<#if shopGoods??>${shopGoods.className}</#if>" name="className" id="className">
-                                        </form>
-                                        <#--选择优惠券-->
-                                        <input type="hidden" id="couponId" name="couponId" value="${id}">
-                                        <#--                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
-                                        <input name="couponName" id="couponName" type="text" value="${couponName}">
-                                        <#--映射的名字-->
-                                        <input name="openName" id="openName"class="w150" type="hidden" value=""/>
-                                        <#--拼接的json-->
-                                        <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}"style="height:23px;display:none;"/>
-                                        <#--搜索商品的按鈕-->
-                                        <a class="btn-search" id="searchgoods" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="goodsdetailspage()"></a>
-                                        <#--搜索优惠券-->
-                                        <a class="btn-search" id="searchbuys" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="buyCouponspage()"></a>
-                                        <a class="btn-search" id="searchactivity" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="activityGoodsListpage()"></a>
-                                        <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>
-                                    </div>
-
-
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr class="noborder">
-                            <td class="required" width="150px">
-                                <em class="pngFix"></em>
-                            </td>
-                            <td>
-
-                                <div class="col-sm-9">
-
-                                    <div class="col-lg-1" STYLE="width: 90%;" >
-                                        <input type="radio" name="jump" value="" id="jumps">
-                                        <span >跳转链接</span>
-
-                                        <input name="jumpUrl"  type="text" id="link" class="w200"  value="${message.jumpUrl}" style="width: 346px"/>
-
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </#if>
-
-                <#if message!=null>
+                <#if message!''>
                     <input type="hidden" name="id" value="${message.id}" />
                     <tr class="noborder">
                         <td class="required">
@@ -225,68 +106,68 @@
 
                     </tr>
 
-                    <tr class="noborder">
-                        <td class="required" width="150px">
-                            <em class="pngFix"></em>
-                        </td>
-                        <td>
-                            <div class="col-sm-9">
-                                <div class="col-lg-1" STYLE="width: 90%;">
-                                    <input type="radio" name="jump" value=""  checked>
-                                    <span >跳转路径</span>
-                                    <select name="jumpPath" class="w150" id="jumpPath">
-                                        <option value="" selected="selected">请选择</option>
-                                        <option value="-1" <#if message.jumpPath == 'homepage'>selected="selected"</#if>>辑</option>
-                                        <option value="-1"<#if message.jumpPath == "messagepage">selected="selected" </#if>>消息中心</option>
-                                        <option value="-1" id="goodsdetailspage" <#if message.jumpPath == "goodsdetailspage">selected="selected" </#if>>商品详情</option>
-                                        <option value="-1"  <#if message.jumpPath == "mypage">selected="selected" </#if>>我</option>
-                                        <option value="-1" <#if message.jumpPath == "myresultspage">selected="selected" </#if>>个人业绩</option>
-                                        <option value="-1"    <#if message.jumpPath == "orderpage">selected="selected" </#if>>我的订单</option>
-                                        <option value="-1" <#if message.jumpPath == "myintegralpage">selected="selected" </#if>>我的积分</option>
-                                        <option value="-1" <#if message.jumpPath == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>
-                                        <option value="-1" <#if message.jumpPath == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>
-                                        <option value="-1" <#if message.jumpPath == "buyintegralpage">selected="selected" </#if>>换购积分</option>
-                                        <option value="-1" <#if message.jumpPath == "bankcardpage">selected="selected" </#if>>我的银行卡</option>
-                                        <option value="-1" <#if message.jumpPath == "learnpage">selected="selected" </#if>>学堂</option>
-                                        <option value="-1" <#if message.jumpPath == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>
-                                        <option value="-1" <#if message.jumpPath == "invitationpage">selected="selected" </#if>>我的邀请</option>
-                                        <option value="-1" <#if message.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>
-                                        <option value="-1" id="buyCouponspage" <#if message.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>
-                                    </select>
-                                    <#--选择文章-->
-                                    <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">
-                                    <input type="hidden" class="text w500" value="${article.id}" name="id" >
-                                    <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" >
-                                    <#--选择活动-->
-                                    <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>
-                                    <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>
-                                    <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>
-                                    <#--选择商品-->
-                                    <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">
-                                        <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">
-                                        <input class="pins" type="text" value="<#if shopGoods??>${shopGoods.goodsName}</#if>" name="goodsName" id="goodsName">
-                                        <input class="pins" type="hidden" value="<#if shopGoods??>${shopGoods.className}</#if>" name="className" id="className">
-                                    </form>
-                                    <#--选择优惠券-->
-                                    <input type="hidden" id="couponId" name="couponId" value="${id}">
-                                    <#--                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">-->
-                                    <input name="couponName" id="couponName" type="text" value="${couponName}">
-                                    <#--映射的名字-->
-                                    <input name="openName" id="openName"class="w150" type="hidden" value=""/>
-                                    <#--拼接的json-->
-                                    <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}"style="height:23px;display:none;"/>
-                                    <#--搜索商品的按鈕-->
-                                    <a class="btn-search" id="searchgoods" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="goodsdetailspage()"></a>
-                                    <#--搜索优惠券-->
-                                    <a class="btn-search" id="searchbuys" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="buyCouponspage()"></a>
-                                    <a class="btn-search" id="searchactivity" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="activityGoodsListpage()"></a>
-                                    <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>
-                                </div>
+<#--                    <tr class="noborder">-->
+<#--                        <td class="required" width="150px">-->
+<#--                            <em class="pngFix"></em>-->
+<#--                        </td>-->
+<#--                        <td>-->
+<#--                            <div class="col-sm-9">-->
+<#--                                <div class="col-lg-1" STYLE="width: 90%;">-->
+<#--                                    <input type="radio" name="jump" value=""  checked>-->
+<#--                                    <span >跳转路径</span>-->
+<#--                                    <select name="jumpPath" class="w150" id="jumpPath">-->
+<#--                                        <option value="" selected="selected">请选择</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == 'homepage'>selected="selected"</#if>>辑</option>-->
+<#--                                        <option value="-1"<#if message.jumpPath == "messagepage">selected="selected" </#if>>消息中心</option>-->
+<#--                                        <option value="-1" id="goodsdetailspage" <#if message.jumpPath == "goodsdetailspage">selected="selected" </#if>>商品详情</option>-->
+<#--                                        <option value="-1"  <#if message.jumpPath == "mypage">selected="selected" </#if>>我</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "myresultspage">selected="selected" </#if>>个人业绩</option>-->
+<#--                                        <option value="-1"    <#if message.jumpPath == "orderpage">selected="selected" </#if>>我的订单</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "myintegralpage">selected="selected" </#if>>我的积分</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "rewardintegralpage">selected="selected" </#if>>奖励积分</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "shoppingintegralpage">selected="selected" </#if>>购物积分</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "buyintegralpage">selected="selected" </#if>>换购积分</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "bankcardpage">selected="selected" </#if>>我的银行卡</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "learnpage">selected="selected" </#if>>学堂</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "learnarticlepage">selected="selected" </#if>>学堂文章详情</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "invitationpage">selected="selected" </#if>>我的邀请</option>-->
+<#--                                        <option value="-1" <#if message.jumpPath == "activityGoodsListpage">selected="selected" </#if>>活动页面</option>-->
+<#--                                        <option value="-1" id="buyCouponspage" <#if message.jumpPath == 'buyCouponspage'>selected="selected" </#if>>优惠券购买详情</option>-->
+<#--                                    </select>-->
+<#--                                    &lt;#&ndash;选择文章&ndash;&gt;-->
+<#--                                    <input type="text" class="text w500" value="${article.articleTitle}" name="articleTitle" id="articleTitle">-->
+<#--                                    <input type="hidden" class="text w500" value="${article.id}" name="id" >-->
+<#--                                    <input type="hidden" class="text w500" value="${article.articleContent}" name="articleContent" >-->
+<#--                                    &lt;#&ndash;选择活动&ndash;&gt;-->
+<#--                                    <input name="name" type="text" id="activityname" value="${shopActivity.name}"/>-->
+<#--                                    <input name="activityId" id="activityId" type="hidden" value="${shopActivity.id}"/>-->
+<#--                                    <input name="info" id="info" type="hidden" value="${shopActivity.info}"/>-->
+<#--                                    &lt;#&ndash;选择商品&ndash;&gt;-->
+<#--                                    <form id="recommend_form" method="post" name="recommendForm" action="${base}/admin/shop_goods_recommend/edit.jhtml">-->
+<#--                                        <input class="pins" type="hidden" id="goodsId" name="goodsId" value="<#if shopGoods??>${shopGoods.id}</#if>">-->
+<#--                                        <input class="pins" type="text" value="<#if shopGoods??>${shopGoods.goodsName}</#if>" name="goodsName" id="goodsName">-->
+<#--                                        <input class="pins" type="hidden" value="<#if shopGoods??>${shopGoods.className}</#if>" name="className" id="className">-->
+<#--                                    </form>-->
+<#--                                    &lt;#&ndash;选择优惠券&ndash;&gt;-->
+<#--                                    <input type="hidden" id="couponId" name="couponId" value="${id}">-->
+<#--                                    &lt;#&ndash;                                <input type="hidden" id="couponLikeName" name="couponLikeName" value="${couponLikeName}">&ndash;&gt;-->
+<#--                                    <input name="couponName" id="couponName" type="text" value="${couponName}">-->
+<#--                                    &lt;#&ndash;映射的名字&ndash;&gt;-->
+<#--                                    <input name="openName" id="openName"class="w150" type="hidden" value=""/>-->
+<#--                                    &lt;#&ndash;拼接的json&ndash;&gt;-->
+<#--                                    <input name="jumpJson" class="w150" id="jsons" value="${jumpJson}"style="height:23px;display:none;"/>-->
+<#--                                    &lt;#&ndash;搜索商品的按鈕&ndash;&gt;-->
+<#--                                    <a class="btn-search" id="searchgoods" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="goodsdetailspage()"></a>-->
+<#--                                    &lt;#&ndash;搜索优惠券&ndash;&gt;-->
+<#--                                    <a class="btn-search" id="searchbuys" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="buyCouponspage()"></a>-->
+<#--                                    <a class="btn-search" id="searchactivity" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="activityGoodsListpage()"></a>-->
+<#--                                    <a class="btn-search" id="searchlearnarticle" style="background-color:#ccc;margin-left:-49px;margin-top:-3px;border: none;display:none;" onclick="learnarticlepage()"></a>-->
+<#--                                </div>-->
 
 
-                            </div>
-                        </td>
-                    </tr>
+<#--                            </div>-->
+<#--                        </td>-->
+<#--                    </tr>-->
 
                     <tr class="noborder">
                         <td class="required" width="150px">
@@ -307,20 +188,69 @@
                             </div>
                         </td>
                     </tr>
+                    <#else >
+                        <tr class="noborder">
+                            <td class="required" width="80px">
+                                <em class="pngFix"></em>消息标题
+                            </td>
+                            <td>
+                                <input name="title" id="title" type="text" value="" />
+
+                                <span class="error-message"></span>
+                            </td>
+                        </tr>
+                        <tr class="noborder">
+                            <td class="required">
+                                <em class="pngFix"></em>图文详情
+                            </td>
+
+                        </tr>
+                        <tr class="noborder">
+                            <td class="required">
+                                <em class="pngFix"></em>
+                            </td>
+                            <td colspan="4" class="vatop rowform">
+                                <div class="span10">
+                                    <script id="ueditor" name="content"  type="text"style="height:250px;width:100%;max-width:540px;"></script>
+                                    <script type="text/javascript">
+                                        //实例化编辑器
+                                        //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+                                        var ueditor = UE.getEditor('ueditor');
+                                    </script>
+                                </div>
+                            </td>
+
+                            <span class="error-message"></span>
+
+                        </tr>
+                        <tr class="noborder">
+                            <td class="required" width="150px">
+                                <em class="pngFix"></em>
+                            </td>
+                            <td>
+
+                                <div class="col-sm-9">
+
+                                    <div class="col-lg-1" STYLE="width: 90%;" >
+                                        <input type="radio" name="jump" value="" id="jumps">
+                                        <span >跳转链接</span>
+
+                                        <input name="jumpUrl"  type="text" id="link" class="w200"  value="" style="width: 346px"/>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                 </#if>
                 </tbody>
                 <tfoot>
                 <tr>
                     <td></td>
                     <td>
-                        <#if message!=null>
+
                         <a class="btn" href="javascript:history.go(-1);" style="float:left"><span><@spring.message "button.back"/></span></a>
                             <a class="btn btn-success" id="subForm" type="submit">提交</a>
-                        </#if>
-<#--                        <#if message==null>-->
-<#--                        <a class="btn" href="javascript:history.go(-1);" style="float:left"><span><@spring.message "button.back"/></span></a>-->
-<#--                        <a class="btn btn-success" id="subForm" type="submit">提交</a>-->
-<#--                        </#if>-->
+
                     </td>
                 </tr>
                 </tfoot>
