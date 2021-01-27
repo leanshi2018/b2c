@@ -60,6 +60,11 @@ public class KuaidiServiceImpl implements KuaidiService {
     public String query(String type, String no) {
         if (type.equals("SFEXPRESS")){
             no = no+":2384";
+        }else {
+            String s = no.substring(0, 2);
+            if (s.equals("SF")){
+                no = no+":2384";
+            }
         }
 
         String host = "https://kdwlcxf.market.alicloudapi.com";// 【1】请求地址 支持http 和 https 及 WEBSOCKET
