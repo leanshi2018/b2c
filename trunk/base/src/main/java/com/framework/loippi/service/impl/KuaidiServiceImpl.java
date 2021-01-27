@@ -64,6 +64,7 @@ public class KuaidiServiceImpl implements KuaidiService {
             String s = no.substring(0, 2);
             if (s.equals("SF")){
                 no = no+":2384";
+                type = "SFEXPRESS";
             }
         }
 
