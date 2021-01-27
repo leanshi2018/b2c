@@ -116,10 +116,6 @@ public class ShopCommonMessageNewController extends GenericController {
             model.addAttribute("msg","通知消息标题过长");
             return Constants.MSG_URL;
         }
-        if(message.getContent().length()>150){
-            model.addAttribute("msg","通知消息内容过长");
-            return Constants.MSG_URL;
-        }
         if(message.getId()!=null){
             shopCommonMessageService.update(message);
         }else {
