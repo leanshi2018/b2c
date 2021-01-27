@@ -796,7 +796,7 @@ public class ShopOrderJob {
      * 白酒顺丰发货
      * @throws Exception
      */
-    //@Scheduled(cron = "0 0 15 * * ?" )  //每天15点发货
+    @Scheduled(cron = "0 17 17 * * ?" )  //每天15点发货
     public void timingSFOrder() throws Exception {
         System.out.println("###############################执行定时白酒顺丰发货#####################################");
 
@@ -924,7 +924,12 @@ public class ShopOrderJob {
                         } else {
                             Integer goodsNumOld = orderExcelOld.getGoodsNum();
                             orderExcelOld.setGoodsNum(goodsNumOld + orderExcel.getGoodsNum());
-                            orderExcelList.add(orderExcelOld);
+                            for (int i = 0; i < orderExcelList.size(); i++) {
+                                if(orderExcelOld.getSpecGoodsSerial().equals(orderExcelList.get(i).getSpecGoodsSerial())) {
+                                    orderExcelList.set(i, orderExcelOld);
+                                }
+                            }
+                            //orderExcelList.add(orderExcelOld);
                         }
                     }
                 }
@@ -1011,7 +1016,12 @@ public class ShopOrderJob {
                             } else {
                                 Integer goodsNumOld = orderExcelOld.getGoodsNum();
                                 orderExcelOld.setGoodsNum(goodsNumOld + total);
-                                orderExcelList.add(orderExcelOld);
+                                for (int i = 0; i < orderExcelList.size(); i++) {
+                                    if(orderExcelOld.getSpecGoodsSerial().equals(orderExcelList.get(i).getSpecGoodsSerial())) {
+                                        orderExcelList.set(i, orderExcelOld);
+                                    }
+                                }
+                                //orderExcelList.add(orderExcelOld);
                             }
                         }
                     }
@@ -1070,7 +1080,6 @@ public class ShopOrderJob {
                         }
                     }
                 }
-
                 CreateExpressOrderJsonDTO createExpressOrderReq = new CreateExpressOrderJsonDTO();
                 // 如果提示重复下单，把这个编号变一下
                 createExpressOrderReq.setOrderId(orderSn);
@@ -1435,7 +1444,12 @@ public class ShopOrderJob {
                             } else {
                                 Integer goodsNumOld = orderExcelOld.getGoodsNum();
                                 orderExcelOld.setGoodsNum(goodsNumOld + orderExcel.getGoodsNum());
-                                orderExcelList.add(orderExcelOld);
+                                for (int i = 0; i < orderExcelList.size(); i++) {
+                                    if(orderExcelOld.getSpecGoodsSerial().equals(orderExcelList.get(i).getSpecGoodsSerial())) {
+                                        orderExcelList.set(i, orderExcelOld);
+                                    }
+                                }
+                                //orderExcelList.add(orderExcelOld);
                             }
                         }
                     }
@@ -1522,7 +1536,12 @@ public class ShopOrderJob {
                                 } else {
                                     Integer goodsNumOld = orderExcelOld.getGoodsNum();
                                     orderExcelOld.setGoodsNum(goodsNumOld + total);
-                                    orderExcelList.add(orderExcelOld);
+                                    for (int i = 0; i < orderExcelList.size(); i++) {
+                                        if(orderExcelOld.getSpecGoodsSerial().equals(orderExcelList.get(i).getSpecGoodsSerial())) {
+                                            orderExcelList.set(i, orderExcelOld);
+                                        }
+                                    }
+                                    //orderExcelList.add(orderExcelOld);
                                 }
                             }
                         }
