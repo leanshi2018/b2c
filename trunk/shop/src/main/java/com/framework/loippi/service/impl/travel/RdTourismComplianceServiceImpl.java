@@ -138,7 +138,7 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 		List<RdTourismCompliance> twoQualifyList = rdTourismComplianceDao.findTwoQualifyList();
 		for (RdTourismCompliance rdTourismCompliance : twoQualifyList) {
 			RdMmBasicInfo mmBasicInfo = rdMmBasicInfoDao.findByMCode(rdTourismCompliance.getMmCode());
-			for (int i=0;i<3;i++){
+			for (int i=0;i<2;i++){
 				RdTravelTicketDetail rdTravelTicketDetail = new RdTravelTicketDetail();
 				rdTravelTicketDetail.setId(twiterIdService.getTwiterId());
 				rdTravelTicketDetail.setTravelId(rdTravelTicket.getId());
@@ -191,6 +191,23 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 			RdMmAccountInfo accountInfo = rdMmAccountInfoDao.findAccByMCode(rdTourismCompliance.getMmCode());
 			BigDecimal bonusBlance = accountInfo.getBonusBlance();
 
+			for (int i=0;i<10;i++){
+				RdTravelTicketDetail rdTravelTicketDetail = new RdTravelTicketDetail();
+				rdTravelTicketDetail.setId(twiterIdService.getTwiterId());
+				rdTravelTicketDetail.setTravelId(rdTravelTicket.getId());
+				rdTravelTicketDetail.setTravelName(Optional.ofNullable(rdTravelTicket.getTravelName()).orElse(""));
+				rdTravelTicketDetail.setTicketPrice(Optional.ofNullable(rdTravelTicket.getTicketPrice()).orElse(BigDecimal.ZERO));
+				rdTravelTicketDetail.setTicketSn("T"+twiterIdService.getTwiterId());
+				rdTravelTicketDetail.setStatus(0);
+				rdTravelTicketDetail.setOwnCode(rdTourismCompliance.getMmCode());
+				rdTravelTicketDetail.setOwnNickName(mmBasicInfo.getMmNickName());
+				rdTravelTicketDetail.setOwnTime(new Date());
+				rdTravelTicketDetail.setImage(Optional.ofNullable(rdTravelTicket.getImage()).orElse(""));
+
+				rdTravelTicketDetailDao.insert(rdTravelTicketDetail);
+				total = total+1;
+			}
+
 			RdMmAccountLog rdMmAccountLog = new RdMmAccountLog();
 			rdMmAccountLog.setMmCode(rdTourismCompliance.getMmCode());
 			rdMmAccountLog.setMmNickName(mmBasicInfo.getMmNickName());
@@ -198,8 +215,8 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 			rdMmAccountLog.setAccType("SBB");
 			rdMmAccountLog.setTrSourceType("CMP");
 			rdMmAccountLog.setBlanceBefore(bonusBlance);
-			rdMmAccountLog.setAmount(new BigDecimal("10000"));
-			rdMmAccountLog.setBlanceAfter(bonusBlance.add(new BigDecimal("10000")));
+			rdMmAccountLog.setAmount(new BigDecimal("5000"));
+			rdMmAccountLog.setBlanceAfter(bonusBlance.add(new BigDecimal("5000")));
 			rdMmAccountLog.setTransDate(new Date());
 			rdMmAccountLog.setCreationTime(new Date());
 			rdMmAccountLog.setAutohrizeTime(new Date());
@@ -211,7 +228,7 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 			rdMmAccountLog.setAutohrizeDesc("旅游计划达标三级店奖励");
 			rdMmAccountLog.setStatus(3);
 			rdMmAccountLogDao.insert(rdMmAccountLog);
-			accountInfo.setBonusBlance(bonusBlance.add(new BigDecimal("10000")));
+			accountInfo.setBonusBlance(bonusBlance.add(new BigDecimal("5000")));
 			rdMmAccountInfoDao.update(accountInfo);
 			//4.生成通知消息
 			ShopCommonMessage shopCommonMessage=new ShopCommonMessage();
@@ -223,7 +240,7 @@ public class RdTourismComplianceServiceImpl extends GenericServiceImpl<RdTourism
 			shopCommonMessage.setIsTop(1);
 			shopCommonMessage.setCreateTime(new Date());
 			shopCommonMessage.setTitle("旅游计划达标三级店奖励");
-			shopCommonMessage.setContent("恭喜旅游计划达标三级店奖励，"+new BigDecimal("10000").setScale(2,BigDecimal.ROUND_HALF_UP)+"奖励积分到积分账户");
+			shopCommonMessage.setContent("恭喜旅游计划达标三级店奖励，"+new BigDecimal("5000").setScale(2,BigDecimal.ROUND_HALF_UP)+"奖励积分到积分账户");
 			Long msgId = twiterIdService.getTwiterId();
 			shopCommonMessage.setId(msgId);
 			shopCommonMessageDao.insert(shopCommonMessage);

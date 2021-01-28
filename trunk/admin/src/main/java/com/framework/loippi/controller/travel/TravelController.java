@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ import com.framework.loippi.entity.travel.RdTravelTicket;
 import com.framework.loippi.entity.travel.RdTravelTicketDetail;
 import com.framework.loippi.entity.user.MemberQualification;
 import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.mybatis.paginator.domain.Order;
 import com.framework.loippi.result.travel.RdTravelActivityResult;
 import com.framework.loippi.service.TwiterIdService;
@@ -52,7 +50,6 @@ import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
-import com.framework.loippi.utils.DateConverter;
 import com.framework.loippi.utils.StringUtil;
 
 @Slf4j
@@ -100,7 +97,7 @@ public class TravelController {
 			return Constants.MSG_URL;
 		}
 		Integer sign = 0;
-		String periods = "202007,202008,202009,202010,202011,202012";
+		String periods = "202102,202103,202104,202105,202106";
 		//String periods = "202004,202005,202006,202007,202011,202012";
 		String[] periodList = periods.split(",");
 		for (String period : periodList) {
@@ -118,15 +115,15 @@ public class TravelController {
 				Integer threeQualify = 0;//3
 				Integer keepQualify = 0;//保留资格
 
-				//计算'202006','202007','202008','202009','202010','202011','202012'内rd_dis_qualification里DD_NEW_VIP_NUMBER新推荐vip人数
+				//计算'202102,202103,202104,202105,202106'内rd_dis_qualification里DD_NEW_VIP_NUMBER新推荐vip人数
 				Integer vipNum = memberQualificationService.findVipNumByMCode(qualification.getMCode());
 
 				//6月1号到12月31号从老会员转过来的会员任意一个月买满25mi算一个合格推荐
 				Integer oldNum = 0;
 
-				DateConverter dateConverter = new DateConverter();
-				Date startTime = dateConverter.convert("2020-06-01 00:00:00");
-				Date endTime = dateConverter.convert("2020-12-31 23:59:59");
+				/*DateConverter dateConverter = new DateConverter();
+				Date startTime = dateConverter.convert("2021-01-01 00:00:00");
+				Date endTime = dateConverter.convert("2021-06-31 23:59:59");
 				Calendar begin = Calendar.getInstance();
 				begin.setTime(startTime);
 
@@ -150,7 +147,7 @@ public class TravelController {
 							}
 						}
 					}
-				}
+				}*/
 
 				vipNum += oldNum;
 

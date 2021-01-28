@@ -567,7 +567,7 @@
 	</select>
 
 	<select id="findVipNumByMCode" parameterType="string" resultType="java.lang.Integer">
-		SELECT SUM(DD_NEW_VIP_NUMBER) FROM rd_dis_qualification WHERE MM_CODE = #{mCode} AND PERIOD_CODE IN ('202006','202007','202008','202009','202010','202011','202012')
+		SELECT SUM(DD_NEW_VIP_NUMBER) FROM rd_dis_qualification WHERE MM_CODE = #{mCode} AND PERIOD_CODE IN ('202101','202102','202103','202104','202105','202106')
 	</select>
 
 	<select id="countByMCode" parameterType="string" resultType="java.lang.Integer">
