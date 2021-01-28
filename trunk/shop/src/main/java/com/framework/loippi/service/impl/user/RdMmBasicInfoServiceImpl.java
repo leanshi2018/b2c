@@ -10,12 +10,6 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.allinpay.yunst.sdk.YunClient;
-import com.allinpay.yunst.sdk.bean.YunRequest;
-import com.framework.loippi.dao.user.*;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.utils.JacksonUtil;
-import com.framework.loippi.vo.user.UserInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +36,7 @@ import com.framework.loippi.service.impl.GenericServiceImpl;
 import com.framework.loippi.service.user.OldSysRelationshipService;
 import com.framework.loippi.service.user.RdMmBasicInfoService;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.vo.user.UserInfoVo;
 
 
 /**
