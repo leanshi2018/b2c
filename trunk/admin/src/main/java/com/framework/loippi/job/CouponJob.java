@@ -2,10 +2,13 @@ package com.framework.loippi.job;
 
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -252,4 +255,45 @@ public class CouponJob {
             }
         }
     }*/
+
+    /**
+     * 每天定时任务执行，发放优惠券刺激不活跃用户购买
+     */
+    //@Scheduled(cron = "0 5 5 * * ? ")  //每天5点五分运行
+    //@Scheduled(cron = "0 59 15 * * ? ")  //每天0点五分运行
+    //@Scheduled(cron = "0/30 * * * * ? " )  //每隔30秒执行一次
+    public void sendCoupon() {
+        log.info("#################################################################");
+        log.info("#########开始执行，发放优惠券 ####################################");
+        log.info("#################################################################");
+        ArrayList<RdMmBasicInfo> list = new ArrayList<>();
+        Long couponId=0L;
+        couponService.sendByCondition(list,couponId);
+    }
+
+    /**
+     * 回收动态优惠券
+     */
+    //@Scheduled(cron = "0 5 6 * * ? ")  //每天6点五分运行
+    //@Scheduled(cron = "0 59 15 * * ? ")  //每天0点五分运行
+    //@Scheduled(cron = "0/30 * * * * ? " )  //每隔30秒执行一次
+    public void killDynamicStateCoupon() {
+        log.info("#################################################################");
+        log.info("#########开始执行，回收动态优惠券 #################################");
+        log.info("#################################################################");
+        couponService.killDynamicStateCoupon();
+    }
+
+    /**
+     * 提醒券快过期
+     */
+    //@Scheduled(cron = "0 5 7 * * ? ")  //每天7点五分运行
+    //@Scheduled(cron = "0 59 15 * * ? ")  //每天0点五分运行
+    //@Scheduled(cron = "0/30 * * * * ? " )  //每隔30秒执行一次
+    public void alarmDynamicStateCoupon() {
+        log.info("#################################################################");
+        log.info("#########开始执行，提醒券快过期 #################################");
+        log.info("#################################################################");
+        couponService.alarmDynamicStateCoupon();
+    }
 }

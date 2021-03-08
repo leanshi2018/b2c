@@ -229,6 +229,11 @@ public class Coupon implements GenericEntity {
      */
     @Column(name = "update_time")
     private Date updateTime;
+    /**
+     * 是否动态决定优惠券使用结束时间  0：否 1：是
+     */
+    @Column(name = "dynamic_state")
+    private Integer dynamicState;
 
     /******************设置条件搜索字段，不参与数据库存储****************************/
     /**

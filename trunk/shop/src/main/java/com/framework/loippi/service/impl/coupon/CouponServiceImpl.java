@@ -1,15 +1,14 @@
 package com.framework.loippi.service.impl.coupon;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.framework.loippi.entity.*;
+import com.framework.loippi.service.ShopCommonMessageService;
+import com.framework.loippi.service.ShopMemberMessageService;
+import com.framework.loippi.utils.jpush.JpushUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +17,6 @@ import com.framework.loippi.dao.coupon.CouponDetailDao;
 import com.framework.loippi.dao.coupon.CouponPayDetailDao;
 import com.framework.loippi.dao.coupon.CouponUserDao;
 import com.framework.loippi.dao.user.RdMmRemarkDao;
-import com.framework.loippi.entity.AliPayRefund;
-import com.framework.loippi.entity.TSystemPluginConfig;
-import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
@@ -94,6 +90,10 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
     private RdMmRelationService rdMmRelationService;
     @Resource
     private RdMmRemarkDao rdMmRemarkDao;
+    @Resource
+    private ShopCommonMessageService shopCommonMessageService;
+    @Resource
+    private ShopMemberMessageService shopMemberMessageService;
 
     /**
      *  添加/编辑优惠券
@@ -837,6 +837,138 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         //修改优惠券发放数量
         coupon.setReceivedNum(coupon.getReceivedNum()+2);
         couponDao.update(coupon);
+    }
+
+    /**
+     * 给指定用户发放优惠券
+     * @param list
+     * @param couponId
+     */
+    @Override
+    public void sendByCondition(ArrayList<RdMmBasicInfo> list, Long couponId) {
+        if(list==null||list.size()==0){
+            return;
+        }
+        List<Coupon> params = couponDao.findByParams(Paramap.create().put("id", couponId).put("receiveType", 2).put("status", 2).put("dynamicState", 1));
+        if(params==null||params.size()==0){
+            return;
+        }
+        //1.获取需要发放的优惠券实体
+        Coupon coupon = params.get(0);
+        String message = "送您1张"+coupon.getCouponValue()+"元代金券，赶快打开蜗米商城使用吧";
+        HashMap<Object, Object> map = new HashMap<>();//TODO 预留跳转优惠券列表页面
+        ArrayList<String> strings = new ArrayList<>();
+        //2.遍历符合条件的会员，依次发放优惠券
+        for (RdMmBasicInfo basicInfo : list) {
+            //2.1查询当前会员是否已经获取过该类型的优惠券，如果获取过，不发
+            List<CouponUser> users = couponUserDao.findByMMCodeAndCouponId(Paramap.create().put("mCode",basicInfo.getMmCode()).put("couponId",couponId));
+            if(users!=null&&users.size()>0){
+                continue;
+            }
+            //2.2针对会员发放优惠券
+            //2.2.1生成couponUser记录
+            CouponUser couponUser = new CouponUser();
+            Long couponUserId = twiterIdService.getTwiterId();
+            couponUser.setId(couponUserId);
+            couponUser.setMCode(basicInfo.getMmCode());
+            couponUser.setCouponId(couponId);
+            couponUser.setHaveCouponNum(1);
+            couponUser.setOwnNum(1);
+            couponUser.setUseAbleNum(coupon.getUseNumLimit());
+            couponUser.setUseNum(0);
+            couponUserService.save(couponUser);
+            //2.2.2生成couponDetail记录
+            CouponDetail couponDetail = new CouponDetail();
+            couponDetail.setId(twiterIdService.getTwiterId());
+            couponDetail.setRdCouponUserId(couponUserId);
+            couponDetail.setCouponId(coupon.getId());
+            couponDetail.setCouponSn("YH"+twiterIdService.getTwiterId());
+            couponDetail.setCouponName(coupon.getCouponName());
+            couponDetail.setReceiveId(basicInfo.getMmCode());
+            couponDetail.setReceiveNickName(basicInfo.getMmNickName());
+            couponDetail.setReceiveTime(new Date());
+            couponDetail.setHoldId(basicInfo.getMmCode());
+            couponDetail.setHoldNickName(basicInfo.getMmNickName());
+            couponDetail.setHoldTime(new Date());
+            couponDetail.setUseStartTime(new Date());
+            Calendar instance = Calendar.getInstance();
+            instance.add(Calendar.DATE,7);
+            couponDetail.setUseEndTime(instance.getTime());
+            couponDetail.setUseState(2);
+            couponDetail.setRefundState(0);
+            couponDetailService.save(couponDetail);
+            //2.2.3发放消息通知
+            Long twiterId = twiterIdService.getTwiterId();
+            ShopCommonMessage commonMsg = new ShopCommonMessage();
+            commonMsg.setId(twiterId);
+            commonMsg.setTitle("优惠券到账通知");
+            commonMsg.setContent("您已经获得1张"+coupon.getCouponValue()+"元的代价券，有效期7天，快去使用吧~");
+            commonMsg.setBizId(0l);
+            commonMsg.setBizType(2); //1-消息通知  2-提醒信息  3-订单信息 4-留言信息
+            commonMsg.setCreateTime(new Date());
+            commonMsg.setSendUid(basicInfo.getMmCode());
+            commonMsg.setType(1); //1-系统消息  2-短信消息
+            commonMsg.setUType(1); //用户类型 1-个人  2-分组  3-全部用户
+            commonMsg.setOnLine(1); //草稿 1-在线  2-草稿
+            commonMsg.setIsTop(1); //1-置顶  2-未置顶
+            shopCommonMessageService.save(commonMsg);
+            ShopMemberMessage memberMsg = new ShopMemberMessage();
+            memberMsg.setId(twiterIdService.getTwiterId());
+            memberMsg.setMsgId(twiterId);
+            memberMsg.setBizType(2);
+            memberMsg.setIsRead(0);
+            memberMsg.setCreateTime(new Date());
+            memberMsg.setUid(Long.parseLong(basicInfo.getMmCode()));
+            shopMemberMessageService.save(memberMsg);
+            //2.2.4发送极光推送
+            strings.add(basicInfo.getMmCode());
+        }
+        boolean b = JpushUtils.sendJpush(strings, message, map);
+    }
+
+    /**
+     * 回收动态优惠券
+     */
+    @Override
+    public void killDynamicStateCoupon() {
+        //查询当前时间下，已经超过了使用结束时间的且优惠券使用状态为未使用的动态优惠券详情
+        List<CouponDetail> list=couponDetailDao.findDynamicOverDetail(Paramap.create().put("searchUseTime",new Date()).put("useState",2));
+        if(list!=null&&list.size()>0){
+            for (CouponDetail couponDetail : list) {
+                String mmCode = couponDetail.getHoldId();
+                List<CouponUser> params = couponUserDao.findByParams(Paramap.create().put("couponId",couponDetail.getCouponId()).put("mCode",mmCode));
+                if(params!=null&&params.size()>0){
+                    CouponUser couponUser = params.get(0);
+                    couponUser.setOwnNum(couponUser.getOwnNum()-1);
+                    couponUserDao.update(couponUser);
+                }
+                couponDetail.setUseState(3);
+                couponDetailDao.update(couponDetail);
+            }
+        }
+        //couponDetailDao.dynamicOverDetail(Paramap.create().put("searchUseTime",new Date()).put("useState",2));
+    }
+
+    /**
+     * 提醒券快过期
+     */
+    @Override
+    public void alarmDynamicStateCoupon() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE,1);
+        Date time = calendar.getTime();
+        ArrayList<String> strings = new ArrayList<>();
+        List<CouponDetail> list=couponDetailDao.findDynamicOverDetail(Paramap.create().put("searchUseTime",time).put("useState",2));
+        if(list!=null&&list.size()>0){
+            for (CouponDetail couponDetail : list) {
+                strings.add(couponDetail.getHoldId());
+            }
+        }
+        HashSet<String> set = new HashSet<>(strings);
+        strings.clear();
+        strings.addAll(set);
+        HashMap<Object, Object> map = new HashMap<>();//TODO 预留跳转优惠券列表页面
+        JpushUtils.sendJpush(strings,"您的优惠券即将过期，赶紧使用吧~",map);
     }
 
     public void updateCouponDetailList(CouponPayDetail couponPayDetail, String bathno, Coupon coupon, List<CouponDetail> couponDetailList,Integer refundNum) {

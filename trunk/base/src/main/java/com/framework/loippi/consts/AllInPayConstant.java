@@ -5,7 +5,8 @@ public interface AllInPayConstant {
      * 分账回调地址
      */
     //public static final String CUT_BILL_BACKURL="http://qa7kbb.natappfree.cc/admin_war_exploded/admin/allinpayContract/cutBack.jhtml";
-    public static final String CUT_BILL_BACKURL="http://glht.rdnmall.cn/admin/admin/allinpayContract/cutBack.jhtml";
+    //public static final String CUT_BILL_BACKURL="http://glht.rdnmall.cn/admin/admin/allinpayContract/cutBack.jhtml";
+    public static final String CUT_BILL_BACKURL="http://szleanshi.rdnmall.cn/admin/admin/allinpayContract/cutBack.jhtml";
     /**
      * 通联网络签约地址 正式测试区分
      */
@@ -16,7 +17,8 @@ public interface AllInPayConstant {
      * 通联网络签约后台回调地址
      */
     //public static final String SIGN_BACK_URL="http://qa7kbb.natappfree.cc/admin_war_exploded/admin/allinpayContract/signBack.jhtml";
-    public static final String SIGN_BACK_URL="http://glht.rdnmall.cn/admin/admin/allinpayContract/signBack.jhtml";
+    //public static final String SIGN_BACK_URL="http://glht.rdnmall.cn/admin/admin/allinpayContract/signBack.jhtml";
+    public static final String SIGN_BACK_URL="http://szleanshi.rdnmall.cn/admin/admin/allinpayContract/signBack.jhtml";
 
     /**
      * 通联网络签约app回调地址

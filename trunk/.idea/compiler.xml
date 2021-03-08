@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="api" />
+        <module name="plug" />
+        <module name="system" />
+        <module name="shop" />
+        <module name="base" />
+        <module name="dubbo-config" />
+        <module name="task" />
+        <module name="admin" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="admin" target="1.8" />
+      <module name="api" target="1.8" />
+      <module name="base" target="1.8" />
+      <module name="dubbo" target="1.5" />
+      <module name="dubbo-common" target="1.5" />
+      <module name="dubbo-config" target="1.8" />
+      <module name="plug" target="1.8" />
+      <module name="shop" target="1.8" />
+      <module name="system" target="1.8" />
+      <module name="task" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
