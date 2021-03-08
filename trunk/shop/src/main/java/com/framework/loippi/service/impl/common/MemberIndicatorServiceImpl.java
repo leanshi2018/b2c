@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -39,9 +40,17 @@ public class MemberIndicatorServiceImpl extends GenericServiceImpl<MemberIndicat
      * 统计会员周期指标
      */
     @Override
-    public void getMemberIndicator() {
+    public void getMemberIndicator(){
+        System.out.println("修改");
         //1.查询是否存在正常使用的会员指标 如果有，作废掉
+        //SimpleDateFormat format5 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        /*try {*/
+            //Date parse = format5.parse("2021-02-01 00:15:00");
+        /*} catch (ParseException e) {
+            e.printStackTrace();
+        }*/
         RdSysPeriod sysPeriod = rdSysPeriodService.getPeriodService(new Date());
+        //RdSysPeriod sysPeriod = rdSysPeriodService.getPeriodService(parse);
         if(sysPeriod==null){//如果当前时间没有业务周期，结束方法
             return;
         }
@@ -61,6 +70,7 @@ public class MemberIndicatorServiceImpl extends GenericServiceImpl<MemberIndicat
         MemberIndicator indicator = new MemberIndicator();
         indicator.setPeriodCode(periodCode);
         indicator.setStatisticalTime(new Date());
+        //indicator.setStatisticalTime(parse);
         Long memberNumTotal=rdMmRelationDao.findMemEffective();
         indicator.setMemberNumTotal(memberNumTotal);
         indicator.setStartNum(0L);//TODO 当前版本不涉及统计会员登录次数
@@ -108,7 +118,21 @@ public class MemberIndicatorServiceImpl extends GenericServiceImpl<MemberIndicat
         }
         //获取当前年份
         SimpleDateFormat format = new SimpleDateFormat("yyyy");
-        String str = format.format(new Date());
+        String str = "";
+        SimpleDateFormat format3 = new SimpleDateFormat("yyyy-MM");
+        String format4 = format3.format(new Date());
+        //String format4 = format3.format(parse);
+        System.out.println(format4);
+        if(format4.endsWith("01")){
+            Calendar instance = Calendar.getInstance();
+            instance.add(Calendar.YEAR,-1);
+            str = format.format(instance.getTime());
+            System.out.println(str+"***12");
+        }else {
+            str = format.format(new Date());
+            //str = format.format(parse);
+            System.out.println(str+"***no12");
+        }
         String start=str+"-01-01 00:00:00";
         String end=str+"-12-31 23:59:59";
         HashMap<String, Object> map = new HashMap<>();
@@ -145,7 +169,7 @@ public class MemberIndicatorServiceImpl extends GenericServiceImpl<MemberIndicat
         //查询统计周期前一个周期的会员购买情况
         RdSysPeriod period = rdSysPeriodService.findByPeriodCode(periodCode);
         if(period!=null&&period.getPrePeriod()!=null){
-            List<MemIndicatorVo> list3=shopOrderDao.findMemIndicatorVo(period.getPeriodCode());
+            List<MemIndicatorVo> list3=shopOrderDao.findMemIndicatorVo(period.getPrePeriod());
             if(list3!=null&&list3.size()>0){
                 ArrayList<String> intersect = new ArrayList<>();
                 for (MemIndicatorVo memIndicatorVo : list3) {
@@ -174,6 +198,7 @@ public class MemberIndicatorServiceImpl extends GenericServiceImpl<MemberIndicat
         indicator.setStatus(1);
         Calendar calendar = Calendar.getInstance(); //得到日历
         calendar.setTime(new Date());//把当前时间赋给日历
+        //calendar.setTime(parse);//把当前时间赋给日历
         calendar.add(Calendar.MONTH, -3);  //设置为前3月
         Date time3month = calendar.getTime();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -189,5 +214,6 @@ public class MemberIndicatorServiceImpl extends GenericServiceImpl<MemberIndicat
         indicator.setMonth6NobuyRate(new BigDecimal(Long.toString(month6NobuyNum)).multiply(new BigDecimal("100.00")).divide(new BigDecimal(Long.toString(indicator.getMemberNumTotal())),2,BigDecimal.ROUND_HALF_UP));
         //写入数据库
         memberIndicatorDao.insert(indicator);
+        System.out.println("结束");
     }
 }

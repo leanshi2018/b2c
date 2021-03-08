@@ -20,4 +20,8 @@ public interface CouponDetailDao extends GenericDao<CouponDetail, Long> {
     Long getNoUseNum(CouponDetail couponDetail1);
 
 	List<CouponDetail> findListByBuyOrderId(Long buyOrderId);
+
+    List<CouponDetail> findDynamicOverDetail(Paramap put);
+
+    void dynamicOverDetail(Paramap put);
 }

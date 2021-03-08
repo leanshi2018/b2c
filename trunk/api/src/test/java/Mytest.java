@@ -2,6 +2,21 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import cn.jiguang.common.ClientConfig;
+import cn.jiguang.common.resp.APIConnectionException;
+import cn.jiguang.common.resp.APIRequestException;
+import cn.jpush.api.JPushClient;
+import cn.jpush.api.push.PushResult;
+import cn.jpush.api.push.model.Options;
+import cn.jpush.api.push.model.Platform;
+import cn.jpush.api.push.model.PushPayload;
+import cn.jpush.api.push.model.audience.Audience;
+import cn.jpush.api.push.model.notification.AndroidNotification;
+import cn.jpush.api.push.model.notification.IosNotification;
+import cn.jpush.api.push.model.notification.Notification;
+import cn.jpush.api.schedule.ScheduleResult;
+import com.framework.loippi.consts.Constants;
+import com.framework.loippi.consts.JpushConstant;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.JacksonUtil;
 import org.apache.commons.lang.StringUtils;
@@ -89,63 +104,106 @@ public class Mytest {
 
     @Test
     public void test() {
-        /*byte[] data = null;
-        // 读取图片字节数组
-        try {
-            InputStream in = new FileInputStream("E:\\微信图片_20200427092558.jpg");
-            data = new byte[in.available()];
-            in.read(data);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // 对字节数组Base64编码
-        BASE64Encoder encoder = new BASE64Encoder();
-        String encode = encoder.encode(Objects.requireNonNull(data));
-        System.out.println(encode);*/
-/*        final YunRequest allInRequest = new YunRequest("MemberService", "sendVerificationCode");
-        allInRequest.put("bizUserId", "900013900");
-        allInRequest.put("phone", "15669093971");
-        allInRequest.put("verificationCodeType", 6L);
-        try {
-            String s = YunClient.request(allInRequest);
-            Map<String, Object> map = JacksonUtil.convertMap(s);
-            if(map.get("status").equals("OK")){
-                System.out.println("解绑成功");
-            }else if(map.get("status").equals("error")){
-                String message = (String) map.get("message");
-                System.out.println(message);
-            } else {
-                throw new RuntimeException("通联支付发送手机验证码异常");
+        ClientConfig config = ClientConfig.getInstance();
+        config.setPushHostName("https://api.jpush.cn");
+        JPushClient jpushClient = new JPushClient(JpushConstant.MASTER_SECRET,JpushConstant.APP_KEY, null, config);
+        PushPayload.Builder payLoad = PushPayload.newBuilder();
+        payLoad.setPlatform(Platform.all());
+        //payLoad.setAudience(Audience.all());
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add("900009045");
+        //strings.add("900004041");
+        //strings.add("900000011");
+        payLoad.setAudience(Audience.alias(strings));
+        /*String[] strings = new String[10];
+        strings[0] = "900000011";
+        payLoad.setAudience(Audience.alias(strings));*/
+
+        //if(param.getJumpPath()!=null&&!"".equals(param.getJumpPath())){
+            Map<String, String> map = new HashMap<>();
+            map.put("page","goodsdetailspage");
+            //map.put("goodsId","{\"goodsId\":\"6552743534695288832\"}");
+            map.put("goodsId","6552743534695288832");
+            /*if(param.getJumpJson()!=null){
+                Map map1= (Map) JSON.parse(param.getJumpJson());*/
+/*        HashMap<String, String> map1 = new HashMap<>();
+        for (String o : map1.keySet()) {
+                    String str =  map1.get(o);
+                    map.put(o+"",str);
+                }*/
+            //}
+            System.out.println(map);
+            payLoad.setNotification(Notification.newBuilder()
+                    .setAlert("逢考必过111")
+                    .addPlatformNotification(AndroidNotification.newBuilder()
+                            .addExtras(map)
+                            .build())
+                    .addPlatformNotification(IosNotification.newBuilder()
+                            .addExtras(map)
+                            .build())
+                    .build());
+
+/*            payLoad.setNotification(Notification.newBuilder()
+                    //.setAlert(param.getMessage())
+                    .setAlert("测试1")
+                    .addPlatformNotification(AndroidNotification.newBuilder()
+                            .addExtra("url","wwww.baidu.com")
+                            //.addExtra("url",param.getJumpLink())
+                            .build())
+                    .addPlatformNotification(IosNotification.newBuilder()
+                            //.addExtra("url",param.getJumpLink())
+                            .addExtra("url","wwww.baidu.com")
+                            .build())
+                    .build());*/
+        //}
+        //if(param.getPlatform()==2||param.getPlatform()==5){
+            //payLoad.setOptions(Options.newBuilder().setApnsProduction(true).build());
+            payLoad.setOptions(Options.newBuilder().setApnsProduction(true).build());
+        //}
+        PushPayload pushPayload = payLoad.build();
+        Boolean flag=false;
+/*        if(param.getPushTime()!=null){
+            if(param.getPushTime().getTime()<=new Date().getTime()){
+                model.addAttribute("msg", "推送时间不可小于当前系统时间");
+                return Constants.MSG_URL;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-/*
-        final YunRequest allInRequest = new YunRequest("MemberService", "unbindPhone");
-        allInRequest.put("bizUserId", "900013900");
-        allInRequest.put("phone", "15669093971");
-        allInRequest.put("verificationCode", "484451");
-        try {
-            String s = YunClient.request(allInRequest);
-            Map<String, Object> map = JacksonUtil.convertMap(s);
-            if(map.get("status").equals("OK")){
-                System.out.println("解绑成功");
-            }else if(map.get("status").equals("error")){
-                String message = (String) map.get("message");
-                System.out.println(message);
-            } else {
-                throw new RuntimeException("通联支付发送手机验证码异常");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String timeStr = format.format(param.getPushTime());
+            try {
+                ScheduleResult result = jpushClient.createSingleSchedule("singleSchedule",timeStr,pushPayload);
+                flag=true;
+                System.out.println(result);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                model.addAttribute("msg", "极光推送连接异常");
+                return Constants.MSG_URL;
+            } catch (APIRequestException e) {
+                e.printStackTrace();
+                System.out.println("HTTP Status: " + e.getStatus());
+                System.out.println("Error Code: " + e.getErrorCode());
+                System.out.println("Error Message: " + e.getErrorMessage());
+                model.addAttribute("msg", e.getErrorMessage());
+                return Constants.MSG_URL;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-        /*String splitCodes="900000011,900000012,900000013,900000014";
-        if (StringUtils.isNotEmpty(splitCodes) && !"null".equals(splitCodes)) {
-            String[] splitCodeList = splitCodes.split(",");
-            for (String s : splitCodeList) {
-                System.out.println(s);
+        }else {*/
+            try {
+                System.out.println("推送开始");
+                PushResult result = jpushClient.sendPush(pushPayload);
+                System.out.println("推送成功");
+                flag=true;
+                System.out.println(result);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                //model.addAttribute("msg", "极光推送连接异常");
+                //return Constants.MSG_URL;
+            } catch (APIRequestException e) {
+                e.printStackTrace();
+                System.out.println("HTTP Status: " + e.getStatus());
+                System.out.println("Error Code: " + e.getErrorCode());
+                System.out.println("Error Message: " + e.getErrorMessage());
+                //model.addAttribute("msg", e.getErrorMessage());
+                //return Constants.MSG_URL;
             }
-        }*/
+        //}
     }
 }

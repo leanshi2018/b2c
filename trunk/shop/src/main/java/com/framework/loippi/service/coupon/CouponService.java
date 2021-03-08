@@ -1,11 +1,13 @@
 package com.framework.loippi.service.coupon;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponUser;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
 import com.framework.loippi.service.GenericService;
 import com.framework.loippi.utils.Paramap;
 
@@ -32,4 +34,10 @@ public interface CouponService extends GenericService<Coupon, Long> {
     void overCoupon();
 
     void givingCoupon(String mobile) throws Exception;
+
+    void sendByCondition(ArrayList<RdMmBasicInfo> list, Long couponId);
+
+    void killDynamicStateCoupon();
+
+    void alarmDynamicStateCoupon();
 }

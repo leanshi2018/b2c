@@ -38,6 +38,13 @@ public class ShopOrderMonthReportServiceImpl extends GenericServiceImpl<ShopOrde
     public void getMonthReport() {
         ShopOrderMonthReport monthReport = new ShopOrderMonthReport();
         Calendar calendar = Calendar.getInstance();
+        //********************
+        SimpleDateFormat format3 = new SimpleDateFormat("yyyy-MM-dd");
+        String timeStr = format3.format(calendar.getTime());
+        if(timeStr.endsWith("01")){
+            calendar.add(Calendar.MONTH,-1);
+        }
+        //********************
         //calendar.add(Calendar.MONTH,-1);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date time = calendar.getTime();

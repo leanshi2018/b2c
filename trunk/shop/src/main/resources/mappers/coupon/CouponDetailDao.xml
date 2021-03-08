@@ -141,6 +141,12 @@
         <if test="elseState != null">
             AND use_state != 2
         </if>
+        <if test="searchUseTime !=null and searchUseTime != ''">
+            <![CDATA[and use_start_time <= #{searchUseTime}]]>
+        </if>
+        <if test="searchUseTime !=null and searchUseTime != ''">
+            <![CDATA[and use_end_time >= #{searchUseTime}]]>
+        </if>
     </sql>
     <!-- 设置语句 -->
     <sql id="set_column">
@@ -387,4 +393,11 @@
         SELECT * FROM rd_coupon_detail WHERE buy_order_id = #{buyOrderId}
     </select>
 
+    <select id="findDynamicOverDetail" parameterType="map" resultMap="couponDetailResultMap">
+        SELECT a.* FROM rd_coupon_detail a INNER JOIN rd_coupon b on a.coupon_id = b.id WHERE b.dynamic_state = 1 and a.use_state = #{useState} and a.use_end_time &lt; #{searchUseTime}
+    </select>
+
+    <update id="dynamicOverDetail" parameterType="map" >
+        UPDATE rd_coupon_detail a INNER JOIN rd_coupon b  on a.coupon_id = b.id set a.use_state = 3 WHERE b.dynamic_state = 1 and a.use_state = #{useState} and a.use_end_time &lt; #{searchUseTime}
+    </update>
 </mapper>
