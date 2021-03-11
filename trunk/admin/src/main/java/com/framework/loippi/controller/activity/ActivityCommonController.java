@@ -137,6 +137,23 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
+     * 系统弹窗列表
+     * @param request
+     * @param pageable
+     * @param model
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/findSysPictureList")
+    public String findSysPictureList(HttpServletRequest request, Pageable pageable, ModelMap model, @ModelAttribute ShopHomePicture param) {
+        pageable.setParameter(Paramap.create().put("pictureName", param.getPictureName()).put("pictureTypeS",5));
+        pageable.setOrderProperty("p_sort");
+        pageable.setOrderDirection(Order.Direction.DESC);
+        model.addAttribute("page", shopHomePictureService.findByPage(pageable));
+        return "/common/ad_management/index";
+    }
+
+    /**
      * 轮播图
      * @param request
      * @param model
@@ -160,16 +177,24 @@ public class ActivityCommonController extends GenericController {
      */
     @RequestMapping(value = "/findADPicture")
     public String findADPicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
-        /*if (pictureId==null){
-            model.addAttribute("msg", "id为空");
-            return Constants.MSG_URL;
-        }*/
         model.addAttribute("picture", shopHomePictureService.find(pictureId));
         return "/common/ad_management/edit";
     }
 
     /**
      * 广告位2图
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/findSysPicture")
+    public String findSysPicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
+        model.addAttribute("picture", shopHomePictureService.find(pictureId));
+        return "/common/ad_management/edit";
+    }
+
+    /**
+     * 系统弹窗
      * @param request
      * @param model
      * @return
@@ -293,7 +318,7 @@ public class ActivityCommonController extends GenericController {
                 }
                 shopHomePictureService.save(shopHomePicture);
                 return "redirect:findAD2PictureList.jhtml";
-            }else {//首页广告图2
+            }else if (shopHomePicture.getPictureType()==2){//首页广告图2
                 System.out.println("广告位图2添加");
                 /*if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图2排序只能是1-3");
@@ -306,6 +331,20 @@ public class ActivityCommonController extends GenericController {
                 }*/
                 shopHomePictureService.save(shopHomePicture);
                 return "redirect:findAD2PictureList.jhtml";
+            }else if (shopHomePicture.getPictureType()==5){
+                System.out.println("系统弹窗添加");
+
+                Integer num = shopHomePictureService.countNumByType(5);
+                if (num==0){
+                    shopHomePictureService.save(shopHomePicture);
+                    return "redirect:findSysPictureList.jhtml";
+                }else {
+                    model.addAttribute("msg", "系统弹窗已存在一个");
+                    return Constants.MSG_URL;
+                }
+            }else {
+                model.addAttribute("msg", "请选择正确的类型");
+                return Constants.MSG_URL;
             }
         }else {
             if (shopHomePicture.getPictureType()==0){//轮播图
@@ -371,25 +410,13 @@ public class ActivityCommonController extends GenericController {
                 System.out.println("t=="+shopHomePicture);
                 shopHomePictureService.update(shopHomePicture);
                 return "redirect:findAD2PictureList.jhtml";
-            }else {
+            }else if (shopHomePicture.getPictureType()==2){
                 System.out.println("广告位图2修改");
                 if (shopHomePicture.getPSort()<1 || shopHomePicture.getPSort()>3){
                     model.addAttribute("msg", "广告位图2排序只能是1-3");
                     return Constants.MSG_URL;
                 }
-                List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
-                /*if (pictureList.size()!=0){
-                    for (ShopHomePicture homePicture : pictureList) {
-                        if (homePicture.getPictureType()==2){
-                            if (homePicture.getId().longValue() != shopHomePicture.getId().longValue()){
-                                if (homePicture.getPSort()==shopHomePicture.getPSort()){
-                                    model.addAttribute("msg", "广告位图2排序"+shopHomePicture.getPSort()+"号已存在");
-                                    return Constants.MSG_URL;
-                                }
-                            }
-                        }
-                    }
-                }*/
+                //List<ShopHomePicture> pictureList = shopHomePictureService.findByTypeAndSort(shopHomePicture.getPictureType(),shopHomePicture.getPSort());
                 if (shopHomePicture.getJumpInterface()==null){
                     shopHomePicture.setJumpInterface("");
                 }
@@ -405,6 +432,23 @@ public class ActivityCommonController extends GenericController {
                 System.out.println("t=="+shopHomePicture);
                 shopHomePictureService.update(shopHomePicture);
                 return "redirect:findAD2PictureList.jhtml";
+            }else {
+                System.out.println("系统弹窗修改");
+                if (shopHomePicture.getJumpInterface()==null){
+                    shopHomePicture.setJumpInterface("");
+                }
+                if (shopHomePicture.getPictureJson()==null){
+                    shopHomePicture.setPictureJson("");
+                }
+                if (shopHomePicture.getActivityUrl()==null){
+                    shopHomePicture.setActivityUrl("");
+                }
+                if (shopHomePicture.getDescName()==null){
+                    shopHomePicture.setDescName("");
+                }
+                System.out.println("t=="+shopHomePicture);
+                shopHomePictureService.update(shopHomePicture);
+                return "redirect:findSysPictureList.jhtml";
             }
         }
 

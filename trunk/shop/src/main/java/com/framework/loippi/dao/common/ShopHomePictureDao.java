@@ -15,4 +15,6 @@ public interface ShopHomePictureDao extends GenericDao<ShopHomePicture, Long> {
 	List<ShopHomePicture> findByTypeAndSort(Map<String, Object> map);
 
 	List<ShopHomePicture> findListByTypeAndStutus(Map<String, Object> map);
+
+	Integer countNumByType(Integer pictureType);
 }
