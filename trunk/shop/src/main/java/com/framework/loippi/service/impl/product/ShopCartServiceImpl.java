@@ -1,9 +1,12 @@
 package com.framework.loippi.service.impl.product;
 
 
+import com.framework.loippi.entity.coupon.CouponDetail;
+import com.framework.loippi.service.coupon.CouponDetailService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -108,6 +111,8 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
     private CouponService couponService;
     @Autowired
     private CouponUserService couponUserService;
+    @Autowired
+    private CouponDetailService couponDetailService;
     @Autowired
     private RdMmRelationService rdMmRelationService;
     @Autowired
@@ -1542,7 +1547,20 @@ public class ShopCartServiceImpl extends GenericServiceImpl<ShopCart, Long> impl
             //获得了当前用户拥有的合法可以使用的优惠券种类的集合
             //遍历集合，判断合法优惠券集合中可以用于当前订单的部分
             if(coupons!=null&&coupons.size()>0){
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String searchTimeStr = format.format(new Date());
                 for (Coupon coupon : coupons) {
+                    //***************************** TODO 2021-03-05
+                    //如果是动态判断优惠券使用结束时间的优惠券，需要判定优惠券详情的使用结束时间
+                    if(coupon.getDynamicState()!=null&&coupon.getDynamicState()==1){
+                        List<CouponDetail> details = couponDetailService.findList(Paramap.create().put("couponId",coupon.getId()).put("holdId",memberId).put("useState",2)
+                        .put("searchUseTime",searchTimeStr));
+                        if(details==null||details.size()==0){
+                            coupon.setNoUseFalg(0);
+                            noUseList.add(coupon);
+                            continue;
+                        }
+                    }
                     //特定优惠券限制使用 TODO 2020-02-02
                     if(coupon.getId().equals(6555008628095455330L)){
                         RdMmRelation mmRelation = rdMmRelationService.find("mmCode", memberId);

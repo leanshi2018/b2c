@@ -156,4 +156,8 @@ public class CouponDetail implements GenericEntity {
 
     //查询字段
     private Integer elseState;
+    /**
+     * 查询使用优惠券时间
+     */
+    private String searchUseTime;
 }

@@ -15,4 +15,6 @@ public interface ShopHomePictureService extends GenericService<ShopHomePicture, 
 	List<ShopHomePicture> findByTypeAndSort(Integer pictureType, Integer pSort);
 
 	List<ShopHomePicture> findListByTypeAndStutus(int pictureType, int auditStatus);
+
+	Integer countNumByType(Integer pictureType);
 }

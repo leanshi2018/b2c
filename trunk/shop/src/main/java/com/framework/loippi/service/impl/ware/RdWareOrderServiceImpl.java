@@ -310,7 +310,8 @@ public class RdWareOrderServiceImpl extends GenericServiceImpl<RdWareOrder, Long
 				rdWareOrder.setTradeSn(tradeSn);
 				if (rdWareOrder.getOrderAmount().compareTo(new BigDecimal("0.00"))==1){
 					System.out.println("totalFee="+totalFee);
-					rdWareOrder.setOrderAmount(rdWareOrder.getOrderAmount().subtract(new BigDecimal(totalFee)).setScale(2,BigDecimal.ROUND_HALF_UP));
+					rdWareOrder.setOrderAmount(new BigDecimal("0.00"));
+					//rdWareOrder.setOrderAmount(rdWareOrder.getOrderAmount().subtract(new BigDecimal(totalFee)).setScale(2,BigDecimal.ROUND_HALF_UP));
 				}
 				rdWareOrder.setOrderState(WareOrderState.ORDER_STATE_NO_AUDIT);
 				rdWareOrderDao.update(rdWareOrder);

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.consts.ActivityStatus;
+import com.framework.loippi.consts.GatherAreaConstant;
 import com.framework.loippi.consts.GoodsState;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.activity.ShopActivity;
@@ -33,6 +34,8 @@ import com.framework.loippi.entity.common.ShopRecommendationGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.product.ShopGoodsRecommend;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
 import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -52,10 +55,13 @@ import com.framework.loippi.service.product.ShopGoodsBrandService;
 import com.framework.loippi.service.product.ShopGoodsClassService;
 import com.framework.loippi.service.product.ShopGoodsRecommendService;
 import com.framework.loippi.service.product.ShopGoodsService;
+import com.framework.loippi.service.user.RdMmBasicInfoService;
+import com.framework.loippi.service.user.RdMmRelationService;
 import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
+import com.framework.loippi.utils.Constants;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.wechat.applets.util.GetOpenIDUtil;
@@ -95,6 +101,12 @@ public class IndexAPIController extends BaseController {
     private ShopProductRecommendationService shopProductRecommendationService;
     @Resource
     private ShopRecommendationGoodsService shopRecommendationGoodsService;
+    @Resource
+    private RdMmBasicInfoService rdMmBasicInfoService;
+    @Resource
+    private RdMmRelationService rdMmRelationService;
+    @Resource
+    private ShopGoodsService goodsService;
 
     /**
      * 首页数据（初始化数据）
@@ -643,7 +655,7 @@ public class IndexAPIController extends BaseController {
      */
 	@ResponseBody
     @RequestMapping("/api/index/getHomePictureNew.json")
-    public String getHomePictureNew() {
+    public String getHomePictureNew(HttpServletRequest request) {
 
         //轮播图
         List<ShopHomePicture> homePictures = shopHomePictureService.findListByTypeAndStutus( 0,1);
@@ -652,7 +664,42 @@ public class IndexAPIController extends BaseController {
         List<ShopHomePicture> adPictures = shopHomePictureService.findListByTypeAndStutus(2,1);
 
 		List<RdKeyword> keywordList = rdKeywordService.findByAll();
-		return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
+
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        if(session==null){
+            return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
+        }else {
+            if (StringUtils.isEmpty(session.getMmCode())){
+                return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
+            }else {
+                RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+                if (StringUtils.isEmpty(member.getMmCode())){
+                    return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
+                }else {
+                    RdMmRelation relation = rdMmRelationService.findByMCode(member.getMmCode());
+                    if (relation.getRank()==0){
+                        Pageable pager = new Pageable();
+                        pager.setPageNumber(0);
+                        pager.setPageSize(3);
+                        Paramap paramap = Paramap.create();
+                        paramap.put("highPrice", GatherAreaConstant.PACKAGE_MAIL_HIGH);
+                        paramap.put("lowPrice", GatherAreaConstant.PACKAGE_MAIL_LOW);
+                        paramap.put("goodsSalenum","yes");
+                        paramap.put("noExchange","yes");
+                        paramap.put("goodsShow",1);
+                        pager.setParameter(paramap);
+                        Page<ShopGoods> page = goodsService.findByPage(pager);
+                        List<ShopGoods> goods = page.getContent();
+                        List<GoodsListResult> goodsList = shopActivityGoodsService.findAndAddAtiInfo(goods, prefix);
+
+                        return ApiUtils.success(HomeAndADPictureResult.build1(homePictures,adPictures,keywordList,goodsList));
+                    }else {
+                        return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
+                    }
+                }
+            }
+        }
+
     }
 
     public static String appid = "wx6e94bb18bedf3c4c";//公众账号ID
