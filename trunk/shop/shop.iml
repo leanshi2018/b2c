@@ -202,7 +202,7 @@
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: com.aliyun.openservices:aliyun-openservices:1.0.12" level="project" />
     <orderEntry type="module" module-name="task" />
-    <orderEntry type="library" name="Maven: cn.jpush.api:jpush-client:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: cn.jpush.api:jpush-client:3.4.8" level="project" />
     <orderEntry type="library" name="Maven: cn.jpush.api:jiguang-common:1.1.7" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.6.Final" level="project" />
     <orderEntry type="library" name="Maven: com.rabbitmq:amqp-client:5.11.0" level="project" />

@@ -64,7 +64,7 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.6.3" level="project" />
     <orderEntry type="library" name="Maven: org.freemarker:freemarker:2.3.28" level="project" />
     <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />
-    <orderEntry type="library" name="Maven: cn.jpush.api:jpush-client:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: cn.jpush.api:jpush-client:3.4.8" level="project" />
     <orderEntry type="library" name="Maven: cn.jpush.api:jiguang-common:1.1.7" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.1" level="project" />
