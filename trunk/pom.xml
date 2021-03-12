@@ -74,7 +74,7 @@
         <junit.version>4.11</junit.version>
         <log4j.version>1.2.17</log4j.version>
         <slf4j.version>1.7.5</slf4j.version>
-        <guava.version>18.0</guava.version>
+        <guava.version>25.0.0.redhat-1</guava.version>
         <poi.version>3.10-FINAL</poi.version>
         <druid.version>1.0.15</druid.version>
         <javax.annotation-api.version>1.2</javax.annotation-api.version>
