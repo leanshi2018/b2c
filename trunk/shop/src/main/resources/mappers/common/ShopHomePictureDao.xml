@@ -201,4 +201,8 @@
         FROM shop_home_picture WHERE picture_type = #{pictureType} AND audit_status = #{auditStatus} order by p_sort
     </select>
 
+    <select id="countNumByType" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM shop_home_picture WHERE picture_type = #{pictureType}
+    </select>
+
 </mapper>

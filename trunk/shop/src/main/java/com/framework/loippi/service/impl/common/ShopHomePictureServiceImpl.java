@@ -42,4 +42,9 @@ public class ShopHomePictureServiceImpl extends GenericServiceImpl<ShopHomePictu
 		map.put("auditStatus",auditStatus);
 		return shopHomePictureDao.findListByTypeAndStutus(map);
 	}
+
+	@Override
+	public Integer countNumByType(Integer pictureType) {
+		return shopHomePictureDao.countNumByType(pictureType);
+	}
 }

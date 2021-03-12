@@ -5,20 +5,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.framework.loippi.dao.user.RdMmBasicInfoDao;
-import com.framework.loippi.entity.user.*;
-import com.framework.loippi.service.user.*;
-import com.framework.loippi.utils.Digests;
-import com.framework.loippi.utils.Paramap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.framework.loippi.dao.user.MemberRelationLogDao;
 import com.framework.loippi.dao.user.OldSysRelationshipDao;
+import com.framework.loippi.dao.user.RdMmBasicInfoDao;
 import com.framework.loippi.dao.user.RdMmRelationDao;
+import com.framework.loippi.entity.user.MemberRelationLog;
+import com.framework.loippi.entity.user.OldSysRelationship;
+import com.framework.loippi.entity.user.RdMmBasicInfo;
+import com.framework.loippi.entity.user.RdMmEdit;
+import com.framework.loippi.entity.user.RdMmLogOutNum;
+import com.framework.loippi.entity.user.RdMmRelation;
+import com.framework.loippi.entity.user.RdMmStatusDetail;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.impl.GenericServiceImpl;
+import com.framework.loippi.service.user.RdBonusPaymentService;
+import com.framework.loippi.service.user.RdMmEditService;
+import com.framework.loippi.service.user.RdMmLogOutNumService;
+import com.framework.loippi.service.user.RdMmRelationService;
+import com.framework.loippi.service.user.RdMmStatusDetailService;
+import com.framework.loippi.service.user.RdReceivableMasterService;
+import com.framework.loippi.service.user.RdReceiveableDetailService;
+import com.framework.loippi.utils.Digests;
+import com.framework.loippi.utils.Paramap;
 
 
 /**
@@ -195,6 +207,11 @@ public class RdMmRelationServiceImpl extends GenericServiceImpl<RdMmRelation, Lo
 	@Override
 	public List<RdMmRelation> findBySponsorCodeRuleOut(String mmCode) {
 		return rdMmRelationDao.findBySponsorCodeRuleOut(mmCode);
+	}
+
+	@Override
+	public RdMmRelation findByMCode(String mmCode) {
+		return rdMmRelationDao.findByMCode(mmCode);
 	}
 
 	/**

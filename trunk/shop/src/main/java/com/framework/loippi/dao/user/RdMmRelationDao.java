@@ -44,4 +44,6 @@ public interface RdMmRelationDao  extends GenericDao<RdMmRelation, Long> {
     List<RdMmRelation> findFreezeMem();
 
     List<RdMmRelation> findBySponsorCodeRuleOut(String mmCode);
+
+	RdMmRelation findByMCode(String mmCode);
 }

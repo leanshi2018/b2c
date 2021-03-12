@@ -33,4 +33,6 @@ public interface RdMmRelationService  extends GenericService<RdMmRelation, Long>
     void cancellation(RdMmBasicInfo rdMmBasicInfo);
 
     List<RdMmRelation> findBySponsorCodeRuleOut(String mmCode);
+
+	RdMmRelation findByMCode(String mmCode);
 }
