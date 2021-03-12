@@ -12,12 +12,13 @@ import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.framework.loippi.consts.JpushConstant;
-import com.google.gson.JsonObject;
 
-import java.util.*;
-
-public class JpushUtils {
+public class JpushUtil {
 
     /**
      * 发送极光推送

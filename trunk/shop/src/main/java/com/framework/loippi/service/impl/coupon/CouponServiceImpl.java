@@ -1,14 +1,17 @@
 package com.framework.loippi.service.impl.coupon;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.framework.loippi.entity.*;
-import com.framework.loippi.service.ShopCommonMessageService;
-import com.framework.loippi.service.ShopMemberMessageService;
-import com.framework.loippi.utils.jpush.JpushUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,11 @@ import com.framework.loippi.dao.coupon.CouponDetailDao;
 import com.framework.loippi.dao.coupon.CouponPayDetailDao;
 import com.framework.loippi.dao.coupon.CouponUserDao;
 import com.framework.loippi.dao.user.RdMmRemarkDao;
+import com.framework.loippi.entity.AliPayRefund;
+import com.framework.loippi.entity.ShopCommonMessage;
+import com.framework.loippi.entity.ShopMemberMessage;
+import com.framework.loippi.entity.TSystemPluginConfig;
+import com.framework.loippi.entity.WeiRefund;
 import com.framework.loippi.entity.coupon.Coupon;
 import com.framework.loippi.entity.coupon.CouponDetail;
 import com.framework.loippi.entity.coupon.CouponPayDetail;
@@ -29,6 +37,8 @@ import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.RdMmRemark;
 import com.framework.loippi.entity.user.RdSysPeriod;
 import com.framework.loippi.result.common.coupon.CouponTransferResult;
+import com.framework.loippi.service.ShopCommonMessageService;
+import com.framework.loippi.service.ShopMemberMessageService;
 import com.framework.loippi.service.TSystemPluginConfigService;
 import com.framework.loippi.service.TwiterIdService;
 import com.framework.loippi.service.alipay.AlipayRefundService;
@@ -46,6 +56,7 @@ import com.framework.loippi.service.wechat.WechatMobileRefundService;
 import com.framework.loippi.service.wechat.WechatRefundService;
 import com.framework.loippi.utils.NumberUtils;
 import com.framework.loippi.utils.Paramap;
+import com.framework.loippi.utils.jpush.JpushUtil;
 import com.framework.loippi.utils.validator.DateUtils;
 
 /**
@@ -923,7 +934,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
             //2.2.4发送极光推送
             strings.add(basicInfo.getMmCode());
         }
-        boolean b = JpushUtils.sendJpush(strings, message, map);
+        boolean b = JpushUtil.sendJpush(strings, message, map);
     }
 
     /**
@@ -968,7 +979,7 @@ public class CouponServiceImpl extends GenericServiceImpl<Coupon, Long> implemen
         strings.clear();
         strings.addAll(set);
         HashMap<Object, Object> map = new HashMap<>();//TODO 预留跳转优惠券列表页面
-        JpushUtils.sendJpush(strings,"您的优惠券即将过期，赶紧使用吧~",map);
+        JpushUtil.sendJpush(strings,"您的优惠券即将过期，赶紧使用吧~",map);
     }
 
     public void updateCouponDetailList(CouponPayDetail couponPayDetail, String bathno, Coupon coupon, List<CouponDetail> couponDetailList,Integer refundNum) {
