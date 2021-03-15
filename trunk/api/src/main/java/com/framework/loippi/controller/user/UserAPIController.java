@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.allinpay.yunst.sdk.YunClient;
+import com.framework.loippi.consts.GatherAreaConstant;
 import com.framework.loippi.consts.NotifyConsts;
 import com.framework.loippi.consts.UpdateMemberInfoStatus;
 import com.framework.loippi.controller.BaseController;
@@ -60,6 +61,8 @@ import com.framework.loippi.pojo.activity.PictureVio;
 import com.framework.loippi.pojo.selfMention.GoodsType;
 import com.framework.loippi.pojo.selfMention.OrderInfo;
 import com.framework.loippi.result.auths.AuthsLoginResult;
+import com.framework.loippi.result.common.goods.GoodsListResult;
+import com.framework.loippi.result.common.goods.OutWindowResult;
 import com.framework.loippi.result.common.index.HomeAndADPictureResult;
 import com.framework.loippi.result.user.BankCardsListResult;
 import com.framework.loippi.result.user.MemberBasicResult;
@@ -74,6 +77,7 @@ import com.framework.loippi.result.user.UserProfileResult;
 import com.framework.loippi.result.user.WithdrawBalanceResult;
 import com.framework.loippi.service.RedisService;
 import com.framework.loippi.service.ShopMemberMessageService;
+import com.framework.loippi.service.activity.ShopActivityGoodsService;
 import com.framework.loippi.service.common.ShopAppService;
 import com.framework.loippi.service.common.ShopCommonAreaService;
 import com.framework.loippi.service.common.ShopHomePictureService;
@@ -102,6 +106,7 @@ import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.service.wallet.RdMmWithdrawLogService;
 import com.framework.loippi.service.ware.RdInventoryWarningService;
 import com.framework.loippi.service.ware.RdWarehouseService;
+import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
 import com.framework.loippi.utils.BankCardUtils;
@@ -196,6 +201,8 @@ public class UserAPIController extends BaseController {
     private ShopOrderSplitService shopOrderSplitService;
     @Resource
     private RdMmRemarkService rdMmRemarkService;
+    @Resource
+    private ShopActivityGoodsService shopActivityGoodsService;
 
     @Value("#{properties['wap.server']}")
     private String wapServer;
@@ -2517,6 +2524,52 @@ public class UserAPIController extends BaseController {
         }
 
         return ApiUtils.success();
+    }
+
+    /**
+     * 弹窗
+     * @param
+     * @param
+     */
+    @RequestMapping(value = "/outWindow.json", method = RequestMethod.POST)
+    public String outWindow(HttpServletRequest request) {
+        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+
+        List<ShopHomePicture> sysPictures = shopHomePictureService.findListByTypeAndStutus(5,1);
+        //用户未登录或者登录失效
+        if(session==null){
+            return ApiUtils.success(OutWindowResult.buildSys(sysPictures));
+        }else {
+            if (StringUtils.isEmpty(session.getMmCode())){
+                return ApiUtils.success(OutWindowResult.buildSys(sysPictures));
+            }else {
+                RdMmBasicInfo member = rdMmBasicInfoService.find("mmCode", session.getMmCode());
+                if (StringUtils.isEmpty(member.getMmCode())){
+                    return ApiUtils.success(OutWindowResult.buildSys(sysPictures));
+                }else {
+                    RdMmRelation relation = rdMmRelationService.findByMCode(member.getMmCode());
+                    if (relation.getRank()==0){
+                        Pageable pager = new Pageable();
+                        pager.setPageNumber(0);
+                        pager.setPageSize(3);
+                        Paramap paramap = Paramap.create();
+                        paramap.put("highPrice", GatherAreaConstant.PACKAGE_MAIL_HIGH);
+                        paramap.put("lowPrice", GatherAreaConstant.PACKAGE_MAIL_LOW);
+                        paramap.put("goodsSalenum","yes");
+                        paramap.put("noExchange","yes");
+                        paramap.put("goodsShow",1);
+                        pager.setParameter(paramap);
+                        Page<ShopGoods> page = shopGoodsService.findByPage(pager);
+                        List<ShopGoods> goods = page.getContent();
+                        List<GoodsListResult> goodsList = shopActivityGoodsService.findAndAddAtiInfo(goods, prefix);
+
+                        return ApiUtils.success(OutWindowResult.build(sysPictures,goodsList));
+                    }else {
+                        return ApiUtils.success(OutWindowResult.buildSys(sysPictures));
+                    }
+                }
+            }
+        }
     }
 
 }

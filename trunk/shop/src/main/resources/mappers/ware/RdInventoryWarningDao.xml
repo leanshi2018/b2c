@@ -12,17 +12,17 @@
 		<result property="goodsName" column="GOODS_NAME" />
 		<result property="specificationId" column="SPECIFICATION_ID" />
 		<result property="specifications" column="SPECIFICATIONS" />
-		<result property="inventory" column="INVENTORY" />
+		<result property="fInventory" column="F_INVENTORY" />
 		<result property="precautiousLine" column="PRECAUTIOUS_LINE" />
 	</resultMap>
 	
 	<!-- 定义可重用的SQL代码段，可以包含在其他语句中 -->
 	<sql id="base_column">
-		 WARE_CODE ,WARE_NAME ,GOODS_CODE ,GOODS_NAME ,SPECIFICATION_ID ,SPECIFICATIONS ,INVENTORY ,PRECAUTIOUS_LINE 
+		 WARE_CODE ,WARE_NAME ,GOODS_CODE ,GOODS_NAME ,SPECIFICATION_ID ,SPECIFICATIONS ,INVENTORY ,F_INVENTORY ,PRECAUTIOUS_LINE
 	</sql>
 	
 	<sql id="base_value_column">
-		 #{wareCode},#{wareName},#{goodsCode},#{goodsName},#{specificationId},#{specifications},#{inventory},#{precautiousLine}
+		 #{wareCode},#{wareName},#{goodsCode},#{goodsName},#{specificationId},#{specifications},#{inventory},#{fInventory},#{precautiousLine}
 	</sql>
 	
 	<!-- 定义可重用的WHERE SQL公共代码段，可以包含在其他语句中 -->
@@ -47,6 +47,9 @@
 		</if>
 		<if test="inventory != null and inventory != ''">
 			AND INVENTORY = #{inventory,jdbcType=INTEGER}
+		</if>
+		<if test="fInventory != null and fInventory != ''">
+			AND F_INVENTORY = #{fInventory,jdbcType=INTEGER}
 		</if>
 		<if test="precautiousLine != null and precautiousLine != ''">
 			AND PRECAUTIOUS_LINE = #{precautiousLine,jdbcType=INTEGER}
@@ -75,6 +78,9 @@
 		</if>
 		<if test="inventory != null">
 			INVENTORY = #{inventory,jdbcType=INTEGER},
+		</if>
+		<if test="fInventory != null">
+			F_INVENTORY = #{fInventory,jdbcType=INTEGER},
 		</if>
 		<if test="precautiousLine != null">
 			PRECAUTIOUS_LINE = #{precautiousLine,jdbcType=INTEGER},

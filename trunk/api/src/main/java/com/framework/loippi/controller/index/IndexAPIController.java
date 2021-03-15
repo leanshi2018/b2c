@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.framework.loippi.consts.ActivityStatus;
-import com.framework.loippi.consts.GatherAreaConstant;
 import com.framework.loippi.consts.GoodsState;
 import com.framework.loippi.controller.BaseController;
 import com.framework.loippi.entity.activity.ShopActivity;
@@ -34,8 +33,6 @@ import com.framework.loippi.entity.common.ShopRecommendationGoods;
 import com.framework.loippi.entity.product.ShopGoods;
 import com.framework.loippi.entity.product.ShopGoodsBrand;
 import com.framework.loippi.entity.product.ShopGoodsRecommend;
-import com.framework.loippi.entity.user.RdMmBasicInfo;
-import com.framework.loippi.entity.user.RdMmRelation;
 import com.framework.loippi.entity.user.ShopMemberFavorites;
 import com.framework.loippi.enus.ActivityTypeEnus;
 import com.framework.loippi.mybatis.paginator.domain.Order;
@@ -61,7 +58,6 @@ import com.framework.loippi.service.user.ShopMemberFavoritesService;
 import com.framework.loippi.support.Page;
 import com.framework.loippi.support.Pageable;
 import com.framework.loippi.utils.ApiUtils;
-import com.framework.loippi.utils.Constants;
 import com.framework.loippi.utils.Paramap;
 import com.framework.loippi.utils.StringUtil;
 import com.framework.loippi.utils.wechat.applets.util.GetOpenIDUtil;
@@ -665,7 +661,7 @@ public class IndexAPIController extends BaseController {
 
 		List<RdKeyword> keywordList = rdKeywordService.findByAll();
 
-        AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
+        /*AuthsLoginResult session = (AuthsLoginResult) request.getAttribute(Constants.CURRENT_USER);
         if(session==null){
             return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
         }else {
@@ -698,8 +694,8 @@ public class IndexAPIController extends BaseController {
                     }
                 }
             }
-        }
-
+        }*/
+        return ApiUtils.success(HomeAndADPictureResult.build(homePictures,adPictures,keywordList));
     }
 
     public static String appid = "wx6e94bb18bedf3c4c";//公众账号ID
