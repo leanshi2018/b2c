@@ -150,7 +150,7 @@ public class ActivityCommonController extends GenericController {
         pageable.setOrderProperty("p_sort");
         pageable.setOrderDirection(Order.Direction.DESC);
         model.addAttribute("page", shopHomePictureService.findByPage(pageable));
-        return "/common/ad_management/index";
+        return "/common/system_pop_up/index";
     }
 
     /**
@@ -182,7 +182,7 @@ public class ActivityCommonController extends GenericController {
     }
 
     /**
-     * 广告位2图
+     * 系统弹窗
      * @param request
      * @param model
      * @return
@@ -190,11 +190,11 @@ public class ActivityCommonController extends GenericController {
     @RequestMapping(value = "/findSysPicture")
     public String findSysPicture(HttpServletRequest request, ModelMap model, @RequestParam(required = false, value = "pictureId") Long pictureId) {
         model.addAttribute("picture", shopHomePictureService.find(pictureId));
-        return "/common/ad_management/edit";
+        return "/common/system_pop_up/edit";
     }
 
     /**
-     * 系统弹窗
+     * 广告位2图
      * @param request
      * @param model
      * @return

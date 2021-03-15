@@ -47,7 +47,7 @@ public class HomeAndADPictureResult {
 
 		HomeAndADPictureResult result = new HomeAndADPictureResult();
 		result.setOutType(0);
-
+		result.setGoodsList(new ArrayList<>());
 		if (homePictures==null){
 			result.setHomePictures(new ArrayList<PictureVio>());
 		}else {
