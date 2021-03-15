@@ -28,24 +28,23 @@
     <div class="page">
         <div class="fixed-bar">
             <div class="item-title">
-                <h3>广告图管理</h3>
+                <h3>系统弹窗管理</h3>
                 <ul class="tab-base">
                     <li><a href="JavaScript:void(0);" class="current"><@spring.message "manage"/></a></li>
                     <li>
-                        <a href="${base}/admin/shop_activity_common/findAD2Picture.jhtml?pictureId=${id}"><@spring.message "add"/></a>
+                        <a href="${base}/admin/shop_activity_common/findSysPicture.jhtml?pictureId=${id}"><@spring.message "add"/></a>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="fixed-empty"></div>
-        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findAD2PictureList.jhtml">
+        <form method="post" name="formSearch" id="formSearch" action="${base}/admin/shop_activity_common/findSysPictureList.jhtml">
             <input type="hidden" name="pageNo" value="${1}">
             <table class="tb-type1 noborder search">
                 <tbody>
                 <tr>
-                    <th class="th_w">活动图名称</th>
+                    <th class="th_w">系统弹窗名称</th>
                     <td class="ths"><input type="text" class="text" name="pictureName" value="${shopHomePicture.pictureName}"></td>
-                    <td style="width:10px">&nbsp;</td>
                     <td class="w70 tc">
                         <a href="javascript:void(0);" id="shopPMansongSubmit" type="submit"  class="btn-search " title="<@spring.message "search"/>">&nbsp;</a>
                         <a href="" class="btns "><@spring.message "search.cancel"/></a>
@@ -60,8 +59,7 @@
                 <thead>
                 <tr class="thead">
                     <th class="w24"><input type="checkbox" id="idsAll" class="checkitem"></th>
-                    <th class="align-center">活动图名称</th>
-                    <th>类型</th>
+                    <th class="align-center">系统弹窗名称</th>
                     <th class="align-center">跳转页面</th>
                     <th class="align-center">排序</th>
                     <th class="align-center"><@spring.message "operation"/></th>
@@ -73,10 +71,6 @@
                         <td><input type="checkbox" name="ids" value="${list.id}" class="checkitem"></td>
                         <td style="text-align: left">
                             ${list.pictureName}
-                        </td>
-                        <td>
-                            <#if list.pictureType ==2>广告位</#if>
-                            <#if list.pictureType ==4>商品详情活动入口</#if>
                         </td>
                         <td style="text-align: left">
                             <#if list.activityUrl??>
@@ -106,7 +100,7 @@
                             ${list.PSort}
                         </td>
                         <td>
-                            <a class="look" href="${base}/admin/shop_activity_common/findAD2Picture.jhtml?pictureId=${list.id}">编 辑</a>
+                            <a class="look" href="${base}/admin/shop_activity_common/findSysPicture.jhtml?pictureId=${list.id}">编 辑</a>
                         </td>
                     </tr>
                 </#list>
