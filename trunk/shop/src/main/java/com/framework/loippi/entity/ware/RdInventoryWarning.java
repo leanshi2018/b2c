@@ -1,12 +1,12 @@
 package com.framework.loippi.entity.ware;
 
-import com.framework.loippi.mybatis.eitity.GenericEntity;
-import com.framework.loippi.mybatis.ext.annotation.Column;
-import com.framework.loippi.mybatis.ext.annotation.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.framework.loippi.mybatis.eitity.GenericEntity;
+import com.framework.loippi.mybatis.ext.annotation.Column;
+import com.framework.loippi.mybatis.ext.annotation.Table;
 
 /**
  * Entity - 仓库库存表
@@ -49,7 +49,11 @@ public class RdInventoryWarning implements GenericEntity {
 	/**  */
 	@Column(name = "INVENTORY" )
 	private Integer inventory;
-	
+
+	/** 自提仓库赠品数量    负数为欠数量  正数为多给的数量 */
+	@Column(name = "F_INVENTORY" )
+	private Integer fInventory;
+
 	/**  */
 	@Column(name = "PRECAUTIOUS_LINE" )
 	private Integer precautiousLine;
