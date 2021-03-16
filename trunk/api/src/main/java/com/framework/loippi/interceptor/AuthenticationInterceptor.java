@@ -51,6 +51,12 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         interceptset.add("/api/evaluate/saveReplyEvaluate.json");
     }
 
+    private Set<String> outWindset = new HashSet <>();
+    {
+
+        outWindset.add("/api/api/user/outWindow.json");
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
@@ -67,6 +73,11 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
             }
         }
         String sessionId = request.getHeader(Constants.USER_SESSION_ID);
+        if (outWindset.contains(uri)) {
+            if(sessionId==null||"".equals(sessionId)){
+                return true;
+            }
+        }
         AuthsLoginResult member = null;
         response.setCharacterEncoding("utf8");
         response.setHeader("Content-type", "text/json;charset=UTF-8");
