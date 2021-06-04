@@ -103,7 +103,7 @@
         <pjl-comp-filter.version>1.7</pjl-comp-filter.version>
         <aspectjweaver.version>1.6.11</aspectjweaver.version>
         <httpcore.version>4.4.1</httpcore.version>
-        <httpclient.version>4.5</httpclient.version>
+        <httpclient.version>4.5.13</httpclient.version>
         <json-lib.version>2.4</json-lib.version>
         <flexjson.version>3.3</flexjson.version>
         <jaxen.version>1.1.1</jaxen.version>
