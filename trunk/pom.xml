@@ -78,7 +78,7 @@
         <poi.version>3.10-FINAL</poi.version>
         <druid.version>1.0.15</druid.version>
         <javax.annotation-api.version>1.2</javax.annotation-api.version>
-        <fastjson.version>1.2.7</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <mail.version>1.4.7</mail.version>
         <sigar.version>1.6.4</sigar.version>
         <ezmorph.version>1.0.6</ezmorph.version>
