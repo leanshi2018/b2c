@@ -65,7 +65,7 @@
         <!-- 主要依赖库的版本定义 -->
         <asm.version>3.3.1</asm.version>
         <javax.inject.version>1</javax.inject.version>
-        <spring.version>4.1.4.RELEASE</spring.version>
+        <spring.version>5.2.20.RELEASE</spring.version>
         <shiro.version>1.2.3</shiro.version>
         <mybatis.version>3.2.8</mybatis.version>
         <mybatis-spring.version>1.2.2</mybatis-spring.version>
